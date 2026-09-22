@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setTerrain"
-				:ref="registryRef(fieldEls, 'setTerrain')" @confirm="onConfirm">
+	<WindowFrame id="setTerrain" :ref="registryRef(fieldEls, 'setTerrain')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setTerrain.title') }}
@@ -9,13 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setTerrain-position.label') }}</div>
-			<CustomBox id="setTerrain-position"
+			<CustomBox
+				id="setTerrain-position"
 				:ref="registryRef(fieldEls, 'setTerrain-position')"
-				v-tip="t('components.setTerrain-position.tip')" v-focus type="position" v-model="form.position" />
+				v-tip="t('components.setTerrain-position.tip')"
+				v-focus
+				type="position"
+				v-model="form.position"
+			/>
 			<div class="text">{{ t('components.setTerrain-terrain.label') }}</div>
-			<SelectBox id="setTerrain-terrain"
+			<SelectBox
+				id="setTerrain-terrain"
 				v-tip="t('components.setTerrain-terrain.tip')"
-				:ref="registryRef(fieldEls, 'setTerrain-terrain')" v-model="form.terrain" />
+				:ref="registryRef(fieldEls, 'setTerrain-terrain')"
+				v-model="form.terrain"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -66,5 +73,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

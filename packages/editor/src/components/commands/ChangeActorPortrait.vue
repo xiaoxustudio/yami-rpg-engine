@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="changeActorPortrait"
-				:ref="registryRef(fieldEls, 'changeActorPortrait')" @confirm="onConfirm">
+	<WindowFrame
+		id="changeActorPortrait"
+		:ref="registryRef(fieldEls, 'changeActorPortrait')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.changeActorPortrait.title') }}
@@ -9,13 +12,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeActorPortrait-actor.label') }}</div>
-			<CustomBox id="changeActorPortrait-actor"
+			<CustomBox
+				id="changeActorPortrait-actor"
 				:ref="registryRef(fieldEls, 'changeActorPortrait-actor')"
-				v-tip="t('components.changeActorPortrait-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.changeActorPortrait-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.changeActorPortrait-mode.label') }}</div>
-			<SelectBox id="changeActorPortrait-mode"
+			<SelectBox
+				id="changeActorPortrait-mode"
 				v-tip="t('components.changeActorPortrait-mode.tip')"
-				:ref="registryRef(fieldEls, 'changeActorPortrait-mode')" v-model="form.mode" />
+				:ref="registryRef(fieldEls, 'changeActorPortrait-mode')"
+				v-model="form.mode"
+			/>
 			<div class="text">{{ t('components.changeActorPortrait-portrait.label') }}</div>
 			<CustomBox
 				id="changeActorPortrait-portrait"
@@ -66,12 +77,16 @@ onMounted(() => {
 		{ name: 'Image Mode', value: 'portrait' },
 		{ name: t('command.changeActorPortrait.clip') || 'Clip Mode', value: 'clip' }
 	]);
-	fieldEls.get('changeActorPortrait-mode')
+	fieldEls
+		.get('changeActorPortrait-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'full',
-				targets: [fieldEls.get('changeActorPortrait-portrait'), fieldEls.get('changeActorPortrait-clip')]
+				targets: [
+					fieldEls.get('changeActorPortrait-portrait'),
+					fieldEls.get('changeActorPortrait-clip')
+				]
 			},
 			{
 				case: 'portrait',
@@ -98,5 +113,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

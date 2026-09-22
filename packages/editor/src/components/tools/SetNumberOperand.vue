@@ -359,10 +359,7 @@ const setForm = (data: Partial<NumberOperandForm>): void => {
 const getForm = (): NumberOperandForm => {
 	const data = { ...form } as NumberOperandForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = registryElement<HTMLElement & { read?: () => unknown }>(
-			composableEls,
-			id
-		);
+		const control = registryElement<HTMLElement & { read?: () => unknown }>(composableEls, id);
 		if (control && typeof control.read === 'function') {
 			data[field] = control.read() as never;
 		}

@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="setAnimation"
-				:ref="registryRef(fieldEls, 'setAnimation')" @confirm="onConfirm">
+	<WindowFrame
+		id="setAnimation"
+		:ref="registryRef(fieldEls, 'setAnimation')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setAnimation.title') }}
@@ -9,12 +12,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setAnimation-element.label') }}</div>
-			<CustomBox id="setAnimation-element"
+			<CustomBox
+				id="setAnimation-element"
 				:ref="registryRef(fieldEls, 'setAnimation-element')"
-				v-tip="t('components.setAnimation-element.tip')" v-focus type="element" v-model="form.element" />
+				v-tip="t('components.setAnimation-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.setAnimation-properties.label') }}</div>
-			<ParamList id="setAnimation-properties"
-				:ref="registryRef(fieldEls, 'setAnimation-properties')" v-focus v-model="form.properties" />
+			<ParamList
+				id="setAnimation-properties"
+				:ref="registryRef(fieldEls, 'setAnimation-properties')"
+				v-focus
+				v-model="form.properties"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -71,5 +83,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

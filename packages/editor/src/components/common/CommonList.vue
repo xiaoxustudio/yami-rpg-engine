@@ -131,7 +131,12 @@ onMounted(() => {
 	on('write', (e: Event & { value?: unknown }) => emit('write', e.value));
 	on('select', (e: Event & { value?: unknown }) => emit('select', e.value));
 	on('popup', (e: Event) =>
-		emit('popup', (e as YamiMouseEvent).value, (e as YamiMouseEvent).clientX, (e as YamiMouseEvent).clientY)
+		emit(
+			'popup',
+			(e as YamiMouseEvent).value,
+			(e as YamiMouseEvent).clientX,
+			(e as YamiMouseEvent).clientY
+		)
 	);
 });
 </script>

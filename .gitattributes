@@ -1,0 +1,35 @@
+# 行尾统一（2026-09-21 补）
+#
+# 背景：仓库此前**没有** `.gitattributes`，而 Windows 的 `core.autocrlf` 默认为 `true`。
+# 后果是同一份文件在不同机器/不同工具下 CRLF 与 LF 混用：
+#   - 工作树实测 398/400 个源文件是 LF（由编辑器/工具写入），另几个是 CRLF；
+#   - `git diff` 每次都警告 `LF will be replaced by CRLF the next time Git touches it`；
+#   - `oxfmt --check` / `oxlint` 的结果会因行尾而抖动，diff 也会出现整文件重写。
+# 统一为 LF，让「格式化」「lint」「diff」在任何平台上得到同一个结论。
+* text=auto eol=lf
+
+# 明确二进制：不让 git 尝试做行尾转换或文本 diff
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.icns binary
+*.bmp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.zip binary
+*.7z binary
+*.exe binary
+*.dll binary
+*.node binary
+*.so binary
+*.dylib binary
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.aseprite binary
+*.tmx binary

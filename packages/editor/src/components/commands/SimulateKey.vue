@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="simulateKey"
-				:ref="registryRef(fieldEls, 'simulateKey')" @confirm="onConfirm">
+	<WindowFrame id="simulateKey" :ref="registryRef(fieldEls, 'simulateKey')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.simulateKey.title') }}
@@ -9,13 +8,20 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.simulateKey-operation.label') }}</div>
-			<SelectBox id="simulateKey-operation"
+			<SelectBox
+				id="simulateKey-operation"
 				v-tip="t('components.simulateKey-operation.tip')"
-				:ref="registryRef(fieldEls, 'simulateKey-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'simulateKey-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.simulateKey-keycode.label') }}</div>
-			<KeyboardBox id="simulateKey-keycode"
+			<KeyboardBox
+				id="simulateKey-keycode"
 				:ref="registryRef(fieldEls, 'simulateKey-keycode')"
-				v-tip="t('components.simulateKey-keycode.tip')" @input="onKeycode" />
+				v-tip="t('components.simulateKey-keycode.tip')"
+				@input="onKeycode"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -70,5 +76,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

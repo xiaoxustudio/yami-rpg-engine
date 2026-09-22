@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="addAnimationComponent"
-				:ref="registryRef(fieldEls, 'addAnimationComponent')" @confirm="onConfirm">
+	<WindowFrame
+		id="addAnimationComponent"
+		:ref="registryRef(fieldEls, 'addAnimationComponent')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.addAnimationComponent.title') }}
@@ -9,9 +12,14 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.addAnimationComponent-actor.label') }}</div>
-			<CustomBox id="addAnimationComponent-actor"
+			<CustomBox
+				id="addAnimationComponent-actor"
 				:ref="registryRef(fieldEls, 'addAnimationComponent-actor')"
-				v-tip="t('components.addAnimationComponent-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.addAnimationComponent-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.addAnimationComponent-animationId.label') }}</div>
 			<CustomBox
 				id="addAnimationComponent-animationId"
@@ -23,17 +31,26 @@
 				@write="onWrite"
 			/>
 			<div class="text">{{ t('components.addAnimationComponent-motion.label') }}</div>
-			<SelectBox id="addAnimationComponent-motion"
+			<SelectBox
+				id="addAnimationComponent-motion"
 				:ref="registryRef(fieldEls, 'addAnimationComponent-motion')"
-				v-tip="t('components.addAnimationComponent-motion.tip')" v-model="form.motion" />
+				v-tip="t('components.addAnimationComponent-motion.tip')"
+				v-model="form.motion"
+			/>
 			<div class="text">{{ t('components.addAnimationComponent-rotatable.label') }}</div>
-			<SelectBox id="addAnimationComponent-rotatable"
+			<SelectBox
+				id="addAnimationComponent-rotatable"
 				v-tip="t('components.addAnimationComponent-rotatable.tip')"
-				:ref="registryRef(fieldEls, 'addAnimationComponent-rotatable')" v-model="form.rotatable" />
+				:ref="registryRef(fieldEls, 'addAnimationComponent-rotatable')"
+				v-model="form.rotatable"
+			/>
 			<div class="text">{{ t('components.addAnimationComponent-syncAngle.label') }}</div>
-			<SelectBox id="addAnimationComponent-syncAngle"
+			<SelectBox
+				id="addAnimationComponent-syncAngle"
 				v-tip="t('components.addAnimationComponent-syncAngle.tip')"
-				:ref="registryRef(fieldEls, 'addAnimationComponent-syncAngle')" v-model="form.syncAngle" />
+				:ref="registryRef(fieldEls, 'addAnimationComponent-syncAngle')"
+				v-model="form.syncAngle"
+			/>
 			<div class="text">{{ t('components.addAnimationComponent-priority.label') }}</div>
 			<NumberBox
 				id="addAnimationComponent-priority"
@@ -124,5 +141,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

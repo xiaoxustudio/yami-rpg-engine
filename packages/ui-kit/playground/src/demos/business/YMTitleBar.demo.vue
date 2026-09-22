@@ -10,9 +10,13 @@ const closeDialog = (id: string) => (document.getElementById(id) as FrameElement
 <template>
 	<section class="demo">
 		<h2>YMTitleBar</h2>
-		<p class="desc">标题栏：按住拖动窗口、双击最大化、点击 .close / .maximize 按钮执行对应操作。</p>
+		<p class="desc">
+			标题栏：按住拖动窗口、双击最大化、点击 .close / .maximize 按钮执行对应操作。
+		</p>
 		<div class="row">
-			<YMButton variant="primary" @click="openDialog('tb-demo-1')">Open Draggable Window</YMButton>
+			<YMButton variant="primary" @click="openDialog('tb-demo-1')"
+				>Open Draggable Window</YMButton
+			>
 		</div>
 		<YMWindowFrame id="tb-demo-1" mode="center">
 			<template #title>
@@ -24,7 +28,9 @@ const closeDialog = (id: string) => (document.getElementById(id) as FrameElement
 				</YMTitleBar>
 			</template>
 			<div class="frame-content">
-				<p>Drag the title bar to move, double click to maximize, use buttons on the right.</p>
+				<p>
+					Drag the title bar to move, double click to maximize, use buttons on the right.
+				</p>
 				<YMButton @click="closeDialog('tb-demo-1')">Close</YMButton>
 			</div>
 		</YMWindowFrame>

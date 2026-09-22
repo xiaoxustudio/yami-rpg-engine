@@ -2,7 +2,13 @@
 	"name": "@yami/ui-kit",
 	"version": "0.1.0",
 	"description": "Yami RPG Editor 通用组件库（纯 Vue 契约，CSS Module + design tokens）",
+	"files": [
+		"dist"
+	],
 	"type": "module",
+	"sideEffects": [
+		"*.css"
+	],
 	"main": "./dist/ui-kit.js",
 	"module": "./dist/ui-kit.js",
 	"types": "./dist/index.d.ts",
@@ -13,22 +19,12 @@
 		},
 		"./style.css": "./dist/ui-kit.css"
 	},
-	"files": [
-		"dist"
-	],
-	"sideEffects": [
-		"*.css"
-	],
 	"scripts": {
 		"dev": "vite --config playground/vite.config.ts",
 		"build": "vite build && pnpm run build:types",
 		"build:types": "vue-tsc --emitDeclarationOnly -p tsconfig.build.json",
 		"test": "vitest run",
-		"test:watch": "vitest",
-		"create": "node scripts/create-component.js"
-	},
-	"peerDependencies": {
-		"vue": "^3.5.0"
+		"test:watch": "vitest"
 	},
 	"devDependencies": {
 		"@vitejs/plugin-vue": "^6.0.8",
@@ -39,5 +35,8 @@
 		"vitest": "^4.1.10",
 		"vue": "^3.6.0-rc.9",
 		"vue-tsc": "^3.3.9"
+	},
+	"peerDependencies": {
+		"vue": "^3.5.0"
 	}
 }

@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="getActor"
-				:ref="registryRef(fieldEls, 'getActor')" @confirm="onConfirm">
+	<WindowFrame id="getActor" :ref="registryRef(fieldEls, 'getActor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.getActor.title') }}
@@ -19,13 +18,20 @@
 				v-model="form.variable"
 			/>
 			<div class="text">{{ t('components.getActor-position.label') }}</div>
-			<CustomBox id="getActor-position"
+			<CustomBox
+				id="getActor-position"
 				:ref="registryRef(fieldEls, 'getActor-position')"
-				v-tip="t('components.getActor-position.tip')" type="position" v-model="form.position" />
+				v-tip="t('components.getActor-position.tip')"
+				type="position"
+				v-model="form.position"
+			/>
 			<div class="text">{{ t('components.getActor-area.label') }}</div>
-			<SelectBox id="getActor-area"
+			<SelectBox
+				id="getActor-area"
 				v-tip="t('components.getActor-area.tip')"
-				:ref="registryRef(fieldEls, 'getActor-area')" v-model="form.area" />
+				:ref="registryRef(fieldEls, 'getActor-area')"
+				v-model="form.area"
+			/>
 			<div class="text">{{ t('components.getActor-size.label') }}</div>
 			<NumberVar
 				id="getActor-size"
@@ -49,41 +55,71 @@
 				v-model="form.radius"
 			/>
 			<div class="text">{{ t('components.getActor-selector.label') }}</div>
-			<SelectBox id="getActor-selector"
+			<SelectBox
+				id="getActor-selector"
 				v-tip="t('components.getActor-selector.tip')"
-				:ref="registryRef(fieldEls, 'getActor-selector')" v-model="form.selector" />
+				:ref="registryRef(fieldEls, 'getActor-selector')"
+				v-model="form.selector"
+			/>
 			<div class="text">{{ t('components.getActor-teamId.label') }}</div>
-			<SelectVar id="getActor-teamId"
+			<SelectVar
+				id="getActor-teamId"
 				v-tip="t('components.getActor-teamId.tip')"
-				:ref="registryRef(fieldEls, 'getActor-teamId')" v-model="form.teamId" />
+				:ref="registryRef(fieldEls, 'getActor-teamId')"
+				v-model="form.teamId"
+			/>
 			<div class="text">{{ t('components.getActor-condition.label') }}</div>
-			<SelectBox id="getActor-condition"
+			<SelectBox
+				id="getActor-condition"
 				v-tip="t('components.getActor-condition.tip')"
-				:ref="registryRef(fieldEls, 'getActor-condition')" v-model="form.condition" />
+				:ref="registryRef(fieldEls, 'getActor-condition')"
+				v-model="form.condition"
+			/>
 			<div class="text">{{ t('components.getActor-attribute.label') }}</div>
-			<SelectBox id="getActor-attribute"
+			<SelectBox
+				id="getActor-attribute"
 				v-tip="t('components.getActor-attribute.tip')"
-				:ref="registryRef(fieldEls, 'getActor-attribute')" v-focus v-model="form.attribute" />
+				:ref="registryRef(fieldEls, 'getActor-attribute')"
+				v-focus
+				v-model="form.attribute"
+			/>
 			<div class="text">{{ t('components.getActor-divisor.label') }}</div>
-			<SelectBox id="getActor-divisor"
+			<SelectBox
+				id="getActor-divisor"
 				v-tip="t('components.getActor-divisor.tip')"
-				:ref="registryRef(fieldEls, 'getActor-divisor')" v-focus v-model="form.divisor" />
+				:ref="registryRef(fieldEls, 'getActor-divisor')"
+				v-focus
+				v-model="form.divisor"
+			/>
 			<div class="text">{{ t('components.getActor-activation.label') }}</div>
-			<SelectBox id="getActor-activation"
+			<SelectBox
+				id="getActor-activation"
 				v-tip="t('components.getActor-activation.tip')"
-				:ref="registryRef(fieldEls, 'getActor-activation')" v-model="form.activation" />
+				:ref="registryRef(fieldEls, 'getActor-activation')"
+				v-model="form.activation"
+			/>
 			<div class="text">{{ t('components.getActor-exclusion.label') }}</div>
-			<SelectBox id="getActor-exclusion"
+			<SelectBox
+				id="getActor-exclusion"
 				v-tip="t('components.getActor-exclusion.tip')"
-				:ref="registryRef(fieldEls, 'getActor-exclusion')" v-model="form.exclusion" />
+				:ref="registryRef(fieldEls, 'getActor-exclusion')"
+				v-model="form.exclusion"
+			/>
 			<div class="text">{{ t('components.getActor-exclusionActor.label') }}</div>
-			<CustomBox id="getActor-exclusionActor"
+			<CustomBox
+				id="getActor-exclusionActor"
 				v-tip="t('components.getActor-exclusionActor.tip')"
-				:ref="registryRef(fieldEls, 'getActor-exclusionActor')" type="actor" v-model="form.exclusionActor" />
+				:ref="registryRef(fieldEls, 'getActor-exclusionActor')"
+				type="actor"
+				v-model="form.exclusionActor"
+			/>
 			<div class="text">{{ t('components.getActor-exclusionTeamId.label') }}</div>
-			<SelectVar id="getActor-exclusionTeamId"
+			<SelectVar
+				id="getActor-exclusionTeamId"
 				v-tip="t('components.getActor-exclusionTeamId.tip')"
-				:ref="registryRef(fieldEls, 'getActor-exclusionTeamId')" v-model="form.exclusionTeamId" />
+				:ref="registryRef(fieldEls, 'getActor-exclusionTeamId')"
+				v-model="form.exclusionTeamId"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -115,11 +151,14 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('getActor-area', ['square', 'circle'], (items) =>
-		fieldEls.get('getActor-area')?.loadItems?.(items),
-		{ 'square': 'command.getActor.square', 'circle': 'command.getActor.circle' }
+	useLocalizedOptions(
+		'getActor-area',
+		['square', 'circle'],
+		(items) => fieldEls.get('getActor-area')?.loadItems?.(items),
+		{ square: 'command.getActor.square', circle: 'command.getActor.circle' }
 	);
-	fieldEls.get('getActor-area')
+	fieldEls
+		.get('getActor-area')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'square', targets: [fieldEls.get('getActor-size')] },
@@ -128,7 +167,8 @@ onMounted(() => {
 	useLocalizedOptions('getActor-selector', ['enemy', 'friend', 'team', 'any'], (items) =>
 		fieldEls.get('getActor-selector')?.loadItems?.(items)
 	);
-	fieldEls.get('getActor-selector')
+	fieldEls
+		.get('getActor-selector')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -136,11 +176,30 @@ onMounted(() => {
 				targets: [fieldEls.get('getActor-teamId')]
 			}
 		]);
-	useLocalizedOptions('getActor-condition', ['nearest', 'farthest', 'min-attribute-value', 'max-attribute-value', 'min-attribute-ratio', 'max-attribute-ratio', 'random'], (items) =>
-		fieldEls.get('getActor-condition')?.loadItems?.(items),
-		{ 'nearest': 'command.getActor.condition.nearest', 'farthest': 'command.getActor.condition.farthest', 'min-attribute-value': 'command.getActor.condition.min-attribute-value', 'max-attribute-value': 'command.getActor.condition.max-attribute-value', 'min-attribute-ratio': 'command.getActor.condition.min-attribute-ratio', 'max-attribute-ratio': 'command.getActor.condition.max-attribute-ratio', 'random': 'command.getActor.condition.random' }
+	useLocalizedOptions(
+		'getActor-condition',
+		[
+			'nearest',
+			'farthest',
+			'min-attribute-value',
+			'max-attribute-value',
+			'min-attribute-ratio',
+			'max-attribute-ratio',
+			'random'
+		],
+		(items) => fieldEls.get('getActor-condition')?.loadItems?.(items),
+		{
+			nearest: 'command.getActor.condition.nearest',
+			farthest: 'command.getActor.condition.farthest',
+			'min-attribute-value': 'command.getActor.condition.min-attribute-value',
+			'max-attribute-value': 'command.getActor.condition.max-attribute-value',
+			'min-attribute-ratio': 'command.getActor.condition.min-attribute-ratio',
+			'max-attribute-ratio': 'command.getActor.condition.max-attribute-ratio',
+			random: 'command.getActor.condition.random'
+		}
 	);
-	fieldEls.get('getActor-condition')
+	fieldEls
+		.get('getActor-condition')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -152,14 +211,21 @@ onMounted(() => {
 				targets: [fieldEls.get('getActor-attribute'), fieldEls.get('getActor-divisor')]
 			}
 		]);
-	useLocalizedOptions('getActor-activation', ['active', 'inactive', 'either'], (items) =>
-		fieldEls.get('getActor-activation')?.loadItems?.(items),
-		{ 'active': 'command.getActor.active', 'inactive': 'command.getActor.inactive', 'either': 'command.getActor.either' }
+	useLocalizedOptions(
+		'getActor-activation',
+		['active', 'inactive', 'either'],
+		(items) => fieldEls.get('getActor-activation')?.loadItems?.(items),
+		{
+			active: 'command.getActor.active',
+			inactive: 'command.getActor.inactive',
+			either: 'command.getActor.either'
+		}
 	);
 	useLocalizedOptions('getActor-exclusion', ['none', 'actor', 'team'], (items) =>
 		fieldEls.get('getActor-exclusion')?.loadItems?.(items)
 	);
-	fieldEls.get('getActor-exclusion')
+	fieldEls
+		.get('getActor-exclusion')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'actor', targets: [fieldEls.get('getActor-exclusionActor')] },
@@ -189,5 +255,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

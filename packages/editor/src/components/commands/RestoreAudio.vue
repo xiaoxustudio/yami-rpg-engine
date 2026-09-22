@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="restoreAudio"
-				:ref="registryRef(fieldEls, 'restoreAudio')" @confirm="onConfirm">
+	<WindowFrame
+		id="restoreAudio"
+		:ref="registryRef(fieldEls, 'restoreAudio')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.restoreAudio.title') }}
@@ -9,9 +12,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.restoreAudio-type.label') }}</div>
-			<SelectBox id="restoreAudio-type"
+			<SelectBox
+				id="restoreAudio-type"
 				v-tip="t('components.restoreAudio-type.tip')"
-				:ref="registryRef(fieldEls, 'restoreAudio-type')" v-focus v-model="form.type" />
+				:ref="registryRef(fieldEls, 'restoreAudio-type')"
+				v-focus
+				v-model="form.type"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -62,5 +69,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

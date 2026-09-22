@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setFocus"
-				:ref="registryRef(fieldEls, 'setFocus')" @confirm="onConfirm">
+	<WindowFrame id="setFocus" :ref="registryRef(fieldEls, 'setFocus')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setFocus.title') }}
@@ -9,21 +8,36 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setFocus-operation.label') }}</div>
-			<SelectBox id="setFocus-operation"
+			<SelectBox
+				id="setFocus-operation"
 				v-tip="t('components.setFocus-operation.tip')"
-				:ref="registryRef(fieldEls, 'setFocus-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setFocus-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setFocus-element.label') }}</div>
-			<CustomBox id="setFocus-element"
+			<CustomBox
+				id="setFocus-element"
 				v-tip="t('components.setFocus-element.tip')"
-				:ref="registryRef(fieldEls, 'setFocus-element')" type="element" v-model="form.element" />
+				:ref="registryRef(fieldEls, 'setFocus-element')"
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.setFocus-mode.label') }}</div>
-			<SelectBox id="setFocus-mode"
+			<SelectBox
+				id="setFocus-mode"
 				v-tip="t('components.setFocus-mode.tip')"
-				:ref="registryRef(fieldEls, 'setFocus-mode')" v-model="form.mode" />
+				:ref="registryRef(fieldEls, 'setFocus-mode')"
+				v-model="form.mode"
+			/>
 			<div class="text">{{ t('components.setFocus-cancelable.label') }}</div>
-			<CheckBox id="setFocus-cancelable"
+			<CheckBox
+				id="setFocus-cancelable"
 				v-tip="t('components.setFocus-cancelable.tip')"
-				:ref="registryRef(fieldEls, 'setFocus-cancelable')" class="standard large" v-model="cancelable" />
+				:ref="registryRef(fieldEls, 'setFocus-cancelable')"
+				class="standard large"
+				v-model="cancelable"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -60,18 +74,27 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setFocus-operation', ['add', 'remove', 'remove-latest', 'reset'], (items) =>
-		fieldEls.get('setFocus-operation')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setFocus-operation',
+		['add', 'remove', 'remove-latest', 'reset'],
+		(items) => fieldEls.get('setFocus-operation')?.loadItems?.(items)
 	);
-	useLocalizedOptions('setFocus-mode', ['control-child-buttons', 'control-descendant-buttons'], (items) =>
-		fieldEls.get('setFocus-mode')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setFocus-mode',
+		['control-child-buttons', 'control-descendant-buttons'],
+		(items) => fieldEls.get('setFocus-mode')?.loadItems?.(items)
 	);
-	fieldEls.get('setFocus-operation')
+	fieldEls
+		.get('setFocus-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'add',
-				targets: [fieldEls.get('setFocus-element'), fieldEls.get('setFocus-mode'), fieldEls.get('setFocus-cancelable')]
+				targets: [
+					fieldEls.get('setFocus-element'),
+					fieldEls.get('setFocus-mode'),
+					fieldEls.get('setFocus-cancelable')
+				]
 			},
 			{ case: 'remove', targets: [fieldEls.get('setFocus-element')] }
 		]);
@@ -94,5 +117,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

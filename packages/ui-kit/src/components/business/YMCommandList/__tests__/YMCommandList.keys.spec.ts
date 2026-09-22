@@ -35,7 +35,10 @@ class MockHistory {
 const makeOptions = (): CommandListApiOptions =>
 	({
 		command: {
-			parse: (item: Record<string, unknown>) => [{ color: 'normal' }, { text: String(item.id) }],
+			parse: (item: Record<string, unknown>) => [
+				{ color: 'normal' },
+				{ text: String(item.id) }
+			],
 			fetchVariables: () => [],
 			insert: vi.fn(),
 			edit: vi.fn(),
@@ -48,7 +51,6 @@ const makeOptions = (): CommandListApiOptions =>
 	}) as unknown as CommandListApiOptions;
 
 const makeCommand = (id: string) => ({ id, params: {}, commands: [] });
-
 
 /** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
 const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandListElementApi>(

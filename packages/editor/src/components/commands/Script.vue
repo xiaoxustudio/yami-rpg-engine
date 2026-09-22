@@ -1,23 +1,38 @@
 <template>
-	<WindowFrame id="script"
-				:ref="registryRef(composableEls, 'script')" @confirm="onConfirm">
+	<WindowFrame id="script" :ref="registryRef(composableEls, 'script')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.script.title') }}
-				<div class="text hidden" id="script-mark"
-				:ref="registryRef(composableEls, 'script-mark')">✱</div>
-				<button id="script-change"
-				:ref="registryRef(composableEls, 'script-change')" name="script-change-ts">切换为TS</button>
+				<div
+					class="text hidden"
+					id="script-mark"
+					:ref="registryRef(composableEls, 'script-mark')"
+				>
+					✱
+				</div>
+				<button
+					id="script-change"
+					:ref="registryRef(composableEls, 'script-change')"
+					name="script-change-ts"
+				>
+					切换为TS
+				</button>
 				<div class="maximize" id="script-maximize" />
 				<div class="close" /> </TitleBar
 		></template>
 
-		<div class="box" id="script-script"
-				:ref="registryRef(composableEls, 'script-script')"></div>
+		<div
+			class="box"
+			id="script-script"
+			:ref="registryRef(composableEls, 'script-script')"
+		></div>
 		<!-- P1b：代码着色用的「文本模板节点」（原先是 document.createElement('div') + render()）→ 模板提供、模块 cloneNode -->
 		<div class="hidden">
-			<div class="text" id="script-text-template"
-				:ref="registryRef(composableEls, 'script-text-template')"></div>
+			<div
+				class="text"
+				id="script-text-template"
+				:ref="registryRef(composableEls, 'script-text-template')"
+			></div>
 		</div>
 	</WindowFrame>
 </template>
@@ -58,7 +73,7 @@ onMounted(() => {
 	top: 10px;
 	width: 700px;
 	height: calc(238px * 1.15);
-	/* 用于填补150%缩放时边框处的缝�?*/
+	/* 用于填补150%缩放时边框处的缝隙 */
 	background-color: var(--input-background);
 	border: var(--fieldset-border);
 	border-radius: 2px;

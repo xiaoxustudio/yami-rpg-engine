@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setList"
-				:ref="registryRef(fieldEls, 'setList')" @confirm="onConfirm">
+	<WindowFrame id="setList" :ref="registryRef(fieldEls, 'setList')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setList.title') }}
@@ -8,48 +7,59 @@
 		></template>
 
 		<div class="grid-box">
-		<div class="text">{{ t('components.setList-variable.label') }}</div>
-		<CustomBox
-			id="setList-variable"
+			<div class="text">{{ t('components.setList-variable.label') }}</div>
+			<CustomBox
+				id="setList-variable"
 				:ref="registryRef(fieldEls, 'setList-variable')"
 				v-tip="t('components.setList-variable.tip')"
-			v-focus
-			type="variable"
-			filter="object"
-			v-model="form.variable"
-		/>
-		<div class="text">{{ t('components.setList-operation.label') }}</div>
-		<SelectBox id="setList-operation"
+				v-focus
+				type="variable"
+				filter="object"
+				v-model="form.variable"
+			/>
+			<div class="text">{{ t('components.setList-operation.label') }}</div>
+			<SelectBox
+				id="setList-operation"
 				v-tip="t('components.setList-operation.tip')"
-				:ref="registryRef(fieldEls, 'setList-operation')" v-model="form.operation" />
-		<div class="text">{{ t('components.setList-numbers.label') }}</div>
-		<CustomBox
-			id="setList-numbers"
+				:ref="registryRef(fieldEls, 'setList-operation')"
+				v-model="form.operation"
+			/>
+			<div class="text">{{ t('components.setList-numbers.label') }}</div>
+			<CustomBox
+				id="setList-numbers"
 				v-tip="t('components.setList-numbers.tip')"
 				:ref="registryRef(fieldEls, 'setList-numbers')"
-			v-focus
-			type="array"
-			filter="number"
-			v-model="form.numbers"
-		/>
-		<div class="text">{{ t('components.setList-strings.label') }}</div>
-		<CustomBox
-			id="setList-strings"
+				v-focus
+				type="array"
+				filter="number"
+				v-model="form.numbers"
+			/>
+			<div class="text">{{ t('components.setList-strings.label') }}</div>
+			<CustomBox
+				id="setList-strings"
 				v-tip="t('components.setList-strings.tip')"
 				:ref="registryRef(fieldEls, 'setList-strings')"
-			v-focus
-			type="array"
-			filter="string"
-			v-model="form.strings"
-		/>
+				v-focus
+				type="array"
+				filter="string"
+				v-model="form.strings"
+			/>
 			<div class="text">{{ t('components.setList-index.label') }}</div>
-			<NumberVar id="setList-index"
+			<NumberVar
+				id="setList-index"
 				v-tip="t('components.setList-index.tip')"
-				:ref="registryRef(fieldEls, 'setList-index')" min="0" max="1000000000" v-model="form.index" />
+				:ref="registryRef(fieldEls, 'setList-index')"
+				min="0"
+				max="1000000000"
+				v-model="form.index"
+			/>
 			<div class="text">{{ t('components.setList-boolean.label') }}</div>
-			<SelectBox id="setList-boolean"
+			<SelectBox
+				id="setList-boolean"
 				v-tip="t('components.setList-boolean.tip')"
-				:ref="registryRef(fieldEls, 'setList-boolean')" v-model="form.boolean" />
+				:ref="registryRef(fieldEls, 'setList-boolean')"
+				v-model="form.boolean"
+			/>
 			<div class="text">{{ t('components.setList-number.label') }}</div>
 			<NumberBox
 				id="setList-number"
@@ -61,45 +71,55 @@
 				v-model="number"
 			/>
 			<div class="text">{{ t('components.setList-string.label') }}</div>
-			<TextArea id="setList-string"
+			<TextArea
+				id="setList-string"
 				v-tip="t('components.setList-string.tip')"
-				:ref="registryRef(fieldEls, 'setList-string')" v-model="string" />
-		<div class="text">{{ t('components.setList-operand.label') }}</div>
-		<CustomBox
-			id="setList-operand"
+				:ref="registryRef(fieldEls, 'setList-string')"
+				v-model="string"
+			/>
+			<div class="text">{{ t('components.setList-operand.label') }}</div>
+			<CustomBox
+				id="setList-operand"
 				v-tip="t('components.setList-operand.tip')"
 				:ref="registryRef(fieldEls, 'setList-operand')"
-			v-focus
-			type="variable"
-			filter="all"
-			v-model="form.operand"
-		/>
-		<div class="text">{{ t('components.setList-separator.label') }}</div>
-		<TextAreaVar id="setList-separator"
+				v-focus
+				type="variable"
+				filter="all"
+				v-model="form.operand"
+			/>
+			<div class="text">{{ t('components.setList-separator.label') }}</div>
+			<TextAreaVar
+				id="setList-separator"
 				v-tip="t('components.setList-separator.tip')"
-				:ref="registryRef(fieldEls, 'setList-separator')" v-model="form.separator" />
-		<div class="text">{{ t('components.setList-attribute-groupId.label') }}</div>
-		<CustomBox
-			id="setList-attribute-groupId"
+				:ref="registryRef(fieldEls, 'setList-separator')"
+				v-model="form.separator"
+			/>
+			<div class="text">{{ t('components.setList-attribute-groupId.label') }}</div>
+			<CustomBox
+				id="setList-attribute-groupId"
 				v-tip="t('components.setList-attribute-groupId.tip')"
 				:ref="registryRef(fieldEls, 'setList-attribute-groupId')"
-			v-focus
-			type="attribute-group"
-			v-model="form.attributeGroupId"
-		/>
-		<div class="text">{{ t('components.setList-enum-groupId.label') }}</div>
-		<CustomBox
-			id="setList-enum-groupId"
+				v-focus
+				type="attribute-group"
+				v-model="form.attributeGroupId"
+			/>
+			<div class="text">{{ t('components.setList-enum-groupId.label') }}</div>
+			<CustomBox
+				id="setList-enum-groupId"
 				v-tip="t('components.setList-enum-groupId.tip')"
 				:ref="registryRef(fieldEls, 'setList-enum-groupId')"
-			v-focus
-			type="enum-group"
-			v-model="form.enumGroupId"
-		/>
-		<div class="text">{{ t('components.setList-actor.label') }}</div>
-		<CustomBox id="setList-actor"
+				v-focus
+				type="enum-group"
+				v-model="form.enumGroupId"
+			/>
+			<div class="text">{{ t('components.setList-actor.label') }}</div>
+			<CustomBox
+				id="setList-actor"
 				v-tip="t('components.setList-actor.tip')"
-				:ref="registryRef(fieldEls, 'setList-actor')" type="actor" v-model="form.actor" />
+				:ref="registryRef(fieldEls, 'setList-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.setList-index-skip-check.label') }}</div>
 			<CheckBox
 				id="setList-index-skip-check"
@@ -196,7 +216,8 @@ onMounted(() => {
 			value: 'get-actor-targets'
 		}
 	]);
-	fieldEls.get('setList-operation')
+	fieldEls
+		.get('setList-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'set-numbers', targets: [fieldEls.get('setList-numbers')] },
@@ -211,11 +232,19 @@ onMounted(() => {
 			},
 			{
 				case: 'set-number',
-				targets: [fieldEls.get('setList-index'), fieldEls.get('setList-index-skip-check'), fieldEls.get('setList-number')]
+				targets: [
+					fieldEls.get('setList-index'),
+					fieldEls.get('setList-index-skip-check'),
+					fieldEls.get('setList-number')
+				]
 			},
 			{
 				case: 'set-string',
-				targets: [fieldEls.get('setList-index'), fieldEls.get('setList-index-skip-check'), fieldEls.get('setList-string')]
+				targets: [
+					fieldEls.get('setList-index'),
+					fieldEls.get('setList-index-skip-check'),
+					fieldEls.get('setList-string')
+				]
 			},
 			{
 				case: 'set-variable',
@@ -268,5 +297,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

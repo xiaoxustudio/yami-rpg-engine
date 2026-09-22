@@ -66,7 +66,8 @@ describe('YMCommandList（模型 ↔ DOM 一致性）', () => {
 					(r) => (r as unknown as { rowKey?: string }).rowKey ?? ''
 				)
 			);
-		const expectConsistent = (): void => expect(domKeys()).toEqual(nonEmpty(el.getRowModel().keys));
+		const expectConsistent = (): void =>
+			expect(domKeys()).toEqual(nonEmpty(el.getRowModel().keys));
 
 		el.write([
 			{ id: 'a', params: {}, commands: [] },

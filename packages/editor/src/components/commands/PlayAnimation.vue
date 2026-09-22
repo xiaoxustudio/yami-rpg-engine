@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="playAnimation"
-				:ref="registryRef(fieldEls, 'playAnimation')" @confirm="onConfirm">
+	<WindowFrame
+		id="playAnimation"
+		:ref="registryRef(fieldEls, 'playAnimation')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.playAnimation.title') }}
@@ -9,17 +12,29 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.playAnimation-mode.label') }}</div>
-			<SelectBox id="playAnimation-mode"
+			<SelectBox
+				id="playAnimation-mode"
 				v-tip="t('components.playAnimation-mode.tip')"
-				:ref="registryRef(fieldEls, 'playAnimation-mode')" v-focus v-model="form.mode" />
+				:ref="registryRef(fieldEls, 'playAnimation-mode')"
+				v-focus
+				v-model="form.mode"
+			/>
 			<div class="text">{{ t('components.playAnimation-position.label') }}</div>
-			<CustomBox id="playAnimation-position"
+			<CustomBox
+				id="playAnimation-position"
 				v-tip="t('components.playAnimation-position.tip')"
-				:ref="registryRef(fieldEls, 'playAnimation-position')" type="position" v-model="form.position" />
+				:ref="registryRef(fieldEls, 'playAnimation-position')"
+				type="position"
+				v-model="form.position"
+			/>
 			<div class="text">{{ t('components.playAnimation-actor.label') }}</div>
-			<CustomBox id="playAnimation-actor"
+			<CustomBox
+				id="playAnimation-actor"
 				v-tip="t('components.playAnimation-actor.tip')"
-				:ref="registryRef(fieldEls, 'playAnimation-actor')" type="actor" v-model="form.actor" />
+				:ref="registryRef(fieldEls, 'playAnimation-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.playAnimation-animationId.label') }}</div>
 			<CustomBox
 				id="playAnimation-animationId"
@@ -32,17 +47,29 @@
 				@write="onWrite"
 			/>
 			<div class="text">{{ t('components.playAnimation-motion.label') }}</div>
-			<SelectBox id="playAnimation-motion"
+			<SelectBox
+				id="playAnimation-motion"
 				:ref="registryRef(fieldEls, 'playAnimation-motion')"
-				v-tip="t('components.playAnimation-motion.tip')" v-focus v-model="form.motion" />
+				v-tip="t('components.playAnimation-motion.tip')"
+				v-focus
+				v-model="form.motion"
+			/>
 			<div class="text">{{ t('components.playAnimation-rotatable.label') }}</div>
-			<SelectBox id="playAnimation-rotatable"
+			<SelectBox
+				id="playAnimation-rotatable"
 				v-tip="t('components.playAnimation-rotatable.tip')"
-				:ref="registryRef(fieldEls, 'playAnimation-rotatable')" v-model="form.rotatable" />
+				:ref="registryRef(fieldEls, 'playAnimation-rotatable')"
+				v-model="form.rotatable"
+			/>
 			<div class="text">{{ t('components.playAnimation-priority.label') }}</div>
-			<NumberBox id="playAnimation-priority"
+			<NumberBox
+				id="playAnimation-priority"
 				:ref="registryRef(fieldEls, 'playAnimation-priority')"
-				v-tip="t('components.playAnimation-priority.tip')" min="-100" max="100" v-model="priority" />
+				v-tip="t('components.playAnimation-priority.tip')"
+				min="-100"
+				max="100"
+				v-model="priority"
+			/>
 			<div class="text">{{ t('components.playAnimation-offsetY.label') }}</div>
 			<NumberVar
 				id="playAnimation-offsetY"
@@ -76,8 +103,12 @@
 				v-model="form.speed"
 			/>
 			<div class="text">{{ t('components.playAnimation-wait.label') }}</div>
-			<SelectBox id="playAnimation-wait"
-				:ref="registryRef(fieldEls, 'playAnimation-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="playAnimation-wait"
+				:ref="registryRef(fieldEls, 'playAnimation-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -123,7 +154,8 @@ onMounted(() => {
 	useLocalizedOptions('playAnimation-mode', ['position', 'actor'], (items) =>
 		fieldEls.get('playAnimation-mode')?.loadItems?.(items)
 	);
-	fieldEls.get('playAnimation-mode')
+	fieldEls
+		.get('playAnimation-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'position', targets: [fieldEls.get('playAnimation-position')] },
@@ -156,5 +188,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="choice"
-				:ref="registryRef(fieldEls, 'choice')" @confirm="onConfirm">
+	<WindowFrame id="choice" :ref="registryRef(fieldEls, 'choice')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.choice.title') }}
@@ -67,4 +66,3 @@ onMounted(() => {
 	bottom: 10px;
 }
 </style>
-

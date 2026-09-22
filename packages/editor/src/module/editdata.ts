@@ -12,6 +12,7 @@ import { h } from 'vue';
 import { renderDetached } from '@app/utils/dom';
 
 import { getMonaco } from '@app/utils/monaco';
+import { registryElement } from '@app/utils/element-registry';
 import type * as monacoNs from 'monaco-editor';
 import type { YamiElement } from '@app/types/element-api';
 
@@ -27,6 +28,17 @@ interface EditDataContentItem {
 	node: EditDataNodeShape;
 	value: { id: string; params: unknown; commands: unknown };
 }
+
+/**
+ * 事件列表 DOM（`event-commands` 那个 TreeList）的**读点契约**。
+ *
+ * `YamiElement` 是面向所有模板 ref 的公共窄契约（`update` / `select` 都在里面），但不含
+ * TreeList 的选中游标 `start` / `end`。两个读点过去各写一遍
+ * `as unknown as { start: unknown }` —— **同一个事实、两份各自为政的解释**；
+ * 现在按**读点**声明一次（与 `scene-*-engine.ts` 的 `SceneXxxThis` 是同一手法）。
+ * 注意 `select()` 的形参本来就是 `unknown[]`，所以 `start` / `end` 保持 `unknown` 即可。
+ */
+type EventListCursorDom = YamiElement & { start: unknown; end: unknown };
 
 export const EditDataInstance = new (class {
 	editor: (monacoNs.editor.IStandaloneCodeEditor & { getFocus?: () => void }) | null = null;
@@ -51,7 +63,7 @@ export const EditDataInstance = new (class {
 	mark = moduleEls.get('edit-data-mark') as YamiElement;
 	editorParent: HTMLElement | null = null;
 	editorDom: HTMLElement | null = null;
-	eventListDom: YamiElement | null = null;
+	eventListDom: EventListCursorDom | null = null;
 	currentContent: EditDataContentItem[] | EditDataContentItem | null = null;
 	createTheme: (() => void) | null = null;
 	constructor() {}
@@ -61,7 +73,7 @@ export const EditDataInstance = new (class {
 		this.mark = moduleEls.get('edit-data-mark') as YamiElement;
 		this.editorParent = moduleEls.get('edit-data') as YamiElement;
 		this.editorDom = moduleEls.get('edit-data-current') as YamiElement;
-		this.eventListDom = eventEditorEls.get('event-commands') as YamiElement;
+		this.eventListDom = registryElement<EventListCursorDom>(eventEditorEls, 'event-commands');
 		on(moduleEls.get('edit-data') as YamiElement, 'resize', () => {
 			this.resize();
 		});
@@ -166,8 +178,8 @@ export const EditDataInstance = new (class {
 		const modelValue = this.model!.getValue();
 		const parse = this.parseJSON(modelValue);
 		if (!parse) return;
-		const originalStart = (this.eventListDom as unknown as { start: unknown }).start;
-		const originalEnd = (this.eventListDom as unknown as { end: unknown }).end;
+		const originalStart = this.eventListDom!.start;
+		const originalEnd = this.eventListDom!.end;
 
 		let hasChanges = false;
 

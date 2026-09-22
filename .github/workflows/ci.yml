@@ -57,9 +57,22 @@ jobs:
             - name: DOM 迁移矩阵（明细，落盘 scripts/dom-migration-tracker.md）
               run: pnpm run dom:guard:tracker
 
+            # 文档一致性：文档里写的包脚本 / 相对链接 / `node scripts/x` 引用必须真实存在。
+            # 2026-09-21 重写前它是「docs/ 不存在 → exit 0」的空门禁；现在的口径与零误报实测
+            # 见 scripts/docs-check.mjs 头部。
+            - name: 文档一致性（包脚本 / 链接 / 脚本引用）
+              run: pnpm run docs:check
+
             # --- 类型与 lint -------------------------------------------------------
-            - name: oxlint（编辑器 + 组件库）
+            - name: oxlint（编辑器 + 组件库 + scripts）
               run: pnpm run lint
+
+            # 格式门禁（2026-09-21 补，对应待决策第 ① 项）：此前 `format:check` 有 321 个文件不合格
+            # （editor 249 + ui-kit 72）且**不在 CI 里** —— 一个永远红、又没人看的脚本。
+            # 存量已用一次 `pnpm format` 收口（305 个文件，独立提交），现在它是一条真门禁。
+            # 扫描面与 `lint` 对齐：`packages/editor` + `packages/ui-kit`。
+            - name: 格式一致性（oxfmt）
+              run: pnpm run format:check
 
             - name: tsc strict（编辑器）
               run: pnpm run typecheck
@@ -83,6 +96,12 @@ jobs:
 
             - name: 陈旧豁免注释（应为 0）
               run: pnpm run stale-exemptions
+
+            # 2026-09-21 补：`tsc` / `oxlint` / `oxfmt` / vitest **全都看不见**的一族写坏 ——
+            # 单词首字母被换成控制字符、代码行被吞进 `//` 注释、整段注释被复制进自己。
+            # 实测过 4 种形态且全绿通过既有门禁，因此必须单独量（口径与自证见 scripts/lib/text-integrity.mjs）。
+            - name: 文本污染（控制字符 / 注释被写坏，应为 0）
+              run: pnpm run text:check
 
     tests:
         name: 测试（editor / ui-kit）

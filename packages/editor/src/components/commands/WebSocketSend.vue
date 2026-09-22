@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="webSocketSend"
-				:ref="registryRef(fieldEls, 'webSocketSend')" @confirm="onConfirm">
+	<WindowFrame
+		id="webSocketSend"
+		:ref="registryRef(fieldEls, 'webSocketSend')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.webSocketSend.title') }}
@@ -9,13 +12,20 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.webSocketSend-id.label') }}</div>
-			<StringVar id="webSocketSend-id"
+			<StringVar
+				id="webSocketSend-id"
 				:ref="registryRef(fieldEls, 'webSocketSend-id')"
-				v-tip="t('components.webSocketSend-id.tip')" v-focus v-model="form.id" />
+				v-tip="t('components.webSocketSend-id.tip')"
+				v-focus
+				v-model="form.id"
+			/>
 			<div class="text">{{ t('components.webSocketSend-data.label') }}</div>
-			<StringVar id="webSocketSend-data"
+			<StringVar
+				id="webSocketSend-data"
 				:ref="registryRef(fieldEls, 'webSocketSend-data')"
-				v-tip="t('components.webSocketSend-data.tip')" v-model="form.data" />
+				v-tip="t('components.webSocketSend-data.tip')"
+				v-model="form.data"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -57,5 +67,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

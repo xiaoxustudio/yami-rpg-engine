@@ -9,25 +9,37 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.variableGetter2-type.label') }}</div>
-			<SelectBox id="variableGetter2-type"
+			<SelectBox
+				id="variableGetter2-type"
 				:ref="registryRef(composableEls, 'variableGetter2-type')"
-				v-tip="t('components.variableGetter2-type.tip')" />
+				v-tip="t('components.variableGetter2-type.tip')"
+			/>
 			<div class="text">{{ t('components.variableGetter2-element.label') }}</div>
-			<CustomBox id="variableGetter2-element"
+			<CustomBox
+				id="variableGetter2-element"
 				:ref="registryRef(composableEls, 'variableGetter2-element')"
-				v-tip="t('components.variableGetter2-element.tip')" type="element" />
+				v-tip="t('components.variableGetter2-element.tip')"
+				type="element"
+			/>
 			<div class="text">{{ t('components.variableGetter2-common-key.label') }}</div>
-			<TextBox id="variableGetter2-common-key"
+			<TextBox
+				id="variableGetter2-common-key"
 				:ref="registryRef(composableEls, 'variableGetter2-common-key')"
-				v-tip="t('components.variableGetter2-common-key.tip')" />
+				v-tip="t('components.variableGetter2-common-key.tip')"
+			/>
 			<div class="text">{{ t('components.variableGetter2-preset-key.label') }}</div>
-			<SelectBox id="variableGetter2-preset-key"
+			<SelectBox
+				id="variableGetter2-preset-key"
 				:ref="registryRef(composableEls, 'variableGetter2-preset-key')"
-				v-tip="t('components.variableGetter2-preset-key.tip')" />
+				v-tip="t('components.variableGetter2-preset-key.tip')"
+			/>
 			<div class="text">{{ t('components.variableGetter2-global-key.label') }}</div>
-			<CustomBox id="variableGetter2-global-key"
+			<CustomBox
+				id="variableGetter2-global-key"
 				:ref="registryRef(composableEls, 'variableGetter2-global-key')"
-				v-tip="t('components.variableGetter2-global-key.tip')" type="global-variable" />
+				v-tip="t('components.variableGetter2-global-key.tip')"
+				type="global-variable"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -72,10 +84,7 @@ const setForm = (data: Partial<VariableGetterForm>): void => {
 const getForm = (): VariableGetterForm => {
 	const data = { ...form } as VariableGetterForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = registryElement<HTMLElement & { read?: () => unknown }>(
-			composableEls,
-			id
-		);
+		const control = registryElement<HTMLElement & { read?: () => unknown }>(composableEls, id);
 		if (control && typeof control.read === 'function') {
 			data[field] = control.read() as never;
 		}
@@ -122,5 +131,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

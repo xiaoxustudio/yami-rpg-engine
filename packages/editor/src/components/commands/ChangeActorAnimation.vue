@@ -8,8 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeActorAnimation-actor.label') }}</div>
-			<CustomBox id="changeActorAnimation-actor"
-				v-tip="t('components.changeActorAnimation-actor.tip')" v-focus type="actor" v-model="form.actor" />
+			<CustomBox
+				id="changeActorAnimation-actor"
+				v-tip="t('components.changeActorAnimation-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.changeActorAnimation-animationId.label') }}</div>
 			<CustomBox
 				id="changeActorAnimation-animationId"
@@ -54,5 +59,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

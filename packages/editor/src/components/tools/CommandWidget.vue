@@ -1,7 +1,14 @@
 <template>
-	<WindowFrame id="command-widget" :ref="registryRef(commandSuggestionEls, 'command-widget')" no-buttons>
+	<WindowFrame
+		id="command-widget"
+		:ref="registryRef(commandSuggestionEls, 'command-widget')"
+		no-buttons
+	>
 		<div class="text" id="command-searcher-mark">&gt;</div>
-		<TextBox id="command-searcher" :ref="registryRef(commandSuggestionEls, 'command-searcher')" />
+		<TextBox
+			id="command-searcher"
+			:ref="registryRef(commandSuggestionEls, 'command-searcher')"
+		/>
 	</WindowFrame>
 </template>
 
@@ -25,4 +32,3 @@ onMounted(() => {});
 	/* outline-color: var(--input-border-color-focus); */
 }
 </style>
-

@@ -41,18 +41,26 @@ Build and install the player shell (electron game runtime) as game deployment de
 
 ```shell
 # Windows player shell
-pnpm run build:runtime
+pnpm -F @yami/editor build:runtime
 
 # macOS player shell (run on macOS)
-pnpm run build:runtime:mac
+pnpm -F @yami/editor build:runtime:mac
 ```
 
-The artifacts are installed to `Project/Templates/electron-win-x64` / `electron-mac-universal.app`.
+The artifacts are installed to `packages/editor/Project/Templates/electron-win-x64` / `electron-mac-universal.app`.
 
 ## Run
 
+Build first, then start the editor in production mode:
+
 ```shell
-pnpm run start
+pnpm run start:prod
+```
+
+Development mode (Vite dev server + Electron, with HMR):
+
+```shell
+pnpm dev
 ```
 
 ## External Browser Plugins
@@ -63,7 +71,7 @@ You can add browser plugins in the `extension` folder under the directory, and t
 
 ```shell
 # windows
-npm run build:win
+pnpm run build:win
 
 # macos
 pnpm run build:mac
@@ -84,7 +92,7 @@ pnpm run build:linux
 
 1. Download the resource package you need to update from https://github.com/Open-Yami-Community/yami-rpg-editor/releases/tag/win
 2. Extract and replace it to `C:\Users\<username>\.openyami\Templates`
-3. Replace the `C:\Users\<username>\.openyami\Templates\template.json` file with the `./src/module/packmeta.json` file from this repository
+3. Replace the `C:\Users\<username>\.openyami\Templates\template.json` file with the `packages/editor/src/module/packmeta.json` file from this repository
 4. Restart the editor
 
 ## Contributors

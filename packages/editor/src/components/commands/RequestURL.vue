@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="requestURL"
-				:ref="registryRef(fieldEls, 'requestURL')" @confirm="onConfirm">
+	<WindowFrame id="requestURL" :ref="registryRef(fieldEls, 'requestURL')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.requestURL.title') }}
@@ -9,21 +8,34 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.requestURL-url.label') }}</div>
-			<StringVar id="requestURL-url"
+			<StringVar
+				id="requestURL-url"
 				:ref="registryRef(fieldEls, 'requestURL-url')"
-				v-tip="t('components.requestURL-url.tip')" v-focus v-model="form.url" />
+				v-tip="t('components.requestURL-url.tip')"
+				v-focus
+				v-model="form.url"
+			/>
 			<div class="text">{{ t('components.requestURL-header.label') }}</div>
-			<ParamList id="requestURL-header"
+			<ParamList
+				id="requestURL-header"
 				v-tip="t('components.requestURL-header.tip')"
-				:ref="registryRef(fieldEls, 'requestURL-header')" v-model="form.headers" />
+				:ref="registryRef(fieldEls, 'requestURL-header')"
+				v-model="form.headers"
+			/>
 			<div class="text">{{ t('components.requestURL-method.label') }}</div>
-			<SelectBox id="requestURL-method"
+			<SelectBox
+				id="requestURL-method"
 				v-tip="t('components.requestURL-method.tip')"
-				:ref="registryRef(fieldEls, 'requestURL-method')" v-model="form.method" />
+				:ref="registryRef(fieldEls, 'requestURL-method')"
+				v-model="form.method"
+			/>
 			<div class="text">{{ t('components.requestURL-data.label') }}</div>
-			<ParamList id="requestURL-data"
+			<ParamList
+				id="requestURL-data"
 				v-tip="t('components.requestURL-data.tip')"
-				:ref="registryRef(fieldEls, 'requestURL-data')" v-model="form.data" />
+				:ref="registryRef(fieldEls, 'requestURL-data')"
+				v-model="form.data"
+			/>
 			<div class="text">{{ t('components.requestURL-callback.label') }}</div>
 			<CustomBox
 				id="requestURL-callback"
@@ -98,5 +110,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

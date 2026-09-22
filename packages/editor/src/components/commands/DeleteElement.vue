@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="deleteElement"
-				:ref="registryRef(fieldEls, 'deleteElement')" @confirm="onConfirm">
+	<WindowFrame
+		id="deleteElement"
+		:ref="registryRef(fieldEls, 'deleteElement')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.deleteElement.title') }}
@@ -9,13 +12,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.deleteElement-operation.label') }}</div>
-			<SelectBox id="deleteElement-operation"
+			<SelectBox
+				id="deleteElement-operation"
 				v-tip="t('components.deleteElement-operation.tip')"
-				:ref="registryRef(fieldEls, 'deleteElement-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'deleteElement-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.deleteElement-element.label') }}</div>
-			<CustomBox id="deleteElement-element"
+			<CustomBox
+				id="deleteElement-element"
 				v-tip="t('components.deleteElement-element.tip')"
-				:ref="registryRef(fieldEls, 'deleteElement-element')" type="element" v-model="form.element" />
+				:ref="registryRef(fieldEls, 'deleteElement-element')"
+				type="element"
+				v-model="form.element"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -44,11 +55,18 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('deleteElement-operation', ['delete-element', 'delete-children', 'delete-all'], (items) =>
-		fieldEls.get('deleteElement-operation')?.loadItems?.(items),
-		{ 'delete-element': 'command.deleteElement.children', 'delete-children': 'command.deleteElement.children', 'delete-all': 'command.deleteElement.all-elements' }
+	useLocalizedOptions(
+		'deleteElement-operation',
+		['delete-element', 'delete-children', 'delete-all'],
+		(items) => fieldEls.get('deleteElement-operation')?.loadItems?.(items),
+		{
+			'delete-element': 'command.deleteElement.children',
+			'delete-children': 'command.deleteElement.children',
+			'delete-all': 'command.deleteElement.all-elements'
+		}
 	);
-	fieldEls.get('deleteElement-operation')
+	fieldEls
+		.get('deleteElement-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -75,5 +93,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -12,9 +12,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileActor-inventory-type.label') }}</div>
-			<SelectBox id="fileActor-inventory-type"
+			<SelectBox
+				id="fileActor-inventory-type"
 				v-tip="t('components.fileActor-inventory-type.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-inventory-type')" v-focus v-model="form.type" />
+				:ref="registryRef(inspectorEls, 'fileActor-inventory-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.fileActor-inventory-item-id.label') }}</div>
 			<CustomBox
 				id="fileActor-inventory-item-id"
@@ -88,4 +92,3 @@ onMounted(() => {});
 	height: 146px;
 }
 </style>
-

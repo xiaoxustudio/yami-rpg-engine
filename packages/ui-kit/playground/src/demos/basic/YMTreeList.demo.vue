@@ -68,7 +68,10 @@ onUnmounted(() => {
 });
 
 const addFolder = (): void => {
-	getEl()?.addNodeTo({ name: `Folder ${treeData.value.length + 1}`, class: 'folder', children: [] }, null);
+	getEl()?.addNodeTo(
+		{ name: `Folder ${treeData.value.length + 1}`, class: 'folder', children: [] },
+		null
+	);
 };
 
 const addLeaf = (): void => {

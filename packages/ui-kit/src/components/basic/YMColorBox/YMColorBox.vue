@@ -31,10 +31,14 @@ type ColorBoxApi = HTMLElement & {
 	input(color: string): void;
 	enable(): void;
 	disable(): void;
-	on(type: string, 	listener: (event: Event) => void, options?: boolean | AddEventListenerOptions): void;
+	on(
+		type: string,
+		listener: (event: Event) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
 	keydown(event: KeyboardEvent): void;
 	mouseclick(event: Event): void;
-}
+};
 
 const root = ref<HTMLElement | null>(null);
 const foreground = ref<HTMLElement | null>(null);
@@ -203,13 +207,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div
-		ref="root"
-		class="color-box"
-		:class="{ disabled }"
-		:id="props.id"
-		@keydown="keydown"
-	>
+	<div ref="root" class="color-box" :class="{ disabled }" :id="props.id" @keydown="keydown">
 		<div class="box color-box-background" :class="$style.background" />
 		<div ref="foreground" class="box color-box-foreground" :class="$style.foreground" />
 		<div v-if="builtinOpen" class="color-popup" :class="$style.popup" @click.stop>
@@ -223,7 +221,8 @@ onBeforeUnmount(() => {
 	position: absolute;
 	inset: 0;
 	background-color: #ffffff;
-	background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
+	background-image:
+		linear-gradient(45deg, #ccc 25%, transparent 25%),
 		linear-gradient(-45deg, #ccc 25%, transparent 25%),
 		linear-gradient(45deg, transparent 75%, #ccc 75%),
 		linear-gradient(-45deg, transparent 75%, #ccc 75%);
@@ -237,7 +236,8 @@ onBeforeUnmount(() => {
 
 :global(:root.dark) .background {
 	background-color: #202020;
-	background-image: linear-gradient(45deg, #545454 25%, transparent 25%),
+	background-image:
+		linear-gradient(45deg, #545454 25%, transparent 25%),
 		linear-gradient(-45deg, #545454 25%, transparent 25%),
 		linear-gradient(45deg, transparent 75%, #545454 75%),
 		linear-gradient(-45deg, transparent 75%, #545454 75%);

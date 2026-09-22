@@ -204,10 +204,14 @@ export function createSelectBoxCore(
 		if (last !== value) {
 			write(value);
 			if (state.inputEventEnabled) {
-				const inputEvent = createPayloadEvent('input', {} as {
-					last?: unknown;
-					value?: unknown;
-				}, { bubbles: true });
+				const inputEvent = createPayloadEvent(
+					'input',
+					{} as {
+						last?: unknown;
+						value?: unknown;
+					},
+					{ bubbles: true }
+				);
 				inputEvent.last = last;
 				inputEvent.value = state.dataValue;
 				root?.dispatchEvent(inputEvent);

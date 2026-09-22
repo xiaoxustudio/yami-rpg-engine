@@ -60,8 +60,7 @@ export function useUseItemCommandSchema() {
 	const { form, load, commit } = useCommandSchema('useItem', {
 		skipWrite: true,
 		onLoad() {
-			composableEls.get('useItem-key')
-				?.loadItems?.(Enum.getStringItems!('shortcut-key'));
+			composableEls.get('useItem-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 			requestFocus('useItem-actor');
 		}
 	});

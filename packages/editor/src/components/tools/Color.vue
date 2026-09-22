@@ -6,12 +6,22 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<canvas id="color-palette-canvas"
-				:ref="registryRef(colorEls, 'color-palette-canvas')" width="256" height="194" />
-		<div class="box" id="color-palette-frame"
-				:ref="registryRef(colorEls, 'color-palette-frame')">
-			<div class="box" id="color-palette-cursor"
-				:ref="registryRef(colorEls, 'color-palette-cursor')" />
+		<canvas
+			id="color-palette-canvas"
+			:ref="registryRef(colorEls, 'color-palette-canvas')"
+			width="256"
+			height="194"
+		/>
+		<div
+			class="box"
+			id="color-palette-frame"
+			:ref="registryRef(colorEls, 'color-palette-frame')"
+		>
+			<div
+				class="box"
+				id="color-palette-cursor"
+				:ref="registryRef(colorEls, 'color-palette-cursor')"
+			/>
 		</div>
 		<div class="grid-box" id="color-index-grid">
 			<RadioBox name="color-index" value="0" @input="onIndexedInput" />
@@ -31,16 +41,21 @@
 			<RadioBox name="color-index" value="14" @input="onIndexedInput" />
 			<RadioBox name="color-index" value="15" @input="onIndexedInput" />
 		</div>
-		<canvas id="color-pillar-canvas"
-				:ref="registryRef(colorEls, 'color-pillar-canvas')" width="20" height="256" />
-		<div class="box" id="color-pillar-frame"
-				:ref="registryRef(colorEls, 'color-pillar-frame')">
-			<div class="box" id="color-pillar-cursor"
-				:ref="registryRef(colorEls, 'color-pillar-cursor')" />
+		<canvas
+			id="color-pillar-canvas"
+			:ref="registryRef(colorEls, 'color-pillar-canvas')"
+			width="20"
+			height="256"
+		/>
+		<div class="box" id="color-pillar-frame" :ref="registryRef(colorEls, 'color-pillar-frame')">
+			<div
+				class="box"
+				id="color-pillar-cursor"
+				:ref="registryRef(colorEls, 'color-pillar-cursor')"
+			/>
 		</div>
 		<div class="box" id="color-viewer-frame">
-			<div class="box" id="color-viewer"
-				:ref="registryRef(colorEls, 'color-viewer')" />
+			<div class="box" id="color-viewer" :ref="registryRef(colorEls, 'color-viewer')" />
 		</div>
 		<div class="grid-box" id="color-rgba-grid">
 			<div class="text">#</div>
@@ -54,17 +69,41 @@
 				@input="onHexInput"
 			/>
 			<div class="text">R</div>
-			<NumberBox id="color-r"
-				v-tip="t('components.color-r.tip')" min="0" max="255" v-model="form.r" @input="onRgbaInput" />
+			<NumberBox
+				id="color-r"
+				v-tip="t('components.color-r.tip')"
+				min="0"
+				max="255"
+				v-model="form.r"
+				@input="onRgbaInput"
+			/>
 			<div class="text">G</div>
-			<NumberBox id="color-g"
-				v-tip="t('components.color-g.tip')" min="0" max="255" v-model="form.g" @input="onRgbaInput" />
+			<NumberBox
+				id="color-g"
+				v-tip="t('components.color-g.tip')"
+				min="0"
+				max="255"
+				v-model="form.g"
+				@input="onRgbaInput"
+			/>
 			<div class="text">B</div>
-			<NumberBox id="color-b"
-				v-tip="t('components.color-b.tip')" min="0" max="255" v-model="form.b" @input="onRgbaInput" />
+			<NumberBox
+				id="color-b"
+				v-tip="t('components.color-b.tip')"
+				min="0"
+				max="255"
+				v-model="form.b"
+				@input="onRgbaInput"
+			/>
 			<div class="text">A</div>
-			<NumberBox id="color-a"
-				v-tip="t('components.color-a.tip')" min="0" max="255" v-model="form.a" @input="onRgbaInput" />
+			<NumberBox
+				id="color-a"
+				v-tip="t('components.color-a.tip')"
+				min="0"
+				max="255"
+				v-model="form.a"
+				@input="onRgbaInput"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -231,4 +270,3 @@ onMounted(() => {
 	bottom: 10px;
 }
 </style>
-

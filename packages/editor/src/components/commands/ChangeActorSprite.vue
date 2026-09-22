@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="changeActorSprite"
-				:ref="registryRef(fieldEls, 'changeActorSprite')" @confirm="onConfirm">
+	<WindowFrame
+		id="changeActorSprite"
+		:ref="registryRef(fieldEls, 'changeActorSprite')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.changeActorSprite.title') }}
@@ -9,9 +12,14 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeActorSprite-actor.label') }}</div>
-			<CustomBox id="changeActorSprite-actor"
+			<CustomBox
+				id="changeActorSprite-actor"
 				:ref="registryRef(fieldEls, 'changeActorSprite-actor')"
-				v-tip="t('components.changeActorSprite-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.changeActorSprite-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.changeActorSprite-animationId.label') }}</div>
 			<CustomBox
 				id="changeActorSprite-animationId"
@@ -23,9 +31,12 @@
 				@write="onWrite"
 			/>
 			<div class="text">{{ t('components.changeActorSprite-spriteId.label') }}</div>
-			<SelectBox id="changeActorSprite-spriteId"
+			<SelectBox
+				id="changeActorSprite-spriteId"
 				:ref="registryRef(fieldEls, 'changeActorSprite-spriteId')"
-				v-tip="t('components.changeActorSprite-spriteId.tip')" v-model="form.spriteId" />
+				v-tip="t('components.changeActorSprite-spriteId.tip')"
+				v-model="form.spriteId"
+			/>
 			<div class="text">{{ t('components.changeActorSprite-image.label') }}</div>
 			<CustomBox
 				id="changeActorSprite-image"
@@ -81,5 +92,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

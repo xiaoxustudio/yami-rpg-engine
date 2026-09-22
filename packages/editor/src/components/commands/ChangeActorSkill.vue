@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="changeActorSkill"
-				:ref="registryRef(fieldEls, 'changeActorSkill')" @confirm="onConfirm">
+	<WindowFrame
+		id="changeActorSkill"
+		:ref="registryRef(fieldEls, 'changeActorSkill')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.changeActorSkill.title') }}
@@ -9,11 +12,19 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeActorSkill-actor.label') }}</div>
-			<CustomBox id="changeActorSkill-actor"
-				:ref="registryRef(fieldEls, 'changeActorSkill-actor')" v-focus type="actor" v-model="form.actor" />
+			<CustomBox
+				id="changeActorSkill-actor"
+				:ref="registryRef(fieldEls, 'changeActorSkill-actor')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.changeActorSkill-operation.label') }}</div>
-			<SelectBox id="changeActorSkill-operation"
-				:ref="registryRef(fieldEls, 'changeActorSkill-operation')" v-model="form.operation" />
+			<SelectBox
+				id="changeActorSkill-operation"
+				:ref="registryRef(fieldEls, 'changeActorSkill-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.changeActorSkill-skillId.label') }}</div>
 			<FileVar
 				id="changeActorSkill-skillId"
@@ -24,8 +35,12 @@
 				v-model="form.skillId"
 			/>
 			<div class="text">{{ t('components.changeActorSkill-skill.label') }}</div>
-			<CustomBox id="changeActorSkill-skill"
-				:ref="registryRef(fieldEls, 'changeActorSkill-skill')" type="skill" v-model="form.skill" />
+			<CustomBox
+				id="changeActorSkill-skill"
+				:ref="registryRef(fieldEls, 'changeActorSkill-skill')"
+				type="skill"
+				v-model="form.skill"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -55,11 +70,19 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('changeActorSkill-operation', ['add', 'remove', 'remove-instance', 'sort-by-order'], (items) =>
-		fieldEls.get('changeActorSkill-operation')?.loadItems?.(items),
-		{ 'add': 'command.changeActorSkill.add', 'remove': 'command.changeActorSkill.remove', 'remove-instance': 'command.changeActorSkill.remove-instance', 'sort-by-order': 'command.changeActorSkill.sort-by-order' }
+	useLocalizedOptions(
+		'changeActorSkill-operation',
+		['add', 'remove', 'remove-instance', 'sort-by-order'],
+		(items) => fieldEls.get('changeActorSkill-operation')?.loadItems?.(items),
+		{
+			add: 'command.changeActorSkill.add',
+			remove: 'command.changeActorSkill.remove',
+			'remove-instance': 'command.changeActorSkill.remove-instance',
+			'sort-by-order': 'command.changeActorSkill.sort-by-order'
+		}
 	);
-	fieldEls.get('changeActorSkill-operation')
+	fieldEls
+		.get('changeActorSkill-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -90,5 +113,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

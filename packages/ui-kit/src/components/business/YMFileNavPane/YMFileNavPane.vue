@@ -58,7 +58,7 @@ type FolderElement = HTMLElement & {
 	markVisible?: boolean;
 	textIndent?: number;
 	expanded?: boolean;
-}
+};
 
 /** P4b：这些字段走元素数据（WeakMap），不再是元素上的隐式属性 */
 interface FolderElementData {
@@ -132,7 +132,7 @@ type FileNavPaneElement = HTMLElement & {
 	clear?: () => HTMLElement;
 	elements?: FolderElements;
 	links?: FileBrowserLinks;
-}
+};
 
 interface Props {
 	links: FileBrowserLinks;
@@ -729,9 +729,9 @@ function createTextBox(): TextBoxElement {
 							throw new Error();
 						}
 					})
-				.catch((_error: unknown) => {
-					elementDataOf<{ textNode: Text }>(item).textNode.nodeValue = file.name;
-				});
+					.catch((_error: unknown) => {
+						elementDataOf<{ textNode: Text }>(item).textNode.nodeValue = file.name;
+					});
 			}
 		}
 		elementDataOf<{ textNode: Text }>(item).textNode.nodeValue = file.name;

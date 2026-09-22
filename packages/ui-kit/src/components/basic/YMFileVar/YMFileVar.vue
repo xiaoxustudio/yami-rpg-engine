@@ -198,12 +198,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div
-		ref="root"
-		class="file-var"
-		:class="[mode, { disabled }]"
-		:id="props.id"
-	>
+	<div ref="root" class="file-var" :class="[mode, { disabled }]" :id="props.id">
 		<div v-show="mode === 'constant'" class="file-var-file">
 			<slot name="file" :value="fileValue" :on-input="onFileInput" />
 		</div>

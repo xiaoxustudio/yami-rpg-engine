@@ -1,23 +1,32 @@
 <template>
-	<WindowFrame id="presetElement"
-				:ref="registryRef(composableEls, 'presetElement')" mode="center" @confirm="onConfirm">
+	<WindowFrame
+		id="presetElement"
+		:ref="registryRef(composableEls, 'presetElement')"
+		mode="center"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.presetElement.title') }}
 				<div class="close"></div></TitleBar
 		></template>
 
-		<CustomBox id="presetElement-uiId"
-				:ref="registryRef(composableEls, 'presetElement-uiId')" type="file" filter="ui" @write="onUiIdWrite" />
+		<CustomBox
+			id="presetElement-uiId"
+			:ref="registryRef(composableEls, 'presetElement-uiId')"
+			type="file"
+			filter="ui"
+			@write="onUiIdWrite"
+		/>
 		<TreeList
 			id="presetElement-list"
-				:ref="registryRef(composableEls, 'presetElement-list')"
+			:ref="registryRef(composableEls, 'presetElement-list')"
 			:node-icon-renderer="nodeIconRenderer"
 			@open="onListOpen"
 		/>
 		<TextBox
 			id="presetElement-searcher"
-				:ref="registryRef(composableEls, 'presetElement-searcher')"
+			:ref="registryRef(composableEls, 'presetElement-searcher')"
 			name="search"
 			@input="onSearcherInput"
 			@compositionend="onSearcherInput"
@@ -149,4 +158,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

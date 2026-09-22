@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="getTarget"
-				:ref="registryRef(fieldEls, 'getTarget')" @confirm="onConfirm">
+	<WindowFrame id="getTarget" :ref="registryRef(fieldEls, 'getTarget')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.getTarget.title') }}
@@ -9,25 +8,44 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.getTarget-actor.label') }}</div>
-			<CustomBox id="getTarget-actor"
+			<CustomBox
+				id="getTarget-actor"
 				:ref="registryRef(fieldEls, 'getTarget-actor')"
-				v-tip="t('components.getTarget-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.getTarget-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.getTarget-selector.label') }}</div>
-			<SelectBox id="getTarget-selector"
+			<SelectBox
+				id="getTarget-selector"
 				v-tip="t('components.getTarget-selector.tip')"
-				:ref="registryRef(fieldEls, 'getTarget-selector')" v-model="form.selector" />
+				:ref="registryRef(fieldEls, 'getTarget-selector')"
+				v-model="form.selector"
+			/>
 			<div class="text">{{ t('components.getTarget-condition.label') }}</div>
-			<SelectBox id="getTarget-condition"
+			<SelectBox
+				id="getTarget-condition"
 				v-tip="t('components.getTarget-condition.tip')"
-				:ref="registryRef(fieldEls, 'getTarget-condition')" v-model="form.condition" />
+				:ref="registryRef(fieldEls, 'getTarget-condition')"
+				v-model="form.condition"
+			/>
 			<div class="text">{{ t('components.getTarget-attribute.label') }}</div>
-			<SelectBox id="getTarget-attribute"
+			<SelectBox
+				id="getTarget-attribute"
 				v-tip="t('components.getTarget-attribute.tip')"
-				:ref="registryRef(fieldEls, 'getTarget-attribute')" v-focus v-model="form.attribute" />
+				:ref="registryRef(fieldEls, 'getTarget-attribute')"
+				v-focus
+				v-model="form.attribute"
+			/>
 			<div class="text">{{ t('components.getTarget-divisor.label') }}</div>
-			<SelectBox id="getTarget-divisor"
+			<SelectBox
+				id="getTarget-divisor"
 				v-tip="t('components.getTarget-divisor.tip')"
-				:ref="registryRef(fieldEls, 'getTarget-divisor')" v-focus v-model="form.divisor" />
+				:ref="registryRef(fieldEls, 'getTarget-divisor')"
+				v-focus
+				v-model="form.divisor"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -56,14 +74,37 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('getTarget-selector', ['enemy', 'friend', 'team', 'team-except-self', 'any-except-self', 'any'], (items) =>
-		fieldEls.get('getTarget-selector')?.loadItems?.(items)
+	useLocalizedOptions(
+		'getTarget-selector',
+		['enemy', 'friend', 'team', 'team-except-self', 'any-except-self', 'any'],
+		(items) => fieldEls.get('getTarget-selector')?.loadItems?.(items)
 	);
-	useLocalizedOptions('getTarget-condition', ['max-threat', 'nearest', 'farthest', 'min-attribute-value', 'max-attribute-value', 'min-attribute-ratio', 'max-attribute-ratio', 'random'], (items) =>
-		fieldEls.get('getTarget-condition')?.loadItems?.(items),
-		{ 'max-threat': 'command.getTarget.condition.max-threat', 'nearest': 'command.getTarget.condition.nearest', 'farthest': 'command.getTarget.condition.farthest', 'min-attribute-value': 'command.getTarget.condition.min-attribute-value', 'max-attribute-value': 'command.getTarget.condition.max-attribute-value', 'min-attribute-ratio': 'command.getTarget.condition.min-attribute-ratio', 'max-attribute-ratio': 'command.getTarget.condition.max-attribute-ratio', 'random': 'command.getTarget.condition.random' }
+	useLocalizedOptions(
+		'getTarget-condition',
+		[
+			'max-threat',
+			'nearest',
+			'farthest',
+			'min-attribute-value',
+			'max-attribute-value',
+			'min-attribute-ratio',
+			'max-attribute-ratio',
+			'random'
+		],
+		(items) => fieldEls.get('getTarget-condition')?.loadItems?.(items),
+		{
+			'max-threat': 'command.getTarget.condition.max-threat',
+			nearest: 'command.getTarget.condition.nearest',
+			farthest: 'command.getTarget.condition.farthest',
+			'min-attribute-value': 'command.getTarget.condition.min-attribute-value',
+			'max-attribute-value': 'command.getTarget.condition.max-attribute-value',
+			'min-attribute-ratio': 'command.getTarget.condition.min-attribute-ratio',
+			'max-attribute-ratio': 'command.getTarget.condition.max-attribute-ratio',
+			random: 'command.getTarget.condition.random'
+		}
 	);
-	fieldEls.get('getTarget-condition')
+	fieldEls
+		.get('getTarget-condition')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -94,5 +135,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

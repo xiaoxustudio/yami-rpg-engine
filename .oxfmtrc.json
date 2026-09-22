@@ -33,6 +33,8 @@
 		"README.md",
 		"package-lock.json",
 		"!**/*.min.js",
-		"Unused"
+		"Unused",
+		"packages/editor/src/module/packmeta.json",
+		"**/*.md"
 	]
 }

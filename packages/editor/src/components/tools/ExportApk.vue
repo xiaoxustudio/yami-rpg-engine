@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="export-apk"
-				:ref="registryRef(titleEls, 'export-apk')" no-buttons>
+	<WindowFrame id="export-apk" :ref="registryRef(titleEls, 'export-apk')" no-buttons>
 		<template #title
 			><TitleBar
 				>构建APK
@@ -13,8 +12,11 @@
 				<div class="text">应用名称</div>
 				<TextBox id="export-apk-apkName" v-model="exportApkForm.apkName" />
 				<div class="text">应用图标</div>
-				<TextBox id="export-apk-apkIcon"
-				:ref="registryRef(titleEls, 'export-apk-apkIcon')" v-model="exportApkForm.apkIcon" />
+				<TextBox
+					id="export-apk-apkIcon"
+					:ref="registryRef(titleEls, 'export-apk-apkIcon')"
+					v-model="exportApkForm.apkIcon"
+				/>
 				<div class="text">应用包名</div>
 				<TextBox id="export-apk-apkPackageName" v-model="exportApkForm.apkPackageName" />
 				<div class="text">应用版本</div>
@@ -52,8 +54,11 @@
 				</div>
 			</div>
 		</div>
-		<button id="export-apk-button"
-				:ref="registryRef(titleEls, 'export-apk-button')" name="export-to-apk" />
+		<button
+			id="export-apk-button"
+			:ref="registryRef(titleEls, 'export-apk-button')"
+			name="export-to-apk"
+		/>
 	</WindowFrame>
 </template>
 
@@ -150,4 +155,3 @@ onMounted(() => {
 	left: 140px;
 }
 </style>
-

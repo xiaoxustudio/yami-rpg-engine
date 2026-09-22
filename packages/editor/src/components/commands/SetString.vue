@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setString"
-				:ref="registryRef(fieldEls, 'setString')" @confirm="onConfirm">
+	<WindowFrame id="setString" :ref="registryRef(fieldEls, 'setString')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setString.title') }}
@@ -8,23 +7,30 @@
 		></template>
 
 		<div class="grid-box">
-		<div class="text">{{ t('components.setString-variable.label') }}</div>
-		<CustomBox
-			id="setString-variable"
+			<div class="text">{{ t('components.setString-variable.label') }}</div>
+			<CustomBox
+				id="setString-variable"
 				:ref="registryRef(fieldEls, 'setString-variable')"
-			v-focus
-			type="variable"
-			filter="writable-string"
-			v-model="form.variable"
-		/>
-		<div class="text">{{ t('components.setString-operation.label') }}</div>
-			<SelectBox id="setString-operation"
+				v-focus
+				type="variable"
+				filter="writable-string"
+				v-model="form.variable"
+			/>
+			<div class="text">{{ t('components.setString-operation.label') }}</div>
+			<SelectBox
+				id="setString-operation"
 				v-tip="t('components.setString-operation.tip')"
-				:ref="registryRef(fieldEls, 'setString-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setString-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setString-operand-type.label') }}</div>
-			<SelectBox id="setString-operand-type"
+			<SelectBox
+				id="setString-operand-type"
 				v-tip="t('components.setString-operand-type.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-type')" v-model="form.operandType" @write="onWrite" />
+				:ref="registryRef(fieldEls, 'setString-operand-type')"
+				v-model="form.operandType"
+				@write="onWrite"
+			/>
 			<div class="text">{{ t('components.setString-operand-common-value.label') }}</div>
 			<TextArea
 				id="setString-operand-common-value"
@@ -33,19 +39,22 @@
 				v-model="commonValue"
 			/>
 			<div class="text">{{ t('components.setString-operand-string-method.label') }}</div>
-			<SelectBox id="setString-operand-string-method"
+			<SelectBox
+				id="setString-operand-string-method"
 				v-tip="t('components.setString-operand-string-method.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-string-method')" v-model="form.stringMethod" />
+				:ref="registryRef(fieldEls, 'setString-operand-string-method')"
+				v-model="form.stringMethod"
+			/>
 			<div class="text">{{ t('components.setString-operand-common-variable.label') }}</div>
-		<CustomBox
-			id="setString-operand-common-variable"
+			<CustomBox
+				id="setString-operand-common-variable"
 				v-tip="t('components.setString-operand-common-variable.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-variable')"
-			v-focus
-			type="variable"
-			filter="all"
-			v-model="form.commonVariable"
-		/>
+				v-focus
+				type="variable"
+				filter="all"
+				v-model="form.commonVariable"
+			/>
 			<div class="text">{{ t('components.setString-operand-string-char-index.label') }}</div>
 			<NumberVar
 				id="setString-operand-string-char-index"
@@ -73,7 +82,9 @@
 				max="1000000000"
 				v-model="form.stringSliceEnd"
 			/>
-			<div class="text">{{ t('components.setString-operand-string-pad-start-length.label') }}</div>
+			<div class="text">
+				{{ t('components.setString-operand-string-pad-start-length.label') }}
+			</div>
 			<NumberBox
 				id="setString-operand-string-pad-start-length"
 				v-tip="t('components.setString-operand-string-pad-start-length.tip')"
@@ -82,11 +93,18 @@
 				max="10"
 				v-model="stringPadStartLength"
 			/>
-			<div class="text">{{ t('components.setString-operand-string-pad-start-pad.label') }}</div>
-			<TextBox id="setString-operand-string-pad-start-pad"
+			<div class="text">
+				{{ t('components.setString-operand-string-pad-start-pad.label') }}
+			</div>
+			<TextBox
+				id="setString-operand-string-pad-start-pad"
 				v-tip="t('components.setString-operand-string-pad-start-pad.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-string-pad-start-pad')" v-model="stringPadStartPad" />
-			<div class="text">{{ t('components.setString-operand-string-replace-pattern.label') }}</div>
+				:ref="registryRef(fieldEls, 'setString-operand-string-pad-start-pad')"
+				v-model="stringPadStartPad"
+			/>
+			<div class="text">
+				{{ t('components.setString-operand-string-replace-pattern.label') }}
+			</div>
 			<StringVar
 				id="setString-operand-string-replace-pattern"
 				v-tip="t('components.setString-operand-string-replace-pattern.tip')"
@@ -94,88 +112,114 @@
 				v-focus
 				v-model="form.stringReplacePattern"
 			/>
-			<div class="text">{{ t('components.setString-operand-string-replace-replacement.label') }}</div>
+			<div class="text">
+				{{ t('components.setString-operand-string-replace-replacement.label') }}
+			</div>
 			<StringVar
 				id="setString-operand-string-replace-replacement"
 				v-tip="t('components.setString-operand-string-replace-replacement.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-replace-replacement')"
 				v-model="form.stringReplaceReplacement"
 			/>
-			<div class="text">{{ t('components.setString-operand-attribute-attributeId.label') }}</div>
-		<CustomBox
-			id="setString-operand-attribute-attributeId"
+			<div class="text">
+				{{ t('components.setString-operand-attribute-attributeId.label') }}
+			</div>
+			<CustomBox
+				id="setString-operand-attribute-attributeId"
 				v-tip="t('components.setString-operand-attribute-attributeId.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-attribute-attributeId')"
-			v-focus
-			type="attribute"
-			v-model="form.attributeId"
-		/>
+				v-focus
+				type="attribute"
+				v-model="form.attributeId"
+			/>
 			<div class="text">{{ t('components.setString-operand-enum-stringId.label') }}</div>
-		<CustomBox
-			id="setString-operand-enum-stringId"
+			<CustomBox
+				id="setString-operand-enum-stringId"
 				v-tip="t('components.setString-operand-enum-stringId.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-enum-stringId')"
-			v-focus
-			type="enum-string"
-			v-model="form.enumStringId"
-		/>
+				v-focus
+				type="enum-string"
+				v-model="form.enumStringId"
+			/>
 			<div class="text">{{ t('components.setString-operand-object-property.label') }}</div>
-			<SelectBox id="setString-operand-object-property"
+			<SelectBox
+				id="setString-operand-object-property"
 				v-tip="t('components.setString-operand-object-property.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-object-property')" v-model="form.objectProperty" />
+				:ref="registryRef(fieldEls, 'setString-operand-object-property')"
+				v-model="form.objectProperty"
+			/>
 			<div class="text">{{ t('components.setString-operand-element-property.label') }}</div>
-			<SelectBox id="setString-operand-element-property"
+			<SelectBox
+				id="setString-operand-element-property"
 				v-tip="t('components.setString-operand-element-property.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-element-property')" v-model="form.elementProperty" />
+				:ref="registryRef(fieldEls, 'setString-operand-element-property')"
+				v-model="form.elementProperty"
+			/>
 			<div class="text">{{ t('components.setString-operand-element-element.label') }}</div>
-		<CustomBox
-			id="setString-operand-element-element"
+			<CustomBox
+				id="setString-operand-element-element"
 				v-tip="t('components.setString-operand-element-element.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-element-element')"
-			type="element"
-			v-model="form.elementElement"
-		/>
-		<div class="text">{{ t('components.setString-operand-common-actor.label') }}</div>
-		<CustomBox id="setString-operand-common-actor"
+				type="element"
+				v-model="form.elementElement"
+			/>
+			<div class="text">{{ t('components.setString-operand-common-actor.label') }}</div>
+			<CustomBox
+				id="setString-operand-common-actor"
 				v-tip="t('components.setString-operand-common-actor.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-common-actor')" type="actor" v-model="form.commonActor" />
-		<div class="text">{{ t('components.setString-operand-common-skill.label') }}</div>
-		<CustomBox id="setString-operand-common-skill"
+				:ref="registryRef(fieldEls, 'setString-operand-common-actor')"
+				type="actor"
+				v-model="form.commonActor"
+			/>
+			<div class="text">{{ t('components.setString-operand-common-skill.label') }}</div>
+			<CustomBox
+				id="setString-operand-common-skill"
 				v-tip="t('components.setString-operand-common-skill.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-common-skill')" type="skill" v-model="form.commonSkill" />
-		<div class="text">{{ t('components.setString-operand-common-trigger.label') }}</div>
-		<CustomBox
-			id="setString-operand-common-trigger"
+				:ref="registryRef(fieldEls, 'setString-operand-common-skill')"
+				type="skill"
+				v-model="form.commonSkill"
+			/>
+			<div class="text">{{ t('components.setString-operand-common-trigger.label') }}</div>
+			<CustomBox
+				id="setString-operand-common-trigger"
 				v-tip="t('components.setString-operand-common-trigger.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-trigger')"
-			type="trigger"
-			v-model="form.commonTrigger"
-		/>
-		<div class="text">{{ t('components.setString-operand-common-state.label') }}</div>
-		<CustomBox id="setString-operand-common-state"
+				type="trigger"
+				v-model="form.commonTrigger"
+			/>
+			<div class="text">{{ t('components.setString-operand-common-state.label') }}</div>
+			<CustomBox
+				id="setString-operand-common-state"
 				v-tip="t('components.setString-operand-common-state.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-common-state')" type="state" v-model="form.commonState" />
-		<div class="text">{{ t('components.setString-operand-common-equipment.label') }}</div>
-		<CustomBox
-			id="setString-operand-common-equipment"
+				:ref="registryRef(fieldEls, 'setString-operand-common-state')"
+				type="state"
+				v-model="form.commonState"
+			/>
+			<div class="text">{{ t('components.setString-operand-common-equipment.label') }}</div>
+			<CustomBox
+				id="setString-operand-common-equipment"
 				v-tip="t('components.setString-operand-common-equipment.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-common-equipment')"
-			type="equipment"
-			v-model="form.commonEquipment"
-		/>
-		<div class="text">{{ t('components.setString-operand-common-item.label') }}</div>
-		<CustomBox id="setString-operand-common-item"
+				type="equipment"
+				v-model="form.commonEquipment"
+			/>
+			<div class="text">{{ t('components.setString-operand-common-item.label') }}</div>
+			<CustomBox
+				id="setString-operand-common-item"
 				v-tip="t('components.setString-operand-common-item.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-common-item')" type="item" v-model="form.commonItem" />
-		<div class="text">{{ t('components.setString-operand-object-fileId.label') }}</div>
-		<CustomBox
-			id="setString-operand-object-fileId"
+				:ref="registryRef(fieldEls, 'setString-operand-common-item')"
+				type="item"
+				v-model="form.commonItem"
+			/>
+			<div class="text">{{ t('components.setString-operand-object-fileId.label') }}</div>
+			<CustomBox
+				id="setString-operand-object-fileId"
 				v-tip="t('components.setString-operand-object-fileId.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-object-fileId')"
-			v-focus
-			type="file"
-			v-model="form.objectFileId"
-		/>
+				v-focus
+				type="file"
+				v-model="form.objectFileId"
+			/>
 			<div class="text">{{ t('components.setString-operand-list-index.label') }}</div>
 			<NumberVar
 				id="setString-operand-list-index"
@@ -186,17 +230,30 @@
 				v-model="form.listIndex"
 			/>
 			<div class="text">{{ t('components.setString-operand-parameter-key.label') }}</div>
-			<StringVar id="setString-operand-parameter-key"
-				:ref="registryRef(fieldEls, 'setString-operand-parameter-key')" v-focus v-model="form.parameterKey" />
+			<StringVar
+				id="setString-operand-parameter-key"
+				:ref="registryRef(fieldEls, 'setString-operand-parameter-key')"
+				v-focus
+				v-model="form.parameterKey"
+			/>
 			<div class="text">{{ t('components.setString-operand-script.label') }}</div>
-			<TextBox id="setString-operand-script"
+			<TextBox
+				id="setString-operand-script"
 				v-tip="t('components.setString-operand-script.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-script')" v-focus v-model="script" />
+				:ref="registryRef(fieldEls, 'setString-operand-script')"
+				v-focus
+				v-model="script"
+			/>
 			<div class="text">{{ t('components.setString-operand-other-data.label') }}</div>
-			<SelectBox id="setString-operand-other-data"
+			<SelectBox
+				id="setString-operand-other-data"
 				v-tip="t('components.setString-operand-other-data.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-other-data')" v-model="form.otherData" />
-			<div class="text">{{ t('components.setString-operand-showChoices-content-choiceIndex.label') }}</div>
+				:ref="registryRef(fieldEls, 'setString-operand-other-data')"
+				v-model="form.otherData"
+			/>
+			<div class="text">
+				{{ t('components.setString-operand-showChoices-content-choiceIndex.label') }}
+			</div>
 			<NumberVar
 				id="setString-operand-showChoices-content-choiceIndex"
 				v-tip="t('components.setString-operand-showChoices-content-choiceIndex.tip')"
@@ -205,17 +262,21 @@
 				max="255"
 				v-model="form.showChoicesIndex"
 			/>
-			<div class="text">{{ t('components.setString-operand-parse-timestamp-variable.label') }}</div>
-		<CustomBox
-			id="setString-operand-parse-timestamp-variable"
+			<div class="text">
+				{{ t('components.setString-operand-parse-timestamp-variable.label') }}
+			</div>
+			<CustomBox
+				id="setString-operand-parse-timestamp-variable"
 				v-tip="t('components.setString-operand-parse-timestamp-variable.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-parse-timestamp-variable')"
-			v-focus
-			type="variable"
-			filter="number"
-			v-model="form.parseTimestampVariable"
-		/>
-			<div class="text">{{ t('components.setString-operand-parse-timestamp-format.label') }}</div>
+				v-focus
+				type="variable"
+				filter="number"
+				v-model="form.parseTimestampVariable"
+			/>
+			<div class="text">
+				{{ t('components.setString-operand-parse-timestamp-format.label') }}
+			</div>
 			<TextBox
 				id="setString-operand-parse-timestamp-format"
 				v-tip="t('components.setString-operand-parse-timestamp-format.tip')"
@@ -331,10 +392,26 @@ onMounted(() => {
 	useLocalizedOptions('setString-operation', ['set', 'add'], (items) =>
 		fieldEls.get('setString-operation')?.loadItems?.(items)
 	);
-	useLocalizedOptions('setString-operand-type', ['constant', 'variable', 'template', 'string', 'attribute', 'enum', 'object', 'element', 'list', 'parameter', 'script', 'other'], (items) =>
-		fieldEls.get('setString-operand-type')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setString-operand-type',
+		[
+			'constant',
+			'variable',
+			'template',
+			'string',
+			'attribute',
+			'enum',
+			'object',
+			'element',
+			'list',
+			'parameter',
+			'script',
+			'other'
+		],
+		(items) => fieldEls.get('setString-operand-type')?.loadItems?.(items)
 	);
-	fieldEls.get('setString-operand-type')
+	fieldEls
+		.get('setString-operand-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -389,11 +466,20 @@ onMounted(() => {
 			{ case: 'script', targets: [fieldEls.get('setString-operand-script')] },
 			{ case: 'other', targets: [fieldEls.get('setString-operand-other-data')] }
 		]);
-	useLocalizedOptions('setString-operand-string-method', ['char', 'slice', 'pad-start', 'replace', 'replace-all'], (items) =>
-		fieldEls.get('setString-operand-string-method')?.loadItems?.(items),
-		{ 'char': 'command.setString.string.char', 'slice': 'command.setString.string.slice', 'pad-start': 'command.setString.string.pad-start', 'replace': 'command.setString.string.replace', 'replace-all': 'command.setString.string.replace-all' }
+	useLocalizedOptions(
+		'setString-operand-string-method',
+		['char', 'slice', 'pad-start', 'replace', 'replace-all'],
+		(items) => fieldEls.get('setString-operand-string-method')?.loadItems?.(items),
+		{
+			char: 'command.setString.string.char',
+			slice: 'command.setString.string.slice',
+			'pad-start': 'command.setString.string.pad-start',
+			replace: 'command.setString.string.replace',
+			'replace-all': 'command.setString.string.replace-all'
+		}
 	);
-	fieldEls.get('setString-operand-string-method')
+	fieldEls
+		.get('setString-operand-string-method')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -422,11 +508,36 @@ onMounted(() => {
 				]
 			}
 		]);
-	useLocalizedOptions('setString-operand-object-property', ['actor-team-id', 'actor-file-id', 'actor-animation-motion-name', 'skill-file-id', 'trigger-file-id', 'state-file-id', 'equipment-file-id', 'equipment-slot', 'item-file-id', 'file-id'], (items) =>
-		fieldEls.get('setString-operand-object-property')?.loadItems?.(items),
-		{ 'actor-team-id': 'command.setString.object.actor-team-id', 'actor-file-id': 'command.setString.object.actor-file-id', 'actor-animation-motion-name': 'command.setString.object.actor-animation-motion-name', 'skill-file-id': 'command.setString.object.skill-file-id', 'trigger-file-id': 'command.setString.object.trigger-file-id', 'state-file-id': 'command.setString.object.state-file-id', 'equipment-file-id': 'command.setString.object.equipment-file-id', 'equipment-slot': 'command.setString.object.equipment-slot', 'item-file-id': 'command.setString.object.item-file-id', 'file-id': 'command.setString.object.file-id' }
+	useLocalizedOptions(
+		'setString-operand-object-property',
+		[
+			'actor-team-id',
+			'actor-file-id',
+			'actor-animation-motion-name',
+			'skill-file-id',
+			'trigger-file-id',
+			'state-file-id',
+			'equipment-file-id',
+			'equipment-slot',
+			'item-file-id',
+			'file-id'
+		],
+		(items) => fieldEls.get('setString-operand-object-property')?.loadItems?.(items),
+		{
+			'actor-team-id': 'command.setString.object.actor-team-id',
+			'actor-file-id': 'command.setString.object.actor-file-id',
+			'actor-animation-motion-name': 'command.setString.object.actor-animation-motion-name',
+			'skill-file-id': 'command.setString.object.skill-file-id',
+			'trigger-file-id': 'command.setString.object.trigger-file-id',
+			'state-file-id': 'command.setString.object.state-file-id',
+			'equipment-file-id': 'command.setString.object.equipment-file-id',
+			'equipment-slot': 'command.setString.object.equipment-slot',
+			'item-file-id': 'command.setString.object.item-file-id',
+			'file-id': 'command.setString.object.file-id'
+		}
 	);
-	fieldEls.get('setString-operand-object-property')
+	fieldEls
+		.get('setString-operand-object-property')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -458,15 +569,40 @@ onMounted(() => {
 				targets: [fieldEls.get('setString-operand-object-fileId')]
 			}
 		]);
-	useLocalizedOptions('setString-operand-element-property', ['text-content', 'textBox-text', 'dialogBox-content'], (items) =>
-		fieldEls.get('setString-operand-element-property')?.loadItems?.(items),
-		{ 'text-content': 'command.setString.element.text-content', 'textBox-text': 'command.setString.element.textBox-text', 'dialogBox-content': 'command.setString.element.dialogBox-content' }
+	useLocalizedOptions(
+		'setString-operand-element-property',
+		['text-content', 'textBox-text', 'dialogBox-content'],
+		(items) => fieldEls.get('setString-operand-element-property')?.loadItems?.(items),
+		{
+			'text-content': 'command.setString.element.text-content',
+			'textBox-text': 'command.setString.element.textBox-text',
+			'dialogBox-content': 'command.setString.element.dialogBox-content'
+		}
 	);
-	useLocalizedOptions('setString-operand-other-data', ['trigger-key', 'start-position-scene-id', 'showText-content', 'showChoices-content', 'parse-timestamp', 'screenshot', 'game-language'], (items) =>
-		fieldEls.get('setString-operand-other-data')?.loadItems?.(items),
-		{ 'trigger-key': 'command.setString.other.trigger-key', 'start-position-scene-id': 'command.setString.other.start-position-scene-id', 'showText-content': 'command.setString.other.showText-content', 'showChoices-content': 'command.setString.other.showChoices-content', 'parse-timestamp': 'command.setString.other.parse-timestamp', 'screenshot': 'command.setString.other.screenshot', 'game-language': 'command.setString.other.game-language' }
+	useLocalizedOptions(
+		'setString-operand-other-data',
+		[
+			'trigger-key',
+			'start-position-scene-id',
+			'showText-content',
+			'showChoices-content',
+			'parse-timestamp',
+			'screenshot',
+			'game-language'
+		],
+		(items) => fieldEls.get('setString-operand-other-data')?.loadItems?.(items),
+		{
+			'trigger-key': 'command.setString.other.trigger-key',
+			'start-position-scene-id': 'command.setString.other.start-position-scene-id',
+			'showText-content': 'command.setString.other.showText-content',
+			'showChoices-content': 'command.setString.other.showChoices-content',
+			'parse-timestamp': 'command.setString.other.parse-timestamp',
+			screenshot: 'command.setString.other.screenshot',
+			'game-language': 'command.setString.other.game-language'
+		}
 	);
-	fieldEls.get('setString-operand-other-data')
+	fieldEls
+		.get('setString-operand-other-data')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -511,5 +647,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

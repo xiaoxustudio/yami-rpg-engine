@@ -35,7 +35,11 @@ interface SelectVarApi extends HTMLElement {
 	enable: () => void;
 	disable: () => void;
 	getFocus: (modeArg?: string) => HTMLElement | null | undefined;
-	on: (type: string, listener: (event: Event) => void, options?: boolean | AddEventListenerOptions) => void;
+	on: (
+		type: string,
+		listener: (event: Event) => void,
+		options?: boolean | AddEventListenerOptions
+	) => void;
 }
 
 const mode = ref<'constant' | 'variable'>('constant');

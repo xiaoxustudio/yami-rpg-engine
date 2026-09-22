@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setImage"
-				:ref="registryRef(fieldEls, 'setImage')" @confirm="onConfirm">
+	<WindowFrame id="setImage" :ref="registryRef(fieldEls, 'setImage')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setImage.title') }}
@@ -9,11 +8,20 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setImage-element.label') }}</div>
-			<CustomBox id="setImage-element"
-				:ref="registryRef(fieldEls, 'setImage-element')" v-focus type="element" v-model="form.element" />
+			<CustomBox
+				id="setImage-element"
+				:ref="registryRef(fieldEls, 'setImage-element')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.setImage-properties.label') }}</div>
-			<ParamList id="setImage-properties"
-				:ref="registryRef(fieldEls, 'setImage-properties')" v-focus v-model="form.properties" />
+			<ParamList
+				id="setImage-properties"
+				:ref="registryRef(fieldEls, 'setImage-properties')"
+				v-focus
+				v-model="form.properties"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -70,5 +78,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

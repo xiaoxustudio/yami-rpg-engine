@@ -24,7 +24,14 @@ const onChange = (value: number) => {
 		</div>
 		<div class="row">
 			<div class="box">
-				<YMNumberBox v-model="percent" :min="0" :max="10" :step="1" unit="%" @change="onChange" />
+				<YMNumberBox
+					v-model="percent"
+					:min="0"
+					:max="10"
+					:step="1"
+					unit="%"
+					@change="onChange"
+				/>
 			</div>
 			<span class="hint">unit="%": {{ percent }}</span>
 		</div>

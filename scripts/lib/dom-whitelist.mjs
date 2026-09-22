@@ -80,13 +80,16 @@ export function readDomWhitelist() {
 	return entries;
 }
 
-/** glob → 正则（`**` 跨目录、`*` 不跨目录），与 dom-guard 历史语义一致 */
+/**
+ * glob → 正则（`**` 跨目录、`*` 不跨目录），与 dom-guard 历史语义一致。
+ *
+ * ⚠️ 必须**一趟**替换完：先替 `**`→`.*` 再替 `*`→`[^/]*` 会让第二趟吃掉第一趟产出的 `*`，
+ * 所以旧写法中间塞了一个 0 号哨兵字符 —— 而正则会因此被 `eslint/no-control-regex` 判为坏味道。
+ * `migration-ledger.mjs` 的 `dom-whitelist-drift` 轴里有一份**逐字同源**的实现，改这里要同步改那里。
+ */
 export function globToRegExp(pattern) {
 	const escaped = String(pattern).replace(/[.+^${}()|[\]\\]/g, '\\$&');
-	const body = escaped
-		.replace(/\*\*/g, '\u0000')
-		.replace(/\*/g, '[^/]*')
-		.replace(/\u0000/g, '.*');
+	const body = escaped.replace(/\*\*|\*/g, (m) => (m === '**' ? '.*' : '[^/]*'));
 	return new RegExp(`^${body}$`);
 }
 

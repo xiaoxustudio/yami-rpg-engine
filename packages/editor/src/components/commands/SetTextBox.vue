@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setTextBox"
-				:ref="registryRef(fieldEls, 'setTextBox')" @confirm="onConfirm">
+	<WindowFrame id="setTextBox" :ref="registryRef(fieldEls, 'setTextBox')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setTextBox.title') }}
@@ -9,12 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setTextBox-element.label') }}</div>
-			<CustomBox id="setTextBox-element"
+			<CustomBox
+				id="setTextBox-element"
 				:ref="registryRef(fieldEls, 'setTextBox-element')"
-				v-tip="t('components.setTextBox-element.tip')" v-focus type="element" v-model="form.element" />
+				v-tip="t('components.setTextBox-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.setTextBox-properties.label') }}</div>
-			<ParamList id="setTextBox-properties"
-				:ref="registryRef(fieldEls, 'setTextBox-properties')" v-focus v-model="form.properties" />
+			<ParamList
+				id="setTextBox-properties"
+				:ref="registryRef(fieldEls, 'setTextBox-properties')"
+				v-focus
+				v-model="form.properties"
+			/>
 		</div>
 	</WindowFrame>
 </template>

@@ -28,19 +28,31 @@
 			<div class="flex-box" id="deployment-location-box">
 				<TextBox
 					id="deployment-location"
-				v-tip="t('components.deployment-location.tip')"
+					v-tip="t('components.deployment-location.tip')"
 					v-model="Deployment.form.location"
 					@input="onLocationInput"
 				/>
-				<button id="deployment-choose"
-				v-tip="t('components.deployment-choose.tip')" @click="onChooseClick">…</button>
+				<button
+					id="deployment-choose"
+					v-tip="t('components.deployment-choose.tip')"
+					@click="onChooseClick"
+				>
+					…
+				</button>
 			</div>
 			<div class="text">{{ t('components.deployment-compress.label') }}</div>
-			<CheckBox id="deployment-compress"
-				v-tip="t('components.deployment-compress.tip')" standard @change="onCompressChange" />
+			<CheckBox
+				id="deployment-compress"
+				v-tip="t('components.deployment-compress.tip')"
+				standard
+				@change="onCompressChange"
+			/>
 		</div>
-		<div class="text" id="deployment-warning"
-				:ref="registryRef(titleEls, 'deployment-warning')" />
+		<div
+			class="text"
+			id="deployment-warning"
+			:ref="registryRef(titleEls, 'deployment-warning')"
+		/>
 	</WindowFrame>
 </template>
 
@@ -133,4 +145,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

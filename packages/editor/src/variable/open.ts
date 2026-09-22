@@ -65,15 +65,15 @@ Variable.confirm = function (this: typeof Variable, _event?: Event) {
 				}
 				break;
 		}
-		this.apply!(undefined as unknown as Event);
+		this.apply!();
 		(target as { input?: (value: unknown) => void }).input?.(variable.id);
 	} else {
-		this.apply!(undefined as unknown as Event);
+		this.apply!();
 	}
 	Window.close!('variable');
 }.bind(Variable);
 
-Variable.apply = function (this: typeof Variable, _event: Event) {
+Variable.apply = function (this: typeof Variable, _event?: Event) {
 	if (this.changed) {
 		this.changed = false;
 

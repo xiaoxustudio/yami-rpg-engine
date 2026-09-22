@@ -58,7 +58,9 @@ defineExpose({ focusFirstButton });
 				v-show="props.items[index]"
 				:ref="(element) => setButtonRef(element, index)"
 				@click="emit('confirm', index)"
-			>{{ props.items[index]?.label }}</button>
+			>
+				{{ props.items[index]?.label }}
+			</button>
 		</div>
 	</YMWindowFrame>
 </template>

@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setSkill"
-				:ref="registryRef(fieldEls, 'setSkill')" @confirm="onConfirm">
+	<WindowFrame id="setSkill" :ref="registryRef(fieldEls, 'setSkill')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setSkill.title') }}
@@ -9,13 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setSkill-skill.label') }}</div>
-			<CustomBox id="setSkill-skill"
+			<CustomBox
+				id="setSkill-skill"
 				:ref="registryRef(fieldEls, 'setSkill-skill')"
-				v-tip="t('components.setSkill-skill.tip')" v-focus type="skill" v-model="form.skill" />
+				v-tip="t('components.setSkill-skill.tip')"
+				v-focus
+				type="skill"
+				v-model="form.skill"
+			/>
 			<div class="text">{{ t('components.setSkill-operation.label') }}</div>
-			<SelectBox id="setSkill-operation"
+			<SelectBox
+				id="setSkill-operation"
 				v-tip="t('components.setSkill-operation.tip')"
-				:ref="registryRef(fieldEls, 'setSkill-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setSkill-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setSkill-cooldown.label') }}</div>
 			<NumberVar
 				id="setSkill-cooldown"
@@ -55,8 +62,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setSkill-operation', ['set-cooldown', 'increase-cooldown', 'decrease-cooldown'], (items) =>
-		fieldEls.get('setSkill-operation')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setSkill-operation',
+		['set-cooldown', 'increase-cooldown', 'decrease-cooldown'],
+		(items) => fieldEls.get('setSkill-operation')?.loadItems?.(items)
 	);
 });
 </script>
@@ -77,5 +86,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

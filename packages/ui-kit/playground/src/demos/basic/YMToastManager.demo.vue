@@ -43,7 +43,9 @@ const showProgrammatic = (): void => {
 <template>
 	<section>
 		<h2>YMToastManager</h2>
-		<p class="desc">右下角 toast 通知；支持 info / success / error 三种类型与命令式 show 调用。</p>
+		<p class="desc">
+			右下角 toast 通知；支持 info / success / error 三种类型与命令式 show 调用。
+		</p>
 		<div class="row">
 			<YMButton size="sm" @click="showInfo">Info</YMButton>
 			<YMButton size="sm" variant="primary" @click="showSuccess">Success</YMButton>

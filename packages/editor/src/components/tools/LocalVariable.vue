@@ -8,9 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.localVariable-key.label') }}</div>
-			<TextBox id="localVariable-key"
+			<TextBox
+				id="localVariable-key"
 				v-tip="t('components.localVariable-key.tip')"
-				:ref="registryRef(textCaptureEls, 'localVariable-key')" v-model="form.key" />
+				:ref="registryRef(textCaptureEls, 'localVariable-key')"
+				v-model="form.key"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -50,4 +53,3 @@ const onConfirm = () => {
 	bottom: 10px;
 }
 </style>
-

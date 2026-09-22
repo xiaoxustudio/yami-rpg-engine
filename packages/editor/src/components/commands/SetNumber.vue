@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setNumber"
-				:ref="registryRef(fieldEls, 'setNumber')" @confirm="onConfirm">
+	<WindowFrame id="setNumber" :ref="registryRef(fieldEls, 'setNumber')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setNumber.title') }}
@@ -19,8 +18,12 @@
 				v-model="form.variable"
 			/>
 			<div class="text">{{ t('components.setNumber-operands.label') }}</div>
-			<ParamList id="setNumber-operands"
-				:ref="registryRef(fieldEls, 'setNumber-operands')" v-focus v-model="form.operands" />
+			<ParamList
+				id="setNumber-operands"
+				:ref="registryRef(fieldEls, 'setNumber-operands')"
+				v-focus
+				v-model="form.operands"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -79,5 +82,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="setZoomFactor"
-				:ref="registryRef(fieldEls, 'setZoomFactor')" @confirm="onConfirm">
+	<WindowFrame
+		id="setZoomFactor"
+		:ref="registryRef(fieldEls, 'setZoomFactor')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setZoomFactor.title') }}
@@ -21,8 +24,12 @@
 				v-model="form.zoom"
 			/>
 			<div class="text">{{ t('components.setZoomFactor-easingId.label') }}</div>
-			<SelectBox id="setZoomFactor-easingId"
-				:ref="registryRef(fieldEls, 'setZoomFactor-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="setZoomFactor-easingId"
+				:ref="registryRef(fieldEls, 'setZoomFactor-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.setZoomFactor-duration.label') }}</div>
 			<NumberVar
 				id="setZoomFactor-duration"
@@ -34,8 +41,12 @@
 				v-model="form.duration"
 			/>
 			<div class="text">{{ t('components.setZoomFactor-wait.label') }}</div>
-			<SelectBox id="setZoomFactor-wait"
-				:ref="registryRef(fieldEls, 'setZoomFactor-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="setZoomFactor-wait"
+				:ref="registryRef(fieldEls, 'setZoomFactor-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -90,5 +101,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="setDialogBox"
-				:ref="registryRef(fieldEls, 'setDialogBox')" @confirm="onConfirm">
+	<WindowFrame
+		id="setDialogBox"
+		:ref="registryRef(fieldEls, 'setDialogBox')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setDialogBox.title') }}
@@ -9,12 +12,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setDialogBox-element.label') }}</div>
-			<CustomBox id="setDialogBox-element"
+			<CustomBox
+				id="setDialogBox-element"
 				:ref="registryRef(fieldEls, 'setDialogBox-element')"
-				v-tip="t('components.setDialogBox-element.tip')" v-focus type="element" v-model="form.element" />
+				v-tip="t('components.setDialogBox-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.setDialogBox-properties.label') }}</div>
-			<ParamList id="setDialogBox-properties"
-				:ref="registryRef(fieldEls, 'setDialogBox-properties')" v-focus v-model="form.properties" />
+			<ParamList
+				id="setDialogBox-properties"
+				:ref="registryRef(fieldEls, 'setDialogBox-properties')"
+				v-focus
+				v-model="form.properties"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -71,5 +83,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

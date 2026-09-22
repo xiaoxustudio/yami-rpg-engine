@@ -8,14 +8,26 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.webSocketClose-id.label') }}</div>
-			<StringVar id="webSocketClose-id"
-				v-tip="t('components.webSocketClose-id.tip')" v-focus v-model="form.id" />
+			<StringVar
+				id="webSocketClose-id"
+				v-tip="t('components.webSocketClose-id.tip')"
+				v-focus
+				v-model="form.id"
+			/>
 			<div class="text">{{ t('components.webSocketClose-code.label') }}</div>
-			<NumberBox id="webSocketClose-code"
-				v-tip="t('components.webSocketClose-code.tip')" min="1000" max="4999" v-model="code" />
+			<NumberBox
+				id="webSocketClose-code"
+				v-tip="t('components.webSocketClose-code.tip')"
+				min="1000"
+				max="4999"
+				v-model="code"
+			/>
 			<div class="text">{{ t('components.webSocketClose-reason.label') }}</div>
-			<StringVar id="webSocketClose-reason"
-				v-tip="t('components.webSocketClose-reason.tip')" v-model="form.reason" />
+			<StringVar
+				id="webSocketClose-reason"
+				v-tip="t('components.webSocketClose-reason.tip')"
+				v-model="form.reason"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -61,5 +73,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

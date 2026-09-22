@@ -48,7 +48,9 @@ const onOpen = () => {
 					@change="onChange"
 				/>
 			</div>
-			<span class="hint">popup=false: 点击/回车触发 open ({{ openCount }}), 方向键可切换选项</span>
+			<span class="hint"
+				>popup=false: 点击/回车触发 open ({{ openCount }}), 方向键可切换选项</span
+			>
 		</div>
 		<div class="row">
 			<div class="box">

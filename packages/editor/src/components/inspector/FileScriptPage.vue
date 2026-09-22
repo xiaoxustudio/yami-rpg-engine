@@ -5,11 +5,13 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="fileScript-info-grid">
 			<div class="text">{{ t('components.fileScript-name.label') || 'Name' }}</div>
-			<div class="text" id="fileScript-name"
-				v-tip="t('components.fileScript-name.tip')">{{ form.name }}</div>
+			<div class="text" id="fileScript-name" v-tip="t('components.fileScript-name.tip')">
+				{{ form.name }}
+			</div>
 			<div class="text">{{ t('components.fileScript-size.label') || 'Size' }}</div>
-			<div class="text" id="fileScript-size"
-				v-tip="t('components.fileScript-size.tip')">{{ form.size }}</div>
+			<div class="text" id="fileScript-size" v-tip="t('components.fileScript-size.tip')">
+				{{ form.size }}
+			</div>
 		</div>
 	</DetailBox>
 	<DetailBox open>
@@ -87,4 +89,3 @@ onBeforeUnmount(() => {
 	border-radius: 2px;
 }
 </style>
-

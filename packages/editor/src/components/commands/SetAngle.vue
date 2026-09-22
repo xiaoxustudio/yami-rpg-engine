@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setAngle"
-				:ref="registryRef(fieldEls, 'setAngle')" @confirm="onConfirm">
+	<WindowFrame id="setAngle" :ref="registryRef(fieldEls, 'setAngle')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setAngle.title') }}
@@ -9,16 +8,29 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setAngle-actor.label') }}</div>
-			<CustomBox id="setAngle-actor"
+			<CustomBox
+				id="setAngle-actor"
 				:ref="registryRef(fieldEls, 'setAngle-actor')"
-				v-tip="t('components.setAngle-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.setAngle-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.setAngle-angle.label') }}</div>
-			<CustomBox id="setAngle-angle"
+			<CustomBox
+				id="setAngle-angle"
 				:ref="registryRef(fieldEls, 'setAngle-angle')"
-				v-tip="t('components.setAngle-angle.tip')" type="angle" v-model="form.angle" />
+				v-tip="t('components.setAngle-angle.tip')"
+				type="angle"
+				v-model="form.angle"
+			/>
 			<div class="text">{{ t('components.setAngle-easingId.label') }}</div>
-			<SelectBox id="setAngle-easingId"
-				:ref="registryRef(fieldEls, 'setAngle-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="setAngle-easingId"
+				:ref="registryRef(fieldEls, 'setAngle-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.setAngle-duration.label') }}</div>
 			<NumberVar
 				id="setAngle-duration"
@@ -30,8 +42,12 @@
 				v-model="form.duration"
 			/>
 			<div class="text">{{ t('components.setAngle-wait.label') }}</div>
-			<SelectBox id="setAngle-wait"
-				:ref="registryRef(fieldEls, 'setAngle-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="setAngle-wait"
+				:ref="registryRef(fieldEls, 'setAngle-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -87,5 +103,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

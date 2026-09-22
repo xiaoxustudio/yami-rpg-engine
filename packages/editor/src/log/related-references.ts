@@ -909,7 +909,7 @@ Reference.getPointerdownListener = function (this: typeof Reference, list: HTMLE
 					const item = rowData(element).item;
 					const guid = item!.id ?? item!.presetId;
 					if (guid) {
-						// 阻止focus后快捷键不被禁用的情�?
+						// 阻止focus后快捷键不被禁用的情况
 						event.preventDefault();
 						event.stopImmediatePropagation();
 						Reference.openRelated!(guid);

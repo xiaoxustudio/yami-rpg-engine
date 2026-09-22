@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="event-search-string"
-				:ref="registryRef(storesEls, 'event-search-string')" no-buttons>
+	<WindowFrame
+		id="event-search-string"
+		:ref="registryRef(storesEls, 'event-search-string')"
+		no-buttons
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.event-search-string.title') }}
@@ -9,9 +12,11 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.event-search-string-search.label') }}</div>
-			<TextBox id="event-search-string-search"
+			<TextBox
+				id="event-search-string-search"
 				v-tip="t('components.event-search-string-search.tip')"
-				:ref="registryRef(storesEls, 'event-search-string-search')" />
+				:ref="registryRef(storesEls, 'event-search-string-search')"
+			/>
 			<div class="text">{{ t('components.event-search-string-case-insensitive.label') }}</div>
 			<CheckBox
 				id="event-search-string-case-insensitive"
@@ -29,15 +34,32 @@
 				:disabled="regexDisabled"
 			/>
 			<div class="text">{{ t('components.event-search-string-match-line.label') }}</div>
-			<CheckBox id="event-search-string-match-line"
-				v-tip="t('components.event-search-string-match-line.tip')" class="standard" v-model="matchLine" />
-			<div class="text" id="event-search-string-log"
-				:ref="registryRef(storesEls, 'event-search-string-log')"></div>
+			<CheckBox
+				id="event-search-string-match-line"
+				v-tip="t('components.event-search-string-match-line.tip')"
+				class="standard"
+				v-model="matchLine"
+			/>
+			<div
+				class="text"
+				id="event-search-string-log"
+				:ref="registryRef(storesEls, 'event-search-string-log')"
+			></div>
 		</div>
-		<button id="event-search-string-previous"
-				:ref="registryRef(storesEls, 'event-search-string-previous')" name="previous">上一个</button>
-		<button id="event-search-string-next"
-				:ref="registryRef(storesEls, 'event-search-string-next')" name="next">下一个</button>
+		<button
+			id="event-search-string-previous"
+			:ref="registryRef(storesEls, 'event-search-string-previous')"
+			name="previous"
+		>
+			上一个
+		</button>
+		<button
+			id="event-search-string-next"
+			:ref="registryRef(storesEls, 'event-search-string-next')"
+			name="next"
+		>
+			下一个
+		</button>
 	</WindowFrame>
 </template>
 
@@ -92,4 +114,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="controlButton"
-				:ref="registryRef(fieldEls, 'controlButton')" @confirm="onConfirm">
+	<WindowFrame
+		id="controlButton"
+		:ref="registryRef(fieldEls, 'controlButton')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.controlButton.title') }}
@@ -9,13 +12,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.controlButton-operation.label') }}</div>
-			<SelectBox id="controlButton-operation"
+			<SelectBox
+				id="controlButton-operation"
 				v-tip="t('components.controlButton-operation.tip')"
-				:ref="registryRef(fieldEls, 'controlButton-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'controlButton-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.controlButton-element.label') }}</div>
-			<CustomBox id="controlButton-element"
+			<CustomBox
+				id="controlButton-element"
 				v-tip="t('components.controlButton-element.tip')"
-				:ref="registryRef(fieldEls, 'controlButton-element')" type="element" v-model="form.element" />
+				:ref="registryRef(fieldEls, 'controlButton-element')"
+				type="element"
+				v-model="form.element"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -44,11 +55,20 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('controlButton-operation', ['select-default', 'select', 'hover-mode', 'active-mode', 'normal-mode'], (items) =>
-		fieldEls.get('controlButton-operation')?.loadItems?.(items),
-		{ 'select-default': 'command.controlButton.select-default', 'select': 'command.controlButton.select', 'hover-mode': 'command.controlButton.hover-mode', 'active-mode': 'command.controlButton.active-mode', 'normal-mode': 'command.controlButton.normal-mode' }
+	useLocalizedOptions(
+		'controlButton-operation',
+		['select-default', 'select', 'hover-mode', 'active-mode', 'normal-mode'],
+		(items) => fieldEls.get('controlButton-operation')?.loadItems?.(items),
+		{
+			'select-default': 'command.controlButton.select-default',
+			select: 'command.controlButton.select',
+			'hover-mode': 'command.controlButton.hover-mode',
+			'active-mode': 'command.controlButton.active-mode',
+			'normal-mode': 'command.controlButton.normal-mode'
+		}
 	);
-	fieldEls.get('controlButton-operation')
+	fieldEls
+		.get('controlButton-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{

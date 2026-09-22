@@ -16,12 +16,21 @@
 				<div style="color: red">如果内容没刷新，请Ctrl+S保存场景</div>
 			</div>
 		</div>
-		<button id="qr-start-button"
-				:ref="registryRef(serviceEls, 'qr-start-button')" name="start-qr-code" />
-		<button id="qr-close-button"
-				:ref="registryRef(serviceEls, 'qr-close-button')" name="close-qr-code" />
-		<button id="qr-update-button"
-				:ref="registryRef(serviceEls, 'qr-update-button')" name="update-qr-code" />
+		<button
+			id="qr-start-button"
+			:ref="registryRef(serviceEls, 'qr-start-button')"
+			name="start-qr-code"
+		/>
+		<button
+			id="qr-close-button"
+			:ref="registryRef(serviceEls, 'qr-close-button')"
+			name="close-qr-code"
+		/>
+		<button
+			id="qr-update-button"
+			:ref="registryRef(serviceEls, 'qr-update-button')"
+			name="update-qr-code"
+		/>
 	</WindowFrame>
 </template>
 
@@ -90,4 +99,3 @@ onMounted(() => {
 	bottom: 10px;
 }
 </style>
-

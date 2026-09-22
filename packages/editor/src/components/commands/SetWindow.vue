@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setWindow"
-				:ref="registryRef(fieldEls, 'setWindow')" @confirm="onConfirm">
+	<WindowFrame id="setWindow" :ref="registryRef(fieldEls, 'setWindow')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setWindow.title') }}
@@ -9,12 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setWindow-element.label') }}</div>
-			<CustomBox id="setWindow-element"
+			<CustomBox
+				id="setWindow-element"
 				:ref="registryRef(fieldEls, 'setWindow-element')"
-				v-tip="t('components.setWindow-element.tip')" v-focus type="element" v-model="form.element" />
+				v-tip="t('components.setWindow-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.setWindow-properties.label') }}</div>
-			<ParamList id="setWindow-properties"
-				:ref="registryRef(fieldEls, 'setWindow-properties')" v-focus v-model="form.properties" />
+			<ParamList
+				id="setWindow-properties"
+				:ref="registryRef(fieldEls, 'setWindow-properties')"
+				v-focus
+				v-model="form.properties"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -71,5 +79,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

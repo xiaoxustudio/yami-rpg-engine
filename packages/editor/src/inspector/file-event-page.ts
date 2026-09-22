@@ -39,13 +39,22 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	interface FileEventPage {
 		target: FileEventData | null;
 		meta: { file: unknown } | null;
-		parameters: FileEventList;
+		/**
+		 * 参数列表。**可空**：字面量里先占 `null`，真实实现在 `FileEvent.parameters = {…}`
+		 * 那一句才装上（本文件第 194 行起）。
+		 *
+		 * 之所以要如实写 `| null`：写成非空的 `FileEventList` 时，下面那个对象字面量就
+		 * 对不上类型，只能整块 `as unknown as FileEventPage` —— **一处双重断言，
+		 * 换来整个单例 9 个成员一起不受检**。改成可空后断言消失，缺口只剩「谁忘了赋值」，
+		 * 而那由 `?.` 显式表达。
+		 */
+		parameters: FileEventList | null;
 		update: ((event: FileEventData, key: string, value: unknown) => void) | null;
 		listChange: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 
-	const FileEvent = {
+	const FileEvent: FileEventPage = {
 		target: null,
 		meta: null,
 		parameters: null,
@@ -57,7 +66,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		update: null,
 		typeWrite: null,
 		listChange: null
-	} as unknown as FileEventPage;
+	};
 
 	FileEvent.initialize = function () {};
 
@@ -113,11 +122,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	};
 
 	FileEvent.write = function (this: FileEventPage, _options: { type?: string }) {
-		(
-			inspectorEls.get('fileEvent-vue-mount') as unknown as HTMLElement & {
-				sync?: () => void;
-			}
-		)?.sync?.();
+		registryElement<{ sync?: () => void }>(inspectorEls, 'fileEvent-vue-mount')?.sync?.();
 	};
 
 	FileEvent.update = function (
@@ -193,7 +198,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 
 	FileEvent.parameters = {
 		initialize: function (this: FileEventList, _list: FileEventList) {
-			FileEvent.parameters.loadTypeItems?.();
+			FileEvent.parameters?.loadTypeItems?.();
 		},
 		loadTypeItems: function () {
 			const el = inspectorEls.get('fileEvent-parameter-type') as YamiElement;
@@ -222,7 +227,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			note = ''
 		}: { type?: string; key?: string; note?: string } = {}) {
 			Window.open!('fileEvent-parameter');
-			FileEvent.parameters.loadTypeItems?.();
+			FileEvent.parameters?.loadTypeItems?.();
 			Object.assign(fileEventParameterForm, { type, key, note });
 			requestFocus('fileEvent-parameter-type');
 		},

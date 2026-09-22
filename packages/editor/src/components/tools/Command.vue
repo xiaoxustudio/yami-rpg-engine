@@ -50,14 +50,18 @@
 				<DetailSummary>{{ t('components.command-settings-grid.label') }}</DetailSummary>
 				<div class="detail-grid" id="command-settings-grid">
 					<div class="text">{{ t('components.command-alias.label') }}</div>
-					<TextBox id="command-alias"
-					:placeholder="t('components.command-alias.placeholder')"
-				v-tip="t('components.command-alias.tip')" v-model="commandForm.alias" @input="onParamInput" />
+					<TextBox
+						id="command-alias"
+						:placeholder="t('components.command-alias.placeholder')"
+						v-tip="t('components.command-alias.tip')"
+						v-model="commandForm.alias"
+						@input="onParamInput"
+					/>
 					<div class="text">{{ t('components.command-keywords.label') }}</div>
 					<TextBox
 						id="command-keywords"
 						:placeholder="t('components.command-keywords.placeholder')"
-				v-tip="t('components.command-keywords.tip')"
+						v-tip="t('components.command-keywords.tip')"
 						v-model="commandForm.keywords"
 						@input="onParamInput"
 					/>
@@ -73,7 +77,11 @@ import type { YamiEvent } from '@app/types/editor-event';
 import { useI18n } from 'vue-i18n';
 import { File } from '@app/file/file-system-core.ts';
 import { getBrowserStore } from '@app/stores/browser';
-import { CustomCommand, commandForm, customCommandEls } from '@app/commands/custom-command-window.ts';
+import {
+	CustomCommand,
+	commandForm,
+	customCommandEls
+} from '@app/commands/custom-command-window.ts';
 import { registryRef } from '@app/utils/element-registry';
 import type { PluginMetaShape } from '@app/plugin/plugin.ts';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';

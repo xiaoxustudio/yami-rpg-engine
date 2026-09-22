@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setTileTag"
-				:ref="registryRef(moduleEls, 'setTileTag')" @confirm="onConfirm">
+	<WindowFrame id="setTileTag" :ref="registryRef(moduleEls, 'setTileTag')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setTileTag.title') }}
@@ -9,9 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setTileTag-tag.label') }}</div>
-			<NumberBox id="setTileTag-tag"
+			<NumberBox
+				id="setTileTag-tag"
 				v-tip="t('components.setTileTag-tag.tip')"
-				:ref="registryRef(moduleEls, 'setTileTag-tag')" min="0" max="99999" />
+				:ref="registryRef(moduleEls, 'setTileTag-tag')"
+				min="0"
+				max="99999"
+			/>
 		</div>
 	</WindowFrame>
 </template>

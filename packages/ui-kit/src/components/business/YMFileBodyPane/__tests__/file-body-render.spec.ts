@@ -80,7 +80,10 @@ describe('file-body-render（M2 派生层：行数据）', () => {
 	});
 
 	it('deriveFileRows：可注入 isFolderOf（消费方用自己的类判定）', () => {
-		const rows = deriveFileRows([{ path: '/a/x', kind: 'folder' }], (item) => item.kind === 'folder');
+		const rows = deriveFileRows(
+			[{ path: '/a/x', kind: 'folder' }],
+			(item) => item.kind === 'folder'
+		);
 		expect(rows[0].isFolder).toBe(true);
 	});
 

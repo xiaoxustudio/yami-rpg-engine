@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="setAnimationComponent"
-				:ref="registryRef(fieldEls, 'setAnimationComponent')" @confirm="onConfirm">
+	<WindowFrame
+		id="setAnimationComponent"
+		:ref="registryRef(fieldEls, 'setAnimationComponent')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setAnimationComponent.title') }}
@@ -9,9 +12,14 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setAnimationComponent-actor.label') }}</div>
-			<CustomBox id="setAnimationComponent-actor"
+			<CustomBox
+				id="setAnimationComponent-actor"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-actor')"
-				v-tip="t('components.setAnimationComponent-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.setAnimationComponent-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.setAnimationComponent-animationId.label') }}</div>
 			<CustomBox
 				id="setAnimationComponent-animationId"
@@ -24,17 +32,28 @@
 				@write="onAnimationIdWrite"
 			/>
 			<div class="text">{{ t('components.setAnimationComponent-motion.label') }}</div>
-			<SelectBox id="setAnimationComponent-motion"
+			<SelectBox
+				id="setAnimationComponent-motion"
 				v-tip="t('components.setAnimationComponent-motion.tip')"
-				:ref="registryRef(fieldEls, 'setAnimationComponent-motion')" v-focus v-model="form.motion" />
+				:ref="registryRef(fieldEls, 'setAnimationComponent-motion')"
+				v-focus
+				v-model="form.motion"
+			/>
 			<div class="text">{{ t('components.setAnimationComponent-operation.label') }}</div>
-			<SelectBox id="setAnimationComponent-operation"
+			<SelectBox
+				id="setAnimationComponent-operation"
 				v-tip="t('components.setAnimationComponent-operation.tip')"
-				:ref="registryRef(fieldEls, 'setAnimationComponent-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setAnimationComponent-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setAnimationComponent-angle.label') }}</div>
-			<CustomBox id="setAnimationComponent-angle"
+			<CustomBox
+				id="setAnimationComponent-angle"
 				v-tip="t('components.setAnimationComponent-angle.tip')"
-				:ref="registryRef(fieldEls, 'setAnimationComponent-angle')" type="angle" v-model="form.angle" />
+				:ref="registryRef(fieldEls, 'setAnimationComponent-angle')"
+				type="angle"
+				v-model="form.angle"
+			/>
 			<div class="text">{{ t('components.setAnimationComponent-scale.label') }}</div>
 			<NumberVar
 				id="setAnimationComponent-scale"
@@ -88,9 +107,13 @@
 				v-model="offsetY"
 			/>
 			<div class="text">{{ t('components.setAnimationComponent-spriteId.label') }}</div>
-			<SelectBox id="setAnimationComponent-spriteId"
+			<SelectBox
+				id="setAnimationComponent-spriteId"
 				v-tip="t('components.setAnimationComponent-spriteId.tip')"
-				:ref="registryRef(fieldEls, 'setAnimationComponent-spriteId')" v-focus v-model="form.spriteId" />
+				:ref="registryRef(fieldEls, 'setAnimationComponent-spriteId')"
+				v-focus
+				v-model="form.spriteId"
+			/>
 			<div class="text">{{ t('components.setAnimationComponent-image.label') }}</div>
 			<CustomBox
 				id="setAnimationComponent-image"
@@ -101,12 +124,20 @@
 				v-model="form.image"
 			/>
 			<div class="text">{{ t('components.setAnimationComponent-playMotion.label') }}</div>
-			<SelectBox id="setAnimationComponent-playMotion"
+			<SelectBox
+				id="setAnimationComponent-playMotion"
 				v-tip="t('components.setAnimationComponent-playMotion.tip')"
-				:ref="registryRef(fieldEls, 'setAnimationComponent-playMotion')" v-focus v-model="form.playMotion" />
+				:ref="registryRef(fieldEls, 'setAnimationComponent-playMotion')"
+				v-focus
+				v-model="form.playMotion"
+			/>
 			<div class="text">{{ t('components.setAnimationComponent-wait.label') }}</div>
-			<SelectBox id="setAnimationComponent-wait"
-				:ref="registryRef(fieldEls, 'setAnimationComponent-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="setAnimationComponent-wait"
+				:ref="registryRef(fieldEls, 'setAnimationComponent-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -174,11 +205,34 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setAnimationComponent-operation', ['set-angle', 'set-scale', 'set-speed', 'set-opacity', 'set-priority', 'set-offsetY', 'set-sprite', 'play-motion', 'stop-motion'], (items) =>
-		fieldEls.get('setAnimationComponent-operation')?.loadItems?.(items),
-		{ 'set-angle': 'command.setAnimationComponent.set-angle', 'set-scale': 'command.setAnimationComponent.set-scale', 'set-speed': 'command.setAnimationComponent.set-speed', 'set-opacity': 'command.setAnimationComponent.set-opacity', 'set-priority': 'command.setAnimationComponent.set-priority', 'set-offsetY': 'command.setAnimationComponent.set-offsetY', 'set-sprite': 'command.setAnimationComponent.set-sprite', 'play-motion': 'command.setAnimationComponent.play-motion', 'stop-motion': 'command.setAnimationComponent.stop-motion' }
+	useLocalizedOptions(
+		'setAnimationComponent-operation',
+		[
+			'set-angle',
+			'set-scale',
+			'set-speed',
+			'set-opacity',
+			'set-priority',
+			'set-offsetY',
+			'set-sprite',
+			'play-motion',
+			'stop-motion'
+		],
+		(items) => fieldEls.get('setAnimationComponent-operation')?.loadItems?.(items),
+		{
+			'set-angle': 'command.setAnimationComponent.set-angle',
+			'set-scale': 'command.setAnimationComponent.set-scale',
+			'set-speed': 'command.setAnimationComponent.set-speed',
+			'set-opacity': 'command.setAnimationComponent.set-opacity',
+			'set-priority': 'command.setAnimationComponent.set-priority',
+			'set-offsetY': 'command.setAnimationComponent.set-offsetY',
+			'set-sprite': 'command.setAnimationComponent.set-sprite',
+			'play-motion': 'command.setAnimationComponent.play-motion',
+			'stop-motion': 'command.setAnimationComponent.stop-motion'
+		}
 	);
-	fieldEls.get('setAnimationComponent-operation')
+	fieldEls
+		.get('setAnimationComponent-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -207,11 +261,17 @@ onMounted(() => {
 			},
 			{
 				case: 'set-sprite',
-				targets: [fieldEls.get('setAnimationComponent-spriteId'), fieldEls.get('setAnimationComponent-image')]
+				targets: [
+					fieldEls.get('setAnimationComponent-spriteId'),
+					fieldEls.get('setAnimationComponent-image')
+				]
 			},
 			{
 				case: 'play-motion',
-				targets: [fieldEls.get('setAnimationComponent-playMotion'), fieldEls.get('setAnimationComponent-wait')]
+				targets: [
+					fieldEls.get('setAnimationComponent-playMotion'),
+					fieldEls.get('setAnimationComponent-wait')
+				]
 			}
 		]);
 	useLocalizedOptions('setAnimationComponent-wait', [true, false], (items) =>
@@ -236,5 +296,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, onUpdated, ref, shallowRef, watch } from 'vue';
+import {
+	computed,
+	nextTick,
+	onBeforeUnmount,
+	onMounted,
+	onUpdated,
+	ref,
+	shallowRef,
+	watch
+} from 'vue';
 import { createTreeListApi, type TreeListHost } from './tree-api';
 import type { TreeItem } from './tree-core';
 import type { TreeRenderRow, TreeRenderState } from './tree-render';

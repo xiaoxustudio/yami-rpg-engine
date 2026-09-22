@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setVolume"
-				:ref="registryRef(fieldEls, 'setVolume')" @confirm="onConfirm">
+	<WindowFrame id="setVolume" :ref="registryRef(fieldEls, 'setVolume')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setVolume.title') }}
@@ -9,9 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setVolume-type.label') }}</div>
-			<SelectBox id="setVolume-type"
+			<SelectBox
+				id="setVolume-type"
 				v-tip="t('components.setVolume-type.tip')"
-				:ref="registryRef(fieldEls, 'setVolume-type')" v-focus v-model="form.type" />
+				:ref="registryRef(fieldEls, 'setVolume-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.setVolume-volume.label') }}</div>
 			<NumberVar
 				id="setVolume-volume"
@@ -24,8 +27,12 @@
 				v-model="form.volume"
 			/>
 			<div class="text">{{ t('components.setVolume-easingId.label') }}</div>
-			<SelectBox id="setVolume-easingId"
-				:ref="registryRef(fieldEls, 'setVolume-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="setVolume-easingId"
+				:ref="registryRef(fieldEls, 'setVolume-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.setVolume-duration.label') }}</div>
 			<NumberBox
 				id="setVolume-duration"
@@ -37,8 +44,12 @@
 				v-model="duration"
 			/>
 			<div class="text">{{ t('components.setVolume-wait.label') }}</div>
-			<SelectBox id="setVolume-wait"
-				:ref="registryRef(fieldEls, 'setVolume-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="setVolume-wait"
+				:ref="registryRef(fieldEls, 'setVolume-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -107,5 +118,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

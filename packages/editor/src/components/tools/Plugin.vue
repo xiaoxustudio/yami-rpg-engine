@@ -1,6 +1,11 @@
 <template>
-	<WindowFrame id="plugin"
-				:ref="registryRef(pluginEls, 'plugin')" show-apply @apply="onApply" @confirm="onConfirm">
+	<WindowFrame
+		id="plugin"
+		:ref="registryRef(pluginEls, 'plugin')"
+		show-apply
+		@apply="onApply"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.plugin.title') }}
@@ -22,16 +27,25 @@
 			/>
 		</div>
 		<div class="box" id="plugin-inspector">
-			<DetailBox id="plugin-overview-detail"
-				:ref="registryRef(pluginEls, 'plugin-overview-detail')" open>
+			<DetailBox
+				id="plugin-overview-detail"
+				:ref="registryRef(pluginEls, 'plugin-overview-detail')"
+				open
+			>
 				<DetailSummary>{{ t('components.plugin-overview.label') }}</DetailSummary>
-				<div class="box" id="plugin-overview"
-				:ref="registryRef(pluginEls, 'plugin-overview')" @update="syncOverview">
+				<div
+					class="box"
+					id="plugin-overview"
+					:ref="registryRef(pluginEls, 'plugin-overview')"
+					@update="syncOverview"
+				>
 					<PluginOverview :meta="overviewMeta" :detailed="overviewDetailed" />
 				</div>
 			</DetailBox>
-			<ParameterPane id="plugin-parameter-pane"
-				:ref="registryRef(pluginEls, 'plugin-parameter-pane')">
+			<ParameterPane
+				id="plugin-parameter-pane"
+				:ref="registryRef(pluginEls, 'plugin-parameter-pane')"
+			>
 				<DetailBox id="plugin-parameter-detail" open>
 					<DetailSummary>{{ t('components.plugin-parameter-grid.label') }}</DetailSummary>
 					<div class="detail-grid" id="plugin-parameter-grid" />
@@ -185,4 +199,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

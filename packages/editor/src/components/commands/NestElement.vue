@@ -8,11 +8,20 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.nestElement-parent.label') }}</div>
-			<CustomBox id="nestElement-parent"
-				v-tip="t('components.nestElement-parent.tip')" v-focus type="element" v-model="form.parent" />
+			<CustomBox
+				id="nestElement-parent"
+				v-tip="t('components.nestElement-parent.tip')"
+				v-focus
+				type="element"
+				v-model="form.parent"
+			/>
 			<div class="text">{{ t('components.nestElement-child.label') }}</div>
-			<CustomBox id="nestElement-child"
-				v-tip="t('components.nestElement-child.tip')" type="element" v-model="form.child" />
+			<CustomBox
+				id="nestElement-child"
+				v-tip="t('components.nestElement-child.tip')"
+				type="element"
+				v-model="form.child"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -49,5 +58,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setBoolean"
-				:ref="registryRef(fieldEls, 'setBoolean')" @confirm="onConfirm">
+	<WindowFrame id="setBoolean" :ref="registryRef(fieldEls, 'setBoolean')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setBoolean.title') }}
@@ -19,8 +18,11 @@
 				v-model="form.variable"
 			/>
 			<div class="text">{{ t('components.setBoolean-operation.label') }}</div>
-			<SelectBox id="setBoolean-operation"
-				:ref="registryRef(fieldEls, 'setBoolean-operation')" v-model="form.operation" />
+			<SelectBox
+				id="setBoolean-operation"
+				:ref="registryRef(fieldEls, 'setBoolean-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setBoolean-operand-type.label') }}</div>
 			<SelectBox
 				id="setBoolean-operand-type"
@@ -30,9 +32,12 @@
 				@write="onWrite"
 			/>
 			<div class="text">{{ t('components.setBoolean-constant-value.label') }}</div>
-			<SelectBox id="setBoolean-constant-value"
+			<SelectBox
+				id="setBoolean-constant-value"
 				v-tip="t('components.setBoolean-constant-value.tip')"
-				:ref="registryRef(fieldEls, 'setBoolean-constant-value')" v-model="form['constant-value']" />
+				:ref="registryRef(fieldEls, 'setBoolean-constant-value')"
+				v-model="form['constant-value']"
+			/>
 			<div class="text">{{ t('components.setBoolean-common-variable.label') }}</div>
 			<CustomBox
 				id="setBoolean-common-variable"
@@ -53,13 +58,21 @@
 				v-model="form['list-index']"
 			/>
 			<div class="text">{{ t('components.setBoolean-parameter-key.label') }}</div>
-			<StringVar id="setBoolean-parameter-key"
+			<StringVar
+				id="setBoolean-parameter-key"
 				v-tip="t('components.setBoolean-parameter-key.tip')"
-				:ref="registryRef(fieldEls, 'setBoolean-parameter-key')" v-focus v-model="form['parameter-key']" />
+				:ref="registryRef(fieldEls, 'setBoolean-parameter-key')"
+				v-focus
+				v-model="form['parameter-key']"
+			/>
 			<div class="text">{{ t('components.setBoolean-script.label') }}</div>
-			<TextBox id="setBoolean-script"
+			<TextBox
+				id="setBoolean-script"
 				v-tip="t('components.setBoolean-script.tip')"
-				:ref="registryRef(fieldEls, 'setBoolean-script')" v-focus v-model="script" />
+				:ref="registryRef(fieldEls, 'setBoolean-script')"
+				v-focus
+				v-model="script"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -105,10 +118,13 @@ onMounted(() => {
 	useLocalizedOptions('setBoolean-operation', ['set', 'not', 'and', 'or', 'xor'], (items) =>
 		fieldEls.get('setBoolean-operation')?.loadItems?.(items)
 	);
-	useLocalizedOptions('setBoolean-operand-type', ['constant', 'variable', 'list', 'parameter', 'script'], (items) =>
-		fieldEls.get('setBoolean-operand-type')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setBoolean-operand-type',
+		['constant', 'variable', 'list', 'parameter', 'script'],
+		(items) => fieldEls.get('setBoolean-operand-type')?.loadItems?.(items)
 	);
-	fieldEls.get('setBoolean-operand-type')
+	fieldEls
+		.get('setBoolean-operand-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -121,7 +137,10 @@ onMounted(() => {
 			},
 			{
 				case: 'list',
-				targets: [fieldEls.get('setBoolean-common-variable'), fieldEls.get('setBoolean-list-index')]
+				targets: [
+					fieldEls.get('setBoolean-common-variable'),
+					fieldEls.get('setBoolean-list-index')
+				]
 			},
 			{
 				case: 'parameter',
@@ -152,5 +171,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

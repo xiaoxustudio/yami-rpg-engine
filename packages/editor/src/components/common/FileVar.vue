@@ -169,7 +169,9 @@ onMounted(() => {
 			const cls = root.value?.className ?? '';
 			api.mode = cls.includes('variable') ? 'variable' : 'constant';
 			api.fileBox = getChildRoot(fileBoxRef.value);
-			elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(varBoxRef.value);
+			elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(
+				varBoxRef.value
+			);
 			nextTick(() => {
 				emit('update:modelValue', read());
 			});

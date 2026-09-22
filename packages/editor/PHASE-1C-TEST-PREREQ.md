@@ -12,7 +12,7 @@
 ### 1. `stores/__tests__/ui-state.spec.ts` —— 脆断言
 
 ```ts
-expect(uiStateKeys).toHaveLength(6);   // ← 已失效：实际 25 项
+expect(uiStateKeys).toHaveLength(6); // ← 已失效：实际 25 项
 ```
 
 `uiStateKeys` 随迁移推进持续增长（每搬一个遗留成员 +1）。写死数字会让**每一次搬迁都顺带弄红一个
@@ -43,6 +43,7 @@ vi.mock('@app/stores/ui', () => ({ useUIStore: () => ({ syncState: vi.fn() }) })
 真正的问题只是**测试读错了地方**（读 mock 的 `UI.Element`，而不是真实的 `uiElClasses.Element`）。
 
 **改法（已落地）**：
+
 - `const { UI } = await import('@app/ui/ui-window.ts')` → `import { uiElClasses } from '@app/engine/ui/element-classes.ts'`
 - 15 处 `new (UI.X as any)(…)` → `new (uiElClasses.X as any)(…)`
 - store mock 补 `matrix`（`ui-engine.ts` 的 `GL.matrix.set(getUIStore().matrix!)` 走这里）与
@@ -58,11 +59,11 @@ vi.mock('@app/stores/ui', () => ({ useUIStore: () => ({ syncState: vi.fn() }) })
 
 ## 待复核（低风险，下一轮顺手确认）
 
-| 文件 | 判定 |
-|---|---|
-| `engine/__tests__/scene.spec.ts` | **不** mock `@app/stores/ui`（用真 store），但把 `renderingFunction`/`drawElements` 都标成了 `vi.fn()` ⇒ **不会走到** `GL.matrix.set(getUIStore().matrix!)`，因此 `matrix` 为 null 不构成问题。**低风险** |
-| `engine/__tests__/animation.spec.ts` | 同上（`drawBackground`/`drawElements` 均为 `vi.fn()`）。**低风险** |
-| `engine/__tests__/webgl.spec.ts` | 同上；它测的是真实的 `GL.drawElements`（bufferData 路径），不经过 ui-engine。**低风险** |
+| 文件                                     | 判定                                                                                                                                                                                                                                         |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `engine/__tests__/scene.spec.ts`         | **不** mock `@app/stores/ui`（用真 store），但把 `renderingFunction`/`drawElements` 都标成了 `vi.fn()` ⇒ **不会走到** `GL.matrix.set(getUIStore().matrix!)`，因此 `matrix` 为 null 不构成问题。**低风险**                                    |
+| `engine/__tests__/animation.spec.ts`     | 同上（`drawBackground`/`drawElements` 均为 `vi.fn()`）。**低风险**                                                                                                                                                                           |
+| `engine/__tests__/webgl.spec.ts`         | 同上；它测的是真实的 `GL.drawElements`（bufferData 路径），不经过 ui-engine。**低风险**                                                                                                                                                      |
 | `printer/__tests__/printer-draw.spec.ts` | `printer.ts` 的 `new UI.Image(...)` 已改为 `new uiElClasses.Image!(...)`。该 spec 用 `vi.mock('@app/ui/ui-window.ts', () => ({ UI: {} }))`，0 处引用元素类 ⇒ 若它走到 `printer.ts:434` 则需要 `uiElClasses.Image` 非空。**需确认**（未确认） |
 
 ### 5. 删除遗留层时同步要处理的非测试引用
@@ -89,10 +90,10 @@ file/file-system-core.ts:14  const UI = getLazyWindow('ui', () => loadCluster().
 
 ### 结论二：6 个「既无赋值也无消费」的槽位，分成两类（已逐个人工确认）
 
-| 槽位 | 遗留层内部引用 | store 接管 | 真结论 |
-|---|---|---|---|
-| `scrollLeft` / `scrollTop` / `scrollRight` / `scrollBottom` | **0** | ✅ | **已完全迁到 store**；遗留侧的 `this.scrollXxx = null` 已是死字段 |
-| `controlPointActive` / `controlPointRotation` | 4 / 1 | ❌ | **遗留层内部专用**（只在 `ui-pointer` / `ui-transform` 里用），随阶段 1c 一起删，**不需要找新家** |
+| 槽位                                                        | 遗留层内部引用 | store 接管 | 真结论                                                                                            |
+| ----------------------------------------------------------- | -------------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| `scrollLeft` / `scrollTop` / `scrollRight` / `scrollBottom` | **0**          | ✅         | **已完全迁到 store**；遗留侧的 `this.scrollXxx = null` 已是死字段                                 |
+| `controlPointActive` / `controlPointRotation`               | 4 / 1          | ❌         | **遗留层内部专用**（只在 `ui-pointer` / `ui-transform` 里用），随阶段 1c 一起删，**不需要找新家** |
 
 这条结论是「先粗筛、再逐个精确核对」得来的：粗暴的文本扫描会把上表两类的**性质完全不同的东西**
 放进同一张「可删」清单里 —— 前者是「迁移已完成」，后者是「功能会一起消失」。**不能只看清单就动手。**
@@ -159,7 +160,7 @@ composables/commands/useGetObjectPropertyCommandSchema.ts(23): Type '"get-object
 
 ```ts
 export const UndoManager = {
-	active: null as unknown as ActiveEditorShape | null,
+	active: null as unknown as ActiveEditorShape | null
 	//      ^^^^ 可降级：把 `unknown as` 去掉、只留 `as ActiveEditorShape | null` 仍然合法，
 	//           因为字面量本身没有被注解，TS 需要那个断言来给 active 定型。
 };
@@ -179,17 +180,17 @@ export const UndoManager = {
 
 （2026-09-17 实测）把 `src/ui/` 当成一个整体来删是**错的**。逐个统计「谁给 `UI` 单例挂了成员」：
 
-| 文件 | 挂的成员数 | 域 |
-|---|---|---|
-| `ui-window.ts` | 21（自身）+ 对象字面量 | **接线/形状**（唯一真·接线件） |
-| `ui-events.ts` | 21 | 窗口事件（21 个 handler） |
-| `ui-transform.ts` | 18 | 元素变换/属性同步 |
-| `ui-file.ts` | 15 | 文档生命周期（open/load/save/close/destroy + copy/paste/undo/redo） |
-| `ui-list.ts` | 10 | 列表交互 |
-| `ui-pointer.ts` | 8 | 画布指针交互（marquee/selectObject/pointermove…） |
-| `ui-prefab.ts` | 8 | **预设/预制体**（registerPreset / hasPrefab / createPrefabItem / loadElement…） |
-| `ui-initialize.ts` | 1（`initialize`） | DOM 引用与定时器初始化 |
-| `element-registry.ts` / `register.ts` | 0 | 元素注册表 + import 顺序 |
+| 文件                                  | 挂的成员数             | 域                                                                              |
+| ------------------------------------- | ---------------------- | ------------------------------------------------------------------------------- |
+| `ui-window.ts`                        | 21（自身）+ 对象字面量 | **接线/形状**（唯一真·接线件）                                                  |
+| `ui-events.ts`                        | 21                     | 窗口事件（21 个 handler）                                                       |
+| `ui-transform.ts`                     | 18                     | 元素变换/属性同步                                                               |
+| `ui-file.ts`                          | 15                     | 文档生命周期（open/load/save/close/destroy + copy/paste/undo/redo）             |
+| `ui-list.ts`                          | 10                     | 列表交互                                                                        |
+| `ui-pointer.ts`                       | 8                      | 画布指针交互（marquee/selectObject/pointermove…）                               |
+| `ui-prefab.ts`                        | 8                      | **预设/预制体**（registerPreset / hasPrefab / createPrefabItem / loadElement…） |
+| `ui-initialize.ts`                    | 1（`initialize`）      | DOM 引用与定时器初始化                                                          |
+| `element-registry.ts` / `register.ts` | 0                      | 元素注册表 + import 顺序                                                        |
 
 合计 **103 处 `UI.x = ` 赋值**分布在 8 个域模块里（本行早先写 102，漏了 `ui-prefab.ts:105` 的链式赋值；
 实测口径与守卫见文末「删完之后应该发生什么」）。
@@ -199,14 +200,14 @@ export const UndoManager = {
 精确核对（遗留层挂载 102 个成员 vs store 暴露 61 个同名动作）后，**store 尚缺 41 个**。
 但按「实现来源」拆开看，情况比数字乐观得多：
 
-| 类别 | 数量 | 说明 |
-|---|---|---|
-| **A. UIEngine 自身函数** | **10** | `drawBackground` / `drawElements` / `drawCoordinateAxes` / `drawHoverWireframe` / `drawTargetWireframe` / `drawTargetAnchor` / `drawControlPoints` / `getPointerCoords` / `updateCamera` / `updateControlPoints` / `selectControlPoint` / `renderingFunction` / `stopRendering` —— 这些在 `ui-engine.ts` 里**已有实现**，只需 `UIEngine.x.apply(UI, args)`（`this` 绑定，见附录一），**零新逻辑** |
-| **B. `ui-prefab.ts` 域方法** | **2** | `createPrefabItem` / `loadElement` —— 需要真正搬过来 |
-| **C. `ui-list.ts` 域方法** | **5** | `listKeydown` / `listPointerdown` / `listRename` / `listPageResize` / `searcherInput` |
-| **D. `ui-events.ts` 域 handler** | **8** | `keydown` / `themechange` / `localizationchange` / `loadFromProject` / `screenBlur` / `screenUserscroll` / `translationKeyup` |
-| **E. `ui-pointer.ts` 域 handler** | **5** | `selectObject` / `marqueePointermove` / `marqueePointerleave` / `menuPopup` / `pointerup` / `pointermove` |
-| **F. `ui-transform.ts` 域方法** | **3** | `updateAllReferences` / `updateHead` / `resize` |
+| 类别                              | 数量   | 说明                                                                                                                                                                                                                                                                                                                                                                                              |
+| --------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A. UIEngine 自身函数**          | **10** | `drawBackground` / `drawElements` / `drawCoordinateAxes` / `drawHoverWireframe` / `drawTargetWireframe` / `drawTargetAnchor` / `drawControlPoints` / `getPointerCoords` / `updateCamera` / `updateControlPoints` / `selectControlPoint` / `renderingFunction` / `stopRendering` —— 这些在 `ui-engine.ts` 里**已有实现**，只需 `UIEngine.x.apply(UI, args)`（`this` 绑定，见附录一），**零新逻辑** |
+| **B. `ui-prefab.ts` 域方法**      | **2**  | `createPrefabItem` / `loadElement` —— 需要真正搬过来                                                                                                                                                                                                                                                                                                                                              |
+| **C. `ui-list.ts` 域方法**        | **5**  | `listKeydown` / `listPointerdown` / `listRename` / `listPageResize` / `searcherInput`                                                                                                                                                                                                                                                                                                             |
+| **D. `ui-events.ts` 域 handler**  | **8**  | `keydown` / `themechange` / `localizationchange` / `loadFromProject` / `screenBlur` / `screenUserscroll` / `translationKeyup`                                                                                                                                                                                                                                                                     |
+| **E. `ui-pointer.ts` 域 handler** | **5**  | `selectObject` / `marqueePointermove` / `marqueePointerleave` / `menuPopup` / `pointerup` / `pointermove`                                                                                                                                                                                                                                                                                         |
+| **F. `ui-transform.ts` 域方法**   | **3**  | `updateAllReferences` / `updateHead` / `resize`                                                                                                                                                                                                                                                                                                                                                   |
 
 ⇒ **直接删 `src/ui/` 会让「UI 预设 / 列表快捷键 / 画布指针交互 / 主题与本地化切换」这些功能静默失效**：
 store 的转发是 `UI?.x?.()`，槽位不存在时**静默返回 undefined，不报错**。
@@ -265,10 +266,10 @@ this.heads = [
 
 时序对比（这是全部问题所在）：
 
-| | 谁来赋值 | 何时赋值 |
-|---|---|---|
-| 旧：`UI.head` / `UI.list` | `ui-window.ts` 的对象字面量 | **模块加载期**（import 时就绪） |
-| 我改成：`getUIStore().head` / `.list` | `ui-initialize.ts` 的 `this.head = …`（经 `uiStateKeys` 桥） | **`UI.initialize()` 时** |
+|                                       | 谁来赋值                                                     | 何时赋值                        |
+| ------------------------------------- | ------------------------------------------------------------ | ------------------------------- |
+| 旧：`UI.head` / `UI.list`             | `ui-window.ts` 的对象字面量                                  | **模块加载期**（import 时就绪） |
+| 我改成：`getUIStore().head` / `.list` | `ui-initialize.ts` 的 `this.head = …`（经 `uiStateKeys` 桥） | **`UI.initialize()` 时**        |
 
 而 `Layout.initialize` 由 `initCore` 调用，**早于** UI 窗口的 `UI.initialize()`（后者在 `lazyComponentsReady` 之后才走）。
 于是那一刻 `getUIStore().head` 是 `undefined` ⇒ `elementDataOf(undefined)` ⇒ WeakMap 键非法 ⇒ **启动即挂**。
@@ -342,12 +343,12 @@ rg 'getUIStore\(\)\.(root|nodes|history)\s*=' packages/editor/src
 
 ### 同一形状还有一批（审计方法在下面）
 
-| 字段 | 真实写入点 | 后果 |
-| --- | --- | --- |
-| `root` / `nodes` / `history` | `ui-file.ts` 写 `this.x` | 崩溃 + 黑屏 ✅ 已修 |
+| 字段                          | 真实写入点                           | 后果                                            |
+| ----------------------------- | ------------------------------------ | ----------------------------------------------- |
+| `root` / `nodes` / `history`  | `ui-file.ts` 写 `this.x`             | 崩溃 + 黑屏 ✅ 已修                             |
 | `scrollLeft/Top/Right/Bottom` | `ui-engine.ts:434` 写 `this.scrollX` | `animation-element.ts` 的 `!` 读到 null ✅ 已修 |
-| `dragging` | `ui-pointer.ts` 写 `this.dragging` | 按钮按下态判断恒 false ✅ 已修 |
-| `hover` | `ui-transform.ts` 写 `this.hover` | 按钮/文本框 hover 贴图静默失效 ✅ 已修 |
+| `dragging`                    | `ui-pointer.ts` 写 `this.dragging`   | 按钮按下态判断恒 false ✅ 已修                  |
+| `hover`                       | `ui-transform.ts` 写 `this.hover`    | 按钮/文本框 hover 贴图静默失效 ✅ 已修          |
 
 ### 两步审计（补 `ui-slot-coverage` 的死角）
 
@@ -397,7 +398,7 @@ rg -c 'getUIStore\(\)\.<key>\s*=[^=]' packages/editor/src     # 写
 ```ts
 UIEngine.renderingFunction = function () {
 	if (GL.width * GL.height !== 0) {
-		UI.drawBackground!();   // ← 方法调用，this 绑定到 UI 单例
+		UI.drawBackground!(); // ← 方法调用，this 绑定到 UI 单例
 		// …其余 6 个同理
 	}
 };
@@ -406,7 +407,7 @@ UIEngine.renderingFunction = function () {
 我曾把它改成 `UIEngine.drawXxx!.call(this)` 并加了一行"保护"：
 
 ```ts
-if (!this?.renderingFunction) return;   // ← 致命
+if (!this?.renderingFunction) return; // ← 致命
 ```
 
 **为什么致命**：`timer.ts:195` 是 `stageRendering(deltaTime)` —— **裸函数调用，没有接收者**。
@@ -443,7 +444,7 @@ if (!this?.renderingFunction) return;   // ← 致命
 写这个修复时踩到的第三个坑：想当然以为 `StageColor` 是 6 位 RGB。它的 `input()` 是
 
 ```ts
-this.red = parseInt(hex.slice(0, 2), 16) / 255;   // …green/blue
+this.red = parseInt(hex.slice(0, 2), 16) / 255; // …green/blue
 this.alpha = parseInt(hex.slice(6, 8), 16) / 255; // ← 第 4 位是 alpha
 ```
 
@@ -539,10 +540,10 @@ rg 'this\.(target|list|meta)\b' packages/editor/src/ui/    # 这些字段的真�
 
 两条路径的差异就是答案：
 
-| 操作 | 调用链 | 结果 |
-| --- | --- | --- |
-| 左侧列表点选 | `UI.listSelect` → `UI.setTarget` → store | ✅ 选中框出来了 |
-| **画布上点选** | `UI.marqueePointerdown` → `this.selectObject(x,y)` | ❌ 无反应 |
+| 操作           | 调用链                                             | 结果            |
+| -------------- | -------------------------------------------------- | --------------- |
+| 左侧列表点选   | `UI.listSelect` → `UI.setTarget` → store           | ✅ 选中框出来了 |
+| **画布上点选** | `UI.marqueePointerdown` → `this.selectObject(x,y)` | ❌ 无反应       |
 
 既然列表那条能出框，说明 `setTarget` / store / 绘制链**全都是通的** —— 问题只在
 `selectObject` 这一个函数里。
@@ -552,7 +553,7 @@ rg 'this\.(target|list|meta)\b' packages/editor/src/ui/    # 这些字段的真�
 ```ts
 // 修复前（ui-pointer.ts）
 return function (this: UIShape, x: number, y: number) {
-	return find(this.root.children, x, y);   // ❌ this.root 是 undefined
+	return find(this.root.children, x, y); // ❌ this.root 是 undefined
 };
 ```
 
@@ -565,15 +566,15 @@ return function (this: UIShape, x: number, y: number) {
 
 ### 同形状还有 5 处（一起修了）
 
-| 位置 | 读法 | 后果 |
-| --- | --- | --- |
-| `ui-pointer.ts` `selectObject` | `this.root.children` | 画布点选失效（主症状） |
-| `ui-transform.ts` `updateElementFont` ×2 | `this.root` | 换字体不刷新 |
-| `ui-transform.ts` `updateElementLanguage` | `this.root.children` | 换语言不刷新 |
-| `ui-transform.ts` `updateElementTextScaling` | `this.root.children` | 改文本缩放不刷新 |
-| `ui-transform.ts` `UI.resize` | `this.root.resize()` | **缩放/改尺寸时不重算根节点** |
-| `ui-transform.ts` `UI.updateElement` | `this.nodes` / `this.root` | 元素改名/属性同步失效 |
-| `ui-events.ts` `loadFromConfig` 的 foreground 回调 | `this.root.resize()` | 改前景色不重绘 |
+| 位置                                               | 读法                       | 后果                          |
+| -------------------------------------------------- | -------------------------- | ----------------------------- |
+| `ui-pointer.ts` `selectObject`                     | `this.root.children`       | 画布点选失效（主症状）        |
+| `ui-transform.ts` `updateElementFont` ×2           | `this.root`                | 换字体不刷新                  |
+| `ui-transform.ts` `updateElementLanguage`          | `this.root.children`       | 换语言不刷新                  |
+| `ui-transform.ts` `updateElementTextScaling`       | `this.root.children`       | 改文本缩放不刷新              |
+| `ui-transform.ts` `UI.resize`                      | `this.root.resize()`       | **缩放/改尺寸时不重算根节点** |
+| `ui-transform.ts` `UI.updateElement`               | `this.nodes` / `this.root` | 元素改名/属性同步失效         |
+| `ui-events.ts` `loadFromConfig` 的 foreground 回调 | `this.root.resize()`       | 改前景色不重绘                |
 
 ### 类型上的附带收获
 
@@ -615,10 +616,10 @@ ERR: -                                     没有任何异常
 
 ### 根因：`matrix` 有两份，改的和读的不是同一个
 
-| | 位置 | 谁在用 |
-| --- | --- | --- |
+|              | 位置                                                              | 谁在用                                                                         |
+| ------------ | ----------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | 相机**写入** | `UI.matrix`（`ui-initialize.ts` 的 `this.matrix = new Matrix()`） | `ui-engine.ts` 的 `updateTransform`：`this.matrix.reset().scale().translate()` |
-| 绘制**读取** | `getUIStore().matrix` | `element-base.ts:85/149`、`ui-engine.ts:477/567/638` |
+| 绘制**读取** | `getUIStore().matrix`                                             | `element-base.ts:85/149`、`ui-engine.ts:477/567/638`                           |
 
 `getUIStore().matrix` **全仓库没有任何写入方**（`rg 'getUIStore\(\)\.matrix\s*='` 零命中），
 所以它永远是构造时那个**单位矩阵**。相机怎么平移缩放，绘制都用同一个单位矩阵
@@ -655,7 +656,7 @@ const matrix = shallowRef<Matrix>(new Matrix());
 
 ```ts
 this.matrix = new Matrix();
-getUIStore().matrix = this.matrix;   // ← 之后两边是同一个对象
+getUIStore().matrix = this.matrix; // ← 之后两边是同一个对象
 ```
 
 初值仍保留（防初始化前读到 null），但它不再是真源。
@@ -668,10 +669,10 @@ getUIStore().matrix = this.matrix;   // ← 之后两边是同一个对象
 
 区别只在于"症状形态"：
 
-| 症状 | 触发条件 |
-| --- | --- |
-| 抛 `Cannot read properties of null` | 读取方用了 `!`，且初值是 `null` |
-| **静默不显示 / 不更新** | 读取方用了 `?.`，或初值是**合法值**（单位矩阵、透明色） |
+| 症状                                | 触发条件                                                |
+| ----------------------------------- | ------------------------------------------------------- |
+| 抛 `Cannot read properties of null` | 读取方用了 `!`，且初值是 `null`                         |
+| **静默不显示 / 不更新**             | 读取方用了 `?.`，或初值是**合法值**（单位矩阵、透明色） |
 
 后一种永远更难查。凡是"迁移后只是不显示/不动"的，一律先去查**读写是否同一存储位置**。
 
@@ -713,7 +714,9 @@ append(getDataStore().data.manifest!.changes as unknown[], meta);
 那些元素类型带**索引签名**，把成员访问"洗"成了 `any`：
 
 ```ts
-interface UIElementShape { [k: string]: any; }   // ← element-base.ts:8
+interface UIElementShape {
+	[k: string]: any;
+} // ← element-base.ts:8
 ```
 
 于是 `element.parent!.children` 的静态类型是 `any`，`.remove(x)` 怎么点都不报错。
@@ -724,13 +727,13 @@ interface UIElementShape { [k: string]: any; }   // ← element-base.ts:8
 
 ### 完整的家族清单（同一个机械改写，共 8 处）
 
-| 文件 | 错误写法 | 正确写法 |
-| --- | --- | --- |
-| `file/file-system-core.ts` | `changes.append(meta)` | `append(changes, meta)` |
-| `file/file-system-core.ts` | `changes.remove(meta)` | `remove(changes, meta)` |
-| `file/directory-object.ts` | `changes.remove(meta)` | `remove(changes, meta)` |
-| `engine/ui/element-base.ts` ×2 | `children.remove(element)` | `remove(children, element)` |
-| `scene/scene-context.ts` ×3 | `actors/animations/particles.remove(o)` | `remove(arr, o)` |
+| 文件                           | 错误写法                                | 正确写法                    |
+| ------------------------------ | --------------------------------------- | --------------------------- |
+| `file/file-system-core.ts`     | `changes.append(meta)`                  | `append(changes, meta)`     |
+| `file/file-system-core.ts`     | `changes.remove(meta)`                  | `remove(changes, meta)`     |
+| `file/directory-object.ts`     | `changes.remove(meta)`                  | `remove(changes, meta)`     |
+| `engine/ui/element-base.ts` ×2 | `children.remove(element)`              | `remove(children, element)` |
+| `scene/scene-context.ts` ×3    | `actors/animations/particles.remove(o)` | `remove(arr, o)`            |
 
 **同一个文件里两种形态并存**是最好认的指纹 —— `element-base.ts`：
 
@@ -835,11 +838,11 @@ if (element?.fold) {
 
 ### 实测构成（`npm run migration:null-dead-stores`）
 
-| 形态 | 数量 | 性质 |
-| --- | --- | --- |
-| ② 对象字面量 `prop: null as unknown as T` | **584**（38 文件） | 不是死写：接口声明非空，初值只能写 null ⇒ **要改类型**才能去掉 |
-| ① 赋值 `X.prop = null as unknown as T` | **82** | 混合：其中一部分是**纯死写**，可直接删 |
-| ① 里的「直线型死写」 | 初始 19 → 现在 **0** | 本轮已全部清除 |
+| 形态                                      | 数量                 | 性质                                                           |
+| ----------------------------------------- | -------------------- | -------------------------------------------------------------- |
+| ② 对象字面量 `prop: null as unknown as T` | **584**（38 文件）   | 不是死写：接口声明非空，初值只能写 null ⇒ **要改类型**才能去掉 |
+| ① 赋值 `X.prop = null as unknown as T`    | **82**               | 混合：其中一部分是**纯死写**，可直接删                         |
+| ① 里的「直线型死写」                      | 初始 19 → 现在 **0** | 本轮已全部清除                                                 |
 
 ② 集中在：`command-object.ts` 74、`sprite.ts` 65、`transition-window.ts` 58、
 `attribute-window.ts` 51、`local-window.ts` 44、`enum-window.ts` 40…
@@ -848,11 +851,11 @@ if (element?.fold) {
 
 删掉 3 处「先写 null、紧接着又赋真值」的直线型死写块：
 
-| 文件 | 删除行 | 说明 |
-| --- | --- | --- |
-| `plugin/plugin-initialize.ts` | 14 | 7 个成员占位 + 7 条 `no-explicit-any` 豁免 |
-| `commands/custom-command-window.ts` | 6 | 6 个成员占位 |
-| `composables/useTeamWindow.ts` | 6 | 6 个成员占位 |
+| 文件                                | 删除行 | 说明                                       |
+| ----------------------------------- | ------ | ------------------------------------------ |
+| `plugin/plugin-initialize.ts`       | 14     | 7 个成员占位 + 7 条 `no-explicit-any` 豁免 |
+| `commands/custom-command-window.ts` | 6      | 6 个成员占位                               |
+| `composables/useTeamWindow.ts`      | 6      | 6 个成员占位                               |
 
 **结果：`null-casts` 689 → 670，`unknown-casts` 1450 → 1431**（各 −19），
 `tsc` 0 错、全量 2052 用例通过、行为不变（死写无可观测语义）。
@@ -865,6 +868,7 @@ npm run migration:null-dead-stores -- --list  # 逐条候选
 ```
 
 判据（三条同时满足才算死写）：
+
 1. 之后存在对**同一路径**的再赋值，且右侧不是 `null as unknown as`；
 2. 占位写与再赋值之间**没有读取**该路径；
 3. 两者处于**同一个大括号深度**。
@@ -872,8 +876,10 @@ npm run migration:null-dead-stores -- --list  # 逐条候选
 第 3 条是踩坑后加的：只看位置会把**跨函数的延迟赋值**误判成死写。实测误报形态：
 
 ```ts
-let animationWindow = null as unknown as typeof Animation;   // ← 不是死写
-export function bindAnimationWindow(instance) { animationWindow = instance; }
+let animationWindow = null as unknown as typeof Animation; // ← 不是死写
+export function bindAnimationWindow(instance) {
+	animationWindow = instance;
+}
 ```
 
 以及类字段在异步 `create()` 里赋值（`module/editdata.ts` 的 `editor` / `model`）。
@@ -906,12 +912,12 @@ may be a mistake"）—— 这正是这个形态必须绕 `as unknown as` 的原
 所以去掉它只有两条路：**(a) 把目标类型放宽到含 `null`**（会波及读取方，产生 `!` 级联），
 或 **(b) 重构掉占位本身**。本轮走的是 (b) 与 (a) 的轻量形态，共 −13 处：
 
-| # | 手法 | 适用形态 | 本轮实例 |
-| --- | --- | --- | --- |
-| 1 | **类型本来就含 `\| null`** ⇒ 直接 `null as T \| null`（类型完全不变，只删掉 `unknown` 中转） | `null as unknown as T \| null` | `useGetObjectPropertyCommandSchema` / `useRequestURLCommandSchema` / `update-log-window` / `printer`（共 8 处） |
-| 2 | **真值在同作用域已可得** ⇒ 字面量里直接内联，占位消失 | 循环变量/参数就在手边 | `engine/animation/animation-player.ts` 的 `layer: null as unknown as PlayerLayer` → `layer`（循环变量） |
-| 3 | **把子对象提前成局部 const** ⇒ 有序数组可内联进字面量 | `list/rectList: null as unknown as {x;y;angle}[]` 后紧跟整体赋值 | `ui/ui-initialize.ts`（用已有 `UIControlPoints` 标注 + `list: []`）、`animation/animation-initialize.ts`（提取 `rectRotate`/`rectResize` 两个 const） |
-| 4 | **标注成标准库类型** ⇒ 其属性本就允许 null | `{ writable: true, value: null as unknown as T }` | `data/metadata.ts` → `const fileDescriptor: PropertyDescriptor`（`value?: any`，`null` 直接合法） |
+| #   | 手法                                                                                         | 适用形态                                                         | 本轮实例                                                                                                                                              |
+| --- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **类型本来就含 `\| null`** ⇒ 直接 `null as T \| null`（类型完全不变，只删掉 `unknown` 中转） | `null as unknown as T \| null`                                   | `useGetObjectPropertyCommandSchema` / `useRequestURLCommandSchema` / `update-log-window` / `printer`（共 8 处）                                       |
+| 2   | **真值在同作用域已可得** ⇒ 字面量里直接内联，占位消失                                        | 循环变量/参数就在手边                                            | `engine/animation/animation-player.ts` 的 `layer: null as unknown as PlayerLayer` → `layer`（循环变量）                                               |
+| 3   | **把子对象提前成局部 const** ⇒ 有序数组可内联进字面量                                        | `list/rectList: null as unknown as {x;y;angle}[]` 后紧跟整体赋值 | `ui/ui-initialize.ts`（用已有 `UIControlPoints` 标注 + `list: []`）、`animation/animation-initialize.ts`（提取 `rectRotate`/`rectResize` 两个 const） |
+| 4   | **标注成标准库类型** ⇒ 其属性本就允许 null                                                   | `{ writable: true, value: null as unknown as T }`                | `data/metadata.ts` → `const fileDescriptor: PropertyDescriptor`（`value?: any`，`null` 直接合法）                                                     |
 
 **累计：`null-casts` 689 → 657，`unknown-casts` 1450 → 1418**（各 −32），
 `legacy-ui-lines` 未受影响（`src/ui/` 内的改动保持净零行）。
@@ -929,12 +935,12 @@ may be a mistake"）—— 这正是这个形态必须绕 `as unknown as` 的原
 
 先把存量按**语法位置**归类（`pnpm migration:cast-shapes`）：
 
-| 形态 | 数量 | 占比 |
-| --- | --- | --- |
-| `literal-prop`：对象字面量里的属性初始化 `name: null as unknown as T,` | 539 | 82.9% |
-| `stmt-assign`：语句赋值 `x = null as unknown as T` | 63 | 9.7% |
-| 其它 | 43 | 6.6% |
-| `decl-init`：`const x = null as unknown as T` | 5 | 0.8% |
+| 形态                                                                   | 数量 | 占比  |
+| ---------------------------------------------------------------------- | ---- | ----- |
+| `literal-prop`：对象字面量里的属性初始化 `name: null as unknown as T,` | 539  | 82.9% |
+| `stmt-assign`：语句赋值 `x = null as unknown as T`                     | 63   | 9.7%  |
+| 其它                                                                   | 43   | 6.6%  |
+| `decl-init`：`const x = null as unknown as T`                          | 5    | 0.8%  |
 
 `literal-prop` 只分布在 **29 个字面量**里，且绝大多数是同一类东西 ——
 **「单例模块对象 + 延迟绑定槽」**：
@@ -973,12 +979,12 @@ export const Sprite = {
   唯一的展开处 `{...Localization, idMap}` 只做真值判断（`if (module.closePropertyPanel)`），
   `null`/`undefined` 等价。
 
-| 手法 | 触发条件 | 处理 |
-| --- | --- | --- |
-| 5a | 字面量顶层、单行属性、右值恰为 `null as unknown as …` | 自动清理（348 处 / 18 文件） |
-| 5b | 类型标注跨行（`searcher: null as unknown as` 换行接 `HTMLElement & {…}`） | 人工（本轮剩 6 处） |
-| 5c | 占位在嵌套层级（`Partial` 是浅层的，删了会让内层对不上类型） | 人工（本轮剩 5 处，如 `variable.ts` 的 `inputs.*`） |
-| 5d | `.vue` 脚本段里的局部对象字面量 | 人工（本轮剩 10 处） |
+| 手法 | 触发条件                                                                  | 处理                                                |
+| ---- | ------------------------------------------------------------------------- | --------------------------------------------------- |
+| 5a   | 字面量顶层、单行属性、右值恰为 `null as unknown as …`                     | 自动清理（348 处 / 18 文件）                        |
+| 5b   | 类型标注跨行（`searcher: null as unknown as` 换行接 `HTMLElement & {…}`） | 人工（本轮剩 6 处）                                 |
+| 5c   | 占位在嵌套层级（`Partial` 是浅层的，删了会让内层对不上类型）              | 人工（本轮剩 5 处，如 `variable.ts` 的 `inputs.*`） |
+| 5d   | `.vue` 脚本段里的局部对象字面量                                           | 人工（本轮剩 10 处）                                |
 
 ### 三个必须记住的坑（都是本轮真实踩到的）
 
@@ -995,7 +1001,7 @@ export const Sprite = {
    看上去是进步，实际是探测面归零（`audit-ui-slots.mjs` 还会输出一张全空的"三态核对"表）。
    已改成「正则匹配声明（类型标注可有可无）+ 花括号配平找闭合」，并把 `audit-ui-slots.mjs`
    里那份重复实现删掉改为 import —— **仪器只维护一份**。
-   *教训：指标下降时，先确认是「问题变少」还是「探针失效」。*
+   _教训：指标下降时，先确认是「问题变少」还是「探针失效」。_
 
 **本轮结果（已锁定进基线）**：`null-casts` 657 → 302，`unknown-casts` 1418 → 1063，
 `legacy-ui-lines` 2895 → 2873（`ui-window.ts` 少 22 行占位，`src/ui/` 内仍无新增注释）。
@@ -1005,7 +1011,7 @@ export const Sprite = {
 ### 本轮顺带观察到的两件事（都不是本轮引入，留给后续轮次）
 
 1. **全量 vitest 每次都会带 1 个未处理的 teardown 竞态**：`EnvironmentTeardownError: Cannot load '…'
-   after the environment was torn down`，报错模块三次运行里换过（`title/menu-bar.ts` ×2、
+after the environment was torn down`，报错模块三次运行里换过（`title/menu-bar.ts` ×2、
    `stores/custom-command.ts` ×1）⇒ 是惰加载（`getLazyWindow` 那条链）在并行 worker 拆环境后
    才 resolve 的系统性竞态，不是某个文件的问题（涉及的 spec 单独跑 3/3 通过）。
    `Test Files 250 passed / Tests 2052 passed` 三次一致，但进程退出码是 1 —— 用 CI 判定时要记得
@@ -1113,11 +1119,11 @@ Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 第一版把**缩进的**同类语句也一起删了。缩进意味着它在函数体里，而函数体里的
 `X.field = null as unknown as T;` 有两种完全不同的语义：
 
-| 语义 | 例子 | 删掉的后果 |
-| --- | --- | --- |
-| **预声明**（后面紧跟 binder 赋真值） | `list.copy = null` + 末尾 `bindListClipboardMethods({list})` | 安全 |
-| **状态重置** | `Particle.close()` 里的 `this.context/meta/layers/emitter = null` | ❌ 字段**保留旧值** |
-| **故意禁用** | `if (this.noWindow) { this.load = null; this.initialize = null; }` | ❌ 回落到原型方法，noWindow 语义反转 |
+| 语义                                 | 例子                                                               | 删掉的后果                           |
+| ------------------------------------ | ------------------------------------------------------------------ | ------------------------------------ |
+| **预声明**（后面紧跟 binder 赋真值） | `list.copy = null` + 末尾 `bindListClipboardMethods({list})`       | 安全                                 |
+| **状态重置**                         | `Particle.close()` 里的 `this.context/meta/layers/emitter = null`  | ❌ 字段**保留旧值**                  |
+| **故意禁用**                         | `if (this.noWindow) { this.load = null; this.initialize = null; }` | ❌ 回落到原型方法，noWindow 语义反转 |
 
 **实测踩到的 10 处**（已全部恢复）：
 
@@ -1128,12 +1134,12 @@ Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 - `schema.ts` 的 `if (this.noWindow){ this.load = null; … }`：调用点 `initialize?.()` 会因此
   回落到原型实现。这一处改用**无断言**写法，既保住语义又不再贡献棘轮：
 
-  ```ts
-  if (this.noWindow) {
-  	// 这两个槽在类上声明为不可空方法，直接赋 null 会被 tsc 拒
-  	Object.assign(this, { load: null, initialize: null });
-  }
-  ```
+    ```ts
+    if (this.noWindow) {
+    	// 这两个槽在类上声明为不可空方法，直接赋 null 会被 tsc 拒
+    	Object.assign(this, { load: null, initialize: null });
+    }
+    ```
 
 **为什么 tsc / lint / 测试都没抓到**：删除不会产生类型错误（赋值不参与类型）、
 不产生 lint 报错（唯一线索是 `schema.ts` 那个空 `if` 块被 `no-empty` 抓到）、
@@ -1150,23 +1156,23 @@ Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 剩下的每一处都要**先想清楚语义**再动，不能批量。本轮用到的方法：**把类型改对，让 tsc
 把「波及面」报出来**——报错少就顺手改完，报错多就说明该换设计。实测数据：
 
-| # | 处理 | 手法 | 波及面 |
-| --- | --- | --- | --- |
-| 1 | `searcher` / `overviewPane` / `filterManifest` / `context` / `Layer` / `Element` 六个**跨行类型**的字面量属性 | 5b：属性本身就是占位，整段删掉（字面量早已是 `satisfies Partial<T> as T`） | 0 |
-| 2 | `text-capture.ts` 的两处 `element: null as unknown as EventTargetElement` | 类型改 `\| null` + 字面量写 `null`。**读侧本来就是 `this.element ? getFocus(...) : undefined`** | 0 |
-| 3 | `window-element.ts` 的 `matrix: null as unknown as Matrix` | **饿汉构造**：`matrix: new Matrix()`。`Matrix extends Float32Array(9)`，构造就是置单位阵；`element-base.ts` 的构造函数本来就是 `this.matrix = new Matrix()`，这是跟既有约定对齐 | 0 |
-| 4 | `progress-bar-element.ts` 的 `vertexLength` / `drawingLength` | 给「长度」一个自然初值 `0`（`calculateProgressVertices()` 每条返回路径都先写它们再返回） | 0 |
-| 5 | `useCommandState.CommandState.id` | 类型改 `\| null` | **2**（`schema.ts` 的 `save()` 里三处补 `!`，并写明「只在解析后调用」这一既有前提） |
-| 6 | 两个 `.vue` 里 `withDefaults(defineProps<Props>(), { … })` 的 5 个 `null as unknown as Fn` 默认值 | **直接删掉**：这些 prop 本来就声明成可选（`localize?: …`），可选 prop 的默认值本来就是 `undefined`；读侧也早就是真值判断 / `?.()`。只剩两个 getter 需要 `?? null` 维持 `\| null` 返回契约 | 0（+ `vue-tsc` 兜底） |
+| #   | 处理                                                                                                          | 手法                                                                                                                                                                                      | 波及面                                                                              |
+| --- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| 1   | `searcher` / `overviewPane` / `filterManifest` / `context` / `Layer` / `Element` 六个**跨行类型**的字面量属性 | 5b：属性本身就是占位，整段删掉（字面量早已是 `satisfies Partial<T> as T`）                                                                                                                | 0                                                                                   |
+| 2   | `text-capture.ts` 的两处 `element: null as unknown as EventTargetElement`                                     | 类型改 `\| null` + 字面量写 `null`。**读侧本来就是 `this.element ? getFocus(...) : undefined`**                                                                                           | 0                                                                                   |
+| 3   | `window-element.ts` 的 `matrix: null as unknown as Matrix`                                                    | **饿汉构造**：`matrix: new Matrix()`。`Matrix extends Float32Array(9)`，构造就是置单位阵；`element-base.ts` 的构造函数本来就是 `this.matrix = new Matrix()`，这是跟既有约定对齐           | 0                                                                                   |
+| 4   | `progress-bar-element.ts` 的 `vertexLength` / `drawingLength`                                                 | 给「长度」一个自然初值 `0`（`calculateProgressVertices()` 每条返回路径都先写它们再返回）                                                                                                  | 0                                                                                   |
+| 5   | `useCommandState.CommandState.id`                                                                             | 类型改 `\| null`                                                                                                                                                                          | **2**（`schema.ts` 的 `save()` 里三处补 `!`，并写明「只在解析后调用」这一既有前提） |
+| 6   | 两个 `.vue` 里 `withDefaults(defineProps<Props>(), { … })` 的 5 个 `null as unknown as Fn` 默认值             | **直接删掉**：这些 prop 本来就声明成可选（`localize?: …`），可选 prop 的默认值本来就是 `undefined`；读侧也早就是真值判断 / `?.()`。只剩两个 getter 需要 `?? null` 维持 `\| null` 返回契约 | 0（+ `vue-tsc` 兜底）                                                               |
 
 **结果**：`null-casts` 45 → 28，`unknown-casts` 806 → 789。
 
 ### 两个「探针报错太多」的案例（本轮**故意没动**）
 
-| 候选 | 改动 | tsc 报错 | 结论 |
-| --- | --- | --- | --- |
-| `CommandState.words` | `\| null` | **184** | `words.push(...)` 遍布几乎所有指令 schema。不能用 `\| null` 硬推 |
-| `command-custom.ts` 的 `Command.custom = { … }` | 改成 `satisfies Partial<…> as …` | 15+ | 这个字面量是**赋值形态**（类型来自赋值目标），且内部 ~15 个方法依赖 `this` 的**非可选**类型；`Partial<T>` 会把每个成员变成 `\| undefined` ⇒ 内部全炸。**该文件的形态不适合这套手法**，已在工具输出里标注 |
+| 候选                                            | 改动                             | tsc 报错 | 结论                                                                                                                                                                                                     |
+| ----------------------------------------------- | -------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CommandState.words`                            | `\| null`                        | **184**  | `words.push(...)` 遍布几乎所有指令 schema。不能用 `\| null` 硬推                                                                                                                                         |
+| `command-custom.ts` 的 `Command.custom = { … }` | 改成 `satisfies Partial<…> as …` | 15+      | 这个字面量是**赋值形态**（类型来自赋值目标），且内部 ~15 个方法依赖 `this` 的**非可选**类型；`Partial<T>` 会把每个成员变成 `\| undefined` ⇒ 内部全炸。**该文件的形态不适合这套手法**，已在工具输出里标注 |
 
 `words` 真正的解法不是 `| null`：`Command.WordList` 这个构造器是**后绑定**的
 （`command-object.ts` 末尾 `Command.WordList = WordList as unknown as …`），所以没法在
@@ -1179,8 +1185,6 @@ Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 但**不紧邻**的那些就留了下来，而台账的 `stale-exemptions` 轴**只管 DOM 豁免**、
 不管这一类，于是它们悄悄累积 —— `data-object.ts` 里一次性堆了 **4 条**（下一行已是 `}`）。
 全仓扫描后共清理 5 条（4 + `event-editor.ts` 1 条），现在全仓 0 条。
-
-
 
 ### 第 27 轮：**仪器修复** —— `codeOnly()` 不认正则字面量（389/1516 文件被少统计）
 
@@ -1197,13 +1201,13 @@ Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 **影响面（实测）**：全仓 1516 个文件里 **389 个**存在「原文命中 > codeOnly 命中」，
 其中不全是 bug（注释/字符串里的命中本来就该被吃掉），但已确认的漏统计包括：
 
-| 文件 | 漏掉的 |
-| --- | --- |
-| `plugin-parse-meta.ts` | `null as unknown as` **8 → 0** |
-| `commands/schema.ts` | `null-cast` 1 → 0 |
-| `animation-initialize.ts` | `null-cast` 2 → 0 |
-| `animation-player.ts` / `custom-command-window.ts` / `useTeamWindow.ts` / `plugin-initialize.ts` | 各 1–2 → 0 |
-| （DOM 模式同理，但 `dom-pending` 复核后仍为 0，门禁结论未变） | |
+| 文件                                                                                             | 漏掉的                         |
+| ------------------------------------------------------------------------------------------------ | ------------------------------ |
+| `plugin-parse-meta.ts`                                                                           | `null as unknown as` **8 → 0** |
+| `commands/schema.ts`                                                                             | `null-cast` 1 → 0              |
+| `animation-initialize.ts`                                                                        | `null-cast` 2 → 0              |
+| `animation-player.ts` / `custom-command-window.ts` / `useTeamWindow.ts` / `plugin-initialize.ts` | 各 1–2 → 0                     |
+| （DOM 模式同理，但 `dom-pending` 复核后仍为 0，门禁结论未变）                                    |                                |
 
 **修复**：给扫描器补上正则字面量识别 —— 用「上一个有意义字符/标识符」判断 `/` 是正则还是除号
 （跟在标识符/数字/`)`/`]` 之后是除号；`return`/`typeof` 等关键字之后是正则），
@@ -1215,10 +1219,10 @@ Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 
 **⚠️ 这导致两条轴的数字「上升」，属于口径修正而非回归**：
 
-| 轴 | 修复前（瞎） | 修复后（真值） |
-| --- | --- | --- |
-| `null-casts` | 28 | **35** |
-| `unknown-casts` | 789 | **799** |
+| 轴              | 修复前（瞎） | 修复后（真值） |
+| --------------- | ------------ | -------------- |
+| `null-casts`    | 28           | **35**         |
+| `unknown-casts` | 789          | **799**        |
 
 也就是说：**第 23–26 轮报出的数字都是偏低的历史值**，真实起点比当时看到的高。
 按台账的既定流程（「若这是有意的设计变更，请复核后在 PR 里显式执行 `--update-baseline`
@@ -1226,11 +1230,11 @@ Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 
 ### 第 27 轮同时清掉的 8 处（真修复）
 
-| # | 位置 | 手法 | 波及面 |
-| --- | --- | --- | --- |
-| 1–5 | `plugin-parse-meta.ts` 的 `overview` / `parameters` / `paramMap` / `langMap` / `manager` | 这五个的**初值就是返回的闭包开头立刻写进去的值**（`{ requires: [] }` / `[]` / `{}` / `new LanguageMap()` / `new OptionManager()`）⇒ 直接写成真值，类型保持不可空，读侧一行不改 | 0 |
-| 6–7 | `scene-animate.ts` 的 `items` 记录（`tilemap: null` ×2） | 记录的值类型改 `Record<string, HTMLElement \| null>`；读取处本来就是 `if (element)` 真值判断 | 0 |
-| 8 | `tree-api.ts` 的 `renderElement` SSR 分支 | 原写 `null as unknown as HTMLDivElement`（谎报非空 host，随后 `render(vnode, null)` 会以难懂方式炸）⇒ 改成**显式抛错**说明「这里需要 DOM」 | 0 |
+| #   | 位置                                                                                     | 手法                                                                                                                                                                           | 波及面 |
+| --- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| 1–5 | `plugin-parse-meta.ts` 的 `overview` / `parameters` / `paramMap` / `langMap` / `manager` | 这五个的**初值就是返回的闭包开头立刻写进去的值**（`{ requires: [] }` / `[]` / `{}` / `new LanguageMap()` / `new OptionManager()`）⇒ 直接写成真值，类型保持不可空，读侧一行不改 | 0      |
+| 6–7 | `scene-animate.ts` 的 `items` 记录（`tilemap: null` ×2）                                 | 记录的值类型改 `Record<string, HTMLElement \| null>`；读取处本来就是 `if (element)` 真值判断                                                                                   | 0      |
+| 8   | `tree-api.ts` 的 `renderElement` SSR 分支                                                | 原写 `null as unknown as HTMLDivElement`（谎报非空 host，随后 `render(vnode, null)` 会以难懂方式炸）⇒ 改成**显式抛错**说明「这里需要 DOM」                                     | 0      |
 
 **本轮净变化**：真值起点 40 → 32（仪器修复 +7，真修复 −8，另有几处第 26 轮遗留的计数变化）。
 
@@ -1258,12 +1262,12 @@ Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 （不是债务消失了，而是原先有一大批根本没被统计进来 —— 见上一节的仪器修复）。
 本轮清掉 11 处，全部是「读侧早就在按可空使用、只有类型在撒谎」的那一类：
 
-| # | 位置 | 手法 | 波及面 |
-| --- | --- | --- | --- |
-| 1–5 | `plugin-parse-meta.ts` 收尾重置块里的 `overview` / `parameters` / `paramMap` / `langMap` / `manager` | **删掉**：闭包开头（L786 起）会无条件重新赋值，这五行是纯死写；而且 `meta` 已通过 `Object.defineProperties` 持有 `langMap`/`manager` 引用，置空也释放不了内存 | 0 |
-| 6–7 | 同文件 `parameter` 的声明与重置 | 类型改 `ParameterShape \| null`。**代码本来就有十来处 `if (parameter === null) return;` 与 `parameter?.type`** —— 只有类型在谎报 | 5 处（都是「解析阶段才可能为 null」的读点，补 `!` 并逐条写明前提：`parseDefault()` 唯一调用点就在 `if (parameter === null) return;` 之后；`append()`/`relate()` 只在解析阶段调用） |
-| 8–9 | `YMParamList.vue` 的 `self.start = null as unknown as number` ×2 | `ParamListElement.start` **本来就是 `number \| null`**（L125）⇒ 直接写 `null` | 0 |
-| 10–11 | `image-crop-window.ts` 的 `resolve(null as unknown as HTMLImageElement)` 与 `image ?? (null as unknown as HTMLImageElement)` | `new Promise<HTMLImageElement \| null>`：图片加载失败时**确实** resolve null，`.then` 回调本来就按可空声明。`updateTitle` 的参数是 `(...args: unknown[])`，`??` 那一支永远走不到 ⇒ 一并去掉 | 0 |
+| #     | 位置                                                                                                                         | 手法                                                                                                                                                                                        | 波及面                                                                                                                                                                             |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1–5   | `plugin-parse-meta.ts` 收尾重置块里的 `overview` / `parameters` / `paramMap` / `langMap` / `manager`                         | **删掉**：闭包开头（L786 起）会无条件重新赋值，这五行是纯死写；而且 `meta` 已通过 `Object.defineProperties` 持有 `langMap`/`manager` 引用，置空也释放不了内存                               | 0                                                                                                                                                                                  |
+| 6–7   | 同文件 `parameter` 的声明与重置                                                                                              | 类型改 `ParameterShape \| null`。**代码本来就有十来处 `if (parameter === null) return;` 与 `parameter?.type`** —— 只有类型在谎报                                                            | 5 处（都是「解析阶段才可能为 null」的读点，补 `!` 并逐条写明前提：`parseDefault()` 唯一调用点就在 `if (parameter === null) return;` 之后；`append()`/`relate()` 只在解析阶段调用） |
+| 8–9   | `YMParamList.vue` 的 `self.start = null as unknown as number` ×2                                                             | `ParamListElement.start` **本来就是 `number \| null`**（L125）⇒ 直接写 `null`                                                                                                               | 0                                                                                                                                                                                  |
+| 10–11 | `image-crop-window.ts` 的 `resolve(null as unknown as HTMLImageElement)` 与 `image ?? (null as unknown as HTMLImageElement)` | `new Promise<HTMLImageElement \| null>`：图片加载失败时**确实** resolve null，`.then` 回调本来就按可空声明。`updateTitle` 的参数是 `(...args: unknown[])`，`??` 那一支永远走不到 ⇒ 一并去掉 | 0                                                                                                                                                                                  |
 
 ### 本轮**主动放弃**的一处（连同理由记下来，免得下轮重复评估）
 
@@ -1281,25 +1285,23 @@ Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 
 ### 剩余 21 处的分布与建议
 
-| 位置 | 数量 | 建议 |
-| --- | --- | --- |
-| `variable.ts` 的 `inputs.*` | 5 | 嵌套成员改 `\| null` + 读侧；`inputs` 是「元素注册表」语义，可以整体看成一个可空子对象 |
-| `command-custom.ts` | 3 | 该字面量是**赋值形态**且内部方法依赖 `this` 非可选（实测改 `satisfies Partial<…>` 会炸 15+ 处）⇒ 要么给这三个字段加 `?`，要么换写法 |
-| `useCallEventCommandSchema.ts` | 2 | `let input: … = null as unknown as …` 声明形态，按第 27 轮 `parameter` 的同款做法 |
-| `YMTabBar.vue` 的 `hint` ×2 | 2 | 拖拽态契约：`hint` 在 3 条构造路径里有 2 条没有值，读侧却按非空用 ⇒ 要先定「无 hint 的拖拽态怎么办」 |
-| `Particle.emitter` | 1 | 见上（15 处断言，安全但成批） |
-| `ui-file.ts` 的 `this.history` | 1 | `close()` 清空 + 读侧 `this.history.canUndo()` ⇒ 同 emitter |
-| `editdata.ts` 的 `editor` | 1 | 与已改成 `\| null` 的 `model` 成对；约 14 个读点 |
-| `useCommandState.ts` 的 `words` | 1 | 184 处读取（`words.push` 遍布指令 schema），**不要**用 `\| null` 硬推 |
-| `animation-window-engine.ts` 的 `animationWindow` | 1 | 40 个读点；且不能用抛错桩（`if (animationWindow.layers !== null)` 会恒真） |
-| `text-capture.ts` 的 `ColorProxy.color` | 1 | 要动 `read(): string` 契约 |
-| `tree-api.ts` 的 `textBox` | 1 | 模块加载期的 SSR 分支，要先定契约 |
-| `command-api.ts` | 1 | 单点，未评估 |
+| 位置                                              | 数量 | 建议                                                                                                                                |
+| ------------------------------------------------- | ---- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `variable.ts` 的 `inputs.*`                       | 5    | 嵌套成员改 `\| null` + 读侧；`inputs` 是「元素注册表」语义，可以整体看成一个可空子对象                                              |
+| `command-custom.ts`                               | 3    | 该字面量是**赋值形态**且内部方法依赖 `this` 非可选（实测改 `satisfies Partial<…>` 会炸 15+ 处）⇒ 要么给这三个字段加 `?`，要么换写法 |
+| `useCallEventCommandSchema.ts`                    | 2    | `let input: … = null as unknown as …` 声明形态，按第 27 轮 `parameter` 的同款做法                                                   |
+| `YMTabBar.vue` 的 `hint` ×2                       | 2    | 拖拽态契约：`hint` 在 3 条构造路径里有 2 条没有值，读侧却按非空用 ⇒ 要先定「无 hint 的拖拽态怎么办」                                |
+| `Particle.emitter`                                | 1    | 见上（15 处断言，安全但成批）                                                                                                       |
+| `ui-file.ts` 的 `this.history`                    | 1    | `close()` 清空 + 读侧 `this.history.canUndo()` ⇒ 同 emitter                                                                         |
+| `editdata.ts` 的 `editor`                         | 1    | 与已改成 `\| null` 的 `model` 成对；约 14 个读点                                                                                    |
+| `useCommandState.ts` 的 `words`                   | 1    | 184 处读取（`words.push` 遍布指令 schema），**不要**用 `\| null` 硬推                                                               |
+| `animation-window-engine.ts` 的 `animationWindow` | 1    | 40 个读点；且不能用抛错桩（`if (animationWindow.layers !== null)` 会恒真）                                                          |
+| `text-capture.ts` 的 `ColorProxy.color`           | 1    | 要动 `read(): string` 契约                                                                                                          |
+| `tree-api.ts` 的 `textBox`                        | 1    | 模块加载期的 SSR 分支，要先定契约                                                                                                   |
+| `command-api.ts`                                  | 1    | 单点，未评估                                                                                                                        |
 
 **共同的结论**：剩下的每一处都**需要一个契约决定**（要么「这个字段什么时候可以为 null」，
 要么「读侧怎么处理」），机械替换的时代已经过去了 —— 这与第 26 轮末尾的判断一致。
-
-
 
 ### 第 29 轮：把「读侧早就当可空用」的那批一次清完 —— 21 → 12
 
@@ -1307,12 +1309,12 @@ Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 **声明在撒谎，而它所有的读取点早就在按可空处理**。所以每一项都只需要改类型，
 再让 tsc 把「少数几个没判空的点」报出来：
 
-| # | 位置 | 手法 | 波及面 | 备注 |
-| --- | --- | --- | --- | --- |
-| 1–2 | `useCallEventCommandSchema.ts` 两处 `let input: … = null as unknown as …` | 去掉初值，交给 tsc 的「使用前赋值」分析 | **9** | 分析报出 9 处「使用前未赋值」⇒ 两个 `switch` 因为 `CallEventArg.type` 是普通 `string` **本来就无法穷尽**，落空时 `input` 保持 null、在下面的 `setTooltip`/`appendChild` 处以「null 上取属性」炸 ⇒ 各补一个 `default: throw` 明确报错（**这处不是删谎言，而是把一个隐藏的空指针变成了具名错误**） |
-| 3 | `editdata.ts` 的 `editor` 类字段 | `(…IStandaloneCodeEditor & { getFocus?: () => void }) \| null` | 5 | 与第 25 轮已改成 `\| null` 的 `model` 成对；补的 `!` 与相邻的 `this.model!` 同一约定 |
-| 4 | `ui-window.ts` 的 `UIShape.history` | `History \| null` | 7 | store 侧的 `history` 早就改成 `History \| null` 并写明「调用方必须判空」——只有单例侧没跟上；`ui-list.ts` 的 5 处 `UI.history.save(` 补 `!`，`ui-file.ts` 的 undo/redo 条件改 `this.history?.canUndo()`（`?.` 在条件里顺带完成收窄，函数体不用再改） |
-| 5–9 | `variable.ts` 的 `inputs.name/value/number/string/note` | 5 行声明改 `YamiElement \| null`，字面量去掉 cast | **1** | `inputs` 形状里本来就有 `[k: string]: unknown` 索引签名，动态读取（`this.inputs[type]`）走的是它 ⇒ 全仓只有一个读点报错（`panel.ts` 的 `const { style } = Variable.inputs.value`，补 `!`） |
+| #   | 位置                                                                      | 手法                                                           | 波及面 | 备注                                                                                                                                                                                                                                                                                             |
+| --- | ------------------------------------------------------------------------- | -------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1–2 | `useCallEventCommandSchema.ts` 两处 `let input: … = null as unknown as …` | 去掉初值，交给 tsc 的「使用前赋值」分析                        | **9**  | 分析报出 9 处「使用前未赋值」⇒ 两个 `switch` 因为 `CallEventArg.type` 是普通 `string` **本来就无法穷尽**，落空时 `input` 保持 null、在下面的 `setTooltip`/`appendChild` 处以「null 上取属性」炸 ⇒ 各补一个 `default: throw` 明确报错（**这处不是删谎言，而是把一个隐藏的空指针变成了具名错误**） |
+| 3   | `editdata.ts` 的 `editor` 类字段                                          | `(…IStandaloneCodeEditor & { getFocus?: () => void }) \| null` | 5      | 与第 25 轮已改成 `\| null` 的 `model` 成对；补的 `!` 与相邻的 `this.model!` 同一约定                                                                                                                                                                                                             |
+| 4   | `ui-window.ts` 的 `UIShape.history`                                       | `History \| null`                                              | 7      | store 侧的 `history` 早就改成 `History \| null` 并写明「调用方必须判空」——只有单例侧没跟上；`ui-list.ts` 的 5 处 `UI.history.save(` 补 `!`，`ui-file.ts` 的 undo/redo 条件改 `this.history?.canUndo()`（`?.` 在条件里顺带完成收窄，函数体不用再改）                                              |
+| 5–9 | `variable.ts` 的 `inputs.name/value/number/string/note`                   | 5 行声明改 `YamiElement \| null`，字面量去掉 cast              | **1**  | `inputs` 形状里本来就有 `[k: string]: unknown` 索引签名，动态读取（`this.inputs[type]`）走的是它 ⇒ 全仓只有一个读点报错（`panel.ts` 的 `const { style } = Variable.inputs.value`，补 `!`）                                                                                                       |
 
 **⛔ 本轮自己踩到并当场纠正的一个坑**：改 `ui-window.ts` 的 `UIShape.history` 时顺手写了一段
 7 行说明注释，结果 `legacy-ui-lines` 立刻从 2868 涨到 2874 ——
@@ -1321,11 +1323,11 @@ Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 
 ### 第 30 轮：赋值形态的 3 处 + 两处单点契约 —— 12 → 7
 
-| # | 位置 | 手法 | 波及面 | 备注 |
-| --- | --- | --- | --- | --- |
-| 1–3 | `command-object.ts` 的 `windowFrame` / `parameterPane` / `parameterGrid` | 字段改可选（`windowFrame?: …`），带一段说明注释 | 5 | 这一处是**赋形字面量**（类型来自赋值目标），`satisfies Partial<T> as T` 走不通（TS2352：字面量里仍留着值为 `null` 的成员）⇒ 只能把字段改成可选；`command-custom.ts` 的 8 行占位赋值删掉，5 个读点补 `!`（`this.windowFrame!` / `this.parameterPane!`）。与 `initialize()` 里本来就有的 `if (!this.parameterPane) return;` 相互印证：它**本来就当成可空用** |
-| 4 | `tools/text-capture.ts` 的 `ColorProxy.color` | `color: string \| null` + `read(): string \| null`，字面量写 `color: null` | 1 | 同一文件里 `VariableProxy.element` 一并改成 `EventTargetElement \| null` |
-| 5 | `YMCommandList/command-api.ts` 的 `element.contents` | 删断言、直接赋 `null` | 0 | **不是新契约**：`contents` 的声明本来就是 `CommandContent[] \| null`，当初那句 `null as unknown as CommandContent[]` 纯粹是写法债 |
+| #   | 位置                                                                     | 手法                                                                       | 波及面 | 备注                                                                                                                                                                                                                                                                                                                                                       |
+| --- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1–3 | `command-object.ts` 的 `windowFrame` / `parameterPane` / `parameterGrid` | 字段改可选（`windowFrame?: …`），带一段说明注释                            | 5      | 这一处是**赋形字面量**（类型来自赋值目标），`satisfies Partial<T> as T` 走不通（TS2352：字面量里仍留着值为 `null` 的成员）⇒ 只能把字段改成可选；`command-custom.ts` 的 8 行占位赋值删掉，5 个读点补 `!`（`this.windowFrame!` / `this.parameterPane!`）。与 `initialize()` 里本来就有的 `if (!this.parameterPane) return;` 相互印证：它**本来就当成可空用** |
+| 4   | `tools/text-capture.ts` 的 `ColorProxy.color`                            | `color: string \| null` + `read(): string \| null`，字面量写 `color: null` | 1      | 同一文件里 `VariableProxy.element` 一并改成 `EventTargetElement \| null`                                                                                                                                                                                                                                                                                   |
+| 5   | `YMCommandList/command-api.ts` 的 `element.contents`                     | 删断言、直接赋 `null`                                                      | 0      | **不是新契约**：`contents` 的声明本来就是 `CommandContent[] \| null`，当初那句 `null as unknown as CommandContent[]` 纯粹是写法债                                                                                                                                                                                                                          |
 
 ### 第 31 轮：`YMParamList` 的 `self.object` —— 7 → 6
 
@@ -1349,11 +1351,11 @@ Animation.list.copy = null as unknown as (...args: unknown[]) => any;
 
 `TabDraggingEvent` 有 3 条构造路径，其中 **2 条本来就没有拖拽提示元素**：
 
-| 路径 | 位置 | hint |
-| --- | --- | --- |
-| `mode: 'close'`（按住标签上的 × 拖动） | `pointerdown` L351 | **无**（不显示落点提示） |
-| `mode: 'popup'`（右键拖出菜单） | `pointerdown` L373 | **无** |
-| HTML5 拖动（`dragstart`） | L392 | `createDragAndDropHintElement()` |
+| 路径                                   | 位置               | hint                             |
+| -------------------------------------- | ------------------ | -------------------------------- |
+| `mode: 'close'`（按住标签上的 × 拖动） | `pointerdown` L351 | **无**（不显示落点提示）         |
+| `mode: 'popup'`（右键拖出菜单）        | `pointerdown` L373 | **无**                           |
+| HTML5 拖动（`dragstart`）              | L392               | `createDragAndDropHintElement()` |
 
 所以 `hint: null` 是**如实的**，不是占位：这两条路径的唯一出口 `windowPointerup` 全程不碰 `hint`（它直接 `data.dragging = null` 并摘掉自己）。
 
@@ -1400,7 +1402,7 @@ export const treeListStatics = {
 
 **两条工具教训（本轮踩到、已绕开）**：
 
-1. **PowerShell 变量名大小写不敏感** —— 我用 `$T="`t"` 存制表符，而 `$t` 正是文件内容，结果**把内容覆盖成了一个制表符**。所幸脚本在写入前有一条长度 sanity check 挡住了。以后存放内容的变量一律用 `$content` 这类不会撞车的名字。
+1. **PowerShell 变量名大小写不敏感** —— 我用 `$T="`t"`存制表符，而`$t` 正是文件内容，结果**把内容覆盖成了一个制表符**。所幸脚本在写入前有一条长度 sanity check 挡住了。以后存放内容的变量一律用 `$content` 这类不会撞车的名字。
 2. **PowerShell 双引号字符串里再嵌双引号**（`"… $([regex]::Matches($c,"`r`n").Count) …"`）会让锚点比较得出莫名其妙的结果（同一条比较单独测是 `True`）。多行文本改写改用 `node` 脚本写文件，一次成型。
 
 **顺带一笔格式债**：整体降一级缩进之后，`textBox.addEventListener('input', …)` 那 6 行第一次「装得进一行」，`oxfmt --check` 随即报出这一处 —— 这属于**我这次改动引入的**格式债（区别于 YMTabBar 那种既存不合规），已 `--write` 收口；新增的 spec 也过 `oxfmt`。三个改动文件现在格式都是干净的。
@@ -1429,14 +1431,14 @@ export const treeListStatics = {
 
 契约本来就写在代码里：`ParticleShape.emitter` 在窗口打开时由 `editor.emitter` 带过来（`Particle.load`），`close()` 里清空 ⇒ **关闭后确实是 null**。老注释预估「收紧会波及约 15 个读取点」，实际把 `| null` 收紧后 tsc 报出 **51 个**：
 
-| 文件 | 读点 | 备注 |
-| --- | --- | --- |
-| `particle-motion.ts` | 30 | 每个函数都以 `const emitter = this.emitter;` 开头 |
-| `particle-pointer.ts` | 11 | 有 1 处局部量 + 2 处 `this.emitter.` 直读 |
-| `particle-list.ts` | 6 | 列表回调 onCreate/onRemove/onDelete/onResume |
-| `particle-file.ts` | 2 | `save()` 的赋值 + `restart()` 的读 |
-| `particle-events.ts` | 1 | 已在 `state === 'open'` 守卫内 |
-| `inspector/particle-layer-page.ts` | 1 | inspector 回调 |
+| 文件                               | 读点 | 备注                                              |
+| ---------------------------------- | ---- | ------------------------------------------------- |
+| `particle-motion.ts`               | 30   | 每个函数都以 `const emitter = this.emitter;` 开头 |
+| `particle-pointer.ts`              | 11   | 有 1 处局部量 + 2 处 `this.emitter.` 直读         |
+| `particle-list.ts`                 | 6    | 列表回调 onCreate/onRemove/onDelete/onResume      |
+| `particle-file.ts`                 | 2    | `save()` 的赋值 + `restart()` 的读                |
+| `particle-events.ts`               | 1    | 已在 `state === 'open'` 守卫内                    |
+| `inspector/particle-layer-page.ts` | 1    | inspector 回调                                    |
 
 **手法要点（省下大量断言）**：这些函数几乎都以 `const emitter = this.emitter;`（或 `const { emitter } = this;`）开头、后面连着用十几处 ⇒ **一处 `!` 覆盖整段**。于是 51 个读点只用 **23 处 `!`** 就收口（`particle-motion` 30 → 9）。
 
@@ -1487,7 +1489,7 @@ words: markRaw(new WordList()),   // 原来是 null as unknown as WordListShape
 我为「可逆」写了 `scripts/tmp-any-hatch.mjs forward|reverse`，替换回调写成：
 
 ```js
-const make = (m) => `[${m}: string]: ...`;   // ← 有捕获组时，第一个参数是**整个匹配**，不是分组
+const make = (m) => `[${m}: string]: ...`; // ← 有捕获组时，第一个参数是**整个匹配**，不是分组
 line.replace(re, make);
 ```
 
@@ -1515,13 +1517,13 @@ line.replace(re, make);
 
 方法是第 37 轮量出来的：**删掉索引签名 → tsc 点名到底读了哪些成员 → 按真类型逐个声明**（改前先把文件备份下来，这是第 37 轮事故后立的规矩）。为了省 tsc 时间，本轮把 4 个**互不相关**的单点文件一起删、再按错误所属文件分摊 —— 级联大小因此一目了然。
 
-| 文件 | 性质 | 结果 |
-| --- | --- | --- |
+| 文件                                     | 性质                                                                  | 结果                                                                                                                                                                       |
+| ---------------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `engine/scene/scene-selection-engine.ts` | 模块私有 `SceneObjectShape`（角色/动画/区域/光照/粒子/视差/瓦片共用） | 47 个报错点名 **21 个真属性**，全部枚举进类型；**零新增断言** —— `data`（`object.data?.size ?? 1`）与 `emitter`（`emitter?.bounding`）读侧本来就写了 `?.`，所以标 `?` 即可 |
-| `data/transition-window.ts` | `EasingDrag` 上的索引签名 | **0 个报错** ⇒ 纯噪声，直接删掉 |
-| `engine/layout/layout.ts` | `LayoutScheme` 上的索引签名 | **0 个报错** ⇒ 直接删掉 |
-| `commands/custom-command-window.ts` | 大方法面板接口 | 只报出 2 个真成员：`state` / `commands` —— 正是与 Pinia store 桥接的那对键（`stores/custom-command.ts` 的 `customCommandStateKeys`），按 store 的 `shallowRef` 类型补上 |
-| `composables/useTeamWindow.ts` | `TeamData` | 报出 1 个真成员 `parent` |
+| `data/transition-window.ts`              | `EasingDrag` 上的索引签名                                             | **0 个报错** ⇒ 纯噪声，直接删掉                                                                                                                                            |
+| `engine/layout/layout.ts`                | `LayoutScheme` 上的索引签名                                           | **0 个报错** ⇒ 直接删掉                                                                                                                                                    |
+| `commands/custom-command-window.ts`      | 大方法面板接口                                                        | 只报出 2 个真成员：`state` / `commands` —— 正是与 Pinia store 桥接的那对键（`stores/custom-command.ts` 的 `customCommandStateKeys`），按 store 的 `shallowRef` 类型补上    |
+| `composables/useTeamWindow.ts`           | `TeamData`                                                            | 报出 1 个真成员 `parent`                                                                                                                                                   |
 
 **一处被 tsc 纠正的错误假设（如实记录）**：我先按「读侧从不判空 ⇒ 声明为必需」的约定把 `parent` 写成必需，tsc 立刻报 3 处 —— **新建队伍时该字段还不存在**（`createData` 只造 id/name/…，父节点由树列表稍后挂上）。改成 `parent?`，并在唯一那个「已挂进树」的读点（`list_updateTextNode`）补 1 个 `!`。这正是「先改类型、让 tsc 把真实契约顶出来」的价值：我原来的猜测是错的，而错在**类型层就被挡住**，没有变成运行时的 NaN。
 
@@ -1541,12 +1543,12 @@ line.replace(re, make);
 
 从「错误列表里没出现」推断出 8 个可疑文件（12 处），单独删它们：
 
-| 步骤 | 错误数 | 归因 |
-| --- | --- | --- |
-| 删 8 个文件（12 处） | 990 | 全是 `DynamicShape` ⇒ **`types/shapes.ts` 是全局松散对象类型**（承重） |
-| 恢复 `types/shapes.ts` | 109 | `ParticleEmitterShape` 71 + `UIElementInstance` 7 + 其余 ⇒ `particle-window.ts` 与 `engine/ui/*` 承重 |
-| 恢复 `particle-window.ts` + `root-element.ts` + `window-element.ts` + `element-classes.ts` | 31 | 全是 `HistoryData` ⇒ **`types/history.ts` 承重**（历史记录载荷按操作变化） |
-| 恢复 `types/history.ts` | **0** | 只剩两个 `.vue` 候选 |
+| 步骤                                                                                       | 错误数 | 归因                                                                                                  |
+| ------------------------------------------------------------------------------------------ | ------ | ----------------------------------------------------------------------------------------------------- |
+| 删 8 个文件（12 处）                                                                       | 990    | 全是 `DynamicShape` ⇒ **`types/shapes.ts` 是全局松散对象类型**（承重）                                |
+| 恢复 `types/shapes.ts`                                                                     | 109    | `ParticleEmitterShape` 71 + `UIElementInstance` 7 + 其余 ⇒ `particle-window.ts` 与 `engine/ui/*` 承重 |
+| 恢复 `particle-window.ts` + `root-element.ts` + `window-element.ts` + `element-classes.ts` | 31     | 全是 `HistoryData` ⇒ **`types/history.ts` 承重**（历史记录载荷按操作变化）                            |
+| 恢复 `types/history.ts`                                                                    | **0**  | 只剩两个 `.vue` 候选                                                                                  |
 
 这条链把「哪些逃生口承重、承重多少」量化了下来，后续按它排优先级。
 
@@ -1578,15 +1580,13 @@ head?: { view: { write(index: number): void } } | null;
 
 `null as unknown as` 这类「遗留单例形状」在全仓已清零（`null-casts 0 files=0`，从第 26 轮的 28 处清到 0，其中第 29 轮 21→12、30 轮 12→7、31 轮 7→6、32 轮 6→4、33 轮 4→3、34 轮 3→2、35 轮 2→1、第 36 轮 1→0）。台账里这条轴的终态就是「归零」，现在达成。
 
-
-
 ### 历史留存：第 26 轮对「28 处」的分类（数字与判断均已被后续各轮取代，仅作沿革记录）
 
-| 形态 | 数量 | 说明 |
-| --- | --- | --- |
-| 缩进的赋值形态 | 11 | **状态重置 / 故意禁用**，要改类型（`\| null`）或换写法，不能删 |
-| 声明形态 | 11 | `let x = null as unknown as T;`（`plugin-parse-meta` 6、`useCallEventCommandSchema` 2、`animation-window-engine` 1、`scene-animate` 1、`tree-api` 1）⇒ 应改成 `let x: T;` 或用 `\| null`，再让 tsc 找出「使用前未赋值」 |
-| 其它 | 6 | `variable.ts` 的 `inputs.*`（嵌套 5 处，需 `\| null` + 读侧）、`text-capture.ts` 的 `ColorProxy.color`（要动 `read(): string` 契约）、`command-custom.ts`（形态不适合本套手法，见上表）、`image-crop-window.ts` 的 2 处**调用实参**、`tree-api.ts` 2 处、`command-api.ts` 1 处、两个 `.vue` 各 1 处 |
+| 形态           | 数量 | 说明                                                                                                                                                                                                                                                                                                |
+| -------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 缩进的赋值形态 | 11   | **状态重置 / 故意禁用**，要改类型（`\| null`）或换写法，不能删                                                                                                                                                                                                                                      |
+| 声明形态       | 11   | `let x = null as unknown as T;`（`plugin-parse-meta` 6、`useCallEventCommandSchema` 2、`animation-window-engine` 1、`scene-animate` 1、`tree-api` 1）⇒ 应改成 `let x: T;` 或用 `\| null`，再让 tsc 找出「使用前未赋值」                                                                             |
+| 其它           | 6    | `variable.ts` 的 `inputs.*`（嵌套 5 处，需 `\| null` + 读侧）、`text-capture.ts` 的 `ColorProxy.color`（要动 `read(): string` 契约）、`command-custom.ts`（形态不适合本套手法，见上表）、`image-crop-window.ts` 的 2 处**调用实参**、`tree-api.ts` 2 处、`command-api.ts` 1 处、两个 `.vue` 各 1 处 |
 
 **推荐顺序**：声明形态（11 处）最机械 —— `let x: T;` 之后 tsc 会把「使用前未赋值」逐条报出来，
 是纯机械的、tsc 全程兜底的改动；剩下的按「每个都要先定契约」单独处理。
@@ -1599,31 +1599,46 @@ head?: { view: { write(index: number): void } } | null;
 ## 交接（第 87 轮 · 当前真实数字与工作单）——**先读这一节**
 
 > 本节取代下面那份「交接（第 62 轮）」，是**唯一**仍然准确的现状描述。数字取自
-> `node scripts/migration-ledger.mjs --check`（第 87 轮提交后复核）。
+> `node scripts/migration-ledger.mjs --check`。
+>
+> **数字刷新于第 91 轮（2026-09-21）**，全 15 轴当场重测（`unknown-casts` 已从 136 降到 89、
+> 并修正了两条**恒为假 0** 的轴 —— 见下表脚注）。**以 `pnpm migration:ledger` 的输出为准**。
 
 ### 1. 轴现状
 
-> ### ⚠️ 本节数字的复核记录（2026-09-21，第 89 轮）
+> ### ⚠️ 本节数字的复核记录（2026-09-21，第 89 轮 + 第 91 轮）
 >
-> 有人（AI 会话）在**没有改任何代码**的前提下核对了本节，发现**两处失真**。复核后实测：
+> 第 89 轮（无代码改动）核出**两处失真**：
 >
-> | 本文原写法 | 实测 | 处置 |
-> |---|---|---|
-> | `any-hatches`「会话起点 **67**」 | 会话起点是 **52** | 67 是**第 62 轮扩口径当轮**的数（`32 + 35`）；第 63→87 轮之间又清掉了 15 处，**67 早就过时了**，却一直留在这里当「起点」 |
-> | §4 工作单第 1 条：「**口径有跨行漏洞**，`Record<\n…,any\n>` 匹配不到」 | **漏洞不存在** | 已删除该任务，理由见 §4 |
+> | 本文原写法                                                             | 实测              | 处置                                                                                                                     |
+> | ---------------------------------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------ |
+> | `any-hatches`「会话起点 **67**」                                       | 会话起点是 **52** | 67 是**第 62 轮扩口径当轮**的数（`32 + 35`）；第 63→87 轮之间又清掉了 15 处，**67 早就过时了**，却一直留在这里当「起点」 |
+> | §4 工作单第 1 条：「**口径有跨行漏洞**，`Record<\n…,any\n>` 匹配不到」 | **漏洞不存在**    | 已删除该任务，理由见 §4                                                                                                  |
+>
+> 第 91 轮又核出**第三处、也是最严重的一处**：下表原先写的
+> `legacy-ui-lines` / `legacy-ui-refs` = **0 / 0**，并据此判「阶段 1c 的 B（纯移动）已完成」。
+> **两条轴都是假 0**：`legacy-ui-lines` 的目录被**写死**成 `packages/editor/src/ui`（P5-B 搬运后
+> 该目录已不存在，而 `collectFiles` 对不存在的目录返回 `[]` 且不抛错）；`legacy-ui-refs` 用
+> `^@app/ui/` 前缀、且只认 `import … from`（真实引用点是 `window-cluster.ts` 的**再导出**
+> `export { UI } from '@app/engine/ui/legacy/ui-window.ts'`）。两条轴同时读 0，而
+> `ui-singleton-members` 报 **103** —— **同一张表自相矛盾时，先怀疑仪器。** 已修（第 90 轮）。
 >
 > **教训（与「数字必须自证」同源）**：本文档的**历史轮次小节**是沿革记录，数的是当轮的数，
 > 这是对的；但**交接节**声称「唯一准确」，就必须**每个数字都当场由脚本重测**。
-> 上面那个「67」正是「把第 62 轮的数字抄进第 87 轮的交接节」的产物 —— 抄的当时就已经不是真值。
+> 上面那个「67」是「把第 62 轮的数字抄进第 87 轮的交接节」的产物 —— 抄的当时就已经不是真值；
+> 那个「0 / 0」更糟，是**仪器瞎了却说「已完成」**。
 
-| 轴 | 现状 | 说明 |
-|---|---|---|
-| `unknown-casts` | **136 处 / 109 文件** | 会话起点 285 ⇒ 已减 149 |
-| `any-hatches` | **52 处 / 26 文件** | **实测起点就是 52**（索引签名 32 + `Record<string, any>` 20）。⚠️ 此前这里写的「起点 67」「跨行漏洞」均已被第 89 轮证伪 —— 见上方复核记录 |
-| `legacy-ui-lines` / `legacy-ui-refs` | **0 / 0** | 阶段 1c 的 B（纯移动）已完成 |
-| `ui-singleton-members` | 103 files=8 declared=134 | 属 P5-C/D，**等实机回归后才能动** |
-| `null-casts` / `dom-pending` / `stale-exemptions` / `ui-slot-coverage` | 全 0 | — |
-| `unremovable-listeners` / `dom-on-exempted` / `dom-whitelist-size` | 9 / 120 / 14 | 只需不增 |
+| 轴                                                                     | 现状                            | 说明                                                                                                                                                                                                                           |
+| ---------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `unknown-casts`                                                        | **89 处 / 76 文件**             | 会话起点 285 ⇒ 已减 196（第 91 轮又清 12：修声明 5 / `registryElement` 收窄 5 / `Reflect.set` 2）                                                                                                                              |
+| `any-hatches`                                                          | **52 处 / 26 文件**             | **实测起点就是 52**（索引签名 32 + `Record<string, any>` 20）。⚠️ 此前这里写的「起点 67」「跨行漏洞」均已被第 89 轮证伪 —— 见上方复核记录。**剩余全在承重形状上**（`SceneShape` / `DynamicShape` / `UIShape` / 粒子同名形状…） |
+| `legacy-ui-lines`                                                      | **2859 行 / 9 文件**            | 遗留单例层所在的**目录**（`dirname(uiWindowRel())`）。⚠️ 曾经假 0，见上方复核记录                                                                                                                                              |
+| `legacy-ui-refs`                                                       | **2 处 / 1 文件**（runtime=2）  | 全部落在 `tools/window-cluster.ts`。⚠️ 曾经假 0。**只抓静态依赖**，数不到 `getLazyWindow('ui', …m.UI)` 那 2 处（`file/file-system-core.ts`、`components/layout/LayoutPanel.vue`），1c 收尾时手工核对                           |
+| `1c-store-slot-gaps`                                                   | **41 个槽位**（`storeRefs=49`） | **第 90 轮新增**：store 引用了、但**实现只在遗留目录里**的槽位 = 1c 第 ③ 步的工作单（首轮实测 41，与附录三手工数出的 41 一致）                                                                                                 |
+| `ui-singleton-members`                                                 | 103 files=8 declared=134        | 属 P5-C/D，**等实机回归后才能动**（三条 1c 轴必须**同时**归零才算收口）                                                                                                                                                        |
+| `null-casts` / `dom-pending` / `stale-exemptions` / `ui-slot-coverage` | 全 0                            | —                                                                                                                                                                                                                              |
+| `unremovable-listeners` / `dom-on-exempted` / `dom-whitelist-size`     | 9 / 120 / 14                    | 只需不增                                                                                                                                                                                                                       |
+| `dom-whitelist-drift` / `dom-whitelist-unjustified`                    | 0 / 0                           | 白名单单一真源（`.oxlintrc.json`）                                                                                                                                                                                             |
 
 ### 2. 已完成
 
@@ -1631,8 +1646,16 @@ head?: { view: { write(index: number): void } } | null;
 - **P1**（仪器）：补 `ui-singleton-members` 轴、扩 `any-hatches` 口径（`a27d2819`）。
 - **P5-B**（纯移动）：8 个遗留 UI 域模块 → `src/engine/ui/legacy/`（`8c40b735`），
   7 个文件零改动、2 个只改一个 import。
-- **P4**：285 → 137（本轮会话共 30+ 次提交，逐轮记录见下面各节）。
-- **顺带修的真 bug**：`FSP.existsSync`（`fs.promises.existsSync` 为 undefined，文件改名会抛）。
+- **P4**：285 → 137（第 38–89 轮，逐轮记录见下面各节）；**第 91 轮再 101 → 89**。
+- **第 90 轮（2026-09-21，仪器轮）**：修好两条**恒为假 0** 的轴（`legacy-ui-lines` /
+  `legacy-ui-refs`，见 §1 的复核记录）、新增 `1c-store-slot-gaps` 轴（1c 第 ③ 步的工作单，
+  首轮 41 与附录三手工数一致）、新增 `pnpm text:check` 文本污染门禁（7 条规则 + 11 条自证用例）、
+  `docs-check` 重写（原实现只扫已删除的 `docs/`，恒绿）、`pnpm-lock.yaml` 入库
+  （此前未跟踪而 CI 用 `--frozen-lockfile`）、清掉一批只被自身 spec 养着的死代码。
+- **第 91 轮**：`scripts/` 的 37 条 lint warning 清零并把 `scripts` 纳入 `pnpm lint`；
+  新增 `replacement-char` 规则并修掉 15 处 U+FFFD 编码事故（11 处从污染前的历史版本逐字恢复）。
+- **顺带修的真 bug**：`FSP.existsSync`（`fs.promises.existsSync` 为 undefined，文件改名会抛）；
+  7 个文件的文本污染（单词首字母被控制字符吃掉、两条真代码被吞进 `//` 注释）。
 
 ### 3. 手法库（拆 `as unknown as` 的五条，按判定顺序用）
 
@@ -1645,6 +1668,10 @@ head?: { view: { write(index: number): void } } | null;
    那会引入没被计量的 `any`）。
 6. **交叉断言**（第 85/86 轮）：保留对象类型只补缺口那一支；**边界**：交叉里必须有一支与源类型是同一支，
    否则 TS 仍报缺成员。
+7. **收窄集中到一处**（第 91 轮）：按 id 取元素统一走 `registryElement<T>(registry, id)`；
+   多读点各自 `as unknown as` 时先问「是不是同一个事实被解释了 N 遍」。
+8. **「同名方法换签名」无解**（第 91 轮）：`WebGLRenderingContext.prototype.bufferData` 那种
+   重载补丁连单次 `as` 都会被 TS2352 挡住 ⇒ 换机制（`Reflect.set`），而不是换写法。
 
 ### 4. 剩下的活（按性价比排序）
 
@@ -1657,36 +1684,46 @@ head?: { view: { write(index: number): void } } | null;
    （`Record<[\s\n]*string[\s\n]*,[\s\n]*any[\s\n]*>`）与现行正则逐文件比对，
    **无一个文件读数不同**（都是 20）。
    ⇒ 这条轴**是在口径内被数干净的**，不存在「改个写法就能凭空归零」的后门。不要再做这个任务。
-2. **P4 剩余 136 处的成组形态**：`eslints.ts` 3（要先动 `CommandListShape` 的类型设计）·
-   `printer.ts` 3（1 处类→索引签名 + 2 处占位值待决策）· `window-object.ts` 1（frames 后挂方法）·
-   `command-tip.ts` 1 · `particle-engine.ts` 1 · 其余多为零散 2 处以内的 `.vue` 组件。
+2. **P4 剩余 89 处的成组形态**（第 91 轮刷新）：`eslints.ts` 3（要先动 `CommandListShape` 的类型设计）·
+   `printer.ts` 3（`typeof Printer` 是类类型、无隐式索引签名；另有 2 处占位值待决策）·
+   `scene-context.ts` 2（`Light`/`Parallax` 的构造参数与本地 `SceneLight` **漂移**，`LightData` 未导出）·
+   `command-list.ts` 2（选项契约写窄了）· `codec.ts` 2（`terrains`/`code` 的声明与运行期的 `Uint8Array` 不符）·
+   `text-element.ts` 2（`printer.images` 有两个**互补而非同形**的本地接口：`ImageElementShape` vs
+   `EmbeddedImageShape` —— 要合并成一份具名形状，属设计改动）· 其余为零散 1–2 处的 `.vue` 组件。
+   **第 91 轮已拿下 12 处**，手法与「为什么剩下的这些更难」记在 `xr.md` 的「第 91 轮」一节。
 3. **已确认「必须留 `unknown`」的三类**（要归零只能改写法或改类型设计）：
-   - **interface → 索引签名**（`TreeListHost as Record<string, unknown>` 一类）：换 `Reflect.*`；
-   - **类与接口漂移**：`ParticleElementLayer` vs 粒子层类（两条路都试过：TS2345 + TS2352）、
-     `ParamHistory` vs `IEditableHistory`（缺 `stack`/`index`）—— 都是**真债务**，不是写法问题；
-   - **payload 判别字段**：从 `{ [k: string]: unknown }` 断言到具体字段集时，目标里必须带 `type`（第 78 轮）。
+    - **interface → 索引签名**（`TreeListHost as Record<string, unknown>` 一类）：换 `Reflect.*`；
+    - **类与接口漂移**：`ParticleElementLayer` vs 粒子层类（两条路都试过：TS2345 + TS2352）、
+      `ParamHistory` vs `IEditableHistory`（缺 `stack`/`index`）—— 都是**真债务**，不是写法问题；
+    - **payload 判别字段**：从 `{ [k: string]: unknown }` 断言到具体字段集时，目标里必须带 `type`（第 78 轮）。
 4. **P3（52 处）**：都压在承重类型上（`SceneShape` 字段、`DynamicShape`、`UIShape`、粒子同名形状…）。
 5. **P5-C/D 与 P6**：**运行时高危，必须等用户按 9 项实机回归清单验证过再动**
    （清单全文见第 66 轮「下一步（1c 第 ③ 步）与实机回归清单」一节；原文此处写「10 项」是笔误 —— 该清单实测为 9 条）。
 
 ### 5. 待用户决策（原 7 项 → **已降到 5 项**，2026-09-21 第 89 轮）
 
-> ✅ **① 已定性，但处置需你拍板**：`format:check` 实测 **249 个文件**不合格（原文记 261，也已过时），
-> 且**不在 CI 里** —— 属「有个红门禁但没人看」。定性如下，**代码未动**：
+> ✅ **① 已关闭（第 91 轮，选了 (a)）**：一次 `pnpm format` 收口 **305 个文件**（+7836 / −4359），
+> `format:check` 从此 **0** 并接进 CI 的 `gates` job。定性记录保留如下：
+>
 > - 它**不是**「格式从没被管过」：`.husky` + `lint-staged.config.js` 已在**每次提交时**
 >   对暂存文件跑 `oxfmt`，所以**新增/改动的代码一直是合规的**；红的只是「全仓历史存量」。
-> - 所以处置是二选一，**两个都要单独一轮**：**(a)** 跑一次 `pnpm format` 收口存量（会动 249 个文件，
->   属大面积机械改写 —— 按本仓第 37 轮的教训，**这种改动必须避开任何并行写入者**），
->   然后加进 CI；**(b)** 明确降级为「非门禁脚本」并在本文标注，避免一个永远红的门禁教人忽略门禁。
-> - ⚠️ `format` 脚本的扫描面是 `packages/editor`，**不含 `packages/ui-kit`** —— 选 (a) 时要一并确认。
-> ✅ **② 已关闭，并且它不是 flake**：原文把它记成「真·间歇性」，**这个判断是错的**。
-> 第 89 轮实测：它是 **`tools/window-registry.ts` 里两处 `void ensure(...)` 丢弃了派生 promise
-> 却没给原始 promise 挂 rejection 回调**导致的**确定性**缺陷 —— 全量套件 **2066 用例全绿、
-> 却 `exit 1`**（vitest 把 unhandled rejection 记成**套件级**错误）。已修 + 已加自证回归 spec。
-> 连带纠正：「必须独占跑」只对 `template-localized.spec.ts` 的**超时**成立，与本条无关。
+> - 扫描面缺口（原先只扫 `packages/editor`、不含 `packages/ui-kit`）已在第 90 轮补上；
+>   实测存量 **321** 个文件，实际被改写 **305** 个。
+> - 实测体量：`LayoutPanel.vue`（2109 行）单文件重排就是 **+1251 / −985 行** ——
+>   所以第 90 轮「顺手删 `#uiContainer-vue-mount` 那个死 id」被推迟，本轮仍留作下次同类清理的顺手项。
+> - ⚠️ 收口后跑全量套件曾出现「**137 个文件 0 用例失败**」，报 `Electron failed to install correctly` ——
+>   **是环境问题不是回归**（同一个 spec 在 `git stash` 前后都失败）：`electron@43.2.0` 的 `index.js`
+>   在 require 时检查 `dist/` 二进制、缺失就当场下载，而本机下不到该版本。绕过办法见
+>   `CONTRIBUTING.md`（`ELECTRON_OVERRIDE_DIST_PATH`）；设上之后 editor 250/2057、ui-kit 115/811 全绿。
+>   ✅ **② 已关闭，并且它不是 flake**：原文把它记成「真·间歇性」，**这个判断是错的**。
+>   第 89 轮实测：它是 **`tools/window-registry.ts` 里两处 `void ensure(...)` 丢弃了派生 promise
+>   却没给原始 promise 挂 rejection 回调**导致的**确定性**缺陷 —— 全量套件 **2066 用例全绿、
+>   却 `exit 1`**（vitest 把 unhandled rejection 记成**套件级**错误）。已修 + 已加自证回归 spec。
+>   连带纠正：「必须独占跑」只对 `template-localized.spec.ts` 的**超时**成立，与本条无关。
 
 **仍待决策的 4 项**：④ `TextCommandShape.color` 的真实类型（决定 4 处 canvas 赋值是否真 bug）
 ⑤ `ParamHistory` vs `IEditableHistory` 矛盾 ⑥ P6 三处行为缺陷 ⑦ P5-C/D 开工（前提是实机回归全过）。
+
 > ✅ **③ 已落地（2026-09-21）**：`pnpm -F @yami/ui-kit build:types` 已加进 CI 的 `gates` job
 > （此前 ui-kit 的 `.vue` **不在任何门禁里**）。
 
@@ -1700,13 +1737,13 @@ head?: { view: { write(index: number): void } } | null;
 - **仪器要自证**：新增扫描规则时先塞一个「故意错误」验证检查面（第 75 轮对 `build:types` 做过）。
 - **验收命令**（照抄即可）：
 
-  ```bash
-  node scripts/migration-ledger.mjs --check
-  pnpm run migration:selftest && pnpm run lint
-  pnpm -F @yami/editor typecheck && pnpm -F @yami/editor typecheck:vue
-  pnpm -F @yami/ui-kit build:types
-  pnpm -F @yami/ui-kit test && pnpm -F @yami/editor test   # editor 那条**独占**跑
-  ```
+    ```bash
+    node scripts/migration-ledger.mjs --check
+    pnpm run migration:selftest && pnpm run lint
+    pnpm -F @yami/editor typecheck && pnpm -F @yami/editor typecheck:vue
+    pnpm -F @yami/ui-kit build:types
+    pnpm -F @yami/ui-kit test && pnpm -F @yami/editor test   # editor 那条**独占**跑
+    ```
 
 ## 第 89 轮（续二）：`unknown-casts` 111 → 102 —— 修声明两批，外加两个**新踩到的坑**
 
@@ -1717,7 +1754,7 @@ head?: { view: { write(index: number): void } } | null;
 后果不是「读不到」，而是**每个读点各自撒谎**：
 
 ```ts
-Number((file.stats as unknown as { size: number }).size)   // 5 个文件各一遍
+Number((file.stats as unknown as { size: number }).size); // 5 个文件各一遍
 ```
 
 收口成具名 `FileItemStats` + 补 `size`，5 处断言消失。
@@ -1758,8 +1795,6 @@ Number((file.stats as unknown as { size: number }).size)   // 5 个文件各一�
    ⇒ **验证脚本也有适用域**：行数不变用逐行比对；含增删行必须用**真正的 diff**（或先按
    hunk 归一化）。本轮后半程改看 `git diff -U3`（4 个 hunk，逐条即预期改动），
    并以 `tsc` + 全量套件（**253 files / 2070 tests / exit 0**）为准。
-
-
 
 ## 第 89 轮：修掉测试套件级红灯（`unknown-casts` 136 → 111）
 
@@ -1813,9 +1848,8 @@ imported from .../title/menu-bar.ts after the environment was torn down`。
 但**实测发现真正的病灶不是「写得啰嗦」**：
 
 ```ts
-const control = composableEls.get(id) as
-unknown as 	unknown as | (HTMLElement & { write?: (value: unknown) => void })
-	| null;
+const control = composableEls.get(id) as unknown as unknown as
+	(HTMLElement & { write?: (value: unknown) => void }) | null;
 ```
 
 `as unknown as␉unknown as` —— **`as unknown as` 被套了两遍**。这说明**某次 codemod 在
@@ -1869,7 +1903,7 @@ unknown as 	unknown as | (HTMLElement & { write?: (value: unknown) => void })
  * 这个具名类型是**读点与注册点共用**的那一个。
  */
 interface VariableTextElement extends HTMLDivElement {
-	[k: string]: unknown;              // 该元素还被挂了不少临时字段（如 text.name）
+	[k: string]: unknown; // 该元素还被挂了不少临时字段（如 text.name）
 	varSpace: string;
 	varType: string;
 	varKey: string;
@@ -1902,7 +1936,7 @@ interface VariableTextElement extends HTMLDivElement {
 
 ```ts
 this.elements = [] as unknown as ParticleElementRef[] & { count: number };
-this.elements.count = 0;                    // 断言之后紧接着写字段 ⇒ 合并
+this.elements.count = 0; // 断言之后紧接着写字段 ⇒ 合并
 // ↓
 this.elements = Object.assign([], { count: 0 });
 this.reserves = Object.assign([], { count: 0 });
@@ -1960,7 +1994,7 @@ const bind = (scriptList: ParamScriptListElement): void => { … scriptList.obje
 ### ⚠️ 回退 1：`typeof Easing.list` 解析出来是**字面量 `null`**
 
 ```ts
-Easing.list = list as typeof Easing.list;   // TS2352: Conversion of type 'YamiElement' to type 'null'
+Easing.list = list as typeof Easing.list; // TS2352: Conversion of type 'YamiElement' to type 'null'
 ```
 
 `Easing.list` 在形状里的初始值就是 `null`，所以 `typeof Easing.list` **不是**「`YamiElement | null`」而是 `null`。
@@ -1970,7 +2004,7 @@ Easing.list = list as typeof Easing.list;   // TS2352: Conversion of type 'YamiE
 ### ⚠️ 回退 2：交叉断言**不能**用来「给一个 interface 加 DOM 基类」
 
 ```ts
-const input = container as HTMLElement & RepeatableGroupInput;   // TS2352
+const input = container as HTMLElement & RepeatableGroupInput; // TS2352
 // Type 'HTMLDivElement' is missing the following properties from type 'RepeatableGroupInput':
 //   setTooltip, parameters, key, read, write
 ```
@@ -1981,6 +2015,7 @@ const input = container as HTMLElement & RepeatableGroupInput;   // TS2352
 
 > **交叉断言的适用边界（本轮实测收口）**：只有当交叉里有一支**与源类型是同一支**（或源可直接赋值给它、
 > 且另一支不引入**必需**成员冲突）时才成立。经验判据：
+>
 > - ✅ `TreeItem[] & TreeItem`（源就是 `TreeItem[]`）、`RadioProxyElement & {…}`（源就是前者）、
 >   `FileNavPaneElement & CommonListLike`（源可赋给前者、后者成员在源上齐备）；
 > - ❌ `HTMLElement & RepeatableGroupInput`（后者有源上不存在的必需成员）。
@@ -2009,8 +2044,9 @@ const input = container as HTMLElement & RepeatableGroupInput;   // TS2352
 只剩「一张字符串表」。改成交叉断言：
 
 ```ts
-(getComputedStyle(el as Element) as CSSStyleDeclaration & Record<string, string>)[args[0] as string]
-(el.style as CSSStyleDeclaration & Record<string, string>)[key] = props[key];
+(getComputedStyle(el as Element) as CSSStyleDeclaration & Record<string, string>)[
+	args[0] as string
+](el.style as CSSStyleDeclaration & Record<string, string>)[key] = props[key];
 ```
 
 为什么这样更好：
@@ -2113,17 +2149,18 @@ textPointerenter: function (this: GlobalEventHandlers & { [k: string]: unknown }
 - editor **252 文件 / 2056 全部通过**，1 个 error = 那个已知 flake；**这轮抓到了它的完整调用链**
   （用于日后决定治不治）：
 
-  ```txt
-  EnvironmentTeardownError: Cannot load '/src/title/menu-bar.ts' imported from
-    packages/editor/src/tools/window-cluster.ts after the environment was torn down.
-  - /src/title/menu-bar.ts
-  - packages/editor/src/tools/window-cluster.ts
-  - packages/editor/src/stores/ui.ts
-  - packages/editor/src/stores/__tests__/ui-state.spec.ts
-  ```
+    ```txt
+    EnvironmentTeardownError: Cannot load '/src/title/menu-bar.ts' imported from
+      packages/editor/src/tools/window-cluster.ts after the environment was torn down.
+    - /src/title/menu-bar.ts
+    - packages/editor/src/tools/window-cluster.ts
+    - packages/editor/src/stores/ui.ts
+    - packages/editor/src/stores/__tests__/ui-state.spec.ts
+    ```
 
-  ⇒ 即 `ui-state.spec.ts` 触发 `stores/ui.ts` 的惰性代理 → 模块级 `tools/window-cluster.ts`
-  → 拉起 `title/menu-bar.ts`，而此刻该 spec 的环境已经被拆掉。
+    ⇒ 即 `ui-state.spec.ts` 触发 `stores/ui.ts` 的惰性代理 → 模块级 `tools/window-cluster.ts`
+    → 拉起 `title/menu-bar.ts`，而此刻该 spec 的环境已经被拆掉。
+
 - **运行期改动**：4 处 `Object.assign`（均可证等价：都是「先空数组、再逐个写字段」的合并写法）
   ＋ 1 处 `= undefined`（原来就是 undefined）；均在 ui-kit 列表装配路径上
 
@@ -2182,11 +2219,12 @@ strings[i] = Command.setStringColor!(`"…"`) as unknown as string;
 
 1. 三段式「取 → 判空 → 断言」换成一句既有 helper（第 56 轮引入的 `registryElement`）：
 
-   ```ts
-   const list = registryElement<CustomCommandList>(customCommandEls, 'command-list');
-   if (!list) return;
-   CustomCommand.list = list;
-   ```
+    ```ts
+    const list = registryElement<CustomCommandList>(customCommandEls, 'command-list');
+    if (!list) return;
+    CustomCommand.list = list;
+    ```
+
 2. `Easing.getItemById as unknown as (id: string) => CustomCommandData | null` → 单次断言
    （两个函数类型本来就可比）。
 
@@ -2314,7 +2352,7 @@ const list = Array.from(children).filter((child): child is Element => child?.nod
 
 ```ts
 for (const button of lastPad.buttons as unknown as { pressed: boolean; value: number }[]) {
-	button.pressed = false;   // ← 报 TS2540：Cannot assign to 'pressed' because it is a read-only property
+	button.pressed = false; // ← 报 TS2540：Cannot assign to 'pressed' because it is a read-only property
 	button.value = 0;
 }
 ```
@@ -2409,12 +2447,12 @@ const save = (): SwitchConditionData | undefined => { … requestFocus('…'); r
 
 `script-list.ts` 把 `new ParamHistory(...)` 当 `IEditableHistory` 用。单次断言被 TS 拒绝，原因不是形式：
 
-| `IEditableHistory` 要求 | `ParamHistory` 实际 |
-|---|---|
-| `stack: HistoryData[]` | **没有** |
-| `index: number` | **没有** |
-| `save(data: HistoryData)` | `save(data: { type: string } & InspectorParamData)` |
-| `restore(operation: HistoryOperation)` | `restore(operation: string)` |
+| `IEditableHistory` 要求                | `ParamHistory` 实际                                 |
+| -------------------------------------- | --------------------------------------------------- |
+| `stack: HistoryData[]`                 | **没有**                                            |
+| `index: number`                        | **没有**                                            |
+| `save(data: HistoryData)`              | `save(data: { type: string } & InspectorParamData)` |
+| `restore(operation: HistoryOperation)` | `restore(operation: string)`                        |
 
 而 `types/history.ts` 的头部注释明确写着「项目中 CommandHistory / NumberHistory / TextHistory /
 ParamListHistory / **ParamHistory** 6 个 History 类重复实现同一组栈式 undo/redo 契约 …… 供各 History 类
@@ -2444,6 +2482,7 @@ TileFrame.marqueePointerdown = function (this: typeof TileFrame, event: PointerE
 所以写扩展字段只要 `event.screen = screen;` 就够了，一个断言都不需要（两处 ×3 字段全清）。
 
 > 与第 75 轮对照记一条判定顺序：**先看参数/变量的声明里有没有索引签名**。
+>
 > - 有 ⇒ 读写扩展字段都**无需断言**（本轮 6 处）；
 > - 没有、且要**读**回来 ⇒ 在声明处给一个具名交叉类型（第 75 轮 `Dragging`，8 处）；
 > - 没有、且只在**外部**读 ⇒ 抽小工具收一次断言（第 76 轮 `fileElementOf`，3 处）。
@@ -2475,14 +2514,14 @@ src/printer/printer.ts(1266,3): error TS2322: Type 'string | number' is not assi
 也就是说：**这个声明与文件自身的用法不自洽，只是被 `as unknown as string` 盖住了。**
 证据链（全部在本文件内）：
 
-| 事实 | 位置 |
-|---|---|
-| 声明 `color: string` | `TextCommandShape` |
-| 占位命令写 `color: 0`（打包整数形状） | `fetchCommand()` |
-| `command.color = this.colors[0]` | `drawBuffer()` |
-| `colors = [Printer.color!]`，而 `Printer.color = CSSRGBA('ffffffff')` | 类静态/初始化 |
-| 同文件效果颜色构造**打包整数** | 三处 `r + (g + (b + a * 256) * 256) * 256` |
-| 4 处把 `color` 直接交给 canvas | `drawText` / `drawTextWithShadow` 等 |
+| 事实                                                                  | 位置                                       |
+| --------------------------------------------------------------------- | ------------------------------------------ |
+| 声明 `color: string`                                                  | `TextCommandShape`                         |
+| 占位命令写 `color: 0`（打包整数形状）                                 | `fetchCommand()`                           |
+| `command.color = this.colors[0]`                                      | `drawBuffer()`                             |
+| `colors = [Printer.color!]`，而 `Printer.color = CSSRGBA('ffffffff')` | 类静态/初始化                              |
+| 同文件效果颜色构造**打包整数**                                        | 三处 `r + (g + (b + a * 256) * 256) * 256` |
+| 4 处把 `color` 直接交给 canvas                                        | `drawText` / `drawTextWithShadow` 等       |
 
 **本轮不修的理由**：真实取值究竟是「打包整数」还是「CSS 颜色串」是**行为问题**，
 改声明 = 改行为（canvas 对非法 `fillStyle` 是静默忽略的，所以线上一旦是整数，文字颜色一直在吃上一次的值）。
@@ -2508,14 +2547,15 @@ src/printer/printer.ts(1266,3): error TS2322: Type 'string | number' is not assi
 
 1. **`treeData` 直接复用既有 helper**：
 
-   ```ts
-   // 前：getElementData(el as HTMLElement) as unknown as TreeListElementData
-   const treeData = (el: unknown): TreeListElementData => elementDataOf<TreeListElementData>(el);
-   ```
+    ```ts
+    // 前：getElementData(el as HTMLElement) as unknown as TreeListElementData
+    const treeData = (el: unknown): TreeListElementData => elementDataOf<TreeListElementData>(el);
+    ```
 
-   依据不是猜的：`utils/element-data.ts:42-44` 里 `elementDataOf<T>` 的实现**就是**
-   `getElementData(el as HTMLElement) as T` —— 同一个调用、同一个单次断言，所以是**可证等价**。
-   顺带删掉因此变成未使用的 `getElementData` 导入（lint 又抓到一次，与第 77 轮同一套路）。
+    依据不是猜的：`utils/element-data.ts:42-44` 里 `elementDataOf<T>` 的实现**就是**
+    `getElementData(el as HTMLElement) as T` —— 同一个调用、同一个单次断言，所以是**可证等价**。
+    顺带删掉因此变成未使用的 `getElementData` 导入（lint 又抓到一次，与第 77 轮同一套路）。
+
 2. `dItem = data as unknown as TreeItem` → `data as TreeItem[] & TreeItem`：
    代码上方的注释早就写着「**根"节点"就是 `data` 数组本身**」，所以诚实形状是交叉类型；
    单次断言合法，因为交叉的一支与源类型一致。
@@ -2538,7 +2578,7 @@ from type '{ item: TreeItem; oldValue: string; newValue: string; }': item, oldVa
 ### 最后一处：`unknown` 在这里**不是懒，是 TS 不允许单次断言**
 
 ```ts
-const prototypeSink = list as unknown as Record<string, unknown>;   // TreeListHost 是 interface
+const prototypeSink = list as unknown as Record<string, unknown>; // TreeListHost 是 interface
 ```
 
 `TreeListHost` 是 **interface ⇒ 没有隐式索引签名**，而目标是指向索引签名的类型。
@@ -2574,11 +2614,11 @@ TS 对这种转换**没有合法的单次写法**（`Record<string, unknown>`、
 第 75/76 轮的规律是「声明**写松了**，读点各自打补丁」。这一轮的五个站点（`command-api.ts` 4 ·
 `tree-api.ts` 1，全都是 `commonList*` 共享助手）恰恰相反 —— **是契约本身写偏了**，而且三种偏法各占一种：
 
-| 偏法 | 事实 | 后果 |
-|---|---|---|
-| 写**紧**了 | `CommonListLike.textContent: string`，而助手只**写不读**它（`commonListResize` 里 `el.textContent = ''`） | DOM 侧是 `string \| null`，两边「不可比」⇒ 每个调用点 `as unknown as` |
+| 偏法       | 事实                                                                                                                  | 后果                                                                                   |
+| ---------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| 写**紧**了 | `CommonListLike.textContent: string`，而助手只**写不读**它（`commonListResize` 里 `el.textContent = ''`）             | DOM 侧是 `string \| null`，两边「不可比」⇒ 每个调用点 `as unknown as`                  |
 | 写**宽**了 | `commonListUpdateHeadAndFoot(list: CommonListLike)`，可它只读 `list.elements` 的窗口游标，**从不调 `updateOnResize`** | 树列表宿主**真的没有**这个能力 ⇒ 契约在索要一个用不到的能力 ⇒ 调用方只能绕道 `unknown` |
-| **漏**写了 | `CommandListHost` 没声明 `updateOnResize`（原型上有，接口里没有）；`TreeListHost` 连 `elements` 都没声明 | 宿主「缺零件」⇒ 与助手契约不可比 |
+| **漏**写了 | `CommandListHost` 没声明 `updateOnResize`（原型上有，接口里没有）；`TreeListHost` 连 `elements` 都没声明              | 宿主「缺零件」⇒ 与助手契约不可比                                                       |
 
 ### 改法（4 个文件，全部是类型层）
 
@@ -2599,8 +2639,8 @@ elements: CommonListLike['elements'];
 ### 结果比预期好：5 处**断言彻底消失**，而不是「降级成单次断言」
 
 ```ts
-commonListClearElements(this, elements.count);          // 原来是 this as unknown as CommonListLike
-commonListUpdateHeadAndFoot(this);                      // 原来两处都是 as unknown as
+commonListClearElements(this, elements.count); // 原来是 this as unknown as CommonListLike
+commonListUpdateHeadAndFoot(this); // 原来两处都是 as unknown as
 ```
 
 宿主契约补齐后 `this` 与 `CommonListLike` **真的可赋值**了 ⇒ 一个断言都不需要。
@@ -2646,12 +2686,12 @@ Found 1 warning and 0 errors.   help: Consider removing this import.
 这个文件是**猴子补丁模块**（给 `CommandList` 的运行期扩展打补丁）。它的类型不是「错的」，
 而是**写松了**，于是每个读点各自拿 `as unknown as` 把松掉的那半截补回来：
 
-| 声明（改前） | 挨着的读点 | 改后 |
-|---|---|---|
-| `CommandItemElement.lines: HTMLElement[]` | 80 / 97 | `lines: (HTMLElement & { mark?: string })[]` ⇒ `needNode.mark !== 'header'` |
-| `CommandListShape[i].mark?: unknown` | 197 / 319 / 327 | `mark?: string` ⇒ `e.mark!` 与普通读取 |
-| `on(…, 'update', function (this: { elements: { dataIndent: number }[] })` | 303 / 323 | `this: { elements: CommandListShape } & HTMLElement` ⇒ `this.elements`、`renderedRowsOf(this)` |
-| `rendered[i] as unknown as { classList: DOMTokenList }`（**两处同形**） | 196 / 326 | 元素类型本来就 `extends YamiElement`（自带 `classList`）⇒ 直接读 |
+| 声明（改前）                                                              | 挨着的读点      | 改后                                                                                           |
+| ------------------------------------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------- |
+| `CommandItemElement.lines: HTMLElement[]`                                 | 80 / 97         | `lines: (HTMLElement & { mark?: string })[]` ⇒ `needNode.mark !== 'header'`                    |
+| `CommandListShape[i].mark?: unknown`                                      | 197 / 319 / 327 | `mark?: string` ⇒ `e.mark!` 与普通读取                                                         |
+| `on(…, 'update', function (this: { elements: { dataIndent: number }[] })` | 303 / 323       | `this: { elements: CommandListShape } & HTMLElement` ⇒ `this.elements`、`renderedRowsOf(this)` |
+| `rendered[i] as unknown as { classList: DOMTokenList }`（**两处同形**）   | 196 / 326       | 元素类型本来就 `extends YamiElement`（自带 `classList`）⇒ 直接读                               |
 
 改 `this` 注解**不是猜的**：同一文件里 `resize(this: { elements: CommandListShape } & HTMLElement, …)`
 早就是同一形状，而且它内部就调 `renderedRowsOf(this)` —— **既有先例可直接照抄**，
@@ -2817,15 +2857,15 @@ src/components/business/YMFileBrowser/YMFileBrowser.vue(227,7): error TS2322: Ty
 
 本轮 8 处的旧类型里**没有一处写过 `| null`**，但只有一半需要 `!`：
 
-| 站点 | 要 `!` 吗 | 原因 |
-|---|---|---|
-| `command-custom.ts` | ✅ | `windowFrame` 本身声明为可选（`command-object.ts`） |
-| `scene-window.ts` | ✅ | `SceneShape.list` 非空 |
-| `particle-window.ts` | ✅ | `ParticleShape.head` 非空 |
-| `sprite.ts` | ✅ | `SpriteShape.canvas` 非空 |
-| `file-event-page.ts` ×2 | ❌ | 下游本来就是 `?.(…)` 可选调用 |
-| `SetNumberOperand.vue` ×2 | ❌ | 下游本来就是 `if (control && typeof …)` |
-| `Reference.vue` | ❌ | 下游本来就是 `if (!list) return;` |
+| 站点                      | 要 `!` 吗 | 原因                                                |
+| ------------------------- | --------- | --------------------------------------------------- |
+| `command-custom.ts`       | ✅        | `windowFrame` 本身声明为可选（`command-object.ts`） |
+| `scene-window.ts`         | ✅        | `SceneShape.list` 非空                              |
+| `particle-window.ts`      | ✅        | `ParticleShape.head` 非空                           |
+| `sprite.ts`               | ✅        | `SpriteShape.canvas` 非空                           |
+| `file-event-page.ts` ×2   | ❌        | 下游本来就是 `?.(…)` 可选调用                       |
+| `SetNumberOperand.vue` ×2 | ❌        | 下游本来就是 `if (control && typeof …)`             |
+| `Reference.vue`           | ❌        | 下游本来就是 `if (!list) return;`                   |
 
 ⇒ 第 73 轮那条规则应当写成：**旧断言没写 `| null` 时，非空假设必须显式化 —— 要么补 `!`，
 要么下游本来就有真正的空值检查。** 本轮正好 4 + 4 = 8，没有第三种情况。
@@ -2886,6 +2926,7 @@ CustomCommand.overview = customCommandEls.get(
 	'command-overview'
 ) as unknown as CustomCommandShape['overview'];
 ```
+
 → `registryElement<CustomCommandShape['overview']>(customCommandEls, 'command-overview')`
 
 一次改掉 **9 处**（`custom-command-window.ts` 3 · `command-custom.ts` 2 · `command-tip.ts` 2 ·
@@ -2930,15 +2971,13 @@ CustomCommand.overview = customCommandEls.get(
 `Registry.get` 返回 `| undefined`，所以旧代码在**该诚实的地方**不得不写出 `| null`：
 
 ```ts
-X.get('id') as unknown as
-	| (HTMLElement & { form?: TextForm })
-	| null
+X.get('id') as unknown as (HTMLElement & { form?: TextForm }) | null;
 ```
 
 而这个形状与 `registryElement<T>()` 的 **`T | null` 完全对齐** ⇒ 改完**一个 `!` 都不用加**：
 
 ```ts
-registryElement<HTMLElement & { form?: TextForm }>(inspectorEls, 'uiText-vue-mount')
+registryElement<HTMLElement & { form?: TextForm }>(inspectorEls, 'uiText-vue-mount');
 ```
 
 本轮一次改掉 **13 处 / 10 个文件**（`inspector/` 的 6 个 `*-vue-mount` 页、`useIfConditionSchema` 2、
@@ -2953,10 +2992,10 @@ registryElement<HTMLElement & { form?: TextForm }>(inspectorEls, 'uiText-vue-mou
 
 ### ⚠️ 同一族里又踩了两次「仪器不精确」（第 5、6 次）
 
-| 轮次 | 仪器 | 错在哪 |
-| --- | --- | --- |
-| 第 70 轮 | 行式 `grep 'Els\.get\([^)]*\)\s*as unknown as'` | **ripgrep 按行匹配，`\s*` 跨不了行** ⇒ `.get('x')` 与 `as unknown as` 分行写的站点**全部漏掉**。所以「56 处」是**低估** |
-| 第 72 轮 | 自写的分类脚本 | 用「往下找第一个以 `;` 或 `)` 结尾的行」来判定类型块结尾 ⇒ 类型里**含 `)`** 的（如 `{ setForm?: (data: X) => void }`）**当场截断**，于是把绝大多数 `| null` 站点误判成「不以 `| null` 结尾」 |
+| 轮次     | 仪器                                            | 错在哪                                                                                                                                               |
+| -------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 第 70 轮 | 行式 `grep 'Els\.get\([^)]*\)\s*as unknown as'` | **ripgrep 按行匹配，`\s*` 跨不了行** ⇒ `.get('x')` 与 `as unknown as` 分行写的站点**全部漏掉**。所以「56 处」是**低估**                              |
+| 第 72 轮 | 自写的分类脚本                                  | 用「往下找第一个以 `;` 或 `)` 结尾的行」来判定类型块结尾 ⇒ 类型里**含 `)`** 的（如 `{ setForm?: (data: X) => void }`）**当场截断**，于是把绝大多数 ` | null`站点误判成「不以` | null` 结尾」 |
 
 **两次都指向同一条**：**多行形态不能用行式工具，也不能用「找结尾」的朴素循环去量。**
 本轮最后改用**跨行正则**（`\.get\(([^)]*)\)\s*as unknown as`，`\s` 显式跨行）才拿到准数：
@@ -3026,8 +3065,7 @@ registryElement<HTMLElement & { form?: TextForm }>(inspectorEls, 'uiText-vue-mou
 ```ts
 const setForm = (
 	sceneEls.get('scene-shift') as unknown as
-		| (HTMLElement & { setForm?: (data: Partial<SceneShiftForm>) => void })
-		| null
+		(HTMLElement & { setForm?: (data: Partial<SceneShiftForm>) => void }) | null
 )?.setForm;
 ```
 
@@ -3035,12 +3073,9 @@ const setForm = (
 所以改完**一个 `!` 都不用加**：
 
 ```ts
-const setForm = (
-	registryElement<HTMLElement & { setForm?: (data: Partial<SceneShiftForm>) => void }>(
-		sceneEls,
-		'scene-shift'
-	)
-)?.setForm;
+const setForm = registryElement<
+	HTMLElement & { setForm?: (data: Partial<SceneShiftForm>) => void }
+>(sceneEls, 'scene-shift')?.setForm;
 ```
 
 已改 3 处：`scene/move-scene.ts`（1）· `local/export-language-window.ts`（2）。
@@ -3129,9 +3164,9 @@ export const registryElement = <T extends HTMLElement>(
 
 ### 一、两次错误叠加的完整链条
 
-| 轮次 | 我写了什么 | 错在哪 | 真相 |
-| --- | --- | --- | --- |
-| 第 65 轮 | 「三个引擎读的字段在 `SceneShape` 里 **0 命中**声明」 | PowerShell 里 `'^\\\\t'` → node 收到 `^\\t` → 正则匹配「反斜杠 + t」，**永不命中** | — |
+| 轮次     | 我写了什么                                              | 错在哪                                                                                                                 | 真相                                                                    |
+| -------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 第 65 轮 | 「三个引擎读的字段在 `SceneShape` 里 **0 命中**声明」   | PowerShell 里 `'^\\\\t'` → node 收到 `^\\t` → 正则匹配「反斜杠 + t」，**永不命中**                                     | —                                                                       |
 | 第 68 轮 | 「修好了：`edit` **21/22**、`camera` **29/32** 已声明」 | 检查面放大到**整个 `scene-window.ts`**，把 `export const Scene = { matrix: null, … }` 的**对象字面量键**当成了接口声明 | `SceneShape` 只有 **27 个成员**；`edit` 命中 **3**、`camera` 命中 **2** |
 
 两次都产出了一个**看起来完全合理**的数字，所以都没触发怀疑 —— 第一次是「22 个全未声明」
@@ -3236,12 +3271,12 @@ export const SceneEditEngine: Partial<SceneEditEngineShape> = {};
 
 ### 剩下的 `Scene*` 命名空间，按同一判据分流
 
-| 文件 | 字段已声明比例 | 结论 |
-| --- | --- | --- |
-| `scene-edit-engine.ts` | 21/22 | ✅ 本轮拿下 |
-| `scene-camera-engine.ts` | **29/32** | ⏭ **同样便宜**，下一轮直接做（只差 `layer` / `scaleX` / `scaleY`） |
-| `scene-marquee-engine.ts` | 5/24 | ❌ 它的接收者是 `Scene.marquee`（`HTMLElement & { [k: string]: any }`），19 个字段要另找类型 |
-| `scene-animate-engine.ts` / `scene-selection-engine.ts` / `scene-draw-engine.ts` | — | ✅ 已拿下（本地窄类型 / 无 `this`） |
+| 文件                                                                             | 字段已声明比例 | 结论                                                                                         |
+| -------------------------------------------------------------------------------- | -------------- | -------------------------------------------------------------------------------------------- |
+| `scene-edit-engine.ts`                                                           | 21/22          | ✅ 本轮拿下                                                                                  |
+| `scene-camera-engine.ts`                                                         | **29/32**      | ⏭ **同样便宜**，下一轮直接做（只差 `layer` / `scaleX` / `scaleY`）                           |
+| `scene-marquee-engine.ts`                                                        | 5/24           | ❌ 它的接收者是 `Scene.marquee`（`HTMLElement & { [k: string]: any }`），19 个字段要另找类型 |
+| `scene-animate-engine.ts` / `scene-selection-engine.ts` / `scene-draw-engine.ts` | —              | ✅ 已拿下（本地窄类型 / 无 `this`）                                                          |
 
 ### 验证（本轮）
 
@@ -3290,6 +3325,7 @@ meta: FileMeta | null                                          // 新
 ```
 
 两处「对齐已有口径」的便宜：
+
 - 唯一调用方 `inspector/file-tileset-page.ts:73` 传的本来**就是** `FileMeta | null`
   （`this.meta`，类型 `FileMeta | null`）；
 - `FileMeta` 连 `x` / `y`（`number | null`）都有 —— 而 `palette-engine.ts` 正是往
@@ -3299,10 +3335,10 @@ meta: FileMeta | null                                          // 新
 
 第 66 轮我把「`vi.mock` 字符串要跟着改」写进了记录，**但漏了另外三类同样不走类型系统的路径**：
 
-| 位置 | 症状 | 严重度 |
-| --- | --- | --- |
-| `scripts/lib/self-test.mjs:417` | 写死 `packages/editor/src/ui/ui-window.ts`，读不到 ⇒ **`migration:selftest` 红（37/38）** | **CI 门禁红** |
-| `scripts/audit-ui-slots.mjs:33` | 同一路径写死；那行 `windowSrc` **根本没被用到** ⇒ 一句纯粹的 ENOENT 地雷 | 诊断脚本崩 |
+| 位置                                               | 症状                                                                                                                | 严重度          |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | --------------- |
+| `scripts/lib/self-test.mjs:417`                    | 写死 `packages/editor/src/ui/ui-window.ts`，读不到 ⇒ **`migration:selftest` 红（37/38）**                           | **CI 门禁红**   |
+| `scripts/audit-ui-slots.mjs:33`                    | 同一路径写死；那行 `windowSrc` **根本没被用到** ⇒ 一句纯粹的 ENOENT 地雷                                            | 诊断脚本崩      |
 | `components/__tests__/bridge-integrity.spec.ts:37` | 根目录清单里写死 `'ui'`。空目录还在时 `walk()` 返回 `[]` ⇒ **用例照样绿（覆盖悄悄变小）**；空目录一删就 ENOENT ⇒ 红 | **测试假绿→红** |
 
 **最该记的是第一行的「没被复跑」**：第 66 轮我跑了 `migration:check`（绿）就以为门禁全过，
@@ -3310,6 +3346,7 @@ meta: FileMeta | null                                          // 新
 这正是「仪器瞎了，却表现为指标正常」的自家版本。
 
 **修法是让仪器只维护一份**（本仓一贯的口径纪律）：
+
 - `ui-slots.mjs` 把 `uiDirRe()` 也**导出**（此前只有 `uiWindowRel()` 是导出的）；
 - `self-test.mjs` 与 `audit-ui-slots.mjs` 一律改用 `uiWindowRel()` / `uiDirRe()`，
   **删掉各自的写死副本**；
@@ -3336,12 +3373,12 @@ ui-kit 115 文件 / 811 通过 · `bridge-integrity` 1 passed · `audit-ui-slots
 
 ### 搬迁映射
 
-| 原路径 | 新路径 |
-| --- | --- |
-| `src/ui/ui-window.ts` | `src/engine/ui/legacy/ui-window.ts` |
+| 原路径                                                                                  | 新路径                                       |
+| --------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `src/ui/ui-window.ts`                                                                   | `src/engine/ui/legacy/ui-window.ts`          |
 | `src/ui/{ui-events,ui-transform,ui-file,ui-list,ui-pointer,ui-prefab,ui-initialize}.ts` | `src/engine/ui/legacy/…`（同上，7 个域模块） |
-| `src/ui/register.ts` | `src/engine/ui/legacy/register.ts` |
-| `src/ui/element-registry.ts` | `src/engine/ui/element-registry.ts` |
+| `src/ui/register.ts`                                                                    | `src/engine/ui/legacy/register.ts`           |
+| `src/ui/element-registry.ts`                                                            | `src/engine/ui/element-registry.ts`          |
 
 **为什么 9 个文件进 `legacy/`、唯独 `element-registry.ts` 不进**：
 `uiEls` 是**活的元素注册表**（SFC 用 `:ref="registryRef(uiEls, id)"` 登记、模块按 id 取用），
@@ -3368,15 +3405,15 @@ ui-kit 115 文件 / 811 通过 · `bridge-integrity` 1 passed · `audit-ui-slots
 
 ### 验证（本轮，全部实跑）
 
-| 项 | 结果 |
-| --- | --- |
-| `tsc --noEmit -p tsconfig.strict.json` | **0** 错误 |
-| `lint` | 0 warning / 0 error |
-| `typecheck:vue` | **0 新增** |
-| `-F @yami/ui-kit test` | 115 文件 / **811 通过** |
-| `-F @yami/editor test` | 252 文件 / **2056 通过**（仅既有的 `ui-state.spec.ts` teardown flake 噪声，无失败用例） |
-| `build:vite` | **exit 0** —— 这一条对纯移动尤其关键：它才验证得了 `ui-window.ts` 里那句**动态** `import('./register.ts')` 与整张模块图 |
-| `migration:check` | 14 轴全平（baseline 已固化） |
+| 项                                     | 结果                                                                                                                    |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `tsc --noEmit -p tsconfig.strict.json` | **0** 错误                                                                                                              |
+| `lint`                                 | 0 warning / 0 error                                                                                                     |
+| `typecheck:vue`                        | **0 新增**                                                                                                              |
+| `-F @yami/ui-kit test`                 | 115 文件 / **811 通过**                                                                                                 |
+| `-F @yami/editor test`                 | 252 文件 / **2056 通过**（仅既有的 `ui-state.spec.ts` teardown flake 噪声，无失败用例）                                 |
+| `build:vite`                           | **exit 0** —— 这一条对纯移动尤其关键：它才验证得了 `ui-window.ts` 里那句**动态** `import('./register.ts')` 与整张模块图 |
+| `migration:check`                      | 14 轴全平（baseline 已固化）                                                                                            |
 
 ### 轴的变化 —— 以及「替代轴」这一轮证明了自己
 
@@ -3456,10 +3493,10 @@ type SceneAnimateThis = {
 `export const XxxEngine: Record<string, any> = {}` 后跟 `XxxEngine.foo = function (this: typeof Y)` 时 ——
 **不要**判定为承重，先**数一下这些成员一共读/写了 `Y` 的哪几个字段**：
 
-| `Y` 上被读/写的字段数 | 做法 | 实例 |
-| --- | --- | --- |
-| 个位数（≈≤10，且全是具名字段） | **本地窄类型**，一轮拿下 | `SceneAnimateThis`（5 个）、`SceneSelectionThis`（本已存在） |
-| 几十个 / 含大量写入 / 子对象本身是承重形状 | 整片留到最后 | `SceneCameraEngine`（≈30 个，含 `this.scrollLeft = …` 等**写入**）、`SceneMarqueeEngine`（`typeof Scene.marquee` 是 hatch） |
+| `Y` 上被读/写的字段数                      | 做法                     | 实例                                                                                                                        |
+| ------------------------------------------ | ------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| 个位数（≈≤10，且全是具名字段）             | **本地窄类型**，一轮拿下 | `SceneAnimateThis`（5 个）、`SceneSelectionThis`（本已存在）                                                                |
+| 几十个 / 含大量写入 / 子对象本身是承重形状 | 整片留到最后             | `SceneCameraEngine`（≈30 个，含 `this.scrollLeft = …` 等**写入**）、`SceneMarqueeEngine`（`typeof Scene.marquee` 是 hatch） |
 
 「字段数」比「`Y` 是不是承重形状」有用得多 —— 前者是**可实测的成本**，后者只是个标签。
 
@@ -3467,27 +3504,27 @@ type SceneAnimateThis = {
 
 `this.*` 的**去重字段数**（读+写），以及这些字段在 `SceneShape` 里**有没有显式声明**：
 
-| 文件 | 命名空间成员 | `this.*` 去重字段 | 其中写入 | `SceneShape` 显式声明 | 结论 |
-| --- | --- | --- | --- | --- | --- |
-| `scene-animate-engine.ts` | 8 | **5** | 0 | —（用本地窄类型） | ✅ 本轮拿下 |
-| `scene-draw-engine.ts` | 27 | **0** | 0 | — | ✅ 第 63 轮拿下 |
-| `scene-selection-engine.ts` | 10 | 24 | 0 | —（文件自带 `SceneSelectionThis`） | ✅ 第 63 轮拿下 |
-| `scene-edit-engine.ts` | 12 | **22** | 0 | **0** | ❌ 见下 |
-| `scene-camera-engine.ts` | 8 | **32** | 10 | **0** | ❌ 见下 |
-| `scene-marquee-engine.ts` | 10 | **24** | 8 | **0** | ❌ 见下 |
-| `engine/palette/palette-engine.ts` | 20 | 41 | — | — | ❌ |
-| `engine/animation/animation-window-engine.ts` | — | 28 | — | — | ❌ |
-| `engine/ui/ui-engine.ts` | 21 | 31 | — | — | ❌ |
-| `engine/particle/particle-engine.ts` | 3 | 96 | — | — | ❌ |
-| `engine/palette/auto-tile-engine.ts` | 5 | **7** | — | — | ⚠️ 见下 |
+| 文件                                          | 命名空间成员 | `this.*` 去重字段 | 其中写入 | `SceneShape` 显式声明              | 结论            |
+| --------------------------------------------- | ------------ | ----------------- | -------- | ---------------------------------- | --------------- |
+| `scene-animate-engine.ts`                     | 8            | **5**             | 0        | —（用本地窄类型）                  | ✅ 本轮拿下     |
+| `scene-draw-engine.ts`                        | 27           | **0**             | 0        | —                                  | ✅ 第 63 轮拿下 |
+| `scene-selection-engine.ts`                   | 10           | 24                | 0        | —（文件自带 `SceneSelectionThis`） | ✅ 第 63 轮拿下 |
+| `scene-edit-engine.ts`                        | 12           | **22**            | 0        | **0**                              | ❌ 见下         |
+| `scene-camera-engine.ts`                      | 8            | **32**            | 10       | **0**                              | ❌ 见下         |
+| `scene-marquee-engine.ts`                     | 10           | **24**            | 8        | **0**                              | ❌ 见下         |
+| `engine/palette/palette-engine.ts`            | 20           | 41                | —        | —                                  | ❌              |
+| `engine/animation/animation-window-engine.ts` | —            | 28                | —        | —                                  | ❌              |
+| `engine/ui/ui-engine.ts`                      | 21           | 31                | —        | —                                  | ❌              |
+| `engine/particle/particle-engine.ts`          | 3            | 96                | —        | —                                  | ❌              |
+| `engine/palette/auto-tile-engine.ts`          | 5            | **7**             | —        | —                                  | ⚠️ 见下         |
 
 **本轮最有用的一条实测**（⚠️ **本表在第 67 / 69 轮被更正过两次，见下**）：
 
-| 文件 | 读到的字段 | ~~曾记为已声明~~ | **真相：在 `SceneShape` 接口体内声明** |
-| --- | --- | --- | --- |
-| `scene-edit-engine.ts` | 22 | ~~21~~ | **3**（`marquee` `planToSave` `requestRendering`） |
-| `scene-camera-engine.ts` | 32 | ~~29~~ | **2**（`marquee` `screen`） |
-| `scene-marquee-engine.ts` | 24 | 5 | 0（它的 `this` 是 `Scene.marquee`，**不是** `Scene`） |
+| 文件                      | 读到的字段 | ~~曾记为已声明~~ | **真相：在 `SceneShape` 接口体内声明**                |
+| ------------------------- | ---------- | ---------------- | ----------------------------------------------------- |
+| `scene-edit-engine.ts`    | 22         | ~~21~~           | **3**（`marquee` `planToSave` `requestRendering`）    |
+| `scene-camera-engine.ts`  | 32         | ~~29~~           | **2**（`marquee` `screen`）                           |
+| `scene-marquee-engine.ts` | 24         | 5                | 0（它的 `this` 是 `Scene.marquee`，**不是** `Scene`） |
 
 **真相的关键**：`SceneShape` 是**一个只有 27 个成员的扁平接口**
 （`body close copy create destroy duplicate head info initialize list load loadFromConfig
@@ -3503,6 +3540,7 @@ saveToProject screen searcher toggle undo`），外加一个 `[k: string]: any` 
 但**不能**说成「字段有类型了」。
 
 要真正给字段补类型，只有两条路：
+
 1. 把字段**声明进 `SceneShape`**（或声明进一个专门的窄接口）；
 2. 像 `SceneSelectionThis` 那样**手写**窄接收者类型（12 个函数签名 + 10 个数据字段，是真活）。
 
@@ -3549,11 +3587,11 @@ saveToProject screen searcher toggle undo`），外加一个 `[k: string]: any` 
 
 ### 拿下 4 处
 
-| 站点 | 做法 | 判据 |
-| --- | --- | --- |
-| `YMParameterPane.vue:691` | `const data: Record<string, any> = {}` → `Record<string, unknown>` | 同一函数里 `result: Array<Record<string, unknown>>` 就是它的去处 ⇒ 纯多余 |
-| `YMFileHeadPane.vue:346,350`（2 处） | `Record<string, any>` → `Partial<Record<SliderViewMember, unknown>>`，名单 `as const` 派生字面量联合 | 搬的本来就只是 5 个**具名**成员；`as const` 让 `key` 是联合而不是 `string`，于是**不需要索引签名**，`any` 就没有存在理由 |
-| `YMFileBodyPane.vue:244` | `inoMap: Record<string, any>` → `Record<string, unknown>` | **全仓其余 5 处 `inoMap` 声明全都是 `Record<string, unknown>`**（`YMFileNavPane.vue:143`、`file-nav-pane-core.ts:43/138`、`YMFileBrowser.vue:347`、`directory-tree.ts:30`、`directory-object.ts:17`），只有这一处是孤例；真正的提供方 `Directory.inoMap` 也是 `unknown` ⇒ 原先的 `any` 比来源还宽 |
+| 站点                                 | 做法                                                                                                 | 判据                                                                                                                                                                                                                                                                                              |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `YMParameterPane.vue:691`            | `const data: Record<string, any> = {}` → `Record<string, unknown>`                                   | 同一函数里 `result: Array<Record<string, unknown>>` 就是它的去处 ⇒ 纯多余                                                                                                                                                                                                                         |
+| `YMFileHeadPane.vue:346,350`（2 处） | `Record<string, any>` → `Partial<Record<SliderViewMember, unknown>>`，名单 `as const` 派生字面量联合 | 搬的本来就只是 5 个**具名**成员；`as const` 让 `key` 是联合而不是 `string`，于是**不需要索引签名**，`any` 就没有存在理由                                                                                                                                                                          |
+| `YMFileBodyPane.vue:244`             | `inoMap: Record<string, any>` → `Record<string, unknown>`                                            | **全仓其余 5 处 `inoMap` 声明全都是 `Record<string, unknown>`**（`YMFileNavPane.vue:143`、`file-nav-pane-core.ts:43/138`、`YMFileBrowser.vue:347`、`directory-tree.ts:30`、`directory-object.ts:17`），只有这一处是孤例；真正的提供方 `Directory.inoMap` 也是 `unknown` ⇒ 原先的 `any` 比来源还宽 |
 
 **可复用的判据**：遇到 `Record<string, any>`，先全仓搜**同名成员**的其它声明。
 若其余声明都已经是 `unknown`/精确类型，这一处就是**孤例**，对齐即可，零设计成本。
@@ -3640,13 +3678,13 @@ TS2322 赋值不兼容……）。**根因不是元素类型写得不对，是 `
 
 ### 清掉的 5 处（逐站点理由，均可复核）
 
-| # | 站点 | 为什么是白捡 |
-| --- | --- | --- |
-| 1 | `ui-kit/.../type-registry.ts:58` `types: Record<string, any>` | `get()` 的返回类型**本来就叫** `RegistryEntry`，`register()` 的 40 处调用**全部**传 `{ component, create }`。改成 `Record<string, RegistryEntry>` 后 `register(config: unknown)` 同步收紧为 `RegistryEntry`；**外部零调用方**（`.types[` 全仓只有本文件 2 处，且只用于 `Object.keys`） |
-| 2 | `ui-kit/utils/radio-proxy.ts:95` `value as string \| number \| boolean \| Record<string, any> \| null` | **纯多余**：`dataValue` 的声明就是 `unknown`，`value` 也是 `unknown` ⇒ `unknown` 直接可赋。那串断言既无约束力，又是该文件唯一的 `any` 逃生口。删掉即可 |
-| 3 | `stores/ui.ts:538` `makeForwarder(key, resolve: () => Record<string, any> \| null)` | **形参与调用方口径不一致**：两个调用点本来写的就是 `() => UI as Record<string, unknown> \| null`。改成 `unknown` 后函数体在 `typeof fn !== 'function'` 处正常收窄，无需新断言 |
-| 4 | `module/eslints.ts:284` `prototype as HTMLElement & Record<string, any>` | 为给 `HTMLElement` 挂一个新方法而临时造索引签名。真实契约**只有一个方法**，且消费方早已各自声明（`commands/schema.ts:45`、`composables/useCommandState.ts:6`、`commands/command-tip.ts:61`）⇒ 提成具名 `SelectionPositionHost`，单次断言（不增 `unknown-casts`） |
-| 5 | `palette/tile-frame-generator.ts:17` `FrameGenerator: Record<string, any>` | 自包含单例，成员就 6 个且**全部在本文件挂载**。`this.callback` / `this.windowClosed` 两处补 `!`（类型层，运行期路径上必已赋值） |
+| #   | 站点                                                                                                   | 为什么是白捡                                                                                                                                                                                                                                                                           |
+| --- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `ui-kit/.../type-registry.ts:58` `types: Record<string, any>`                                          | `get()` 的返回类型**本来就叫** `RegistryEntry`，`register()` 的 40 处调用**全部**传 `{ component, create }`。改成 `Record<string, RegistryEntry>` 后 `register(config: unknown)` 同步收紧为 `RegistryEntry`；**外部零调用方**（`.types[` 全仓只有本文件 2 处，且只用于 `Object.keys`） |
+| 2   | `ui-kit/utils/radio-proxy.ts:95` `value as string \| number \| boolean \| Record<string, any> \| null` | **纯多余**：`dataValue` 的声明就是 `unknown`，`value` 也是 `unknown` ⇒ `unknown` 直接可赋。那串断言既无约束力，又是该文件唯一的 `any` 逃生口。删掉即可                                                                                                                                 |
+| 3   | `stores/ui.ts:538` `makeForwarder(key, resolve: () => Record<string, any> \| null)`                    | **形参与调用方口径不一致**：两个调用点本来写的就是 `() => UI as Record<string, unknown> \| null`。改成 `unknown` 后函数体在 `typeof fn !== 'function'` 处正常收窄，无需新断言                                                                                                          |
+| 4   | `module/eslints.ts:284` `prototype as HTMLElement & Record<string, any>`                               | 为给 `HTMLElement` 挂一个新方法而临时造索引签名。真实契约**只有一个方法**，且消费方早已各自声明（`commands/schema.ts:45`、`composables/useCommandState.ts:6`、`commands/command-tip.ts:61`）⇒ 提成具名 `SelectionPositionHost`，单次断言（不增 `unknown-casts`）                       |
+| 5   | `palette/tile-frame-generator.ts:17` `FrameGenerator: Record<string, any>`                             | 自包含单例，成员就 6 个且**全部在本文件挂载**。`this.callback` / `this.windowClosed` 两处补 `!`（类型层，运行期路径上必已赋值）                                                                                                                                                        |
 
 第 5 处顺带说明一个判据：**「成员是否全部在本文件挂载」决定枚举成本**。
 `FrameGenerator`（6 个，全在本文件）一轮拿下；而下面那个反例（9 个 engine 命名空间）全部挂在
@@ -3676,7 +3714,7 @@ TS2322 赋值不兼容……）。**根因不是元素类型写得不对，是 `
 所以既能改成对象字面量（类型全部由导入推断、零手写签名），又**不需要**动位置：
 
 ```ts
-export const SceneDrawEngine = { drawScene, drawBackgrounds, /* …27 个… */ };
+export const SceneDrawEngine = { drawScene, drawBackgrounds /* …27 个… */ };
 ```
 
 唯一的消费方 `scene-draw.ts` 是**逐条镜像**到 `Scene` 上（`Scene.drawScene = …`，30 行），
@@ -3692,12 +3730,12 @@ export const SceneDrawEngine = { drawScene, drawBackgrounds, /* …27 个… */ 
 **这一处推翻了上一节那句「`Scene*` 全部被 `SceneShape` 挡住」的概括** —— 真正的判别式是
 **该文件有没有自己声明接收者类型**：
 
-| 文件 | 成员的 `this` | 结果 |
-| --- | --- | --- |
-| `scene-selection-engine.ts` | `SceneSelectionThis`（**本文件声明**，按读点枚举） | ✅ 干净拿下 |
-| `scene-draw-engine.ts` | 无 `this`（纯函数引用） | ✅ 已拿下 |
-| `scene-animate-engine.ts` / `scene-camera-engine.ts` / `scene-edit-engine.ts` | `this: typeof Scene` | ❌ 需 `SceneShape` |
-| `scene-marquee-engine.ts` | `this: typeof Scene.marquee`（`HTMLElement & { [k: string]: any }`） | ❌ 同上 |
+| 文件                                                                          | 成员的 `this`                                                        | 结果               |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------ |
+| `scene-selection-engine.ts`                                                   | `SceneSelectionThis`（**本文件声明**，按读点枚举）                   | ✅ 干净拿下        |
+| `scene-draw-engine.ts`                                                        | 无 `this`（纯函数引用）                                              | ✅ 已拿下          |
+| `scene-animate-engine.ts` / `scene-camera-engine.ts` / `scene-edit-engine.ts` | `this: typeof Scene`                                                 | ❌ 需 `SceneShape` |
+| `scene-marquee-engine.ts`                                                     | `this: typeof Scene.marquee`（`HTMLElement & { [k: string]: any }`） | ❌ 同上            |
 
 做法与本轮 `FrameGenerator` 同构：`Partial<SceneSelectionEngineShape>`（**如实描述**
 「对象在下面按域逐个挂载，`{}` 时确实一个成员都没有」，不用 `{} as Shape` 把它盖掉）。
@@ -3729,8 +3767,8 @@ export const SceneDrawEngine = { drawScene, drawBackgrounds, /* …27 个… */ 
 零手写接口），本文件**自己**通过，但 `particle-initialize.ts` 一处立刻红：
 
 ```ts
-Particle.Emitter = ParticleEngine.Emitter;   // ← 137-139，模块求值期执行
-Particle.Layer   = ParticleEngine.Layer;
+Particle.Emitter = ParticleEngine.Emitter; // ← 137-139，模块求值期执行
+Particle.Layer = ParticleEngine.Layer;
 Particle.Element = ParticleEngine.Element;
 ```
 
@@ -3777,22 +3815,22 @@ node scripts/any-hatch-probe.mjs
 
 23 处独占一行站点逐文件实测（报错数含测试侧连带）：
 
-| 文件 | 独占一行站点 | 删后 `tsc` 报错 | 首条报错点名 |
-| --- | --- | --- | --- |
-| `scene/scene-window.ts` | 1 | **1446** | `MockedObject<SceneShape>` 缺 `target` / `meta` |
-| `animation/animation-window.ts` | 2 | **1191** | `AnimationShape` 缺 `requestRefreshingList` / `switchMark` / `requestRendering` |
-| `types/shapes.ts` | 1 | **889** | `DynamicShape` 缺 `fileAnimation` / `open` / `close` |
-| `data/data-object.ts` | 1 | **528** | `DataModule` 缺 `animations` / `attribute` |
-| `ui/ui-window.ts` | 2 | **520** | `UIShape` 缺 `drawBackground` / `drawElements`（`TS2551` 还提示 "Did you mean 'background'?"） |
-| `commands/schema.ts` | 2 | 110 | `TS7053` 索引取键 + `CommandSchema` 缺 `colorizeCodeLines` |
-| `particle/particle-window.ts` | 3 | 71 | `ParticleEmitterShape` 缺 `hasArea` / `outerLeft` / `outerTop` / `outerRight` |
-| `composables/useCommandParse.ts` | 3 | 70 | `CommandObjectShape` 缺 `eventId` |
-| `stores/ui.ts` | 1 | 27 | `UINodeShape` 缺 `presetId` / `instances` / `transform` |
-| `engine/ui/element-base.ts` | 2 | 22 | `UIElementShape` 缺 `connect` / `disconnect` / `draw` / `resize` |
-| `engine/particle/particle-engine.ts` | 3 | 19 | `ParticleLayerData` 缺 `sort` / `blend` / `color` |
-| `engine/ui/ui-engine.ts` | 1 | 16 | `UIShape` 缺 `planToSave` / `requestRendering` |
-| `engine/ui/element-classes.ts` | 1 | 7 | `UIElementInstance` 缺 `tryUpdateReferenceElements` / `addReference` |
-| **合计** | **23** | — | **可白捡 0 处** |
+| 文件                                 | 独占一行站点 | 删后 `tsc` 报错 | 首条报错点名                                                                                   |
+| ------------------------------------ | ------------ | --------------- | ---------------------------------------------------------------------------------------------- |
+| `scene/scene-window.ts`              | 1            | **1446**        | `MockedObject<SceneShape>` 缺 `target` / `meta`                                                |
+| `animation/animation-window.ts`      | 2            | **1191**        | `AnimationShape` 缺 `requestRefreshingList` / `switchMark` / `requestRendering`                |
+| `types/shapes.ts`                    | 1            | **889**         | `DynamicShape` 缺 `fileAnimation` / `open` / `close`                                           |
+| `data/data-object.ts`                | 1            | **528**         | `DataModule` 缺 `animations` / `attribute`                                                     |
+| `ui/ui-window.ts`                    | 2            | **520**         | `UIShape` 缺 `drawBackground` / `drawElements`（`TS2551` 还提示 "Did you mean 'background'?"） |
+| `commands/schema.ts`                 | 2            | 110             | `TS7053` 索引取键 + `CommandSchema` 缺 `colorizeCodeLines`                                     |
+| `particle/particle-window.ts`        | 3            | 71              | `ParticleEmitterShape` 缺 `hasArea` / `outerLeft` / `outerTop` / `outerRight`                  |
+| `composables/useCommandParse.ts`     | 3            | 70              | `CommandObjectShape` 缺 `eventId`                                                              |
+| `stores/ui.ts`                       | 1            | 27              | `UINodeShape` 缺 `presetId` / `instances` / `transform`                                        |
+| `engine/ui/element-base.ts`          | 2            | 22              | `UIElementShape` 缺 `connect` / `disconnect` / `draw` / `resize`                               |
+| `engine/particle/particle-engine.ts` | 3            | 19              | `ParticleLayerData` 缺 `sort` / `blend` / `color`                                              |
+| `engine/ui/ui-engine.ts`             | 1            | 16              | `UIShape` 缺 `planToSave` / `requestRendering`                                                 |
+| `engine/ui/element-classes.ts`       | 1            | 7               | `UIElementInstance` 缺 `tryUpdateReferenceElements` / `addReference`                           |
+| **合计**                             | **23**       | —               | **可白捡 0 处**                                                                                |
 
 **结论（写给下一批）**：`any-hatches` 剩下的 32 处**没有任何一处可以靠「只删签名」拿下**。
 白捡机制已经榨干 —— 第 38–61 轮能白捡的都捡完了，**剩下 100% 是「逐成员枚举进具名接口」的活**，
@@ -3840,18 +3878,17 @@ node scripts/any-hatch-probe.mjs
 **结果**：`any-hatches` **33 → 32 处**；产物与 HEAD 逐字节相同；`tsc` 0、`typecheck:vue` 0 new、
 `lint` 0/0，基线已固化。
 
-
 ## 第 59 轮（续轮）：`EnumModule` 清 1 处 —— 34 → 33（先用新工具定位，再按名字找大括号）
 
 第 58 轮新增的 `scripts/any-hatch-inventory.mjs` 先给出归属：`enum-window.ts:116` → 接口 `EnumModule`。
 探针（删签名 → 一次 `tsc` → 按「类型.成员」去重）只有 **4 个成员 / 7 条报错**：
 
-| 成员 | 类型 | 依据 |
-| --- | --- | --- |
-| `mode` | `string` | 测试里 `Enum.mode = 'string'` / `store.state.mode = 'normal'` |
-| `data` | `unknown[] | null` | 桥接用例 `Enum.data = [{ id: 'e1' }]`、`Enum.data = null`；元素形状交给 store（那里才是真源） |
-| `changed` | `boolean` | `Enum.changed = true` |
-| `idMap` | `Record<string, unknown> | null` | `monkey-patches.ts` 的 `Enum.idMap![copy.id]` 判重 |
+| 成员      | 类型                     | 依据                                                          |
+| --------- | ------------------------ | ------------------------------------------------------------- |
+| `mode`    | `string`                 | 测试里 `Enum.mode = 'string'` / `store.state.mode = 'normal'` |
+| `data`    | `unknown[]               | null`                                                         | 桥接用例 `Enum.data = [{ id: 'e1' }]`、`Enum.data = null`；元素形状交给 store（那里才是真源） |
+| `changed` | `boolean`                | `Enum.changed = true`                                         |
+| `idMap`   | `Record<string, unknown> | null`                                                         | `monkey-patches.ts` 的 `Enum.idMap![copy.id]` 判重                                            |
 
 ⚠️ **又一个小坑（这次是脚本自己的）**：探针已经把签名删掉了，我却让「找签名行再替换」的脚本去定位 ——
 自然找不到（`no hatch`）。改用第 54 轮那条规矩就一次过：**按接口名找到声明行，再往下找第一个 `}`**，
@@ -3865,10 +3902,10 @@ node scripts/any-hatch-probe.mjs
 第 54 轮那条教训（按**接口名**定位、别按行号映射）本轮直接用上了：`ParticleElementLayer` 正是
 `export interface` 声明的那一个（第 54 轮踩空就是漏了它们）。补 5 个成员：
 
-| 成员 | 类型 | 依据 |
-| --- | --- | --- |
-| `unitWidth` / `unitHeight` / `textureWidth` / `textureHeight` | `number` | 读点在渲染循环（`const sw = layer.unitWidth`），赋点 `this.unitWidth = Math.floor(texture.width / data.sprite.hframes)` |
-| `easing` | `{ ease(t: number): number }` | 读点只有 `easing.ease(this.elapsed / this.lifetime)`。⚠️ 这里**不能**写 `Easing`：`data/transition-window.ts` 的 `Easing` 是 `export const Easing = EasingBase as …`（**值**，不是类型），所以按结构写；另外它也不该写成 `Float32Array`（同名的 `easing` 在 `ParticleLayerShape` 上才是 `Float32Array | null`，两个接口的 `easing` **不是一回事** —— 一开始照抄就吃了 `Property 'ease' does not exist on type 'Float32Array'`） |
+| 成员                                                          | 类型                          | 依据                                                                                                                                                                                                                                                                                                  |
+| ------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `unitWidth` / `unitHeight` / `textureWidth` / `textureHeight` | `number`                      | 读点在渲染循环（`const sw = layer.unitWidth`），赋点 `this.unitWidth = Math.floor(texture.width / data.sprite.hframes)`                                                                                                                                                                               |
+| `easing`                                                      | `{ ease(t: number): number }` | 读点只有 `easing.ease(this.elapsed / this.lifetime)`。⚠️ 这里**不能**写 `Easing`：`data/transition-window.ts` 的 `Easing` 是 `export const Easing = EasingBase as …`（**值**，不是类型），所以按结构写；另外它也不该写成 `Float32Array`（同名的 `easing` 在 `ParticleLayerShape` 上才是 `Float32Array | null`，两个接口的 `easing`**不是一回事** —— 一开始照抄就吃了`Property 'ease' does not exist on type 'Float32Array'`） |
 
 **结果**：`any-hatches` **35 → 34 处**（`particle-engine.ts` 从 8 处清到 **4 处**（第 53 轮内联 `static stage`、第 54 轮 `ParticleLayerShape` + `ParticleElementRef`、第 55 轮 `ParticleElementLayer`），只剩嵌套形状的
 `ParticleLayerData`(color/sprite) 与 `ParticleElementLayerData`(area/color)）。产物与 HEAD **逐字节相同**；
@@ -3881,10 +3918,10 @@ node scripts/any-hatch-probe.mjs
 
 接着第 53 轮在同一文件里推进，这次挑**形状自足**的那两个接口：
 
-| 接口 | 处理 |
-| --- | --- |
+| 接口                 | 处理                                                                                                                                                                               |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ParticleLayerShape` | 6 个方法全部来自引擎自身装配（读点就是 `layer.emitParticles(dt)` / `updateParticles(dt)`（返回计数）/ `draw(opacity)` / `updateEasing()` / `clear()` / `destroy()`）⇒ 逐个写出签名 |
-| `ParticleElementRef` | 索引签名删掉后没有任何成员报错 ⇒ 纯属没人按运行时键读，直接删（连同上方的豁免注释） |
+| `ParticleElementRef` | 索引签名删掉后没有任何成员报错 ⇒ 纯属没人按运行时键读，直接删（连同上方的豁免注释）                                                                                                |
 
 留着的三处仍是**嵌套形状**（`ParticleLayerData` 的 `color` / `sprite`、`ParticleElementLayerData` 的
 `area` / `color`、`ParticleElementLayer`），按第 53 轮的判定不做。
@@ -3927,11 +3964,11 @@ node scripts/any-hatch-probe.mjs
 第 50 轮量到这个文件级联「约 24」就搁下了。本轮先用**探针**把范围收窄（删三处签名 → 一次 `tsc` →
 按 `类型.成员` 去重），结果只有 **6 个成员**、8 条报错：
 
-| 形状 | 需要补的成员 |
-| --- | --- |
-| `AnimationData` | **一个都不用补** ⇒ 索引签名纯粹没人按运行时键读，直接删 |
-| `PlayerLayer` | `angle: string`（`switch (layer.angle)`）· `sprite: string`（当 key 用）· `blend: string`（`setBlendMode`）· `light: string`（`Scene.showLight ? layer.light : 'raw'`）· `particleId: string`（当 guid 用） |
-| `PlayerContext` | `tint?: Int16Array` —— 读点是**惰性初始化**（`let tint = this.tint; if (tint === undefined) tint = this.tint = new Int16Array(4)`，见 L787-790）⇒ 必须**可选**，否则上下文对象字面量（L668）立刻 TS2741 |
+| 形状            | 需要补的成员                                                                                                                                                                                                |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AnimationData` | **一个都不用补** ⇒ 索引签名纯粹没人按运行时键读，直接删                                                                                                                                                     |
+| `PlayerLayer`   | `angle: string`（`switch (layer.angle)`）· `sprite: string`（当 key 用）· `blend: string`（`setBlendMode`）· `light: string`（`Scene.showLight ? layer.light : 'raw'`）· `particleId: string`（当 guid 用） |
+| `PlayerContext` | `tint?: Int16Array` —— 读点是**惰性初始化**（`let tint = this.tint; if (tint === undefined) tint = this.tint = new Int16Array(4)`，见 L787-790）⇒ 必须**可选**，否则上下文对象字面量（L668）立刻 TS2741     |
 
 两个过程性收获：
 
@@ -3969,12 +4006,12 @@ node scripts/any-hatch-probe.mjs
 沿用第 49 轮的批量探针（`engine/ui/` 那两个能删，是因为**没人按运行时键读**），本轮一次删四个文件的签名，
 按报错里提到的**形状名**归因：
 
-| 文件 | 形状 | 级联 | 判定 |
-| --- | --- | --- | --- |
-| `particle/particle-window.ts` | `ParticleEmitterShape` | **71** | 承重（发射器字段读点遍布 `particle-motion.ts` / `animation-motion.ts` …） |
-| `composables/useCommandParse.ts` | `CommandObjectShape` | **67** | 承重（`parseVariable` / `parseActor` … 一族都读 `.type` / `.key` …） |
-| `composables/useIfConditionSchema.ts` | `IfConditionData` + `IfConditionOperandShape` | **18 + 33** | 承重（条件数据的「按 `type` 分派」字段，第 46 轮已分析过改法） |
-| `engine/animation/animation-player.ts` | `PlayerLayer` / `PlayerContext` | **约 24** | 承重（`angle` / `sprite` / `tint` / `blend` / `light` 都是运行时挂上去的） |
+| 文件                                   | 形状                                          | 级联        | 判定                                                                       |
+| -------------------------------------- | --------------------------------------------- | ----------- | -------------------------------------------------------------------------- |
+| `particle/particle-window.ts`          | `ParticleEmitterShape`                        | **71**      | 承重（发射器字段读点遍布 `particle-motion.ts` / `animation-motion.ts` …）  |
+| `composables/useCommandParse.ts`       | `CommandObjectShape`                          | **67**      | 承重（`parseVariable` / `parseActor` … 一族都读 `.type` / `.key` …）       |
+| `composables/useIfConditionSchema.ts`  | `IfConditionData` + `IfConditionOperandShape` | **18 + 33** | 承重（条件数据的「按 `type` 分派」字段，第 46 轮已分析过改法）             |
+| `engine/animation/animation-player.ts` | `PlayerLayer` / `PlayerContext`               | **约 24**   | 承重（`angle` / `sprite` / `tint` / `blend` / `light` 都是运行时挂上去的） |
 
 四处**全部回退**，本轮没有新增落地。但过程里有一条值得单独记下来的观察：
 
@@ -3992,12 +4029,12 @@ node scripts/any-hatch-probe.mjs
 `engine/ui/` 下四个单点文件一起删签名、一次 `tsc` 归因（第 41 轮的批量法；脚本逐站点打印 before/after，
 遵守第 46 轮的规矩）：
 
-| 文件 | 形状 | 结果 |
-| --- | --- | --- |
-| `window-element.ts` | `WindowProxyShape` | ✅ 干净（成员都声明了，没人按动态键读）⇒ **保留删除** |
-| `root-element.ts` | `PrefabElementShape` | ✅ 干净 ⇒ **保留删除** |
-| `element-classes.ts` | `UIElementInstance` | ✗ 7 处：`tryUpdateReferenceElements`×3 / `addReference` / `draw` / `resize`×2 ⇒ 回退 |
-| `ui-engine.ts` | `UIShape` | ✗ 约 16 处：`planToSave`×4 / `requestRendering`×4 / `hover`×3 / `renderingFunction`×2 / `controlPointTexture` / `marquee` / `updateControlPoints` ⇒ 回退 |
+| 文件                 | 形状                 | 结果                                                                                                                                                     |
+| -------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `window-element.ts`  | `WindowProxyShape`   | ✅ 干净（成员都声明了，没人按动态键读）⇒ **保留删除**                                                                                                    |
+| `root-element.ts`    | `PrefabElementShape` | ✅ 干净 ⇒ **保留删除**                                                                                                                                   |
+| `element-classes.ts` | `UIElementInstance`  | ✗ 7 处：`tryUpdateReferenceElements`×3 / `addReference` / `draw` / `resize`×2 ⇒ 回退                                                                     |
+| `ui-engine.ts`       | `UIShape`            | ✗ 约 16 处：`planToSave`×4 / `requestRendering`×4 / `hover`×3 / `renderingFunction`×2 / `controlPointTexture` / `marquee` / `updateControlPoints` ⇒ 回退 |
 
 **结果**：`any-hatches` **45 → 43 处、19 → 17 文件**。保留下来的两处删除，esbuild 产物与 HEAD
 **逐字节相同**（纯类型层）；`tsc` 0、`typecheck:vue` 0 new、`lint` 1603 文件 0/0，基线已固化。
@@ -4117,11 +4154,11 @@ save/restore/select/getTiles/pointerevent/info`），但**整个对象是 `as an
 
 用可信的那版脚本做过三组实验，全部回退：
 
-| 批次 | 站点 | 结果 |
-| --- | --- | --- |
-| 除 `scene-window.ts` / `YMParameterPane.vue` / `types/shapes.ts` 外的 17 个文件 | 37 | 数百个错误：`AnimationShape`(27+24+17+16+15+15+13+12…) / `UIShape`(`ui-list.ts`、`ui-file.ts`) / `ElementShape` 派生类 … 全部承重 |
-| `commands/schema.ts` + `types/history.ts` + `element-classes.ts` + `root-element.ts` | 5 | `CommandSchema`/`CommandSchemaConfig` 的缺口外溢到 **约 60 个** `use*CommandSchema.ts` + 测试；`HistoryData` 缺 4 个成员；UI 元素基类缺口外溢到 `ui-engine.ts`/`element-base.ts`/`reference-element.ts` |
-| 只删 `types/shapes.ts`（`DynamicShape`） | 1 | **上千个**错误（`Animation`/`Scene`/`Inspector`/`Window` 全靠它动态挂字段）——第 41 轮「990 级联」的结论仍然成立 |
+| 批次                                                                                 | 站点 | 结果                                                                                                                                                                                                    |
+| ------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 除 `scene-window.ts` / `YMParameterPane.vue` / `types/shapes.ts` 外的 17 个文件      | 37   | 数百个错误：`AnimationShape`(27+24+17+16+15+15+13+12…) / `UIShape`(`ui-list.ts`、`ui-file.ts`) / `ElementShape` 派生类 … 全部承重                                                                       |
+| `commands/schema.ts` + `types/history.ts` + `element-classes.ts` + `root-element.ts` | 5    | `CommandSchema`/`CommandSchemaConfig` 的缺口外溢到 **约 60 个** `use*CommandSchema.ts` + 测试；`HistoryData` 缺 4 个成员；UI 元素基类缺口外溢到 `ui-engine.ts`/`element-base.ts`/`reference-element.ts` |
+| 只删 `types/shapes.ts`（`DynamicShape`）                                             | 1    | **上千个**错误（`Animation`/`Scene`/`Inspector`/`Window` 全靠它动态挂字段）——第 41 轮「990 级联」的结论仍然成立                                                                                         |
 
 ⇒ 结论：**「删签名 → tsc → 留下干净的」这条路已经走到头**，剩下的一律是逐族枚举。
 这轮最大的产出就是**否掉了这条捷径**，免得后面几轮反复试。
@@ -4149,7 +4186,7 @@ delete (data.swap as { commands: Record<string, unknown> }).commands.symbol;
 
 - **`Scene.marquee`**（`scene/scene-window.ts` L75/L164 两处）：方法由 `scene/scene-marquee.ts`
   在运行时从 `SceneMarqueeEngine` 挂上（`save/switch/resize/clear/select/selectInPencilMode/
-  selectInRectMode/selectInCopyMode/selectInObjectMode/getTiles`）⇒ 槽位初值是 `null`，故都应是
+selectInRectMode/selectInCopyMode/selectInObjectMode/getTiles`）⇒ 槽位初值是 `null`，故都应是
   `((…) => …) | null`；`key` 是**元素数据**（`scene-window.ts` 的 `marqueeData`/WeakMap，类型 `string | null`）；
   `visible/x/y/width/height/background*Color*/border*Color*` 是 `YMMarqueeArea.vue` 的**组件实例属性**；
   数据字段 `offsetX/offsetY/tilesetMap/tiles/saveData/terrain/previewTiles/pointerevent`。
@@ -4159,9 +4196,9 @@ delete (data.swap as { commands: Record<string, unknown> }).commands.symbol;
   `addCloseButton()`、`addKeydownFilter()`（`scene-window.ts:597/598`）。
 - **`Scene.list`**（L80/L470）：`SceneListExtensions` 已覆盖约 13 个成员，索引签名兜住的是另外约 19 个 ——
   `addNodeTo / canSwitchState / createFolder / createTilemapShortcutItems / data / deleteNode / duplicate /
-  generateUniqueName / getItemByProperties / read / resize / restoreSelection / saveScroll / saveSelection /
-  scrollTop / searchNodesDebounced / select / selectDefaultCommand / unselect / update / updateFolderState /
-  updateItemName / updateNodeElement`（仓内 grep 实测）。
+generateUniqueName / getItemByProperties / read / resize / restoreSelection / saveScroll / saveSelection /
+scrollTop / searchNodesDebounced / select / selectDefaultCommand / unselect / update / updateFolderState /
+updateItemName / updateNodeElement`（仓内 grep 实测）。
 - **`YMParameterPane.vue`**（3 处）：`.vue` 对 `tsc` 不可见 ⇒ 只能靠 `typecheck:vue` 量，
   按 `attachStateAccessors` 挂上去的字段清单枚举（第 39 轮的既有结论）。
 
@@ -4170,13 +4207,13 @@ delete (data.swap as { commands: Record<string, unknown> }).commands.symbol;
 第 44 轮立的口径（**成员清单就在该文件自己的对象字面量里**）让这一族变成机械活。
 本轮把剩下 5 个一次做完，`inspector/` 里再没有 `[k: string]: any`：
 
-| 文件 | 成员 | 类型上的关键决定 |
-| --- | --- | --- |
-| `file-script-page.ts` | 10 | `create: () => string`；`open` 是 **async** ⇒ `Promise<void>` ⇒ 立刻被 oxlint 的 `no-floating-promises` 抓住 ⇒ 调用点加 `void`（见下「产物差异」） |
-| `file-font-page.ts` | 11 | `previews: YamiElement[] & { dpr?: number }` —— 列表由 Vue 页的 `registryElements` 赋值，`dpr` 是运行时挂上去的 |
-| `file-actor-page.ts` | 14 | 四个列表描述符共用 `ActorListDescriptor`（用**方法语法**换双变检查，`parse(item: never)` 兼容各不相同的入参）；`inventory` 写成 `ActorListDescriptor & { loadTypeItems(): void }` 而**不是**可选成员 —— 否则调用点只能写 `?.()`，产物会跟着变 |
-| `element-page.ts` | 21 | `_elementInitialized` / `_openRetry` 声明为**可选**：它们不在字面量初值里，声明必填就得往字面量加初值（那是运行时改动）；`owner` 复用 `UIOwnerShape`；`UIElementData` 补 `id: string` 才过得了 `ScriptListInterface` 的 `{ target?: ScriptListItem }` 门 |
-| `file-audio-page.ts` | 36 | 三个具名别名描述「运行时挂字段」：`AudioWaveformPromise`（带 `canceled`）、`AudioProgressElement`（带 `percent`）、`AudioPointerElement`（带 `time`）；`dataArray: Uint8Array<ArrayBuffer>` / `intervals: Float64Array` / `intensities: Float64Array & { index: number }` 全部**照 Vue 页的真实赋值写**（`new Uint8Array(analyser.frequencyBinCount)`、`new Float64Array(64)`、`.index = 0`），不是猜的 |
+| 文件                  | 成员 | 类型上的关键决定                                                                                                                                                                                                                                                                                                                                                                                        |
+| --------------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `file-script-page.ts` | 10   | `create: () => string`；`open` 是 **async** ⇒ `Promise<void>` ⇒ 立刻被 oxlint 的 `no-floating-promises` 抓住 ⇒ 调用点加 `void`（见下「产物差异」）                                                                                                                                                                                                                                                      |
+| `file-font-page.ts`   | 11   | `previews: YamiElement[] & { dpr?: number }` —— 列表由 Vue 页的 `registryElements` 赋值，`dpr` 是运行时挂上去的                                                                                                                                                                                                                                                                                         |
+| `file-actor-page.ts`  | 14   | 四个列表描述符共用 `ActorListDescriptor`（用**方法语法**换双变检查，`parse(item: never)` 兼容各不相同的入参）；`inventory` 写成 `ActorListDescriptor & { loadTypeItems(): void }` 而**不是**可选成员 —— 否则调用点只能写 `?.()`，产物会跟着变                                                                                                                                                           |
+| `element-page.ts`     | 21   | `_elementInitialized` / `_openRetry` 声明为**可选**：它们不在字面量初值里，声明必填就得往字面量加初值（那是运行时改动）；`owner` 复用 `UIOwnerShape`；`UIElementData` 补 `id: string` 才过得了 `ScriptListInterface` 的 `{ target?: ScriptListItem }` 门                                                                                                                                                |
+| `file-audio-page.ts`  | 36   | 三个具名别名描述「运行时挂字段」：`AudioWaveformPromise`（带 `canceled`）、`AudioProgressElement`（带 `percent`）、`AudioPointerElement`（带 `time`）；`dataArray: Uint8Array<ArrayBuffer>` / `intervals: Float64Array` / `intensities: Float64Array & { index: number }` 全部**照 Vue 页的真实赋值写**（`new Uint8Array(analyser.frequencyBinCount)`、`new Float64Array(64)`、`.index = 0`），不是猜的 |
 
 顺带改了一处**共享类型**：`script-list.ts` 的 `editor: { target?: ScriptListItem }` 补 `| null` ——
 页面的 `target` 在关闭时就是 `null`，原来的声明与真实调用方不符（第 44 轮口径的推论：**枚举之后，
@@ -4214,31 +4251,31 @@ delete (data.swap as { commands: Record<string, unknown> }).commands.symbol;
 
 1. **`HTMLElement & { [k: string]: any }` 一族（8 处 / 2 文件）**——现在这是**唯一一类「形状已知但没做」**的：
    `scene/scene-window.ts`（`marquee` L75 / `searcher` L78 / `list` L80、L164 的 `{} as unknown as …` 兜底、L470）
-   + `ui-kit` 的 `YMParameterPane.vue`（L164 / L201 / L970）。
-   照同文件 `HTMLElement & SceneListExtensions` 的先例：声明**具名扩展接口**，把运行时挂的字段枚举进去。
+    - `ui-kit` 的 `YMParameterPane.vue`（L164 / L201 / L970）。
+      照同文件 `HTMLElement & SceneListExtensions` 的先例：声明**具名扩展接口**，把运行时挂的字段枚举进去。
 2. **承重核心（必须与读侧分批改）**：`types/shapes.ts`(990) / `data/data-object.ts`(600) /
    `scene/scene-window.ts`(296) / `particle/particle-window.ts`(71) / `engine/particle/particle-engine.ts`(62) /
    `types/history.ts`(31) / `stores/ui.ts` + `engine/ui/ui-engine.ts`。
 3. **口径缺口仍待决定**：`Record<string, any>`（35 处 / 31 文件）是否纳入本轴；
    以及上面三处「真问题」要不要修（都需要一次实机回归）。
-   > 〔第 62 轮补注〕`Record<string, any>` **已决定纳入**（见文末交接节）；三处「真问题」仍待决定。
+    > 〔第 62 轮补注〕`Record<string, any>` **已决定纳入**（见文末交接节）；三处「真问题」仍待决定。
 
 ## 第 44 轮（续轮）：`any-hatches` 56 → 52 —— 四个 inspector 单点，和一条被实测推翻的假设
 
 本轮先把**剩下所有「单点」文件一次性删签名、跑一次 `tsc` 归因**（第 41 轮用过的批量法），
 再按级联来源分三类：能枚举的当场做、承重的回退、形状待查的记进工作单。
 
-| 文件（删签名后） | 级联 | 判定 / 处理 |
-| --- | --- | --- |
-| `inspector/file-audio-page.ts` | 80 | 见「下一轮工作单」第 1 条 |
-| `inspector/element-page.ts` | 50 | 同上 |
-| `inspector/file-actor-page.ts` | 26 | 同上 |
-| `inspector/file-font-page.ts` | 26 | 同上 |
-| `inspector/file-script-page.ts` | 23 | 同上 |
-| `inspector/file-scene-page.ts` | 15 | ✅ 本轮枚举（**级联数被高估**，见 ①） |
-| `inspector/element-container-page.ts` | 0 | ✅ 本轮枚举 |
-| `inspector/element-button-page.ts` | 0 | ✅ 本轮枚举 |
-| `inspector/file-trigger-page.ts` | 1 | ✅ 本轮处理（`any` → `unknown`） |
+| 文件（删签名后）                      | 级联 | 判定 / 处理                           |
+| ------------------------------------- | ---- | ------------------------------------- |
+| `inspector/file-audio-page.ts`        | 80   | 见「下一轮工作单」第 1 条             |
+| `inspector/element-page.ts`           | 50   | 同上                                  |
+| `inspector/file-actor-page.ts`        | 26   | 同上                                  |
+| `inspector/file-font-page.ts`         | 26   | 同上                                  |
+| `inspector/file-script-page.ts`       | 23   | 同上                                  |
+| `inspector/file-scene-page.ts`        | 15   | ✅ 本轮枚举（**级联数被高估**，见 ①） |
+| `inspector/element-container-page.ts` | 0    | ✅ 本轮枚举                           |
+| `inspector/element-button-page.ts`    | 0    | ✅ 本轮枚举                           |
+| `inspector/file-trigger-page.ts`      | 1    | ✅ 本轮处理（`any` → `unknown`）      |
 
 ### ① ⚠️ 一条被推翻的假设：「级联 15 / 50 / 80」≠「形状未知」
 
@@ -4261,12 +4298,12 @@ delete (data.swap as { commands: Record<string, unknown> }).commands.symbol;
 
 ### ② 本轮落地的四处
 
-| 文件 | 处理 |
-| --- | --- |
-| `element-container-page.ts` | 6 个成员；`owner` 直接复用 `ui-owner.ts` 已导出的 **`UIOwnerShape`**（3 成员）—— 两处 `owner: any` 从此是同一份契约 |
-| `element-button-page.ts` | 7 个成员；`create` 的返回是 **`Omit<UIButtonData, 'instances'>`**（`instances` 由运行时补，写成 `() => UIButtonData` 立刻 TS2322） |
-| `file-scene-page.ts` | 9 个成员；顺带删掉 **`FileSceneData` 的 `[k: string]: unknown`** —— 它只是「允许额外字段」，而该类型在本文件里只作形参/返回标注、没有任何动态键读取；删掉后 `Codec.encodeScene` 的返回（codec 私有的 `SceneData`）才赋得进 `create` 的返回类型 |
-| `file-trigger-page.ts` | 索引签名**有意保留**（`update()` 按运行时键分派，键来自属性面板），只把 `any` 降成 `unknown`；连带修掉「联合键写入」这个新坑（③） |
+| 文件                        | 处理                                                                                                                                                                                                                                           |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `element-container-page.ts` | 6 个成员；`owner` 直接复用 `ui-owner.ts` 已导出的 **`UIOwnerShape`**（3 成员）—— 两处 `owner: any` 从此是同一份契约                                                                                                                            |
+| `element-button-page.ts`    | 7 个成员；`create` 的返回是 **`Omit<UIButtonData, 'instances'>`**（`instances` 由运行时补，写成 `() => UIButtonData` 立刻 TS2322）                                                                                                             |
+| `file-scene-page.ts`        | 9 个成员；顺带删掉 **`FileSceneData` 的 `[k: string]: unknown`** —— 它只是「允许额外字段」，而该类型在本文件里只作形参/返回标注、没有任何动态键读取；删掉后 `Codec.encodeScene` 的返回（codec 私有的 `SceneData`）才赋得进 `create` 的返回类型 |
+| `file-trigger-page.ts`      | 索引签名**有意保留**（`update()` 按运行时键分派，键来自属性面板），只把 `any` 降成 `unknown`；连带修掉「联合键写入」这个新坑（③）                                                                                                              |
 
 两个 `element-*-page.ts` 顶上原本挂着 `// oxlint-disable-next-line no-explicit-any` ——
 说明这两处**从第一天起就是「懒得写形状」**，不是真需要索引签名。
@@ -4332,7 +4369,7 @@ after the environment was torn down` —— 惰加载在**环境拆除之后**�
 第 42 轮量清的那条（`scene-list.ts` 的 `SceneItem`）本轮做完了。三件事必须一起改，缺一处就报错：
 
 1. **两个声明同步枚举**：`SceneItem`（实现侧）与 store 门面的 `SceneListItem`（`scene-window.ts:28`）各补 `name?` / `shortcut?` / `parent?` / `children?` —— 门面要求 `SceneListItem` 可赋给 `SceneItem`，两边字段不一致就 TS2322（6 处）。
-   *两边注释里都写了「成对维护」*，免得下次只改一边。
+   _两边注释里都写了「成对维护」_，免得下次只改一边。
 2. **`parent` 的类型是节点自身**（`parent?: SceneItem`），不是 `{ children: … }` —— 因为 `check(folder.parent)` 要把父节点当节点用；读点补 `!`（3 处，都是「已在树里」的路径）。
 3. **运行时键改用 `Reflect`**：`node[key]` / `folder[key]` / `item[key]` 共 **6 处**（`restoreRecursiveStates`、`setRecursiveStates`、`updateFolderState`）改成 `Reflect.get/set(node, key, …)`。
    这样**不需要**给整个类型挂索引签名（那会连门面赋值一起卡住），也**不需要**任何 `as unknown as`（会撞 `unknown-casts` 轴）。
@@ -4343,11 +4380,11 @@ after the environment was torn down` —— 惰加载在**环境拆除之后**�
 
 ## 第 42 轮（续轮）：`any-hatches` 61 → 58（`LightData` 枚举 + `HomeShape.state`）
 
-| 文件 | 处理 |
-| --- | --- |
-| `scene/light.ts`（`LightData`） | ✅ 按实测读点枚举 6 个成员：`red`/`green`/`blue`/`intensity`（`drawPointLight` 里参与算术）、`blend: string`（`gl.blend` 就是 string，见 `webgl-methods.ts`）、`mask: string`（`Scene.textures` 的键）；产物**逐字节相同** |
-| `title/home-page.ts`（`HomeShape`） | ✅ 补 `state: string` + 字面量 `state: 'closed'`。store 侧其实早就写了 `homeStateKeys: (keyof HomeShape)[] = ['state']` —— 也就是说这条**类型一直在等这个字段**；产物差异恰为新增的一行 `state: "closed",` |
-| `title/__tests__/home-init.spec.ts` | 顺手修正：mock 原本把 `Home.state` 重置成 `null`（旧类型是 `any` 才允许），现按 store 的初值改成 `'closed'` |
+| 文件                                | 处理                                                                                                                                                                                                                       |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scene/light.ts`（`LightData`）     | ✅ 按实测读点枚举 6 个成员：`red`/`green`/`blue`/`intensity`（`drawPointLight` 里参与算术）、`blend: string`（`gl.blend` 就是 string，见 `webgl-methods.ts`）、`mask: string`（`Scene.textures` 的键）；产物**逐字节相同** |
+| `title/home-page.ts`（`HomeShape`） | ✅ 补 `state: string` + 字面量 `state: 'closed'`。store 侧其实早就写了 `homeStateKeys: (keyof HomeShape)[] = ['state']` —— 也就是说这条**类型一直在等这个字段**；产物差异恰为新增的一行 `state: "closed",`                 |
+| `title/__tests__/home-init.spec.ts` | 顺手修正：mock 原本把 `Home.state` 重置成 `null`（旧类型是 `any` 才允许），现按 store 的初值改成 `'closed'`                                                                                                                |
 
 **`scene/scene-list.ts` 的 `SceneItem`：本轮量清但没做**（留下批）。删掉索引签名后 32 个错误分三类：
 
@@ -4361,16 +4398,16 @@ after the environment was torn down` —— 惰加载在**环境拆除之后**�
 
 方法同前：**逐批删签名 → tsc/vue-tsc 点名 → 按真契约处理**。本轮把 8 个单点文件一起删、再按错误来源回退，一次 tsc 就量出了这批的承重情况：
 
-| 文件 | 级联 | 处理 |
-| --- | --- | --- |
-| `data/data-object.ts`（`DataModule`） | **600** | 承重 ⇒ 回退（全局数据模块，读点遍布全仓） |
-| `stores/ui.ts`（`UINodeShape`） | 72 的一部分 | 承重 ⇒ 回退 |
-| `engine/ui/ui-engine.ts`（`UIShape`） | 72 的一部分 | 承重 ⇒ 回退 |
-| `enum/enum-window.ts`（`EnumModule`） | 29 的一部分 | 承重 ⇒ 回退 |
-| `scene/light.ts`（`LightData`） | 29 的一部分 | **可枚举**（`blend`/`red`/`green`/`blue`/`intensity`/`mask`）⇒ 留下一批 |
-| `title/deploy-project-window.ts` | 4 | ✅ manifest 的键本来就都声明了，索引签名只是让**字符串循环变量**通过 ⇒ 两处循环加 `as DeploymentGroupKey[]` / `as DeploymentListKey[]`（12 个分组键 / 5 个数组键）；循环键从此也被类型检查 |
-| `local/local-window.ts` | 11 的一部分 | ✅ `LocalizationShape` 补 `state: string`（与 `localizationStateKeys = ['state','strings']` 对齐） |
-| `title/menu-bar.ts` | 11 的一部分 | ✅ `MenubarShape` 补 `state: string`，并给 `Menubar` 字面量补初值 `state: 'closed'`（与 store 的 `shallowRef('closed')` 一致） |
+| 文件                                  | 级联        | 处理                                                                                                                                                                                       |
+| ------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `data/data-object.ts`（`DataModule`） | **600**     | 承重 ⇒ 回退（全局数据模块，读点遍布全仓）                                                                                                                                                  |
+| `stores/ui.ts`（`UINodeShape`）       | 72 的一部分 | 承重 ⇒ 回退                                                                                                                                                                                |
+| `engine/ui/ui-engine.ts`（`UIShape`） | 72 的一部分 | 承重 ⇒ 回退                                                                                                                                                                                |
+| `enum/enum-window.ts`（`EnumModule`） | 29 的一部分 | 承重 ⇒ 回退                                                                                                                                                                                |
+| `scene/light.ts`（`LightData`）       | 29 的一部分 | **可枚举**（`blend`/`red`/`green`/`blue`/`intensity`/`mask`）⇒ 留下一批                                                                                                                    |
+| `title/deploy-project-window.ts`      | 4           | ✅ manifest 的键本来就都声明了，索引签名只是让**字符串循环变量**通过 ⇒ 两处循环加 `as DeploymentGroupKey[]` / `as DeploymentListKey[]`（12 个分组键 / 5 个数组键）；循环键从此也被类型检查 |
+| `local/local-window.ts`               | 11 的一部分 | ✅ `LocalizationShape` 补 `state: string`（与 `localizationStateKeys = ['state','strings']` 对齐）                                                                                         |
+| `title/menu-bar.ts`                   | 11 的一部分 | ✅ `MenubarShape` 补 `state: string`，并给 `Menubar` 字面量补初值 `state: 'closed'`（与 store 的 `shallowRef('closed')` 一致）                                                             |
 
 **验证**：`local-window.ts` 与 `deploy-project-window.ts` 的 esbuild 产物**逐字节相同**（纯类型层）；`menu-bar.ts` 产物**只多一行** `state: "closed",` —— 删掉该行后两份产物逐字节相同（即差异恰为那一个预期属性）。`tsc` 0、`check-vue-types` 0 new、`lint` 0/0、三文件 `oxfmt` 合规、定向测试 8 例通过。
 
@@ -4429,16 +4466,16 @@ editor **2056** 测试、ui-kit **810** 测试、台账全部轴持平。
 
 ### 一、已经达成的（有台账数字支撑）
 
-| 轴 | 开轮基线 | 现在 | 说明 |
-| --- | --- | --- | --- |
-| `null-casts`（遗留单例形状） | 28 | **0** | 第 26 → 36 轮清完，第 36 轮归零 |
-| `unknown-casts`（双重断言） | 799（口径修正后） | **764** | 随 `null-casts` 一并下降 |
-| `any-hatches`（泛型逃生口） | 70 | **64** | 第 38 轮 5 处、第 39 轮 1 处 |
-| `dom-pending`（待迁移 DOM 用法） | — | **0** | 白名单单一真源（`.oxlintrc.json` ↔ 台账）无漂移 |
-| `dom-whitelist-drift` / `dom-whitelist-unjustified` | — | **0 / 0** | 白名单 14 条，条条有理由 |
-| `stale-exemptions` | — | **0** | 陈旧豁免注释 0 |
-| `ui-slot-coverage` | — | **0** | store 引用的 UI 槽位均有赋值方（declared 134 / assigned 153） |
-| `unremovable-listeners` | 9 | 9（**不增**） | 该轴只要求不增 |
+| 轴                                                  | 开轮基线          | 现在          | 说明                                                          |
+| --------------------------------------------------- | ----------------- | ------------- | ------------------------------------------------------------- |
+| `null-casts`（遗留单例形状）                        | 28                | **0**         | 第 26 → 36 轮清完，第 36 轮归零                               |
+| `unknown-casts`（双重断言）                         | 799（口径修正后） | **764**       | 随 `null-casts` 一并下降                                      |
+| `any-hatches`（泛型逃生口）                         | 70                | **64**        | 第 38 轮 5 处、第 39 轮 1 处                                  |
+| `dom-pending`（待迁移 DOM 用法）                    | —                 | **0**         | 白名单单一真源（`.oxlintrc.json` ↔ 台账）无漂移               |
+| `dom-whitelist-drift` / `dom-whitelist-unjustified` | —                 | **0 / 0**     | 白名单 14 条，条条有理由                                      |
+| `stale-exemptions`                                  | —                 | **0**         | 陈旧豁免注释 0                                                |
+| `ui-slot-coverage`                                  | —                 | **0**         | store 引用的 UI 槽位均有赋值方（declared 134 / assigned 153） |
+| `unremovable-listeners`                             | 9                 | 9（**不增**） | 该轴只要求不增                                                |
 
 **机制类交付**（对应目标里的「先建立统一的迁移台账与棘轮门禁」）：
 
@@ -4453,12 +4490,12 @@ editor **2056** 测试、ui-kit **810** 测试、台账全部轴持平。
 
 ### 二、还没清完的（都带实测数字，可直接接着做）
 
-| 项 | 现状 | 下一步怎么走 |
-| --- | --- | --- |
-| `any-hatches` | 64 处 / 35 文件 | 按第 39 轮的量化排序：① `YMParameterPane.vue` 的 **71** 个动态成员读点（需要把 `attachStateAccessors` 挂的字段枚举进类型）；② 三个「全局/核心形状」`types/shapes.ts`（`DynamicShape`，全删引发 990 个错误）、`types/history.ts`（`HistoryData`，31 个错误）、`particle/particle-window.ts`（`ParticleEmitterShape`，71 个错误）—— 必须与读侧分批改；③ 其余按「删签名 → tsc/vue-tsc 点名 → 逐个枚举」推进 |
-| `legacy-ui-lines` | 2868 行 / 10 文件 | 阶段 1c：`src/ui/` 是 8 个域模块 + 1 个接线文件（附录三有拆分账）。收尾顺序见文末「删完之后应该发生什么」 |
-| `legacy-ui-refs` | 1 | = 阶段 1c 第 ① 步：`stores/ui.ts` 的 `loadUI` 从 `window-cluster → m.UI` 改为直连 `ui-engine.ts`。**运行时高危**（UI 窗口是本项目反复出崩溃的地方），**必须实机回归**，不要在没有实机验证的会话里动 |
-| `Record<string, any>` | 35 处 / 31 文件 | ✅ **已解决（2026-09-20 第 62 轮）**：口径已扩展并入 `any-hatches`，该轴随之 **32 → 67**，并显式记入新基线。理由：它与索引签名是**同一个逃生的两种写法**，只数一种的话把 `[k: string]: any` 改写成 `Record<string, any>` 就能凭空「归零」 |
+| 项                    | 现状              | 下一步怎么走                                                                                                                                                                                                                                                                                                                                                                                             |
+| --------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `any-hatches`         | 64 处 / 35 文件   | 按第 39 轮的量化排序：① `YMParameterPane.vue` 的 **71** 个动态成员读点（需要把 `attachStateAccessors` 挂的字段枚举进类型）；② 三个「全局/核心形状」`types/shapes.ts`（`DynamicShape`，全删引发 990 个错误）、`types/history.ts`（`HistoryData`，31 个错误）、`particle/particle-window.ts`（`ParticleEmitterShape`，71 个错误）—— 必须与读侧分批改；③ 其余按「删签名 → tsc/vue-tsc 点名 → 逐个枚举」推进 |
+| `legacy-ui-lines`     | 2868 行 / 10 文件 | 阶段 1c：`src/ui/` 是 8 个域模块 + 1 个接线文件（附录三有拆分账）。收尾顺序见文末「删完之后应该发生什么」                                                                                                                                                                                                                                                                                                |
+| `legacy-ui-refs`      | 1                 | = 阶段 1c 第 ① 步：`stores/ui.ts` 的 `loadUI` 从 `window-cluster → m.UI` 改为直连 `ui-engine.ts`。**运行时高危**（UI 窗口是本项目反复出崩溃的地方），**必须实机回归**，不要在没有实机验证的会话里动                                                                                                                                                                                                      |
+| `Record<string, any>` | 35 处 / 31 文件   | ✅ **已解决（2026-09-20 第 62 轮）**：口径已扩展并入 `any-hatches`，该轴随之 **32 → 67**，并显式记入新基线。理由：它与索引签名是**同一个逃生的两种写法**，只数一种的话把 `[k: string]: any` 改写成 `Record<string, any>` 就能凭空「归零」                                                                                                                                                                |
 
 ### 三、门禁怎么跑（本地 = CI 同一套）
 
@@ -4514,16 +4551,16 @@ pnpm build:vite              # 构建
 > `legacy-ui-lines` / `legacy-ui-refs`）。**「刷新于」这句话必须和表里每一行同时成立** ——
 > 否则它就成了一句看起来权威、实际误导的话。
 
-| 轴 | 现值（第 89 轮实测） | 目标 |
-| --- | --- | --- |
-| `any-hatches` | **52 处 / 26 文件**（索引签名 32 + `Record<string, any>` 20） | 归零 |
-| `unknown-casts` | **136 处 / 109 文件**（第 48 轮从 764 降下来） | 归零 |
-| `ui-singleton-members` | **103 处 / 8 文件**（`declared=134`）—— 第 62 轮新增的替代轴 | 归零（与 `legacy-ui-lines` 同时） |
-| `legacy-ui-lines` | **0 行 / 0 文件**（第 66 轮纯移动已收口） | ✅ 已归零 |
-| `legacy-ui-refs` | **0**（第 66 轮已收口） | ✅ 已归零 |
-| `null-casts` | 0 | ✅ 已归零 |
-| `dom-pending` / `dom-whitelist-drift` / `dom-whitelist-unjustified` / `stale-exemptions` / `ui-slot-coverage` | 0 | ✅ 已归零 |
-| `dom-on-exempted` 120 · `dom-whitelist-size` 14 · `unremovable-listeners` 9 | 持平 | 不增 |
+| 轴                                                                                                            | 现值（第 89 轮实测）                                          | 目标                              |
+| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------- |
+| `any-hatches`                                                                                                 | **52 处 / 26 文件**（索引签名 32 + `Record<string, any>` 20） | 归零                              |
+| `unknown-casts`                                                                                               | **136 处 / 109 文件**（第 48 轮从 764 降下来）                | 归零                              |
+| `ui-singleton-members`                                                                                        | **103 处 / 8 文件**（`declared=134`）—— 第 62 轮新增的替代轴  | 归零（与 `legacy-ui-lines` 同时） |
+| `legacy-ui-lines`                                                                                             | **0 行 / 0 文件**（第 66 轮纯移动已收口）                     | ✅ 已归零                         |
+| `legacy-ui-refs`                                                                                              | **0**（第 66 轮已收口）                                       | ✅ 已归零                         |
+| `null-casts`                                                                                                  | 0                                                             | ✅ 已归零                         |
+| `dom-pending` / `dom-whitelist-drift` / `dom-whitelist-unjustified` / `stale-exemptions` / `ui-slot-coverage` | 0                                                             | ✅ 已归零                         |
+| `dom-on-exempted` 120 · `dom-whitelist-size` 14 · `unremovable-listeners` 9                                   | 持平                                                          | 不增                              |
 
 > ⚠️ **`legacy-ui-lines` / `legacy-ui-refs` 归零 ≠ 阶段 1c 收口。** 这两条是**目录口径**，
 > 第 66 轮的**纯移动**（`src/ui/` → `src/engine/ui/legacy/`）就会让它们读到 0，而遗留代码**一行没少** ——
@@ -4540,22 +4577,22 @@ pnpm build:vite              # 构建
 > `Record<string, any>`（**20 处 / 13 文件**），合起来才是台账里的 **52 处 / 26 文件**。
 > 只照上表清，清完仍会剩 20 处 —— 那 20 处的清单见下方「下一批工作单」第 1 条：
 >
-> | 文件 | 处数 | 所属接口（`any-hatch-inventory` 输出） |
-> | --- | --- | --- |
-> | `scene/scene-window.ts` | **5** | `SceneShape`×3（L74 声明）+ `PresetNodeShape` + `SceneMarqueeData`；marquee 待对齐 `saveData` 两个写入方，list 需 19 签名 / 45 处 `!` |
+> | 文件                                 | 处数  | 所属接口（`any-hatch-inventory` 输出）                                                                                                                                         |
+> | ------------------------------------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+> | `scene/scene-window.ts`              | **5** | `SceneShape`×3（L74 声明）+ `PresetNodeShape` + `SceneMarqueeData`；marquee 待对齐 `saveData` 两个写入方，list 需 19 签名 / 45 处 `!`                                          |
 > | `engine/particle/particle-engine.ts` | **3** | `ParticleLayerData` / `ParticleEmitterShape` / `ParticleElementLayerData` —— 要枚举 **35–40 个叶字段**（`data.color` / `data.sprite` / `data.area` 自身又是形状），级联实测 62 |
-> | `particle/particle-window.ts` | **3** | `ParticleElementShape` / `ParticleLayerShape` / `ParticleEmitterShape`，级联实测 71 |
-> | `ui-kit/.../YMParameterPane.vue` | **3** | `Props`（L130 接口 / L164、L201、L971 站点）—— **只能靠 `typecheck:vue` 量** |
-> | `animation/animation-window.ts` | **3** | `AnimationElement` / `AnimationFileContext` / `AnimationShape` |
-> | `composables/useCommandParse.ts` | **3** | `CommandObjectShape` / `CommandNode` / `TextContent`，级联实测 67 |
-> | `ui/ui-window.ts` | **3** | `UIShape` / `UINodeShape` / `UIContextShape` |
-> | `commands/schema.ts` | **2** | `CommandSchemaConfig`，外溢约 60 个 `use*CommandSchema` |
-> | `engine/ui/element-base.ts` | **2** | `UIElementShape` / `UIParentShape` —— 第 61 轮试过并回退（见下） |
-> | `data/data-object.ts` | **1** | `DataModule`（读点遍布全仓） |
-> | `engine/ui/element-classes.ts` | **1** | `UIElementInstance` —— 第 56 轮试过并回退（见下） |
-> | `engine/ui/ui-engine.ts` | **1** | `UIShape` —— 第 57 轮试过并回退（见下） |
-> | `stores/ui.ts` | **1** | `UINodeShape` |
-> | `types/shapes.ts` | **1** | `DynamicShape`（独立实测级联**上千**，承重之首） |
+> | `particle/particle-window.ts`        | **3** | `ParticleElementShape` / `ParticleLayerShape` / `ParticleEmitterShape`，级联实测 71                                                                                            |
+> | `ui-kit/.../YMParameterPane.vue`     | **3** | `Props`（L130 接口 / L164、L201、L971 站点）—— **只能靠 `typecheck:vue` 量**                                                                                                   |
+> | `animation/animation-window.ts`      | **3** | `AnimationElement` / `AnimationFileContext` / `AnimationShape`                                                                                                                 |
+> | `composables/useCommandParse.ts`     | **3** | `CommandObjectShape` / `CommandNode` / `TextContent`，级联实测 67                                                                                                              |
+> | `ui/ui-window.ts`                    | **3** | `UIShape` / `UINodeShape` / `UIContextShape`                                                                                                                                   |
+> | `commands/schema.ts`                 | **2** | `CommandSchemaConfig`，外溢约 60 个 `use*CommandSchema`                                                                                                                        |
+> | `engine/ui/element-base.ts`          | **2** | `UIElementShape` / `UIParentShape` —— 第 61 轮试过并回退（见下）                                                                                                               |
+> | `data/data-object.ts`                | **1** | `DataModule`（读点遍布全仓）                                                                                                                                                   |
+> | `engine/ui/element-classes.ts`       | **1** | `UIElementInstance` —— 第 56 轮试过并回退（见下）                                                                                                                              |
+> | `engine/ui/ui-engine.ts`             | **1** | `UIShape` —— 第 57 轮试过并回退（见下）                                                                                                                                        |
+> | `stores/ui.ts`                       | **1** | `UINodeShape`                                                                                                                                                                  |
+> | `types/shapes.ts`                    | **1** | `DynamicShape`（独立实测级联**上千**，承重之首）                                                                                                                               |
 >
 > 其中 `DynamicShape` 与 `UIShape` / `UIElementInstance` / `DataModule` / `SceneShape` / `AnimationShape`
 > 是**读点遍布全仓**的承重形状，**必须与读侧分批改** —— 且正是 `unknown-casts` 剩下 292 处的同一批类型。
@@ -4586,38 +4623,38 @@ pnpm build:vite              # 构建
 
 1. **`Record<string, any>` 20 处 / 13 文件**（第 89 轮实测，按可做性分三组；**下列 20 条与
    「`Record<string, any>` 站点清单」逐条对账，不重不漏**）：
-   - **A 组 · 引擎命名空间对象 `export const Xxx: Record<string, any> = {}`（10 处）** ——
-     与第 65 轮定的判据同一族，可照做：先数 `XxxEngine.foo = function (this: typeof Y)` 真正
-     读/写了 `Y` 的哪几个字段，**个位数就走本地窄类型，一轮拿下**。
-     `engine/animation/animation-window-engine.ts:12` · `engine/palette/auto-tile-engine.ts:21` ·
-     `engine/palette/palette-engine.ts:20` · `engine/particle/particle-engine.ts:12` ·
-     `engine/scene/scene-camera-engine.ts:9` · `engine/scene/scene-marquee-engine.ts:16` ·
-     `engine/ui/ui-engine.ts:24` · `palette/auto-tile.ts:49` · `palette/palette.ts:4` ·
-     `palette/tile-frame-index.ts:13`。
-     ⚠️ **以脚本清单为准，本行只是导航**（10 条路径 = 10 处；`engine/palette/palette-engine.ts`
-     与 `palette/palette.ts` 是**两个不同的对象**，各算一处）。行数请以
-     `node scripts/any-hatch-inventory.mjs --axis` + 台账逐文件计数复核。
-     ⚠️ `scene-camera-engine` / `scene-marquee-engine` 是第 65 轮实测过的**真承重**（≈30 个字段、
-     含 `this.scrollLeft = …` 写入），按判据属「整片留到最后」，别当白捡。
-     ⚠️ `ui-engine.ts:24` 与 `useSetStringCommandSchema.ts:15` 顶上各有一行
-     `// oxlint-disable-next-line no-explicit-any`：**删签名时必须一并删掉豁免注释**，
-     否则 `stale-exemptions` 轴会多出一处陈旧豁免（第 38 轮已立此规矩）。
-   - **B 组 · 型态变体（6 处，各需单独设计）**：
-     `particle/particle-window.ts:49`（`Array<Record<string, any>> & { count: number }`）·
-     `particle/particle-window.ts:253`（`stage`）·
-     `scene/scene-window.ts:1365`（`(Inspector as Record<string, any>)[key]` 动态取键）·
-     `composables/commands/useSetStringCommandSchema.ts:15`（`type SetStringOperand` ——
-     **9 个用法全在本文件内**，是「枚举真成员」的好候选）·
-     `ui-kit/.../YMParameterPane.vue:135` 与 `:245`（`guidMap`；`.vue` 只能靠 `typecheck:vue` 量）。
-   - **C 组 · 已注明「承重，别顺手删」（4 处）**：`services/file-system/fs-bridge.ts:29`（`FSP` ——
-     底下曾压着一个必崩的 `existsSync` 调用）· `services/project/setting-config/index.ts:16` ·
-     `stores/data.ts:149` · `engine/ui/element-classes.ts:68`（`UIElementCtor`）。
-     **动之前先读该处注释**，它们各自写着为什么不能直接删。
+    - **A 组 · 引擎命名空间对象 `export const Xxx: Record<string, any> = {}`（10 处）** ——
+      与第 65 轮定的判据同一族，可照做：先数 `XxxEngine.foo = function (this: typeof Y)` 真正
+      读/写了 `Y` 的哪几个字段，**个位数就走本地窄类型，一轮拿下**。
+      `engine/animation/animation-window-engine.ts:12` · `engine/palette/auto-tile-engine.ts:21` ·
+      `engine/palette/palette-engine.ts:20` · `engine/particle/particle-engine.ts:12` ·
+      `engine/scene/scene-camera-engine.ts:9` · `engine/scene/scene-marquee-engine.ts:16` ·
+      `engine/ui/ui-engine.ts:24` · `palette/auto-tile.ts:49` · `palette/palette.ts:4` ·
+      `palette/tile-frame-index.ts:13`。
+      ⚠️ **以脚本清单为准，本行只是导航**（10 条路径 = 10 处；`engine/palette/palette-engine.ts`
+      与 `palette/palette.ts` 是**两个不同的对象**，各算一处）。行数请以
+      `node scripts/any-hatch-inventory.mjs --axis` + 台账逐文件计数复核。
+      ⚠️ `scene-camera-engine` / `scene-marquee-engine` 是第 65 轮实测过的**真承重**（≈30 个字段、
+      含 `this.scrollLeft = …` 写入），按判据属「整片留到最后」，别当白捡。
+      ⚠️ `ui-engine.ts:24` 与 `useSetStringCommandSchema.ts:15` 顶上各有一行
+      `// oxlint-disable-next-line no-explicit-any`：**删签名时必须一并删掉豁免注释**，
+      否则 `stale-exemptions` 轴会多出一处陈旧豁免（第 38 轮已立此规矩）。
+    - **B 组 · 型态变体（6 处，各需单独设计）**：
+      `particle/particle-window.ts:49`（`Array<Record<string, any>> & { count: number }`）·
+      `particle/particle-window.ts:253`（`stage`）·
+      `scene/scene-window.ts:1365`（`(Inspector as Record<string, any>)[key]` 动态取键）·
+      `composables/commands/useSetStringCommandSchema.ts:15`（`type SetStringOperand` ——
+      **9 个用法全在本文件内**，是「枚举真成员」的好候选）·
+      `ui-kit/.../YMParameterPane.vue:135` 与 `:245`（`guidMap`；`.vue` 只能靠 `typecheck:vue` 量）。
+    - **C 组 · 已注明「承重，别顺手删」（4 处）**：`services/file-system/fs-bridge.ts:29`（`FSP` ——
+      底下曾压着一个必崩的 `existsSync` 调用）· `services/project/setting-config/index.ts:16` ·
+      `stores/data.ts:149` · `engine/ui/element-classes.ts:68`（`UIElementCtor`）。
+      **动之前先读该处注释**，它们各自写着为什么不能直接删。
 2. **`Scene.list`**（`scene/scene-window.ts` L80 声明 + L470 初始化，2 处）：索引签名兜住的是
    `SceneListExtensions` 之外的约 19 个成员（`addNodeTo / canSwitchState / createFolder /
-   createTilemapShortcutItems / data / deleteNode / duplicate / generateUniqueName / getItemByProperties /
-   read / resize / restoreSelection / saveScroll / saveSelection / scrollTop / searchNodesDebounced /
-   select / selectDefaultCommand / unselect / update / updateFolderState / updateItemName / updateNodeElement`）。
+createTilemapShortcutItems / data / deleteNode / duplicate / generateUniqueName / getItemByProperties /
+read / resize / restoreSelection / saveScroll / saveSelection / scrollTop / searchNodesDebounced /
+select / selectDefaultCommand / unselect / update / updateFolderState / updateItemName / updateNodeElement`）。
    成本：19 个签名 + 调用点 **45 处缺 `!`**（已有 9 处）。
    ⚠️ **不能**直接拿 `ui-kit` 的 `TreeListElementApi` 当这个类型：它的兜底是 `[k: string]: unknown`，
    接上去会让 `addNodeTo` 之类变成 `unknown` 而不可调用。
@@ -4625,24 +4662,24 @@ pnpm build:vite              # 构建
    `scene-marquee-engine.ts` 写 `{x,y,width,height,offsetX,offsetY,tiles}`，而 `palette-engine.ts`
    读 `width/height/rowOffset`（后者根本不在前者的形状里）；对齐后约 12 处 `!`。
    成员清单见第 47 轮。⚠️ `scene.spec.ts` 的 marquee mock 是 `as any`：**类型写错测试不会红**。
-3. **`YMParameterPane.vue`**（3 处）：`.vue` 对 `tsc` 不可见，只能靠 `typecheck:vue` 量；
+4. **`YMParameterPane.vue`**（3 处）：`.vue` 对 `tsc` 不可见，只能靠 `typecheck:vue` 量；
    按 `attachStateAccessors` 挂上去的字段清单枚举。
-4. **核心形状（承重，必须与读侧分批）**：`types/shapes.ts` 的 `DynamicShape`（独立实测仍是**上千**级联）、
+5. **核心形状（承重，必须与读侧分批）**：`types/shapes.ts` 的 `DynamicShape`（独立实测仍是**上千**级联）、
    `data/data-object.ts`(600)、`scene/scene-window.ts` 的 `SceneShape`(296)、
    `engine/animation/animation-window.ts` 的 `AnimationShape`、`ui/ui-window.ts` 的 `UIShape`、
    `particle/particle-window.ts`(71)、`engine/particle/particle-engine.ts`(62)、
    `stores/ui.ts` + `engine/ui/ui-engine.ts`。
    ⚠️ 这批正是 `unknown-casts` 剩下 292 处的**同一批类型**：两侧类型相容之后，两条轴会一起下降。
-5. **阶段 1c**（`legacy-ui-lines` 2866 → 0、`ui-singleton-members` 103 → 0、`legacy-ui-refs` 1 → 0）：
+6. **阶段 1c**（`legacy-ui-lines` 2866 → 0、`ui-singleton-members` 103 → 0、`legacy-ui-refs` 1 → 0）：
    运行时高危，**必须实机回归**（附录四/六/七/八/九记的都是这类改动造成的静默失效）。
    ✅ **前置条件已就绪**：`ui-singleton-members` 替代轴第 62 轮已落地（见文末），
    `ui-slots.mjs` 的两处写死路径也已改为动态定位，搬运不会再让仪器失明或制造假回归。
 
-   ⚠️ **顺序必须改**：原文附录三写的 ①→②→③→④ **按字面执行会打断运行时**。
-   ① 说「`stores/ui.ts` 的 `loadUI` 改为直连 `ui-engine.ts`」——但 `loadUI` 决定惰加载代理
-   解析到谁，而 `ui-engine.ts` 只实现 **21** 个成员、store 引用 **49** 个槽位，
-   先做 ① 会让 **41 个动作在 `UI?.x?.()` 下静默 no-op**。正确顺序是
-   **B（纯移动）→ C（逐域补槽位）→ D（换接线 + 退场）**。
+    ⚠️ **顺序必须改**：原文附录三写的 ①→②→③→④ **按字面执行会打断运行时**。
+    ① 说「`stores/ui.ts` 的 `loadUI` 改为直连 `ui-engine.ts`」——但 `loadUI` 决定惰加载代理
+    解析到谁，而 `ui-engine.ts` 只实现 **21** 个成员、store 引用 **49** 个槽位，
+    先做 ① 会让 **41 个动作在 `UI?.x?.()` 下静默 no-op**。正确顺序是
+    **B（纯移动）→ C（逐域补槽位）→ D（换接线 + 退场）**。
 
 ### 三、门禁（本地 = CI 同一套；第 47/48 轮全部跑绿）
 
@@ -4698,17 +4735,17 @@ const files = collectFiles({ dirs: [dir], includeTests: true });
 **已落地的口径**：台账新增轴 `ui-singleton-members` = 扫描面内 `UI.<name> = ` 的处数
 （**不受目录影响**），2026-09-20 实测起点 **103 处**，分布在 8 个文件：
 
-| 文件 | `UI.x =` 处数 | 域 |
-| --- | --- | --- |
-| `ui-events.ts` | 21 | 窗口事件（21 个 handler） |
-| `ui-window.ts` | 21 | 接线/形状（全部是 `UI.x = UIEngine.x` 镜像） |
-| `ui-transform.ts` | 18 | 元素变换/属性同步 |
-| `ui-file.ts` | 15 | 文档生命周期 |
-| `ui-list.ts` | 10 | 列表交互 |
-| `ui-prefab.ts` | 9 | 预设/预制体 |
-| `ui-pointer.ts` | 8 | 画布指针交互 |
-| `ui-initialize.ts` | 1 | DOM 引用与定时器初始化 |
-| **合计** | **103** | |
+| 文件               | `UI.x =` 处数 | 域                                           |
+| ------------------ | ------------- | -------------------------------------------- |
+| `ui-events.ts`     | 21            | 窗口事件（21 个 handler）                    |
+| `ui-window.ts`     | 21            | 接线/形状（全部是 `UI.x = UIEngine.x` 镜像） |
+| `ui-transform.ts`  | 18            | 元素变换/属性同步                            |
+| `ui-file.ts`       | 15            | 文档生命周期                                 |
+| `ui-list.ts`       | 10            | 列表交互                                     |
+| `ui-prefab.ts`     | 9             | 预设/预制体                                  |
+| `ui-pointer.ts`    | 8             | 画布指针交互                                 |
+| `ui-initialize.ts` | 1             | DOM 引用与定时器初始化                       |
+| **合计**           | **103**       |                                              |
 
 `target: 'zero'`，另带子指标 `declared`（对象字面量**自身**槽位数，现 **134**，同样归零）：
 两个数字同时为 0 才说明「挂载点删干净了**且**字面量退役了」——

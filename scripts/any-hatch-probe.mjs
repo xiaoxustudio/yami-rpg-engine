@@ -14,7 +14,7 @@
  *         运行前工作树必须是干净的（HEAD 即基线），脚本会自检。
  */
 import { execFileSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ROOT, collectFiles, readSource, codeOnly, ANY_HATCH_RE } from './lib/scan.mjs';
 

@@ -1,17 +1,24 @@
 <template>
-	<WindowFrame id="edit-data"
-				:ref="registryRef(moduleEls, 'edit-data')" @confirm="onConfirm">
+	<WindowFrame id="edit-data" :ref="registryRef(moduleEls, 'edit-data')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.edit-data.title') }}
-				<div class="text hidden" id="edit-data-mark"
-				:ref="registryRef(moduleEls, 'edit-data-mark')">✱</div>
+				<div
+					class="text hidden"
+					id="edit-data-mark"
+					:ref="registryRef(moduleEls, 'edit-data-mark')"
+				>
+					✱
+				</div>
 				<div class="maximize" id="edit-data-maximize" />
 				<div class="close" /> </TitleBar
 		></template>
 
-		<div class="box" id="edit-data-current"
-				:ref="registryRef(moduleEls, 'edit-data-current')"></div>
+		<div
+			class="box"
+			id="edit-data-current"
+			:ref="registryRef(moduleEls, 'edit-data-current')"
+		></div>
 	</WindowFrame>
 </template>
 
@@ -49,7 +56,7 @@ onMounted(() => {});
 	top: 10px;
 	width: 700px;
 	height: calc(238px * 1.15);
-	/* 用于填补150%缩放时边框处的缝�?*/
+	/* 用于填补150%缩放时边框处的缝隙 */
 	background-color: var(--input-background);
 	border: var(--fieldset-border);
 	border-radius: 2px;

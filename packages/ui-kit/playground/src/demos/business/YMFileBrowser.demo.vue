@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue';
-import { YMFileBrowser, YMMenuList, createTextBoxElement, type MenuItem, type MenuOptions } from '@ui-kit';
+import {
+	YMFileBrowser,
+	YMMenuList,
+	createTextBoxElement,
+	type MenuItem,
+	type MenuOptions
+} from '@ui-kit';
 
 interface FileItemContext {
 	element?: HTMLElement;
@@ -9,19 +15,21 @@ interface FileItemContext {
 
 const contextMap = new WeakMap<object, Map<HTMLElement, FileItemContext>>();
 
-const getContextOf = (file: object) => (node: HTMLElement): FileItemContext => {
-	let map = contextMap.get(file);
-	if (!map) {
-		map = new Map();
-		contextMap.set(file, map);
-	}
-	let context = map.get(node);
-	if (!context) {
-		context = { expanded: false };
-		map.set(node, context);
-	}
-	return context;
-};
+const getContextOf =
+	(file: object) =>
+	(node: HTMLElement): FileItemContext => {
+		let map = contextMap.get(file);
+		if (!map) {
+			map = new Map();
+			contextMap.set(file, map);
+		}
+		let context = map.get(node);
+		if (!context) {
+			context = { expanded: false };
+			map.set(node, context);
+		}
+		return context;
+	};
 
 let inoCounter = 1;
 
@@ -79,7 +87,10 @@ assets.subfolders = [actors, maps, system];
 assets.children = [actors, maps, system];
 
 actors.subfolders = [];
-actors.children = [new FileItem('hero.actor', 'actor', actors), new FileItem('guard.actor', 'actor', actors)];
+actors.children = [
+	new FileItem('hero.actor', 'actor', actors),
+	new FileItem('guard.actor', 'actor', actors)
+];
 
 maps.subfolders = [];
 maps.children = [
@@ -117,7 +128,10 @@ const fileSystemApi = {
 	path: (p: string) => p,
 	route: (p: string) => p,
 	getPath: (p: string) => p,
-	getFileName: (dir: string, name: string) => ({ path: `${dir}/${name}`, route: `${dir}/${name}` }),
+	getFileName: (dir: string, name: string) => ({
+		path: `${dir}/${name}`,
+		route: `${dir}/${name}`
+	}),
 	getImageResolution: () => Promise.resolve({ width: 0, height: 0 }),
 	showInExplorer: () => {},
 	showOpenDialog: () => Promise.resolve({ filePaths: [] }),
@@ -180,7 +194,10 @@ onMounted(() => {
 <template>
 	<section class="demo">
 		<h2>YMFileBrowser</h2>
-		<p class="desc">文件浏览器：组合 YMFileNavPane / YMFileHeadPane / YMFileBodyPane，双击目录可下钻，单击选中，Ctrl+滚轮切换视图。</p>
+		<p class="desc">
+			文件浏览器：组合 YMFileNavPane / YMFileHeadPane /
+			YMFileBodyPane，双击目录可下钻，单击选中，Ctrl+滚轮切换视图。
+		</p>
 		<div class="row">
 			<span class="hint">{{ info }}</span>
 		</div>

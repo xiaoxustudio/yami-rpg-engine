@@ -181,7 +181,7 @@ function fix() {
 				const full = join(p, entry);
 				if (statSync(full).isDirectory()) {
 					if (!SKIP_DIR.test(entry)) walk(full);
-				} else if (/\.ts$/.test(entry)) {
+				} else if (entry.endsWith('.ts')) {
 					const rel = relative(ROOT, full).replace(/\\/g, '/');
 					if (EXCLUDE_RE.test(rel)) continue;
 					const source = readFileSync(full, 'utf8');

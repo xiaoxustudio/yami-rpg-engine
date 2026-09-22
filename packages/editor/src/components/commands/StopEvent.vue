@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="stopEvent"
-				:ref="registryRef(fieldEls, 'stopEvent')" @confirm="onConfirm">
+	<WindowFrame id="stopEvent" :ref="registryRef(fieldEls, 'stopEvent')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.stopEvent.title') }}
@@ -8,52 +7,89 @@
 		></template>
 
 		<div class="grid-box">
-		<div class="text">{{ t('components.stopEvent-type.label') }}</div>
-		<SelectBox id="stopEvent-type"
+			<div class="text">{{ t('components.stopEvent-type.label') }}</div>
+			<SelectBox
+				id="stopEvent-type"
 				v-tip="t('components.stopEvent-type.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-type')" v-focus v-model="form.type" @write="onTypeWrite" />
-		<div class="text">{{ t('components.stopEvent-actor.label') }}</div>
-		<CustomBox id="stopEvent-actor"
+				:ref="registryRef(fieldEls, 'stopEvent-type')"
+				v-focus
+				v-model="form.type"
+				@write="onTypeWrite"
+			/>
+			<div class="text">{{ t('components.stopEvent-actor.label') }}</div>
+			<CustomBox
+				id="stopEvent-actor"
 				v-tip="t('components.stopEvent-actor.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-actor')" type="actor" v-model="form.actor" />
-		<div class="text">{{ t('components.stopEvent-skill.label') }}</div>
-		<CustomBox id="stopEvent-skill"
+				:ref="registryRef(fieldEls, 'stopEvent-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
+			<div class="text">{{ t('components.stopEvent-skill.label') }}</div>
+			<CustomBox
+				id="stopEvent-skill"
 				v-tip="t('components.stopEvent-skill.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-skill')" type="skill" v-model="form.skill" />
-		<div class="text">{{ t('components.stopEvent-state.label') }}</div>
-		<CustomBox id="stopEvent-state"
+				:ref="registryRef(fieldEls, 'stopEvent-skill')"
+				type="skill"
+				v-model="form.skill"
+			/>
+			<div class="text">{{ t('components.stopEvent-state.label') }}</div>
+			<CustomBox
+				id="stopEvent-state"
 				v-tip="t('components.stopEvent-state.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-state')" type="state" v-model="form.state" />
-		<div class="text">{{ t('components.stopEvent-equipment.label') }}</div>
-		<CustomBox id="stopEvent-equipment"
+				:ref="registryRef(fieldEls, 'stopEvent-state')"
+				type="state"
+				v-model="form.state"
+			/>
+			<div class="text">{{ t('components.stopEvent-equipment.label') }}</div>
+			<CustomBox
+				id="stopEvent-equipment"
 				v-tip="t('components.stopEvent-equipment.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-equipment')" type="equipment" v-model="form.equipment" />
-		<div class="text">{{ t('components.stopEvent-item.label') }}</div>
-		<CustomBox id="stopEvent-item"
+				:ref="registryRef(fieldEls, 'stopEvent-equipment')"
+				type="equipment"
+				v-model="form.equipment"
+			/>
+			<div class="text">{{ t('components.stopEvent-item.label') }}</div>
+			<CustomBox
+				id="stopEvent-item"
 				v-tip="t('components.stopEvent-item.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-item')" type="item" v-model="form.item" />
-		<div class="text">{{ t('components.stopEvent-light.label') }}</div>
-		<CustomBox id="stopEvent-light"
+				:ref="registryRef(fieldEls, 'stopEvent-item')"
+				type="item"
+				v-model="form.item"
+			/>
+			<div class="text">{{ t('components.stopEvent-light.label') }}</div>
+			<CustomBox
+				id="stopEvent-light"
 				v-tip="t('components.stopEvent-light.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-light')" type="light" v-model="form.light" />
-		<div class="text">{{ t('components.stopEvent-element.label') }}</div>
-		<CustomBox id="stopEvent-element"
+				:ref="registryRef(fieldEls, 'stopEvent-light')"
+				type="light"
+				v-model="form.light"
+			/>
+			<div class="text">{{ t('components.stopEvent-element.label') }}</div>
+			<CustomBox
+				id="stopEvent-element"
 				v-tip="t('components.stopEvent-element.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-element')" type="element" v-model="form.element" />
-		<div class="text">{{ t('components.stopEvent-eventId.label') }}</div>
-		<CustomBox
-			id="stopEvent-eventId"
+				:ref="registryRef(fieldEls, 'stopEvent-element')"
+				type="element"
+				v-model="form.element"
+			/>
+			<div class="text">{{ t('components.stopEvent-eventId.label') }}</div>
+			<CustomBox
+				id="stopEvent-eventId"
 				v-tip="t('components.stopEvent-eventId.tip')"
 				:ref="registryRef(fieldEls, 'stopEvent-eventId')"
-			v-focus
-			type="file"
-			filter="event"
-			v-model="form.eventId"
-		/>
+				v-focus
+				type="file"
+				filter="event"
+				v-model="form.eventId"
+			/>
 			<div class="text">{{ t('components.stopEvent-eventType.label') }}</div>
-			<SelectBox id="stopEvent-eventType"
+			<SelectBox
+				id="stopEvent-eventType"
 				v-tip="t('components.stopEvent-eventType.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-eventType')" v-focus v-model="form.eventType" />
+				:ref="registryRef(fieldEls, 'stopEvent-eventType')"
+				v-focus
+				v-model="form.eventType"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -114,7 +150,8 @@ onMounted(() => {
 		{ name: 'Light', value: 'light' },
 		{ name: 'Element', value: 'element' }
 	]);
-	fieldEls.get('stopEvent-type')
+	fieldEls
+		.get('stopEvent-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'global', targets: [fieldEls.get('stopEvent-eventId')] },
@@ -167,5 +204,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

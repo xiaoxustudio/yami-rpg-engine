@@ -56,10 +56,7 @@ const state: SelectBoxCoreState = {
 const builtinOpen = ref(false);
 let documentPointerdown: ((event: PointerEvent) => void) | null = null;
 
-const core = createSelectBoxCore(
-	{ getRoot: () => root.value, getInfo: () => info.value },
-	state
-);
+const core = createSelectBoxCore({ getRoot: () => root.value, getInfo: () => info.value }, state);
 const {
 	read,
 	write,
@@ -373,4 +370,3 @@ onBeforeUnmount(() => {
 	color: var(--text-color-error);
 }
 </style>
-

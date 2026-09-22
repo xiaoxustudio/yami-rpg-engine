@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setReverb"
-				:ref="registryRef(fieldEls, 'setReverb')" @confirm="onConfirm">
+	<WindowFrame id="setReverb" :ref="registryRef(fieldEls, 'setReverb')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setReverb.title') }}
@@ -9,9 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setReverb-type.label') }}</div>
-			<SelectBox id="setReverb-type"
+			<SelectBox
+				id="setReverb-type"
 				v-tip="t('components.setReverb-type.tip')"
-				:ref="registryRef(fieldEls, 'setReverb-type')" v-focus v-model="form.type" />
+				:ref="registryRef(fieldEls, 'setReverb-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.setReverb-dry.label') }}</div>
 			<NumberVar
 				id="setReverb-dry"
@@ -35,8 +38,12 @@
 				v-model="form.wet"
 			/>
 			<div class="text">{{ t('components.setReverb-easingId.label') }}</div>
-			<SelectBox id="setReverb-easingId"
-				:ref="registryRef(fieldEls, 'setReverb-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="setReverb-easingId"
+				:ref="registryRef(fieldEls, 'setReverb-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.setReverb-duration.label') }}</div>
 			<NumberBox
 				id="setReverb-duration"
@@ -48,8 +55,12 @@
 				v-model="duration"
 			/>
 			<div class="text">{{ t('components.setReverb-wait.label') }}</div>
-			<SelectBox id="setReverb-wait"
-				:ref="registryRef(fieldEls, 'setReverb-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="setReverb-wait"
+				:ref="registryRef(fieldEls, 'setReverb-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -118,5 +129,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

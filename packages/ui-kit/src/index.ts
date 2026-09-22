@@ -127,11 +127,13 @@ export {
 } from './components/basic/YMToastManager/toast-api';
 export {
 	createNumberBoxElement,
+	type HistoryInputElement,
 	type NumberBoxApi,
 	type NumberBoxApiOptions
 } from './components/basic/YMNumberBox/number-box-api';
 export {
 	createTextAreaElement,
+	type HistoryTextAreaElement,
 	type TextAreaApi,
 	type TextAreaApiOptions
 } from './components/basic/YMTextArea/text-area-api';

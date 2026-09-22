@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="setPartyMember"
-				:ref="registryRef(fieldEls, 'setPartyMember')" @confirm="onConfirm">
+	<WindowFrame
+		id="setPartyMember"
+		:ref="registryRef(fieldEls, 'setPartyMember')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setPartyMember.title') }}
@@ -9,13 +12,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setPartyMember-operation.label') }}</div>
-			<SelectBox id="setPartyMember-operation"
+			<SelectBox
+				id="setPartyMember-operation"
 				v-tip="t('components.setPartyMember-operation.tip')"
-				:ref="registryRef(fieldEls, 'setPartyMember-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setPartyMember-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setPartyMember-actor.label') }}</div>
-			<CustomBox id="setPartyMember-actor"
+			<CustomBox
+				id="setPartyMember-actor"
 				:ref="registryRef(fieldEls, 'setPartyMember-actor')"
-				v-tip="t('components.setPartyMember-actor.tip')" type="actor" v-model="form.actor" />
+				v-tip="t('components.setPartyMember-actor.tip')"
+				type="actor"
+				v-model="form.actor"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -44,9 +55,11 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setPartyMember-operation', ['add', 'remove'], (items) =>
-		fieldEls.get('setPartyMember-operation')?.loadItems?.(items),
-		{ 'add': 'command.setPartyMember.add', 'remove': 'command.setPartyMember.remove' }
+	useLocalizedOptions(
+		'setPartyMember-operation',
+		['add', 'remove'],
+		(items) => fieldEls.get('setPartyMember-operation')?.loadItems?.(items),
+		{ add: 'command.setPartyMember.add', remove: 'command.setPartyMember.remove' }
 	);
 });
 </script>
@@ -67,5 +80,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

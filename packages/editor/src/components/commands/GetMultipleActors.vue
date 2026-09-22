@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="getMultipleActors"
-				:ref="registryRef(fieldEls, 'getMultipleActors')" @confirm="onConfirm">
+	<WindowFrame
+		id="getMultipleActors"
+		:ref="registryRef(fieldEls, 'getMultipleActors')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.getMultipleActors.title') }}
@@ -19,13 +22,20 @@
 				v-model="form.variable"
 			/>
 			<div class="text">{{ t('components.getMultipleActors-position.label') }}</div>
-			<CustomBox id="getMultipleActors-position"
+			<CustomBox
+				id="getMultipleActors-position"
 				:ref="registryRef(fieldEls, 'getMultipleActors-position')"
-				v-tip="t('components.getMultipleActors-position.tip')" type="position" v-model="form.position" />
+				v-tip="t('components.getMultipleActors-position.tip')"
+				type="position"
+				v-model="form.position"
+			/>
 			<div class="text">{{ t('components.getMultipleActors-area.label') }}</div>
-			<SelectBox id="getMultipleActors-area"
+			<SelectBox
+				id="getMultipleActors-area"
 				v-tip="t('components.getMultipleActors-area.tip')"
-				:ref="registryRef(fieldEls, 'getMultipleActors-area')" v-model="form.area" />
+				:ref="registryRef(fieldEls, 'getMultipleActors-area')"
+				v-model="form.area"
+			/>
 			<div class="text">{{ t('components.getMultipleActors-width.label') }}</div>
 			<NumberVar
 				id="getMultipleActors-width"
@@ -60,17 +70,26 @@
 				v-model="form.radius"
 			/>
 			<div class="text">{{ t('components.getMultipleActors-selector.label') }}</div>
-			<SelectBox id="getMultipleActors-selector"
+			<SelectBox
+				id="getMultipleActors-selector"
 				v-tip="t('components.getMultipleActors-selector.tip')"
-				:ref="registryRef(fieldEls, 'getMultipleActors-selector')" v-model="form.selector" />
+				:ref="registryRef(fieldEls, 'getMultipleActors-selector')"
+				v-model="form.selector"
+			/>
 			<div class="text">{{ t('components.getMultipleActors-teamId.label') }}</div>
-			<SelectVar id="getMultipleActors-teamId"
+			<SelectVar
+				id="getMultipleActors-teamId"
 				v-tip="t('components.getMultipleActors-teamId.tip')"
-				:ref="registryRef(fieldEls, 'getMultipleActors-teamId')" v-model="form.teamId" />
+				:ref="registryRef(fieldEls, 'getMultipleActors-teamId')"
+				v-model="form.teamId"
+			/>
 			<div class="text">{{ t('components.getMultipleActors-activation.label') }}</div>
-			<SelectBox id="getMultipleActors-activation"
+			<SelectBox
+				id="getMultipleActors-activation"
 				v-tip="t('components.getMultipleActors-activation.tip')"
-				:ref="registryRef(fieldEls, 'getMultipleActors-activation')" v-model="form.activation" />
+				:ref="registryRef(fieldEls, 'getMultipleActors-activation')"
+				v-model="form.activation"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -102,23 +121,33 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('getMultipleActors-area', ['rectangle', 'circle'], (items) =>
-		fieldEls.get('getMultipleActors-area')?.loadItems?.(items),
-		{ 'rectangle': 'command.getMultipleActors.rectangle', 'circle': 'command.getMultipleActors.circle' }
+	useLocalizedOptions(
+		'getMultipleActors-area',
+		['rectangle', 'circle'],
+		(items) => fieldEls.get('getMultipleActors-area')?.loadItems?.(items),
+		{
+			rectangle: 'command.getMultipleActors.rectangle',
+			circle: 'command.getMultipleActors.circle'
+		}
 	);
-	fieldEls.get('getMultipleActors-area')
+	fieldEls
+		.get('getMultipleActors-area')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'rectangle',
-				targets: [fieldEls.get('getMultipleActors-width'), fieldEls.get('getMultipleActors-height')]
+				targets: [
+					fieldEls.get('getMultipleActors-width'),
+					fieldEls.get('getMultipleActors-height')
+				]
 			},
 			{ case: 'circle', targets: [fieldEls.get('getMultipleActors-radius')] }
 		]);
 	useLocalizedOptions('getMultipleActors-selector', ['enemy', 'friend', 'team', 'any'], (items) =>
 		fieldEls.get('getMultipleActors-selector')?.loadItems?.(items)
 	);
-	fieldEls.get('getMultipleActors-selector')
+	fieldEls
+		.get('getMultipleActors-selector')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -126,9 +155,15 @@ onMounted(() => {
 				targets: [fieldEls.get('getMultipleActors-teamId')]
 			}
 		]);
-	useLocalizedOptions('getMultipleActors-activation', ['active', 'inactive', 'either'], (items) =>
-		fieldEls.get('getMultipleActors-activation')?.loadItems?.(items),
-		{ 'active': 'command.getMultipleActors.active', 'inactive': 'command.getMultipleActors.inactive', 'either': 'command.getMultipleActors.either' }
+	useLocalizedOptions(
+		'getMultipleActors-activation',
+		['active', 'inactive', 'either'],
+		(items) => fieldEls.get('getMultipleActors-activation')?.loadItems?.(items),
+		{
+			active: 'command.getMultipleActors.active',
+			inactive: 'command.getMultipleActors.inactive',
+			either: 'command.getMultipleActors.either'
+		}
 	);
 	fieldEls.get('getMultipleActors')?.on?.('open', function (_event: Event) {
 		const items = Data.createTeamItems!();
@@ -153,5 +188,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

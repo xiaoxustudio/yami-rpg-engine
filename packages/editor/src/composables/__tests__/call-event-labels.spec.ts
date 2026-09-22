@@ -92,7 +92,9 @@ describe('CallEvent 参数标签与显隐（P1b 第 7 刀）', () => {
 
 		// 2 个参数各 1 标签 + 1 输入，返回值 1 标签 + 1 输入 —— 正是旧代码
 		// `querySelectorAll('.call-event-component')` 会找到的那批（显隐循环现在直接遍历这份数据）
-		const all = Array.from(gridBox().querySelectorAll('.call-event-component')) as HTMLElement[];
+		const all = Array.from(
+			gridBox().querySelectorAll('.call-event-component')
+		) as HTMLElement[];
 		expect(all.length).toBe(6);
 		expect(labelsInGrid().length).toBe(3);
 

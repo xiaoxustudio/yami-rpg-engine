@@ -41,13 +41,13 @@ pnpm install
 
 ```shell
 # Windows 播放器壳子
-pnpm run build:runtime
+pnpm -F @yami/editor build:runtime
 
 # macOS 播放器壳子（需在 macOS 上执行）
-pnpm run build:runtime:mac
+pnpm -F @yami/editor build:runtime:mac
 ```
 
-产物会安装到 `Project/Templates/electron-win-x64` / `electron-mac-universal.app`。
+产物会安装到 `packages/editor/Project/Templates/electron-win-x64` / `electron-mac-universal.app`。
 
 ## 调试模板与播放器
 
@@ -69,8 +69,16 @@ pnpm debug:template --inspect
 
 ## 运行
 
+先构建再以生产模式启动编辑器：
+
 ```shell
-pnpm run start
+pnpm run start:prod
+```
+
+开发模式（Vite dev server + Electron，热更新）：
+
+```shell
+pnpm dev
 ```
 
 ## 外部 Browser 插件
@@ -81,7 +89,7 @@ pnpm run start
 
 ```shell
 # windows
-npm run build:win
+pnpm run build:win
 
 # macos
 pnpm run build:mac
@@ -102,7 +110,7 @@ pnpm run build:linux
 
 1. 在 https://github.com/Open-Yami-Community/yami-rpg-editor/releases/tag/win 中将需要更新的资源包下载下来
 2. 将其解压并替换到`C:\Users\<用户名>\.openyami\Templates`中
-3. 将`C:\Users\<用户名>\.openyami\Templates\template.json`文件替换为本仓库的`./src/module/packmeta.json`文件
+3. 将`C:\Users\<用户名>\.openyami\Templates\template.json`文件替换为本仓库的`packages/editor/src/module/packmeta.json`文件
 4. 重启编辑器即可
 
 ## 贡献者

@@ -17,14 +17,26 @@
 				v-model="form.triggerId"
 			/>
 			<div class="text">{{ t('components.createTrigger-caster.label') }}</div>
-			<CustomBox id="createTrigger-caster"
-				v-tip="t('components.createTrigger-caster.tip')" type="actor" v-model="form.caster" />
+			<CustomBox
+				id="createTrigger-caster"
+				v-tip="t('components.createTrigger-caster.tip')"
+				type="actor"
+				v-model="form.caster"
+			/>
 			<div class="text">{{ t('components.createTrigger-origin.label') }}</div>
-			<CustomBox id="createTrigger-origin"
-				v-tip="t('components.createTrigger-origin.tip')" type="position" v-model="form.origin" />
+			<CustomBox
+				id="createTrigger-origin"
+				v-tip="t('components.createTrigger-origin.tip')"
+				type="position"
+				v-model="form.origin"
+			/>
 			<div class="text">{{ t('components.createTrigger-angle.label') }}</div>
-			<CustomBox id="createTrigger-angle"
-				v-tip="t('components.createTrigger-angle.tip')" type="angle" v-model="form.angle" />
+			<CustomBox
+				id="createTrigger-angle"
+				v-tip="t('components.createTrigger-angle.tip')"
+				type="angle"
+				v-model="form.angle"
+			/>
 			<div class="text">{{ t('components.createTrigger-distance.label') }}</div>
 			<NumberVar
 				id="createTrigger-distance"
@@ -93,5 +105,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

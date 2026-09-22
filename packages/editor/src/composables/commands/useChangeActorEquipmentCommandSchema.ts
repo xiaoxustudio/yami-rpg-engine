@@ -81,7 +81,8 @@ const createDefault = (): Record<string, unknown> => {
 };
 
 const load = (params: Record<string, unknown> = {}): void => {
-	composableEls.get('changeActorEquipment-slot')
+	composableEls
+		.get('changeActorEquipment-slot')
 		?.loadItems?.(Enum.getStringItems!('equipment-slot'));
 	Object.assign(form, createDefault(), params);
 	requestFocus('changeActorEquipment-actor');

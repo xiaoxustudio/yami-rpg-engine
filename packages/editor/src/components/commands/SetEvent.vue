@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setEvent"
-				:ref="registryRef(fieldEls, 'setEvent')" @confirm="onConfirm">
+	<WindowFrame id="setEvent" :ref="registryRef(fieldEls, 'setEvent')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setEvent.title') }}
@@ -9,9 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setEvent-operation.label') }}</div>
-			<SelectBox id="setEvent-operation"
+			<SelectBox
+				id="setEvent-operation"
 				v-tip="t('components.setEvent-operation.tip')"
-				:ref="registryRef(fieldEls, 'setEvent-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setEvent-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setEvent-variable.label') }}</div>
 			<CustomBox
 				id="setEvent-variable"
@@ -33,9 +36,14 @@
 				v-model="form.eventId"
 			/>
 			<div class="text">{{ t('components.setEvent-choiceIndex.label') }}</div>
-			<NumberVar id="setEvent-choiceIndex"
+			<NumberVar
+				id="setEvent-choiceIndex"
 				v-tip="t('components.setEvent-choiceIndex.tip')"
-				:ref="registryRef(fieldEls, 'setEvent-choiceIndex')" min="0" max="255" v-model="form.choiceIndex" />
+				:ref="registryRef(fieldEls, 'setEvent-choiceIndex')"
+				min="0"
+				max="255"
+				v-model="form.choiceIndex"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -65,11 +73,30 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setEvent-operation', ['stop-propagation', 'pause', 'continue', 'enable', 'disable', 'highest-priority', 'goto-choice-branch'], (items) =>
-		fieldEls.get('setEvent-operation')?.loadItems?.(items),
-		{ 'stop-propagation': 'command.setEvent.stop-propagation', 'pause': 'command.setEvent.pause', 'continue': 'command.setEvent.continue', 'enable': 'command.setEvent.enable', 'disable': 'command.setEvent.disable', 'highest-priority': 'command.setEvent.highest-priority', 'goto-choice-branch': 'command.setEvent.goto-choice-branch' }
+	useLocalizedOptions(
+		'setEvent-operation',
+		[
+			'stop-propagation',
+			'pause',
+			'continue',
+			'enable',
+			'disable',
+			'highest-priority',
+			'goto-choice-branch'
+		],
+		(items) => fieldEls.get('setEvent-operation')?.loadItems?.(items),
+		{
+			'stop-propagation': 'command.setEvent.stop-propagation',
+			pause: 'command.setEvent.pause',
+			continue: 'command.setEvent.continue',
+			enable: 'command.setEvent.enable',
+			disable: 'command.setEvent.disable',
+			'highest-priority': 'command.setEvent.highest-priority',
+			'goto-choice-branch': 'command.setEvent.goto-choice-branch'
+		}
 	);
-	fieldEls.get('setEvent-operation')
+	fieldEls
+		.get('setEvent-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -104,5 +131,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

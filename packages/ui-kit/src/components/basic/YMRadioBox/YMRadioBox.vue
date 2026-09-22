@@ -88,10 +88,7 @@ defineExpose({ root, select });
 	<div
 		ref="root"
 		class="radio-box"
-		:class="[
-			$style.radioBox,
-			{ selected: selected, standard, disabled }
-		]"
+		:class="[$style.radioBox, { selected: selected, standard, disabled }]"
 		:id="props.id"
 		:name="props.name"
 		:tabindex="standard && !disabled ? 0 : undefined"

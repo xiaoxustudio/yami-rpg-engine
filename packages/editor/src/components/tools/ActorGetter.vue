@@ -8,13 +8,22 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.actorGetter-type.label') }}</div>
-			<SelectBox id="actorGetter-type"
+			<SelectBox
+				id="actorGetter-type"
 				v-tip="t('components.actorGetter-type.tip')"
-				:ref="fieldRef('actorGetter-type')" v-focus v-model="form.type" />
+				:ref="fieldRef('actorGetter-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.actorGetter-memberId.label') }}</div>
-			<NumberVar id="actorGetter-memberId"
+			<NumberVar
+				id="actorGetter-memberId"
 				v-tip="t('components.actorGetter-memberId.tip')"
-				:ref="fieldRef('actorGetter-memberId')" min="0" max="10000" v-model="form.memberId" />
+				:ref="fieldRef('actorGetter-memberId')"
+				min="0"
+				max="10000"
+				v-model="form.memberId"
+			/>
 			<div class="text">{{ t('components.actorGetter-actorId.label') }}</div>
 			<CustomBox
 				id="actorGetter-actorId"
@@ -101,5 +110,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

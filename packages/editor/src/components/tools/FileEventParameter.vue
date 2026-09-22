@@ -8,15 +8,26 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileEvent-parameter-type.label') }}</div>
-			<SelectBox id="fileEvent-parameter-type"
+			<SelectBox
+				id="fileEvent-parameter-type"
 				v-tip="t('components.fileEvent-parameter-type.tip')"
-				:ref="registryRef(inspectorEls, 'fileEvent-parameter-type')" v-focus v-model="form.type" />
+				:ref="registryRef(inspectorEls, 'fileEvent-parameter-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.fileEvent-parameter-key.label') }}</div>
-			<TextBox id="fileEvent-parameter-key"
-				v-tip="t('components.fileEvent-parameter-key.tip')" v-focus v-model="form.key" />
+			<TextBox
+				id="fileEvent-parameter-key"
+				v-tip="t('components.fileEvent-parameter-key.tip')"
+				v-focus
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.fileEvent-parameter-note.label') }}</div>
-			<TextArea id="fileEvent-parameter-note"
-				v-tip="t('components.fileEvent-parameter-note.tip')" v-model="form.note" />
+			<TextArea
+				id="fileEvent-parameter-note"
+				v-tip="t('components.fileEvent-parameter-note.tip')"
+				v-model="form.note"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -66,4 +77,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

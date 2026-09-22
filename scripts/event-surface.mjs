@@ -6,17 +6,14 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { NATIVE_EVENTS } from './lib/scan.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SCAN_DIRS = [join('packages', 'editor', 'src'), join('packages', 'ui-kit', 'src')];
 const EXCLUDE_RE = /(?:\.spec\.ts$|\.d\.ts$|\/__tests__\/|\.demo\.vue$)/;
-// 浏览器原生事件（其余视为应用自定义事件）
-const NATIVE = new Set([
-	'pointerup', 'pointermove', 'pointerdown', 'pointercancel', 'keydown', 'keyup', 'keypress',
-	'resize', 'blur', 'focus', 'error', 'unhandledrejection', 'beforeunload', 'dragenter',
-	'dragover', 'dragleave', 'drop', 'dragstart', 'dragend', 'click', 'dblclick', 'wheel',
-	'contextmenu', 'message', 'online', 'offline', 'scroll', 'visibilitychange', 'closed'
-]);
+// 浏览器原生事件（其余视为应用自定义事件）—— 口径**只维护一份**：`scripts/lib/scan.mjs`。
+// 2026-09-21 之前本文件自带一份逐字相同的 `NATIVE` 集合；两份列表一分叉，
+// 报表的「自定义事件」数字就会与门禁对不上。
 
 function collectFiles() {
 	const files = [];
@@ -103,15 +100,20 @@ function main() {
 		const remMatches = src.match(/window\.removeEventListener\(/g) ?? [];
 		adds += addMatches.length;
 		removes += remMatches.length;
-		for (const m of src.matchAll(/window\.addEventListener\(\s*['"]([\w:-]+)['"]/g)) add(listeners, m[1], rel);
+		for (const m of src.matchAll(/window\.addEventListener\(\s*['"]([\w:-]+)['"]/g))
+			add(listeners, m[1], rel);
 		// 派发只统计**落在 window 上**的两种写法：
 		//   ① `window.dispatchEvent(new Event('x'))`
 		//   ② `const e = new Event('x'); …; window.dispatchEvent(e)`（变量形式）
-		for (const m of src.matchAll(/window\.dispatchEvent\(\s*new\s+\w*Event\(\s*['"]([\w:-]+)['"]/g)) {
+		for (const m of src.matchAll(
+			/window\.dispatchEvent\(\s*new\s+\w*Event\(\s*['"]([\w:-]+)['"]/g
+		)) {
 			add(dispatchers, m[1], rel);
 		}
 		const constructed = new Map();
-		for (const m of src.matchAll(/(?:const|let|var)\s+([\w$]+)\s*=\s*new\s+\w*Event\(\s*['"]([\w:-]+)['"]/g)) {
+		for (const m of src.matchAll(
+			/(?:const|let|var)\s+([\w$]+)\s*=\s*new\s+\w*Event\(\s*['"]([\w:-]+)['"]/g
+		)) {
 			constructed.set(m[1], m[2]);
 		}
 		for (const m of src.matchAll(/window\.dispatchEvent\(\s*([\w$]+)\s*\)/g)) {
@@ -121,8 +123,10 @@ function main() {
 		// P4b/E1：自定义事件在 2026-09-12 之后走**类型化通道** `emitCustom` / `onCustom`
 		// （`events/custom-events.ts`：名册 + 载荷形状集中成一张表，内部仍是 window 事件）。
 		// 这两行只是让本报表认得它们——否则整批已迁移的事件会被误判成"派发无监听 / 监听无派发"。
-		for (const m of src.matchAll(/\bemitCustom\(\s*['"]([\w:-]+)['"]/g)) add(dispatchers, m[1], rel);
-		for (const m of src.matchAll(/\bonCustom\(\s*['"]([\w:-]+)['"]/g)) add(listeners, m[1], rel);
+		for (const m of src.matchAll(/\bemitCustom\(\s*['"]([\w:-]+)['"]/g))
+			add(dispatchers, m[1], rel);
+		for (const m of src.matchAll(/\bonCustom\(\s*['"]([\w:-]+)['"]/g))
+			add(listeners, m[1], rel);
 		const calls = scanAddListenerCalls(src);
 		// 内联匿名 + 非 once 才是真正的"无法 remove"风险（once 由浏览器自动摘除）
 		const inlineRisk = calls.filter((c) => c.inline && !c.once).length;
@@ -138,10 +142,14 @@ function main() {
 		windowOn += (src.match(/\bwindow\.on\(/g) ?? []).length;
 	}
 
-	const names = [...new Set([...listeners.keys(), ...dispatchers.keys()])].sort((a, b) => a.localeCompare(b));
-	const custom = names.filter((n) => !NATIVE.has(n));
+	const names = [...new Set([...listeners.keys(), ...dispatchers.keys()])].sort((a, b) =>
+		a.localeCompare(b)
+	);
+	const custom = names.filter((n) => !NATIVE_EVENTS.has(n));
 	// 只对**自定义**事件判定"单侧"（原生事件本就由浏览器派发或在别处派发，不构成问题）
-	const deadCustom = custom.filter((n) => (listeners.get(n)?.size ?? 0) === 0 || (dispatchers.get(n)?.size ?? 0) === 0);
+	const deadCustom = custom.filter(
+		(n) => (listeners.get(n)?.size ?? 0) === 0 || (dispatchers.get(n)?.size ?? 0) === 0
+	);
 
 	console.log('窗口事件面报表（window.addEventListener / dispatchEvent）');
 	console.log(`  扫描文件：${files.length}；add ${adds} 处 / remove ${removes} 处`);
@@ -155,11 +163,16 @@ function main() {
 		const d = dispatchers.get(name)?.size ?? 0;
 		console.log(`    - ${name}：监听 ${l} 文件 / 构造派发 ${d} 文件`);
 	}
-	console.log(`  内联匿名监听（无法 remove）：${inlineAnonymous} 处 / ${inlineFiles.length} 文件`);
-	for (const [rel, n] of inlineFiles.sort((a, b) => b[1] - a[1]).slice(0, 5)) console.log(`    - ${n} 处 ${rel}`);
+	console.log(
+		`  内联匿名监听（无法 remove）：${inlineAnonymous} 处 / ${inlineFiles.length} 文件`
+	);
+	for (const [rel, n] of inlineFiles.sort((a, b) => b[1] - a[1]).slice(0, 5))
+		console.log(`    - ${n} 处 ${rel}`);
 	console.log(`  .vue 内 add 有、remove 无：${vueUnpaired.length} 个文件`);
 	for (const [rel, n] of vueUnpaired) console.log(`    - ${n} 处 add ${rel}`);
-	console.log(`  替代品使用：mitt( ${mittUse} 处、useEventListener( ${useEventListener} 处、window.on( ${windowOn} 处`);
+	console.log(
+		`  替代品使用：mitt( ${mittUse} 处、useEventListener( ${useEventListener} 处、window.on( ${windowOn} 处`
+	);
 }
 
 main();

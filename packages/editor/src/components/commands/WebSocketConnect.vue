@@ -8,14 +8,24 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.webSocketConnect-url.label') }}</div>
-			<StringVar id="webSocketConnect-url"
-				v-tip="t('components.webSocketConnect-url.tip')" v-focus v-model="form.url" />
+			<StringVar
+				id="webSocketConnect-url"
+				v-tip="t('components.webSocketConnect-url.tip')"
+				v-focus
+				v-model="form.url"
+			/>
 			<div class="text">{{ t('components.webSocketConnect-id.label') }}</div>
-			<StringVar id="webSocketConnect-id"
-				v-tip="t('components.webSocketConnect-id.tip')" v-model="form.id" />
+			<StringVar
+				id="webSocketConnect-id"
+				v-tip="t('components.webSocketConnect-id.tip')"
+				v-model="form.id"
+			/>
 			<div class="text">{{ t('components.webSocketConnect-protocols.label') }}</div>
-			<StringVar id="webSocketConnect-protocols"
-				v-tip="t('components.webSocketConnect-protocols.tip')" v-model="form.protocols" />
+			<StringVar
+				id="webSocketConnect-protocols"
+				v-tip="t('components.webSocketConnect-protocols.tip')"
+				v-model="form.protocols"
+			/>
 			<div class="text">{{ t('components.webSocketConnect-onOpen.label') }}</div>
 			<CustomBox
 				id="webSocketConnect-onOpen"
@@ -85,5 +95,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

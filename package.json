@@ -30,8 +30,8 @@
 		"debug:template": "node scripts/debug-template.js",
 		"debug:template:watch": "node scripts/debug-template.js --watch",
 		"typecheck": "pnpm -F @yami/editor typecheck",
-		"lint": "oxlint -c ./.oxlintrc.json packages/editor packages/ui-kit",
-		"lint:fix": "oxlint -c ./.oxlintrc.json --fix packages/editor packages/ui-kit",
+		"lint": "oxlint -c ./.oxlintrc.json packages/editor packages/ui-kit scripts",
+		"lint:fix": "oxlint -c ./.oxlintrc.json --fix packages/editor packages/ui-kit scripts",
 		"dom:guard:tracker": "node scripts/dom-guard.mjs tracker",
 		"dom:guard:fix": "node scripts/dom-guard.mjs fix",
 		"migration:ledger": "node scripts/migration-ledger.mjs",
@@ -45,9 +45,11 @@
 		"migration:lazy-slots-assign": "node scripts/lazy-slot-assign-codemod.mjs",
 		"docs:check": "node scripts/docs-check.mjs",
 		"stale-exemptions": "node scripts/stale-exemptions.mjs",
+		"text:check": "node scripts/check-text-integrity.mjs",
+		"text:rules": "node scripts/check-text-integrity.mjs --rules",
 		"events:surface": "node scripts/event-surface.mjs",
-		"format": "oxfmt -c ./.oxfmtrc.json --write packages/editor",
-		"format:check": "oxfmt -c ./.oxfmtrc.json --check packages/editor"
+		"format": "oxfmt -c ./.oxfmtrc.json --write packages/editor packages/ui-kit",
+		"format:check": "oxfmt -c ./.oxfmtrc.json --check packages/editor packages/ui-kit"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^21.2.2",

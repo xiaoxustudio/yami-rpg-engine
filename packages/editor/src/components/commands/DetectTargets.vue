@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="detectTargets"
-				:ref="registryRef(fieldEls, 'detectTargets')" @confirm="onConfirm">
+	<WindowFrame
+		id="detectTargets"
+		:ref="registryRef(fieldEls, 'detectTargets')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.detectTargets.title') }}
@@ -9,9 +12,14 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.detectTargets-actor.label') }}</div>
-			<CustomBox id="detectTargets-actor"
+			<CustomBox
+				id="detectTargets-actor"
 				:ref="registryRef(fieldEls, 'detectTargets-actor')"
-				v-tip="t('components.detectTargets-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.detectTargets-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.detectTargets-distance.label') }}</div>
 			<NumberVar
 				id="detectTargets-distance"
@@ -25,13 +33,19 @@
 				v-model="form.distance"
 			/>
 			<div class="text">{{ t('components.detectTargets-selector.label') }}</div>
-			<SelectBox id="detectTargets-selector"
+			<SelectBox
+				id="detectTargets-selector"
 				v-tip="t('components.detectTargets-selector.tip')"
-				:ref="registryRef(fieldEls, 'detectTargets-selector')" v-model="form.selector" />
+				:ref="registryRef(fieldEls, 'detectTargets-selector')"
+				v-model="form.selector"
+			/>
 			<div class="text">{{ t('components.detectTargets-inSight.label') }}</div>
-			<SelectBox id="detectTargets-inSight"
+			<SelectBox
+				id="detectTargets-inSight"
 				v-tip="t('components.detectTargets-inSight.tip')"
-				:ref="registryRef(fieldEls, 'detectTargets-inSight')" v-model="form.inSight" />
+				:ref="registryRef(fieldEls, 'detectTargets-inSight')"
+				v-model="form.inSight"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -61,8 +75,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('detectTargets-selector', ['enemy', 'friend', 'team', 'team-except-self', 'any-except-self', 'any'], (items) =>
-		fieldEls.get('detectTargets-selector')?.loadItems?.(items)
+	useLocalizedOptions(
+		'detectTargets-selector',
+		['enemy', 'friend', 'team', 'team-except-self', 'any-except-self', 'any'],
+		(items) => fieldEls.get('detectTargets-selector')?.loadItems?.(items)
 	);
 	useLocalizedOptions('detectTargets-inSight', [true, false], (items) =>
 		fieldEls.get('detectTargets-inSight')?.loadItems?.(items)
@@ -86,5 +102,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

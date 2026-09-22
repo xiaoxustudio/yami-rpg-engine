@@ -21,8 +21,7 @@ const open = (target: unknown): void => api?.open(target);
 const close = (): void => api?.close();
 const resize = (): void => api?.resize();
 const updateHeadAndFoot = (): void => api?.updateHeadAndFoot();
-const createItems = (items: unknown[]): void =>
-	api?.createItems(items as SelectItem[]);
+const createItems = (items: unknown[]): void => api?.createItems(items as SelectItem[]);
 const pageUp = (selectFlag: boolean): void => api?.pageUp(selectFlag);
 const pageDown = (selectFlag: boolean): void => api?.pageDown(selectFlag);
 const getElementIndexOfSelection = (defIndex: number): number =>

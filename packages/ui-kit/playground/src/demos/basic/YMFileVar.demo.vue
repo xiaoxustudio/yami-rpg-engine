@@ -33,7 +33,9 @@ const resetConstant = (): void => {
 <template>
 	<section>
 		<h2>YMFileVar</h2>
-		<p class="desc">文件变量输入框；通过 #file / #variable 插槽自定义展示，支持 v-model 绑定。</p>
+		<p class="desc">
+			文件变量输入框；通过 #file / #variable 插槽自定义展示，支持 v-model 绑定。
+		</p>
 		<div class="row">
 			<div class="field">
 				<YMFileVar ref="fileRef" v-model="filePath">

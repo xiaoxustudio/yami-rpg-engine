@@ -3,19 +3,24 @@
 		<DetailSummary>{{ t('components.fileFont-info-grid.label') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileFont-info-grid">
 			<div class="text">{{ t('components.fileFont-name.label') || 'Name' }}</div>
-			<div class="text" id="fileFont-name"
-				v-tip="t('components.fileFont-name.tip')">{{ form.name }}</div>
+			<div class="text" id="fileFont-name" v-tip="t('components.fileFont-name.tip')">
+				{{ form.name }}
+			</div>
 			<div class="text">{{ t('components.fileFont-size.label') || 'Size' }}</div>
-			<div class="text" id="fileFont-size"
-				v-tip="t('components.fileFont-size.tip')">{{ form.size }}</div>
+			<div class="text" id="fileFont-size" v-tip="t('components.fileFont-size.tip')">
+				{{ form.size }}
+			</div>
 		</div>
 	</DetailBox>
 	<DetailBox id="fileFont-font-detail" open>
 		<DetailSummary>{{
 			t('components.fileFont-font-grid.label') || 'Font Preview'
 		}}</DetailSummary>
-		<div class="detail-grid" id="fileFont-font-grid"
-				:ref="registryRef(inspectorEls, 'fileFont-font-grid')">
+		<div
+			class="detail-grid"
+			id="fileFont-font-grid"
+			:ref="registryRef(inspectorEls, 'fileFont-font-grid')"
+		>
 			<TextBox id="fileFont-content" v-model="form.text" />
 			<div class="text fileFont-preview" id="fileFont-12px">{{ form.text }}</div>
 			<div class="text fileFont-preview" id="fileFont-18px">{{ form.text }}</div>
@@ -104,4 +109,3 @@ onMounted(() => {
 	line-height: 1em;
 }
 </style>
-

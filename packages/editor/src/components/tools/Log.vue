@@ -34,4 +34,3 @@ onMounted(() => {});
 	z-index: 10;
 }
 </style>
-

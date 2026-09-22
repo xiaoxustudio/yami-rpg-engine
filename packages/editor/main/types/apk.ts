@@ -7,7 +7,7 @@
  * 收敛为精确接口。字段清单经 grep `config.\w+` 全量访问实证（17 字段）。
  */
 export interface ApkConfig {
-	/** �原始 APK �路径 */
+	/** 原始 APK 的路径 */
 	apkPath: string;
 	/** 反编译输出目录 */
 	outputDir: string;

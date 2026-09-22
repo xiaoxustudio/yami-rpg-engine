@@ -8,9 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.regionGetter-type.label') }}</div>
-			<SelectBox id="regionGetter-type"
+			<SelectBox
+				id="regionGetter-type"
 				v-tip="t('components.regionGetter-type.tip')"
-				:ref="fieldRef('regionGetter-type')" v-focus v-model="form.type" />
+				:ref="fieldRef('regionGetter-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.regionGetter-presetId.label') }}</div>
 			<CustomBox
 				id="regionGetter-presetId"
@@ -76,5 +80,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

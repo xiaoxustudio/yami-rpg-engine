@@ -8,14 +8,30 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.loadSubscene-sceneId.label') }}</div>
-			<FileVar id="loadSubscene-sceneId"
-				v-tip="t('components.loadSubscene-sceneId.tip')" v-focus type="file" filter="scene" v-model="form.sceneId" />
+			<FileVar
+				id="loadSubscene-sceneId"
+				v-tip="t('components.loadSubscene-sceneId.tip')"
+				v-focus
+				type="file"
+				filter="scene"
+				v-model="form.sceneId"
+			/>
 			<div class="text">{{ t('components.loadSubscene-shiftX.label') }}</div>
-			<NumberVar id="loadSubscene-shiftX"
-				v-tip="t('components.loadSubscene-shiftX.tip')" min="0" max="512" v-model="form.shiftX" />
+			<NumberVar
+				id="loadSubscene-shiftX"
+				v-tip="t('components.loadSubscene-shiftX.tip')"
+				min="0"
+				max="512"
+				v-model="form.shiftX"
+			/>
 			<div class="text">{{ t('components.loadSubscene-shiftY.label') }}</div>
-			<NumberVar id="loadSubscene-shiftY"
-				v-tip="t('components.loadSubscene-shiftY.tip')" min="0" max="512" v-model="form.shiftY" />
+			<NumberVar
+				id="loadSubscene-shiftY"
+				v-tip="t('components.loadSubscene-shiftY.tip')"
+				min="0"
+				max="512"
+				v-model="form.shiftY"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -53,5 +69,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

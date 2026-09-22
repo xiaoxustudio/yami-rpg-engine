@@ -1,7 +1,7 @@
 <template>
 	<YMFont
 		id="font"
-				:ref="registryRef(textCaptureEls, 'font')"
+		:ref="registryRef(textCaptureEls, 'font')"
 		:model-value="form.font"
 		:label="t('components.font-font.label')"
 		v-tip="t('components.font-font.tip')"
@@ -44,4 +44,3 @@ const onConfirm = () => {
 	bottom: 10px;
 }
 </style>
-

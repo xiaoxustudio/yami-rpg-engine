@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="gameData"
-				:ref="registryRef(fieldEls, 'gameData')" @confirm="onConfirm">
+	<WindowFrame id="gameData" :ref="registryRef(fieldEls, 'gameData')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.gameData.title') }}
@@ -9,18 +8,30 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.gameData-operation.label') }}</div>
-			<SelectBox id="gameData-operation"
+			<SelectBox
+				id="gameData-operation"
 				v-tip="t('components.gameData-operation.tip')"
-				:ref="registryRef(fieldEls, 'gameData-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'gameData-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.gameData-index.label') }}</div>
-			<NumberVar id="gameData-index"
+			<NumberVar
+				id="gameData-index"
 				v-tip="t('components.gameData-index.tip')"
-				:ref="registryRef(fieldEls, 'gameData-index')" min="0" max="32" v-model="form.index" />
+				:ref="registryRef(fieldEls, 'gameData-index')"
+				min="0"
+				max="32"
+				v-model="form.index"
+			/>
 			<div class="text">{{ t('components.gameData-variables.label') }}</div>
-			<TextBox id="gameData-variables"
-			:placeholder="t('components.gameData-variables.placeholder')"
+			<TextBox
+				id="gameData-variables"
+				:placeholder="t('components.gameData-variables.placeholder')"
 				v-tip="t('components.gameData-variables.tip')"
-				:ref="registryRef(fieldEls, 'gameData-variables')" v-model="variables" />
+				:ref="registryRef(fieldEls, 'gameData-variables')"
+				v-model="variables"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -57,11 +68,18 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('gameData-operation', ['save', 'load', 'delete'], (items) =>
-		fieldEls.get('gameData-operation')?.loadItems?.(items),
-		{ 'save': 'command.gameData.save', 'load': 'command.gameData.load', 'delete': 'command.gameData.delete' }
+	useLocalizedOptions(
+		'gameData-operation',
+		['save', 'load', 'delete'],
+		(items) => fieldEls.get('gameData-operation')?.loadItems?.(items),
+		{
+			save: 'command.gameData.save',
+			load: 'command.gameData.load',
+			delete: 'command.gameData.delete'
+		}
 	);
-	fieldEls.get('gameData-operation')
+	fieldEls
+		.get('gameData-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -89,5 +107,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

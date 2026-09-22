@@ -8,8 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.ObjectProperty-index-name.label') }}</div>
-			<TextBox id="ObjectProperty-index-name"
-				v-tip="t('components.ObjectProperty-index-name.tip')" v-focus v-model="indexForm.name" />
+			<TextBox
+				id="ObjectProperty-index-name"
+				v-tip="t('components.ObjectProperty-index-name.tip')"
+				v-focus
+				v-model="indexForm.name"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -47,5 +51,4 @@ onMounted(() => {});
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

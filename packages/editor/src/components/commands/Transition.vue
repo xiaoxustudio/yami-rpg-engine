@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="transition"
-				:ref="registryRef(fieldEls, 'transition')" @confirm="onConfirm">
+	<WindowFrame id="transition" :ref="registryRef(fieldEls, 'transition')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.transition.title') }}
@@ -39,8 +38,12 @@
 				v-model="form.end"
 			/>
 			<div class="text">{{ t('components.transition-easingId.label') }}</div>
-			<SelectBox id="transition-easingId"
-				:ref="registryRef(fieldEls, 'transition-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="transition-easingId"
+				:ref="registryRef(fieldEls, 'transition-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.transition-duration.label') }}</div>
 			<NumberVar
 				id="transition-duration"
@@ -102,5 +105,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -8,9 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setButton-property-key.label') }}</div>
-			<SelectBox id="setButton-property-key"
+			<SelectBox
+				id="setButton-property-key"
 				v-tip="t('components.setButton-property-key.tip')"
-				:ref="fieldRef('setButton-property-key')" v-model="form.key" />
+				:ref="fieldRef('setButton-property-key')"
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.setButton-property-image.label') }}</div>
 			<CustomBox
 				id="setButton-property-image"
@@ -20,43 +23,49 @@
 				v-model="form.image"
 			/>
 			<div class="text">{{ t('components.setButton-property-clip-box.label') }}</div>
-			<div id="setButton-property-clip-box"
-				:ref="fieldRef('setButton-property-clip-box')" class="box uiElement-grid-box with-4-columns">
+			<div
+				id="setButton-property-clip-box"
+				:ref="fieldRef('setButton-property-clip-box')"
+				class="box uiElement-grid-box with-4-columns"
+			>
 				<NumberBox
 					id="setButton-property-clip-0"
-				:ref="fieldRef('setButton-property-clip-0')"
+					:ref="fieldRef('setButton-property-clip-0')"
 					min="0"
 					max="10000"
 					v-model="clip0"
 				/>
 				<NumberBox
 					id="setButton-property-clip-1"
-				:ref="fieldRef('setButton-property-clip-1')"
+					:ref="fieldRef('setButton-property-clip-1')"
 					min="0"
 					max="10000"
 					v-model="clip1"
 				/>
 				<NumberBox
 					id="setButton-property-clip-2"
-				:ref="fieldRef('setButton-property-clip-2')"
+					:ref="fieldRef('setButton-property-clip-2')"
 					min="0"
 					max="4000"
 					v-model="clip2"
 				/>
 				<NumberBox
 					id="setButton-property-clip-3"
-				:ref="fieldRef('setButton-property-clip-3')"
+					:ref="fieldRef('setButton-property-clip-3')"
 					min="0"
 					max="4000"
 					v-model="clip3"
 				/>
 			</div>
 			<div class="text">{{ t('components.setButton-property-tint-box.label') }}</div>
-			<div id="setButton-property-tint-box"
-				:ref="fieldRef('setButton-property-tint-box')" class="box uiElement-grid-box with-4-columns">
+			<div
+				id="setButton-property-tint-box"
+				:ref="fieldRef('setButton-property-tint-box')"
+				class="box uiElement-grid-box with-4-columns"
+			>
 				<NumberBox
 					id="setButton-property-tint-0"
-				:ref="fieldRef('setButton-property-tint-0')"
+					:ref="fieldRef('setButton-property-tint-0')"
 					min="-255"
 					max="255"
 					step="5"
@@ -64,7 +73,7 @@
 				/>
 				<NumberBox
 					id="setButton-property-tint-1"
-				:ref="fieldRef('setButton-property-tint-1')"
+					:ref="fieldRef('setButton-property-tint-1')"
 					min="-255"
 					max="255"
 					step="5"
@@ -72,7 +81,7 @@
 				/>
 				<NumberBox
 					id="setButton-property-tint-2"
-				:ref="fieldRef('setButton-property-tint-2')"
+					:ref="fieldRef('setButton-property-tint-2')"
 					min="-255"
 					max="255"
 					step="5"
@@ -80,7 +89,7 @@
 				/>
 				<NumberBox
 					id="setButton-property-tint-3"
-				:ref="fieldRef('setButton-property-tint-3')"
+					:ref="fieldRef('setButton-property-tint-3')"
 					min="0"
 					max="255"
 					step="5"

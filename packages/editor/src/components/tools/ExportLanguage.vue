@@ -8,13 +8,19 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.exportLanguage-first.label') }}</div>
-			<SelectBox id="exportLanguage-first"
+			<SelectBox
+				id="exportLanguage-first"
 				v-tip="t('components.exportLanguage-first.tip')"
-				:ref="registryRef(localEls, 'exportLanguage-first')" v-model="form.first" />
+				:ref="registryRef(localEls, 'exportLanguage-first')"
+				v-model="form.first"
+			/>
 			<div class="text">{{ t('components.exportLanguage-second.label') }}</div>
-			<SelectBox id="exportLanguage-second"
+			<SelectBox
+				id="exportLanguage-second"
 				v-tip="t('components.exportLanguage-second.tip')"
-				:ref="registryRef(localEls, 'exportLanguage-second')" v-model="form.second" />
+				:ref="registryRef(localEls, 'exportLanguage-second')"
+				v-model="form.second"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -63,10 +69,7 @@ const setForm = (data: Partial<ExportLanguageForm>): void => {
 const getForm = (): ExportLanguageForm => {
 	const data = { ...form } as ExportLanguageForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = registryElement<HTMLElement & { read?: () => unknown }>(
-			composableEls,
-			id
-		);
+		const control = registryElement<HTMLElement & { read?: () => unknown }>(composableEls, id);
 		if (control && typeof control.read === 'function') {
 			data[field] = control.read() as never;
 		}
@@ -102,4 +105,3 @@ onMounted(() => {
 	bottom: 10px;
 }
 </style>
-

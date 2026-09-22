@@ -8,8 +8,15 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.wait-duration.label') }}</div>
-			<NumberVar id="wait-duration"
-				v-tip="t('components.wait-duration.tip')" v-focus min="1" max="3600000" unit="ms" v-model="form.duration" />
+			<NumberVar
+				id="wait-duration"
+				v-tip="t('components.wait-duration.tip')"
+				v-focus
+				min="1"
+				max="3600000"
+				unit="ms"
+				v-model="form.duration"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -46,5 +53,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

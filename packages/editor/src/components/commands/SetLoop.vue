@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setLoop"
-				:ref="registryRef(fieldEls, 'setLoop')" @confirm="onConfirm">
+	<WindowFrame id="setLoop" :ref="registryRef(fieldEls, 'setLoop')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setLoop.title') }}
@@ -9,13 +8,20 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setLoop-type.label') }}</div>
-			<SelectBox id="setLoop-type"
+			<SelectBox
+				id="setLoop-type"
 				v-tip="t('components.setLoop-type.tip')"
-				:ref="registryRef(fieldEls, 'setLoop-type')" v-focus v-model="form.type" />
+				:ref="registryRef(fieldEls, 'setLoop-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.setLoop-loop.label') }}</div>
-			<SelectBox id="setLoop-loop"
+			<SelectBox
+				id="setLoop-loop"
 				v-tip="t('components.setLoop-loop.tip')"
-				:ref="registryRef(fieldEls, 'setLoop-loop')" v-model="form.loop" />
+				:ref="registryRef(fieldEls, 'setLoop-loop')"
+				v-model="form.loop"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -48,9 +54,11 @@ onMounted(() => {
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' }
 	]);
-	useLocalizedOptions('setLoop-loop', [false, true], (items) =>
-		fieldEls.get('setLoop-loop')?.loadItems?.(items),
-		{ 'false': 'command.setLoop.once', 'true': 'command.setLoop.loop' }
+	useLocalizedOptions(
+		'setLoop-loop',
+		[false, true],
+		(items) => fieldEls.get('setLoop-loop')?.loadItems?.(items),
+		{ false: 'command.setLoop.once', true: 'command.setLoop.loop' }
 	);
 });
 </script>
@@ -71,5 +79,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -62,7 +62,9 @@ const toggleDisabled = () => {
 <template>
 	<section class="demo">
 		<h2>YMCustomBox</h2>
-		<p class="desc">自定义选择框：点击触发 getter（模拟文件选择/目录选择），parsers 负责展示与非法值标红。</p>
+		<p class="desc">
+			自定义选择框：点击触发 getter（模拟文件选择/目录选择），parsers 负责展示与非法值标红。
+		</p>
 		<div class="row">
 			<div class="field">
 				<span class="label">file</span>
@@ -103,7 +105,9 @@ const toggleDisabled = () => {
 		</div>
 		<div class="row">
 			<YMButton @click="toggleDisabled">Toggle Disabled</YMButton>
-			<span class="hint">file={{ fileValue }} dir={{ dirValue }} number={{ numberValue }}</span>
+			<span class="hint"
+				>file={{ fileValue }} dir={{ dirValue }} number={{ numberValue }}</span
+			>
 		</div>
 		<div class="row">
 			<span class="hint">{{ lastWrite }}</span>

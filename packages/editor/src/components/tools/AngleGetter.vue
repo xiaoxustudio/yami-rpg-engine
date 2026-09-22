@@ -8,13 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.angleGetter-type.label') }}</div>
-			<SelectBox id="angleGetter-type"
+			<SelectBox
+				id="angleGetter-type"
 				v-tip="t('components.angleGetter-type.tip')"
-				:ref="fieldRef('angleGetter-type')" v-focus v-model="form.type" />
+				:ref="fieldRef('angleGetter-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.angleGetter-position-position.label') }}</div>
-			<CustomBox id="angleGetter-position-position"
+			<CustomBox
+				id="angleGetter-position-position"
 				v-tip="t('components.angleGetter-position-position.tip')"
-				:ref="fieldRef('angleGetter-position-position')" type="position" v-model="form.position" />
+				:ref="fieldRef('angleGetter-position-position')"
+				type="position"
+				v-model="form.position"
+			/>
 			<div class="text">{{ t('components.angleGetter-common-degrees.label') }}</div>
 			<NumberVar
 				id="angleGetter-common-degrees"
@@ -82,5 +90,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

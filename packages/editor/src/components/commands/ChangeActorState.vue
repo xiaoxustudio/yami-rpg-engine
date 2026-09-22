@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="changeActorState"
-				:ref="registryRef(fieldEls, 'changeActorState')" @confirm="onConfirm">
+	<WindowFrame
+		id="changeActorState"
+		:ref="registryRef(fieldEls, 'changeActorState')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.changeActorState.title') }}
@@ -9,13 +12,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeActorState-actor.label') }}</div>
-			<CustomBox id="changeActorState-actor"
+			<CustomBox
+				id="changeActorState-actor"
 				:ref="registryRef(fieldEls, 'changeActorState-actor')"
-				v-tip="t('components.changeActorState-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.changeActorState-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.changeActorState-operation.label') }}</div>
-			<SelectBox id="changeActorState-operation"
+			<SelectBox
+				id="changeActorState-operation"
 				v-tip="t('components.changeActorState-operation.tip')"
-				:ref="registryRef(fieldEls, 'changeActorState-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'changeActorState-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.changeActorState-stateId.label') }}</div>
 			<CustomBox
 				id="changeActorState-stateId"
@@ -27,9 +38,13 @@
 				v-model="form.stateId"
 			/>
 			<div class="text">{{ t('components.changeActorState-state.label') }}</div>
-			<CustomBox id="changeActorState-state"
+			<CustomBox
+				id="changeActorState-state"
 				v-tip="t('components.changeActorState-state.tip')"
-				:ref="registryRef(fieldEls, 'changeActorState-state')" type="state" v-model="form.state" />
+				:ref="registryRef(fieldEls, 'changeActorState-state')"
+				type="state"
+				v-model="form.state"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -58,11 +73,18 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('changeActorState-operation', ['add', 'remove', 'remove-instance'], (items) =>
-		fieldEls.get('changeActorState-operation')?.loadItems?.(items),
-		{ 'add': 'command.changeActorState.add', 'remove': 'command.changeActorState.remove', 'remove-instance': 'command.changeActorState.remove-instance' }
+	useLocalizedOptions(
+		'changeActorState-operation',
+		['add', 'remove', 'remove-instance'],
+		(items) => fieldEls.get('changeActorState-operation')?.loadItems?.(items),
+		{
+			add: 'command.changeActorState.add',
+			remove: 'command.changeActorState.remove',
+			'remove-instance': 'command.changeActorState.remove-instance'
+		}
 	);
-	fieldEls.get('changeActorState-operation')
+	fieldEls
+		.get('changeActorState-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -93,5 +115,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

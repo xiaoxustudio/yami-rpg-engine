@@ -8,9 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileActor-sprite-id.label') }}</div>
-			<SelectBox id="fileActor-sprite-id"
+			<SelectBox
+				id="fileActor-sprite-id"
 				v-tip="t('components.fileActor-sprite-id.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-sprite-id')" v-focus v-model="form.id" />
+				:ref="registryRef(inspectorEls, 'fileActor-sprite-id')"
+				v-focus
+				v-model="form.id"
+			/>
 			<div class="text">{{ t('components.fileActor-sprite-image.label') }}</div>
 			<CustomBox
 				id="fileActor-sprite-image"
@@ -63,5 +67,4 @@ onMounted(() => {});
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

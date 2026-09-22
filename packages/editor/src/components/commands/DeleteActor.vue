@@ -8,8 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.deleteActor-actor.label') }}</div>
-			<CustomBox id="deleteActor-actor"
-				v-tip="t('components.deleteActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
+			<CustomBox
+				id="deleteActor-actor"
+				v-tip="t('components.deleteActor-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -46,5 +51,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

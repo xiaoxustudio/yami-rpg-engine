@@ -60,7 +60,15 @@ interface VariableModule {
 	panelKeydown: ((event: KeyboardEvent) => void) | null;
 	searcherInput: ((event: InputEvent) => void) | null;
 	confirm: (event?: Event) => void;
-	apply: ((event: Event) => void) | null;
+	/**
+	 * 「应用」动作。参数**可选**：它有两条调用路径 ——
+	 * 窗口按钮走 `Variable?.apply?.(new Event('click'))`（带事件），
+	 * 而 `Variable.confirm` 内部要主动触发一次（无事件，故过去写成
+	 * `this.apply!(undefined as unknown as Event)`——两处谎言）。
+	 * 兄弟单例（`Attribute` / `Enum` / `Localization` / `PluginManager`）本来
+	 * 就是以 `x?.apply?.()` 无参调用的，这里只是把 `Variable` 对齐到同一契约。
+	 */
+	apply: ((event?: Event) => void) | null;
 	list_saveScroll: () => void;
 	list_restoreScroll: () => void;
 	list_cancelSearch: () => void;

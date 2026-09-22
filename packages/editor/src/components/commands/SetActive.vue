@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setActive"
-				:ref="registryRef(fieldEls, 'setActive')" @confirm="onConfirm">
+	<WindowFrame id="setActive" :ref="registryRef(fieldEls, 'setActive')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setActive.title') }}
@@ -9,13 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setActive-actor.label') }}</div>
-			<CustomBox id="setActive-actor"
+			<CustomBox
+				id="setActive-actor"
 				:ref="registryRef(fieldEls, 'setActive-actor')"
-				v-tip="t('components.setActive-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.setActive-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.setActive-active.label') }}</div>
-			<SelectBox id="setActive-active"
+			<SelectBox
+				id="setActive-active"
 				v-tip="t('components.setActive-active.tip')"
-				:ref="registryRef(fieldEls, 'setActive-active')" v-model="form.active" />
+				:ref="registryRef(fieldEls, 'setActive-active')"
+				v-model="form.active"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -44,9 +51,11 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setActive-active', [true, false], (items) =>
-		fieldEls.get('setActive-active')?.loadItems?.(items),
-		{ 'true': 'command.setActive.active.true', 'false': 'command.setActive.active.false' }
+	useLocalizedOptions(
+		'setActive-active',
+		[true, false],
+		(items) => fieldEls.get('setActive-active')?.loadItems?.(items),
+		{ true: 'command.setActive.active.true', false: 'command.setActive.active.false' }
 	);
 });
 </script>
@@ -67,5 +76,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

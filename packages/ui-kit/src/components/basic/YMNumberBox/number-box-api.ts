@@ -37,7 +37,13 @@ interface NumberBoxData {
 	decimals: number;
 }
 
-interface HistoryInputElement extends HTMLInputElement {
+/**
+ * 带历史记录的内部 input 元素（attachNumberBoxApi 在挂载时把它装到 input 上）。
+ *
+ * 导出以便**消费方**不必各自写 as unknown as { history: unknown } —— 编辑器侧 3 个
+ * components/common/*.vue 曾各写一遍同形断言（2026-09-21 第 89 轮）。
+ */
+export interface HistoryInputElement extends HTMLInputElement {
 	history: { reset(): void };
 }
 

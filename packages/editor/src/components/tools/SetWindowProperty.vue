@@ -9,9 +9,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setWindow-property-key.label') }}</div>
-			<SelectBox id="setWindow-property-key"
+			<SelectBox
+				id="setWindow-property-key"
 				v-tip="t('components.setWindow-property-key.tip')"
-				:ref="fieldRef('setWindow-property-key')" v-model="form.key" />
+				:ref="fieldRef('setWindow-property-key')"
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.setWindow-property-scrollX.label') }}</div>
 			<NumberVar
 				id="setWindow-property-scrollX"
@@ -133,4 +136,3 @@ onMounted(() => {
 	bottom: 10px;
 }
 </style>
-

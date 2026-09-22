@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="moveElement"
-				:ref="registryRef(fieldEls, 'moveElement')" @confirm="onConfirm">
+	<WindowFrame id="moveElement" :ref="registryRef(fieldEls, 'moveElement')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.moveElement.title') }}
@@ -9,15 +8,28 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.moveElement-element.label') }}</div>
-			<CustomBox id="moveElement-element"
+			<CustomBox
+				id="moveElement-element"
 				:ref="registryRef(fieldEls, 'moveElement-element')"
-				v-tip="t('components.moveElement-element.tip')" v-focus type="element" v-model="form.element" />
+				v-tip="t('components.moveElement-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.moveElement-properties.label') }}</div>
-			<ParamList id="moveElement-properties"
-				:ref="registryRef(fieldEls, 'moveElement-properties')" v-focus v-model="form.properties" />
+			<ParamList
+				id="moveElement-properties"
+				:ref="registryRef(fieldEls, 'moveElement-properties')"
+				v-focus
+				v-model="form.properties"
+			/>
 			<div class="text">{{ t('components.moveElement-easingId.label') }}</div>
-			<SelectBox id="moveElement-easingId"
-				:ref="registryRef(fieldEls, 'moveElement-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="moveElement-easingId"
+				:ref="registryRef(fieldEls, 'moveElement-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.moveElement-duration.label') }}</div>
 			<NumberBox
 				id="moveElement-duration"
@@ -29,8 +41,12 @@
 				v-model="duration"
 			/>
 			<div class="text">{{ t('components.moveElement-wait.label') }}</div>
-			<SelectBox id="moveElement-wait"
-				:ref="registryRef(fieldEls, 'moveElement-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="moveElement-wait"
+				:ref="registryRef(fieldEls, 'moveElement-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -104,5 +120,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

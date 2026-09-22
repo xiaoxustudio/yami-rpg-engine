@@ -38,7 +38,11 @@ const useVariable = (): void => {
 };
 
 const loadMore = (): void => {
-	selectRef.value?.loadItems([...baseItems, { value: 'light', name: 'Light' }, { value: 'dark', name: 'Dark' }]);
+	selectRef.value?.loadItems([
+		...baseItems,
+		{ value: 'light', name: 'Light' },
+		{ value: 'dark', name: 'Dark' }
+	]);
 	read();
 };
 

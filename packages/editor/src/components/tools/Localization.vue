@@ -1,6 +1,12 @@
 <template>
-	<WindowFrame id="localization"
-				:ref="registryRef(localEls, 'localization')" show-apply mode="center" @apply="onApply" @confirm="onConfirm">
+	<WindowFrame
+		id="localization"
+		:ref="registryRef(localEls, 'localization')"
+		show-apply
+		mode="center"
+		@apply="onApply"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.localization.title') }}
@@ -21,14 +27,30 @@
 				@popup="onListPopup"
 			/>
 		</div>
-		<div class="box" id="localization-inspector"
-				:ref="registryRef(localEls, 'localization-inspector')" />
-		<TextBox id="localization-searcher"
-				:ref="registryRef(localEls, 'localization-searcher')" name="search" />
-		<button id="localization-from-excel"
-				:ref="registryRef(localEls, 'localization-from-excel')" name="from-excel">from-excel</button>
-		<button id="localization-to-excel"
-				:ref="registryRef(localEls, 'localization-to-excel')" name="to-excel">to-excel</button>
+		<div
+			class="box"
+			id="localization-inspector"
+			:ref="registryRef(localEls, 'localization-inspector')"
+		/>
+		<TextBox
+			id="localization-searcher"
+			:ref="registryRef(localEls, 'localization-searcher')"
+			name="search"
+		/>
+		<button
+			id="localization-from-excel"
+			:ref="registryRef(localEls, 'localization-from-excel')"
+			name="from-excel"
+		>
+			from-excel
+		</button>
+		<button
+			id="localization-to-excel"
+			:ref="registryRef(localEls, 'localization-to-excel')"
+			name="to-excel"
+		>
+			to-excel
+		</button>
 	</WindowFrame>
 </template>
 
@@ -165,4 +187,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

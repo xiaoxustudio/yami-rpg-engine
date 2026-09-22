@@ -9,17 +9,29 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.skillGetter-type.label') }}</div>
-			<SelectBox id="skillGetter-type"
+			<SelectBox
+				id="skillGetter-type"
 				v-tip="t('components.skillGetter-type.tip')"
-				:ref="fieldRef('skillGetter-type')" v-focus v-model="form.type" />
+				:ref="fieldRef('skillGetter-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.skillGetter-actor.label') }}</div>
-			<CustomBox id="skillGetter-actor"
+			<CustomBox
+				id="skillGetter-actor"
 				v-tip="t('components.skillGetter-actor.tip')"
-				:ref="fieldRef('skillGetter-actor')" type="actor" v-model="form.actor" />
+				:ref="fieldRef('skillGetter-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.skillGetter-key.label') }}</div>
-			<SelectVar id="skillGetter-key"
+			<SelectVar
+				id="skillGetter-key"
 				v-tip="t('components.skillGetter-key.tip')"
-				:ref="fieldRef('skillGetter-key')" v-focus v-model="form.key" />
+				:ref="fieldRef('skillGetter-key')"
+				v-focus
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.skillGetter-skillId.label') }}</div>
 			<CustomBox
 				id="skillGetter-skillId"
@@ -96,5 +108,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

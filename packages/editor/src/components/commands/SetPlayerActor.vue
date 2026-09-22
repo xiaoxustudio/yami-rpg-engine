@@ -8,8 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setPlayerActor-actor.label') }}</div>
-			<CustomBox id="setPlayerActor-actor"
-				v-tip="t('components.setPlayerActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
+			<CustomBox
+				id="setPlayerActor-actor"
+				v-tip="t('components.setPlayerActor-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -46,5 +51,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

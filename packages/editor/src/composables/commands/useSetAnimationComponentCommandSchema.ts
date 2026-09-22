@@ -120,11 +120,14 @@ export function useSetAnimationComponentCommandSchema() {
 	const onLoad = (params: Record<string, unknown>): void => {
 		const animationId = (params.animationId ?? '') as string;
 		if (animationId !== '') {
-			composableEls.get('setAnimationComponent-motion')
+			composableEls
+				.get('setAnimationComponent-motion')
 				?.loadItems?.(Animation.getMotionListItems!(animationId));
-			composableEls.get('setAnimationComponent-playMotion')
+			composableEls
+				.get('setAnimationComponent-playMotion')
 				?.loadItems?.(Animation.getMotionListItems!(animationId));
-			composableEls.get('setAnimationComponent-spriteId')
+			composableEls
+				.get('setAnimationComponent-spriteId')
 				?.loadItems?.(Animation.getSpriteListItems!(animationId));
 		}
 		load(params);

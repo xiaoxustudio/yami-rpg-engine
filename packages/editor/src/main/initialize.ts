@@ -1,7 +1,6 @@
 import { Timer } from '@app/utils/timer';
 import { lazyComponentsReady } from '@app/bootstrap';
 import { loadConfigPromise } from '@app/utils/config';
-import { registerTool, type ToolInstance } from '@app/tools/tool-registry';
 import { primeWindows } from '@app/tools/window-registry';
 import { Window } from '@app/tools/window-object.ts';
 import '@app/variable/initialize.ts';
@@ -113,17 +112,6 @@ Editor.initialize = async function (this: typeof Editor) {
 				cluster.Title.initialize!();
 				initEditors(cluster);
 				initTools(cluster);
-
-				registerTool('ArrayList', cluster.ArrayList as ToolInstance);
-				registerTool('Color', cluster.Color as ToolInstance);
-				registerTool('ImageClip', cluster.ImageClip as ToolInstance);
-				registerTool('Rename', cluster.Rename as ToolInstance);
-				registerTool('SetKey', cluster.SetKey as ToolInstance);
-				registerTool('SetQuantity', cluster.SetQuantity as ToolInstance);
-				registerTool('Zoom', cluster.Zoom as ToolInstance);
-				registerTool('PresetObject', cluster.PresetObject as ToolInstance);
-				registerTool('PresetElement', cluster.PresetElement as ToolInstance);
-				registerTool('Selection', cluster.Selection as ToolInstance);
 
 				EventBus.emit('editor_loaded');
 			})

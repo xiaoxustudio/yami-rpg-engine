@@ -1,7 +1,6 @@
 <template>
 	<!-- 队伍窗口 -->
-	<WindowFrame id="team"
-				:ref="registryRef(composableEls, 'team')" @confirm="onConfirm">
+	<WindowFrame id="team" :ref="registryRef(composableEls, 'team')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.team.title') }}
@@ -125,4 +124,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

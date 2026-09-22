@@ -233,8 +233,14 @@ const drop = (_event: DragEvent): void => {
 
 defineExpose({ read, write, input, update, enable, disable, focus, on, root, initializeApi });
 
-watch(() => props.modelValue, (val) => write(val));
-watch(() => props.disabled, (val) => (val ? disable() : enable()));
+watch(
+	() => props.modelValue,
+	(val) => write(val)
+);
+watch(
+	() => props.disabled,
+	(val) => (val ? disable() : enable())
+);
 
 function initializeApi(): void {
 	const el = root.value as (HTMLElement & { [k: string]: unknown }) | null;
@@ -277,7 +283,7 @@ function initializeApi(): void {
 
 	write(props.modelValue);
 	if (props.disabled) disable();
-};
+}
 
 onMounted(initializeApi);
 </script>
@@ -358,4 +364,3 @@ onMounted(initializeApi);
 	color: var(--text-color-error);
 }
 </style>
-

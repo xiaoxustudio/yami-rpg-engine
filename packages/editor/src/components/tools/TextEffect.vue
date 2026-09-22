@@ -9,9 +9,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.textEffect-type.label') }}</div>
-			<SelectBox id="textEffect-type"
+			<SelectBox
+				id="textEffect-type"
 				v-tip="t('components.textEffect-type.tip')"
-				:ref="registryRef(textCaptureEls, 'textEffect-type')" v-model="form.type" />
+				:ref="registryRef(textCaptureEls, 'textEffect-type')"
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.textEffect-shadowOffsetX.label') }}</div>
 			<NumberBox
 				id="textEffect-shadowOffsetX"
@@ -43,9 +46,12 @@
 				v-model="form.strokeWidth"
 			/>
 			<div class="text">{{ t('components.textEffect-color.label') }}</div>
-			<ColorBox id="textEffect-color"
+			<ColorBox
+				id="textEffect-color"
 				v-tip="t('components.textEffect-color.tip')"
-				:ref="registryRef(textCaptureEls, 'textEffect-color')" v-model="form.color" />
+				:ref="registryRef(textCaptureEls, 'textEffect-color')"
+				v-model="form.color"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -87,4 +93,3 @@ const onConfirm = () => {
 	bottom: 10px;
 }
 </style>
-

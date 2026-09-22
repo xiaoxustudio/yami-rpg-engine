@@ -102,7 +102,6 @@ const makeOptions = (overrides: Partial<CommandListApiOptions> = {}): CommandLis
 	...overrides
 });
 
-
 /** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
 const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandListElementApi>(
 	options: CommandListApiOptions

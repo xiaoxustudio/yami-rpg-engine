@@ -80,7 +80,10 @@ const onWheel = (event: WheelEvent): void => {
 	}
 };
 
-watch(() => props.modelValue, (val) => write(val));
+watch(
+	() => props.modelValue,
+	(val) => write(val)
+);
 
 onMounted(() => {
 	write(props.modelValue);

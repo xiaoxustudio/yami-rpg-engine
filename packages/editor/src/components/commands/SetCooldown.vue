@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setCooldown"
-				:ref="registryRef(fieldEls, 'setCooldown')" @confirm="onConfirm">
+	<WindowFrame id="setCooldown" :ref="registryRef(fieldEls, 'setCooldown')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setCooldown.title') }}
@@ -9,17 +8,28 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setCooldown-actor.label') }}</div>
-			<CustomBox id="setCooldown-actor"
+			<CustomBox
+				id="setCooldown-actor"
 				:ref="registryRef(fieldEls, 'setCooldown-actor')"
-				v-tip="t('components.setCooldown-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.setCooldown-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.setCooldown-operation.label') }}</div>
-			<SelectBox id="setCooldown-operation"
+			<SelectBox
+				id="setCooldown-operation"
 				v-tip="t('components.setCooldown-operation.tip')"
-				:ref="registryRef(fieldEls, 'setCooldown-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setCooldown-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setCooldown-key.label') }}</div>
-			<SelectVar id="setCooldown-key"
+			<SelectVar
+				id="setCooldown-key"
 				:ref="registryRef(fieldEls, 'setCooldown-key')"
-				v-tip="t('components.setCooldown-key.tip')" v-model="form.key" />
+				v-tip="t('components.setCooldown-key.tip')"
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.setCooldown-cooldown.label') }}</div>
 			<NumberVar
 				id="setCooldown-cooldown"
@@ -60,9 +70,15 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setCooldown-operation', ['set', 'increase', 'decrease'], (items) =>
-		fieldEls.get('setCooldown-operation')?.loadItems?.(items),
-		{ 'set': 'command.setCooldown.set', 'increase': 'command.setCooldown.increase', 'decrease': 'command.setCooldown.decrease' }
+	useLocalizedOptions(
+		'setCooldown-operation',
+		['set', 'increase', 'decrease'],
+		(items) => fieldEls.get('setCooldown-operation')?.loadItems?.(items),
+		{
+			set: 'command.setCooldown.set',
+			increase: 'command.setCooldown.increase',
+			decrease: 'command.setCooldown.decrease'
+		}
 	);
 });
 </script>
@@ -83,5 +99,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

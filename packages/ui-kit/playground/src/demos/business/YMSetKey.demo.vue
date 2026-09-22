@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { YMButton, YMSetKey } from '@ui-kit';
 
-
 type FrameElement = HTMLElement & { open?(): void; close?(): boolean };
 
 const openDialog = (id: string) => (document.getElementById(id) as FrameElement | null)?.open?.();
@@ -12,7 +11,6 @@ const setKeyValue = ref('');
 const onConfirm = () => {
 	closeDialog('setKey');
 };
-
 </script>
 
 <template>
@@ -23,7 +21,13 @@ const onConfirm = () => {
 			<YMButton variant="primary" @click="openDialog('setKey')">Open Set Key</YMButton>
 			<span class="hint">value: {{ setKeyValue }}</span>
 		</div>
-		<YMSetKey v-model="setKeyValue" label="Key" title="Set Key" @confirm="onConfirm" @closed="() => {}" />
+		<YMSetKey
+			v-model="setKeyValue"
+			label="Key"
+			title="Set Key"
+			@confirm="onConfirm"
+			@closed="() => {}"
+		/>
 	</section>
 </template>
 

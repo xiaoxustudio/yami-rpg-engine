@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { YMButton, YMFontSize } from '@ui-kit';
 
-
 type FrameElement = HTMLElement & { open?(): void; close?(): boolean };
 
 const openDialog = (id: string) => (document.getElementById(id) as FrameElement | null)?.open?.();
@@ -12,13 +11,14 @@ const fontSizeValue = ref(16);
 const onConfirm = () => {
 	closeDialog('fontSize');
 };
-
 </script>
 
 <template>
 	<section class="demo">
 		<h2>YMFontSize</h2>
-		<p class="desc">字号输入窗口：数值输入框（min/max/unit 可配，默认 10~400 px），确认触发 confirm。</p>
+		<p class="desc">
+			字号输入窗口：数值输入框（min/max/unit 可配，默认 10~400 px），确认触发 confirm。
+		</p>
 		<div class="row">
 			<YMButton variant="primary" @click="openDialog('fontSize')">Open Font Size</YMButton>
 			<span class="hint">value: {{ fontSizeValue }}px</span>

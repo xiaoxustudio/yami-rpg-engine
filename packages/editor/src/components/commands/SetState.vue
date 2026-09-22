@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setState"
-				:ref="registryRef(fieldEls, 'setState')" @confirm="onConfirm">
+	<WindowFrame id="setState" :ref="registryRef(fieldEls, 'setState')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setState.title') }}
@@ -9,17 +8,31 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setState-state.label') }}</div>
-			<CustomBox id="setState-state"
+			<CustomBox
+				id="setState-state"
 				:ref="registryRef(fieldEls, 'setState-state')"
-				v-tip="t('components.setState-state.tip')" v-focus type="state" v-model="form.state" />
+				v-tip="t('components.setState-state.tip')"
+				v-focus
+				type="state"
+				v-model="form.state"
+			/>
 			<div class="text">{{ t('components.setState-operation.label') }}</div>
-			<SelectBox id="setState-operation"
+			<SelectBox
+				id="setState-operation"
 				v-tip="t('components.setState-operation.tip')"
-				:ref="registryRef(fieldEls, 'setState-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setState-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setState-time.label') }}</div>
-			<NumberVar id="setState-time"
+			<NumberVar
+				id="setState-time"
 				:ref="registryRef(fieldEls, 'setState-time')"
-				v-tip="t('components.setState-time.tip')" min="0" max="36000000" unit="ms" v-model="form.time" />
+				v-tip="t('components.setState-time.tip')"
+				min="0"
+				max="36000000"
+				unit="ms"
+				v-model="form.time"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -49,8 +62,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setState-operation', ['set-time', 'increase-time', 'decrease-time'], (items) =>
-		fieldEls.get('setState-operation')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setState-operation',
+		['set-time', 'increase-time', 'decrease-time'],
+		(items) => fieldEls.get('setState-operation')?.loadItems?.(items)
 	);
 });
 </script>
@@ -71,5 +86,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

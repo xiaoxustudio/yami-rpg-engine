@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="changeThreat"
-				:ref="registryRef(fieldEls, 'changeThreat')" @confirm="onConfirm">
+	<WindowFrame
+		id="changeThreat"
+		:ref="registryRef(fieldEls, 'changeThreat')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.changeThreat.title') }}
@@ -9,17 +12,29 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeThreat-actor.label') }}</div>
-			<CustomBox id="changeThreat-actor"
+			<CustomBox
+				id="changeThreat-actor"
 				:ref="registryRef(fieldEls, 'changeThreat-actor')"
-				v-tip="t('components.changeThreat-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.changeThreat-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.changeThreat-target.label') }}</div>
-			<CustomBox id="changeThreat-target"
+			<CustomBox
+				id="changeThreat-target"
 				:ref="registryRef(fieldEls, 'changeThreat-target')"
-				v-tip="t('components.changeThreat-target.tip')" type="actor" v-model="form.target" />
+				v-tip="t('components.changeThreat-target.tip')"
+				type="actor"
+				v-model="form.target"
+			/>
 			<div class="text">{{ t('components.changeThreat-operation.label') }}</div>
-			<SelectBox id="changeThreat-operation"
+			<SelectBox
+				id="changeThreat-operation"
 				v-tip="t('components.changeThreat-operation.tip')"
-				:ref="registryRef(fieldEls, 'changeThreat-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'changeThreat-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.changeThreat-threat.label') }}</div>
 			<NumberVar
 				id="changeThreat-threat"
@@ -59,9 +74,11 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('changeThreat-operation', ['increase', 'decrease'], (items) =>
-		fieldEls.get('changeThreat-operation')?.loadItems?.(items),
-		{ 'increase': 'command.changeThreat.increase', 'decrease': 'command.changeThreat.decrease' }
+	useLocalizedOptions(
+		'changeThreat-operation',
+		['increase', 'decrease'],
+		(items) => fieldEls.get('changeThreat-operation')?.loadItems?.(items),
+		{ increase: 'command.changeThreat.increase', decrease: 'command.changeThreat.decrease' }
 	);
 });
 </script>
@@ -82,5 +99,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

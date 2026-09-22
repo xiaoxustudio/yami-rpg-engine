@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { YMButton, YMZoom } from '@ui-kit';
 
-
 type FrameElement = HTMLElement & { open?(): void; close?(): boolean };
 
 const openDialog = (id: string) => (document.getElementById(id) as FrameElement | null)?.open?.();
@@ -12,13 +11,14 @@ const zoomValue = ref(1);
 const onConfirm = () => {
 	closeDialog('zoom');
 };
-
 </script>
 
 <template>
 	<section class="demo">
 		<h2>YMZoom</h2>
-		<p class="desc">缩放窗口：数值输入框（0.6666 ~ 2，4 位小数）v-model 绑定，确认触发 confirm。</p>
+		<p class="desc">
+			缩放窗口：数值输入框（0.6666 ~ 2，4 位小数）v-model 绑定，确认触发 confirm。
+		</p>
 		<div class="row">
 			<YMButton variant="primary" @click="openDialog('zoom')">Open Zoom</YMButton>
 			<span class="hint">value: {{ zoomValue }}</span>

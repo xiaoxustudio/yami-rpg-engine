@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="createElement"
-				:ref="registryRef(fieldEls, 'createElement')" @confirm="onConfirm">
+	<WindowFrame
+		id="createElement"
+		:ref="registryRef(fieldEls, 'createElement')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.createElement.title') }}
@@ -9,13 +12,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.createElement-operation.label') }}</div>
-			<SelectBox id="createElement-operation"
+			<SelectBox
+				id="createElement-operation"
 				v-tip="t('components.createElement-operation.tip')"
-				:ref="registryRef(fieldEls, 'createElement-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'createElement-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.createElement-parent.label') }}</div>
-			<CustomBox id="createElement-parent"
+			<CustomBox
+				id="createElement-parent"
 				v-tip="t('components.createElement-parent.tip')"
-				:ref="registryRef(fieldEls, 'createElement-parent')" type="element" v-model="form.parent" />
+				:ref="registryRef(fieldEls, 'createElement-parent')"
+				type="element"
+				v-model="form.parent"
+			/>
 			<div class="text">{{ t('components.createElement-uiId.label') }}</div>
 			<CustomBox
 				id="createElement-uiId"
@@ -63,10 +74,18 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('createElement-operation', ['append-all-to-root', 'append-one-to-root', 'append-all-to-element', 'append-one-to-element'], (items) =>
-		fieldEls.get('createElement-operation')?.loadItems?.(items)
+	useLocalizedOptions(
+		'createElement-operation',
+		[
+			'append-all-to-root',
+			'append-one-to-root',
+			'append-all-to-element',
+			'append-one-to-element'
+		],
+		(items) => fieldEls.get('createElement-operation')?.loadItems?.(items)
 	);
-	fieldEls.get('createElement-operation')
+	fieldEls
+		.get('createElement-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -83,7 +102,10 @@ onMounted(() => {
 			},
 			{
 				case: 'append-one-to-element',
-				targets: [fieldEls.get('createElement-parent'), fieldEls.get('createElement-presetId')]
+				targets: [
+					fieldEls.get('createElement-parent'),
+					fieldEls.get('createElement-presetId')
+				]
 			}
 		]);
 });
@@ -105,5 +127,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -5,20 +5,33 @@
 		}}</DetailSummary>
 		<div class="detail-grid" id="fileVideo-info-grid">
 			<div class="text">{{ t('components.fileVideo-name.label') || 'Name' }}</div>
-			<div class="text" id="fileVideo-name"
-				v-tip="t('components.fileVideo-name.tip')">{{ form.name }}</div>
+			<div class="text" id="fileVideo-name" v-tip="t('components.fileVideo-name.tip')">
+				{{ form.name }}
+			</div>
 			<div class="text">{{ t('components.fileVideo-size.label') || 'Size' }}</div>
-			<div class="text" id="fileVideo-size"
-				v-tip="t('components.fileVideo-size.tip')">{{ form.size }}</div>
+			<div class="text" id="fileVideo-size" v-tip="t('components.fileVideo-size.tip')">
+				{{ form.size }}
+			</div>
 			<div class="text">{{ t('components.fileVideo-duration.label') || 'Duration' }}</div>
-			<div class="text" id="fileVideo-duration"
-				v-tip="t('components.fileVideo-duration.tip')">{{ form.duration }}</div>
+			<div
+				class="text"
+				id="fileVideo-duration"
+				v-tip="t('components.fileVideo-duration.tip')"
+			>
+				{{ form.duration }}
+			</div>
 			<div class="text">{{ t('components.fileVideo-resolution.label') || 'Resolution' }}</div>
-			<div class="text" id="fileVideo-resolution"
-				v-tip="t('components.fileVideo-resolution.tip')">{{ form.resolution }}</div>
+			<div
+				class="text"
+				id="fileVideo-resolution"
+				v-tip="t('components.fileVideo-resolution.tip')"
+			>
+				{{ form.resolution }}
+			</div>
 			<div class="text">{{ t('components.fileVideo-bitrate.label') || 'Bitrate' }}</div>
-			<div class="text" id="fileVideo-bitrate"
-				v-tip="t('components.fileVideo-bitrate.tip')">{{ form.bitrate }}</div>
+			<div class="text" id="fileVideo-bitrate" v-tip="t('components.fileVideo-bitrate.tip')">
+				{{ form.bitrate }}
+			</div>
 		</div>
 	</DetailBox>
 	<DetailBox id="fileVideo-video-detail" open>
@@ -28,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref , onBeforeUnmount } from 'vue';
+import { onMounted, ref, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileVideoPage } from '@app/composables/useFileVideoPage';
@@ -77,4 +90,3 @@ onBeforeUnmount(() => {
 	height: calc(100% - 22px);
 }
 </style>
-

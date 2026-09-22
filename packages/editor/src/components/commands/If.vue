@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="if"
-				:ref="registryRef(fieldEls, 'if')" @confirm="onConfirm">
+	<WindowFrame id="if" :ref="registryRef(fieldEls, 'if')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.if.title') }}
@@ -9,14 +8,26 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.if-branches.label') }}</div>
-			<ParamList id="if-branches"
-				:ref="registryRef(fieldEls, 'if-branches')" v-focus v-model="form.branches" />
+			<ParamList
+				id="if-branches"
+				:ref="registryRef(fieldEls, 'if-branches')"
+				v-focus
+				v-model="form.branches"
+			/>
 		</div>
-		<CheckBox id="if-else"
-				:ref="registryRef(fieldEls, 'if-else')" v-model="form.else" class="standard"
-			><div class="text" id="if-else-label"
+		<CheckBox
+			id="if-else"
+			:ref="registryRef(fieldEls, 'if-else')"
+			v-model="form.else"
+			class="standard"
+			><div
+				class="text"
+				id="if-else-label"
 				:ref="registryRef(fieldEls, 'if-else-label')"
-				v-tip="t('components.if-else-label.tip')">{{ t('components.if-else-label.content') }}</div></CheckBox
+				v-tip="t('components.if-else-label.tip')"
+			>
+				{{ t('components.if-else-label.content') }}
+			</div></CheckBox
 		>
 	</WindowFrame>
 </template>
@@ -79,5 +90,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

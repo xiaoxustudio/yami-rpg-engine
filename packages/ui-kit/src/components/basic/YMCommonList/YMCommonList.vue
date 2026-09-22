@@ -289,24 +289,30 @@ const pointerup = (event: PointerEvent): void => {
 	switch (event.button) {
 		case 2:
 			if (popupEventEnabled && document.activeElement === el) {
-const element = seek(event.target as HTMLElement, '.common-item');
-			if (element && hasClass(element, 'common-item') && hasClass(element, 'selected')) {
-					const popup = createPayloadEvent('popup', {} as {
-						value: unknown;
-						clientX: number;
-						clientY: number;
-					});
+				const element = seek(event.target as HTMLElement, '.common-item');
+				if (element && hasClass(element, 'common-item') && hasClass(element, 'selected')) {
+					const popup = createPayloadEvent(
+						'popup',
+						{} as {
+							value: unknown;
+							clientX: number;
+							clientY: number;
+						}
+					);
 					popup.value = itemData(element).dataValue;
 					popup.clientX = event.clientX;
 					popup.clientY = event.clientY;
 					el.dispatchEvent(popup);
 					emit('popup', popup.value, popup.clientX, popup.clientY);
 				} else {
-					const popup = createPayloadEvent('popup', {} as {
-						value: unknown;
-						clientX: number;
-						clientY: number;
-					});
+					const popup = createPayloadEvent(
+						'popup',
+						{} as {
+							value: unknown;
+							clientX: number;
+							clientY: number;
+						}
+					);
 					popup.value = null;
 					popup.clientX = event.clientX;
 					popup.clientY = event.clientY;

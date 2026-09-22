@@ -17,9 +17,13 @@
 				v-model="form.id"
 			/>
 			<div class="text">{{ t('components.fileActor-equipment-slot.label') }}</div>
-			<SelectBox id="fileActor-equipment-slot"
+			<SelectBox
+				id="fileActor-equipment-slot"
 				v-tip="t('components.fileActor-equipment-slot.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-equipment-slot')" v-focus v-model="form.slot" />
+				:ref="registryRef(inspectorEls, 'fileActor-equipment-slot')"
+				v-focus
+				v-model="form.slot"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -63,5 +67,4 @@ onMounted(() => {});
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -1,21 +1,32 @@
 <template>
-	<WindowFrame id="block"
-				:ref="registryRef(fieldEls, 'block')" @confirm="onConfirm">
+	<WindowFrame id="block" :ref="registryRef(fieldEls, 'block')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.block.title') }}
 				<div class="close" /></TitleBar
 		></template>
 
-		<TextBox id="block-note"
-		:placeholder="t('components.block-note.placeholder')"
-				:ref="registryRef(fieldEls, 'block-note')"
-				v-tip="t('components.block-note.tip')" v-focus v-model="note" />
-		<CheckBox id="block-asynchronous"
-				:ref="registryRef(fieldEls, 'block-asynchronous')" class="standard" v-model="asynchronous"
-			><div class="text" id="block-asynchronous-label"
+		<TextBox
+			id="block-note"
+			:placeholder="t('components.block-note.placeholder')"
+			:ref="registryRef(fieldEls, 'block-note')"
+			v-tip="t('components.block-note.tip')"
+			v-focus
+			v-model="note"
+		/>
+		<CheckBox
+			id="block-asynchronous"
+			:ref="registryRef(fieldEls, 'block-asynchronous')"
+			class="standard"
+			v-model="asynchronous"
+			><div
+				class="text"
+				id="block-asynchronous-label"
 				:ref="registryRef(fieldEls, 'block-asynchronous-label')"
-				v-tip="t('components.block-asynchronous-label.tip')">{{ t('components.block-asynchronous-label.content') }}</div></CheckBox
+				v-tip="t('components.block-asynchronous-label.tip')"
+			>
+				{{ t('components.block-asynchronous-label.content') }}
+			</div></CheckBox
 		>
 	</WindowFrame>
 </template>
@@ -94,5 +105,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

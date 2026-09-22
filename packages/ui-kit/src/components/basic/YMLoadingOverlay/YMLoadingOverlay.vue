@@ -14,7 +14,11 @@ const props = withDefaults(defineProps<Props>(), {
 const root = ref<HTMLElement | null>(null);
 const showCount = ref(props.visible ? 1 : 0);
 
-defineExpose({ root, show: () => showCount.value++, hide: () => (showCount.value = Math.max(0, showCount.value - 1)) });
+defineExpose({
+	root,
+	show: () => showCount.value++,
+	hide: () => (showCount.value = Math.max(0, showCount.value - 1))
+});
 
 watch(
 	() => props.visible,
@@ -26,11 +30,7 @@ watch(
 </script>
 
 <template>
-	<div
-		ref="root"
-		class="loading-overlay"
-		:class="[$style.overlay, { visible: showCount > 0 }]"
-	>
+	<div ref="root" class="loading-overlay" :class="[$style.overlay, { visible: showCount > 0 }]">
 		<div class="loading-spinner" :class="$style.spinner" />
 		<div class="loading-text" :class="$style.text">{{ text }}</div>
 	</div>

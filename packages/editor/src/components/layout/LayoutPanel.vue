@@ -1,15 +1,20 @@
 <template>
-	<PageManager id="workspace-page-manager"
-				:ref="registryRef(engineEls, 'workspace-page-manager')">
-		<div class="page-frame" id="home"
-				:ref="registryRef(titleEls, 'home')" value="home">
-			<div class="box" id="home-content"
-				:ref="registryRef(titleEls, 'home-content')">
+	<PageManager
+		id="workspace-page-manager"
+		:ref="registryRef(engineEls, 'workspace-page-manager')"
+	>
+		<div class="page-frame" id="home" :ref="registryRef(titleEls, 'home')" value="home">
+			<div class="box" id="home-content" :ref="registryRef(titleEls, 'home-content')">
 				<div class="text" id="home-title">YAMI RPG EDITOR (Open Yami)</div>
-				<div class="text" id="home-version"
-				:ref="registryRef(moduleEls, 'home-version')"></div>
+				<div
+					class="text"
+					id="home-version"
+					:ref="registryRef(moduleEls, 'home-version')"
+				></div>
 				<div class="box" id="home-start-list" @click="onHomeStartClick">
-					<div class="item home-list-label" id="home-start-label">{{ t('components.home-start-label.content') }}</div>
+					<div class="item home-list-label" id="home-start-label">
+						{{ t('components.home-start-label.content') }}
+					</div>
 					<div class="item home-start-item" id="home-start-new" value="new">
 						{{ t('components.home-start-new.content') }}
 					</div>
@@ -22,1044 +27,1302 @@
 		</div>
 		<div class="page-frame" value="directory">
 			<div class="box" id="layout-content">
-			<LayoutPaletteHost>
-				<NavBar id="layout-nav" ref="paletteNavEl">
-					<PaletteNode value="project" source="tab">
-					<div class="nav-item" value="project">
-						<div class="nav-icon">&#xf07b;</div>
-						<div class="nav-text" id="nav-project">{{ t('components.nav-project.content') }}</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="scene" source="tab">
-					<div class="nav-item" value="scene">
-						<div class="nav-icon">&#xf26c;</div>
-						<div class="nav-text" id="nav-scene">{{ t('components.nav-scene.content') }}</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="scene-object" source="tab">
-					<div class="nav-item" value="scene-object">
-						<div class="nav-icon">&#xf1b2;</div>
-						<div class="nav-text" id="nav-scene-object">{{ t('components.nav-scene-object.content') }}</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="ui" source="tab">
-					<div class="nav-item" value="ui">
-						<div class="nav-icon">&#xf26c;</div>
-						<div class="nav-text" id="nav-ui">{{ t('components.nav-ui.content') }}</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="ui-element" source="tab">
-					<div class="nav-item" value="ui-element">
-						<div class="nav-icon">&#xf1b2;</div>
-						<div class="nav-text" id="nav-ui-element">{{ t('components.nav-ui-element.content') }}</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="animation" source="tab">
-					<div class="nav-item" value="animation">
-						<div class="nav-icon">&#xf26c;</div>
-						<div class="nav-text" id="nav-animation">{{ t('components.nav-animation.content') }}</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="animation-motion" source="tab">
-					<div class="nav-item" value="animation-motion">
-						<div class="nav-icon">&#xf1b2;</div>
-						<div class="nav-text" id="nav-animation-motion">{{ t('components.nav-animation-motion.content') }}</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="animation-timeline" source="tab">
-					<div class="nav-item" value="animation-timeline">
-						<div class="nav-icon">&#xf017;</div>
-						<div class="nav-text" id="nav-animation-timeline">{{ t('components.nav-animation-timeline.content') }}</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="animation-easing" source="tab">
-					<div class="nav-item" value="animation-easing">
-						<div class="nav-icon">&#xf201;</div>
-						<div class="nav-text" id="nav-animation-easing">{{ t('components.nav-animation-easing.content') }}</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="particle" source="tab">
-					<div class="nav-item" value="particle">
-						<div class="nav-icon">&#xf26c;</div>
-						<div class="nav-text" id="nav-particle">{{ t('components.nav-particle.content') }}</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="particle-layer" source="tab">
-					<div class="nav-item" value="particle-layer">
-						<div class="nav-icon">&#xf1b2;</div>
-						<div class="nav-text" id="nav-particle-layer">{{ t('components.nav-particle-layer.content') }}</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="inspector" source="tab">
-					<div class="nav-item" value="inspector">
-						<div class="nav-icon">&#xf05a;</div>
-						<div class="nav-text" id="nav-inspector">{{ t('components.nav-inspector.content') }}</div>
-					</div>
-					</PaletteNode>
-				</NavBar>
-				<PageManager id="layout-page-manager" ref="paletteManagerEl">
-					<PaletteNode value="project" source="page">
-					<div class="page-frame" id="project"
-				:ref="registryRef(storesEls, 'project')" value="project">
-						<div class="file-browser" id="project-browser"
-					:ref="registryRef(storesEls, 'project-browser')"></div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="scene" source="page">
-					<div class="page-frame" id="scene"
-				:ref="registryRef(sceneEls, 'scene')" value="scene">
-						<div class="box" id="scene-head"
-				:ref="registryRef(sceneEls, 'scene-head')" @pointerdown="onSceneHeadPointerdown">
+				<LayoutPaletteHost>
+					<NavBar id="layout-nav" ref="paletteNavEl">
+						<PaletteNode value="project" source="tab">
+							<div class="nav-item" value="project">
+								<div class="nav-icon">&#xf07b;</div>
+								<div class="nav-text" id="nav-project">
+									{{ t('components.nav-project.content') }}
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="scene" source="tab">
+							<div class="nav-item" value="scene">
+								<div class="nav-icon">&#xf26c;</div>
+								<div class="nav-text" id="nav-scene">
+									{{ t('components.nav-scene.content') }}
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="scene-object" source="tab">
+							<div class="nav-item" value="scene-object">
+								<div class="nav-icon">&#xf1b2;</div>
+								<div class="nav-text" id="nav-scene-object">
+									{{ t('components.nav-scene-object.content') }}
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="ui" source="tab">
+							<div class="nav-item" value="ui">
+								<div class="nav-icon">&#xf26c;</div>
+								<div class="nav-text" id="nav-ui">
+									{{ t('components.nav-ui.content') }}
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="ui-element" source="tab">
+							<div class="nav-item" value="ui-element">
+								<div class="nav-icon">&#xf1b2;</div>
+								<div class="nav-text" id="nav-ui-element">
+									{{ t('components.nav-ui-element.content') }}
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="animation" source="tab">
+							<div class="nav-item" value="animation">
+								<div class="nav-icon">&#xf26c;</div>
+								<div class="nav-text" id="nav-animation">
+									{{ t('components.nav-animation.content') }}
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="animation-motion" source="tab">
+							<div class="nav-item" value="animation-motion">
+								<div class="nav-icon">&#xf1b2;</div>
+								<div class="nav-text" id="nav-animation-motion">
+									{{ t('components.nav-animation-motion.content') }}
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="animation-timeline" source="tab">
+							<div class="nav-item" value="animation-timeline">
+								<div class="nav-icon">&#xf017;</div>
+								<div class="nav-text" id="nav-animation-timeline">
+									{{ t('components.nav-animation-timeline.content') }}
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="animation-easing" source="tab">
+							<div class="nav-item" value="animation-easing">
+								<div class="nav-icon">&#xf201;</div>
+								<div class="nav-text" id="nav-animation-easing">
+									{{ t('components.nav-animation-easing.content') }}
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="particle" source="tab">
+							<div class="nav-item" value="particle">
+								<div class="nav-icon">&#xf26c;</div>
+								<div class="nav-text" id="nav-particle">
+									{{ t('components.nav-particle.content') }}
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="particle-layer" source="tab">
+							<div class="nav-item" value="particle-layer">
+								<div class="nav-icon">&#xf1b2;</div>
+								<div class="nav-text" id="nav-particle-layer">
+									{{ t('components.nav-particle-layer.content') }}
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="inspector" source="tab">
+							<div class="nav-item" value="inspector">
+								<div class="nav-icon">&#xf05a;</div>
+								<div class="nav-text" id="nav-inspector">
+									{{ t('components.nav-inspector.content') }}
+								</div>
+							</div>
+						</PaletteNode>
+					</NavBar>
+					<PageManager id="layout-page-manager" ref="paletteManagerEl">
+						<PaletteNode value="project" source="page">
 							<div
-								class="box"
-								id="scene-head-start"
-								@pointerdown="onSceneSwitchPointerdown"
+								class="page-frame"
+								id="project"
+								:ref="registryRef(storesEls, 'project')"
+								value="project"
 							>
 								<div
-									class="item toolbar-item"
-									id="scene-switch-grid"
-
-									v-tip="t('components.scene-switch-grid.tip')"
-				:ref="registryRef(sceneEls, 'scene-switch-grid')"
-									value="grid"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="scene-switch-light"
-
-									v-tip="t('components.scene-switch-light.tip')"
-				:ref="registryRef(sceneEls, 'scene-switch-light')"
-									value="light"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="scene-switch-animation"
-
-									v-tip="t('components.scene-switch-animation.tip')"
-				:ref="registryRef(sceneEls, 'scene-switch-animation')"
-									value="animation"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="scene-switch-settings"
-
-									v-tip="t('components.scene-switch-settings.tip')"
-				:ref="registryRef(inspectorEls, 'scene-switch-settings')"
-									value="settings"
-									hotkey="Alt+S"
+									class="file-browser"
+									id="project-browser"
+									:ref="registryRef(storesEls, 'project-browser')"
 								></div>
 							</div>
-							<div class="box" id="scene-head-center">
+						</PaletteNode>
+						<PaletteNode value="scene" source="page">
+							<div
+								class="page-frame"
+								id="scene"
+								:ref="registryRef(sceneEls, 'scene')"
+								value="scene"
+							>
 								<div
 									class="box"
-									id="scene-layer"
-				:ref="registryRef(sceneEls, 'scene-layer')"
-									@pointerdown="onSceneLayerPointerdown"
+									id="scene-head"
+									:ref="registryRef(sceneEls, 'scene-head')"
+									@pointerdown="onSceneHeadPointerdown"
 								>
 									<div
-										class="item toolbar-item"
-										id="scene-layer-object"
-
-										v-tip="t('components.scene-layer-object.tip')"
-										value="object"
-										hotkey="`"
+										class="box"
+										id="scene-head-start"
+										@pointerdown="onSceneSwitchPointerdown"
+									>
+										<div
+											class="item toolbar-item"
+											id="scene-switch-grid"
+											v-tip="t('components.scene-switch-grid.tip')"
+											:ref="registryRef(sceneEls, 'scene-switch-grid')"
+											value="grid"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="scene-switch-light"
+											v-tip="t('components.scene-switch-light.tip')"
+											:ref="registryRef(sceneEls, 'scene-switch-light')"
+											value="light"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="scene-switch-animation"
+											v-tip="t('components.scene-switch-animation.tip')"
+											:ref="registryRef(sceneEls, 'scene-switch-animation')"
+											value="animation"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="scene-switch-settings"
+											v-tip="t('components.scene-switch-settings.tip')"
+											:ref="
+												registryRef(inspectorEls, 'scene-switch-settings')
+											"
+											value="settings"
+											hotkey="Alt+S"
+										></div>
+									</div>
+									<div class="box" id="scene-head-center">
+										<div
+											class="box"
+											id="scene-layer"
+											:ref="registryRef(sceneEls, 'scene-layer')"
+											@pointerdown="onSceneLayerPointerdown"
+										>
+											<div
+												class="item toolbar-item"
+												id="scene-layer-object"
+												v-tip="t('components.scene-layer-object.tip')"
+												value="object"
+												hotkey="`"
+											></div>
+											<div
+												class="item toolbar-item hidden"
+												id="scene-layer-tilemap-1"
+												:ref="
+													registryRef(sceneEls, 'scene-layer-tilemap-1')
+												"
+												value="1"
+												hotkey="1"
+											></div>
+											<div
+												class="item toolbar-item hidden"
+												id="scene-layer-tilemap-2"
+												:ref="
+													registryRef(sceneEls, 'scene-layer-tilemap-2')
+												"
+												value="2"
+												hotkey="2"
+											></div>
+											<div
+												class="item toolbar-item hidden"
+												id="scene-layer-tilemap-3"
+												:ref="
+													registryRef(sceneEls, 'scene-layer-tilemap-3')
+												"
+												value="3"
+												hotkey="3"
+											></div>
+											<div
+												class="item toolbar-item hidden"
+												id="scene-layer-tilemap-4"
+												:ref="
+													registryRef(sceneEls, 'scene-layer-tilemap-4')
+												"
+												value="4"
+												hotkey="4"
+											></div>
+											<div
+												class="item toolbar-item hidden"
+												id="scene-layer-tilemap-5"
+												:ref="
+													registryRef(sceneEls, 'scene-layer-tilemap-5')
+												"
+												value="5"
+												hotkey="5"
+											></div>
+											<div
+												class="item toolbar-item hidden"
+												id="scene-layer-tilemap-6"
+												:ref="
+													registryRef(sceneEls, 'scene-layer-tilemap-6')
+												"
+												value="6"
+												hotkey="6"
+											></div>
+											<div
+												class="item toolbar-item"
+												id="scene-layer-terrain"
+												v-tip="t('components.scene-layer-terrain.tip')"
+												value="terrain"
+												hotkey="`"
+											></div>
+										</div>
+										<div
+											class="box"
+											id="scene-brush"
+											:ref="registryRef(sceneEls, 'scene-brush')"
+											@pointerdown="onSceneBrushPointerdown"
+										>
+											<div
+												class="item toolbar-item"
+												id="scene-brush-eraser"
+												v-tip="t('components.scene-brush-eraser.tip')"
+												value="eraser"
+												hotkey="Q"
+											></div>
+											<div
+												class="item toolbar-item"
+												id="scene-brush-pencil"
+												v-tip="t('components.scene-brush-pencil.tip')"
+												value="pencil"
+												hotkey="E"
+											></div>
+											<div
+												class="item toolbar-item"
+												id="scene-brush-rect"
+												v-tip="t('components.scene-brush-rect.tip')"
+												value="rect"
+												hotkey="R"
+											></div>
+											<div
+												class="item toolbar-item"
+												id="scene-brush-oval"
+												v-tip="t('components.scene-brush-oval.tip')"
+												value="oval"
+												hotkey="T"
+											></div>
+											<div
+												class="item toolbar-item"
+												id="scene-brush-fill"
+												v-tip="t('components.scene-brush-fill.tip')"
+												value="fill"
+												hotkey="Y"
+											></div>
+										</div>
+									</div>
+									<div class="box" id="scene-head-end">
+										<SliderBox
+											id="scene-zoom"
+											:ref="registryRef(sceneEls, 'scene-zoom')"
+											name="zoom"
+											min="0"
+											max="4"
+											hotkey="-/+"
+											active-wheel
+											@input="onSceneZoomInput"
+											@focus="onSceneZoomFocus"
+										></SliderBox>
+									</div>
+								</div>
+								<div
+									class="box"
+									id="scene-body"
+									:ref="registryRef(sceneEls, 'scene-body')"
+								>
+									<div
+										class="box"
+										id="scene-screen"
+										:ref="registryRef(sceneEls, 'scene-screen')"
+										tabindex="-1"
+										@keydown="onSceneScreenKeydown"
+										@wheel="onSceneScreenWheel"
+									>
+										<MarqueeArea
+											id="scene-marquee"
+											:ref="registryRef(sceneEls, 'scene-marquee')"
+											@pointerdown="onSceneMarqueePointerdown"
+											@doubleclick="onSceneMarqueeDoubleclick"
+										></MarqueeArea>
+									</div>
+									<div
+										class="text"
+										id="scene-info"
+										:ref="registryRef(sceneEls, 'scene-info')"
+									></div>
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="scene-object" source="page">
+							<div
+								class="page-frame"
+								id="scene-object"
+								:ref="registryRef(sceneEls, 'scene-object')"
+								value="scene-object"
+							>
+								<div
+									class="box"
+									id="scene-list-head"
+									:ref="registryRef(sceneEls, 'scene-list-head')"
+								>
+									<TextBox
+										id="scene-searcher"
+										:ref="registryRef(sceneEls, 'scene-searcher')"
+										name="search"
+									></TextBox>
+								</div>
+								<TreeList
+									id="scene-list"
+									:ref="registryRef(sceneEls, 'scene-list')"
+									padded
+									:node-extras="sceneNodeExtras"
+									:node-icon-renderer="sceneNodeIcon"
+									@select="onSceneListSelect"
+									@record="onSceneListRecord"
+									@popup="onSceneListPopup"
+									@open="onSceneListOpen"
+									@change="onSceneListChange"
+								></TreeList>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="ui" source="page">
+							<div
+								class="page-frame"
+								id="ui"
+								:ref="registryRef(uiEls, 'ui')"
+								value="ui"
+							>
+								<div
+									class="box"
+									id="ui-head"
+									:ref="registryRef(uiEls, 'ui-head')"
+									@pointerdown="onUiHeadPointerdown"
+								>
+									<div
+										class="box"
+										id="ui-head-start"
+										@pointerdown="onUiSwitchPointerdown"
+									>
+										<div
+											class="item toolbar-item"
+											id="ui-switch-settings"
+											v-tip="t('components.ui-switch-settings.tip')"
+											:ref="registryRef(inspectorEls, 'ui-switch-settings')"
+											value="settings"
+										></div>
+									</div>
+									<div
+										class="box"
+										id="ui-head-center"
+										@pointerdown="onUiShortcutPointerdown"
+									>
+										<div
+											class="item toolbar-item"
+											id="ui-element-image"
+											v-tip="t('components.ui-element-image.tip')"
+											value="image"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="ui-element-text"
+											v-tip="t('components.ui-element-text.tip')"
+											value="text"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="ui-element-textbox"
+											v-tip="t('components.ui-element-textbox.tip')"
+											value="textbox"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="ui-element-dialogbox"
+											v-tip="t('components.ui-element-dialogbox.tip')"
+											value="dialogbox"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="ui-element-progressbar"
+											v-tip="t('components.ui-element-progressbar.tip')"
+											value="progressbar"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="ui-element-button"
+											v-tip="t('components.ui-element-button.tip')"
+											value="button"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="ui-element-animation"
+											v-tip="t('components.ui-element-animation.tip')"
+											value="animation"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="ui-element-video"
+											v-tip="t('components.ui-element-video.tip')"
+											value="video"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="ui-element-window"
+											v-tip="t('components.ui-element-window.tip')"
+											value="window"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="ui-element-container"
+											v-tip="t('components.ui-element-container.tip')"
+											value="container"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="ui-element-reference"
+											v-tip="t('components.ui-element-reference.tip')"
+											value="reference"
+										></div>
+									</div>
+									<div class="box" id="ui-head-end">
+										<SliderBox
+											id="ui-zoom"
+											:ref="registryRef(engineEls, 'ui-zoom')"
+											name="zoom"
+											min="0"
+											max="4"
+											hotkey="-/+"
+											active-wheel
+											@input="onUiZoomInput"
+											@focus="onUiZoomFocus"
+										></SliderBox>
+									</div>
+								</div>
+								<div class="box" id="ui-body" :ref="registryRef(uiEls, 'ui-body')">
+									<div
+										class="box"
+										id="ui-screen"
+										:ref="registryRef(uiEls, 'ui-screen')"
+										tabindex="-1"
+										@keydown="onUiScreenKeydown"
+										@wheel="onUiScreenWheel"
+									>
+										<MarqueeArea
+											id="ui-marquee"
+											:ref="registryRef(uiEls, 'ui-marquee')"
+											@pointerdown="onUiMarqueePointerdown"
+											@doubleclick="onUiMarqueeDoubleclick"
+										></MarqueeArea>
+									</div>
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="ui-element" source="page">
+							<div
+								class="page-frame"
+								id="ui-element"
+								:ref="registryRef(uiEls, 'ui-element')"
+								value="ui-element"
+							>
+								<div
+									class="box"
+									id="ui-list-head"
+									:ref="registryRef(uiEls, 'ui-list-head')"
+								>
+									<TextBox
+										id="ui-searcher"
+										:ref="registryRef(uiEls, 'ui-searcher')"
+										name="search"
+									></TextBox>
+								</div>
+								<TreeList
+									id="ui-list"
+									:ref="registryRef(uiEls, 'ui-list')"
+									padded
+									:node-extras="uiNodeExtras"
+									:node-icon-renderer="uiNodeIcon"
+									@select="onUiListSelect"
+									@record="onUiListRecord"
+									@popup="onUiListPopup"
+									@open="onUiListOpen"
+									@change="onUiListChange"
+								></TreeList>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="animation" source="page">
+							<div
+								class="page-frame"
+								id="animation"
+								:ref="registryRef(animationEls, 'animation')"
+								value="animation"
+							>
+								<div
+									class="box"
+									id="animation-head"
+									:ref="registryRef(animationEls, 'animation-head')"
+									@pointerdown="onAnimationHeadPointerdown"
+								>
+									<div
+										class="box"
+										id="animation-head-start"
+										@pointerdown="onAnimationSwitchPointerdown"
+									>
+										<div
+											class="item toolbar-item"
+											id="animation-switch-mark"
+											v-tip="t('components.animation-switch-mark.tip')"
+											value="mark"
+											:class="{ selected: animation.showMark }"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="animation-switch-onionskin"
+											v-tip="t('components.animation-switch-onionskin.tip')"
+											value="onionskin"
+											hotkey="O"
+											:class="{ selected: animation.showOnionskin }"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="animation-switch-mirror"
+											v-tip="t('components.animation-switch-mirror.tip')"
+											value="mirror"
+											hotkey="M"
+											:class="{ selected: animation.mirror }"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="animation-switch-settings"
+											v-tip="t('components.animation-switch-settings.tip')"
+											:ref="
+												registryRef(
+													inspectorEls,
+													'animation-switch-settings'
+												)
+											"
+											value="settings"
+										></div>
+									</div>
+									<div class="box" id="animation-head-center">
+										<NumberBox
+											id="animation-speed"
+											v-tip="t('components.animation-speed.tip')"
+											min="0"
+											max="4"
+											step="0.05"
+											decimals="2"
+											v-model="speedModel"
+											><div class="text label">speed:</div></NumberBox
+										>
+									</div>
+									<div class="box" id="animation-head-end">
+										<SliderBox
+											id="animation-zoom"
+											name="zoom-0-6"
+											min="0"
+											max="6"
+											hotkey="-/+"
+											active-wheel
+											v-model="zoomModel"
+											@focus="onAnimationZoomFocus"
+										></SliderBox>
+									</div>
+								</div>
+								<div
+									class="box"
+									id="animation-body"
+									:ref="registryRef(animationEls, 'animation-body')"
+								>
+									<div
+										class="box"
+										id="animation-screen"
+										:ref="registryRef(animationEls, 'animation-screen')"
+										tabindex="-1"
+										@keydown="onAnimationScreenKeydown"
+										@wheel="onAnimationScreenWheel"
+									>
+										<MarqueeArea
+											id="animation-marquee"
+											:ref="registryRef(animationEls, 'animation-marquee')"
+											@pointerdown="onAnimationMarqueePointerdown"
+											@doubleclick="onAnimationMarqueeDoubleclick"
+										></MarqueeArea>
+									</div>
+									<div
+										ref="dirListEl"
+										class="box"
+										id="animation-dirList"
+										v-show="dirs.length > 1"
+									>
+										<div
+											class="anim-dir"
+											v-for="(dir, index) in dirs"
+											:key="index"
+											:class="{ selected: index === direction }"
+											@pointerdown="onDirPointerdown(index)"
+										>
+											{{ dir }}
+										</div>
+									</div>
+								</div>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="animation-motion" source="page">
+							<div
+								class="page-frame"
+								id="animation-motion"
+								:ref="registryRef(animationEls, 'animation-motion')"
+								value="animation-motion"
+							>
+								<div
+									class="box"
+									id="animation-list-head"
+									:ref="registryRef(animationEls, 'animation-list-head')"
+								>
+									<TextBox
+										id="animation-searcher"
+										:ref="registryRef(animationEls, 'animation-searcher')"
+										name="search"
+									></TextBox>
+								</div>
+								<TreeList
+									id="animation-list"
+									:ref="registryRef(animationEls, 'animation-list')"
+									padded
+									:node-extras="animationNodeExtras"
+									:node-icon-renderer="animationNodeIcon"
+									@select="onAnimationListSelect"
+									@record="onAnimationListRecord"
+									@open="onAnimationListOpen"
+									@popup="onAnimationListPopup"
+									@change="onAnimationListChange"
+								></TreeList>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="animation-timeline" source="page">
+							<div
+								class="page-frame"
+								id="animation-timeline"
+								:ref="registryRef(animationEls, 'animation-timeline')"
+								value="animation-timeline"
+							>
+								<div
+									class="box"
+									id="animation-timeline-head"
+									:ref="registryRef(animationEls, 'animation-timeline-head')"
+								>
+									<div
+										class="box"
+										id="animation-timeline-toolbar"
+										:ref="
+											registryRef(animationEls, 'animation-timeline-toolbar')
+										"
+										@pointerdown="onTimelineToolbarPointerdown"
+									>
+										<div
+											class="item toolbar-item"
+											id="animation-timeline-previousKey"
+											v-tip="
+												t('components.animation-timeline-previousKey.tip')
+											"
+											value="previousKey"
+											hotkey="Z"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="animation-timeline-previous"
+											v-tip="t('components.animation-timeline-previous.tip')"
+											value="previous"
+											hotkey="Q"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="animation-timeline-play"
+											v-tip="t('components.animation-timeline-play.tip')"
+											value="play"
+											hotkey="R"
+											:class="{ playing: animation.playing }"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="animation-timeline-next"
+											v-tip="t('components.animation-timeline-next.tip')"
+											value="next"
+											hotkey="E"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="animation-timeline-nextKey"
+											v-tip="t('components.animation-timeline-nextKey.tip')"
+											value="nextKey"
+											hotkey="X"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="animation-timeline-loop"
+											v-tip="t('components.animation-timeline-loop.tip')"
+											value="loop"
+											:class="{ selected: animation.loop }"
+										></div>
+									</div>
+									<div
+										class="box"
+										id="animation-timeline-ruler-outer"
+										:ref="
+											registryRef(
+												animationEls,
+												'animation-timeline-ruler-outer'
+											)
+										"
+									>
+										<div
+											class="box"
+											id="animation-timeline-ruler-inner"
+											:ref="
+												registryRef(
+													animationEls,
+													'animation-timeline-ruler-inner'
+												)
+											"
+										></div>
+									</div>
+								</div>
+								<TreeList
+									id="animation-layer-list"
+									:ref="registryRef(animationEls, 'animation-layer-list')"
+									:node-extras="layerNodeExtras"
+									:node-icon-renderer="layerNodeIcon"
+									@select="onLayerListSelect"
+									@record="onLayerListRecord"
+									@popup="onLayerListPopup"
+									@change="onLayerListChange"
+								></TreeList>
+								<div
+									class="box"
+									id="animation-timeline-list-outer"
+									:ref="
+										registryRef(animationEls, 'animation-timeline-list-outer')
+									"
+									tabindex="0"
+								>
+									<div
+										class="box"
+										id="animation-timeline-list-inner"
+										:ref="
+											registryRef(
+												animationEls,
+												'animation-timeline-list-inner'
+											)
+										"
 									></div>
 									<div
-										class="item toolbar-item hidden"
-										id="scene-layer-tilemap-1"
-				:ref="registryRef(sceneEls, 'scene-layer-tilemap-1')"
-										value="1"
-										hotkey="1"
+										class="box"
+										id="animation-timeline-cursor"
+										:ref="
+											registryRef(animationEls, 'animation-timeline-cursor')
+										"
 									></div>
 									<div
-										class="item toolbar-item hidden"
-										id="scene-layer-tilemap-2"
-				:ref="registryRef(sceneEls, 'scene-layer-tilemap-2')"
-										value="2"
-										hotkey="2"
+										class="box"
+										id="animation-timeline-marquee"
+										:ref="
+											registryRef(animationEls, 'animation-timeline-marquee')
+										"
 									></div>
 									<div
-										class="item toolbar-item hidden"
-										id="scene-layer-tilemap-3"
-				:ref="registryRef(sceneEls, 'scene-layer-tilemap-3')"
-										value="3"
-										hotkey="3"
-									></div>
-									<div
-										class="item toolbar-item hidden"
-										id="scene-layer-tilemap-4"
-				:ref="registryRef(sceneEls, 'scene-layer-tilemap-4')"
-										value="4"
-										hotkey="4"
-									></div>
-									<div
-										class="item toolbar-item hidden"
-										id="scene-layer-tilemap-5"
-				:ref="registryRef(sceneEls, 'scene-layer-tilemap-5')"
-										value="5"
-										hotkey="5"
-									></div>
-									<div
-										class="item toolbar-item hidden"
-										id="scene-layer-tilemap-6"
-				:ref="registryRef(sceneEls, 'scene-layer-tilemap-6')"
-										value="6"
-										hotkey="6"
-									></div>
-									<div
-										class="item toolbar-item"
-										id="scene-layer-terrain"
-
-										v-tip="t('components.scene-layer-terrain.tip')"
-										value="terrain"
-										hotkey="`"
+										class="box"
+										id="animation-timeline-marquee-shift"
+										:ref="
+											registryRef(
+												animationEls,
+												'animation-timeline-marquee-shift'
+											)
+										"
 									></div>
 								</div>
 								<div
 									class="box"
-									id="scene-brush"
-				:ref="registryRef(sceneEls, 'scene-brush')"
-									@pointerdown="onSceneBrushPointerdown"
+									id="animation-timeline-pointer-area-outer"
+									:ref="
+										registryRef(
+											animationEls,
+											'animation-timeline-pointer-area-outer'
+										)
+									"
 								>
 									<div
-										class="item toolbar-item"
-										id="scene-brush-eraser"
-
-										v-tip="t('components.scene-brush-eraser.tip')"
-										value="eraser"
-										hotkey="Q"
-									></div>
-									<div
-										class="item toolbar-item"
-										id="scene-brush-pencil"
-
-										v-tip="t('components.scene-brush-pencil.tip')"
-										value="pencil"
-										hotkey="E"
-									></div>
-									<div
-										class="item toolbar-item"
-										id="scene-brush-rect"
-
-										v-tip="t('components.scene-brush-rect.tip')"
-										value="rect"
-										hotkey="R"
-									></div>
-									<div
-										class="item toolbar-item"
-										id="scene-brush-oval"
-
-										v-tip="t('components.scene-brush-oval.tip')"
-										value="oval"
-										hotkey="T"
-									></div>
-									<div
-										class="item toolbar-item"
-										id="scene-brush-fill"
-
-										v-tip="t('components.scene-brush-fill.tip')"
-										value="fill"
-										hotkey="Y"
-									></div>
+										class="box"
+										id="animation-timeline-pointer-area-inner"
+										:ref="
+											registryRef(
+												animationEls,
+												'animation-timeline-pointer-area-inner'
+											)
+										"
+									>
+										<div
+											class="box"
+											id="animation-timeline-pointer"
+											:ref="
+												registryRef(
+													animationEls,
+													'animation-timeline-pointer'
+												)
+											"
+										></div>
+									</div>
 								</div>
 							</div>
-							<div class="box" id="scene-head-end">
-								<SliderBox
-									id="scene-zoom"
-				:ref="registryRef(sceneEls, 'scene-zoom')"
-									name="zoom"
-									min="0"
-									max="4"
-									hotkey="-/+"
-									active-wheel
-									@input="onSceneZoomInput"
-									@focus="onSceneZoomFocus"
-								></SliderBox>
-							</div>
-						</div>
-						<div class="box" id="scene-body"
-				:ref="registryRef(sceneEls, 'scene-body')">
+						</PaletteNode>
+						<PaletteNode value="animation-easing" source="page">
 							<div
-								class="box"
-								id="scene-screen"
-				:ref="registryRef(sceneEls, 'scene-screen')"
-								tabindex="-1"
-								@keydown="onSceneScreenKeydown"
-								@wheel="onSceneScreenWheel"
+								class="page-frame"
+								id="animation-easing"
+								:ref="registryRef(animationEls, 'animation-easing')"
+								value="animation-easing"
 							>
-								<MarqueeArea
-									id="scene-marquee"
-				:ref="registryRef(sceneEls, 'scene-marquee')"
-									@pointerdown="onSceneMarqueePointerdown"
-									@doubleclick="onSceneMarqueeDoubleclick"
-								></MarqueeArea>
-							</div>
-							<div class="text" id="scene-info"
-				:ref="registryRef(sceneEls, 'scene-info')"></div>
-						</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="scene-object" source="page">
-					<div class="page-frame" id="scene-object"
-				:ref="registryRef(sceneEls, 'scene-object')" value="scene-object">
-						<div class="box" id="scene-list-head"
-				:ref="registryRef(sceneEls, 'scene-list-head')">
-							<TextBox id="scene-searcher"
-				:ref="registryRef(sceneEls, 'scene-searcher')" name="search"></TextBox>
-						</div>
-						<TreeList
-							id="scene-list"
-				:ref="registryRef(sceneEls, 'scene-list')"
-							padded
-							:node-extras="sceneNodeExtras"
-							:node-icon-renderer="sceneNodeIcon"
-							@select="onSceneListSelect"
-							@record="onSceneListRecord"
-							@popup="onSceneListPopup"
-							@open="onSceneListOpen"
-							@change="onSceneListChange"
-						></TreeList>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="ui" source="page">
-					<div class="page-frame" id="ui"
-				:ref="registryRef(uiEls, 'ui')" value="ui">
-						<div class="box" id="ui-head"
-				:ref="registryRef(uiEls, 'ui-head')" @pointerdown="onUiHeadPointerdown">
-							<div
-								class="box"
-								id="ui-head-start"
-								@pointerdown="onUiSwitchPointerdown"
-							>
-								<div
-									class="item toolbar-item"
-									id="ui-switch-settings"
-
-									v-tip="t('components.ui-switch-settings.tip')"
-				:ref="registryRef(inspectorEls, 'ui-switch-settings')"
-									value="settings"
-								></div>
-							</div>
-							<div
-								class="box"
-								id="ui-head-center"
-								@pointerdown="onUiShortcutPointerdown"
-							>
-								<div
-									class="item toolbar-item"
-									id="ui-element-image"
-
-									v-tip="t('components.ui-element-image.tip')"
-									value="image"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="ui-element-text"
-
-									v-tip="t('components.ui-element-text.tip')"
-									value="text"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="ui-element-textbox"
-
-									v-tip="t('components.ui-element-textbox.tip')"
-									value="textbox"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="ui-element-dialogbox"
-
-									v-tip="t('components.ui-element-dialogbox.tip')"
-									value="dialogbox"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="ui-element-progressbar"
-
-									v-tip="t('components.ui-element-progressbar.tip')"
-									value="progressbar"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="ui-element-button"
-
-									v-tip="t('components.ui-element-button.tip')"
-									value="button"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="ui-element-animation"
-
-									v-tip="t('components.ui-element-animation.tip')"
-									value="animation"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="ui-element-video"
-
-									v-tip="t('components.ui-element-video.tip')"
-									value="video"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="ui-element-window"
-
-									v-tip="t('components.ui-element-window.tip')"
-									value="window"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="ui-element-container"
-
-									v-tip="t('components.ui-element-container.tip')"
-									value="container"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="ui-element-reference"
-
-									v-tip="t('components.ui-element-reference.tip')"
-									value="reference"
-								></div>
-							</div>
-							<div class="box" id="ui-head-end">
-								<SliderBox
-									id="ui-zoom"
-				:ref="registryRef(engineEls, 'ui-zoom')"
-									name="zoom"
-									min="0"
-									max="4"
-									hotkey="-/+"
-									active-wheel
-									@input="onUiZoomInput"
-									@focus="onUiZoomFocus"
-								></SliderBox>
-							</div>
-						</div>
-						<div class="box" id="ui-body"
-				:ref="registryRef(uiEls, 'ui-body')">
-							<div
-								class="box"
-								id="ui-screen"
-				:ref="registryRef(uiEls, 'ui-screen')"
-								tabindex="-1"
-								@keydown="onUiScreenKeydown"
-								@wheel="onUiScreenWheel"
-							>
-								<MarqueeArea
-									id="ui-marquee"
-				:ref="registryRef(uiEls, 'ui-marquee')"
-									@pointerdown="onUiMarqueePointerdown"
-									@doubleclick="onUiMarqueeDoubleclick"
-								></MarqueeArea>
-							</div>
-						</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="ui-element" source="page">
-					<div class="page-frame" id="ui-element"
-				:ref="registryRef(uiEls, 'ui-element')" value="ui-element">
-						<div class="box" id="ui-list-head"
-				:ref="registryRef(uiEls, 'ui-list-head')">
-							<TextBox id="ui-searcher"
-				:ref="registryRef(uiEls, 'ui-searcher')" name="search"></TextBox>
-						</div>
-						<TreeList
-							id="ui-list"
-				:ref="registryRef(uiEls, 'ui-list')"
-							padded
-							:node-extras="uiNodeExtras"
-							:node-icon-renderer="uiNodeIcon"
-							@select="onUiListSelect"
-							@record="onUiListRecord"
-							@popup="onUiListPopup"
-							@open="onUiListOpen"
-							@change="onUiListChange"
-						></TreeList>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="animation" source="page">
-					<div class="page-frame" id="animation"
-				:ref="registryRef(animationEls, 'animation')" value="animation">
-						<div
-							class="box"
-							id="animation-head"
-				:ref="registryRef(animationEls, 'animation-head')"
-							@pointerdown="onAnimationHeadPointerdown"
-						>
-							<div
-								class="box"
-								id="animation-head-start"
-								@pointerdown="onAnimationSwitchPointerdown"
-							>
-								<div
-									class="item toolbar-item"
-									id="animation-switch-mark"
-
-									v-tip="t('components.animation-switch-mark.tip')"
-									value="mark"
-									:class="{ selected: animation.showMark }"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="animation-switch-onionskin"
-
-									v-tip="t('components.animation-switch-onionskin.tip')"
-									value="onionskin"
-									hotkey="O"
-									:class="{ selected: animation.showOnionskin }"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="animation-switch-mirror"
-
-									v-tip="t('components.animation-switch-mirror.tip')"
-									value="mirror"
-									hotkey="M"
-									:class="{ selected: animation.mirror }"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="animation-switch-settings"
-
-									v-tip="t('components.animation-switch-settings.tip')"
-				:ref="registryRef(inspectorEls, 'animation-switch-settings')"
-									value="settings"
-								></div>
-							</div>
-							<div class="box" id="animation-head-center">
-								<NumberBox
-									id="animation-speed"
-
-									v-tip="t('components.animation-speed.tip')"
-									min="0"
-									max="4"
-									step="0.05"
-									decimals="2"
-									v-model="speedModel"
-									><div class="text label">speed:</div></NumberBox
-								>
-							</div>
-							<div class="box" id="animation-head-end">
-								<SliderBox
-									id="animation-zoom"
-									name="zoom-0-6"
-									min="0"
-									max="6"
-									hotkey="-/+"
-									active-wheel
-									v-model="zoomModel"
-									@focus="onAnimationZoomFocus"
-								></SliderBox>
-							</div>
-						</div>
-						<div class="box" id="animation-body"
-				:ref="registryRef(animationEls, 'animation-body')">
-							<div
-								class="box"
-								id="animation-screen"
-				:ref="registryRef(animationEls, 'animation-screen')"
-								tabindex="-1"
-								@keydown="onAnimationScreenKeydown"
-								@wheel="onAnimationScreenWheel"
-							>
-								<MarqueeArea
-									id="animation-marquee"
-				:ref="registryRef(animationEls, 'animation-marquee')"
-									@pointerdown="onAnimationMarqueePointerdown"
-									@doubleclick="onAnimationMarqueeDoubleclick"
-								></MarqueeArea>
-							</div>
-							<div
-								ref="dirListEl"
-								class="box"
-								id="animation-dirList"
-								v-show="dirs.length > 1"
-							>
-								<div
-									class="anim-dir"
-									v-for="(dir, index) in dirs"
-									:key="index"
-									:class="{ selected: index === direction }"
-									@pointerdown="onDirPointerdown(index)"
-								>
-									{{ dir }}
-								</div>
-							</div>
-						</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="animation-motion" source="page">
-					<div class="page-frame" id="animation-motion"
-				:ref="registryRef(animationEls, 'animation-motion')" value="animation-motion">
-						<div class="box" id="animation-list-head"
-				:ref="registryRef(animationEls, 'animation-list-head')">
-							<TextBox id="animation-searcher"
-				:ref="registryRef(animationEls, 'animation-searcher')" name="search"></TextBox>
-						</div>
-						<TreeList
-							id="animation-list"
-				:ref="registryRef(animationEls, 'animation-list')"
-							padded
-							:node-extras="animationNodeExtras"
-							:node-icon-renderer="animationNodeIcon"
-							@select="onAnimationListSelect"
-							@record="onAnimationListRecord"
-							@open="onAnimationListOpen"
-							@popup="onAnimationListPopup"
-							@change="onAnimationListChange"
-						></TreeList>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="animation-timeline" source="page">
-					<div class="page-frame" id="animation-timeline"
-				:ref="registryRef(animationEls, 'animation-timeline')" value="animation-timeline">
-						<div class="box" id="animation-timeline-head"
-				:ref="registryRef(animationEls, 'animation-timeline-head')">
-							<div
-								class="box"
-								id="animation-timeline-toolbar"
-				:ref="registryRef(animationEls, 'animation-timeline-toolbar')"
-								@pointerdown="onTimelineToolbarPointerdown"
-							>
-								<div
-									class="item toolbar-item"
-									id="animation-timeline-previousKey"
-
-									v-tip="t('components.animation-timeline-previousKey.tip')"
-									value="previousKey"
-									hotkey="Z"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="animation-timeline-previous"
-
-									v-tip="t('components.animation-timeline-previous.tip')"
-									value="previous"
-									hotkey="Q"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="animation-timeline-play"
-
-									v-tip="t('components.animation-timeline-play.tip')"
-									value="play"
-									hotkey="R"
-									:class="{ playing: animation.playing }"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="animation-timeline-next"
-
-									v-tip="t('components.animation-timeline-next.tip')"
-									value="next"
-									hotkey="E"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="animation-timeline-nextKey"
-
-									v-tip="t('components.animation-timeline-nextKey.tip')"
-									value="nextKey"
-									hotkey="X"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="animation-timeline-loop"
-
-									v-tip="t('components.animation-timeline-loop.tip')"
-									value="loop"
-									:class="{ selected: animation.loop }"
-								></div>
-							</div>
-							<div class="box" id="animation-timeline-ruler-outer"
-				:ref="registryRef(animationEls, 'animation-timeline-ruler-outer')">
-								<div class="box" id="animation-timeline-ruler-inner"
-				:ref="registryRef(animationEls, 'animation-timeline-ruler-inner')"></div>
-							</div>
-						</div>
-						<TreeList
-							id="animation-layer-list"
-				:ref="registryRef(animationEls, 'animation-layer-list')"
-							:node-extras="layerNodeExtras"
-							:node-icon-renderer="layerNodeIcon"
-							@select="onLayerListSelect"
-							@record="onLayerListRecord"
-							@popup="onLayerListPopup"
-							@change="onLayerListChange"
-						></TreeList>
-						<div class="box" id="animation-timeline-list-outer"
-				:ref="registryRef(animationEls, 'animation-timeline-list-outer')" tabindex="0">
-							<div class="box" id="animation-timeline-list-inner"
-				:ref="registryRef(animationEls, 'animation-timeline-list-inner')"></div>
-							<div class="box" id="animation-timeline-cursor"
-				:ref="registryRef(animationEls, 'animation-timeline-cursor')"></div>
-							<div class="box" id="animation-timeline-marquee"
-				:ref="registryRef(animationEls, 'animation-timeline-marquee')"></div>
-							<div class="box" id="animation-timeline-marquee-shift"
-				:ref="registryRef(animationEls, 'animation-timeline-marquee-shift')"></div>
-						</div>
-						<div class="box" id="animation-timeline-pointer-area-outer"
-				:ref="registryRef(animationEls, 'animation-timeline-pointer-area-outer')">
-							<div class="box" id="animation-timeline-pointer-area-inner"
-				:ref="registryRef(animationEls, 'animation-timeline-pointer-area-inner')">
-								<div class="box" id="animation-timeline-pointer"
-				:ref="registryRef(animationEls, 'animation-timeline-pointer')"></div>
-							</div>
-						</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="animation-easing" source="page">
-					<div class="page-frame" id="animation-easing"
-				:ref="registryRef(animationEls, 'animation-easing')" value="animation-easing">
-						<div class="box" id="animation-easing-head"
-				:ref="registryRef(animationEls, 'animation-easing-head')">
-							<div
-								class="item toolbar-item"
-								id="animation-easing-settings"
-				:ref="registryRef(animationEls, 'animation-easing-settings')"
-								value="bezier"
-							></div>
-							<SelectBox
-								id="animation-easing-id"
-				:ref="registryRef(animationEls, 'animation-easing-id')"
-								@write="onEasingIdWrite"
-								@input="onEasingIdInput"
-							></SelectBox>
-						</div>
-						<canvas id="animation-easing-canvas"
-				:ref="registryRef(animationEls, 'animation-easing-canvas')" width="0" height="0"></canvas>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="particle" source="page">
-					<div class="page-frame" id="particle"
-				:ref="registryRef(particleEls, 'particle')" value="particle">
-						<div
-							class="box"
-							id="particle-head"
-				:ref="registryRef(particleEls, 'particle-head')"
-							@pointerdown="onParticleHeadPointerdown"
-						>
-							<div
-								class="box"
-								id="particle-head-start"
-								@pointerdown="onParticleViewPointerdown"
-							>
-								<div
-									class="item toolbar-item"
-									id="particle-view-wireframe"
-
-									v-tip="t('components.particle-view-wireframe.tip')"
-				:ref="registryRef(particleEls, 'particle-view-wireframe')"
-									value="wireframe"
-								></div>
-								<div
-									class="item toolbar-item"
-									id="particle-view-anchor"
-
-									v-tip="t('components.particle-view-anchor.tip')"
-				:ref="registryRef(particleEls, 'particle-view-anchor')"
-									value="anchor"
-								></div>
-							</div>
-							<div class="box" id="particle-head-center">
 								<div
 									class="box"
-									id="particle-control"
-									@pointerdown="onParticleControlPointerdown"
+									id="animation-easing-head"
+									:ref="registryRef(animationEls, 'animation-easing-head')"
 								>
 									<div
 										class="item toolbar-item"
-										id="particle-control-restart"
-
-										v-tip="t('components.particle-control-restart.tip')"
-				:ref="registryRef(particleEls, 'particle-control-restart')"
-										value="restart"
-										hotkey="R"
+										id="animation-easing-settings"
+										:ref="
+											registryRef(animationEls, 'animation-easing-settings')
+										"
+										value="bezier"
 									></div>
+									<SelectBox
+										id="animation-easing-id"
+										:ref="registryRef(animationEls, 'animation-easing-id')"
+										@write="onEasingIdWrite"
+										@input="onEasingIdInput"
+									></SelectBox>
+								</div>
+								<canvas
+									id="animation-easing-canvas"
+									:ref="registryRef(animationEls, 'animation-easing-canvas')"
+									width="0"
+									height="0"
+								></canvas>
+							</div>
+						</PaletteNode>
+						<PaletteNode value="particle" source="page">
+							<div
+								class="page-frame"
+								id="particle"
+								:ref="registryRef(particleEls, 'particle')"
+								value="particle"
+							>
+								<div
+									class="box"
+									id="particle-head"
+									:ref="registryRef(particleEls, 'particle-head')"
+									@pointerdown="onParticleHeadPointerdown"
+								>
 									<div
-										class="item toolbar-item"
-										id="particle-control-pause"
-
-										v-tip="t('components.particle-control-pause.tip')"
-				:ref="registryRef(particleEls, 'particle-control-pause')"
-										value="pause"
-										hotkey="P"
+										class="box"
+										id="particle-head-start"
+										@pointerdown="onParticleViewPointerdown"
+									>
+										<div
+											class="item toolbar-item"
+											id="particle-view-wireframe"
+											v-tip="t('components.particle-view-wireframe.tip')"
+											:ref="
+												registryRef(particleEls, 'particle-view-wireframe')
+											"
+											value="wireframe"
+										></div>
+										<div
+											class="item toolbar-item"
+											id="particle-view-anchor"
+											v-tip="t('components.particle-view-anchor.tip')"
+											:ref="registryRef(particleEls, 'particle-view-anchor')"
+											value="anchor"
+										></div>
+									</div>
+									<div class="box" id="particle-head-center">
+										<div
+											class="box"
+											id="particle-control"
+											@pointerdown="onParticleControlPointerdown"
+										>
+											<div
+												class="item toolbar-item"
+												id="particle-control-restart"
+												v-tip="t('components.particle-control-restart.tip')"
+												:ref="
+													registryRef(
+														particleEls,
+														'particle-control-restart'
+													)
+												"
+												value="restart"
+												hotkey="R"
+											></div>
+											<div
+												class="item toolbar-item"
+												id="particle-control-pause"
+												v-tip="t('components.particle-control-pause.tip')"
+												:ref="
+													registryRef(
+														particleEls,
+														'particle-control-pause'
+													)
+												"
+												value="pause"
+												hotkey="P"
+											></div>
+										</div>
+										<NumberBox
+											id="particle-speed"
+											v-tip="t('components.particle-speed.tip')"
+											:ref="registryRef(particleEls, 'particle-speed')"
+											min="0"
+											max="4"
+											step="0.05"
+											decimals="2"
+											><div class="text label">speed:</div></NumberBox
+										>
+									</div>
+									<div class="box" id="particle-head-end">
+										<SliderBox
+											id="particle-zoom"
+											:ref="registryRef(particleEls, 'particle-zoom')"
+											name="zoom"
+											min="0"
+											max="4"
+											hotkey="-/+"
+											active-wheel
+											@input="onParticleZoomInput"
+											@focus="onParticleZoomFocus"
+										></SliderBox>
+									</div>
+								</div>
+								<div
+									class="box"
+									id="particle-body"
+									:ref="registryRef(particleEls, 'particle-body')"
+								>
+									<div
+										class="box"
+										id="particle-screen"
+										:ref="registryRef(particleEls, 'particle-screen')"
+										tabindex="-1"
+										@keydown="onParticleScreenKeydown"
+										@wheel="onParticleScreenWheel"
+									>
+										<MarqueeArea
+											id="particle-marquee"
+											:ref="registryRef(particleEls, 'particle-marquee')"
+											@pointerdown="onParticleMarqueePointerdown"
+										></MarqueeArea>
+									</div>
+									<div
+										class="text"
+										id="particle-info"
+										:ref="registryRef(particleEls, 'particle-info')"
 									></div>
 								</div>
-								<NumberBox
-									id="particle-speed"
-
-									v-tip="t('components.particle-speed.tip')"
-				:ref="registryRef(particleEls, 'particle-speed')"
-									min="0"
-									max="4"
-									step="0.05"
-									decimals="2"
-									><div class="text label">speed:</div></NumberBox
-								>
 							</div>
-							<div class="box" id="particle-head-end">
-								<SliderBox
-									id="particle-zoom"
-				:ref="registryRef(particleEls, 'particle-zoom')"
-									name="zoom"
-									min="0"
-									max="4"
-									hotkey="-/+"
-									active-wheel
-									@input="onParticleZoomInput"
-									@focus="onParticleZoomFocus"
-								></SliderBox>
+						</PaletteNode>
+						<PaletteNode value="particle-layer" source="page">
+							<div class="page-frame" id="particle-layer" value="particle-layer">
+								<TreeList
+									id="particle-list"
+									:ref="registryRef(particleEls, 'particle-list')"
+									padded
+									:node-extras="particleNodeExtras"
+									:node-icon-renderer="particleNodeIcon"
+								></TreeList>
 							</div>
-						</div>
-						<div class="box" id="particle-body"
-				:ref="registryRef(particleEls, 'particle-body')">
+						</PaletteNode>
+						<PaletteNode value="inspector" source="page">
 							<div
-								class="box"
-								id="particle-screen"
-				:ref="registryRef(particleEls, 'particle-screen')"
-								tabindex="-1"
-								@keydown="onParticleScreenKeydown"
-								@wheel="onParticleScreenWheel"
+								class="page-frame"
+								id="inspector"
+								:ref="registryRef(inspectorEls, 'inspector')"
+								value="inspector"
 							>
-								<MarqueeArea
-									id="particle-marquee"
-				:ref="registryRef(particleEls, 'particle-marquee')"
-									@pointerdown="onParticleMarqueePointerdown"
-								></MarqueeArea>
+								<PageManager
+									id="inspector-page-manager"
+									:ref="registryRef(inspectorEls, 'inspector-page-manager')"
+									tabindex="-1"
+								>
+									<div
+										class="page-frame"
+										value="fileScene"
+										id="fileScene-vue-mount"
+										:ref="registryRef(inspectorEls, 'fileScene-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="fileUI"
+										id="fileUI-vue-mount"
+										:ref="registryRef(inspectorEls, 'fileUI-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="fileAnimation"
+										id="fileAnimation-vue-mount"
+									></div>
+									<div
+										class="page-frame"
+										id="fileTileset"
+										:ref="registryRef(inspectorEls, 'fileTileset')"
+										value="fileTileset"
+									></div>
+									<div
+										class="page-frame"
+										value="fileActor"
+										id="fileActor-vue-mount"
+										:ref="registryRef(inspectorEls, 'fileActor-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="fileSkill"
+										id="fileSkill-vue-mount"
+										:ref="registryRef(inspectorEls, 'fileSkill-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="fileTrigger"
+										id="fileTrigger-vue-mount"
+										:ref="registryRef(inspectorEls, 'fileTrigger-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="fileItem"
+										id="fileItem-vue-mount"
+										:ref="registryRef(inspectorEls, 'fileItem-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="fileEquipment"
+										id="fileEquipment-vue-mount"
+										:ref="registryRef(inspectorEls, 'fileEquipment-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="fileState"
+										id="fileState-vue-mount"
+										:ref="registryRef(inspectorEls, 'fileState-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="fileEvent"
+										id="fileEvent-vue-mount"
+										:ref="registryRef(inspectorEls, 'fileEvent-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										id="fileImage"
+										:ref="registryRef(inspectorEls, 'fileImage')"
+										value="fileImage"
+									></div>
+									<div
+										class="page-frame"
+										id="fileAudio"
+										:ref="registryRef(inspectorEls, 'fileAudio')"
+										value="fileAudio"
+									></div>
+									<div
+										class="page-frame"
+										id="fileVideo"
+										:ref="registryRef(inspectorEls, 'fileVideo')"
+										value="fileVideo"
+									></div>
+									<div
+										class="page-frame"
+										id="fileFont"
+										:ref="registryRef(inspectorEls, 'fileFont')"
+										value="fileFont"
+									></div>
+									<div
+										class="page-frame"
+										id="fileScript"
+										:ref="registryRef(inspectorEls, 'fileScript')"
+										value="fileScript"
+									></div>
+									<div
+										class="page-frame"
+										value="sceneActor"
+										id="sceneActor-vue-mount"
+										:ref="registryRef(inspectorEls, 'sceneActor-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="sceneRegion"
+										id="sceneRegion-vue-mount"
+										:ref="registryRef(inspectorEls, 'sceneRegion-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="sceneLight"
+										id="sceneLight-vue-mount"
+										:ref="registryRef(inspectorEls, 'sceneLight-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="sceneAnimation"
+										id="sceneAnimation-vue-mount"
+										:ref="registryRef(inspectorEls, 'sceneAnimation-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="sceneParticle"
+										id="sceneParticle-vue-mount"
+										:ref="registryRef(inspectorEls, 'sceneParticle-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="sceneParallax"
+										id="sceneParallax-vue-mount"
+										:ref="registryRef(inspectorEls, 'sceneParallax-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="sceneTilemap"
+										id="sceneTilemap-vue-mount"
+										:ref="registryRef(inspectorEls, 'sceneTilemap-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="uiImage"
+										id="uiImage-vue-mount"
+										:ref="registryRef(inspectorEls, 'uiImage-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="uiText"
+										id="uiText-vue-mount"
+										:ref="registryRef(inspectorEls, 'uiText-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="uiTextBox"
+										id="uiTextBox-vue-mount"
+										:ref="registryRef(inspectorEls, 'uiTextBox-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="uiDialogBox"
+										id="uiDialogBox-vue-mount"
+										:ref="registryRef(inspectorEls, 'uiDialogBox-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="uiProgressBar"
+										id="uiProgressBar-vue-mount"
+										:ref="registryRef(inspectorEls, 'uiProgressBar-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="uiButton"
+										id="uiButton-vue-mount"
+										:ref="registryRef(inspectorEls, 'uiButton-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="uiAnimation"
+										id="uiAnimation-vue-mount"
+										:ref="registryRef(inspectorEls, 'uiAnimation-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="uiVideo"
+										id="uiVideo-vue-mount"
+										:ref="registryRef(inspectorEls, 'uiVideo-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="uiWindow"
+										id="uiWindow-vue-mount"
+										:ref="registryRef(inspectorEls, 'uiWindow-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="uiContainer"
+										id="uiContainer-vue-mount"
+									></div>
+									<div
+										class="page-frame"
+										value="uiReference"
+										id="uiReference-vue-mount"
+										:ref="registryRef(inspectorEls, 'uiReference-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="animMotion"
+										id="animMotion-vue-mount"
+										:ref="registryRef(inspectorEls, 'animMotion-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="animJointFrame"
+										id="animJointFrame-vue-mount"
+										:ref="registryRef(inspectorEls, 'animJointFrame-vue-mount')"
+									></div>
+									<div
+										class="page-frame"
+										value="animSpriteLayer"
+										id="animSpriteLayer-vue-mount"
+										:ref="
+											registryRef(inspectorEls, 'animSpriteLayer-vue-mount')
+										"
+									></div>
+									<div
+										class="page-frame"
+										value="animSpriteFrame"
+										id="animSpriteFrame-vue-mount"
+										:ref="
+											registryRef(inspectorEls, 'animSpriteFrame-vue-mount')
+										"
+									></div>
+									<div
+										class="page-frame"
+										value="animParticleLayer"
+										id="animParticleLayer-vue-mount"
+										:ref="
+											registryRef(inspectorEls, 'animParticleLayer-vue-mount')
+										"
+									></div>
+									<div
+										class="page-frame"
+										value="animParticleFrame"
+										id="animParticleFrame-vue-mount"
+										:ref="
+											registryRef(inspectorEls, 'animParticleFrame-vue-mount')
+										"
+									></div>
+									<div
+										class="page-frame"
+										value="animSoundLayer"
+										id="animSoundLayer-vue-mount"
+										:ref="
+											registryRef(composableEls, 'animSoundLayer-vue-mount')
+										"
+									></div>
+									<div
+										class="page-frame"
+										value="animSoundFrame"
+										id="animSoundFrame-vue-mount"
+										:ref="
+											registryRef(composableEls, 'animSoundFrame-vue-mount')
+										"
+									></div>
+									<div
+										class="page-frame"
+										value="particleLayer"
+										id="particleLayer-vue-mount"
+										:ref="registryRef(inspectorEls, 'particleLayer-vue-mount')"
+									></div>
+								</PageManager>
 							</div>
-							<div class="text" id="particle-info"
-				:ref="registryRef(particleEls, 'particle-info')"></div>
-						</div>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="particle-layer" source="page">
-					<div class="page-frame" id="particle-layer" value="particle-layer">
-						<TreeList
-							id="particle-list"
-				:ref="registryRef(particleEls, 'particle-list')"
-							padded
-							:node-extras="particleNodeExtras"
-							:node-icon-renderer="particleNodeIcon"
-						></TreeList>
-					</div>
-					</PaletteNode>
-					<PaletteNode value="inspector" source="page">
-					<div class="page-frame" id="inspector"
-				:ref="registryRef(inspectorEls, 'inspector')" value="inspector">
-						<PageManager id="inspector-page-manager"
-				:ref="registryRef(inspectorEls, 'inspector-page-manager')" tabindex="-1">
-							<div
-								class="page-frame"
-								value="fileScene"
-								id="fileScene-vue-mount"
-				:ref="registryRef(inspectorEls, 'fileScene-vue-mount')"
-							></div>
-							<div class="page-frame" value="fileUI" id="fileUI-vue-mount"
-				:ref="registryRef(inspectorEls, 'fileUI-vue-mount')"></div>
-							<div
-								class="page-frame"
-								value="fileAnimation"
-								id="fileAnimation-vue-mount"
-							></div>
-							<div class="page-frame" id="fileTileset"
-				:ref="registryRef(inspectorEls, 'fileTileset')" value="fileTileset"></div>
-							<div
-								class="page-frame"
-								value="fileActor"
-								id="fileActor-vue-mount"
-				:ref="registryRef(inspectorEls, 'fileActor-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="fileSkill"
-								id="fileSkill-vue-mount"
-				:ref="registryRef(inspectorEls, 'fileSkill-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="fileTrigger"
-								id="fileTrigger-vue-mount"
-				:ref="registryRef(inspectorEls, 'fileTrigger-vue-mount')"
-							></div>
-							<div class="page-frame" value="fileItem" id="fileItem-vue-mount"
-				:ref="registryRef(inspectorEls, 'fileItem-vue-mount')"></div>
-							<div
-								class="page-frame"
-								value="fileEquipment"
-								id="fileEquipment-vue-mount"
-				:ref="registryRef(inspectorEls, 'fileEquipment-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="fileState"
-								id="fileState-vue-mount"
-				:ref="registryRef(inspectorEls, 'fileState-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="fileEvent"
-								id="fileEvent-vue-mount"
-				:ref="registryRef(inspectorEls, 'fileEvent-vue-mount')"
-							></div>
-							<div class="page-frame" id="fileImage"
-				:ref="registryRef(inspectorEls, 'fileImage')" value="fileImage"></div>
-							<div class="page-frame" id="fileAudio"
-				:ref="registryRef(inspectorEls, 'fileAudio')" value="fileAudio"></div>
-							<div class="page-frame" id="fileVideo"
-				:ref="registryRef(inspectorEls, 'fileVideo')" value="fileVideo"></div>
-							<div class="page-frame" id="fileFont"
-				:ref="registryRef(inspectorEls, 'fileFont')" value="fileFont"></div>
-							<div class="page-frame" id="fileScript"
-				:ref="registryRef(inspectorEls, 'fileScript')" value="fileScript"></div>
-							<div
-								class="page-frame"
-								value="sceneActor"
-								id="sceneActor-vue-mount"
-				:ref="registryRef(inspectorEls, 'sceneActor-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="sceneRegion"
-								id="sceneRegion-vue-mount"
-				:ref="registryRef(inspectorEls, 'sceneRegion-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="sceneLight"
-								id="sceneLight-vue-mount"
-				:ref="registryRef(inspectorEls, 'sceneLight-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="sceneAnimation"
-								id="sceneAnimation-vue-mount"
-				:ref="registryRef(inspectorEls, 'sceneAnimation-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="sceneParticle"
-								id="sceneParticle-vue-mount"
-				:ref="registryRef(inspectorEls, 'sceneParticle-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="sceneParallax"
-								id="sceneParallax-vue-mount"
-				:ref="registryRef(inspectorEls, 'sceneParallax-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="sceneTilemap"
-								id="sceneTilemap-vue-mount"
-				:ref="registryRef(inspectorEls, 'sceneTilemap-vue-mount')"
-							></div>
-							<div class="page-frame" value="uiImage" id="uiImage-vue-mount"
-				:ref="registryRef(inspectorEls, 'uiImage-vue-mount')"></div>
-							<div class="page-frame" value="uiText" id="uiText-vue-mount"
-				:ref="registryRef(inspectorEls, 'uiText-vue-mount')"></div>
-							<div
-								class="page-frame"
-								value="uiTextBox"
-								id="uiTextBox-vue-mount"
-				:ref="registryRef(inspectorEls, 'uiTextBox-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="uiDialogBox"
-								id="uiDialogBox-vue-mount"
-				:ref="registryRef(inspectorEls, 'uiDialogBox-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="uiProgressBar"
-								id="uiProgressBar-vue-mount"
-				:ref="registryRef(inspectorEls, 'uiProgressBar-vue-mount')"
-							></div>
-							<div class="page-frame" value="uiButton" id="uiButton-vue-mount"
-				:ref="registryRef(inspectorEls, 'uiButton-vue-mount')"></div>
-							<div
-								class="page-frame"
-								value="uiAnimation"
-								id="uiAnimation-vue-mount"
-				:ref="registryRef(inspectorEls, 'uiAnimation-vue-mount')"
-							></div>
-							<div class="page-frame" value="uiVideo" id="uiVideo-vue-mount"
-				:ref="registryRef(inspectorEls, 'uiVideo-vue-mount')"></div>
-							<div class="page-frame" value="uiWindow" id="uiWindow-vue-mount"
-				:ref="registryRef(inspectorEls, 'uiWindow-vue-mount')"></div>
-							<div
-								class="page-frame"
-								value="uiContainer"
-								id="uiContainer-vue-mount"
-							></div>
-							<div
-								class="page-frame"
-								value="uiReference"
-								id="uiReference-vue-mount"
-				:ref="registryRef(inspectorEls, 'uiReference-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="animMotion"
-								id="animMotion-vue-mount"
-				:ref="registryRef(inspectorEls, 'animMotion-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="animJointFrame"
-								id="animJointFrame-vue-mount"
-				:ref="registryRef(inspectorEls, 'animJointFrame-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="animSpriteLayer"
-								id="animSpriteLayer-vue-mount"
-				:ref="registryRef(inspectorEls, 'animSpriteLayer-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="animSpriteFrame"
-								id="animSpriteFrame-vue-mount"
-				:ref="registryRef(inspectorEls, 'animSpriteFrame-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="animParticleLayer"
-								id="animParticleLayer-vue-mount"
-				:ref="registryRef(inspectorEls, 'animParticleLayer-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="animParticleFrame"
-								id="animParticleFrame-vue-mount"
-				:ref="registryRef(inspectorEls, 'animParticleFrame-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="animSoundLayer"
-								id="animSoundLayer-vue-mount"
-				:ref="registryRef(composableEls, 'animSoundLayer-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="animSoundFrame"
-								id="animSoundFrame-vue-mount"
-				:ref="registryRef(composableEls, 'animSoundFrame-vue-mount')"
-							></div>
-							<div
-								class="page-frame"
-								value="particleLayer"
-								id="particleLayer-vue-mount"
-				:ref="registryRef(inspectorEls, 'particleLayer-vue-mount')"
-							></div>
-						</PageManager>
-					</div>
-					</PaletteNode>
-				</PageManager>
-			</LayoutPaletteHost>
+						</PaletteNode>
+					</PageManager>
+				</LayoutPaletteHost>
 			</div>
 		</div>
 		<div class="page-frame" value="scene"></div>
@@ -2106,4 +2369,3 @@ const onUiListOpen = (event: Event) => {
 	/* background-color: red; */
 }
 </style>
-

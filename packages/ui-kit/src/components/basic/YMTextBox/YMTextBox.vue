@@ -51,7 +51,7 @@ type TextBoxApi = HTMLElement & {
 		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
-}
+};
 
 const state = {
 	focusEventEnabled: false,
@@ -64,8 +64,18 @@ const core = createTextBoxCore({
 	getRoot: () => root.value,
 	getInput: () => inputEl.value
 });
-const { read, insert, enable, disable, focus, getFocus, setPlaceholder, setMaxLength, fitContent, deleteInputContent } =
-	core;
+const {
+	read,
+	insert,
+	enable,
+	disable,
+	focus,
+	getFocus,
+	setPlaceholder,
+	setMaxLength,
+	fitContent,
+	deleteInputContent
+} = core;
 
 const write = (value: string): void => {
 	const el = inputEl.value;
@@ -212,8 +222,14 @@ defineExpose({
 	initializeApi
 });
 
-watch(() => props.modelValue, (val) => write(val));
-watch(() => props.disabled, (val) => (val ? disable() : enable()));
+watch(
+	() => props.modelValue,
+	(val) => write(val)
+);
+watch(
+	() => props.disabled,
+	(val) => (val ? disable() : enable())
+);
 
 function initializeApi(): void {
 	const el = root.value;
@@ -243,7 +259,7 @@ function initializeApi(): void {
 	if (props.disabled) disable();
 	// P4b：与 `*-api.ts` 工厂同一套守卫（第十六刀只改了工厂，三个 SFC 仍留着私有 expando）
 	markApiAttached(el);
-};
+}
 
 onMounted(initializeApi);
 </script>
@@ -336,5 +352,3 @@ onMounted(initializeApi);
 	color: var(--tab-close-color-active);
 }
 </style>
-
-

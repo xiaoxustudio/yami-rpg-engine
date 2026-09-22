@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="moveActor"
-				:ref="registryRef(fieldEls, 'moveActor')" @confirm="onConfirm">
+	<WindowFrame id="moveActor" :ref="registryRef(fieldEls, 'moveActor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.moveActor.title') }}
@@ -9,13 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.moveActor-actor.label') }}</div>
-			<CustomBox id="moveActor-actor"
+			<CustomBox
+				id="moveActor-actor"
 				:ref="registryRef(fieldEls, 'moveActor-actor')"
-				v-tip="t('components.moveActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.moveActor-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.moveActor-mode.label') }}</div>
-			<SelectBox id="moveActor-mode"
+			<SelectBox
+				id="moveActor-mode"
 				v-tip="t('components.moveActor-mode.tip')"
-				:ref="registryRef(fieldEls, 'moveActor-mode')" v-model="form.mode" />
+				:ref="registryRef(fieldEls, 'moveActor-mode')"
+				v-model="form.mode"
+			/>
 			<div class="text">{{ t('components.moveActor-angle.label') }}</div>
 			<NumberVar
 				id="moveActor-angle"
@@ -28,12 +35,20 @@
 				v-model="form.angle"
 			/>
 			<div class="text">{{ t('components.moveActor-destination.label') }}</div>
-			<CustomBox id="moveActor-destination"
+			<CustomBox
+				id="moveActor-destination"
 				v-tip="t('components.moveActor-destination.tip')"
-				:ref="registryRef(fieldEls, 'moveActor-destination')" type="position" v-model="form.destination" />
+				:ref="registryRef(fieldEls, 'moveActor-destination')"
+				type="position"
+				v-model="form.destination"
+			/>
 			<div class="text">{{ t('components.moveActor-wait.label') }}</div>
-			<SelectBox id="moveActor-wait"
-				:ref="registryRef(fieldEls, 'moveActor-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="moveActor-wait"
+				:ref="registryRef(fieldEls, 'moveActor-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -63,11 +78,21 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('moveActor-mode', ['stop', 'keep', 'straight', 'navigate', 'navigate-bypass', 'teleport'], (items) =>
-		fieldEls.get('moveActor-mode')?.loadItems?.(items),
-		{ 'stop': 'command.moveActor.mode.stop', 'keep': 'command.moveActor.mode.keep', 'straight': 'command.moveActor.mode.straight', 'navigate': 'command.moveActor.mode.navigate', 'navigate-bypass': 'command.moveActor.mode.navigate-bypass', 'teleport': 'command.moveActor.mode.teleport' }
+	useLocalizedOptions(
+		'moveActor-mode',
+		['stop', 'keep', 'straight', 'navigate', 'navigate-bypass', 'teleport'],
+		(items) => fieldEls.get('moveActor-mode')?.loadItems?.(items),
+		{
+			stop: 'command.moveActor.mode.stop',
+			keep: 'command.moveActor.mode.keep',
+			straight: 'command.moveActor.mode.straight',
+			navigate: 'command.moveActor.mode.navigate',
+			'navigate-bypass': 'command.moveActor.mode.navigate-bypass',
+			teleport: 'command.moveActor.mode.teleport'
+		}
 	);
-	fieldEls.get('moveActor-mode')
+	fieldEls
+		.get('moveActor-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'keep', targets: [fieldEls.get('moveActor-angle')] },
@@ -99,5 +124,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

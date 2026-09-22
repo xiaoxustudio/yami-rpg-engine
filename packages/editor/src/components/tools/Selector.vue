@@ -1,6 +1,10 @@
 <template>
-	<WindowFrame id="selector"
-				:ref="registryRef(storesEls, 'selector')" mode="center" @confirm="onConfirm">
+	<WindowFrame
+		id="selector"
+		:ref="registryRef(storesEls, 'selector')"
+		mode="center"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.selector.title') }}
@@ -60,4 +64,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

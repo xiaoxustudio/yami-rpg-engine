@@ -162,11 +162,14 @@ TextSuggestion.list.updateNodeElement = null;
 TextSuggestion.list.selectDefaultCommand = null;
 
 TextSuggestion.initialize = function (this: TextSuggestionShape): void {
-	const element = textSuggestionEls.get('text-suggestions');
-	if (element && element !== (this.list as unknown as HTMLElement)) {
-		element.updateNodeElement = this.list.updateNodeElement as (item: unknown) => unknown;
-		element.selectDefaultCommand = this.list.selectDefaultCommand as (item: unknown) => unknown;
-		this.list = element as unknown as TextSuggestionList;
+	// 收窄走 `registryElement`（P4 的既有手法：把「按 id 收窄」集中在一处）。
+	// 于是：① 与 `this.list` 的比较是两个同类型；② 下面两处成员赋值不必再写断言；
+	// ③ `this.list = element` 也不再需要 `as unknown as`。
+	const element = registryElement<TextSuggestionList>(textSuggestionEls, 'text-suggestions');
+	if (element && element !== this.list) {
+		element.updateNodeElement = this.list.updateNodeElement;
+		element.selectDefaultCommand = this.list.selectDefaultCommand;
+		this.list = element;
 	}
 	const { list } = this;
 	list.bind(() => this.data);

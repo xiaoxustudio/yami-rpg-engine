@@ -29,13 +29,15 @@ export const viewModeOfIndex = (viewIndex: number): FileBodyViewMode => {
 };
 
 /** 平铺视图的单元尺寸（原 `computeGridProperties` 里的字面量：small/medium/large/huge） */
-export const TILE_SIZE_BY_VIEW_MODE: Record<Exclude<FileBodyViewMode, 'list'>, readonly [number, number]> =
-	{
-		small: [40, 72],
-		medium: [72, 104],
-		large: [136, 168],
-		huge: [264, 296]
-	};
+export const TILE_SIZE_BY_VIEW_MODE: Record<
+	Exclude<FileBodyViewMode, 'list'>,
+	readonly [number, number]
+> = {
+	small: [40, 72],
+	medium: [72, 104],
+	large: [136, 168],
+	huge: [264, 296]
+};
 
 /** 按视图模式算出网格度量（纯：把 core 的两个度量函数按模式分派，不改任何状态） */
 export const computeViewMetrics = (

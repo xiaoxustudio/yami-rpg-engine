@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setLanguage"
-				:ref="registryRef(fieldEls, 'setLanguage')" @confirm="onConfirm">
+	<WindowFrame id="setLanguage" :ref="registryRef(fieldEls, 'setLanguage')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setLanguage.title') }}
@@ -9,9 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setLanguage-language.label') }}</div>
-			<SelectBox id="setLanguage-language"
+			<SelectBox
+				id="setLanguage-language"
 				:ref="registryRef(fieldEls, 'setLanguage-language')"
-				v-tip="t('components.setLanguage-language.tip')" v-model="form.language" />
+				v-tip="t('components.setLanguage-language.tip')"
+				v-model="form.language"
+			/>
 		</div>
 	</WindowFrame>
 </template>

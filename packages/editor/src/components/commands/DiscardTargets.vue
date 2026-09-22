@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="discardTargets"
-				:ref="registryRef(fieldEls, 'discardTargets')" @confirm="onConfirm">
+	<WindowFrame
+		id="discardTargets"
+		:ref="registryRef(fieldEls, 'discardTargets')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.discardTargets.title') }}
@@ -9,13 +12,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.discardTargets-actor.label') }}</div>
-			<CustomBox id="discardTargets-actor"
+			<CustomBox
+				id="discardTargets-actor"
 				:ref="registryRef(fieldEls, 'discardTargets-actor')"
-				v-tip="t('components.discardTargets-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.discardTargets-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.discardTargets-selector.label') }}</div>
-			<SelectBox id="discardTargets-selector"
+			<SelectBox
+				id="discardTargets-selector"
 				v-tip="t('components.discardTargets-selector.tip')"
-				:ref="registryRef(fieldEls, 'discardTargets-selector')" v-model="form.selector" />
+				:ref="registryRef(fieldEls, 'discardTargets-selector')"
+				v-model="form.selector"
+			/>
 			<div class="text">{{ t('components.discardTargets-distance.label') }}</div>
 			<NumberVar
 				id="discardTargets-distance"
@@ -56,8 +67,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('discardTargets-selector', ['enemy', 'friend', 'team', 'team-except-self', 'any-except-self', 'any'], (items) =>
-		fieldEls.get('discardTargets-selector')?.loadItems?.(items)
+	useLocalizedOptions(
+		'discardTargets-selector',
+		['enemy', 'friend', 'team', 'team-except-self', 'any-except-self', 'any'],
+		(items) => fieldEls.get('discardTargets-selector')?.loadItems?.(items)
 	);
 });
 </script>
@@ -78,5 +91,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

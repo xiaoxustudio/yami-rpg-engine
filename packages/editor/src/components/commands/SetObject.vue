@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setObject"
-				:ref="registryRef(fieldEls, 'setObject')" @confirm="onConfirm">
+	<WindowFrame id="setObject" :ref="registryRef(fieldEls, 'setObject')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setObject.title') }}
@@ -8,70 +7,105 @@
 		></template>
 
 		<div class="grid-box">
-		<div class="text">{{ t('components.setObject-variable.label') }}</div>
-		<CustomBox
-			id="setObject-variable"
+			<div class="text">{{ t('components.setObject-variable.label') }}</div>
+			<CustomBox
+				id="setObject-variable"
 				:ref="registryRef(fieldEls, 'setObject-variable')"
 				v-tip="t('components.setObject-variable.tip')"
-			v-focus
-			type="variable"
-			filter="object"
-			v-model="form.variable"
-		/>
-		<div class="text">{{ t('components.setObject-operand-type.label') }}</div>
-		<SelectBox id="setObject-operand-type"
+				v-focus
+				type="variable"
+				filter="object"
+				v-model="form.variable"
+			/>
+			<div class="text">{{ t('components.setObject-operand-type.label') }}</div>
+			<SelectBox
+				id="setObject-operand-type"
 				v-tip="t('components.setObject-operand-type.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-type')" v-model="form['operand-type']" />
-		<div class="text">{{ t('components.setObject-operand-actor.label') }}</div>
-		<CustomBox id="setObject-operand-actor"
+				:ref="registryRef(fieldEls, 'setObject-operand-type')"
+				v-model="form['operand-type']"
+			/>
+			<div class="text">{{ t('components.setObject-operand-actor.label') }}</div>
+			<CustomBox
+				id="setObject-operand-actor"
 				v-tip="t('components.setObject-operand-actor.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-actor')" type="actor" v-model="form['operand-actor']" />
-		<div class="text">{{ t('components.setObject-operand-skill.label') }}</div>
-		<CustomBox id="setObject-operand-skill"
+				:ref="registryRef(fieldEls, 'setObject-operand-actor')"
+				type="actor"
+				v-model="form['operand-actor']"
+			/>
+			<div class="text">{{ t('components.setObject-operand-skill.label') }}</div>
+			<CustomBox
+				id="setObject-operand-skill"
 				v-tip="t('components.setObject-operand-skill.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-skill')" type="skill" v-model="form['operand-skill']" />
-		<div class="text">{{ t('components.setObject-operand-state.label') }}</div>
-		<CustomBox id="setObject-operand-state"
+				:ref="registryRef(fieldEls, 'setObject-operand-skill')"
+				type="skill"
+				v-model="form['operand-skill']"
+			/>
+			<div class="text">{{ t('components.setObject-operand-state.label') }}</div>
+			<CustomBox
+				id="setObject-operand-state"
 				v-tip="t('components.setObject-operand-state.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-state')" type="state" v-model="form['operand-state']" />
-		<div class="text">{{ t('components.setObject-operand-equipment.label') }}</div>
-		<CustomBox
-			id="setObject-operand-equipment"
+				:ref="registryRef(fieldEls, 'setObject-operand-state')"
+				type="state"
+				v-model="form['operand-state']"
+			/>
+			<div class="text">{{ t('components.setObject-operand-equipment.label') }}</div>
+			<CustomBox
+				id="setObject-operand-equipment"
 				v-tip="t('components.setObject-operand-equipment.tip')"
 				:ref="registryRef(fieldEls, 'setObject-operand-equipment')"
-			type="equipment"
-			v-model="form['operand-equipment']"
-		/>
-		<div class="text">{{ t('components.setObject-operand-item.label') }}</div>
-		<CustomBox id="setObject-operand-item"
+				type="equipment"
+				v-model="form['operand-equipment']"
+			/>
+			<div class="text">{{ t('components.setObject-operand-item.label') }}</div>
+			<CustomBox
+				id="setObject-operand-item"
 				v-tip="t('components.setObject-operand-item.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-item')" type="item" v-model="form['operand-item']" />
-		<div class="text">{{ t('components.setObject-operand-trigger.label') }}</div>
-		<CustomBox id="setObject-operand-trigger"
+				:ref="registryRef(fieldEls, 'setObject-operand-item')"
+				type="item"
+				v-model="form['operand-item']"
+			/>
+			<div class="text">{{ t('components.setObject-operand-trigger.label') }}</div>
+			<CustomBox
+				id="setObject-operand-trigger"
 				v-tip="t('components.setObject-operand-trigger.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-trigger')" type="trigger" v-model="form['operand-trigger']" />
-		<div class="text">{{ t('components.setObject-operand-light.label') }}</div>
-		<CustomBox id="setObject-operand-light"
+				:ref="registryRef(fieldEls, 'setObject-operand-trigger')"
+				type="trigger"
+				v-model="form['operand-trigger']"
+			/>
+			<div class="text">{{ t('components.setObject-operand-light.label') }}</div>
+			<CustomBox
+				id="setObject-operand-light"
 				v-tip="t('components.setObject-operand-light.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-light')" type="light" v-model="form['operand-light']" />
-		<div class="text">{{ t('components.setObject-operand-object.label') }}</div>
-		<CustomBox id="setObject-operand-object"
+				:ref="registryRef(fieldEls, 'setObject-operand-light')"
+				type="light"
+				v-model="form['operand-light']"
+			/>
+			<div class="text">{{ t('components.setObject-operand-object.label') }}</div>
+			<CustomBox
+				id="setObject-operand-object"
 				v-tip="t('components.setObject-operand-object.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-object')" type="object" v-model="form['operand-object']" />
-		<div class="text">{{ t('components.setObject-operand-element.label') }}</div>
-		<CustomBox id="setObject-operand-element"
+				:ref="registryRef(fieldEls, 'setObject-operand-object')"
+				type="object"
+				v-model="form['operand-object']"
+			/>
+			<div class="text">{{ t('components.setObject-operand-element.label') }}</div>
+			<CustomBox
+				id="setObject-operand-element"
 				v-tip="t('components.setObject-operand-element.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-element')" type="element" v-model="form['operand-element']" />
-		<div class="text">{{ t('components.setObject-operand-variable.label') }}</div>
-		<CustomBox
-			id="setObject-operand-variable"
+				:ref="registryRef(fieldEls, 'setObject-operand-element')"
+				type="element"
+				v-model="form['operand-element']"
+			/>
+			<div class="text">{{ t('components.setObject-operand-variable.label') }}</div>
+			<CustomBox
+				id="setObject-operand-variable"
 				v-tip="t('components.setObject-operand-variable.tip')"
 				:ref="registryRef(fieldEls, 'setObject-operand-variable')"
-			v-focus
-			type="variable"
-			filter="object"
-			v-model="form['operand-variable']"
-		/>
+				v-focus
+				type="variable"
+				filter="object"
+				v-model="form['operand-variable']"
+			/>
 			<div class="text">{{ t('components.setObject-operand-list-index.label') }}</div>
 			<NumberVar
 				id="setObject-operand-list-index"
@@ -110,10 +144,26 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setObject-operand-type', ['none', 'actor', 'skill', 'state', 'equipment', 'item', 'trigger', 'light', 'object', 'element', 'variable', 'list'], (items) =>
-		fieldEls.get('setObject-operand-type')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setObject-operand-type',
+		[
+			'none',
+			'actor',
+			'skill',
+			'state',
+			'equipment',
+			'item',
+			'trigger',
+			'light',
+			'object',
+			'element',
+			'variable',
+			'list'
+		],
+		(items) => fieldEls.get('setObject-operand-type')?.loadItems?.(items)
 	);
-	fieldEls.get('setObject-operand-type')
+	fieldEls
+		.get('setObject-operand-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'actor', targets: [fieldEls.get('setObject-operand-actor')] },
@@ -134,7 +184,10 @@ onMounted(() => {
 			},
 			{
 				case: 'list',
-				targets: [fieldEls.get('setObject-operand-variable'), fieldEls.get('setObject-operand-list-index')]
+				targets: [
+					fieldEls.get('setObject-operand-variable'),
+					fieldEls.get('setObject-operand-list-index')
+				]
 			}
 		]);
 });
@@ -156,5 +209,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

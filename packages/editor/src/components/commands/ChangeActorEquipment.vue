@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="changeActorEquipment"
-				:ref="registryRef(fieldEls, 'changeActorEquipment')" @confirm="onConfirm">
+	<WindowFrame
+		id="changeActorEquipment"
+		:ref="registryRef(fieldEls, 'changeActorEquipment')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.changeActorEquipment.title') }}
@@ -9,17 +12,29 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeActorEquipment-actor.label') }}</div>
-			<CustomBox id="changeActorEquipment-actor"
+			<CustomBox
+				id="changeActorEquipment-actor"
 				:ref="registryRef(fieldEls, 'changeActorEquipment-actor')"
-				v-tip="t('components.changeActorEquipment-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.changeActorEquipment-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.changeActorEquipment-operation.label') }}</div>
-			<SelectBox id="changeActorEquipment-operation"
+			<SelectBox
+				id="changeActorEquipment-operation"
 				v-tip="t('components.changeActorEquipment-operation.tip')"
-				:ref="registryRef(fieldEls, 'changeActorEquipment-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'changeActorEquipment-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.changeActorEquipment-slot.label') }}</div>
-			<SelectVar id="changeActorEquipment-slot"
+			<SelectVar
+				id="changeActorEquipment-slot"
 				v-tip="t('components.changeActorEquipment-slot.tip')"
-				:ref="registryRef(fieldEls, 'changeActorEquipment-slot')" v-focus v-model="form.slot" />
+				:ref="registryRef(fieldEls, 'changeActorEquipment-slot')"
+				v-focus
+				v-model="form.slot"
+			/>
 			<div class="text">{{ t('components.changeActorEquipment-equipmentId.label') }}</div>
 			<CustomBox
 				id="changeActorEquipment-equipmentId"
@@ -67,16 +82,28 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('changeActorEquipment-operation', ['add', 'remove', 'add-instance', 'remove-instance', 'remove-slot'], (items) =>
-		fieldEls.get('changeActorEquipment-operation')?.loadItems?.(items),
-		{ 'add': 'command.changeActorEquipment.add', 'remove': 'command.changeActorEquipment.remove', 'add-instance': 'command.changeActorEquipment.add-instance', 'remove-instance': 'command.changeActorEquipment.remove-instance', 'remove-slot': 'command.changeActorEquipment.remove-slot' }
+	useLocalizedOptions(
+		'changeActorEquipment-operation',
+		['add', 'remove', 'add-instance', 'remove-instance', 'remove-slot'],
+		(items) => fieldEls.get('changeActorEquipment-operation')?.loadItems?.(items),
+		{
+			add: 'command.changeActorEquipment.add',
+			remove: 'command.changeActorEquipment.remove',
+			'add-instance': 'command.changeActorEquipment.add-instance',
+			'remove-instance': 'command.changeActorEquipment.remove-instance',
+			'remove-slot': 'command.changeActorEquipment.remove-slot'
+		}
 	);
-	fieldEls.get('changeActorEquipment-operation')
+	fieldEls
+		.get('changeActorEquipment-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
 				case: 'add',
-				targets: [fieldEls.get('changeActorEquipment-slot'), fieldEls.get('changeActorEquipment-equipmentId')]
+				targets: [
+					fieldEls.get('changeActorEquipment-slot'),
+					fieldEls.get('changeActorEquipment-equipmentId')
+				]
 			},
 			{
 				case: 'remove',
@@ -84,7 +111,10 @@ onMounted(() => {
 			},
 			{
 				case: 'add-instance',
-				targets: [fieldEls.get('changeActorEquipment-slot'), fieldEls.get('changeActorEquipment-equipment')]
+				targets: [
+					fieldEls.get('changeActorEquipment-slot'),
+					fieldEls.get('changeActorEquipment-equipment')
+				]
 			},
 			{
 				case: 'remove-instance',
@@ -114,5 +144,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

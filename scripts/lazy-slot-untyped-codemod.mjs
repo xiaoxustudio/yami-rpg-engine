@@ -102,7 +102,6 @@ function codeOnly(src) {
 const full = join(ROOT, only);
 const src = readSource(full);
 const code = codeOnly(src);
-const lines = src.split('\n');
 
 const m = /^([ \t]*)(export\s+)?const\s+([A-Za-z_$][\w$]*)\s*=\s*\{\s*$/m.exec(code);
 if (!m) throw new Error('找不到 `const NAME = {` 形态');

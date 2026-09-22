@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="removeAnimationComponent"
-				:ref="registryRef(fieldEls, 'removeAnimationComponent')" @confirm="onConfirm">
+	<WindowFrame
+		id="removeAnimationComponent"
+		:ref="registryRef(fieldEls, 'removeAnimationComponent')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.removeAnimationComponent.title') }}
@@ -28,9 +31,12 @@
 				@write="onWrite"
 			/>
 			<div class="text">{{ t('components.removeAnimationComponent-motion.label') }}</div>
-			<SelectBox id="removeAnimationComponent-motion"
+			<SelectBox
+				id="removeAnimationComponent-motion"
 				:ref="registryRef(fieldEls, 'removeAnimationComponent-motion')"
-				v-tip="t('components.removeAnimationComponent-motion.tip')" v-model="form.motion" />
+				v-tip="t('components.removeAnimationComponent-motion.tip')"
+				v-model="form.motion"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -77,5 +83,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

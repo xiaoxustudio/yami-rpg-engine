@@ -9,9 +9,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.triggerGetter-type.label') }}</div>
-			<SelectBox id="triggerGetter-type"
+			<SelectBox
+				id="triggerGetter-type"
 				v-tip="t('components.triggerGetter-type.tip')"
-				:ref="fieldRef('triggerGetter-type')" v-focus v-model="form.type" />
+				:ref="fieldRef('triggerGetter-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.triggerGetter-variable.label') }}</div>
 			<CustomBox
 				id="triggerGetter-variable"
@@ -77,5 +81,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

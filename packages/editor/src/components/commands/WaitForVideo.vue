@@ -8,8 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.waitForVideo-element.label') }}</div>
-			<CustomBox id="waitForVideo-element"
-				v-tip="t('components.waitForVideo-element.tip')" v-focus type="element" v-model="form.element" />
+			<CustomBox
+				id="waitForVideo-element"
+				v-tip="t('components.waitForVideo-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -46,5 +51,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

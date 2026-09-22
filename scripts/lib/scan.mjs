@@ -223,11 +223,6 @@ export function countCodeMatches(src, re) {
 	return countMatches(codeOnly(src), re);
 }
 
-/** 命中该正则的文件列表 */
-export function filesMatching(files, re) {
-	return files.filter(({ full }) => countMatches(readSource(full), re) > 0);
-}
-
 // ---------------------------------------------------------------------------
 // 受限 DOM API（与 .oxlintrc.json 的 no-restricted-properties 对齐）
 // ---------------------------------------------------------------------------
@@ -276,7 +271,14 @@ export function hasDomExemption(src) {
 // 事件面
 // ---------------------------------------------------------------------------
 
-/** 浏览器原生事件（其余视为应用自定义事件） */
+/**
+ * 浏览器原生事件（其余视为应用自定义事件）。
+ *
+ * ⚠️ 这是**唯一一份**：`scripts/event-surface.mjs` 原先自带一份逐字相同的 `NATIVE` 集合
+ * （2026-09-21 合并到这里）。两份列表是「事件面报表把哪些事件算成自定义事件」的口径，
+ * 分叉一次就会让报表数字与门禁对不上 —— 本仓已有 `dom-guard` / `migration-ledger` 分叉的
+ * 前车之鉴，所以口径一律只维护一份。
+ */
 export const NATIVE_EVENTS = new Set([
 	'pointerup',
 	'pointermove',
@@ -308,11 +310,6 @@ export const NATIVE_EVENTS = new Set([
 	'visibilitychange',
 	'closed'
 ]);
-
-/** 转义正则元字符，供把字面量拼进正则时使用 */
-export function escapeRegExp(text) {
-	return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 /**
  * 逐条取出 `TARGET.addEventListener(...)` 的整段调用文本（按括号配对），
@@ -382,34 +379,54 @@ export function unremovableListeners(files, target = 'window') {
 const IMPORT_RE = /^\s*import\s+(type\s+)?([\s\S]*?)\s+from\s+['"]([^'"]+)['"]/gm;
 
 /**
- * 收集一个文件里所有静态 import。
+ * `export … from '…'` 形式的**再导出**。
+ *
+ * 2026-09-21 补：它是一条**静态运行时依赖**，与 `import … from` 等价 ——
+ * `tools/window-cluster.ts` 正是用 `export { UI } from '@app/engine/ui/legacy/ui-window.ts'`
+ * 把遗留 UI 单例转出去的。旧口径只认 `import`，于是那条依赖在任何引用计数里都不存在：
+ * 阶段 1c 纯搬运之后，`legacy-ui-refs` 轴读到 **0**，看起来像「遗留层已经没人用了」——
+ * 而真正的引用一直在（只是换成了再导出）。**仪器漏掉一种写法，读数就会假装变好。**
+ */
+const REEXPORT_RE = /^\s*export\s+(type\s+)?(\*|\{[\s\S]*?\})\s+from\s+['"]([^'"]+)['"]/gm;
+
+/**
+ * 收集一个文件里所有静态 import **与再导出**。
  *
  * `typeOnly` 的判定是启发式的，覆盖三种写法：
  *   `import type { X } from …` / `import { type X } from …`（具名全带 type）/ `import type X from …`。
  * 混合写法（`import { Foo, type Bar }`）判为**运行时**——保守方向：宁可把它算成运行时，
  * 也不要把真正的运行时依赖算漏（否则「拆掉遗留层」的进度会虚高）。
  *
- * @returns {{ specifier: string, typeOnly: boolean, text: string }[]}
+ * @returns {{ specifier: string, typeOnly: boolean, kind: 'import' | 'reexport', text: string }[]}
  */
 export function collectImports(src) {
 	const out = [];
-	IMPORT_RE.lastIndex = 0;
-	let m;
-	while ((m = IMPORT_RE.exec(src)) !== null) {
-		const [, typeKeyword, clause, specifier] = m;
-		let typeOnly = Boolean(typeKeyword);
-		if (!typeOnly) {
-			const braces = clause.match(/\{([\s\S]*)\}/);
-			if (braces) {
-				const names = braces[1]
-					.split(',')
-					.map((s) => s.trim())
-					.filter((s) => s !== '');
-				typeOnly = names.length > 0 && names.every((n) => /^type\s/.test(n));
+	const collect = (re, kind) => {
+		re.lastIndex = 0;
+		let m;
+		while ((m = re.exec(src)) !== null) {
+			const [, typeKeyword, clause, specifier] = m;
+			let typeOnly = Boolean(typeKeyword);
+			if (!typeOnly && kind === 'import') {
+				const braces = clause.match(/\{([\s\S]*)\}/);
+				if (braces) {
+					const names = braces[1]
+						.split(',')
+						.map((s) => s.trim())
+						.filter((s) => s !== '');
+					typeOnly = names.length > 0 && names.every((n) => /^type\s/.test(n));
+				}
 			}
+			out.push({
+				specifier,
+				typeOnly,
+				kind,
+				text: m[0].replace(/\s+/g, ' ').trim()
+			});
 		}
-		out.push({ specifier, typeOnly, text: m[0].replace(/\s+/g, ' ').trim() });
-	}
+	};
+	collect(IMPORT_RE, 'import');
+	collect(REEXPORT_RE, 'reexport');
 	return out;
 }
 
@@ -467,25 +484,9 @@ export const ANY_HATCH_RE = /(?:\[(?:k|key):\s*string\]:\s*any\b|Record<string,\
 export const UI_SINGLETON_RE = /\bUI\.[A-Za-z_$][\w$]*\s*=(?!=)/g;
 
 /**
- * 按正则统计每个文件与总量。
- * @returns {{ total: number, fileCount: number, perFile: { rel: string, count: number }[] }}
+ * 2026-09-21：删掉了四个零引用的导出 —— `filesMatching` / `countByFile` / `countAll` /
+ * `escapeRegExp`。全仓（含 `scripts/` 自身）都只有它们的**定义行**，没有任何调用点。
+ * 死导出比死文件更隐蔽：它看起来像「公共工具」，下一个人会照着它写第二份实现。
+ *
+ * 同轮把 `NATIVE_EVENTS` 从「死导出」变成唯一真源（`event-surface.mjs` 自带的那份已合并进来）。
  */
-export function countByFile(files, re) {
-	let total = 0;
-	const perFile = [];
-	for (const { full, rel } of files) {
-		const n = countMatches(readSource(full), re);
-		if (n === 0) continue;
-		total += n;
-		perFile.push({ rel, count: n });
-	}
-	perFile.sort((a, b) => b.count - a.count || a.rel.localeCompare(b.rel));
-	return { total, fileCount: perFile.length, perFile };
-}
-
-/** 取 `*: string]: any` 这类正则最新的一次计数（re 会被复用，故每次重置 lastIndex） */
-export function countAll(files, re) {
-	let total = 0;
-	for (const { full } of files) total += countMatches(readSource(full), re);
-	return total;
-}

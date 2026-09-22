@@ -100,7 +100,9 @@ const reset = () => {
 <template>
 	<section class="demo">
 		<h2>YMDragAndDropHint</h2>
-		<p class="desc">拖放指示条：拖动列表项时 measure/set 定位提示条，moveUp/moveDown 控制层级。</p>
+		<p class="desc">
+			拖放指示条：拖动列表项时 measure/set 定位提示条，moveUp/moveDown 控制层级。
+		</p>
 		<div class="row">
 			<YMButton variant="primary" @click="reset">Reset List</YMButton>
 			<span class="hint">{{ info }}</span>

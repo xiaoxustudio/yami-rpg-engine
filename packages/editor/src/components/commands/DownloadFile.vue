@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="downloadFile"
-				:ref="registryRef(fieldEls, 'downloadFile')" @confirm="onConfirm">
+	<WindowFrame
+		id="downloadFile"
+		:ref="registryRef(fieldEls, 'downloadFile')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.downloadFile.title') }}
@@ -9,21 +12,34 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.downloadFile-url.label') }}</div>
-			<StringVar id="downloadFile-url"
+			<StringVar
+				id="downloadFile-url"
 				:ref="registryRef(fieldEls, 'downloadFile-url')"
-				v-tip="t('components.downloadFile-url.tip')" v-focus v-model="form.url" />
+				v-tip="t('components.downloadFile-url.tip')"
+				v-focus
+				v-model="form.url"
+			/>
 			<div class="text">{{ t('components.downloadFile-header.label') }}</div>
-			<ParamList id="downloadFile-header"
+			<ParamList
+				id="downloadFile-header"
 				v-tip="t('components.downloadFile-header.tip')"
-				:ref="registryRef(fieldEls, 'downloadFile-header')" v-model="form.header" />
+				:ref="registryRef(fieldEls, 'downloadFile-header')"
+				v-model="form.header"
+			/>
 			<div class="text">{{ t('components.downloadFile-method.label') }}</div>
-			<SelectBox id="downloadFile-method"
+			<SelectBox
+				id="downloadFile-method"
 				v-tip="t('components.downloadFile-method.tip')"
-				:ref="registryRef(fieldEls, 'downloadFile-method')" v-model="form.method" />
+				:ref="registryRef(fieldEls, 'downloadFile-method')"
+				v-model="form.method"
+			/>
 			<div class="text">{{ t('components.downloadFile-data.label') }}</div>
-			<ParamList id="downloadFile-data"
+			<ParamList
+				id="downloadFile-data"
 				v-tip="t('components.downloadFile-data.tip')"
-				:ref="registryRef(fieldEls, 'downloadFile-data')" v-model="form.data" />
+				:ref="registryRef(fieldEls, 'downloadFile-data')"
+				v-model="form.data"
+			/>
 			<div class="text">{{ t('components.downloadFile-callback.label') }}</div>
 			<CustomBox
 				id="downloadFile-callback"
@@ -52,9 +68,12 @@
 				@input="onIsBackgroundInput"
 			/>
 			<div class="text">{{ t('components.downloadFile-isBackground-path.label') }}</div>
-			<StringVar id="downloadFile-isBackground-path"
+			<StringVar
+				id="downloadFile-isBackground-path"
 				v-tip="t('components.downloadFile-isBackground-path.tip')"
-				:ref="registryRef(fieldEls, 'downloadFile-isBackground-path')" v-model="form.isBackgroundPath" />
+				:ref="registryRef(fieldEls, 'downloadFile-isBackground-path')"
+				v-model="form.isBackgroundPath"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -108,7 +127,9 @@ onMounted(() => {
 		{ name: 'PUT', value: 'PUT' },
 		{ name: 'DELETE', value: 'DELETE' }
 	]);
-	fieldEls.get('downloadFile-isBackground')?.relate?.([fieldEls.get('downloadFile-isBackground-path')]);
+	fieldEls
+		.get('downloadFile-isBackground')
+		?.relate?.([fieldEls.get('downloadFile-isBackground-path')]);
 	disable(fieldEls.get('downloadFile-isBackground-path'));
 	fieldEls.get('downloadFile-header')?.bind?.(RequestkeyValueBind);
 	fieldEls.get('downloadFile-data')?.bind?.(RequestkeyValueBind);
@@ -139,5 +160,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

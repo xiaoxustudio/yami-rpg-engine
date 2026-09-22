@@ -38,7 +38,7 @@ for (const { full, rel } of files) {
 	// 做法：顺序扫描，维护一个栈；遇到 /(?:export\s+)?const\s+(\w+)\s*:\s*[^=]*=\s*\{/ 记录开始
 	const stack = [];
 	let depth = 0;
-	const ownerOfLine = new Array(lines.length).fill(null);
+	const ownerOfLine = Array.from({ length: lines.length }, () => null);
 	const openRe = /(?:export\s+)?const\s+(\w+)\s*:\s*[^=]*=\s*\{/;
 
 	for (let i = 0; i < lines.length; i++) {
@@ -66,7 +66,7 @@ for (const { full, rel } of files) {
 		const trimmed = line.trim();
 		const endsComma = /,\s*$/.test(trimmed);
 		const isProp = /^[\w$]+\s*:\s*null as unknown as/.test(trimmed);
-		const isStmtAssign = /^[\w$.\[\]]+\s*=\s*null as unknown as/.test(trimmed);
+		const isStmtAssign = /^[\w$.[\]]+\s*=\s*null as unknown as/.test(trimmed);
 		const isDeclInit = /^(?:const|let|var)\s/.test(trimmed);
 		const kind =
 			isProp && endsComma

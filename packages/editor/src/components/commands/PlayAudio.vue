@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="playAudio"
-				:ref="registryRef(fieldEls, 'playAudio')" @confirm="onConfirm">
+	<WindowFrame id="playAudio" :ref="registryRef(fieldEls, 'playAudio')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.playAudio.title') }}
@@ -9,9 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.playAudio-type.label') }}</div>
-			<SelectBox id="playAudio-type"
+			<SelectBox
+				id="playAudio-type"
 				v-tip="t('components.playAudio-type.tip')"
-				:ref="registryRef(fieldEls, 'playAudio-type')" v-focus v-model="form.type" />
+				:ref="registryRef(fieldEls, 'playAudio-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.playAudio-audio.label') }}</div>
 			<CustomBox
 				id="playAudio-audio"
@@ -34,9 +37,13 @@
 				v-model="volume"
 			/>
 			<div class="text">{{ t('components.playAudio-location.label') }}</div>
-			<CustomBox id="playAudio-location"
+			<CustomBox
+				id="playAudio-location"
 				v-tip="t('components.playAudio-location.tip')"
-				:ref="registryRef(fieldEls, 'playAudio-location')" type="position" v-model="form.location" />
+				:ref="registryRef(fieldEls, 'playAudio-location')"
+				type="position"
+				v-model="form.location"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -76,7 +83,8 @@ onMounted(() => {
 	useLocalizedOptions('playAudio-type', ['bgm', 'bgs', 'cv', 'se', 'se-attenuated'], (items) =>
 		fieldEls.get('playAudio-type')?.loadItems?.(items)
 	);
-	fieldEls.get('playAudio-type')
+	fieldEls
+		.get('playAudio-type')
 		?.enableHiddenMode?.()
 		?.relate?.([{ case: 'se-attenuated', targets: [fieldEls.get('playAudio-location')] }]);
 });
@@ -98,5 +106,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

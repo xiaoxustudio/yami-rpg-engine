@@ -52,8 +52,6 @@ const build = (
 	};
 };
 
-
-
 describe('command-render ↔ command-api（行序列的已知边界）', () => {
 	it('普通列表：派生层与 api 的行序列逐项一致（含末尾空白行）', () => {
 		const data = [

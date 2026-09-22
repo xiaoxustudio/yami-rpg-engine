@@ -12,8 +12,16 @@ const buildItems = (): MenuItem[] => [
 	{
 		label: 'View',
 		submenu: [
-			{ label: 'Zoom In', accelerator: 'Ctrl++', click: () => (lastAction.value = 'View > Zoom In') },
-			{ label: 'Zoom Out', accelerator: 'Ctrl+-', click: () => (lastAction.value = 'View > Zoom Out') }
+			{
+				label: 'Zoom In',
+				accelerator: 'Ctrl++',
+				click: () => (lastAction.value = 'View > Zoom In')
+			},
+			{
+				label: 'Zoom Out',
+				accelerator: 'Ctrl+-',
+				click: () => (lastAction.value = 'View > Zoom Out')
+			}
 		]
 	},
 	{

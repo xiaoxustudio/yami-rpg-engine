@@ -138,7 +138,12 @@ defineExpose({ read, write, inputCode, enable, disable, getFocus, on, root, inpu
 </script>
 
 <template>
-	<div ref="root" class="keyboard-box" :class="[$style.box, { disabled: isDisabled }]" :id="props.id">
+	<div
+		ref="root"
+		class="keyboard-box"
+		:class="[$style.box, { disabled: isDisabled }]"
+		:id="props.id"
+	>
 		<input
 			class="keyboard-box-input"
 			:class="$style.input"
@@ -193,4 +198,3 @@ defineExpose({ read, write, inputCode, enable, disable, getFocus, on, root, inpu
 	border: none;
 }
 </style>
-

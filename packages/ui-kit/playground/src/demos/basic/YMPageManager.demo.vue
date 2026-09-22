@@ -16,11 +16,28 @@ const onSwitch = (last: unknown, value: unknown): void => {
 <template>
 	<section>
 		<h2>YMPageManager</h2>
-		<p class="desc">页面管理器；通过 switch() 切换 .page-frame 页面，切换时派发 switch 事件。</p>
+		<p class="desc">
+			页面管理器；通过 switch() 切换 .page-frame 页面，切换时派发 switch 事件。
+		</p>
 		<div class="row">
-			<YMButton size="sm" :variant="current === 'overview' ? 'primary' : 'default'" @click="go('overview')">Overview</YMButton>
-			<YMButton size="sm" :variant="current === 'events' ? 'primary' : 'default'" @click="go('events')">Events</YMButton>
-			<YMButton size="sm" :variant="current === 'variables' ? 'primary' : 'default'" @click="go('variables')">Variables</YMButton>
+			<YMButton
+				size="sm"
+				:variant="current === 'overview' ? 'primary' : 'default'"
+				@click="go('overview')"
+				>Overview</YMButton
+			>
+			<YMButton
+				size="sm"
+				:variant="current === 'events' ? 'primary' : 'default'"
+				@click="go('events')"
+				>Events</YMButton
+			>
+			<YMButton
+				size="sm"
+				:variant="current === 'variables' ? 'primary' : 'default'"
+				@click="go('variables')"
+				>Variables</YMButton
+			>
 			<span class="hint">current: {{ current }}</span>
 		</div>
 		<div class="stage">

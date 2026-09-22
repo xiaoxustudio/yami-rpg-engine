@@ -43,8 +43,11 @@
 				/>
 			</div>
 		</div>
-		<SelectBox id="event-type"
-				v-tip="t('components.event-type.tip')" :ref="registryRef(eventEditorEls, 'event-type')" />
+		<SelectBox
+			id="event-type"
+			v-tip="t('components.event-type.tip')"
+			:ref="registryRef(eventEditorEls, 'event-type')"
+		/>
 	</WindowFrame>
 </template>
 
@@ -178,4 +181,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

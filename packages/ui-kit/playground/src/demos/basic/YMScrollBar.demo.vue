@@ -61,7 +61,9 @@ const scrollToRight = (): void => {
 		<div class="stage">
 			<div ref="targetRef" class="viewport">
 				<div class="content">
-					<div v-for="i in 40" :key="i" class="line">{{ i }}. The quick brown fox jumps over the lazy dog.</div>
+					<div v-for="i in 40" :key="i" class="line">
+						{{ i }}. The quick brown fox jumps over the lazy dog.
+					</div>
 				</div>
 			</div>
 			<YMScrollBar ref="hBarRef" />

@@ -8,13 +8,24 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.scene-shift-x.label') }}</div>
-			<NumberBox id="scene-shift-x"
+			<NumberBox
+				id="scene-shift-x"
 				:ref="registryRef(composableEls, 'scene-shift-x')"
-				v-tip="t('components.scene-shift-x.tip')" v-focus min="-512" max="512" :model-value="form.x" />
+				v-tip="t('components.scene-shift-x.tip')"
+				v-focus
+				min="-512"
+				max="512"
+				:model-value="form.x"
+			/>
 			<div class="text">{{ t('components.scene-shift-y.label') }}</div>
-			<NumberBox id="scene-shift-y"
+			<NumberBox
+				id="scene-shift-y"
 				:ref="registryRef(composableEls, 'scene-shift-y')"
-				v-tip="t('components.scene-shift-y.tip')" min="-512" max="512" :model-value="form.y" />
+				v-tip="t('components.scene-shift-y.tip')"
+				min="-512"
+				max="512"
+				:model-value="form.y"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -52,10 +63,7 @@ const setForm = (data: Partial<SceneShiftForm>): void => {
 const getForm = (): SceneShiftForm => {
 	const data = { ...form } as SceneShiftForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = registryElement<HTMLElement & { read?: () => unknown }>(
-			composableEls,
-			id
-		);
+		const control = registryElement<HTMLElement & { read?: () => unknown }>(composableEls, id);
 		if (control && typeof control.read === 'function') {
 			data[field] = control.read() as never;
 		}
@@ -100,4 +108,3 @@ onMounted(() => {
 	bottom: 10px;
 }
 </style>
-

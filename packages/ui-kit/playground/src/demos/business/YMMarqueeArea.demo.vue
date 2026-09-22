@@ -86,7 +86,9 @@ onMounted(() => {
 <template>
 	<section class="demo">
 		<h2>YMMarqueeArea</h2>
-		<p class="desc">框选区域：在舞台上按住拖动即可框选，支持 select / save / restore / resize / clear。</p>
+		<p class="desc">
+			框选区域：在舞台上按住拖动即可框选，支持 select / save / restore / resize / clear。
+		</p>
 		<div class="row">
 			<YMButton variant="primary" @click="preset">Select Preset</YMButton>
 			<YMButton @click="save">Save</YMButton>

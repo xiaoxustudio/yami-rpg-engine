@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="activateScene"
-				:ref="registryRef(fieldEls, 'activateScene')" @confirm="onConfirm">
+	<WindowFrame
+		id="activateScene"
+		:ref="registryRef(fieldEls, 'activateScene')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.activateScene.title') }}
@@ -9,9 +12,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.activateScene-pointer.label') }}</div>
-			<SelectBox id="activateScene-pointer"
+			<SelectBox
+				id="activateScene-pointer"
 				v-tip="t('components.activateScene-pointer.tip')"
-				:ref="registryRef(fieldEls, 'activateScene-pointer')" v-focus v-model="form.pointer" />
+				:ref="registryRef(fieldEls, 'activateScene-pointer')"
+				v-focus
+				v-model="form.pointer"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -61,5 +68,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

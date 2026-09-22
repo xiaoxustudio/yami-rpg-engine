@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setText"
-				:ref="registryRef(fieldEls, 'setText')" @confirm="onConfirm">
+	<WindowFrame id="setText" :ref="registryRef(fieldEls, 'setText')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setText.title') }}
@@ -9,12 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setText-element.label') }}</div>
-			<CustomBox id="setText-element"
+			<CustomBox
+				id="setText-element"
 				:ref="registryRef(fieldEls, 'setText-element')"
-				v-tip="t('components.setText-element.tip')" v-focus type="element" v-model="form.element" />
+				v-tip="t('components.setText-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.setText-properties.label') }}</div>
-			<ParamList id="setText-properties"
-				:ref="registryRef(fieldEls, 'setText-properties')" v-focus v-model="form.properties" />
+			<ParamList
+				id="setText-properties"
+				:ref="registryRef(fieldEls, 'setText-properties')"
+				v-focus
+				v-model="form.properties"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -71,5 +79,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

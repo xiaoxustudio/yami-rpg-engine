@@ -14,6 +14,12 @@
 //   open-project → drag-region-edge <方向> pick=a → drag-region-edge <方向> pick=b
 // （pick=a：源取最后一个叶子、目标取第一个；pick=b 反之——两个都跑，才能区分"设计内的相邻 no-op"
 //   与"方向没实现"。S1 的 `interact=1` 会在核对行数后追加交互链路：选中 → 折叠 → 展开 → F2。）
+//
+// ⚠️ 本文件在 `.oxlintrc.json` 里**关掉了 `eslint/no-await-in-loop`**（理由必须写在这里，因为 JSON
+//    配置不接受注释）。该规则的目的是抓「本可并行却被误写成串行」；而本文件是**真机 UI 自动化驱动**：
+//    每一步（点目录、等渲染、读状态、拖拽）都必须**等上一步真正生效**才能进行，`await` 写在循环里
+//    正是它要表达的顺序语义。用 `Promise.all` 会直接测出错误结果 —— 这类"关掉"是把规则用在了
+//    它不适用的地方，不是把问题藏起来。
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const port = Number(process.argv.slice(3).find((a) => /^\d+$/.test(a)) || 9223);
@@ -55,12 +61,16 @@ async function connect() {
 		(t) => t.type === 'page' && (t.url.startsWith('file:') || t.url.includes('localhost:5173'))
 	);
 	if (!page)
-		throw new Error('no page target: ' + JSON.stringify(targets.map((t) => ({ t: t.type, u: t.url }))));
+		throw new Error(
+			'no page target: ' + JSON.stringify(targets.map((t) => ({ t: t.type, u: t.url })))
+		);
 	log('page target:', page.url);
 	const ws = new WebSocket(page.webSocketDebuggerUrl);
 	await new Promise((resolve, reject) => {
 		ws.addEventListener('open', resolve, { once: true });
-		ws.addEventListener('error', (e) => reject(new Error('ws error ' + (e.message ?? ''))), { once: true });
+		ws.addEventListener('error', (e) => reject(new Error('ws error ' + (e.message ?? ''))), {
+			once: true
+		});
 	});
 	let seq = 0;
 	const pending = new Map();
@@ -113,7 +123,9 @@ async function evaluate(send, expression) {
 	if (result.exceptionDetails) {
 		throw new Error(
 			'eval failed: ' +
-				JSON.stringify(result.exceptionDetails.exception?.description ?? result.exceptionDetails.text)
+				JSON.stringify(
+					result.exceptionDetails.exception?.description ?? result.exceptionDetails.text
+				)
 		);
 	}
 	return result.result?.value;
@@ -227,14 +239,19 @@ async function openRecentProject(send) {
 		ok = await waitActive(send, 'directory', 90000);
 		lastState = clicked;
 		if (!ok) {
-			log('open attempt', attempt, 'failed, state:', await evaluate(
-				send,
-				`(() => {
+			log(
+				'open attempt',
+				attempt,
+				'failed, state:',
+				await evaluate(
+					send,
+					`(() => {
 					const ws = document.getElementById('workspace-page-manager');
 					const active = ws ? [...ws.children].find((c) => c.classList.contains('visible') && c.getAttribute('value') !== 'home') : null;
 					return active?.getAttribute('value') ?? null;
 				})()`
-			));
+				)
+			);
 		}
 	}
 	if (!ok) throw new Error('open recent project failed (last click: ' + lastState + ')');
@@ -410,11 +427,17 @@ async function dragReorderPhase() {
 	await send('Runtime.enable');
 	await waitForActiveWorkspace(send, 20000);
 	const probe = async (expression) => {
-		const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
+		const r = await send('Runtime.evaluate', {
+			expression,
+			returnByValue: true,
+			awaitPromise: true
+		});
 		if (r.exceptionDetails)
 			throw new Error(
 				'probe failed: ' +
-					JSON.stringify(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text)
+					JSON.stringify(
+						r.exceptionDetails.exception?.description ?? r.exceptionDetails.text
+					)
 			);
 		return r.result?.value;
 	};
@@ -572,11 +595,17 @@ async function dragRegionPhase() {
 	await send('Runtime.enable');
 	await waitForActiveWorkspace(send, 20000);
 	const probe = async (expression) => {
-		const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
+		const r = await send('Runtime.evaluate', {
+			expression,
+			returnByValue: true,
+			awaitPromise: true
+		});
 		if (r.exceptionDetails)
 			throw new Error(
 				'probe failed: ' +
-					JSON.stringify(r.exceptionDetails.exception?.description ?? r.exceptionDetails.text)
+					JSON.stringify(
+						r.exceptionDetails.exception?.description ?? r.exceptionDetails.text
+					)
 			);
 		return r.result?.value;
 	};
@@ -876,7 +905,10 @@ async function treeWindows() {
 				: null;
 		results.push({ key, before, opened, id, probe, chain });
 		if (id !== null) {
-			await evaluate(send, `window.Window && window.Window.close && window.Window.close(${JSON.stringify(id)})`);
+			await evaluate(
+				send,
+				`window.Window && window.Window.close && window.Window.close(${JSON.stringify(id)})`
+			);
 			await sleep(600);
 		}
 	}
@@ -911,7 +943,8 @@ async function menuWindows() {
 		.split(',')
 		.map((s) => Number(s.trim()))
 		.filter((n) => Number.isInteger(n));
-	if (indices.length === 0) throw new Error('usage: node scripts/smoke-layout.mjs menu-windows index=5,6');
+	if (indices.length === 0)
+		throw new Error('usage: node scripts/smoke-layout.mjs menu-windows index=5,6');
 	const { ws, send } = await connect();
 	await send('Runtime.enable');
 	const results = [];
@@ -955,10 +988,16 @@ async function menuWindows() {
 					await interactTree(send, JSON.stringify(id))
 				: null;
 		results.push({ index, labels, clicked, opened, id, probe, chain });
-		await evaluate(send, `document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }))`);
+		await evaluate(
+			send,
+			`document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }))`
+		);
 		await sleep(400);
 		if (id !== null) {
-			await evaluate(send, `window.Window && window.Window.close && window.Window.close(${JSON.stringify(id)})`);
+			await evaluate(
+				send,
+				`window.Window && window.Window.close && window.Window.close(${JSON.stringify(id)})`
+			);
 			await sleep(600);
 		}
 	}
@@ -1055,7 +1094,10 @@ async function openEventEditor(send) {
 			4000
 		);
 		// oxlint-disable-next-line no-await-in-loop
-		const address = await evaluate(send, `(document.querySelector('.file-head-address') || {}).textContent`);
+		const address = await evaluate(
+			send,
+			`(document.querySelector('.file-head-address') || {}).textContent`
+		);
 		trace.push(`${attempt}:${clicked}/${address}`);
 	}
 	if (ready !== true) return `file-list-not-ready [${trace.join(' | ')}]`;
@@ -1072,7 +1114,7 @@ async function fileBodySmoke() {
 	const { ws, send } = await connect();
 	await send('Runtime.enable');
 	const steps = [];
-	await clickNavFolder('事件');
+	clickNavFolder('事件');
 	await sleep(1200);
 	steps.push({ step: 'open-folder', state: await evaluate(send, FILE_BODY_STATE) });
 	// 切视图：`file-head-view` 是 `<input type="range">`（拖动/滚轮最终都落到它的 input 事件）
@@ -1114,7 +1156,10 @@ async function fileBodySmoke() {
 			return popup ? { open: true, items: [...popup.children].map((li) => (li.textContent || '').trim()).slice(0, 8) } : { open: false };
 		})()`
 	);
-	await evaluate(send, `window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape', bubbles: true }))`);
+	await evaluate(
+		send,
+		`window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape', bubbles: true }))`
+	);
 	await sleep(600);
 	const opened = await evaluate(send, dblClickRow('启动游戏事件'));
 	await sleep(2500);
@@ -1202,7 +1247,10 @@ async function commandListSmoke() {
 	);
 	blankResult.openBefore = openBefore;
 	blankResult.openAfter = blankResult.popupFrames.filter((id) => !openBefore.includes(id));
-	await evaluate(send, `window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape', bubbles: true }))`);
+	await evaluate(
+		send,
+		`window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape', bubbles: true }))`
+	);
 	await sleep(500);
 	steps.push({ step: 'blank-row click', blank, blankResult });
 	out('command-list', { steps });

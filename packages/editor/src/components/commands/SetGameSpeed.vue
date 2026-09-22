@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="setGameSpeed"
-				:ref="registryRef(fieldEls, 'setGameSpeed')" @confirm="onConfirm">
+	<WindowFrame
+		id="setGameSpeed"
+		:ref="registryRef(fieldEls, 'setGameSpeed')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setGameSpeed.title') }}
@@ -21,8 +24,12 @@
 				v-model="form.speed"
 			/>
 			<div class="text">{{ t('components.setGameSpeed-easingId.label') }}</div>
-			<SelectBox id="setGameSpeed-easingId"
-				:ref="registryRef(fieldEls, 'setGameSpeed-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="setGameSpeed-easingId"
+				:ref="registryRef(fieldEls, 'setGameSpeed-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.setGameSpeed-duration.label') }}</div>
 			<NumberVar
 				id="setGameSpeed-duration"
@@ -34,8 +41,12 @@
 				v-model="form.duration"
 			/>
 			<div class="text">{{ t('components.setGameSpeed-wait.label') }}</div>
-			<SelectBox id="setGameSpeed-wait"
-				:ref="registryRef(fieldEls, 'setGameSpeed-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="setGameSpeed-wait"
+				:ref="registryRef(fieldEls, 'setGameSpeed-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -90,5 +101,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

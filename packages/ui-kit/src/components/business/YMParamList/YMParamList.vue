@@ -177,7 +177,7 @@ type ParamListElement = HTMLElement & {
 		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
-}
+};
 
 type DragEventState = PointerEvent & {
 	mode?: string;
@@ -505,7 +505,12 @@ const updateHeadAndFoot = (): void => {
 	}
 	const { count, start, end } = self.elements;
 	if (count !== 0) {
-		const margins = core.computeHeadAndFootMargins(count, start, end, !!getListConfig(self).padded);
+		const margins = core.computeHeadAndFootMargins(
+			count,
+			start,
+			end,
+			!!getListConfig(self).padded
+		);
 		self.elements.head = self.elements[start];
 		self.elements.head!.style.marginTop = `${margins.marginTop}px`;
 		self.elements.foot = self.elements[end - 1];
@@ -1156,10 +1161,10 @@ const windowPointermove = (event: PointerEvent): void => {
 			const elements = self.elements;
 			const count = elements.count;
 			if (count > 0) {
-			const pt = self.paddingTop;
-			const { itemHeight } = dragging;
-			const { y } = getRelativeCoords(event, self);
-			const index = core.computeDragSelectIndex(y, pt, itemHeight!, count);
+				const pt = self.paddingTop;
+				const { itemHeight } = dragging;
+				const { y } = getRelativeCoords(event, self);
+				const index = core.computeDragSelectIndex(y, pt, itemHeight!, count);
 				if (dragging.itemIndex !== index) {
 					dragging.itemIndex = index;
 					selectMultiple(index);

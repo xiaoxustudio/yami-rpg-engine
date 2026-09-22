@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="useItem"
-				:ref="registryRef(fieldEls, 'useItem')" @confirm="onConfirm">
+	<WindowFrame id="useItem" :ref="registryRef(fieldEls, 'useItem')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.useItem.title') }}
@@ -9,17 +8,29 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.useItem-actor.label') }}</div>
-			<CustomBox id="useItem-actor"
+			<CustomBox
+				id="useItem-actor"
 				:ref="registryRef(fieldEls, 'useItem-actor')"
-				v-tip="t('components.useItem-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.useItem-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.useItem-mode.label') }}</div>
-			<SelectBox id="useItem-mode"
+			<SelectBox
+				id="useItem-mode"
 				v-tip="t('components.useItem-mode.tip')"
-				:ref="registryRef(fieldEls, 'useItem-mode')" v-model="form.mode" />
+				:ref="registryRef(fieldEls, 'useItem-mode')"
+				v-model="form.mode"
+			/>
 			<div class="text">{{ t('components.useItem-key.label') }}</div>
-			<SelectBox id="useItem-key"
+			<SelectBox
+				id="useItem-key"
 				v-tip="t('components.useItem-key.tip')"
-				:ref="registryRef(fieldEls, 'useItem-key')" v-focus v-model="form.key" />
+				:ref="registryRef(fieldEls, 'useItem-key')"
+				v-focus
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.useItem-itemId.label') }}</div>
 			<CustomBox
 				id="useItem-itemId"
@@ -31,12 +42,20 @@
 				v-model="form.itemId"
 			/>
 			<div class="text">{{ t('components.useItem-item.label') }}</div>
-			<CustomBox id="useItem-item"
+			<CustomBox
+				id="useItem-item"
 				v-tip="t('components.useItem-item.tip')"
-				:ref="registryRef(fieldEls, 'useItem-item')" type="item" v-model="form.item" />
+				:ref="registryRef(fieldEls, 'useItem-item')"
+				type="item"
+				v-model="form.item"
+			/>
 			<div class="text">{{ t('components.useItem-wait.label') }}</div>
-			<SelectBox id="useItem-wait"
-				:ref="registryRef(fieldEls, 'useItem-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="useItem-wait"
+				:ref="registryRef(fieldEls, 'useItem-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -68,7 +87,8 @@ onMounted(() => {
 	useLocalizedOptions('useItem-mode', ['by-key', 'by-id', 'by-item'], (items) =>
 		fieldEls.get('useItem-mode')?.loadItems?.(items)
 	);
-	fieldEls.get('useItem-mode')
+	fieldEls
+		.get('useItem-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'by-key', targets: [fieldEls.get('useItem-key')] },
@@ -97,5 +117,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

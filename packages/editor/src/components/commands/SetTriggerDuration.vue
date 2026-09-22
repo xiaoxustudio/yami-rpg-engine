@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="setTriggerDuration"
-				:ref="registryRef(fieldEls, 'setTriggerDuration')" @confirm="onConfirm">
+	<WindowFrame
+		id="setTriggerDuration"
+		:ref="registryRef(fieldEls, 'setTriggerDuration')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setTriggerDuration.title') }}
@@ -10,17 +13,20 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setTriggerDuration-trigger.label') }}</div>
 			<CustomBox
-			id="setTriggerDuration-trigger"
+				id="setTriggerDuration-trigger"
 				:ref="registryRef(fieldEls, 'setTriggerDuration-trigger')"
 				v-tip="t('components.setTriggerDuration-trigger.tip')"
-			v-focus
-			type="trigger"
-			v-model="form.trigger"
-		/>
+				v-focus
+				type="trigger"
+				v-model="form.trigger"
+			/>
 			<div class="text">{{ t('components.setTriggerDuration-operation.label') }}</div>
-			<SelectBox id="setTriggerDuration-operation"
+			<SelectBox
+				id="setTriggerDuration-operation"
 				v-tip="t('components.setTriggerDuration-operation.tip')"
-				:ref="registryRef(fieldEls, 'setTriggerDuration-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setTriggerDuration-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setTriggerDuration-duration.label') }}</div>
 			<NumberVar
 				id="setTriggerDuration-duration"
@@ -82,5 +88,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

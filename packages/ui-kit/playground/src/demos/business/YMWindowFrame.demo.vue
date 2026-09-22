@@ -5,10 +5,12 @@ type FrameElement = HTMLElement & { open?(): void; close?(): boolean; maximize?(
 
 const openDialog = (id: string) => (document.getElementById(id) as FrameElement | null)?.open?.();
 const closeDialog = (id: string) => (document.getElementById(id) as FrameElement | null)?.close?.();
-const maximizeDialog = (id: string) => (document.getElementById(id) as FrameElement | null)?.maximize?.();
+const maximizeDialog = (id: string) =>
+	(document.getElementById(id) as FrameElement | null)?.maximize?.();
 
 const closeAll = () => {
-	const frames = (window as Window & { Window?: { frames?: HTMLElement[] } }).Window?.frames ?? [];
+	const frames =
+		(window as Window & { Window?: { frames?: HTMLElement[] } }).Window?.frames ?? [];
 	for (const frame of frames) {
 		frame.classList.remove('open');
 	}
@@ -19,9 +21,14 @@ const closeAll = () => {
 <template>
 	<section class="demo">
 		<h2>YMWindowFrame</h2>
-		<p class="desc">窗口框架，依赖 window.Window host 挂载到 body；支持 open/close/maximize，可拖动标题栏移动。</p>
+		<p class="desc">
+			窗口框架，依赖 window.Window host 挂载到 body；支持
+			open/close/maximize，可拖动标题栏移动。
+		</p>
 		<div class="row">
-			<YMButton variant="primary" @click="openDialog('wf-demo-1')">Open Center Window</YMButton>
+			<YMButton variant="primary" @click="openDialog('wf-demo-1')"
+				>Open Center Window</YMButton
+			>
 			<YMButton @click="openDialog('wf-demo-2')">Open Window (Apply)</YMButton>
 			<YMButton variant="danger" @click="closeAll">Close All</YMButton>
 		</div>

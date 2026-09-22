@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-21T15:06:51.902Z",
+	"generatedAt": "2026-09-22T05:01:25.079Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -15,6 +15,14 @@
 		"source": "pure-regex (no child_process)"
 	},
 	"axes": {
+		"1c-store-slot-gaps": {
+			"label": "实现只在遗留层的 store 槽位（1c 第 ③ 步工作单）",
+			"target": "zero",
+			"value": {
+				"total": 41,
+				"storeRefs": 49
+			}
+		},
 		"any-hatches": {
 			"label": "泛型逃生口 [k|key: string]: any / Record<string, any>",
 			"target": "zero",
@@ -64,20 +72,20 @@
 			}
 		},
 		"legacy-ui-lines": {
-			"label": "遗留层 src/ui/* 行数",
+			"label": "遗留层 UI 单例目录行数（engine/ui/legacy/*）",
 			"target": "zero",
 			"value": {
-				"total": 0,
-				"files": 0
+				"total": 2859,
+				"files": 9
 			}
 		},
 		"legacy-ui-refs": {
-			"label": "引用遗留 UI 单例（@app/ui/*，不含元素注册表）",
+			"label": "引用遗留 UI 单例（@app/engine/ui/legacy/*）",
 			"target": "zero",
 			"value": {
-				"total": 0,
-				"runtime": 0,
-				"files": 0
+				"total": 2,
+				"runtime": 2,
+				"files": 1
 			}
 		},
 		"null-casts": {
@@ -119,8 +127,8 @@
 			"label": "双重断言 as unknown as",
 			"target": "zero",
 			"value": {
-				"total": 102,
-				"files": 83
+				"total": 89,
+				"files": 76
 			}
 		},
 		"unremovable-listeners": {

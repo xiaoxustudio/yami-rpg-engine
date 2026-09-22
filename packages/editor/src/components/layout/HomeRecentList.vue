@@ -6,7 +6,9 @@
 		@click="onRecentClick"
 		@pointerup="onRecentPointerup"
 	>
-		<div class="item home-list-label" id="home-recent-label">{{ t('components.home-recent-label.content') }}</div>
+		<div class="item home-list-label" id="home-recent-label">
+			{{ t('components.home-recent-label.content') }}
+		</div>
 		<div
 			v-for="(card, index) in cards"
 			:key="index"
@@ -76,4 +78,3 @@ onBeforeUnmount(() => {
 	/* background-color: blue; */
 }
 </style>
-

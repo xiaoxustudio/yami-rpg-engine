@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="setInventory"
-				:ref="registryRef(fieldEls, 'setInventory')" @confirm="onConfirm">
+	<WindowFrame
+		id="setInventory"
+		:ref="registryRef(fieldEls, 'setInventory')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setInventory.title') }}
@@ -9,25 +12,49 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setInventory-actor.label') }}</div>
-			<CustomBox id="setInventory-actor"
+			<CustomBox
+				id="setInventory-actor"
 				:ref="registryRef(fieldEls, 'setInventory-actor')"
-				v-tip="t('components.setInventory-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.setInventory-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.setInventory-operation.label') }}</div>
-			<SelectBox id="setInventory-operation"
+			<SelectBox
+				id="setInventory-operation"
 				v-tip="t('components.setInventory-operation.tip')"
-				:ref="registryRef(fieldEls, 'setInventory-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setInventory-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setInventory-money.label') }}</div>
-			<NumberVar id="setInventory-money"
+			<NumberVar
+				id="setInventory-money"
 				v-tip="t('components.setInventory-money.tip')"
-				:ref="registryRef(fieldEls, 'setInventory-money')" min="1" max="100000000" v-model="form.money" />
+				:ref="registryRef(fieldEls, 'setInventory-money')"
+				min="1"
+				max="100000000"
+				v-model="form.money"
+			/>
 			<div class="text">{{ t('components.setInventory-itemId.label') }}</div>
-			<FileVar id="setInventory-itemId"
+			<FileVar
+				id="setInventory-itemId"
 				v-tip="t('components.setInventory-itemId.tip')"
-				:ref="registryRef(fieldEls, 'setInventory-itemId')" v-focus type="file" filter="item" v-model="form.itemId" />
+				:ref="registryRef(fieldEls, 'setInventory-itemId')"
+				v-focus
+				type="file"
+				filter="item"
+				v-model="form.itemId"
+			/>
 			<div class="text">{{ t('components.setInventory-quantity.label') }}</div>
-			<NumberVar id="setInventory-quantity"
+			<NumberVar
+				id="setInventory-quantity"
 				v-tip="t('components.setInventory-quantity.tip')"
-				:ref="registryRef(fieldEls, 'setInventory-quantity')" min="1" max="10000" v-model="form.quantity" />
+				:ref="registryRef(fieldEls, 'setInventory-quantity')"
+				min="1"
+				max="10000"
+				v-model="form.quantity"
+			/>
 			<div class="text">{{ t('components.setInventory-equipmentId.label') }}</div>
 			<FileVar
 				id="setInventory-equipmentId"
@@ -39,21 +66,39 @@
 				v-model="form.equipmentId"
 			/>
 			<div class="text">{{ t('components.setInventory-equipment.label') }}</div>
-			<CustomBox id="setInventory-equipment"
+			<CustomBox
+				id="setInventory-equipment"
 				v-tip="t('components.setInventory-equipment.tip')"
-				:ref="registryRef(fieldEls, 'setInventory-equipment')" type="equipment" v-model="form.equipment" />
+				:ref="registryRef(fieldEls, 'setInventory-equipment')"
+				type="equipment"
+				v-model="form.equipment"
+			/>
 			<div class="text">{{ t('components.setInventory-order1.label') }}</div>
-			<NumberVar id="setInventory-order1"
+			<NumberVar
+				id="setInventory-order1"
 				v-tip="t('components.setInventory-order1.tip')"
-				:ref="registryRef(fieldEls, 'setInventory-order1')" min="0" max="10000" v-model="form.order1" />
+				:ref="registryRef(fieldEls, 'setInventory-order1')"
+				min="0"
+				max="10000"
+				v-model="form.order1"
+			/>
 			<div class="text">{{ t('components.setInventory-order2.label') }}</div>
-			<NumberVar id="setInventory-order2"
+			<NumberVar
+				id="setInventory-order2"
 				v-tip="t('components.setInventory-order2.tip')"
-				:ref="registryRef(fieldEls, 'setInventory-order2')" min="0" max="10000" v-model="form.order2" />
+				:ref="registryRef(fieldEls, 'setInventory-order2')"
+				min="0"
+				max="10000"
+				v-model="form.order2"
+			/>
 			<div class="text">{{ t('components.setInventory-refActor.label') }}</div>
-			<CustomBox id="setInventory-refActor"
+			<CustomBox
+				id="setInventory-refActor"
 				v-tip="t('components.setInventory-refActor.tip')"
-				:ref="registryRef(fieldEls, 'setInventory-refActor')" type="actor" v-model="form.refActor" />
+				:ref="registryRef(fieldEls, 'setInventory-refActor')"
+				type="actor"
+				v-model="form.refActor"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -84,11 +129,44 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setInventory-operation', ['increase-money', 'decrease-money', 'increase-items', 'decrease-items', 'gain-equipment', 'lose-equipment', 'gain-equipment-instance', 'lose-equipment-instance', 'swap', 'sort', 'sort-by-order', 'reference', 'dereference', 'reset'], (items) =>
-		fieldEls.get('setInventory-operation')?.loadItems?.(items),
-		{ 'increase-money': 'command.setInventory.increase-money', 'decrease-money': 'command.setInventory.decrease-money', 'increase-items': 'command.setInventory.increase-items', 'decrease-items': 'command.setInventory.decrease-items', 'gain-equipment': 'command.setInventory.gain-equipment', 'lose-equipment': 'command.setInventory.lose-equipment', 'gain-equipment-instance': 'command.setInventory.gain-equipment-instance', 'lose-equipment-instance': 'command.setInventory.lose-equipment-instance', 'swap': 'command.setInventory.swap', 'sort': 'command.setInventory.sort', 'sort-by-order': 'command.setInventory.sort-by-order', 'reference': 'command.setInventory.reference', 'dereference': 'command.setInventory.dereference', 'reset': 'command.setInventory.reset' }
+	useLocalizedOptions(
+		'setInventory-operation',
+		[
+			'increase-money',
+			'decrease-money',
+			'increase-items',
+			'decrease-items',
+			'gain-equipment',
+			'lose-equipment',
+			'gain-equipment-instance',
+			'lose-equipment-instance',
+			'swap',
+			'sort',
+			'sort-by-order',
+			'reference',
+			'dereference',
+			'reset'
+		],
+		(items) => fieldEls.get('setInventory-operation')?.loadItems?.(items),
+		{
+			'increase-money': 'command.setInventory.increase-money',
+			'decrease-money': 'command.setInventory.decrease-money',
+			'increase-items': 'command.setInventory.increase-items',
+			'decrease-items': 'command.setInventory.decrease-items',
+			'gain-equipment': 'command.setInventory.gain-equipment',
+			'lose-equipment': 'command.setInventory.lose-equipment',
+			'gain-equipment-instance': 'command.setInventory.gain-equipment-instance',
+			'lose-equipment-instance': 'command.setInventory.lose-equipment-instance',
+			swap: 'command.setInventory.swap',
+			sort: 'command.setInventory.sort',
+			'sort-by-order': 'command.setInventory.sort-by-order',
+			reference: 'command.setInventory.reference',
+			dereference: 'command.setInventory.dereference',
+			reset: 'command.setInventory.reset'
+		}
 	);
-	fieldEls.get('setInventory-operation')
+	fieldEls
+		.get('setInventory-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -97,7 +175,10 @@ onMounted(() => {
 			},
 			{
 				case: ['increase-items', 'decrease-items'],
-				targets: [fieldEls.get('setInventory-itemId'), fieldEls.get('setInventory-quantity')]
+				targets: [
+					fieldEls.get('setInventory-itemId'),
+					fieldEls.get('setInventory-quantity')
+				]
 			},
 			{
 				case: ['gain-equipment', 'lose-equipment'],
@@ -132,5 +213,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

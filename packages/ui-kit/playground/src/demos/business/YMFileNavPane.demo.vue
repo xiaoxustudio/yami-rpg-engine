@@ -9,19 +9,21 @@ interface FileItemContext {
 
 const contextMap = new WeakMap<object, Map<HTMLElement, FileItemContext>>();
 
-const getContextOf = (file: object) => (node: HTMLElement): FileItemContext => {
-	let map = contextMap.get(file);
-	if (!map) {
-		map = new Map();
-		contextMap.set(file, map);
-	}
-	let context = map.get(node);
-	if (!context) {
-		context = { expanded: false };
-		map.set(node, context);
-	}
-	return context;
-};
+const getContextOf =
+	(file: object) =>
+	(node: HTMLElement): FileItemContext => {
+		let map = contextMap.get(file);
+		if (!map) {
+			map = new Map();
+			contextMap.set(file, map);
+		}
+		let context = map.get(node);
+		if (!context) {
+			context = { expanded: false };
+			map.set(node, context);
+		}
+		return context;
+	};
 
 let inoCounter = 1;
 
@@ -52,7 +54,11 @@ assets.subfolders = [actors, maps, system];
 actors.subfolders = [skills];
 
 const navWrap = ref<HTMLElement | null>(null);
-const navRef = ref<{ load(...folders: unknown[]): void; clear(): void; getSelections(): unknown[] } | null>(null);
+const navRef = ref<{
+	load(...folders: unknown[]): void;
+	clear(): void;
+	getSelections(): unknown[];
+} | null>(null);
 const info = ref('');
 
 const links = {
@@ -63,7 +69,9 @@ const links = {
 			const nav = navRef.value;
 			if (nav) {
 				const selections = nav.getSelections() as FolderItem[];
-				info.value = selections.length ? `selected: ${selections.map((s) => s.path).join(', ')}` : 'no selection';
+				info.value = selections.length
+					? `selected: ${selections.map((s) => s.path).join(', ')}`
+					: 'no selection';
 			}
 		},
 		restoreDisplay() {}
@@ -103,7 +111,7 @@ const pathUtil = {
 const createTextBox = () => createTextBoxElement();
 
 const init = () => {
-	const wrap = navWrap.value as HTMLElement & { directory?: unknown } | null;
+	const wrap = navWrap.value as (HTMLElement & { directory?: unknown }) | null;
 	if (!wrap) return;
 	wrap.directory = assets;
 	navRef.value?.load(assets);
@@ -140,7 +148,10 @@ onMounted(() => {
 <template>
 	<section class="demo">
 		<h2>YMFileNavPane</h2>
-		<p class="desc">文件夹导航树：load(folder) 载入并选中，点击 folder-mark 展开/折叠，双击展开，F2 重命名（需 createTextBox）。</p>
+		<p class="desc">
+			文件夹导航树：load(folder) 载入并选中，点击 folder-mark 展开/折叠，双击展开，F2
+			重命名（需 createTextBox）。
+		</p>
 		<div class="row">
 			<YMButton variant="primary" @click="loadActors">Load /assets/Actors</YMButton>
 			<YMButton @click="loadRoot">Load Root</YMButton>

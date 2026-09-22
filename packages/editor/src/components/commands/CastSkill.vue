@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="castSkill"
-				:ref="registryRef(fieldEls, 'castSkill')" @confirm="onConfirm">
+	<WindowFrame id="castSkill" :ref="registryRef(fieldEls, 'castSkill')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.castSkill.title') }}
@@ -9,32 +8,61 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.castSkill-actor.label') }}</div>
-			<CustomBox id="castSkill-actor"
+			<CustomBox
+				id="castSkill-actor"
 				:ref="registryRef(fieldEls, 'castSkill-actor')"
-				v-tip="t('components.castSkill-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.castSkill-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.castSkill-mode.label') }}</div>
-			<SelectBox id="castSkill-mode"
+			<SelectBox
+				id="castSkill-mode"
 				v-tip="t('components.castSkill-mode.tip')"
-				:ref="registryRef(fieldEls, 'castSkill-mode')" v-model="form.mode" />
+				:ref="registryRef(fieldEls, 'castSkill-mode')"
+				v-model="form.mode"
+			/>
 			<div class="text">{{ t('components.castSkill-key.label') }}</div>
-			<SelectBox id="castSkill-key"
+			<SelectBox
+				id="castSkill-key"
 				v-tip="t('components.castSkill-key.tip')"
-				:ref="registryRef(fieldEls, 'castSkill-key')" v-focus v-model="form.key" />
+				:ref="registryRef(fieldEls, 'castSkill-key')"
+				v-focus
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.castSkill-keyVar.label') }}</div>
-			<StringVar id="castSkill-keyVar"
+			<StringVar
+				id="castSkill-keyVar"
 				v-tip="t('components.castSkill-keyVar.tip')"
-				:ref="registryRef(fieldEls, 'castSkill-keyVar')" v-model="form.keyVar" />
+				:ref="registryRef(fieldEls, 'castSkill-keyVar')"
+				v-model="form.keyVar"
+			/>
 			<div class="text">{{ t('components.castSkill-skillId.label') }}</div>
-			<CustomBox id="castSkill-skillId"
+			<CustomBox
+				id="castSkill-skillId"
 				v-tip="t('components.castSkill-skillId.tip')"
-				:ref="registryRef(fieldEls, 'castSkill-skillId')" v-focus type="file" filter="skill" v-model="form.skillId" />
+				:ref="registryRef(fieldEls, 'castSkill-skillId')"
+				v-focus
+				type="file"
+				filter="skill"
+				v-model="form.skillId"
+			/>
 			<div class="text">{{ t('components.castSkill-skill.label') }}</div>
-			<CustomBox id="castSkill-skill"
+			<CustomBox
+				id="castSkill-skill"
 				v-tip="t('components.castSkill-skill.tip')"
-				:ref="registryRef(fieldEls, 'castSkill-skill')" type="skill" v-model="form.skill" />
+				:ref="registryRef(fieldEls, 'castSkill-skill')"
+				type="skill"
+				v-model="form.skill"
+			/>
 			<div class="text">{{ t('components.castSkill-wait.label') }}</div>
-			<SelectBox id="castSkill-wait"
-				:ref="registryRef(fieldEls, 'castSkill-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="castSkill-wait"
+				:ref="registryRef(fieldEls, 'castSkill-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -67,7 +95,8 @@ onMounted(() => {
 	useLocalizedOptions('castSkill-mode', ['by-key', 'by-id', 'by-skill', 'by-variable'], (items) =>
 		fieldEls.get('castSkill-mode')?.loadItems?.(items)
 	);
-	fieldEls.get('castSkill-mode')
+	fieldEls
+		.get('castSkill-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'by-key', targets: [fieldEls.get('castSkill-key')] },
@@ -97,5 +126,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

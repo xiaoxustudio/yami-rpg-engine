@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="changeActorMotion"
-				:ref="registryRef(fieldEls, 'changeActorMotion')" @confirm="onConfirm">
+	<WindowFrame
+		id="changeActorMotion"
+		:ref="registryRef(fieldEls, 'changeActorMotion')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.changeActorMotion.title') }}
@@ -9,17 +12,29 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.changeActorMotion-actor.label') }}</div>
-			<CustomBox id="changeActorMotion-actor"
+			<CustomBox
+				id="changeActorMotion-actor"
 				:ref="registryRef(fieldEls, 'changeActorMotion-actor')"
-				v-tip="t('components.changeActorMotion-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.changeActorMotion-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.changeActorMotion-type.label') }}</div>
-			<SelectBox id="changeActorMotion-type"
+			<SelectBox
+				id="changeActorMotion-type"
 				v-tip="t('components.changeActorMotion-type.tip')"
-				:ref="registryRef(fieldEls, 'changeActorMotion-type')" v-model="form.type" />
+				:ref="registryRef(fieldEls, 'changeActorMotion-type')"
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.changeActorMotion-motion.label') }}</div>
-			<CustomBox id="changeActorMotion-motion"
+			<CustomBox
+				id="changeActorMotion-motion"
 				:ref="registryRef(fieldEls, 'changeActorMotion-motion')"
-				v-tip="t('components.changeActorMotion-motion.tip')" type="enum-string" v-model="form.motion" />
+				v-tip="t('components.changeActorMotion-motion.tip')"
+				type="enum-string"
+				v-model="form.motion"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -48,9 +63,11 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('changeActorMotion-type', ['idle', 'move'], (items) =>
-		fieldEls.get('changeActorMotion-type')?.loadItems?.(items),
-		{ 'idle': 'command.changeActorMotion.type.idle', 'move': 'command.changeActorMotion.type.move' }
+	useLocalizedOptions(
+		'changeActorMotion-type',
+		['idle', 'move'],
+		(items) => fieldEls.get('changeActorMotion-type')?.loadItems?.(items),
+		{ idle: 'command.changeActorMotion.type.idle', move: 'command.changeActorMotion.type.move' }
 	);
 });
 </script>
@@ -71,5 +88,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setElement"
-				:ref="registryRef(fieldEls, 'setElement')" @confirm="onConfirm">
+	<WindowFrame id="setElement" :ref="registryRef(fieldEls, 'setElement')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setElement.title') }}
@@ -9,13 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setElement-element.label') }}</div>
-			<CustomBox id="setElement-element"
+			<CustomBox
+				id="setElement-element"
 				:ref="registryRef(fieldEls, 'setElement-element')"
-				v-tip="t('components.setElement-element.tip')" v-focus type="element" v-model="form.element" />
+				v-tip="t('components.setElement-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.setElement-operation.label') }}</div>
-			<SelectBox id="setElement-operation"
+			<SelectBox
+				id="setElement-operation"
 				v-tip="t('components.setElement-operation.tip')"
-				:ref="registryRef(fieldEls, 'setElement-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setElement-operation')"
+				v-model="form.operation"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -44,9 +51,27 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setElement-operation', ['hide', 'show', 'disable-pointer-events', 'enable-pointer-events', 'skip-pointer-events', 'move-to-first', 'move-to-last'], (items) =>
-		fieldEls.get('setElement-operation')?.loadItems?.(items),
-		{ 'hide': 'command.setElement.hide', 'show': 'command.setElement.show', 'disable-pointer-events': 'command.setElement.disable-pointer-events', 'enable-pointer-events': 'command.setElement.enable-pointer-events', 'skip-pointer-events': 'command.setElement.skip-pointer-events', 'move-to-first': 'command.setElement.move-to-first', 'move-to-last': 'command.setElement.move-to-last' }
+	useLocalizedOptions(
+		'setElement-operation',
+		[
+			'hide',
+			'show',
+			'disable-pointer-events',
+			'enable-pointer-events',
+			'skip-pointer-events',
+			'move-to-first',
+			'move-to-last'
+		],
+		(items) => fieldEls.get('setElement-operation')?.loadItems?.(items),
+		{
+			hide: 'command.setElement.hide',
+			show: 'command.setElement.show',
+			'disable-pointer-events': 'command.setElement.disable-pointer-events',
+			'enable-pointer-events': 'command.setElement.enable-pointer-events',
+			'skip-pointer-events': 'command.setElement.skip-pointer-events',
+			'move-to-first': 'command.setElement.move-to-first',
+			'move-to-last': 'command.setElement.move-to-last'
+		}
 	);
 });
 </script>
@@ -67,5 +92,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

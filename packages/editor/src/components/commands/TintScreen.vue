@@ -1,14 +1,16 @@
 <template>
-	<WindowFrame id="tintScreen"
-				:ref="registryRef(fieldEls, 'tintScreen')" @confirm="onConfirm">
+	<WindowFrame id="tintScreen" :ref="registryRef(fieldEls, 'tintScreen')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.tintScreen.title') }}
 				<div class="close" /></TitleBar
 		></template>
 
-		<div class="grid-box" id="tintScreen-grid-box"
-				:ref="registryRef(fieldEls, 'tintScreen-grid-box')">
+		<div
+			class="grid-box"
+			id="tintScreen-grid-box"
+			:ref="registryRef(fieldEls, 'tintScreen-grid-box')"
+		>
 			<div class="text">{{ t('components.tintScreen-tint-0.label') }}</div>
 			<NumberBox
 				id="tintScreen-tint-0"
@@ -41,12 +43,22 @@
 				v-model="tint2"
 			/>
 			<div class="text">{{ t('components.tintScreen-tint-3.label') }}</div>
-			<NumberBox id="tintScreen-tint-3"
+			<NumberBox
+				id="tintScreen-tint-3"
 				:ref="registryRef(fieldEls, 'tintScreen-tint-3')"
-				v-tip="t('components.tintScreen-tint-3.tip')" min="0" max="255" step="5" v-model="tint3" />
+				v-tip="t('components.tintScreen-tint-3.tip')"
+				min="0"
+				max="255"
+				step="5"
+				v-model="tint3"
+			/>
 			<div class="text">{{ t('components.tintScreen-easingId.label') }}</div>
-			<SelectBox id="tintScreen-easingId"
-				:ref="registryRef(fieldEls, 'tintScreen-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="tintScreen-easingId"
+				:ref="registryRef(fieldEls, 'tintScreen-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.tintScreen-duration.label') }}</div>
 			<NumberBox
 				id="tintScreen-duration"
@@ -58,11 +70,19 @@
 				v-model="duration"
 			/>
 			<div class="text">{{ t('components.tintScreen-wait.label') }}</div>
-			<SelectBox id="tintScreen-wait"
-				:ref="registryRef(fieldEls, 'tintScreen-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="tintScreen-wait"
+				:ref="registryRef(fieldEls, 'tintScreen-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
-		<FilterBox id="tintScreen-filter"
-				:ref="registryRef(fieldEls, 'tintScreen-filter')" width="96" height="160" />
+		<FilterBox
+			id="tintScreen-filter"
+			:ref="registryRef(fieldEls, 'tintScreen-filter')"
+			width="96"
+			height="160"
+		/>
 	</WindowFrame>
 </template>
 
@@ -175,5 +195,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

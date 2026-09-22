@@ -1,34 +1,59 @@
 <template>
-	<WindowFrame id="setObjectAnimation"
-				:ref="registryRef(fieldEls, 'setObjectAnimation')" @confirm="onConfirm">
+	<WindowFrame
+		id="setObjectAnimation"
+		:ref="registryRef(fieldEls, 'setObjectAnimation')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setObjectAnimation.title') }}
 				<div class="close" /></TitleBar
 		></template>
 
-		<div class="grid-box" id="setObjectAnimation-grid-box"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-grid-box')">
+		<div
+			class="grid-box"
+			id="setObjectAnimation-grid-box"
+			:ref="registryRef(fieldEls, 'setObjectAnimation-grid-box')"
+		>
 			<div class="text">{{ t('components.setObjectAnimation-sort.label') }}</div>
-			<SelectBox id="setObjectAnimation-sort"
+			<SelectBox
+				id="setObjectAnimation-sort"
 				v-tip="t('components.setObjectAnimation-sort.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-sort')" v-focus v-model="form.sort" />
+				:ref="registryRef(fieldEls, 'setObjectAnimation-sort')"
+				v-focus
+				v-model="form.sort"
+			/>
 			<div class="text">{{ t('components.setObjectAnimation-actor.label') }}</div>
-			<CustomBox id="setObjectAnimation-actor"
+			<CustomBox
+				id="setObjectAnimation-actor"
 				v-tip="t('components.setObjectAnimation-actor.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-actor')" type="actor" v-model="form.actor" />
+				:ref="registryRef(fieldEls, 'setObjectAnimation-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.setObjectAnimation-trigger.label') }}</div>
-			<CustomBox id="setObjectAnimation-trigger"
+			<CustomBox
+				id="setObjectAnimation-trigger"
 				v-tip="t('components.setObjectAnimation-trigger.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-trigger')" type="trigger" v-model="form.trigger" />
+				:ref="registryRef(fieldEls, 'setObjectAnimation-trigger')"
+				type="trigger"
+				v-model="form.trigger"
+			/>
 			<div class="text">{{ t('components.setObjectAnimation-animation.label') }}</div>
-			<CustomBox id="setObjectAnimation-animation"
+			<CustomBox
+				id="setObjectAnimation-animation"
 				v-tip="t('components.setObjectAnimation-animation.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-animation')" type="object" v-model="form.animation" />
+				:ref="registryRef(fieldEls, 'setObjectAnimation-animation')"
+				type="object"
+				v-model="form.animation"
+			/>
 			<div class="text">{{ t('components.setObjectAnimation-operation.label') }}</div>
-			<SelectBox id="setObjectAnimation-operation"
+			<SelectBox
+				id="setObjectAnimation-operation"
 				v-tip="t('components.setObjectAnimation-operation.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setObjectAnimation-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setObjectAnimation-tint-0.label') }}</div>
 			<NumberBox
 				id="setObjectAnimation-tint-0"
@@ -103,8 +128,12 @@
 				v-model="form.rotation"
 			/>
 			<div class="text">{{ t('components.setObjectAnimation-easingId.label') }}</div>
-			<SelectBox id="setObjectAnimation-easingId"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="setObjectAnimation-easingId"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.setObjectAnimation-duration.label') }}</div>
 			<NumberBox
 				id="setObjectAnimation-duration"
@@ -116,8 +145,12 @@
 				v-model="duration"
 			/>
 			<div class="text">{{ t('components.setObjectAnimation-wait.label') }}</div>
-			<SelectBox id="setObjectAnimation-wait"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="setObjectAnimation-wait"
+				:ref="registryRef(fieldEls, 'setObjectAnimation-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -184,10 +217,13 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setObjectAnimation-sort', ['actor', 'components', 'trigger', 'animation'], (items) =>
-		fieldEls.get('setObjectAnimation-sort')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setObjectAnimation-sort',
+		['actor', 'components', 'trigger', 'animation'],
+		(items) => fieldEls.get('setObjectAnimation-sort')?.loadItems?.(items)
 	);
-	fieldEls.get('setObjectAnimation-sort')
+	fieldEls
+		.get('setObjectAnimation-sort')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -203,10 +239,13 @@ onMounted(() => {
 				targets: [fieldEls.get('setObjectAnimation-animation')]
 			}
 		]);
-	useLocalizedOptions('setObjectAnimation-operation', ['set-tint', 'set-rgb', 'set-gray', 'set-opacity', 'set-offsetY', 'set-rotation'], (items) =>
-		fieldEls.get('setObjectAnimation-operation')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setObjectAnimation-operation',
+		['set-tint', 'set-rgb', 'set-gray', 'set-opacity', 'set-offsetY', 'set-rotation'],
+		(items) => fieldEls.get('setObjectAnimation-operation')?.loadItems?.(items)
 	);
-	fieldEls.get('setObjectAnimation-operation')
+	fieldEls
+		.get('setObjectAnimation-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -272,5 +311,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

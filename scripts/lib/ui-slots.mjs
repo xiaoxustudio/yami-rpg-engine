@@ -71,7 +71,9 @@ export function uiWindowRel() {
  */
 export function uiDirRe() {
 	const rel = uiWindowRel();
-	if (rel === null) return /^\u0000never$/;
+	// 「永不匹配」用 `(?!)`（一个恒假的零宽断言），而不是往正则里塞控制字符当哨兵：
+	// 后者会被 `eslint/no-control-regex` 判为坏味道，语义上也并不需要。
+	if (rel === null) return /(?!)x/;
 	return new RegExp(`^${dirname(rel).replace(/\\/g, '/')}/`);
 }
 
@@ -109,6 +111,25 @@ export function declaredSlots() {
 	return [];
 }
 
+/**
+ * 「对 UI 单例槽位赋值」的四种写法（正则字面量与 2026-09-17 起的口径**逐字一致**）。
+ *
+ * 抽成数组是为了让 `assignedSlots()`（全仓）与 `legacyOnlyStoreSlots()`（排除遗留目录）
+ * 用同一批口径 —— 后者要回答的是「这个槽位的**实现**是否只在遗留层里」，两份正则一旦分叉，
+ * 两条轴会得出互相矛盾的结论。
+ *
+ * ⚠️ **不要**在这里给赋值正则补 `(?!=)`：`scan.mjs` 的 `UI_SINGLETON_RE`（**计数**轴）需要它，
+ * 因为 `UI.dragging === null` 会被数成一次赋值。但本文件这几个是**取名字的集合**，
+ * 多认一个名字只会让「从未被赋值」的告警变少（保守方向），而改口径会让 `ui-slot-coverage`
+ * 的既有读数无声变化。口径与轴的历史值必须一起改，不能顺手。
+ */
+const SLOT_ASSIGN_RES = [
+	/\bUI\.([A-Za-z_$][\w$]*)\s*=/g,
+	/\buiElClasses\.([A-Za-z_$][\w$]*)\s*=/g,
+	/\bUI\.([A-Za-z_$][\w$]*)\.[A-Za-z_$][\w$]*\s*=/g,
+	/\(\s*UI\.([A-Za-z_$][\w$]*)\s*\)\.[A-Za-z_$][\w$]*\s*=/g
+];
+
 /** 赋值：全仓库对 UI 单例槽位的写入 */
 export function assignedSlots(files) {
 	const all = files ?? collectFiles({ dirs: SCAN_DIRS });
@@ -116,15 +137,12 @@ export function assignedSlots(files) {
 	const uiDir = uiDirRe();
 	for (const { full, rel } of all) {
 		const src = readSource(full);
-		for (const m of src.matchAll(/\bUI\.([A-Za-z_$][\w$]*)\s*=/g)) assigned.add(m[1]);
-		for (const m of src.matchAll(/\buiElClasses\.([A-Za-z_$][\w$]*)\s*=/g)) assigned.add(m[1]);
+		for (const re of SLOT_ASSIGN_RES) {
+			for (const m of src.matchAll(re)) assigned.add(m[1]);
+		}
 		if (uiDir.test(rel)) {
 			for (const m of src.matchAll(/\bthis\.([A-Za-z_$][\w$]*)\s*=/g)) assigned.add(m[1]);
 		}
-		for (const m of src.matchAll(/\bUI\.([A-Za-z_$][\w$]*)\.[A-Za-z_$][\w$]*\s*=/g))
-			assigned.add(m[1]);
-		for (const m of src.matchAll(/\(\s*UI\.([A-Za-z_$][\w$]*)\s*\)\.[A-Za-z_$][\w$]*\s*=/g))
-			assigned.add(m[1]);
 	}
 	return assigned;
 }
@@ -200,4 +218,60 @@ export function uiSlotCoverage() {
 		storeRefsUnassigned,
 		engineBacked: engineBacked.sort((a, b) => a.localeCompare(b))
 	};
+}
+
+/**
+ * **1c 第 ③ 步的工作单口径**：store 引用了、但「实现」只存在于遗留目录里的槽位。
+ *
+ * ## 它补的是哪个缺口（2026-09-21 实测）
+ *
+ * `uiSlotCoverage().storeRefsUnassigned` 恒为 0 —— 因为 `assignedSlots()` 把**遗留目录里**的
+ * `UI.x = …` / `this.x = …` 也算成「已赋值」。于是「删掉遗留层会让多少动作静默失效」这件事
+ * 在台账上**完全不可见**：`ui-singleton-members` 只说「还有 103 处挂载」，
+ * 而 PHASE-1C 附录三手工数出来的是「store 尚缺 ~41 个槽位」——那个数字没有任何轴守着。
+ *
+ * 本函数把它变成可测量的：对每个 store 引用的槽位，只要满足下面**全部**条件就计入
+ *   - 它的赋值不在 `ui-engine.ts` 里（不是 `engineBacked`——那批只需换接线，零新逻辑）；
+ *   - 它的赋值**不在遗留目录里**的任何一个文件里（即：外部/新家已有实现）。
+ *
+ * ## 为什么"排除遗留目录"而不是"只数遗留目录"
+ *
+ * 遗留目录里的 `UI.x = function () {}` 是**实现**，不是"已迁移"。真正的进度是
+ * 「有多少槽位的实现已经搬出遗留目录」。所以计数方向必须反过来：
+ * 数**没有**外部实现的那些。搬走一个，这个数字就降 1 —— 纯移动不会让它下降，
+ * 但**把实现搬出遗留目录一定会**，这正是第 ③ 步的定义。
+ *
+ * ## 与另两条轴的关系（三者必须一起看）
+ *
+ * | 轴 | 回答的问题 |
+ * |---|---|
+ * | `ui-singleton-members` | 遗留层还剩多少 `UI.x = ` 挂载点（含镜像） |
+ * | `ui-slot-coverage.storeRefsUnassigned` | 有没有槽位**全仓都没人赋值**（会静默读到 undefined） |
+ * | **本函数** | 有多少槽位的实现**只在遗留层**（搬走它们才是 ③ 的进度） |
+ *
+ * @returns {string[]} 按名字排序的槽位名
+ */
+export function legacyOnlyStoreSlots() {
+	const files = collectFiles({ dirs: SCAN_DIRS });
+	const uiDir = uiDirRe();
+	const refs = storeReferencedSlots();
+	const engineSrc = readSource(join(ROOT, 'packages/editor/src/engine/ui/ui-engine.ts'));
+
+	/** 遗留目录**之外**的赋值点 —— 每个槽位只要出现在这里，就说明它有「新家」。 */
+	const outsideLegacy = new Set();
+	for (const { full, rel } of files) {
+		if (uiDir.test(rel)) continue;
+		const src = readSource(full);
+		for (const re of SLOT_ASSIGN_RES) {
+			for (const m of src.matchAll(re)) outsideLegacy.add(m[1]);
+		}
+	}
+
+	const legacyOnly = [];
+	for (const slot of refs) {
+		if (new RegExp(`^UIEngine\\.${slot}\\s*=`, 'm').test(engineSrc)) continue;
+		if (outsideLegacy.has(slot)) continue;
+		legacyOnly.push(slot);
+	}
+	return legacyOnly.sort((a, b) => a.localeCompare(b));
 }

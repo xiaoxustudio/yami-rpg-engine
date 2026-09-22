@@ -19,7 +19,9 @@ const onChange = (value: boolean) => {
 		<div class="row">
 			<YMCheckBox v-model="normal" @change="onChange">Normal {{ normal }}</YMCheckBox>
 			<YMCheckBox v-model="standard" standard @change="onChange">Standard</YMCheckBox>
-			<YMCheckBox v-model="large" standard large @change="onChange">Standard Large</YMCheckBox>
+			<YMCheckBox v-model="large" standard large @change="onChange"
+				>Standard Large</YMCheckBox
+			>
 		</div>
 		<div class="row">
 			<YMCheckBox v-model="fixedDisabled" disabled>Disabled (checked)</YMCheckBox>

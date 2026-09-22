@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="switchCollisionSystem"
-				:ref="registryRef(fieldEls, 'switchCollisionSystem')" @confirm="onConfirm">
+	<WindowFrame
+		id="switchCollisionSystem"
+		:ref="registryRef(fieldEls, 'switchCollisionSystem')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.switchCollisionSystem.title') }}
@@ -9,9 +12,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.switchCollisionSystem-operation.label') }}</div>
-			<SelectBox id="switchCollisionSystem-operation"
+			<SelectBox
+				id="switchCollisionSystem-operation"
 				v-tip="t('components.switchCollisionSystem-operation.tip')"
-				:ref="registryRef(fieldEls, 'switchCollisionSystem-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'switchCollisionSystem-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -39,8 +46,15 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('switchCollisionSystem-operation', ['enable-actor-collision', 'disable-actor-collision', 'enable-scene-collision', 'disable-scene-collision'], (items) =>
-		fieldEls.get('switchCollisionSystem-operation')?.loadItems?.(items)
+	useLocalizedOptions(
+		'switchCollisionSystem-operation',
+		[
+			'enable-actor-collision',
+			'disable-actor-collision',
+			'enable-scene-collision',
+			'disable-scene-collision'
+		],
+		(items) => fieldEls.get('switchCollisionSystem-operation')?.loadItems?.(items)
 	);
 });
 </script>
@@ -61,5 +75,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -105,7 +105,15 @@ const guidMap: Record<string, unknown> = {
 				repeatableGroup: {
 					parameters: [
 						{ type: 'string', key: 'label', alias: 'Label', value: '' },
-						{ type: 'number', key: 'power', alias: 'Power', min: 1, max: 999, decimals: 0, value: 1 }
+						{
+							type: 'number',
+							key: 'power',
+							alias: 'Power',
+							min: 1,
+							max: 999,
+							decimals: 0,
+							value: 1
+						}
 					]
 				}
 			}
@@ -154,7 +162,10 @@ onMounted(() => {
 <template>
 	<section class="demo">
 		<h2>YMParameterPane</h2>
-		<p class="desc">参数面板：controls 工厂 + typeRegistry + dataManifest(guidMap) 渲染脚本参数，支持分组、repeatable-group 行、校验。</p>
+		<p class="desc">
+			参数面板：controls 工厂 + typeRegistry + dataManifest(guidMap)
+			渲染脚本参数，支持分组、repeatable-group 行、校验。
+		</p>
 		<div class="row">
 			<YMButton variant="primary" @click="refresh">Refresh Pane</YMButton>
 			<span class="hint">{{ lastUpdate }}</span>

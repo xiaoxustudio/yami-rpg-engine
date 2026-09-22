@@ -8,8 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.label-name.label') }}</div>
-			<TextBox id="label-name"
-				v-tip="t('components.label-name.tip')" v-focus v-model="name" />
+			<TextBox
+				id="label-name"
+				v-tip="t('components.label-name.tip')"
+				v-focus
+				v-model="name"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -54,5 +58,4 @@ const onConfirm = () => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

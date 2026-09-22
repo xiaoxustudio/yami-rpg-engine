@@ -14,7 +14,7 @@
  *   --check：只比对，不写入（供 CI/人工核对；等价于 spec 里的防漂移断言）
  */
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { join } from 'node:path';
 
 const ROOT = process.cwd();
 const CHECK = process.argv.includes('--check');
@@ -75,25 +75,34 @@ for (const [key, item] of Object.entries(components)) {
 		(m) => m.src.includes('applyLocalizedTip(') && m.src.includes(`'${key}'`)
 	);
 	// 只有在"需要 SFC 承担某些字段"时才强制要求承载者存在
-	if (effective.length === 0 && !(fields.length > 0 && fields.every((f) => f === 'tip' && moduleCarriesTip)))
+	if (
+		effective.length === 0 &&
+		!(fields.length > 0 && fields.every((f) => f === 'tip' && moduleCarriesTip))
+	)
 		continue;
 	const ok = fields.every((field) =>
 		field === 'tip' && moduleCarriesTip
 			? true
 			: effective.some((v) =>
-			field === 'tip'
-				? v.src.includes(`v-tip="t('components.${key}.tip')"`) ||
-					new RegExp(`t\\(['"]components\\.${esc(key)}\\.tip['"]`).test(v.src)
-				: field === 'options'
-					? new RegExp(`t\\(['"]components\\.${esc(key)}\\.options\\.`).test(v.src) ||
-						v.src.includes(`useLocalizedOptions('${key}'`) ||
-						// 模块侧（非 Vue）等价路径：utils/localized-items 的 applyLocalizedItems
-						modules.some((m) => m.src.includes(`applyLocalizedItems('${key}'`)) ||
-						// 宿主组件按约定承担（迁移⑮）
-						(selectBoxGeneric !== null &&
-							new RegExp(`<SelectBox[^>]*\\bid="${esc(key)}"`).test(v.src))
-					: new RegExp(`t\\(['"]components\\.${esc(key)}\\.${esc(field)}['"]`).test(v.src)
-		)
+					field === 'tip'
+						? v.src.includes(`v-tip="t('components.${key}.tip')"`) ||
+							new RegExp(`t\\(['"]components\\.${esc(key)}\\.tip['"]`).test(v.src)
+						: field === 'options'
+							? new RegExp(`t\\(['"]components\\.${esc(key)}\\.options\\.`).test(
+									v.src
+								) ||
+								v.src.includes(`useLocalizedOptions('${key}'`) ||
+								// 模块侧（非 Vue）等价路径：utils/localized-items 的 applyLocalizedItems
+								modules.some((m) =>
+									m.src.includes(`applyLocalizedItems('${key}'`)
+								) ||
+								// 宿主组件按约定承担（迁移⑮）
+								(selectBoxGeneric !== null &&
+									new RegExp(`<SelectBox[^>]*\\bid="${esc(key)}"`).test(v.src))
+							: new RegExp(
+									`t\\(['"]components\\.${esc(key)}\\.${esc(field)}['"]`
+								).test(v.src)
+				)
 	);
 	if (ok) covered.push(key);
 }
@@ -132,7 +141,9 @@ const existing = (() => {
 
 if (CHECK) {
 	if (existing === content) {
-		console.log(`i18n-skip-list: OK（${covered.length} 键已由模板承担；扫描面 ${total} → ${total - covered.length}）`);
+		console.log(
+			`i18n-skip-list: OK（${covered.length} 键已由模板承担；扫描面 ${total} → ${total - covered.length}）`
+		);
 		process.exit(0);
 	}
 	console.error('i18n-skip-list: 与源码不一致，请运行 node scripts/i18n-skip-list.mjs 重新生成');

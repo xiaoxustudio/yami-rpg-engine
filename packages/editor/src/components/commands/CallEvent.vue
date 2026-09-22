@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="callEvent"
-				:ref="registryRef(fieldEls, 'callEvent')" @confirm="onConfirm">
+	<WindowFrame id="callEvent" :ref="registryRef(fieldEls, 'callEvent')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.callEvent.title') }}
@@ -8,59 +7,99 @@
 		></template>
 
 		<div class="grid-box">
-		<div class="text">{{ t('components.callEvent-type.label') }}</div>
-		<SelectBox id="callEvent-type"
+			<div class="text">{{ t('components.callEvent-type.label') }}</div>
+			<SelectBox
+				id="callEvent-type"
 				v-tip="t('components.callEvent-type.tip')"
-				:ref="registryRef(fieldEls, 'callEvent-type')" v-focus v-model="form.type" @write="onTypeWrite" />
-		<div class="text">{{ t('components.callEvent-actor.label') }}</div>
-		<CustomBox id="callEvent-actor"
+				:ref="registryRef(fieldEls, 'callEvent-type')"
+				v-focus
+				v-model="form.type"
+				@write="onTypeWrite"
+			/>
+			<div class="text">{{ t('components.callEvent-actor.label') }}</div>
+			<CustomBox
+				id="callEvent-actor"
 				v-tip="t('components.callEvent-actor.tip')"
-				:ref="registryRef(fieldEls, 'callEvent-actor')" type="actor" v-model="form.actor" />
-		<div class="text">{{ t('components.callEvent-skill.label') }}</div>
-		<CustomBox id="callEvent-skill"
+				:ref="registryRef(fieldEls, 'callEvent-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
+			<div class="text">{{ t('components.callEvent-skill.label') }}</div>
+			<CustomBox
+				id="callEvent-skill"
 				v-tip="t('components.callEvent-skill.tip')"
-				:ref="registryRef(fieldEls, 'callEvent-skill')" type="skill" v-model="form.skill" />
-		<div class="text">{{ t('components.callEvent-state.label') }}</div>
-		<CustomBox id="callEvent-state"
+				:ref="registryRef(fieldEls, 'callEvent-skill')"
+				type="skill"
+				v-model="form.skill"
+			/>
+			<div class="text">{{ t('components.callEvent-state.label') }}</div>
+			<CustomBox
+				id="callEvent-state"
 				v-tip="t('components.callEvent-state.tip')"
-				:ref="registryRef(fieldEls, 'callEvent-state')" type="state" v-model="form.state" />
-		<div class="text">{{ t('components.callEvent-equipment.label') }}</div>
-		<CustomBox id="callEvent-equipment"
+				:ref="registryRef(fieldEls, 'callEvent-state')"
+				type="state"
+				v-model="form.state"
+			/>
+			<div class="text">{{ t('components.callEvent-equipment.label') }}</div>
+			<CustomBox
+				id="callEvent-equipment"
 				v-tip="t('components.callEvent-equipment.tip')"
-				:ref="registryRef(fieldEls, 'callEvent-equipment')" type="equipment" v-model="form.equipment" />
-		<div class="text">{{ t('components.callEvent-item.label') }}</div>
-		<CustomBox id="callEvent-item"
+				:ref="registryRef(fieldEls, 'callEvent-equipment')"
+				type="equipment"
+				v-model="form.equipment"
+			/>
+			<div class="text">{{ t('components.callEvent-item.label') }}</div>
+			<CustomBox
+				id="callEvent-item"
 				v-tip="t('components.callEvent-item.tip')"
-				:ref="registryRef(fieldEls, 'callEvent-item')" type="item" v-model="form.item" />
-		<div class="text">{{ t('components.callEvent-light.label') }}</div>
-		<CustomBox id="callEvent-light"
+				:ref="registryRef(fieldEls, 'callEvent-item')"
+				type="item"
+				v-model="form.item"
+			/>
+			<div class="text">{{ t('components.callEvent-light.label') }}</div>
+			<CustomBox
+				id="callEvent-light"
 				v-tip="t('components.callEvent-light.tip')"
-				:ref="registryRef(fieldEls, 'callEvent-light')" type="light" v-model="form.light" />
-		<div class="text">{{ t('components.callEvent-element.label') }}</div>
-		<CustomBox id="callEvent-element"
+				:ref="registryRef(fieldEls, 'callEvent-light')"
+				type="light"
+				v-model="form.light"
+			/>
+			<div class="text">{{ t('components.callEvent-element.label') }}</div>
+			<CustomBox
+				id="callEvent-element"
 				v-tip="t('components.callEvent-element.tip')"
-				:ref="registryRef(fieldEls, 'callEvent-element')" type="element" v-model="form.element" />
-		<div class="text">{{ t('components.callEvent-eventId.label') }}</div>
-		<CustomBox
-			id="callEvent-eventId"
+				:ref="registryRef(fieldEls, 'callEvent-element')"
+				type="element"
+				v-model="form.element"
+			/>
+			<div class="text">{{ t('components.callEvent-eventId.label') }}</div>
+			<CustomBox
+				id="callEvent-eventId"
 				v-tip="t('components.callEvent-eventId.tip')"
 				:ref="registryRef(fieldEls, 'callEvent-eventId')"
-			v-focus
-			type="file"
-			filter="event"
-			v-model="form.eventId"
-			@write="onEventIdWrite"
-			@input="onEventIdInput"
-		/>
+				v-focus
+				type="file"
+				filter="event"
+				v-model="form.eventId"
+				@write="onEventIdWrite"
+				@input="onEventIdInput"
+			/>
 			<div class="text">{{ t('components.callEvent-eventType.label') }}</div>
-			<SelectBox id="callEvent-eventType"
+			<SelectBox
+				id="callEvent-eventType"
 				v-tip="t('components.callEvent-eventType.tip')"
-				:ref="registryRef(fieldEls, 'callEvent-eventType')" v-focus v-model="form.eventType" />
+				:ref="registryRef(fieldEls, 'callEvent-eventType')"
+				v-focus
+				v-model="form.eventType"
+			/>
 		</div>
 		<!-- P1b：参数标签的「模板节点」（原先是 document.createElement('div') + render()）→ 模板提供、模块 cloneNode -->
 		<div class="hidden">
-			<div class="text call-event-component" id="callEvent-label-template"
-				:ref="registryRef(fieldEls, 'callEvent-label-template')"></div>
+			<div
+				class="text call-event-component"
+				id="callEvent-label-template"
+				:ref="registryRef(fieldEls, 'callEvent-label-template')"
+			></div>
 		</div>
 	</WindowFrame>
 </template>
@@ -114,7 +153,8 @@ onMounted(() => {
 		{ name: 'Element', value: 'element' }
 	]);
 
-	fieldEls.get('callEvent-type')
+	fieldEls
+		.get('callEvent-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'global', targets: [fieldEls.get('callEvent-eventId')] },
@@ -171,5 +211,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -125,7 +125,10 @@ onMounted(() => {
 <template>
 	<section class="demo">
 		<h2>YMFileHeadPane</h2>
-		<p class="desc">文件浏览器头部：地址栏（可逐级回退）+ 返回上级按钮 + 搜索框 + 视图缩放条，依赖 links 三联动结构。</p>
+		<p class="desc">
+			文件浏览器头部：地址栏（可逐级回退）+ 返回上级按钮 + 搜索框 + 视图缩放条，依赖 links
+			三联动结构。
+		</p>
 		<div class="row">
 			<YMButton variant="primary" @click="openActors">Open /assets/Actors</YMButton>
 			<YMButton @click="openMaps">Open /assets/Maps</YMButton>
@@ -139,7 +142,10 @@ onMounted(() => {
 				ref="headRef"
 				:links="links"
 				:menu-popup="menuPopup"
-				:is-folder-item="(obj: unknown) => !!obj && typeof obj === 'object' && 'subfolders' in (obj as object)"
+				:is-folder-item="
+					(obj: unknown) =>
+						!!obj && typeof obj === 'object' && 'subfolders' in (obj as object)
+				"
 			/>
 		</div>
 		<YMMenuList ref="menuRef" />

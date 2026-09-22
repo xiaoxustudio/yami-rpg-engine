@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="setProgressBar"
-				:ref="registryRef(fieldEls, 'setProgressBar')" @confirm="onConfirm">
+	<WindowFrame
+		id="setProgressBar"
+		:ref="registryRef(fieldEls, 'setProgressBar')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setProgressBar.title') }}
@@ -9,12 +12,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setProgressBar-element.label') }}</div>
-			<CustomBox id="setProgressBar-element"
+			<CustomBox
+				id="setProgressBar-element"
 				:ref="registryRef(fieldEls, 'setProgressBar-element')"
-				v-tip="t('components.setProgressBar-element.tip')" v-focus type="element" v-model="form.element" />
+				v-tip="t('components.setProgressBar-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.setProgressBar-properties.label') }}</div>
-			<ParamList id="setProgressBar-properties"
-				:ref="registryRef(fieldEls, 'setProgressBar-properties')" v-focus v-model="form.properties" />
+			<ParamList
+				id="setProgressBar-properties"
+				:ref="registryRef(fieldEls, 'setProgressBar-properties')"
+				v-focus
+				v-model="form.properties"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -71,5 +83,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

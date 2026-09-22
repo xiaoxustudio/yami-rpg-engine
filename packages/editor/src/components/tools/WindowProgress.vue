@@ -4,8 +4,11 @@
 		<template #title><TitleBar>进度</TitleBar></template>
 
 		<div class="flex-box" id="windowProgress-flex">
-			<div class="text" id="windowProgress-info"
-				:ref="registryRef(titleEls, 'windowProgress-info')" />
+			<div
+				class="text"
+				id="windowProgress-info"
+				:ref="registryRef(titleEls, 'windowProgress-info')"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -48,4 +51,3 @@ onMounted(() => {});
 	background-color: var(--selected-background);
 }
 </style>
-

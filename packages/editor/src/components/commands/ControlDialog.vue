@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="controlDialog"
-				:ref="registryRef(fieldEls, 'controlDialog')" @confirm="onConfirm">
+	<WindowFrame
+		id="controlDialog"
+		:ref="registryRef(fieldEls, 'controlDialog')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.controlDialog.title') }}
@@ -9,13 +12,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.controlDialog-element.label') }}</div>
-			<CustomBox id="controlDialog-element"
+			<CustomBox
+				id="controlDialog-element"
 				:ref="registryRef(fieldEls, 'controlDialog-element')"
-				v-tip="t('components.controlDialog-element.tip')" v-focus type="element" v-model="form.element" />
+				v-tip="t('components.controlDialog-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.controlDialog-operation.label') }}</div>
-			<SelectBox id="controlDialog-operation"
+			<SelectBox
+				id="controlDialog-operation"
 				v-tip="t('components.controlDialog-operation.tip')"
-				:ref="registryRef(fieldEls, 'controlDialog-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'controlDialog-operation')"
+				v-model="form.operation"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -44,9 +55,16 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('controlDialog-operation', ['pause', 'continue', 'print-immediately', 'print-next-page'], (items) =>
-		fieldEls.get('controlDialog-operation')?.loadItems?.(items),
-		{ 'pause': 'command.controlDialog.pause', 'continue': 'command.controlDialog.continue', 'print-immediately': 'command.controlDialog.print-immediately', 'print-next-page': 'command.controlDialog.print-next-page' }
+	useLocalizedOptions(
+		'controlDialog-operation',
+		['pause', 'continue', 'print-immediately', 'print-next-page'],
+		(items) => fieldEls.get('controlDialog-operation')?.loadItems?.(items),
+		{
+			pause: 'command.controlDialog.pause',
+			continue: 'command.controlDialog.continue',
+			'print-immediately': 'command.controlDialog.print-immediately',
+			'print-next-page': 'command.controlDialog.print-next-page'
+		}
 	);
 });
 </script>
@@ -67,5 +85,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

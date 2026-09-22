@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="setMovementSpeed"
-				:ref="registryRef(fieldEls, 'setMovementSpeed')" @confirm="onConfirm">
+	<WindowFrame
+		id="setMovementSpeed"
+		:ref="registryRef(fieldEls, 'setMovementSpeed')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setMovementSpeed.title') }}
@@ -18,9 +21,12 @@
 				v-model="form.actor"
 			/>
 			<div class="text">{{ t('components.setMovementSpeed-property.label') }}</div>
-			<SelectBox id="setMovementSpeed-property"
+			<SelectBox
+				id="setMovementSpeed-property"
 				v-tip="t('components.setMovementSpeed-property.tip')"
-				:ref="registryRef(fieldEls, 'setMovementSpeed-property')" v-model="form.property" />
+				:ref="registryRef(fieldEls, 'setMovementSpeed-property')"
+				v-model="form.property"
+			/>
 			<div class="text">{{ t('components.setMovementSpeed-base.label') }}</div>
 			<NumberVar
 				id="setMovementSpeed-base"
@@ -71,11 +77,18 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setMovementSpeed-property', ['base', 'factor', 'factor-temp'], (items) =>
-		fieldEls.get('setMovementSpeed-property')?.loadItems?.(items),
-		{ 'base': 'command.setMovementSpeed.base', 'factor': 'command.setMovementSpeed.factor', 'factor-temp': 'command.setMovementSpeed.factor-temp' }
+	useLocalizedOptions(
+		'setMovementSpeed-property',
+		['base', 'factor', 'factor-temp'],
+		(items) => fieldEls.get('setMovementSpeed-property')?.loadItems?.(items),
+		{
+			base: 'command.setMovementSpeed.base',
+			factor: 'command.setMovementSpeed.factor',
+			'factor-temp': 'command.setMovementSpeed.factor-temp'
+		}
 	);
-	fieldEls.get('setMovementSpeed-property')
+	fieldEls
+		.get('setMovementSpeed-property')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'base', targets: [fieldEls.get('setMovementSpeed-base')] },
@@ -103,5 +116,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

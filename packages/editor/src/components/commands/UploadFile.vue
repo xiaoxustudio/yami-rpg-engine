@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="uploadFile"
-				:ref="registryRef(fieldEls, 'uploadFile')" @confirm="onConfirm">
+	<WindowFrame id="uploadFile" :ref="registryRef(fieldEls, 'uploadFile')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.uploadFile.title') }}
@@ -9,25 +8,42 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.uploadFile-url.label') }}</div>
-			<StringVar id="uploadFile-url"
+			<StringVar
+				id="uploadFile-url"
 				:ref="registryRef(fieldEls, 'uploadFile-url')"
-				v-tip="t('components.uploadFile-url.tip')" v-focus v-model="form.url" />
+				v-tip="t('components.uploadFile-url.tip')"
+				v-focus
+				v-model="form.url"
+			/>
 			<div class="text">{{ t('components.uploadFile-path.label') }}</div>
-			<StringVar id="uploadFile-path"
+			<StringVar
+				id="uploadFile-path"
 				:ref="registryRef(fieldEls, 'uploadFile-path')"
-				v-tip="t('components.uploadFile-path.tip')" v-focus v-model="form.path" />
+				v-tip="t('components.uploadFile-path.tip')"
+				v-focus
+				v-model="form.path"
+			/>
 			<div class="text">{{ t('components.uploadFile-method.label') }}</div>
-			<SelectBox id="uploadFile-method"
+			<SelectBox
+				id="uploadFile-method"
 				v-tip="t('components.uploadFile-method.tip')"
-				:ref="registryRef(fieldEls, 'uploadFile-method')" v-model="form.method" />
+				:ref="registryRef(fieldEls, 'uploadFile-method')"
+				v-model="form.method"
+			/>
 			<div class="text">{{ t('components.uploadFile-field.label') }}</div>
-			<StringVar id="uploadFile-field"
+			<StringVar
+				id="uploadFile-field"
 				:ref="registryRef(fieldEls, 'uploadFile-field')"
-				v-tip="t('components.uploadFile-field.tip')" v-model="form.field" />
+				v-tip="t('components.uploadFile-field.tip')"
+				v-model="form.field"
+			/>
 			<div class="text">{{ t('components.uploadFile-header.label') }}</div>
-			<ParamList id="uploadFile-header"
+			<ParamList
+				id="uploadFile-header"
 				v-tip="t('components.uploadFile-header.tip')"
-				:ref="registryRef(fieldEls, 'uploadFile-header')" v-model="form.header" />
+				:ref="registryRef(fieldEls, 'uploadFile-header')"
+				v-model="form.header"
+			/>
 			<div class="text">{{ t('components.uploadFile-callback.label') }}</div>
 			<CustomBox
 				id="uploadFile-callback"
@@ -104,5 +120,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

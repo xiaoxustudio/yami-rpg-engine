@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="playActorAnimation"
-				:ref="registryRef(fieldEls, 'playActorAnimation')" @confirm="onConfirm">
+	<WindowFrame
+		id="playActorAnimation"
+		:ref="registryRef(fieldEls, 'playActorAnimation')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.playActorAnimation.title') }}
@@ -9,13 +12,22 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.playActorAnimation-actor.label') }}</div>
-			<CustomBox id="playActorAnimation-actor"
+			<CustomBox
+				id="playActorAnimation-actor"
 				:ref="registryRef(fieldEls, 'playActorAnimation-actor')"
-				v-tip="t('components.playActorAnimation-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.playActorAnimation-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.playActorAnimation-motion.label') }}</div>
-			<CustomBox id="playActorAnimation-motion"
+			<CustomBox
+				id="playActorAnimation-motion"
 				:ref="registryRef(fieldEls, 'playActorAnimation-motion')"
-				v-tip="t('components.playActorAnimation-motion.tip')" type="enum-string" v-model="form.motion" />
+				v-tip="t('components.playActorAnimation-motion.tip')"
+				type="enum-string"
+				v-model="form.motion"
+			/>
 			<div class="text">{{ t('components.playActorAnimation-speed.label') }}</div>
 			<NumberVar
 				id="playActorAnimation-speed"
@@ -28,8 +40,12 @@
 				v-model="form.speed"
 			/>
 			<div class="text">{{ t('components.playActorAnimation-wait.label') }}</div>
-			<SelectBox id="playActorAnimation-wait"
-				:ref="registryRef(fieldEls, 'playActorAnimation-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="playActorAnimation-wait"
+				:ref="registryRef(fieldEls, 'playActorAnimation-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -81,5 +97,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

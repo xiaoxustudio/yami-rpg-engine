@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="createGlobalActor"
-				:ref="registryRef(fieldEls, 'createGlobalActor')" @confirm="onConfirm">
+	<WindowFrame
+		id="createGlobalActor"
+		:ref="registryRef(fieldEls, 'createGlobalActor')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.createGlobalActor.title') }}
@@ -19,9 +22,12 @@
 				v-model="form.actorId"
 			/>
 			<div class="text">{{ t('components.createGlobalActor-teamId.label') }}</div>
-			<SelectBox id="createGlobalActor-teamId"
+			<SelectBox
+				id="createGlobalActor-teamId"
 				v-tip="t('components.createGlobalActor-teamId.tip')"
-				:ref="registryRef(fieldEls, 'createGlobalActor-teamId')" v-model="form.teamId" />
+				:ref="registryRef(fieldEls, 'createGlobalActor-teamId')"
+				v-model="form.teamId"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -72,5 +78,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

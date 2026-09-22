@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { YMButton, YMRename } from '@ui-kit';
 
-
 type FrameElement = HTMLElement & { open?(): void; close?(): boolean };
 
 const openDialog = (id: string) => (document.getElementById(id) as FrameElement | null)?.open?.();
@@ -12,7 +11,6 @@ const renameValue = ref('untitled');
 const onConfirm = () => {
 	closeDialog('rename');
 };
-
 </script>
 
 <template>
@@ -23,7 +21,13 @@ const onConfirm = () => {
 			<YMButton variant="primary" @click="openDialog('rename')">Open Rename</YMButton>
 			<span class="hint">value: {{ renameValue }}</span>
 		</div>
-		<YMRename v-model="renameValue" label="Name" title="Rename" @confirm="onConfirm" @closed="() => {}" />
+		<YMRename
+			v-model="renameValue"
+			label="Name"
+			title="Rename"
+			@confirm="onConfirm"
+			@closed="() => {}"
+		/>
 	</section>
 </template>
 

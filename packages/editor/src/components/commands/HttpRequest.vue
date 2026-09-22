@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="httpRequest"
-				:ref="registryRef(fieldEls, 'httpRequest')" @confirm="onConfirm">
+	<WindowFrame id="httpRequest" :ref="registryRef(fieldEls, 'httpRequest')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.httpRequest.title') }}
@@ -9,29 +8,48 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.httpRequest-url.label') }}</div>
-			<StringVar id="httpRequest-url"
+			<StringVar
+				id="httpRequest-url"
 				:ref="registryRef(fieldEls, 'httpRequest-url')"
-				v-tip="t('components.httpRequest-url.tip')" v-focus v-model="form.url" />
+				v-tip="t('components.httpRequest-url.tip')"
+				v-focus
+				v-model="form.url"
+			/>
 			<div class="text">{{ t('components.httpRequest-method.label') }}</div>
-			<SelectBox id="httpRequest-method"
+			<SelectBox
+				id="httpRequest-method"
 				v-tip="t('components.httpRequest-method.tip')"
-				:ref="registryRef(fieldEls, 'httpRequest-method')" v-model="form.method" />
+				:ref="registryRef(fieldEls, 'httpRequest-method')"
+				v-model="form.method"
+			/>
 			<div class="text">{{ t('components.httpRequest-header.label') }}</div>
-			<ParamList id="httpRequest-header"
+			<ParamList
+				id="httpRequest-header"
 				v-tip="t('components.httpRequest-header.tip')"
-				:ref="registryRef(fieldEls, 'httpRequest-header')" v-model="form.headers" />
+				:ref="registryRef(fieldEls, 'httpRequest-header')"
+				v-model="form.headers"
+			/>
 			<div class="text">{{ t('components.httpRequest-data.label') }}</div>
-			<ParamList id="httpRequest-data"
+			<ParamList
+				id="httpRequest-data"
 				v-tip="t('components.httpRequest-data.tip')"
-				:ref="registryRef(fieldEls, 'httpRequest-data')" v-model="form.data" />
+				:ref="registryRef(fieldEls, 'httpRequest-data')"
+				v-model="form.data"
+			/>
 			<div class="text">{{ t('components.httpRequest-timeout.label') }}</div>
-			<NumberBox id="httpRequest-timeout"
+			<NumberBox
+				id="httpRequest-timeout"
 				:ref="registryRef(fieldEls, 'httpRequest-timeout')"
-				v-tip="t('components.httpRequest-timeout.tip')" v-model="timeout" />
+				v-tip="t('components.httpRequest-timeout.tip')"
+				v-model="timeout"
+			/>
 			<div class="text">{{ t('components.httpRequest-responseType.label') }}</div>
-			<SelectBox id="httpRequest-responseType"
+			<SelectBox
+				id="httpRequest-responseType"
 				v-tip="t('components.httpRequest-responseType.tip')"
-				:ref="registryRef(fieldEls, 'httpRequest-responseType')" v-model="form.responseType" />
+				:ref="registryRef(fieldEls, 'httpRequest-responseType')"
+				v-model="form.responseType"
+			/>
 			<div class="text">{{ t('components.httpRequest-withCredentials.label') }}</div>
 			<CheckBox
 				class="standard"
@@ -41,13 +59,19 @@
 				v-model="withCredentials"
 			/>
 			<div class="text">{{ t('components.httpRequest-authUser.label') }}</div>
-			<StringVar id="httpRequest-authUser"
+			<StringVar
+				id="httpRequest-authUser"
 				:ref="registryRef(fieldEls, 'httpRequest-authUser')"
-				v-tip="t('components.httpRequest-authUser.tip')" v-model="form.authUser" />
+				v-tip="t('components.httpRequest-authUser.tip')"
+				v-model="form.authUser"
+			/>
 			<div class="text">{{ t('components.httpRequest-authPass.label') }}</div>
-			<StringVar id="httpRequest-authPass"
+			<StringVar
+				id="httpRequest-authPass"
 				:ref="registryRef(fieldEls, 'httpRequest-authPass')"
-				v-tip="t('components.httpRequest-authPass.tip')" v-model="form.authPass" />
+				v-tip="t('components.httpRequest-authPass.tip')"
+				v-model="form.authPass"
+			/>
 			<div class="text">{{ t('components.httpRequest-callback.label') }}</div>
 			<CustomBox
 				id="httpRequest-callback"
@@ -146,5 +170,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

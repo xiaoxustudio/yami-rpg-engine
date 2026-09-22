@@ -87,8 +87,7 @@ export function useLoadImageCommandSchema() {
 	const { form, load, commit } = useCommandSchema('loadImage', {
 		skipWrite: true,
 		onLoad() {
-			composableEls.get('loadImage-key')
-				?.loadItems?.(Enum.getStringItems!('shortcut-key'));
+			composableEls.get('loadImage-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 			requestFocus('loadImage-element');
 		}
 	});

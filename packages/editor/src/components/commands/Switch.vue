@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="switch"
-				:ref="registryRef(fieldEls, 'switch')" @confirm="onConfirm">
+	<WindowFrame id="switch" :ref="registryRef(fieldEls, 'switch')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.switch.title') }}
@@ -9,18 +8,36 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.switch-variable.label') }}</div>
-			<CustomBox id="switch-variable"
+			<CustomBox
+				id="switch-variable"
 				:ref="registryRef(fieldEls, 'switch-variable')"
-				v-tip="t('components.switch-variable.tip')" v-focus type="variable" filter="all" v-model="form.variable" />
+				v-tip="t('components.switch-variable.tip')"
+				v-focus
+				type="variable"
+				filter="all"
+				v-model="form.variable"
+			/>
 			<div class="text">{{ t('components.switch-branches.label') }}</div>
-			<ParamList id="switch-branches"
-				:ref="registryRef(fieldEls, 'switch-branches')" v-focus v-model="form.branches" />
+			<ParamList
+				id="switch-branches"
+				:ref="registryRef(fieldEls, 'switch-branches')"
+				v-focus
+				v-model="form.branches"
+			/>
 		</div>
-		<CheckBox id="switch-default"
-				:ref="registryRef(fieldEls, 'switch-default')" v-model="form.default" class="standard"
-			><div class="text" id="switch-default-label"
+		<CheckBox
+			id="switch-default"
+			:ref="registryRef(fieldEls, 'switch-default')"
+			v-model="form.default"
+			class="standard"
+			><div
+				class="text"
+				id="switch-default-label"
 				:ref="registryRef(fieldEls, 'switch-default-label')"
-				v-tip="t('components.switch-default-label.tip')">{{ t('components.switch-default-label.content') }}</div></CheckBox
+				v-tip="t('components.switch-default-label.tip')"
+			>
+				{{ t('components.switch-default-label.content') }}
+			</div></CheckBox
 		>
 	</WindowFrame>
 </template>
@@ -84,5 +101,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

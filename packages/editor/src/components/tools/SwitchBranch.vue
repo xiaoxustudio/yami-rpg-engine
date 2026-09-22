@@ -1,7 +1,10 @@
 <template>
 	<!-- 匹配 - 分支 -->
-	<WindowFrame id="switch-branch"
-				:ref="registryRef(fieldEls, 'switch-branch')" @confirm="onConfirm">
+	<WindowFrame
+		id="switch-branch"
+		:ref="registryRef(fieldEls, 'switch-branch')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.switch-branch.title') }}
@@ -10,8 +13,11 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.switch-branch-conditions.label') }}</div>
-			<ParamList id="switch-branch-conditions"
-				:ref="registryRef(fieldEls, 'switch-branch-conditions')" v-focus />
+			<ParamList
+				id="switch-branch-conditions"
+				:ref="registryRef(fieldEls, 'switch-branch-conditions')"
+				v-focus
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -42,7 +48,10 @@ const onConfirm = () => {
 
 onMounted(() => {
 	// 该元素由本组件渲染：绑定放这里（原先由父 SFC 跨组件查 DOM）
-	fieldEls.get('switch-branch-conditions')?.bind?.(SwitchCondition);	on(fieldEls.get('switch-branch'), 'closed', () => SwitchBranch.windowClosed?.(new Event('closed')));
+	fieldEls.get('switch-branch-conditions')?.bind?.(SwitchCondition);
+	on(fieldEls.get('switch-branch'), 'closed', () =>
+		SwitchBranch.windowClosed?.(new Event('closed'))
+	);
 });
 </script>
 
@@ -66,5 +75,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

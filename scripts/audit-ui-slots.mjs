@@ -61,7 +61,9 @@ for (const { full, rel } of files) {
 	if (UI_DIR.test(rel)) {
 		for (const m of src.matchAll(/\bthis\.([A-Za-z_$][\w$]*)\s*=/g)) assigned.add(m[1]);
 	}
-	// ⑤ store 侧的写入：store 是阶段 1b 之后这些槽位的**新家**，与 UI 槽位同名（如 scrollLeft/hover）\n	for (const m of src.matchAll(/getUIStore\(\)\.([A-Za-z_$][\w$]*)\s*=/g)) assigned.add(m[1]);\n	// ④ 对槽位**对象**的成员赋值：`UI.list.paste = …`、`elementDataOf<…>(UI.list).head = …`
+	// ⑤ store 侧的写入：store 是阶段 1b 之后这些槽位的**新家**，与 UI 槽位同名（如 scrollLeft/hover）
+	for (const m of src.matchAll(/getUIStore\(\)\.([A-Za-z_$][\w$]*)\s*=/g)) assigned.add(m[1]);
+	// ④ 对槽位**对象**的成员赋值：`UI.list.paste = …`、`elementDataOf<…>(UI.list).head = …`
 	for (const m of src.matchAll(/\bUI\.([A-Za-z_$][\w$]*)\.[A-Za-z_$][\w$]*\s*=/g))
 		assigned.add(m[1]);
 	for (const m of src.matchAll(/\(\s*UI\.([A-Za-z_$][\w$]*)\s*\)\.[A-Za-z_$][\w$]*\s*=/g))

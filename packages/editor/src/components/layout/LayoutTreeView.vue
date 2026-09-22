@@ -1,10 +1,5 @@
 <template>
-	<component
-		:is="'group'"
-		v-if="node !== null"
-		class="group"
-		:class="splitClass"
-	>
+	<component :is="'group'" v-if="node !== null" class="group" :class="splitClass">
 		<template v-if="node.kind === 'split'">
 			<LayoutTreeView v-for="child in node.children" :key="child.id" :node="child" />
 		</template>
@@ -30,7 +25,5 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), { node: null });
 
-const splitClass = computed(() =>
-	props.node?.kind === 'split' ? props.node.split : ''
-);
+const splitClass = computed(() => (props.node?.kind === 'split' ? props.node.split : ''));
 </script>

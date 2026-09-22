@@ -8,7 +8,10 @@ const showApply = ref(true);
 <template>
 	<section>
 		<h2>YMFormButtons</h2>
-		<p class="desc">表单按钮组；点击后派发 confirm / cancel / apply 冒泡事件，可用 show-apply 开关第三个按钮。</p>
+		<p class="desc">
+			表单按钮组；点击后派发 confirm / cancel / apply 冒泡事件，可用 show-apply
+			开关第三个按钮。
+		</p>
 		<div class="row">
 			<YMButton size="sm" @click="showApply = !showApply">Toggle Apply</YMButton>
 			<span class="hint">last action: {{ lastAction }}</span>

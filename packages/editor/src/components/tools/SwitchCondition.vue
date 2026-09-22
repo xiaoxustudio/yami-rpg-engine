@@ -1,7 +1,10 @@
 <template>
 	<!-- 匹配 - 条件 -->
-	<WindowFrame id="switch-condition"
-				:ref="registryRef(fieldEls, 'switch-condition')" @confirm="onConfirm">
+	<WindowFrame
+		id="switch-condition"
+		:ref="registryRef(fieldEls, 'switch-condition')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.switch-condition.title') }}
@@ -10,13 +13,20 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.switch-condition-type.label') }}</div>
-			<SelectBox id="switch-condition-type"
+			<SelectBox
+				id="switch-condition-type"
 				v-tip="t('components.switch-condition-type.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-type')" v-focus v-model="form.type" />
+				:ref="registryRef(fieldEls, 'switch-condition-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.switch-condition-boolean-value.label') }}</div>
-			<SelectBox id="switch-condition-boolean-value"
+			<SelectBox
+				id="switch-condition-boolean-value"
 				v-tip="t('components.switch-condition-boolean-value.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-boolean-value')" v-model="form.booleanValue" />
+				:ref="registryRef(fieldEls, 'switch-condition-boolean-value')"
+				v-model="form.booleanValue"
+			/>
 			<div class="text">{{ t('components.switch-condition-number-value.label') }}</div>
 			<NumberBox
 				id="switch-condition-number-value"
@@ -28,9 +38,12 @@
 				v-model="form.numberValue"
 			/>
 			<div class="text">{{ t('components.switch-condition-string-value.label') }}</div>
-			<TextArea id="switch-condition-string-value"
+			<TextArea
+				id="switch-condition-string-value"
 				v-tip="t('components.switch-condition-string-value.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-string-value')" v-model="form.stringValue" />
+				:ref="registryRef(fieldEls, 'switch-condition-string-value')"
+				v-model="form.stringValue"
+			/>
 			<div class="text">
 				{{ t('components.switch-condition-attribute-attributeId.label') }}
 			</div>
@@ -52,17 +65,26 @@
 				v-model="form.stringId"
 			/>
 			<div class="text">{{ t('components.switch-condition-keyboard-keycode.label') }}</div>
-			<KeyboardBox id="switch-condition-keyboard-keycode"
+			<KeyboardBox
+				id="switch-condition-keyboard-keycode"
 				v-tip="t('components.switch-condition-keyboard-keycode.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-keyboard-keycode')" v-focus />
+				:ref="registryRef(fieldEls, 'switch-condition-keyboard-keycode')"
+				v-focus
+			/>
 			<div class="text">{{ t('components.switch-condition-gamepad-button.label') }}</div>
-			<GamepadBox id="switch-condition-gamepad-button"
+			<GamepadBox
+				id="switch-condition-gamepad-button"
 				v-tip="t('components.switch-condition-gamepad-button.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-gamepad-button')" v-focus />
+				:ref="registryRef(fieldEls, 'switch-condition-gamepad-button')"
+				v-focus
+			/>
 			<div class="text">{{ t('components.switch-condition-mouse-button.label') }}</div>
-			<SelectBox id="switch-condition-mouse-button"
+			<SelectBox
+				id="switch-condition-mouse-button"
 				v-tip="t('components.switch-condition-mouse-button.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-mouse-button')" v-model="form.mouseButton" />
+				:ref="registryRef(fieldEls, 'switch-condition-mouse-button')"
+				v-model="form.mouseButton"
+			/>
 			<div class="text">{{ t('components.switch-condition-variable-variable.label') }}</div>
 			<CustomBox
 				id="switch-condition-variable-variable"
@@ -184,5 +206,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

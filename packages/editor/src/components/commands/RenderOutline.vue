@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="renderOutline"
-				:ref="registryRef(fieldEls, 'renderOutline')" @confirm="onConfirm">
+	<WindowFrame
+		id="renderOutline"
+		:ref="registryRef(fieldEls, 'renderOutline')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.renderOutline.title') }}
@@ -9,17 +12,28 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.renderOutline-operation.label') }}</div>
-			<SelectBox id="renderOutline-operation"
+			<SelectBox
+				id="renderOutline-operation"
 				v-tip="t('components.renderOutline-operation.tip')"
-				:ref="registryRef(fieldEls, 'renderOutline-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'renderOutline-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.renderOutline-actor.label') }}</div>
-			<CustomBox id="renderOutline-actor"
+			<CustomBox
+				id="renderOutline-actor"
 				v-tip="t('components.renderOutline-actor.tip')"
-				:ref="registryRef(fieldEls, 'renderOutline-actor')" type="actor" v-model="form.actor" />
+				:ref="registryRef(fieldEls, 'renderOutline-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.renderOutline-color.label') }}</div>
-			<ColorBox id="renderOutline-color"
+			<ColorBox
+				id="renderOutline-color"
 				v-tip="t('components.renderOutline-color.tip')"
-				:ref="registryRef(fieldEls, 'renderOutline-color')" v-model="color" />
+				:ref="registryRef(fieldEls, 'renderOutline-color')"
+				v-model="color"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -56,11 +70,18 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('renderOutline-operation', ['add', 'remove', 'reset'], (items) =>
-		fieldEls.get('renderOutline-operation')?.loadItems?.(items),
-		{ 'add': 'command.renderOutline.add', 'remove': 'command.renderOutline.remove', 'reset': 'command.renderOutline.reset' }
+	useLocalizedOptions(
+		'renderOutline-operation',
+		['add', 'remove', 'reset'],
+		(items) => fieldEls.get('renderOutline-operation')?.loadItems?.(items),
+		{
+			add: 'command.renderOutline.add',
+			remove: 'command.renderOutline.remove',
+			reset: 'command.renderOutline.reset'
+		}
 	);
-	fieldEls.get('renderOutline-operation')
+	fieldEls
+		.get('renderOutline-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -88,5 +109,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -12,12 +12,15 @@
 //   2. 白名单必须真的是从 .oxlintrc.json 读出来的（单一真源），且每条都有设计理由。
 //   3. 监听器扫描必须区分「匿名/具名」与「once/非 once」。
 
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
 import {
 	codeOnly,
 	countCodeMatches,
 	collectImports,
+	collectFiles,
+	importRefs,
 	scanAddListenerCalls,
+	SCAN_DIRS,
 	DOM_PATTERNS,
 	ANY_HATCH_RE,
 	NULL_CAST_RE,
@@ -27,7 +30,8 @@ import {
 	ROOT
 } from './scan.mjs';
 import { readDomWhitelist, loadDomWhitelist, WHITELIST_RATIONALE } from './dom-whitelist.mjs';
-import { uiWindowRel } from './ui-slots.mjs';
+import { uiWindowRel, legacyOnlyStoreSlots } from './ui-slots.mjs';
+import { checkTextIntegrity, scanTextIntegrity } from './text-integrity.mjs';
 
 // ---------------------------------------------------------------------------
 // 极简测试框架（够用就好：一个用例 = 一个函数 + 一句断言）
@@ -246,7 +250,10 @@ test('成员挂载照常命中（含链式赋值）', () => {
 	eq(countCodeMatches('UI.setZoom = UIEngine.setZoom;', UI_SINGLETON_RE), 1);
 	// 链式：行首锚定的 grep 数不到这一处（实测 ui-prefab.ts:105）
 	eq(
-		countCodeMatches('uiElClasses.createElement = UI.createElement = function () {};', UI_SINGLETON_RE),
+		countCodeMatches(
+			'uiElClasses.createElement = UI.createElement = function () {};',
+			UI_SINGLETON_RE
+		),
 		1
 	);
 });
@@ -277,7 +284,13 @@ test('比较运算符不算成员挂载', () => {
 test('只读与注释不算成员挂载（纯移动不该让本轴下降）', () => {
 	eq(countCodeMatches('const h = UI.outerHeight;', UI_SINGLETON_RE), 0);
 	eq(countCodeMatches('UI.page.resize();', UI_SINGLETON_RE), 0);
-	eq(countCodeMatches('// 原先这里是 UI.background = new StageColor(…)\nconst a = 1;\n', UI_SINGLETON_RE), 0);
+	eq(
+		countCodeMatches(
+			'// 原先这里是 UI.background = new StageColor(…)\nconst a = 1;\n',
+			UI_SINGLETON_RE
+		),
+		0
+	);
 	// 别的单例不算：本轴只盯 UI
 	eq(countCodeMatches('Scene.list = {};', UI_SINGLETON_RE), 0);
 });
@@ -307,6 +320,38 @@ test('四类写法归类正确', () => {
 			['@app/ui/mixed.ts', false]
 		]
 	);
+});
+
+test('再导出（export … from）算运行期依赖，且 specifier 必须真的取到', () => {
+	// 为什么这条必须有：`tools/window-cluster.ts` 是用
+	// `export { UI } from '@app/engine/ui/legacy/ui-window.ts'` 转出遗留 UI 单例的。
+	// 旧口径只认 `import … from` ⇒ 这条依赖在任何计数里都不存在 ⇒ 搬运之后
+	// `legacy-ui-refs` 读到 0，看起来像「遗留层已经没人用了」。
+	// 实测踩过的第二个坑：正则少写一个捕获组时 specifier 是 `undefined`，
+	// 于是再导出被 filter **静默丢弃** —— 数字还是 0，而且不报错。所以这里连 specifier 一起钉。
+	eq(
+		collectImports("export { UI } from '@app/engine/ui/legacy/ui-window.ts';").map((i) => [
+			i.specifier,
+			i.typeOnly,
+			i.kind
+		]),
+		[['@app/engine/ui/legacy/ui-window.ts', false, 'reexport']]
+	);
+	eq(
+		collectImports("export * from '@app/engine/ui/legacy/register.ts';").map((i) => [
+			i.specifier,
+			i.kind
+		]),
+		[['@app/engine/ui/legacy/register.ts', 'reexport']]
+	);
+	eq(
+		collectImports("export type { UIShape } from '@app/engine/ui/legacy/ui-window.ts';").map(
+			(i) => [i.specifier, i.typeOnly]
+		),
+		[['@app/engine/ui/legacy/ui-window.ts', true]]
+	);
+	// 普通导出（没有 from）不是依赖，不能算进来
+	eq(collectImports('export const a = 1;\nexport function b() {}'), []);
 });
 
 // ---------------------------------------------------------------------------
@@ -436,6 +481,163 @@ test('ui-window.ts 的每个 `UI.x = UIEngine.x` 都有真实同名定义', () =
 		)
 		.map(([line]) => line);
 	eq(broken, [], '这些 UI 槽位被赋成了不存在的 UIEngine 成员（运行时会读到 undefined）');
+});
+
+test('遗留层还在 ⟹ 两条 legacy-ui-* 轴与 1c-store-slot-gaps 都必须非 0', () => {
+	// 这一条守的是 2026-09-21 实测到的**假绿三连**：
+	//
+	//   - `legacy-ui-lines` 写死 `packages/editor/src/ui`，而目录已被搬到 `engine/ui/legacy/`
+	//     ⇒ `collectFiles` 对不存在的目录返回 `[]` ⇒ 读到 **0**，报表写「✓ 已完成」；
+	//   - `legacy-ui-refs` 用 `^@app/ui/` 前缀 + 只认 `import … from`，而真实引用是
+	//     `export { UI } from '@app/engine/ui/legacy/ui-window.ts'` ⇒ 也读到 **0**；
+	//   - 与此同时 `ui-singleton-members` 报 **103 处挂载**。**两条轴自相矛盾时先怀疑仪器。**
+	//
+	// `collectFiles` 永不报错、`importRefs` 永不报错 —— 仪器瞎了不会有任何信号，
+	// 所以必须有一条用例把「主体还在」与「读数非 0」绑在一起。
+	const winRel = uiWindowRel();
+	ok(winRel !== null, '找不到 UI 窗口文件；本用例的前提变了，请复核而不是删掉它');
+	const legacyDir = dirname(winRel);
+	const legacyFiles = collectFiles({ dirs: [legacyDir], includeTests: true });
+	ok(
+		legacyFiles.length > 0,
+		`${legacyDir} 下应有文件（把目录写死会让这里静默返回空 → 行数轴假 0）`
+	);
+	const refs = importRefs(collectFiles({ dirs: SCAN_DIRS }), /^@app\/engine\/ui\/legacy\//);
+	ok(
+		refs.total > 0,
+		'遗留 UI 单例应当仍被静态引用（若为 0：要么真删干净了，要么仪器漏了 `export … from`）'
+	);
+	ok(
+		legacyOnlyStoreSlots().length > 0,
+		'只要遗留层还在，就必然有「实现只在遗留层」的 store 槽位；为 0 说明这条轴的排除口径把实现也算进去了'
+	);
+	// 最后一道：台账源码不得回退到那两个已证伪的硬编码口径（回退即静默假 0）
+	const ledgerSrc = readSource(join(ROOT, 'scripts', 'migration-ledger.mjs'));
+	ok(
+		!ledgerSrc.includes("'src', 'ui'"),
+		'legacy-ui-lines 又写死了 packages/editor/src/ui —— P5-B 搬运后它恒为 0'
+	);
+	ok(
+		!ledgerSrc.includes('^@app\\/ui\\/'),
+		'legacy-ui-refs 又用回了 @app/ui/ 前缀 —— 现路径是 @app/engine/ui/legacy/'
+	);
+});
+
+// ---------------------------------------------------------------------------
+// 文本污染 —— 每条规则都必须能抓到「故意写坏」的样本
+//
+// 为什么必须有这一节：这类污染**语法合法**，`tsc` / `oxlint` / `oxfmt` / vitest 全都看不见
+// （2026-09-21 实测：`as`→`0x07`+`s`、`textarea`→`<TAB>extarea`、两条语句被吞进 `//` 注释、
+// 整段注释被复制进自己，四种形态全绿通过所有既有门禁）。规则写了却没人验证过它抓不抓得到，
+// 与「门禁起不来」是同一个失败模式 —— 所以这里用**故意写坏的样本**逐条自证。
+// ---------------------------------------------------------------------------
+
+process.stdout.write('\n文本污染 —— 每条规则都要能抓到「故意写坏」的样本\n');
+
+test('control-char：单词首字母被换成控制字符时命中', () => {
+	eq(
+		checkTextIntegrity(' * 各写一遍 \u0007s unknown as\n').map((i) => i.rule),
+		['control-char']
+	);
+	eq(
+		checkTextIntegrity(' * 代价：\u0008indInput 的 owner 形参\n').map((i) => i.rule),
+		['control-char']
+	);
+	eq(
+		checkTextIntegrity(' * 而 \u001bditor/owner 的实参顺序\n').map((i) => i.rule),
+		['control-char']
+	);
+});
+
+test('control-char：合法的 TAB / 换行 / 回车不算污染', () => {
+	eq(checkTextIntegrity('const a = 1;\r\n\tconst b = 2;\n'), []);
+});
+
+test('replacement-char：U+FFFD（解码失败留下的坑）命中', () => {
+	// 实测形态：一个中文字解不出来 → `\uFFFD`，常常还多带一个 `?`
+	// （`// 存在1个参\uFFFD?` 的真值是 `// 存在1个参数`）。
+	eq(
+		checkTextIntegrity('// 存在1个参\uFFFD?\n').map((i) => i.rule),
+		['replacement-char']
+	);
+	eq(
+		checkTextIntegrity('/** \uFFFD原始 APK \uFFFD路径 */\n').map((i) => i.rule),
+		['replacement-char']
+	);
+	// 正常中文注释不能被误报
+	eq(checkTextIntegrity('// 存在1个参数\n'), []);
+});
+
+test('cjk-then-tab：中文后直接跟 TAB 时命中', () => {
+	eq(
+		checkTextIntegrity(' * 内部\textarea 元素\n').map((i) => i.rule),
+		['cjk-then-tab', 'mid-line-tab']
+	);
+});
+
+test('mid-line-tab：中文与 TAB 之间有一个空格（真实案例）时命中', () => {
+	eq(
+		checkTextIntegrity(' * 带历史记录的内部 \textarea 元素\n').map((i) => i.rule),
+		['mid-line-tab']
+	);
+});
+
+test('mid-line-tab：注释行里紧跟注释标记的 TAB（代码样例缩进）不算污染', () => {
+	eq(checkTextIntegrity(' * \t[k: string]: any;\n'), []);
+});
+
+test('nested-comment-opener：注释体行尾又出现块注释起始符时命中', () => {
+	eq(
+		checkTextIntegrity(' * 不走本注册表：`/**\n').map((i) => i.rule),
+		['nested-comment-opener']
+	);
+});
+
+test('nested-comment-opener：glob 写法（packages/**）不算污染', () => {
+	eq(checkTextIntegrity(' *   扫描 `packages/**` + `scripts/**`\n'), []);
+});
+
+test('glued-statement：字面量 \\n 把下一条语句粘进行注释时命中', () => {
+	const rules = checkTextIntegrity('\t// 说明文字\\n\tfor (const m of xs) f(m);\n').map(
+		(i) => i.rule
+	);
+	ok(
+		rules.includes('glued-statement'),
+		`期望命中 glued-statement，实际 ${JSON.stringify(rules)}`
+	);
+});
+
+test("glued-statement：注释里解释转义串（如 `'\\n};'`）不算污染", () => {
+	eq(checkTextIntegrity("// 与 `'\\n};'` 形态\n"), []);
+});
+
+test('duplicated-comment-block：连续 3 行注释被逐字重复时命中', () => {
+	const bad = [
+		'/**',
+		' * alpha beta gamma',
+		' * delta epsilon zeta',
+		' * eta theta iota',
+		' */',
+		'/* 中间隔一段 */',
+		' * alpha beta gamma',
+		' * delta epsilon zeta',
+		' * eta theta iota',
+		' */'
+	].join('\n');
+	ok(
+		checkTextIntegrity(bad).some((i) => i.rule === 'duplicated-comment-block'),
+		'整段注释被重复时应当命中'
+	);
+});
+
+test('文本污染：当前全仓零命中（规则不能靠「够宽」来制造工作量）', () => {
+	// 上面每条证明了「规则抓得到故意写坏的样本」；这条证明「当前仓库确实干净」。
+	// 两条合起来才说明门禁是有意义的：单看任何一条都可能被「规则从来不命中」骗过。
+	const { issues } = scanTextIntegrity(ROOT);
+	eq(
+		issues.map((i) => `${i.rel}:${i.line}`),
+		[]
+	);
 });
 
 // ---------------------------------------------------------------------------

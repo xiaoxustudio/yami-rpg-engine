@@ -10,7 +10,7 @@
  *   node scripts/any-hatch-inventory.mjs --axis     # 只看汇总（按文件/接口聚合的处数）
  * 口径与台账一致：scripts/lib/scan.mjs 的 collectFiles / readSource / codeOnly / ANY_HATCH_RE。
  */
-import { ROOT, SCAN_DIRS, collectFiles, readSource, codeOnly, ANY_HATCH_RE } from './lib/scan.mjs';
+import { SCAN_DIRS, collectFiles, readSource, codeOnly, ANY_HATCH_RE } from './lib/scan.mjs';
 
 const files = collectFiles({ dirs: SCAN_DIRS });
 const rows = [];
@@ -33,7 +33,14 @@ for (const { full, rel } of files) {
 				break;
 			}
 		}
-		rows.push({ rel, line: lineNo, owner, ownerLine, exported, text: lines[lineNo - 1].trim() });
+		rows.push({
+			rel,
+			line: lineNo,
+			owner,
+			ownerLine,
+			exported,
+			text: lines[lineNo - 1].trim()
+		});
 	}
 }
 
@@ -41,7 +48,8 @@ if (process.argv.includes('--axis')) {
 	const byFile = new Map();
 	for (const r of rows) byFile.set(r.rel, (byFile.get(r.rel) ?? 0) + 1);
 	console.log(`any-hatches 站点：${rows.length} 处 / ${byFile.size} 文件\n`);
-	for (const [rel, n] of [...byFile].sort((a, b) => b[1] - a[1])) console.log(`${String(n).padStart(3)}  ${rel}`);
+	for (const [rel, n] of [...byFile].sort((a, b) => b[1] - a[1]))
+		console.log(`${String(n).padStart(3)}  ${rel}`);
 } else {
 	console.log(`any-hatches 站点：${rows.length} 处（口径：scripts/lib/scan.mjs）\n`);
 	for (const r of rows) {

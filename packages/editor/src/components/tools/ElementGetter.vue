@@ -8,9 +8,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.elementGetter-type.label') }}</div>
-			<SelectBox id="elementGetter-type"
+			<SelectBox
+				id="elementGetter-type"
 				v-tip="t('components.elementGetter-type.tip')"
-				:ref="fieldRef('elementGetter-type')" v-focus v-model="form.type" />
+				:ref="fieldRef('elementGetter-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.elementGetter-ancestor.label') }}</div>
 			<CustomBox
 				id="elementGetter-ancestor"
@@ -29,9 +33,14 @@
 				v-model="form.presetId"
 			/>
 			<div class="text">{{ t('components.elementGetter-index.label') }}</div>
-			<NumberVar id="elementGetter-index"
+			<NumberVar
+				id="elementGetter-index"
 				v-tip="t('components.elementGetter-index.tip')"
-				:ref="fieldRef('elementGetter-index')" min="0" max="10000" v-model="form.index" />
+				:ref="fieldRef('elementGetter-index')"
+				min="0"
+				max="10000"
+				v-model="form.index"
+			/>
 			<div class="text">{{ t('components.elementGetter-variable.label') }}</div>
 			<CustomBox
 				id="elementGetter-variable"
@@ -98,5 +107,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

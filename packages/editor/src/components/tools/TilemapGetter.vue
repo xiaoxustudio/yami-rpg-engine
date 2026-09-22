@@ -9,9 +9,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.tilemapGetter-type.label') }}</div>
-			<SelectBox id="tilemapGetter-type"
+			<SelectBox
+				id="tilemapGetter-type"
 				v-tip="t('components.tilemapGetter-type.tip')"
-				:ref="fieldRef('tilemapGetter-type')" v-focus v-model="form.type" />
+				:ref="fieldRef('tilemapGetter-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.tilemapGetter-presetId.label') }}</div>
 			<CustomBox
 				id="tilemapGetter-presetId"
@@ -87,5 +91,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="getObjectProperty"
-				:ref="registryRef(fieldEls, 'getObjectProperty')" @confirm="onConfirm">
+	<WindowFrame
+		id="getObjectProperty"
+		:ref="registryRef(fieldEls, 'getObjectProperty')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.getObjectProperty.title') }}
@@ -19,9 +22,13 @@
 				v-model="form.variable"
 			/>
 			<div class="text">{{ t('components.getObjectProperty-list.label') }}</div>
-			<ParamList id="getObjectProperty-list"
+			<ParamList
+				id="getObjectProperty-list"
 				v-tip="t('components.getObjectProperty-list.tip')"
-				:ref="registryRef(fieldEls, 'getObjectProperty-list')" v-focus v-model="form.properties" />
+				:ref="registryRef(fieldEls, 'getObjectProperty-list')"
+				v-focus
+				v-model="form.properties"
+			/>
 			<div class="text">{{ t('components.getObjectProperty-save-variable.label') }}</div>
 			<CustomBox
 				id="getObjectProperty-save-variable"
@@ -88,5 +95,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="moveLight"
-				:ref="registryRef(fieldEls, 'moveLight')" @confirm="onConfirm">
+	<WindowFrame id="moveLight" :ref="registryRef(fieldEls, 'moveLight')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.moveLight.title') }}
@@ -9,14 +8,27 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.moveLight-light.label') }}</div>
-			<CustomBox id="moveLight-light"
-				:ref="registryRef(fieldEls, 'moveLight-light')" v-focus type="light" v-model="form.light" />
+			<CustomBox
+				id="moveLight-light"
+				:ref="registryRef(fieldEls, 'moveLight-light')"
+				v-focus
+				type="light"
+				v-model="form.light"
+			/>
 			<div class="text">{{ t('components.moveLight-properties.label') }}</div>
-			<ParamList id="moveLight-properties"
-				:ref="registryRef(fieldEls, 'moveLight-properties')" v-focus v-model="form.properties" />
+			<ParamList
+				id="moveLight-properties"
+				:ref="registryRef(fieldEls, 'moveLight-properties')"
+				v-focus
+				v-model="form.properties"
+			/>
 			<div class="text">{{ t('components.moveLight-easingId.label') }}</div>
-			<SelectBox id="moveLight-easingId"
-				:ref="registryRef(fieldEls, 'moveLight-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="moveLight-easingId"
+				:ref="registryRef(fieldEls, 'moveLight-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.moveLight-duration.label') }}</div>
 			<NumberBox
 				id="moveLight-duration"
@@ -28,8 +40,12 @@
 				v-model="duration"
 			/>
 			<div class="text">{{ t('components.moveLight-wait.label') }}</div>
-			<SelectBox id="moveLight-wait"
-				:ref="registryRef(fieldEls, 'moveLight-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="moveLight-wait"
+				:ref="registryRef(fieldEls, 'moveLight-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -103,5 +119,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

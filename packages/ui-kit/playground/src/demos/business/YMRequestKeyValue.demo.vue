@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { YMButton, YMRequestKeyValue } from '@ui-kit';
 
-
 type FrameElement = HTMLElement & { open?(): void; close?(): boolean };
 
 const openDialog = (id: string) => (document.getElementById(id) as FrameElement | null)?.open?.();
@@ -13,15 +12,18 @@ const value = ref('localhost');
 const onConfirm = () => {
 	closeDialog('request-keyValue');
 };
-
 </script>
 
 <template>
 	<section class="demo">
 		<h2>YMRequestKeyValue</h2>
-		<p class="desc">键值请求窗口：key/value 两个字符串输入，v-model:key-value / v-model:value 绑定。</p>
+		<p class="desc">
+			键值请求窗口：key/value 两个字符串输入，v-model:key-value / v-model:value 绑定。
+		</p>
 		<div class="row">
-			<YMButton variant="primary" @click="openDialog('request-keyValue')">Open Request KeyValue</YMButton>
+			<YMButton variant="primary" @click="openDialog('request-keyValue')"
+				>Open Request KeyValue</YMButton
+			>
 			<span class="hint">{{ keyValue }} = {{ value }}</span>
 		</div>
 		<YMRequestKeyValue

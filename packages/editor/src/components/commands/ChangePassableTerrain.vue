@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="changePassableTerrain"
-				:ref="registryRef(fieldEls, 'changePassableTerrain')" @confirm="onConfirm">
+	<WindowFrame
+		id="changePassableTerrain"
+		:ref="registryRef(fieldEls, 'changePassableTerrain')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.changePassableTerrain.title') }}
@@ -9,13 +12,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.changePassableTerrain-actor.label') }}</div>
-			<CustomBox id="changePassableTerrain-actor"
+			<CustomBox
+				id="changePassableTerrain-actor"
 				:ref="registryRef(fieldEls, 'changePassableTerrain-actor')"
-				v-tip="t('components.changePassableTerrain-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.changePassableTerrain-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.changePassableTerrain-passage.label') }}</div>
-			<SelectBox id="changePassableTerrain-passage"
+			<SelectBox
+				id="changePassableTerrain-passage"
 				v-tip="t('components.changePassableTerrain-passage.tip')"
-				:ref="registryRef(fieldEls, 'changePassableTerrain-passage')" v-model="form.passage" />
+				:ref="registryRef(fieldEls, 'changePassableTerrain-passage')"
+				v-model="form.passage"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -44,9 +55,15 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('changePassableTerrain-passage', ['land', 'water', 'unrestricted'], (items) =>
-		fieldEls.get('changePassableTerrain-passage')?.loadItems?.(items),
-		{ 'land': 'command.changePassableTerrain.land', 'water': 'command.changePassableTerrain.water', 'unrestricted': 'command.changePassableTerrain.unrestricted' }
+	useLocalizedOptions(
+		'changePassableTerrain-passage',
+		['land', 'water', 'unrestricted'],
+		(items) => fieldEls.get('changePassableTerrain-passage')?.loadItems?.(items),
+		{
+			land: 'command.changePassableTerrain.land',
+			water: 'command.changePassableTerrain.water',
+			unrestricted: 'command.changePassableTerrain.unrestricted'
+		}
 	);
 });
 </script>
@@ -67,5 +84,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

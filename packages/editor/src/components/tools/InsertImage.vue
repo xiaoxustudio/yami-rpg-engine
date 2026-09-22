@@ -8,13 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.insertImage-mode.label') }}</div>
-			<SelectBox id="insertImage-mode"
+			<SelectBox
+				id="insertImage-mode"
 				v-tip="t('components.insertImage-mode.tip')"
-				:ref="registryRef(textCaptureEls, 'insertImage-mode')" v-model="form.mode" />
+				:ref="registryRef(textCaptureEls, 'insertImage-mode')"
+				v-model="form.mode"
+			/>
 			<div class="text">{{ t('components.insertImage-image.label') }}</div>
-			<CustomBox id="insertImage-image"
+			<CustomBox
+				id="insertImage-image"
 				v-tip="t('components.insertImage-image.tip')"
-				:ref="registryRef(textCaptureEls, 'insertImage-image')" type="file" filter="image" v-model="form.image" />
+				:ref="registryRef(textCaptureEls, 'insertImage-image')"
+				type="file"
+				filter="image"
+				v-model="form.image"
+			/>
 			<div class="text">{{ t('components.insertImage-clip.label') }}</div>
 			<CustomBox
 				id="insertImage-clip"
@@ -25,13 +33,23 @@
 				v-model="form.clip"
 			/>
 			<div class="text">{{ t('components.insertImage-width.label') }}</div>
-			<NumberBox id="insertImage-width"
+			<NumberBox
+				id="insertImage-width"
 				v-tip="t('components.insertImage-width.tip')"
-				:ref="registryRef(textCaptureEls, 'insertImage-width')" min="0" max="10000" v-model="form.width" />
+				:ref="registryRef(textCaptureEls, 'insertImage-width')"
+				min="0"
+				max="10000"
+				v-model="form.width"
+			/>
 			<div class="text">{{ t('components.insertImage-height.label') }}</div>
-			<NumberBox id="insertImage-height"
+			<NumberBox
+				id="insertImage-height"
 				v-tip="t('components.insertImage-height.tip')"
-				:ref="registryRef(textCaptureEls, 'insertImage-height')" min="0" max="10000" v-model="form.height" />
+				:ref="registryRef(textCaptureEls, 'insertImage-height')"
+				min="0"
+				max="10000"
+				v-model="form.height"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -73,4 +91,3 @@ const onConfirm = () => {
 	bottom: 10px;
 }
 </style>
-

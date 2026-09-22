@@ -8,21 +8,39 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.forEach-data.label') }}</div>
-			<SelectBox id="forEach-data"
+			<SelectBox
+				id="forEach-data"
 				v-tip="t('components.forEach-data.tip')"
-				:ref="registryRef(fieldEls, 'forEach-data')" v-focus v-model="form.data" />
+				:ref="registryRef(fieldEls, 'forEach-data')"
+				v-focus
+				v-model="form.data"
+			/>
 			<div class="text">{{ t('components.forEach-list.label') }}</div>
-			<CustomBox id="forEach-list"
+			<CustomBox
+				id="forEach-list"
 				v-tip="t('components.forEach-list.tip')"
-				:ref="registryRef(fieldEls, 'forEach-list')" v-focus type="variable" filter="object" v-model="form.list" />
+				:ref="registryRef(fieldEls, 'forEach-list')"
+				v-focus
+				type="variable"
+				filter="object"
+				v-model="form.list"
+			/>
 			<div class="text">{{ t('components.forEach-actor.label') }}</div>
-			<CustomBox id="forEach-actor"
+			<CustomBox
+				id="forEach-actor"
 				v-tip="t('components.forEach-actor.tip')"
-				:ref="registryRef(fieldEls, 'forEach-actor')" type="actor" v-model="form.actor" />
+				:ref="registryRef(fieldEls, 'forEach-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.forEach-element.label') }}</div>
-			<CustomBox id="forEach-element"
+			<CustomBox
+				id="forEach-element"
 				v-tip="t('components.forEach-element.tip')"
-				:ref="registryRef(fieldEls, 'forEach-element')" type="element" v-model="form.element" />
+				:ref="registryRef(fieldEls, 'forEach-element')"
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.forEach-attribute-groupId.label') }}</div>
 			<CustomBox
 				id="forEach-attribute-groupId"
@@ -33,9 +51,14 @@
 				v-model="form.attributeGroupId"
 			/>
 			<div class="text">{{ t('components.forEach-enum-groupId.label') }}</div>
-			<CustomBox id="forEach-enum-groupId"
+			<CustomBox
+				id="forEach-enum-groupId"
 				v-tip="t('components.forEach-enum-groupId.tip')"
-				:ref="registryRef(fieldEls, 'forEach-enum-groupId')" v-focus type="enum-group" v-model="form.enumGroupId" />
+				:ref="registryRef(fieldEls, 'forEach-enum-groupId')"
+				v-focus
+				type="enum-group"
+				v-model="form.enumGroupId"
+			/>
 			<div class="text">{{ t('components.forEach-variable.label') }}</div>
 			<CustomBox
 				id="forEach-variable"
@@ -99,9 +122,37 @@ const onConfirm = () => {
 
 onMounted(() => {
 	registerElement(fieldEls, 'forEach', frame.value);
-	useLocalizedOptions('forEach-data', ['list', 'skill', 'state', 'equipment', 'inventory', 'element', 'member', 'attribute', 'enum', 'save', 'touch', 'changed-touch'], (items) =>
-		fieldEls.get('forEach-data')?.loadItems?.(items),
-		{ 'list': 'command.forEach.list', 'skill': 'command.forEach.skill', 'state': 'command.forEach.state', 'equipment': 'command.forEach.equipment', 'inventory': 'command.forEach.inventory', 'element': 'command.forEach.element', 'member': 'command.forEach.member', 'attribute': 'command.forEach.attribute', 'enum': 'command.forEach.enum', 'save': 'command.forEach.save', 'touch': 'command.forEach.touch', 'changed-touch': 'command.forEach.changed-touch' }
+	useLocalizedOptions(
+		'forEach-data',
+		[
+			'list',
+			'skill',
+			'state',
+			'equipment',
+			'inventory',
+			'element',
+			'member',
+			'attribute',
+			'enum',
+			'save',
+			'touch',
+			'changed-touch'
+		],
+		(items) => fieldEls.get('forEach-data')?.loadItems?.(items),
+		{
+			list: 'command.forEach.list',
+			skill: 'command.forEach.skill',
+			state: 'command.forEach.state',
+			equipment: 'command.forEach.equipment',
+			inventory: 'command.forEach.inventory',
+			element: 'command.forEach.element',
+			member: 'command.forEach.member',
+			attribute: 'command.forEach.attribute',
+			enum: 'command.forEach.enum',
+			save: 'command.forEach.save',
+			touch: 'command.forEach.touch',
+			'changed-touch': 'command.forEach.changed-touch'
+		}
 	);
 	// R2b：`enableHiddenMode`/`relate` 原先挂在 `loadItems` 的**调用链**上，拆成独立语句（语义不变）
 	fieldEls
@@ -123,7 +174,10 @@ onMounted(() => {
 			{ case: 'member', targets: [fieldEls.get('forEach-variable')] },
 			{
 				case: 'attribute',
-				targets: [fieldEls.get('forEach-attribute-groupId'), fieldEls.get('forEach-variable')]
+				targets: [
+					fieldEls.get('forEach-attribute-groupId'),
+					fieldEls.get('forEach-variable')
+				]
 			},
 			{
 				case: 'enum',
@@ -155,5 +209,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

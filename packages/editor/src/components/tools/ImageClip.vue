@@ -7,12 +7,17 @@
 				<div class="close"></div> </TitleBar
 		></template>
 
-		<div class="box" id="imageClip-screen"
-				:ref="registryRef(imageClipEls, 'imageClip-screen')" tabindex="-1">
-			<img id="imageClip-image"
-				:ref="registryRef(imageClipEls, 'imageClip-image')" />
-			<MarqueeArea id="imageClip-marquee"
-				:ref="registryRef(imageClipEls, 'imageClip-marquee')" />
+		<div
+			class="box"
+			id="imageClip-screen"
+			:ref="registryRef(imageClipEls, 'imageClip-screen')"
+			tabindex="-1"
+		>
+			<img id="imageClip-image" :ref="registryRef(imageClipEls, 'imageClip-image')" />
+			<MarqueeArea
+				id="imageClip-marquee"
+				:ref="registryRef(imageClipEls, 'imageClip-marquee')"
+			/>
 		</div>
 		<div class="flex-box" id="imageClip-flex">
 			<NumberBox id="imageClip-x" min="0" max="10000" v-model="form.x" @input="onParamInput"
@@ -125,4 +130,3 @@ onMounted(() => {
 	bottom: 10px;
 }
 </style>
-

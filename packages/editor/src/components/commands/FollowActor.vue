@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="followActor"
-				:ref="registryRef(fieldEls, 'followActor')" @confirm="onConfirm">
+	<WindowFrame id="followActor" :ref="registryRef(fieldEls, 'followActor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.followActor.title') }}
@@ -9,17 +8,29 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.followActor-actor.label') }}</div>
-			<CustomBox id="followActor-actor"
+			<CustomBox
+				id="followActor-actor"
 				:ref="registryRef(fieldEls, 'followActor-actor')"
-				v-tip="t('components.followActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.followActor-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.followActor-target.label') }}</div>
-			<CustomBox id="followActor-target"
+			<CustomBox
+				id="followActor-target"
 				:ref="registryRef(fieldEls, 'followActor-target')"
-				v-tip="t('components.followActor-target.tip')" type="actor" v-model="form.target" />
+				v-tip="t('components.followActor-target.tip')"
+				type="actor"
+				v-model="form.target"
+			/>
 			<div class="text">{{ t('components.followActor-mode.label') }}</div>
-			<SelectBox id="followActor-mode"
+			<SelectBox
+				id="followActor-mode"
 				v-tip="t('components.followActor-mode.tip')"
-				:ref="registryRef(fieldEls, 'followActor-mode')" v-model="form.mode" />
+				:ref="registryRef(fieldEls, 'followActor-mode')"
+				v-model="form.mode"
+			/>
 			<div class="text">{{ t('components.followActor-minDist.label') }}</div>
 			<NumberVar
 				id="followActor-minDist"
@@ -76,20 +87,33 @@
 				v-model="bufferDist"
 			/>
 			<div class="text">{{ t('components.followActor-navigate.label') }}</div>
-			<SelectBox id="followActor-navigate"
+			<SelectBox
+				id="followActor-navigate"
 				v-tip="t('components.followActor-navigate.tip')"
-				:ref="registryRef(fieldEls, 'followActor-navigate')" v-model="form.navigate" />
+				:ref="registryRef(fieldEls, 'followActor-navigate')"
+				v-model="form.navigate"
+			/>
 			<div class="text">{{ t('components.followActor-bypass.label') }}</div>
-			<SelectBox id="followActor-bypass"
+			<SelectBox
+				id="followActor-bypass"
 				v-tip="t('components.followActor-bypass.tip')"
-				:ref="registryRef(fieldEls, 'followActor-bypass')" v-model="form.bypass" />
+				:ref="registryRef(fieldEls, 'followActor-bypass')"
+				v-model="form.bypass"
+			/>
 			<div class="text">{{ t('components.followActor-once.label') }}</div>
-			<SelectBox id="followActor-once"
+			<SelectBox
+				id="followActor-once"
 				v-tip="t('components.followActor-once.tip')"
-				:ref="registryRef(fieldEls, 'followActor-once')" v-model="form.once" />
+				:ref="registryRef(fieldEls, 'followActor-once')"
+				v-model="form.once"
+			/>
 			<div class="text">{{ t('components.followActor-wait.label') }}</div>
-			<SelectBox id="followActor-wait"
-				:ref="registryRef(fieldEls, 'followActor-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="followActor-wait"
+				:ref="registryRef(fieldEls, 'followActor-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -139,11 +163,17 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('followActor-mode', ['circle', 'rectangle'], (items) =>
-		fieldEls.get('followActor-mode')?.loadItems?.(items),
-		{ 'circle': 'command.followActor.mode.circle', 'rectangle': 'command.followActor.mode.rectangle' }
+	useLocalizedOptions(
+		'followActor-mode',
+		['circle', 'rectangle'],
+		(items) => fieldEls.get('followActor-mode')?.loadItems?.(items),
+		{
+			circle: 'command.followActor.mode.circle',
+			rectangle: 'command.followActor.mode.rectangle'
+		}
 	);
-	fieldEls.get('followActor-mode')
+	fieldEls
+		.get('followActor-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'circle', targets: [fieldEls.get('followActor-offset')] },
@@ -152,7 +182,8 @@ onMounted(() => {
 	useLocalizedOptions('followActor-navigate', [true, false], (items) =>
 		fieldEls.get('followActor-navigate')?.loadItems?.(items)
 	);
-	fieldEls.get('followActor-navigate')
+	fieldEls
+		.get('followActor-navigate')
 		?.enableHiddenMode?.()
 		?.relate?.([{ case: true, targets: [fieldEls.get('followActor-bypass')] }]);
 	useLocalizedOptions('followActor-bypass', [true, false], (items) =>
@@ -161,7 +192,8 @@ onMounted(() => {
 	useLocalizedOptions('followActor-once', [true, false], (items) =>
 		fieldEls.get('followActor-once')?.loadItems?.(items)
 	);
-	fieldEls.get('followActor-once')
+	fieldEls
+		.get('followActor-once')
 		?.enableHiddenMode?.()
 		?.relate?.([{ case: true, targets: [fieldEls.get('followActor-wait')] }]);
 	useLocalizedOptions('followActor-wait', [true, false], (items) =>
@@ -186,5 +218,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

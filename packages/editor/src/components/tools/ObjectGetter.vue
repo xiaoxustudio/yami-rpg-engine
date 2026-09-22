@@ -8,17 +8,27 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.objectGetter-type.label') }}</div>
-			<SelectBox id="objectGetter-type"
+			<SelectBox
+				id="objectGetter-type"
 				:ref="registryRef(composableEls, 'objectGetter-type')"
-				v-tip="t('components.objectGetter-type.tip')" />
+				v-tip="t('components.objectGetter-type.tip')"
+			/>
 			<div class="text">{{ t('components.objectGetter-presetId.label') }}</div>
-			<CustomBox id="objectGetter-presetId"
+			<CustomBox
+				id="objectGetter-presetId"
 				:ref="registryRef(composableEls, 'objectGetter-presetId')"
-				v-tip="t('components.objectGetter-presetId.tip')" type="preset-object" filter="any" />
+				v-tip="t('components.objectGetter-presetId.tip')"
+				type="preset-object"
+				filter="any"
+			/>
 			<div class="text">{{ t('components.objectGetter-variable.label') }}</div>
-			<CustomBox id="objectGetter-variable"
+			<CustomBox
+				id="objectGetter-variable"
 				:ref="registryRef(composableEls, 'objectGetter-variable')"
-				v-tip="t('components.objectGetter-variable.tip')" type="variable" filter="object" />
+				v-tip="t('components.objectGetter-variable.tip')"
+				type="variable"
+				filter="object"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -62,10 +72,7 @@ const setForm = (data: Partial<PresetGetterForm>): void => {
 const getForm = (): PresetGetterForm => {
 	const data = { ...form } as PresetGetterForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = registryElement<HTMLElement & { read?: () => unknown }>(
-			composableEls,
-			id
-		);
+		const control = registryElement<HTMLElement & { read?: () => unknown }>(composableEls, id);
 		if (control && typeof control.read === 'function') {
 			data[field] = control.read() as never;
 		}
@@ -111,5 +118,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

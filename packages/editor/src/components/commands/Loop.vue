@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="loop"
-				:ref="registryRef(fieldEls, 'loop')" @confirm="onConfirm">
+	<WindowFrame id="loop" :ref="registryRef(fieldEls, 'loop')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.loop.title') }}
@@ -9,12 +8,19 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.loop-mode.label') }}</div>
-			<SelectBox id="loop-mode"
+			<SelectBox
+				id="loop-mode"
 				v-tip="t('components.loop-mode.tip')"
-				:ref="registryRef(fieldEls, 'loop-mode')" v-model="form.mode" />
+				:ref="registryRef(fieldEls, 'loop-mode')"
+				v-model="form.mode"
+			/>
 			<div class="text">{{ t('components.loop-conditions.label') }}</div>
-			<ParamList id="loop-conditions"
-				:ref="registryRef(fieldEls, 'loop-conditions')" v-focus v-model="form.conditions" />
+			<ParamList
+				id="loop-conditions"
+				:ref="registryRef(fieldEls, 'loop-conditions')"
+				v-focus
+				v-model="form.conditions"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -78,5 +84,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

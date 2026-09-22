@@ -119,7 +119,9 @@ onMounted(() => {
 <template>
 	<section class="demo">
 		<h2>YMTabBar</h2>
-		<p class="desc">标签栏：点击切换选中，✖ 关闭（可拖出窗口外侧松开关闭），拖动标签可排序，右键触发 popup。</p>
+		<p class="desc">
+			标签栏：点击切换选中，✖ 关闭（可拖出窗口外侧松开关闭），拖动标签可排序，右键触发 popup。
+		</p>
 		<div class="row">
 			<YMButton variant="primary" @click="addTab">Add Tab</YMButton>
 			<YMButton @click="closeSelected">Close Selected</YMButton>

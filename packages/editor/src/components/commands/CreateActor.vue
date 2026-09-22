@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="createActor"
-				:ref="registryRef(fieldEls, 'createActor')" @confirm="onConfirm">
+	<WindowFrame id="createActor" :ref="registryRef(fieldEls, 'createActor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.createActor.title') }}
@@ -19,13 +18,20 @@
 				v-model="form.actorId"
 			/>
 			<div class="text">{{ t('components.createActor-teamId.label') }}</div>
-			<SelectBox id="createActor-teamId"
+			<SelectBox
+				id="createActor-teamId"
 				v-tip="t('components.createActor-teamId.tip')"
-				:ref="registryRef(fieldEls, 'createActor-teamId')" v-model="form.teamId" />
+				:ref="registryRef(fieldEls, 'createActor-teamId')"
+				v-model="form.teamId"
+			/>
 			<div class="text">{{ t('components.createActor-position.label') }}</div>
-			<CustomBox id="createActor-position"
+			<CustomBox
+				id="createActor-position"
 				:ref="registryRef(fieldEls, 'createActor-position')"
-				v-tip="t('components.createActor-position.tip')" type="position" v-model="form.position" />
+				v-tip="t('components.createActor-position.tip')"
+				type="position"
+				v-model="form.position"
+			/>
 			<div class="text">{{ t('components.createActor-angle.label') }}</div>
 			<NumberVar
 				id="createActor-angle"
@@ -88,5 +94,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

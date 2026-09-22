@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="commandLine"
-				:ref="registryRef(fieldEls, 'commandLine')" @confirm="onConfirm">
+	<WindowFrame id="commandLine" :ref="registryRef(fieldEls, 'commandLine')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.commandLine.title') }}
@@ -9,16 +8,26 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.commandLine-type.label') }}</div>
-			<SelectBox id="commandLine-type"
-				:ref="registryRef(fieldEls, 'commandLine-type')" v-model="form.type" />
+			<SelectBox
+				id="commandLine-type"
+				:ref="registryRef(fieldEls, 'commandLine-type')"
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.commandLine-key.label') }}</div>
-			<StringVar id="commandLine-key"
+			<StringVar
+				id="commandLine-key"
 				v-tip="t('components.commandLine-key.tip')"
-				:ref="registryRef(fieldEls, 'commandLine-key')" v-focus v-model="form.key" />
+				:ref="registryRef(fieldEls, 'commandLine-key')"
+				v-focus
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.commandLine-value.label') }}</div>
-			<StringVar id="commandLine-value"
+			<StringVar
+				id="commandLine-value"
 				v-tip="t('components.commandLine-value.tip')"
-				:ref="registryRef(fieldEls, 'commandLine-value')" v-model="form.value" />
+				:ref="registryRef(fieldEls, 'commandLine-value')"
+				v-model="form.value"
+			/>
 			<div class="text">{{ t('components.commandLine-variable.label') }}</div>
 			<CustomBox
 				id="commandLine-variable"
@@ -58,11 +67,19 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('commandLine-type', ['get', 'rm', 'set', 'has'], (items) =>
-		fieldEls.get('commandLine-type')?.loadItems?.(items),
-		{ 'get': 'command.commandLine.get', 'rm': 'command.commandLine.rm', 'set': 'command.commandLine.set', 'has': 'command.commandLine.has' }
+	useLocalizedOptions(
+		'commandLine-type',
+		['get', 'rm', 'set', 'has'],
+		(items) => fieldEls.get('commandLine-type')?.loadItems?.(items),
+		{
+			get: 'command.commandLine.get',
+			rm: 'command.commandLine.rm',
+			set: 'command.commandLine.set',
+			has: 'command.commandLine.has'
+		}
 	);
-	fieldEls.get('commandLine-type')
+	fieldEls
+		.get('commandLine-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -101,5 +118,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

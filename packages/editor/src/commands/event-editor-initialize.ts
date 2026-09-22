@@ -25,9 +25,12 @@ export const eventEditorEls = createElementRegistry();
 
 function ensureDomBound() {
 	if (EventEditor.list) return;
-	const list = eventEditorEls.get('event-open-list');
+	// 注册表在挂载后才填充，未挂载时为 null ⇒ 仍需判空。
+	// 收窄走 `registryElement`（P4 的既有手法：把「按 id 收窄」集中到一处），
+	// 于是下面两处不再各写一遍 `as unknown as`。
+	const list = registryElement<HTMLElement & EventEditorList>(eventEditorEls, 'event-open-list');
 	if (!list) return;
-	EventEditor.list = list as unknown as HTMLElement & EventEditorList;
+	EventEditor.list = list;
 	EventEditor.commandList = registryElement<EventCommandListShape>(
 		eventEditorEls,
 		'event-commands'
@@ -36,7 +39,7 @@ function ensureDomBound() {
 	EventEditor.outerGutter = eventEditorEls.get('event-commands-gutter-outer') as YamiElement;
 	EventEditor.innerGutter = eventEditorEls.get('event-commands-gutter-inner') as YamiElement;
 	// P4b：滚动位置改用显式元素数据（原先写的是原型访问器 `lastScrollTop`）
-	getElementData(EventEditor.list as unknown as HTMLElement).lastScrollTop = 0;
+	getElementData(list).lastScrollTop = 0;
 	EventEditor.list.close = null;
 	EventEditor.list.closeMultiple = null;
 	EventEditor.list.closeBelow = null;

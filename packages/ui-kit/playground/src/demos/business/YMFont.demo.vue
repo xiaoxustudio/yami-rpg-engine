@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { YMButton, YMFont } from '@ui-kit';
 
-
 type FrameElement = HTMLElement & { open?(): void; close?(): boolean };
 
 const openDialog = (id: string) => (document.getElementById(id) as FrameElement | null)?.open?.();
@@ -12,13 +11,14 @@ const fontValue = ref('');
 const onConfirm = () => {
 	closeDialog('font');
 };
-
 </script>
 
 <template>
 	<section class="demo">
 		<h2>YMFont</h2>
-		<p class="desc">字体输入窗口：id 可配置（默认 font），文本输入 v-model 绑定，确认触发 confirm。</p>
+		<p class="desc">
+			字体输入窗口：id 可配置（默认 font），文本输入 v-model 绑定，确认触发 confirm。
+		</p>
 		<div class="row">
 			<YMButton variant="primary" @click="openDialog('font')">Open Font</YMButton>
 			<span class="hint">value: {{ fontValue }}</span>

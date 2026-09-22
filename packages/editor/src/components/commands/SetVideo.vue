@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setVideo"
-				:ref="registryRef(fieldEls, 'setVideo')" @confirm="onConfirm">
+	<WindowFrame id="setVideo" :ref="registryRef(fieldEls, 'setVideo')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setVideo.title') }}
@@ -9,12 +8,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setVideo-element.label') }}</div>
-			<CustomBox id="setVideo-element"
+			<CustomBox
+				id="setVideo-element"
 				:ref="registryRef(fieldEls, 'setVideo-element')"
-				v-tip="t('components.setVideo-element.tip')" v-focus type="element" v-model="form.element" />
+				v-tip="t('components.setVideo-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.setVideo-properties.label') }}</div>
-			<ParamList id="setVideo-properties"
-				:ref="registryRef(fieldEls, 'setVideo-properties')" v-focus v-model="form.properties" />
+			<ParamList
+				id="setVideo-properties"
+				:ref="registryRef(fieldEls, 'setVideo-properties')"
+				v-focus
+				v-model="form.properties"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -71,5 +79,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

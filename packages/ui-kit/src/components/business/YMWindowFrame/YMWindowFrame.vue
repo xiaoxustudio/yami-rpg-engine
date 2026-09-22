@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
-import { clamp, addClass, removeClass, hasClass, rect, rasterize, focusWithOptions } from '../../../utils/dom';
+import {
+	clamp,
+	addClass,
+	removeClass,
+	hasClass,
+	rect,
+	rasterize,
+	focusWithOptions
+} from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
 import YMFormButtons from '../../basic/YMFormButtons/YMFormButtons.vue';
 
@@ -208,11 +216,13 @@ const close = (): boolean => {
 	}
 	if (state.closeEventEnabled) {
 		try {
-			if (!element.dispatchEvent(
-				new Event('close', {
-					cancelable: true
-				})
-			)) {
+			if (
+				!element.dispatchEvent(
+					new Event('close', {
+						cancelable: true
+					})
+				)
+			) {
 				return false;
 			}
 		} catch (error) {
@@ -290,10 +300,10 @@ const focus = (): void => {
 			}
 		}
 		state.focusableElements = null;
-	if (state.activeElement) {
-		focusWithOptions(state.activeElement, { preventScroll: true });
-		state.activeElement = null;
-	}
+		if (state.activeElement) {
+			focusWithOptions(state.activeElement, { preventScroll: true });
+			state.activeElement = null;
+		}
 	}
 };
 
@@ -338,7 +348,19 @@ const setTitle = (text: string): void => {
 	}
 };
 
-defineExpose({ open, close, maximize, unmaximize, focus, blur, setTitle, absolute, setPosition, on, root });
+defineExpose({
+	open,
+	close,
+	maximize,
+	unmaximize,
+	focus,
+	blur,
+	setTitle,
+	absolute,
+	setPosition,
+	on,
+	root
+});
 
 const applyLocalization = (): void => {
 	const element = root.value;

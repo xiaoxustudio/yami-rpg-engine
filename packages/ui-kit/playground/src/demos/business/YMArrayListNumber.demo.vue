@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { YMArrayListNumber, YMButton } from '@ui-kit';
 
-
 type FrameElement = HTMLElement & { open?(): void; close?(): boolean };
 
 const openDialog = (id: string) => (document.getElementById(id) as FrameElement | null)?.open?.();
@@ -12,18 +11,26 @@ const arrayValue = ref(0);
 const onConfirm = () => {
 	closeDialog('arrayList-number');
 };
-
 </script>
 
 <template>
 	<section class="demo">
 		<h2>YMArrayListNumber</h2>
-		<p class="desc">数组数值编辑窗口：范围 -1e9 ~ 1e9（10 位小数），v-model 绑定，确认触发 confirm。</p>
+		<p class="desc">
+			数组数值编辑窗口：范围 -1e9 ~ 1e9（10 位小数），v-model 绑定，确认触发 confirm。
+		</p>
 		<div class="row">
-			<YMButton variant="primary" @click="openDialog('arrayList-number')">Open Number Editor</YMButton>
+			<YMButton variant="primary" @click="openDialog('arrayList-number')"
+				>Open Number Editor</YMButton
+			>
 			<span class="hint">value: {{ arrayValue }}</span>
 		</div>
-		<YMArrayListNumber v-model="arrayValue" title="Edit Number" @confirm="onConfirm" @closed="() => {}" />
+		<YMArrayListNumber
+			v-model="arrayValue"
+			title="Edit Number"
+			@confirm="onConfirm"
+			@closed="() => {}"
+		/>
 	</section>
 </template>
 

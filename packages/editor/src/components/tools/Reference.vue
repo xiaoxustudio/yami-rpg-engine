@@ -1,14 +1,12 @@
 <template>
-	<WindowFrame id="reference"
-				:ref="registryRef(logEls, 'reference')" no-buttons>
+	<WindowFrame id="reference" :ref="registryRef(logEls, 'reference')" no-buttons>
 		<template #title
 			><TitleBar
 				>Reference
 				<div class="close"></div></TitleBar
 		></template>
 
-		<CommonList id="reference-list"
-				:ref="registryRef(fieldEls, 'reference-list')" />
+		<CommonList id="reference-list" :ref="registryRef(fieldEls, 'reference-list')" />
 	</WindowFrame>
 </template>
 
@@ -17,7 +15,7 @@ import {
 	createElementRegistry,
 	registerElement,
 	registryElement,
-	registryRef,
+	registryRef
 } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 import { logEls } from '@app/log/element-registry';
@@ -87,4 +85,3 @@ onMounted(() => {
 	border-radius: 2px;
 }
 </style>
-

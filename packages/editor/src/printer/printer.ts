@@ -62,10 +62,10 @@ type FontNameList = string[];
 export class Printer {
 	static print: ((...args: unknown[]) => void) | null = null;
 	texture!: PrinterTexture | null;
-	// images 运行时挂�?.changed 标志（L56/L200/L469 读写�?
+	// images 运行时挂上 .changed 标志（L56/L200/L469 读写）
 	images!: ImageElementShape[] & { changed?: boolean };
 	canvas!: HTMLCanvasElement;
-	// CanvasRenderingContext2D 运行时挂�?.paddingItalic/.paddingVertical/.size 扩展（printer 内赋值）
+	// CanvasRenderingContext2D 运行时挂上 .paddingItalic/.paddingVertical/.size 扩展（printer 内赋值）
 	context: CanvasTextContext | null;
 	content!: string;
 	buffer!: string;
@@ -469,7 +469,7 @@ export class Printer {
 		command.drawingMethod = fnEmpty;
 
 		this.breakable = true;
-		// 根据不同的文本方向，计算下一个位置、行高、文本区域宽度、文本区域高�?
+		// 根据不同的文本方向，计算下一个位置、行高、文本区域宽度、文本区域高度
 		if (horizontal) {
 			this.x += imageWidth + letterSpacing;
 			this.lineHeight = Math.max(this.lineHeight, imageHeight);
@@ -957,15 +957,15 @@ export class Printer {
 			let width = 0;
 			let height = 0;
 			if (!match[2]) {
-				// 存在1个参�?
+				// 存在1个参数
 				width = this.sizes[0];
 				height = this.sizes[0];
 			} else if (!match[4]) {
-				// 存在3个参�?
+				// 存在3个参数
 				width = parseInt(match[2]);
 				height = parseInt(match[3]);
 			} else {
-				// 存在5-7个参�?
+				// 存在5-7个参数
 				clip = [
 					parseInt(match[2]),
 					parseInt(match[3]),
@@ -1028,7 +1028,7 @@ export class Printer {
 	} = {
 		// 使用索引颜色: [1]:Index(0-15)
 		colorIndex: /^<color:(\d|1[0-5])>$/i,
-		// 使用指定颜色: [1]:R(00-ff), [2]:G(00-ff), [3]:B(00-ff), [4]:A(00-ff)(可�?
+		// 使用指定颜色: [1]:R(00-ff), [2]:G(00-ff), [3]:B(00-ff), [4]:A(00-ff)(可选)
 		color: /^<color:([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?>$/i,
 		colorRestore: /^<\/color>$/i,
 		// 使用字体: [1]:字体族群
@@ -1042,18 +1042,18 @@ export class Printer {
 		fontSize: /^<size:([1-9]\d|[1-3]\d\d|400)>$/i,
 		fontSizeRestore: /^<\/size>$/i,
 		textPosition: /^<(x|y):(?:(add),)?(-?(?:\d|[1-9]\d|[1-9]\d\d|1000))>$/i,
-		// 使用阴影效果: [1]:水平偏移(-9-9), [2]:垂直偏移(-9-9), [3]:R(00-ff), [4]:G(00-ff), [5]:B(00-ff), [6]:A(00-ff)(可�?
+		// 使用阴影效果: [1]:水平偏移(-9-9), [2]:垂直偏移(-9-9), [3]:R(00-ff), [4]:G(00-ff), [5]:B(00-ff), [6]:A(00-ff)(可选)
 		textShadow:
 			/^<shadow:(0|-?[1-9]),(0|-?[1-9]),([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?>$/i,
 		textShadowRestore: /^<\/shadow>$/i,
-		// 使用描边效果: [1]:描边宽度(1-20), [2]:R(00-ff), [3]:G(00-ff), [4]:B(00-ff), [5]:A(00-ff)(可�?
+		// 使用描边效果: [1]:描边宽度(1-20), [2]:R(00-ff), [3]:G(00-ff), [4]:B(00-ff), [5]:A(00-ff)(可选)
 		textStroke:
 			/^<stroke:([1-9]|1\d|20),([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?>$/i,
 		textStrokeRestore: /^<\/stroke>$/i,
-		// 使用轮廓效果: [1]:R(00-ff), [2]:G(00-ff), [3]:B(00-ff), [4]:A(00-ff)(可�?
+		// 使用轮廓效果: [1]:R(00-ff), [2]:G(00-ff), [3]:B(00-ff), [4]:A(00-ff)(可选)
 		textOutline: /^<outline:([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?>$/i,
 		textOutlineRestore: /^<\/outline>$/i,
-		// 使用指定图像: [1]:GUID(16个字�?, [2]:参数1(0-10000)(可�?, [3]:参数2(0-10000)(可�?, [4]:参数1(0-10000)(可�?, [5]:参数2(0-10000)(可�?, [6]:参数1(0-10000)(可�?, [7]:参数2(0-10000)(可�?
+		// 使用指定图像: [1]:GUID(16个字符), [2]:参数1(0-10000)(可选), [3]:参数2(0-10000)(可选), [4]:参数1(0-10000)(可选), [5]:参数2(0-10000)(可选), [6]:参数1(0-10000)(可选), [7]:参数2(0-10000)(可选)
 		image: /^<image:([0-9a-f]{16})(?:,(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000),(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000))?(?:,(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000),(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000))?(?:,(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000),(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000))?>$/i
 	};
 

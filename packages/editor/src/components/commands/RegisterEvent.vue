@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="registerEvent"
-				:ref="registryRef(fieldEls, 'registerEvent')" @confirm="onConfirm">
+	<WindowFrame
+		id="registerEvent"
+		:ref="registryRef(fieldEls, 'registerEvent')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.registerEvent.title') }}
@@ -9,17 +12,30 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.registerEvent-target.label') }}</div>
-			<SelectBox id="registerEvent-target"
+			<SelectBox
+				id="registerEvent-target"
 				v-tip="t('components.registerEvent-target.tip')"
-				:ref="registryRef(fieldEls, 'registerEvent-target')" v-focus v-model="form.target" @write="onTargetWrite" />
+				:ref="registryRef(fieldEls, 'registerEvent-target')"
+				v-focus
+				v-model="form.target"
+				@write="onTargetWrite"
+			/>
 			<div class="text">{{ t('components.registerEvent-actor.label') }}</div>
-			<CustomBox id="registerEvent-actor"
+			<CustomBox
+				id="registerEvent-actor"
 				v-tip="t('components.registerEvent-actor.tip')"
-				:ref="registryRef(fieldEls, 'registerEvent-actor')" type="actor" v-model="form.actor" />
+				:ref="registryRef(fieldEls, 'registerEvent-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.registerEvent-element.label') }}</div>
-			<CustomBox id="registerEvent-element"
+			<CustomBox
+				id="registerEvent-element"
 				v-tip="t('components.registerEvent-element.tip')"
-				:ref="registryRef(fieldEls, 'registerEvent-element')" type="element" v-model="form.element" />
+				:ref="registryRef(fieldEls, 'registerEvent-element')"
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.registerEvent-operation.label') }}</div>
 			<SelectBox
 				id="registerEvent-operation"
@@ -29,13 +45,21 @@
 				@write="onOperationWrite"
 			/>
 			<div class="text">{{ t('components.registerEvent-type.label') }}</div>
-			<SelectBox id="registerEvent-type"
+			<SelectBox
+				id="registerEvent-type"
 				:ref="registryRef(fieldEls, 'registerEvent-type')"
-				v-tip="t('components.registerEvent-type.tip')" v-model="form.type" @write="onTypeWrite" />
+				v-tip="t('components.registerEvent-type.tip')"
+				v-model="form.type"
+				@write="onTypeWrite"
+			/>
 			<div class="text">{{ t('components.registerEvent-priority.label') }}</div>
-			<CheckBox id="registerEvent-priority"
+			<CheckBox
+				id="registerEvent-priority"
 				:ref="registryRef(fieldEls, 'registerEvent-priority')"
-				v-tip="t('components.registerEvent-priority.tip')" class="standard large" v-model="form.priority" />
+				v-tip="t('components.registerEvent-priority.tip')"
+				class="standard large"
+				v-model="form.priority"
+			/>
 			<div class="text">{{ t('components.registerEvent-namespace.label') }}</div>
 			<CheckBox
 				id="registerEvent-namespace"
@@ -45,9 +69,13 @@
 				v-model="form.namespace"
 			/>
 			<div class="text">{{ t('components.registerEvent-tag.label') }}</div>
-			<StringVar id="registerEvent-tag"
+			<StringVar
+				id="registerEvent-tag"
 				:ref="registryRef(fieldEls, 'registerEvent-tag')"
-				v-tip="t('components.registerEvent-tag.tip')" v-focus v-model="form.tag" />
+				v-tip="t('components.registerEvent-tag.tip')"
+				v-focus
+				v-model="form.tag"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -91,15 +119,22 @@ onMounted(() => {
 	useLocalizedOptions('registerEvent-target', ['global', 'actor', 'element'], (items) =>
 		fieldEls.get('registerEvent-target')?.loadItems?.(items)
 	);
-	fieldEls.get('registerEvent-target')
+	fieldEls
+		.get('registerEvent-target')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'actor', targets: [fieldEls.get('registerEvent-actor')] },
 			{ case: 'element', targets: [fieldEls.get('registerEvent-element')] }
 		]);
-	useLocalizedOptions('registerEvent-operation', ['register', 'unregister', 'reset'], (items) =>
-		fieldEls.get('registerEvent-operation')?.loadItems?.(items),
-		{ 'register': 'command.registerEvent.alias.register', 'unregister': 'command.registerEvent.alias.unregister', 'reset': 'command.registerEvent.alias.reset' }
+	useLocalizedOptions(
+		'registerEvent-operation',
+		['register', 'unregister', 'reset'],
+		(items) => fieldEls.get('registerEvent-operation')?.loadItems?.(items),
+		{
+			register: 'command.registerEvent.alias.register',
+			unregister: 'command.registerEvent.alias.unregister',
+			reset: 'command.registerEvent.alias.reset'
+		}
 	);
 });
 </script>
@@ -120,5 +155,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

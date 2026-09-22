@@ -31,8 +31,16 @@ describe('localized-items（R2b 模块侧选项名）', () => {
 	it('localizedItems：按约定取 name/tip，值与顺序保持传入顺序', () => {
 		const items = localizedItems('easing-mode', [2, 5]);
 		expect(items).toEqual([
-			{ name: 'T:components.easing-mode.options.2.name', tip: 'T:components.easing-mode.options.2.tip', value: 2 },
-			{ name: 'T:components.easing-mode.options.5.name', tip: 'T:components.easing-mode.options.5.tip', value: 5 }
+			{
+				name: 'T:components.easing-mode.options.2.name',
+				tip: 'T:components.easing-mode.options.2.tip',
+				value: 2
+			},
+			{
+				name: 'T:components.easing-mode.options.5.name',
+				tip: 'T:components.easing-mode.options.5.tip',
+				value: 5
+			}
 		]);
 	});
 

@@ -28,16 +28,24 @@
 			<div class="flex-box" id="newProject-location-box">
 				<TextBox
 					id="newProject-location"
-				v-tip="t('components.newProject-location.tip')"
+					v-tip="t('components.newProject-location.tip')"
 					v-model="form.location"
 					@input="onLocationInput"
 				/>
-				<button id="newProject-choose"
-				v-tip="t('components.newProject-choose.tip')" @click="onChooseClick">…</button>
+				<button
+					id="newProject-choose"
+					v-tip="t('components.newProject-choose.tip')"
+					@click="onChooseClick"
+				>
+					…
+				</button>
 			</div>
 		</div>
-		<div class="text" id="newProject-warning"
-				:ref="registryRef(titleEls, 'newProject-warning')" />
+		<div
+			class="text"
+			id="newProject-warning"
+			:ref="registryRef(titleEls, 'newProject-warning')"
+		/>
 	</WindowFrame>
 </template>
 
@@ -46,7 +54,10 @@ import { onMounted } from 'vue';
 import { titleEls } from '@app/title/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
-import { NewProject, newProjectConfirmDisabled as confirmDisabled } from '@app/title/new-project-window.ts';
+import {
+	NewProject,
+	newProjectConfirmDisabled as confirmDisabled
+} from '@app/title/new-project-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
@@ -117,4 +128,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

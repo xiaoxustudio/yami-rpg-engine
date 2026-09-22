@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { YMButton, YMMenuList, YMParamList, ParamListHistory, type MenuItem, type MenuOptions } from '@ui-kit';
+import {
+	YMButton,
+	YMMenuList,
+	YMParamList,
+	ParamListHistory,
+	type MenuItem,
+	type MenuOptions
+} from '@ui-kit';
 
 interface ParamItem {
 	name: string;
@@ -127,7 +134,10 @@ onMounted(() => {
 <template>
 	<section class="demo">
 		<h2>YMParamList</h2>
-		<p class="desc">参数列表：bind(object) 后通过 write(data) 渲染，支持键盘/鼠标选择、Enter 编辑、Insert 插入、Delete 删除、右键菜单（menuPopup）。</p>
+		<p class="desc">
+			参数列表：bind(object) 后通过 write(data) 渲染，支持键盘/鼠标选择、Enter 编辑、Insert
+			插入、Delete 删除、右键菜单（menuPopup）。
+		</p>
 		<div class="row">
 			<YMButton variant="primary" @click="addRow">Add Row</YMButton>
 			<YMButton @click="removeSelected">Delete Selected</YMButton>

@@ -8,9 +8,12 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.importLanguage-language.label') }}</div>
-			<SelectBox id="importLanguage-language"
+			<SelectBox
+				id="importLanguage-language"
 				v-tip="t('components.importLanguage-language.tip')"
-				:ref="registryRef(localEls, 'importLanguage-language')" v-focus />
+				:ref="registryRef(localEls, 'importLanguage-language')"
+				v-focus
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -52,4 +55,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

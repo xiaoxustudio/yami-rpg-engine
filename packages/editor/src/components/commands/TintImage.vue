@@ -1,22 +1,32 @@
 <template>
-	<WindowFrame id="tintImage"
-				:ref="registryRef(fieldEls, 'tintImage')" @confirm="onConfirm">
+	<WindowFrame id="tintImage" :ref="registryRef(fieldEls, 'tintImage')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.tintImage.title') }}
 				<div class="close" /></TitleBar
 		></template>
 
-		<div class="grid-box" id="tintImage-grid-box"
-				:ref="registryRef(fieldEls, 'tintImage-grid-box')">
+		<div
+			class="grid-box"
+			id="tintImage-grid-box"
+			:ref="registryRef(fieldEls, 'tintImage-grid-box')"
+		>
 			<div class="text">{{ t('components.tintImage-element.label') }}</div>
-			<CustomBox id="tintImage-element"
+			<CustomBox
+				id="tintImage-element"
 				:ref="registryRef(fieldEls, 'tintImage-element')"
-				v-tip="t('components.tintImage-element.tip')" v-focus type="element" v-model="form.element" />
+				v-tip="t('components.tintImage-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
 			<div class="text">{{ t('components.tintImage-mode.label') }}</div>
-			<SelectBox id="tintImage-mode"
+			<SelectBox
+				id="tintImage-mode"
 				v-tip="t('components.tintImage-mode.tip')"
-				:ref="registryRef(fieldEls, 'tintImage-mode')" v-model="form.mode" />
+				:ref="registryRef(fieldEls, 'tintImage-mode')"
+				v-model="form.mode"
+			/>
 			<div class="text">{{ t('components.tintImage-tint-0.label') }}</div>
 			<NumberBox
 				id="tintImage-tint-0"
@@ -48,12 +58,22 @@
 				v-model="tint2"
 			/>
 			<div class="text">{{ t('components.tintImage-tint-3.label') }}</div>
-			<NumberBox id="tintImage-tint-3"
+			<NumberBox
+				id="tintImage-tint-3"
 				v-tip="t('components.tintImage-tint-3.tip')"
-				:ref="registryRef(fieldEls, 'tintImage-tint-3')" min="0" max="255" step="5" v-model="tint3" />
+				:ref="registryRef(fieldEls, 'tintImage-tint-3')"
+				min="0"
+				max="255"
+				step="5"
+				v-model="tint3"
+			/>
 			<div class="text">{{ t('components.tintImage-easingId.label') }}</div>
-			<SelectBox id="tintImage-easingId"
-				:ref="registryRef(fieldEls, 'tintImage-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="tintImage-easingId"
+				:ref="registryRef(fieldEls, 'tintImage-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.tintImage-duration.label') }}</div>
 			<NumberBox
 				id="tintImage-duration"
@@ -65,11 +85,19 @@
 				v-model="duration"
 			/>
 			<div class="text">{{ t('components.tintImage-wait.label') }}</div>
-			<SelectBox id="tintImage-wait"
-				:ref="registryRef(fieldEls, 'tintImage-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="tintImage-wait"
+				:ref="registryRef(fieldEls, 'tintImage-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
-		<FilterBox id="tintImage-filter"
-				:ref="registryRef(fieldEls, 'tintImage-filter')" width="96" height="208" />
+		<FilterBox
+			id="tintImage-filter"
+			:ref="registryRef(fieldEls, 'tintImage-filter')"
+			width="96"
+			height="208"
+		/>
 	</WindowFrame>
 </template>
 
@@ -161,11 +189,18 @@ watch(
 );
 
 onMounted(() => {
-	useLocalizedOptions('tintImage-mode', ['full', 'rgb', 'gray'], (items) =>
-		fieldEls.get('tintImage-mode')?.loadItems?.(items),
-		{ 'full': 'command.tintImage.full', 'rgb': 'command.tintImage.rgb', 'gray': 'command.tintImage.gray' }
+	useLocalizedOptions(
+		'tintImage-mode',
+		['full', 'rgb', 'gray'],
+		(items) => fieldEls.get('tintImage-mode')?.loadItems?.(items),
+		{
+			full: 'command.tintImage.full',
+			rgb: 'command.tintImage.rgb',
+			gray: 'command.tintImage.gray'
+		}
 	);
-	fieldEls.get('tintImage-mode')
+	fieldEls
+		.get('tintImage-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -179,7 +214,11 @@ onMounted(() => {
 			},
 			{
 				case: 'rgb',
-				targets: [fieldEls.get('tintImage-tint-0'), fieldEls.get('tintImage-tint-1'), fieldEls.get('tintImage-tint-2')]
+				targets: [
+					fieldEls.get('tintImage-tint-0'),
+					fieldEls.get('tintImage-tint-1'),
+					fieldEls.get('tintImage-tint-2')
+				]
 			},
 			{ case: 'gray', targets: [fieldEls.get('tintImage-tint-3')] }
 		]);
@@ -223,5 +262,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

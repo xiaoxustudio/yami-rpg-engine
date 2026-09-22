@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { YMButton, YMSetQuantity } from '@ui-kit';
 
-
 type FrameElement = HTMLElement & { open?(): void; close?(): boolean };
 
 const openDialog = (id: string) => (document.getElementById(id) as FrameElement | null)?.open?.();
@@ -12,15 +11,18 @@ const setQuantityValue = ref(1);
 const onConfirm = () => {
 	closeDialog('setQuantity');
 };
-
 </script>
 
 <template>
 	<section class="demo">
 		<h2>YMSetQuantity</h2>
-		<p class="desc">数量设置窗口：数值输入框（min 1，max 可配）v-model 绑定，确认触发 confirm。</p>
+		<p class="desc">
+			数量设置窗口：数值输入框（min 1，max 可配）v-model 绑定，确认触发 confirm。
+		</p>
 		<div class="row">
-			<YMButton variant="primary" @click="openDialog('setQuantity')">Open Set Quantity</YMButton>
+			<YMButton variant="primary" @click="openDialog('setQuantity')"
+				>Open Set Quantity</YMButton
+			>
 			<span class="hint">value: {{ setQuantityValue }}</span>
 		</div>
 		<YMSetQuantity

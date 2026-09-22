@@ -20,7 +20,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
-const cssArg = (process.argv.find((a) => a.endsWith('.css')) ?? 'command.css').replace(/^.*[\\/]/, '');
+const cssArg = (process.argv.find((a) => a.endsWith('.css')) ?? 'command.css').replace(
+	/^.*[\\/]/,
+	''
+);
 const cssFile = path.join(root, 'Project/css', cssArg);
 const srcDir = path.join(root, 'src');
 
@@ -108,7 +111,12 @@ while (i < cssText.length) {
 	const selText = cssText.slice(i, brace).trim();
 	const close = cssText.indexOf('}', brace + 1);
 	if (close < 0) break;
-	rules.push({ selectors: selText, body: cssText.slice(brace + 1, close), start: i, end: close + 1 });
+	rules.push({
+		selectors: selText,
+		body: cssText.slice(brace + 1, close),
+		start: i,
+		end: close + 1
+	});
 	i = close + 1;
 }
 
@@ -120,7 +128,10 @@ for (const rule of rules) {
 		if (rule.selectors !== '') skipped.push({ selectors: rule.selectors, reason: '空规则体' });
 		continue;
 	}
-	const sels = rule.selectors.split(',').map((s) => s.trim()).filter(Boolean);
+	const sels = rule.selectors
+		.split(',')
+		.map((s) => s.trim())
+		.filter(Boolean);
 	if (sels.some((s) => !/^#[A-Za-z0-9_-]+$/.test(s))) {
 		skipped.push({ selectors: rule.selectors, reason: '非纯 #id 规则' });
 		continue;
@@ -133,7 +144,10 @@ for (const rule of rules) {
 		if (attrFiles.every((f) => f !== null && f === attrFiles[0])) file = attrFiles[0];
 	}
 	if (file === null) {
-		skipped.push({ selectors: rule.selectors, reason: pagesMode ? '无唯一 Vue 归属' : '无对应 Vue 窗口' });
+		skipped.push({
+			selectors: rule.selectors,
+			reason: pagesMode ? '无唯一 Vue 归属' : '无对应 Vue 窗口'
+		});
 		continue;
 	}
 	if (!plan.has(file)) plan.set(file, []);
@@ -146,7 +160,9 @@ let moved = 0;
 for (const f of files) moved += plan.get(f).length;
 const one = (s) => s.replace(/\s+/g, ' ').trim();
 log(`${cssArg} 顶层规则块: ${rules.length}`);
-log(`可迁移(归属单一 Vue 组件): ${moved} 块 / ${files.length} 个组件${pagesMode ? '（页面模式）' : ''}`);
+log(
+	`可迁移(归属单一 Vue 组件): ${moved} 块 / ${files.length} 个组件${pagesMode ? '（页面模式）' : ''}`
+);
 log(`保留在 css: ${skipped.length} 块\n`);
 log('=== 保留在 css 的块（需人工复核） ===');
 for (const s of skipped) log(`- [${s.reason}] ${one(s.selectors)}`);
@@ -178,7 +194,8 @@ for (const f of files) {
 		if (ai < 0) throw new Error(`未找到 ${tag}: ${f}`);
 		const head = text.slice(0, ai + tag.length);
 		const headNL = head.endsWith('\n') ? head : head + '\n';
-		text = headNL + '\n<style>\n' + css.trimEnd() + '\n</style>\n' + text.slice(ai + tag.length);
+		text =
+			headNL + '\n<style>\n' + css.trimEnd() + '\n</style>\n' + text.slice(ai + tag.length);
 	}
 	fs.writeFileSync(full, text);
 	log(`+ <style> 写入 ${f}`);

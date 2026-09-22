@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="setPointerEventRoot"
-				:ref="registryRef(fieldEls, 'setPointerEventRoot')" @confirm="onConfirm">
+	<WindowFrame
+		id="setPointerEventRoot"
+		:ref="registryRef(fieldEls, 'setPointerEventRoot')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setPointerEventRoot.title') }}
@@ -9,9 +12,13 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setPointerEventRoot-operation.label') }}</div>
-			<SelectBox id="setPointerEventRoot-operation"
+			<SelectBox
+				id="setPointerEventRoot-operation"
 				v-tip="t('components.setPointerEventRoot-operation.tip')"
-				:ref="registryRef(fieldEls, 'setPointerEventRoot-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setPointerEventRoot-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setPointerEventRoot-element.label') }}</div>
 			<CustomBox
 				id="setPointerEventRoot-element"
@@ -48,10 +55,13 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setPointerEventRoot-operation', ['add', 'remove', 'remove-latest', 'reset'], (items) =>
-		fieldEls.get('setPointerEventRoot-operation')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setPointerEventRoot-operation',
+		['add', 'remove', 'remove-latest', 'reset'],
+		(items) => fieldEls.get('setPointerEventRoot-operation')?.loadItems?.(items)
 	);
-	fieldEls.get('setPointerEventRoot-operation')
+	fieldEls
+		.get('setPointerEventRoot-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -78,5 +88,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -1,7 +1,9 @@
 <template>
-	<WindowFrame id="autoTile-generateFrames"
-				:ref="registryRef(paletteEls, 'autoTile-generateFrames')"
-				@confirm="onConfirm">
+	<WindowFrame
+		id="autoTile-generateFrames"
+		:ref="registryRef(paletteEls, 'autoTile-generateFrames')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.autoTile-generateFrames.title') }}
@@ -27,8 +29,13 @@
 				v-model="form.strideY"
 			/>
 			<div class="text">{{ t('components.autoTile-generateFrames-count.label') }}</div>
-			<NumberBox id="autoTile-generateFrames-count"
-				v-tip="t('components.autoTile-generateFrames-count.tip')" min="1" max="255" v-model="form.count" />
+			<NumberBox
+				id="autoTile-generateFrames-count"
+				v-tip="t('components.autoTile-generateFrames-count.tip')"
+				min="1"
+				max="255"
+				v-model="form.count"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -69,4 +76,3 @@ const form = FrameGenerator.form;
 	bottom: 10px;
 }
 </style>
-

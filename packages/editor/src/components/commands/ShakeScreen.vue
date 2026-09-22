@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="shakeScreen"
-				:ref="registryRef(fieldEls, 'shakeScreen')" @confirm="onConfirm">
+	<WindowFrame id="shakeScreen" :ref="registryRef(fieldEls, 'shakeScreen')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.shakeScreen.title') }}
@@ -9,19 +8,37 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.shakeScreen-mode.label') }}</div>
-			<SelectBox id="shakeScreen-mode"
-				:ref="registryRef(fieldEls, 'shakeScreen-mode')" v-focus v-model="form.mode" />
+			<SelectBox
+				id="shakeScreen-mode"
+				:ref="registryRef(fieldEls, 'shakeScreen-mode')"
+				v-focus
+				v-model="form.mode"
+			/>
 			<div class="text">{{ t('components.shakeScreen-power.label') }}</div>
-			<NumberBox id="shakeScreen-power"
+			<NumberBox
+				id="shakeScreen-power"
 				:ref="registryRef(fieldEls, 'shakeScreen-power')"
-				v-tip="t('components.shakeScreen-power.tip')" min="1" max="10" v-model="power" />
+				v-tip="t('components.shakeScreen-power.tip')"
+				min="1"
+				max="10"
+				v-model="power"
+			/>
 			<div class="text">{{ t('components.shakeScreen-speed.label') }}</div>
-			<NumberBox id="shakeScreen-speed"
+			<NumberBox
+				id="shakeScreen-speed"
 				:ref="registryRef(fieldEls, 'shakeScreen-speed')"
-				v-tip="t('components.shakeScreen-speed.tip')" min="1" max="10" v-model="speed" />
+				v-tip="t('components.shakeScreen-speed.tip')"
+				min="1"
+				max="10"
+				v-model="speed"
+			/>
 			<div class="text">{{ t('components.shakeScreen-easingId.label') }}</div>
-			<SelectBox id="shakeScreen-easingId"
-				:ref="registryRef(fieldEls, 'shakeScreen-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="shakeScreen-easingId"
+				:ref="registryRef(fieldEls, 'shakeScreen-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.shakeScreen-duration.label') }}</div>
 			<NumberBox
 				id="shakeScreen-duration"
@@ -33,8 +50,12 @@
 				v-model="duration"
 			/>
 			<div class="text">{{ t('components.shakeScreen-wait.label') }}</div>
-			<SelectBox id="shakeScreen-wait"
-				:ref="registryRef(fieldEls, 'shakeScreen-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="shakeScreen-wait"
+				:ref="registryRef(fieldEls, 'shakeScreen-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -113,5 +134,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

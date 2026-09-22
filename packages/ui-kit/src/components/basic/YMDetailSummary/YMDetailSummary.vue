@@ -11,7 +11,7 @@ interface DetailSummaryElement extends HTMLElement {
 	toggle(): void;
 	on(
 		type: string,
-	listener: (event: Event) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -49,13 +49,13 @@ const pointerdown = (event: PointerEvent): void => {
 	}
 };
 
-	const on = (
-		type: string,
-		listener: (event: Event) => void,
-		options?: boolean | AddEventListenerOptions
-	): void => {
-		root.value?.addEventListener(type, listener as EventListener, options);
-	};
+const on = (
+	type: string,
+	listener: (event: Event) => void,
+	options?: boolean | AddEventListenerOptions
+): void => {
+	root.value?.addEventListener(type, listener as EventListener, options);
+};
 
 onMounted(() => {
 	const el = root.value;
@@ -69,12 +69,7 @@ defineExpose({ toggle, on, root });
 </script>
 
 <template>
-	<div
-		ref="root"
-		class="detail-summary"
-		:class="$style.summary"
-		:id="props.id"
-	>
+	<div ref="root" class="detail-summary" :class="$style.summary" :id="props.id">
 		<slot />
 	</div>
 </template>

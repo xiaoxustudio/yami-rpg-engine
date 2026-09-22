@@ -1,6 +1,12 @@
 <template>
-	<WindowFrame id="enum"
-				:ref="registryRef(enumEls, 'enum')" show-apply mode="center" @apply="onApply" @confirm="onConfirm">
+	<WindowFrame
+		id="enum"
+		:ref="registryRef(enumEls, 'enum')"
+		show-apply
+		mode="center"
+		@apply="onApply"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.enum.title') }}
@@ -23,32 +29,44 @@
 		</div>
 		<div class="field-set" id="enum-properties-fieldset">
 			<div class="legend">{{ t('components.enum-properties-flex.label') }}</div>
-			<div class="flex-box" id="enum-properties-flex"
-				:ref="registryRef(enumEls, 'enum-properties-flex')">
+			<div
+				class="flex-box"
+				id="enum-properties-flex"
+				:ref="registryRef(enumEls, 'enum-properties-flex')"
+			>
 				<div class="flex-item">
 					<div class="text">{{ t('components.enum-name.label') }}</div>
-					<TextBox id="enum-name"
-				v-tip="t('components.enum-name.tip')"
-				:ref="registryRef(enumEls, 'enum-name')" menu="tag-localization" @input="onNameInput" />
+					<TextBox
+						id="enum-name"
+						v-tip="t('components.enum-name.tip')"
+						:ref="registryRef(enumEls, 'enum-name')"
+						menu="tag-localization"
+						@input="onNameInput"
+					/>
 				</div>
 				<div class="flex-item">
 					<div class="text">{{ t('components.enum-value.label') }}</div>
-					<TextBox id="enum-value"
-					:placeholder="t('components.enum-value.placeholder')"
-				v-tip="t('components.enum-value.tip')"
-				:ref="registryRef(enumEls, 'enum-value')" menu="tag-localization" @input="onValueInput" />
+					<TextBox
+						id="enum-value"
+						:placeholder="t('components.enum-value.placeholder')"
+						v-tip="t('components.enum-value.tip')"
+						:ref="registryRef(enumEls, 'enum-value')"
+						menu="tag-localization"
+						@input="onValueInput"
+					/>
 				</div>
 				<div class="flex-item" id="enum-spacing-box" />
 				<div class="flex-item">
 					<div class="text">{{ t('components.enum-note.label') }}</div>
-					<TextArea id="enum-note"
-				v-tip="t('components.enum-note.tip')"
-				:ref="registryRef(enumEls, 'enum-note')" />
+					<TextArea
+						id="enum-note"
+						v-tip="t('components.enum-note.tip')"
+						:ref="registryRef(enumEls, 'enum-note')"
+					/>
 				</div>
 			</div>
 		</div>
-		<TextBox id="enum-searcher"
-				:ref="registryRef(enumEls, 'enum-searcher')" name="search" />
+		<TextBox id="enum-searcher" :ref="registryRef(enumEls, 'enum-searcher')" name="search" />
 	</WindowFrame>
 </template>
 
@@ -194,4 +212,3 @@ onMounted(() => {});
 	bottom: 10px;
 }
 </style>
-

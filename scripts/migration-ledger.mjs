@@ -25,7 +25,7 @@
 //   migration-ledger.mjs  **跨轴总账 + 棘轮**；消费上面三者的口径，不替代它们的明细
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
 import {
 	ROOT,
 	SCAN_DIRS,
@@ -42,7 +42,12 @@ import {
 	UI_SINGLETON_RE
 } from './lib/scan.mjs';
 import { loadDomWhitelist, readDomWhitelist } from './lib/dom-whitelist.mjs';
-import { uiSlotCoverage, declaredSlots } from './lib/ui-slots.mjs';
+import {
+	uiSlotCoverage,
+	declaredSlots,
+	uiWindowRel,
+	legacyOnlyStoreSlots
+} from './lib/ui-slots.mjs';
 
 const BASELINE_FILE = join(ROOT, 'scripts', 'migration-ledger-baseline.json');
 
@@ -114,12 +119,17 @@ function buildAxes() {
 				const covered = srcWithTests.filter((f) => isWhitelisted(f.rel));
 				// 一条 glob 都没覆盖到任何文件 ⇒ 要么写错了，要么文件已删（陈旧白名单）
 				const res = entries.map((e) => {
+					// glob → 正则（`**` 跨目录、`*` 不跨目录）。
+					//
+					// ⚠️ 必须**一趟**替换完（用回调区分 `**` 与 `*`）。早先写法是先替 `**`→`.*`
+					// 再替 `*`→`[^/]*`，为不让第二趟吃掉第一趟产出的 `*`，中间塞了个 0 号哨兵字符
+					// —— 而正则里的控制字符会被 `eslint/no-control-regex` 判为坏味道（它是对的）。
+					// 一趟替换既去掉哨兵，又保证与 `scripts/lib/dom-whitelist.mjs` 的 `globToRegExp()`
+					// **逐字同源**（`dom-whitelist-drift` 轴正是靠这两份实现互相印证）。
 					const re = new RegExp(
 						`^${String(e.pattern)
 							.replace(/[.+^${}()|[\]\\]/g, '\\$&')
-							.replace(/\*\*/g, '\u0000')
-							.replace(/\*/g, '[^/]*')
-							.replace(/\u0000/g, '.*')}$`
+							.replace(/\*\*|\*/g, (m) => (m === '**' ? '.*' : '[^/]*'))}$`
 					);
 					return {
 						pattern: e.pattern,
@@ -164,19 +174,25 @@ function buildAxes() {
 		},
 		{
 			id: 'legacy-ui-refs',
-			label: '引用遗留 UI 单例（@app/ui/*，不含元素注册表）',
+			label: '引用遗留 UI 单例（@app/engine/ui/legacy/*）',
 			target: 'zero',
 			measure() {
-				// 口径：`@app/ui/` 下的**遗留单例**模块（`ui-window.ts` 等）。
+				// 口径：遗留 UI 单例家族（`ui-window.ts` 及其域模块）的**静态依赖**。
 				//
-				// ⚠️ 必须排除 `@app/ui/element-registry`：它是**元素注册表**（SFC 用
-				// `:ref="registryRef(uiEls, id)"` 把元素登记进去、模块侧按 id 取用的那个 Map），
-				// 与「遗留 UI 单例」是两件不相干的事。把它算进来会制造假回归 ——
-				// 实测 2026-09-18：`engine/layout/layout.ts` 因为改读 `uiEls`（修启动崩溃）
-				// 反而让这条轴从 4 涨到 5，纯属噪音。
+				// ⚠️ 2026-09-21 修过一次「仪器瞎了」，两个原因叠加，读数假 0：
 				//
-				// 同理，`@app/engine/ui/*`（element-classes 等）也不属于遗留层。
-				const r = importRefs(src, /^@app\/ui\/(?!element-registry$|element-registry\.)/);
+				//  1. **路径过时**：正则还写着 `^@app/ui/…`，而 P5-B 纯搬运已把 `src/ui/` 搬到
+				//     `src/engine/ui/legacy/` ⇒ 一条都不匹配。（同轮把 `ui-slots.mjs` /
+				//     `self-test.mjs` 都改成了动态定位，**只有这里漏了**。这条轴的标签一直写着
+				//     「0 files=0」，读起来就像「遗留层已经没人引用了」——而 `ui-singleton-members`
+				//     同时报 103 处挂载。**两条轴自相矛盾时，先怀疑仪器。**）
+				//  2. **写法过窄**：`collectImports` 当时只认 `import … from`，而现在的引用点
+				//     `tools/window-cluster.ts` 用的是 **`export { UI } from '…'`**（再导出）。
+				//     只改路径不补写法，这条轴**仍然是 0**。所以同轮给 `collectImports` 补了
+				//     `export … from`（它也确实是静态运行时依赖）。
+				//
+				// 保留的排除：`@app/engine/ui/*`（元素类等）不属于遗留层。
+				const r = importRefs(src, /^@app\/engine\/ui\/legacy\//);
 				return {
 					value: { total: r.total, runtime: r.runtime, files: r.perFile.length },
 					detail: r.perFile.slice(0, 20)
@@ -185,11 +201,18 @@ function buildAxes() {
 		},
 		{
 			id: 'legacy-ui-lines',
-			label: '遗留层 src/ui/* 行数',
+			label: '遗留层 UI 单例目录行数（engine/ui/legacy/*）',
 			target: 'zero',
 			measure() {
-				const dir = join('packages', 'editor', 'src', 'ui');
-				const files = collectFiles({ dirs: [dir], includeTests: true });
+				// ⚠️ 目录必须**动态取**（`uiWindowRel()` 的 dirname），不能写死 `src/ui`。
+				//
+				// 这条轴曾经写死 `packages/editor/src/ui`，而 P5-B 的纯搬运把 8 个域模块搬到了
+				// `src/engine/ui/legacy/`。`collectFiles` 对**不存在的目录返回 `[]`（不抛错）**，
+				// 于是它读到 0 并报「✓ 已完成」——而遗留代码一行都没少。
+				// 这是本仓第 N 次「挪了目录、仪器跟着瞎」，教训写在 `ui-slots.mjs` 头部。
+				const winRel = uiWindowRel();
+				const dir = winRel === null ? null : dirname(winRel);
+				const files = dir === null ? [] : collectFiles({ dirs: [dir], includeTests: true });
 				const rows = files.map(({ full, rel }) => ({
 					rel,
 					lines: readSource(full).split('\n').length
@@ -238,6 +261,30 @@ function buildAxes() {
 					// 否则第 ② 步的纯搬运会让它静默返回空数组 —— 那同样是「仪器瞎了」。
 					value: { total: r.total, files: r.fileCount, declared: declaredSlots().length },
 					detail: r.perFile
+				};
+			}
+		},
+		{
+			id: '1c-store-slot-gaps',
+			label: '实现只在遗留层的 store 槽位（1c 第 ③ 步工作单）',
+			target: 'zero',
+			measure() {
+				// 为什么必须有这条轴（2026-09-21 实测的度量缺口）：
+				//
+				// `ui-slot-coverage.total`（= storeRefsUnassigned）**恒为 0** —— `assignedSlots()`
+				// 把遗留目录里的 `UI.x = …` 也算成「已赋值」。于是「删掉遗留层会让哪些动作静默
+				// 失效」在台账上完全不可见，只有 PHASE-1C 附录三里**手工数**的「store 尚缺 41 个
+				// 槽位」记着这件事，而那个数字没有任何轴守着（文档会过时，轴不会）。
+				//
+				// 本轴数的是「实现只在遗留目录里」的 store 引用槽位：搬走一个降 1。
+				// 与 `ui-singleton-members` **同生共死** —— 两条轴同时归零才算 1c 收口，
+				// 这条自证写在 `self-test.mjs` 里。
+				//
+				// 交叉验证：首轮实测 **41**，与 PHASE-1C 附录三手工数出的 41 一致 —— 口径正确。
+				const slots = legacyOnlyStoreSlots();
+				return {
+					value: { total: slots.length, storeRefs: uiSlotCoverage().storeRefs },
+					detail: slots.map((rel) => ({ rel }))
 				};
 			}
 		},
@@ -463,7 +510,15 @@ function renderValue(value) {
 }
 
 function renderTable(axes, cmp) {
-	const w = (s) => [...String(s)].reduce((n, c) => n + (c.charCodeAt(0) > 0x2e80 ? 2 : 1), 0);
+	// 视觉宽度：CJK（码点 > 0x2E80）按 2 列算，其余按 1 列。
+	// 用 for-of 逐码点累加，而不是 `[...String(s)]` —— 后者的 spread 会被
+	// `typescript/no-misused-spread` 判为「可能拆坏 emoji」，而这里确实只关心码点宽度。
+	// （`Intl.Segmenter` 才是"按字素簇"的正确做法，但本表的列宽只需码点级近似。）
+	const w = (s) => {
+		let n = 0;
+		for (const c of String(s)) n += c.charCodeAt(0) > 0x2e80 ? 2 : 1;
+		return n;
+	};
 	const pad = (s, n) => String(s) + ' '.repeat(Math.max(0, n - w(s)));
 	// 列值超过列宽时 `pad` 会原样返回、**不留分隔** ⇒ 相邻列的「当前」与「基线」会连成
 	// 一串，被读成一个数。实测就有人把 `…engineBacked=7` 后面的 `0 declared=…` 读成了

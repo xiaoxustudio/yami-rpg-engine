@@ -42,7 +42,11 @@ interface NumberVarApi extends HTMLElement {
 	enable: () => void;
 	disable: () => void;
 	getFocus: (modeArg?: string) => HTMLElement | null | undefined;
-	on: (type: string, listener: (event: Event) => void, options?: boolean | AddEventListenerOptions) => void;
+	on: (
+		type: string,
+		listener: (event: Event) => void,
+		options?: boolean | AddEventListenerOptions
+	) => void;
 }
 
 const mode = ref<'constant' | 'variable'>('constant');
@@ -230,12 +234,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div
-		ref="root"
-		class="number-var"
-		:class="[mode, { disabled }]"
-		:id="props.id"
-	>
+	<div ref="root" class="number-var" :class="[mode, { disabled }]" :id="props.id">
 		<YMNumberBox
 			v-show="mode === 'constant'"
 			ref="numBoxRef"

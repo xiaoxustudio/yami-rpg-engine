@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setItem"
-				:ref="registryRef(fieldEls, 'setItem')" @confirm="onConfirm">
+	<WindowFrame id="setItem" :ref="registryRef(fieldEls, 'setItem')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setItem.title') }}
@@ -9,17 +8,30 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setItem-item.label') }}</div>
-			<CustomBox id="setItem-item"
+			<CustomBox
+				id="setItem-item"
 				:ref="registryRef(fieldEls, 'setItem-item')"
-				v-tip="t('components.setItem-item.tip')" v-focus type="item" v-model="form.item" />
+				v-tip="t('components.setItem-item.tip')"
+				v-focus
+				type="item"
+				v-model="form.item"
+			/>
 			<div class="text">{{ t('components.setItem-operation.label') }}</div>
-			<SelectBox id="setItem-operation"
+			<SelectBox
+				id="setItem-operation"
 				v-tip="t('components.setItem-operation.tip')"
-				:ref="registryRef(fieldEls, 'setItem-operation')" v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setItem-operation')"
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setItem-quantity.label') }}</div>
-			<NumberVar id="setItem-quantity"
+			<NumberVar
+				id="setItem-quantity"
 				:ref="registryRef(fieldEls, 'setItem-quantity')"
-				v-tip="t('components.setItem-quantity.tip')" min="1" max="10000" v-model="form.quantity" />
+				v-tip="t('components.setItem-quantity.tip')"
+				min="1"
+				max="10000"
+				v-model="form.quantity"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -71,5 +83,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -144,8 +144,14 @@ const inputInput = (): void => {
 
 defineExpose({ read, write, insert, enable, disable, getFocus, on, input: inputEl, root });
 
-watch(() => props.modelValue, (val) => write(val));
-watch(() => props.disabled, (val) => (val ? disable() : enable()));
+watch(
+	() => props.modelValue,
+	(val) => write(val)
+);
+watch(
+	() => props.disabled,
+	(val) => (val ? disable() : enable())
+);
 
 type TextAreaHost = HTMLElement & {
 	input: HTMLTextAreaElement | null;
@@ -257,4 +263,3 @@ onMounted(() => {
 	height: calc(100% - 20px);
 }
 </style>
-

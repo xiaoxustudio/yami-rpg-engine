@@ -107,7 +107,16 @@ onMounted(() => {
 	element.select = select;
 	// P4b：`selection` 走元素数据（WeakMap）；下面循环里的 `visible` 等仍是组件自己的实例属性
 	elementDataOf<{ selection: HTMLElement | null }>(element).selection = selection.value;
-	for (const key of ['x', 'y', 'width', 'height', 'scaleX', 'scaleY', 'visible', 'saveData'] as const) {
+	for (const key of [
+		'x',
+		'y',
+		'width',
+		'height',
+		'scaleX',
+		'scaleY',
+		'visible',
+		'saveData'
+	] as const) {
 		Object.defineProperty(element, key, {
 			get: () => state[key],
 			set: (value: unknown) => {

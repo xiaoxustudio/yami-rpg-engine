@@ -140,7 +140,9 @@ onMounted(() => {
 			const cls = root.value?.className ?? '';
 			api.mode = cls.includes('variable') ? 'variable' : 'constant';
 			api.areaBox = (ym.value?.root?.querySelector('.text-area') as HTMLElement) ?? null;
-			elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(varBoxRef.value);
+			elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(
+				varBoxRef.value
+			);
 			nextTick(() => {
 				emit('update:modelValue', read());
 			});

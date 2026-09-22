@@ -74,7 +74,7 @@ for (const { full, rel } of ALL) {
 	if (only && rel !== only) continue;
 	const src = readSource(full);
 	if (!CAST_RE.test(src)) continue;
-	if (/\.vue$/.test(rel)) {
+	if (rel.endsWith('.vue')) {
 		skippedFiles.push({
 			rel,
 			why: '.vue（脚本段字面量另有语义）',
@@ -205,7 +205,7 @@ for (const { full, rel } of ALL) {
 	if (only && rel !== only) continue;
 	const src = readSource(full);
 	if (!CAST_RE.test(src)) continue;
-	if (/\.vue$/.test(rel)) continue;
+	if (rel.endsWith('.vue')) continue;
 	const code = codeOnly(src);
 	const lines = src.split('\n');
 	const codeLines = code.split('\n');

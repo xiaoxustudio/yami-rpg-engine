@@ -1,6 +1,9 @@
 <template>
-	<WindowFrame id="translateActor"
-				:ref="registryRef(fieldEls, 'translateActor')" @confirm="onConfirm">
+	<WindowFrame
+		id="translateActor"
+		:ref="registryRef(fieldEls, 'translateActor')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.translateActor.title') }}
@@ -9,13 +12,22 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.translateActor-actor.label') }}</div>
-			<CustomBox id="translateActor-actor"
+			<CustomBox
+				id="translateActor-actor"
 				:ref="registryRef(fieldEls, 'translateActor-actor')"
-				v-tip="t('components.translateActor-actor.tip')" v-focus type="actor" v-model="form.actor" />
+				v-tip="t('components.translateActor-actor.tip')"
+				v-focus
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.translateActor-angle.label') }}</div>
-			<CustomBox id="translateActor-angle"
+			<CustomBox
+				id="translateActor-angle"
 				:ref="registryRef(fieldEls, 'translateActor-angle')"
-				v-tip="t('components.translateActor-angle.tip')" type="angle" v-model="form.angle" />
+				v-tip="t('components.translateActor-angle.tip')"
+				type="angle"
+				v-model="form.angle"
+			/>
 			<div class="text">{{ t('components.translateActor-distance.label') }}</div>
 			<NumberVar
 				id="translateActor-distance"
@@ -29,8 +41,12 @@
 				v-model="form.distance"
 			/>
 			<div class="text">{{ t('components.translateActor-easingId.label') }}</div>
-			<SelectBox id="translateActor-easingId"
-				:ref="registryRef(fieldEls, 'translateActor-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="translateActor-easingId"
+				:ref="registryRef(fieldEls, 'translateActor-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.translateActor-duration.label') }}</div>
 			<NumberVar
 				id="translateActor-duration"
@@ -42,8 +58,12 @@
 				v-model="form.duration"
 			/>
 			<div class="text">{{ t('components.translateActor-wait.label') }}</div>
-			<SelectBox id="translateActor-wait"
-				:ref="registryRef(fieldEls, 'translateActor-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="translateActor-wait"
+				:ref="registryRef(fieldEls, 'translateActor-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -99,5 +119,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="setShortcut"
-				:ref="registryRef(fieldEls, 'setShortcut')" @confirm="onConfirm">
+	<WindowFrame id="setShortcut" :ref="registryRef(fieldEls, 'setShortcut')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setShortcut.title') }}
@@ -9,29 +8,56 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.setShortcut-actor.label') }}</div>
-			<CustomBox id="setShortcut-actor"
+			<CustomBox
+				id="setShortcut-actor"
 				:ref="registryRef(fieldEls, 'setShortcut-actor')"
-				v-tip="t('components.setShortcut-actor.tip')" type="actor" v-model="form.actor" />
+				v-tip="t('components.setShortcut-actor.tip')"
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.setShortcut-operation.label') }}</div>
-			<SelectBox id="setShortcut-operation"
+			<SelectBox
+				id="setShortcut-operation"
 				v-tip="t('components.setShortcut-operation.tip')"
-				:ref="registryRef(fieldEls, 'setShortcut-operation')" v-focus v-model="form.operation" />
+				:ref="registryRef(fieldEls, 'setShortcut-operation')"
+				v-focus
+				v-model="form.operation"
+			/>
 			<div class="text">{{ t('components.setShortcut-key.label') }}</div>
-			<SelectVar id="setShortcut-key"
+			<SelectVar
+				id="setShortcut-key"
 				:ref="registryRef(fieldEls, 'setShortcut-key')"
-				v-tip="t('components.setShortcut-key.tip')" v-focus v-model="form.key" />
+				v-tip="t('components.setShortcut-key.tip')"
+				v-focus
+				v-model="form.key"
+			/>
 			<div class="text">{{ t('components.setShortcut-key2.label') }}</div>
-			<SelectVar id="setShortcut-key2"
+			<SelectVar
+				id="setShortcut-key2"
 				v-tip="t('components.setShortcut-key2.tip')"
-				:ref="registryRef(fieldEls, 'setShortcut-key2')" v-model="form.key2" />
+				:ref="registryRef(fieldEls, 'setShortcut-key2')"
+				v-model="form.key2"
+			/>
 			<div class="text">{{ t('components.setShortcut-itemId.label') }}</div>
-			<FileVar id="setShortcut-itemId"
+			<FileVar
+				id="setShortcut-itemId"
 				v-tip="t('components.setShortcut-itemId.tip')"
-				:ref="registryRef(fieldEls, 'setShortcut-itemId')" v-focus type="file" filter="item" v-model="form.itemId" />
+				:ref="registryRef(fieldEls, 'setShortcut-itemId')"
+				v-focus
+				type="file"
+				filter="item"
+				v-model="form.itemId"
+			/>
 			<div class="text">{{ t('components.setShortcut-skillId.label') }}</div>
-			<FileVar id="setShortcut-skillId"
+			<FileVar
+				id="setShortcut-skillId"
 				v-tip="t('components.setShortcut-skillId.tip')"
-				:ref="registryRef(fieldEls, 'setShortcut-skillId')" v-focus type="file" filter="skill" v-model="form.skillId" />
+				:ref="registryRef(fieldEls, 'setShortcut-skillId')"
+				v-focus
+				type="file"
+				filter="skill"
+				v-model="form.skillId"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -62,10 +88,13 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setShortcut-operation', ['set-item-shortcut', 'set-skill-shortcut', 'delete-shortcut', 'swap-shortcuts'], (items) =>
-		fieldEls.get('setShortcut-operation')?.loadItems?.(items)
+	useLocalizedOptions(
+		'setShortcut-operation',
+		['set-item-shortcut', 'set-skill-shortcut', 'delete-shortcut', 'swap-shortcuts'],
+		(items) => fieldEls.get('setShortcut-operation')?.loadItems?.(items)
 	);
-	fieldEls.get('setShortcut-operation')
+	fieldEls
+		.get('setShortcut-operation')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{
@@ -97,5 +126,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

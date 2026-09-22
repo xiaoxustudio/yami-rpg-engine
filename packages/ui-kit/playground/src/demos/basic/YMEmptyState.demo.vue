@@ -18,15 +18,8 @@ const customIcon =
 			<YMButton size="sm" @click="mode = 'custom'">Custom</YMButton>
 		</div>
 		<div class="stage">
-			<YMEmptyState
-				v-if="mode === 'default'"
-				message="No data found"
-			/>
-			<YMEmptyState
-				v-else
-				message="Drop files here to import assets"
-				:icon="customIcon"
-			/>
+			<YMEmptyState v-if="mode === 'default'" message="No data found" />
+			<YMEmptyState v-else message="Drop files here to import assets" :icon="customIcon" />
 		</div>
 	</section>
 </template>

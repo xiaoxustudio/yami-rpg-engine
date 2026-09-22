@@ -9,19 +9,21 @@ interface FileItemContext {
 
 const contextMap = new WeakMap<object, Map<HTMLElement, FileItemContext>>();
 
-const getContextOf = (file: object) => (node: HTMLElement): FileItemContext => {
-	let map = contextMap.get(file);
-	if (!map) {
-		map = new Map();
-		contextMap.set(file, map);
-	}
-	let context = map.get(node);
-	if (!context) {
-		context = { expanded: false };
-		map.set(node, context);
-	}
-	return context;
-};
+const getContextOf =
+	(file: object) =>
+	(node: HTMLElement): FileItemContext => {
+		let map = contextMap.get(file);
+		if (!map) {
+			map = new Map();
+			contextMap.set(file, map);
+		}
+		let context = map.get(node);
+		if (!context) {
+			context = { expanded: false };
+			map.set(node, context);
+		}
+		return context;
+	};
 
 let inoCounter = 1;
 
@@ -97,7 +99,12 @@ ui.children = [
 	new FileItem('logo.anim', 'animation', ui)
 ];
 
-const bodyRef = ref<{ el: HTMLElement | null; updateFiles(): void; setViewIndex(index: number): void; select(...files: unknown[]): void } | null>(null);
+const bodyRef = ref<{
+	el: HTMLElement | null;
+	updateFiles(): void;
+	setViewIndex(index: number): void;
+	select(...files: unknown[]): void;
+} | null>(null);
 
 const current = ref<FolderItem>(assets);
 const viewIndex = ref(0);
@@ -170,7 +177,10 @@ const fileSystemApi = {
 	path: (p: string) => p,
 	route: (p: string) => p,
 	getPath: (p: string) => p,
-	getFileName: (dir: string, name: string) => ({ path: `${dir}/${name}`, route: `${dir}/${name}` }),
+	getFileName: (dir: string, name: string) => ({
+		path: `${dir}/${name}`,
+		route: `${dir}/${name}`
+	}),
 	getImageResolution: () => Promise.resolve({ width: 0, height: 0 }),
 	showInExplorer: () => {},
 	showOpenDialog: () => Promise.resolve({ filePaths: [] }),
@@ -205,7 +215,10 @@ onMounted(() => {
 <template>
 	<section class="demo">
 		<h2>YMFileBodyPane</h2>
-		<p class="desc">文件正文区：根据 nav.selections 展示目录内容，支持 list/small/medium/large/huge 五种视图与多选。</p>
+		<p class="desc">
+			文件正文区：根据 nav.selections 展示目录内容，支持 list/small/medium/large/huge
+			五种视图与多选。
+		</p>
 		<div class="row">
 			<YMButton variant="primary" @click="openAssets">/assets</YMButton>
 			<YMButton @click="openMaps">/assets/Maps</YMButton>

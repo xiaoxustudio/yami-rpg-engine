@@ -143,7 +143,10 @@ onMounted(() => {
 <template>
 	<section class="demo">
 		<h2>YMCommandList</h2>
-		<p class="desc">命令列表：通过 options 注入 parse / CommandHistory / clipboard 等适配器，write(data) 渲染嵌套命令。</p>
+		<p class="desc">
+			命令列表：通过 options 注入 parse / CommandHistory / clipboard 等适配器，write(data)
+			渲染嵌套命令。
+		</p>
 		<div class="row">
 			<YMButton variant="primary" @click="addCommand">Add Command</YMButton>
 			<YMButton @click="deleteSelected">Delete Selected</YMButton>

@@ -126,4 +126,3 @@ onMounted(() => {
 	bottom: 10px;
 }
 </style>
-

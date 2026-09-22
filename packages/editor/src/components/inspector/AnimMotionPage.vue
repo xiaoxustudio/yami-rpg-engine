@@ -138,7 +138,7 @@ onMounted(() => {
 	const elements = [elSkip.value?.root, elLoop.value?.root, elLoopStart.value?.root].filter(
 		(el): el is HTMLElement => el != null
 	);
-	bindInput(elements, animMotion, Animation as unknown as { history: unknown });
+	bindInput(elements, animMotion, Animation);
 
 	const el = inspectorEls.get('animMotion-vue-mount');
 	if (el) {

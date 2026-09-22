@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="loadImage"
-				:ref="registryRef(fieldEls, 'loadImage')" @confirm="onConfirm">
+	<WindowFrame id="loadImage" :ref="registryRef(fieldEls, 'loadImage')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.loadImage.title') }}
@@ -8,48 +7,79 @@
 		></template>
 
 		<div class="grid-box">
-		<div class="text">{{ t('components.loadImage-element.label') }}</div>
-		<CustomBox id="loadImage-element"
+			<div class="text">{{ t('components.loadImage-element.label') }}</div>
+			<CustomBox
+				id="loadImage-element"
 				:ref="registryRef(fieldEls, 'loadImage-element')"
-				v-tip="t('components.loadImage-element.tip')" v-focus type="element" v-model="form.element" />
-		<div class="text">{{ t('components.loadImage-type.label') }}</div>
-		<SelectBox id="loadImage-type"
+				v-tip="t('components.loadImage-element.tip')"
+				v-focus
+				type="element"
+				v-model="form.element"
+			/>
+			<div class="text">{{ t('components.loadImage-type.label') }}</div>
+			<SelectBox
+				id="loadImage-type"
 				v-tip="t('components.loadImage-type.tip')"
-				:ref="registryRef(fieldEls, 'loadImage-type')" v-model="form.type" />
-		<div class="text">{{ t('components.loadImage-actor.label') }}</div>
-		<CustomBox id="loadImage-actor"
+				:ref="registryRef(fieldEls, 'loadImage-type')"
+				v-model="form.type"
+			/>
+			<div class="text">{{ t('components.loadImage-actor.label') }}</div>
+			<CustomBox
+				id="loadImage-actor"
 				v-tip="t('components.loadImage-actor.tip')"
-				:ref="registryRef(fieldEls, 'loadImage-actor')" type="actor" v-model="form.actor" />
-		<div class="text">{{ t('components.loadImage-skill.label') }}</div>
-		<CustomBox id="loadImage-skill"
+				:ref="registryRef(fieldEls, 'loadImage-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
+			<div class="text">{{ t('components.loadImage-skill.label') }}</div>
+			<CustomBox
+				id="loadImage-skill"
 				v-tip="t('components.loadImage-skill.tip')"
-				:ref="registryRef(fieldEls, 'loadImage-skill')" type="skill" v-model="form.skill" />
-		<div class="text">{{ t('components.loadImage-state.label') }}</div>
-		<CustomBox id="loadImage-state"
+				:ref="registryRef(fieldEls, 'loadImage-skill')"
+				type="skill"
+				v-model="form.skill"
+			/>
+			<div class="text">{{ t('components.loadImage-state.label') }}</div>
+			<CustomBox
+				id="loadImage-state"
 				v-tip="t('components.loadImage-state.tip')"
-				:ref="registryRef(fieldEls, 'loadImage-state')" type="state" v-model="form.state" />
-		<div class="text">{{ t('components.loadImage-equipment.label') }}</div>
-		<CustomBox id="loadImage-equipment"
+				:ref="registryRef(fieldEls, 'loadImage-state')"
+				type="state"
+				v-model="form.state"
+			/>
+			<div class="text">{{ t('components.loadImage-equipment.label') }}</div>
+			<CustomBox
+				id="loadImage-equipment"
 				v-tip="t('components.loadImage-equipment.tip')"
-				:ref="registryRef(fieldEls, 'loadImage-equipment')" type="equipment" v-model="form.equipment" />
-		<div class="text">{{ t('components.loadImage-item.label') }}</div>
-		<CustomBox id="loadImage-item"
+				:ref="registryRef(fieldEls, 'loadImage-equipment')"
+				type="equipment"
+				v-model="form.equipment"
+			/>
+			<div class="text">{{ t('components.loadImage-item.label') }}</div>
+			<CustomBox
+				id="loadImage-item"
 				v-tip="t('components.loadImage-item.tip')"
-				:ref="registryRef(fieldEls, 'loadImage-item')" type="item" v-model="form.item" />
-		<div class="text">{{ t('components.loadImage-key.label') }}</div>
-		<SelectVar id="loadImage-key"
+				:ref="registryRef(fieldEls, 'loadImage-item')"
+				type="item"
+				v-model="form.item"
+			/>
+			<div class="text">{{ t('components.loadImage-key.label') }}</div>
+			<SelectVar
+				id="loadImage-key"
 				v-tip="t('components.loadImage-key.tip')"
-				:ref="registryRef(fieldEls, 'loadImage-key')" v-model="form.key" />
-		<div class="text">{{ t('components.loadImage-variable.label') }}</div>
-		<CustomBox
-			id="loadImage-variable"
+				:ref="registryRef(fieldEls, 'loadImage-key')"
+				v-model="form.key"
+			/>
+			<div class="text">{{ t('components.loadImage-variable.label') }}</div>
+			<CustomBox
+				id="loadImage-variable"
 				v-tip="t('components.loadImage-variable.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-variable')"
-			v-focus
-			type="variable"
-			filter="string"
-			v-model="form.variable"
-		/>
+				v-focus
+				type="variable"
+				filter="string"
+				v-model="form.variable"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -79,11 +109,30 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('loadImage-type', ['actor-portrait', 'skill-icon', 'state-icon', 'equipment-icon', 'item-icon', 'shortcut-icon', 'base64'], (items) =>
-		fieldEls.get('loadImage-type')?.loadItems?.(items),
-		{ 'actor-portrait': 'command.loadImage.actor-portrait', 'skill-icon': 'command.loadImage.skill-icon', 'state-icon': 'command.loadImage.state-icon', 'equipment-icon': 'command.loadImage.equipment-icon', 'item-icon': 'command.loadImage.item-icon', 'shortcut-icon': 'command.loadImage.shortcut-icon', 'base64': 'command.loadImage.base64' }
+	useLocalizedOptions(
+		'loadImage-type',
+		[
+			'actor-portrait',
+			'skill-icon',
+			'state-icon',
+			'equipment-icon',
+			'item-icon',
+			'shortcut-icon',
+			'base64'
+		],
+		(items) => fieldEls.get('loadImage-type')?.loadItems?.(items),
+		{
+			'actor-portrait': 'command.loadImage.actor-portrait',
+			'skill-icon': 'command.loadImage.skill-icon',
+			'state-icon': 'command.loadImage.state-icon',
+			'equipment-icon': 'command.loadImage.equipment-icon',
+			'item-icon': 'command.loadImage.item-icon',
+			'shortcut-icon': 'command.loadImage.shortcut-icon',
+			base64: 'command.loadImage.base64'
+		}
 	);
-	fieldEls.get('loadImage-type')
+	fieldEls
+		.get('loadImage-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'actor-portrait', targets: [fieldEls.get('loadImage-actor')] },
@@ -119,5 +168,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

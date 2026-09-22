@@ -9,13 +9,21 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.stateGetter-type.label') }}</div>
-			<SelectBox id="stateGetter-type"
+			<SelectBox
+				id="stateGetter-type"
 				v-tip="t('components.stateGetter-type.tip')"
-				:ref="fieldRef('stateGetter-type')" v-focus v-model="form.type" />
+				:ref="fieldRef('stateGetter-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.stateGetter-actor.label') }}</div>
-			<CustomBox id="stateGetter-actor"
+			<CustomBox
+				id="stateGetter-actor"
 				v-tip="t('components.stateGetter-actor.tip')"
-				:ref="fieldRef('stateGetter-actor')" type="actor" v-model="form.actor" />
+				:ref="fieldRef('stateGetter-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.stateGetter-stateId.label') }}</div>
 			<CustomBox
 				id="stateGetter-stateId"
@@ -91,5 +99,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

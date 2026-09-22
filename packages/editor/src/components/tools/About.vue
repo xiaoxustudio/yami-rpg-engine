@@ -37,23 +37,29 @@
 				<br />
 			</div>
 			<div class="text">Editor</div>
-			<div class="text" id="editor-version"
-				:ref="registryRef(titleEls, 'editor-version')"></div>
+			<div
+				class="text"
+				id="editor-version"
+				:ref="registryRef(titleEls, 'editor-version')"
+			></div>
 			<div class="text">Electron</div>
-			<div class="text" id="electron-version"
-				:ref="registryRef(titleEls, 'electron-version')"></div>
+			<div
+				class="text"
+				id="electron-version"
+				:ref="registryRef(titleEls, 'electron-version')"
+			></div>
 			<div class="text">Chromium</div>
-			<div class="text" id="chrome-version"
-				:ref="registryRef(titleEls, 'chrome-version')"></div>
+			<div
+				class="text"
+				id="chrome-version"
+				:ref="registryRef(titleEls, 'chrome-version')"
+			></div>
 			<div class="text">Node.js</div>
-			<div class="text" id="node-version"
-				:ref="registryRef(titleEls, 'node-version')"></div>
+			<div class="text" id="node-version" :ref="registryRef(titleEls, 'node-version')"></div>
 			<div class="text">V8</div>
-			<div class="text" id="v8-version"
-				:ref="registryRef(titleEls, 'v8-version')"></div>
+			<div class="text" id="v8-version" :ref="registryRef(titleEls, 'v8-version')"></div>
 			<div class="text">OS</div>
-			<div class="text" id="os-version"
-				:ref="registryRef(titleEls, 'os-version')"></div>
+			<div class="text" id="os-version" :ref="registryRef(titleEls, 'os-version')"></div>
 		</div>
 	</WindowFrame>
 </template>
@@ -87,4 +93,3 @@ onMounted(() => {});
 	animation: neon-border-animation 3s linear infinite;
 }
 </style>
-

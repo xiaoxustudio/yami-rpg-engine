@@ -6,12 +6,21 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<canvas id="autoTile-selectNode-canvas"
-				:ref="registryRef(composableEls, 'autoTile-selectNode-canvas')" width="0" height="0" />
-		<div class="box" id="autoTile-selectNode-screen"
-				:ref="registryRef(composableEls, 'autoTile-selectNode-screen')">
-			<MarqueeArea id="autoTile-selectNode-marquee"
-				:ref="registryRef(composableEls, 'autoTile-selectNode-marquee')" />
+		<canvas
+			id="autoTile-selectNode-canvas"
+			:ref="registryRef(composableEls, 'autoTile-selectNode-canvas')"
+			width="0"
+			height="0"
+		/>
+		<div
+			class="box"
+			id="autoTile-selectNode-screen"
+			:ref="registryRef(composableEls, 'autoTile-selectNode-screen')"
+		>
+			<MarqueeArea
+				id="autoTile-selectNode-marquee"
+				:ref="registryRef(composableEls, 'autoTile-selectNode-marquee')"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -61,4 +70,3 @@ onMounted(() => {
 	height: 100%;
 }
 </style>
-

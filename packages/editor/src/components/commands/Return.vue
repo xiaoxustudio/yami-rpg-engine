@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="return"
-				:ref="registryRef(fieldEls, 'return')" @confirm="onConfirm">
+	<WindowFrame id="return" :ref="registryRef(fieldEls, 'return')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.return.title') }}
@@ -9,13 +8,20 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.return-type.label') }}</div>
-			<SelectBox id="return-type"
+			<SelectBox
+				id="return-type"
 				v-tip="t('components.return-type.tip')"
-				:ref="registryRef(fieldEls, 'return-type')" v-focus v-model="form.type" />
+				:ref="registryRef(fieldEls, 'return-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.return-boolean.label') }}</div>
-			<SelectBox id="return-boolean"
+			<SelectBox
+				id="return-boolean"
 				v-tip="t('components.return-boolean.tip')"
-				:ref="registryRef(fieldEls, 'return-boolean')" v-model="form.boolean" />
+				:ref="registryRef(fieldEls, 'return-boolean')"
+				v-model="form.boolean"
+			/>
 			<div class="text">{{ t('components.return-number.label') }}</div>
 			<NumberVar
 				id="return-number"
@@ -27,51 +33,86 @@
 				v-model="form.number"
 			/>
 			<div class="text">{{ t('components.return-string.label') }}</div>
-			<StringVar id="return-string"
+			<StringVar
+				id="return-string"
 				v-tip="t('components.return-string.tip')"
-				:ref="registryRef(fieldEls, 'return-string')" v-model="form.string" />
-		<div class="text">{{ t('components.return-object.label') }}</div>
-		<CustomBox
-			id="return-object"
+				:ref="registryRef(fieldEls, 'return-string')"
+				v-model="form.string"
+			/>
+			<div class="text">{{ t('components.return-object.label') }}</div>
+			<CustomBox
+				id="return-object"
 				v-tip="t('components.return-object.tip')"
 				:ref="registryRef(fieldEls, 'return-object')"
-			v-focus
-			type="variable"
-			filter="object"
-			v-model="form.object"
-		/>
-		<div class="text">{{ t('components.return-actor.label') }}</div>
-		<CustomBox id="return-actor"
+				v-focus
+				type="variable"
+				filter="object"
+				v-model="form.object"
+			/>
+			<div class="text">{{ t('components.return-actor.label') }}</div>
+			<CustomBox
+				id="return-actor"
 				v-tip="t('components.return-actor.tip')"
-				:ref="registryRef(fieldEls, 'return-actor')" type="actor" v-model="form.actor" />
-		<div class="text">{{ t('components.return-skill.label') }}</div>
-		<CustomBox id="return-skill"
+				:ref="registryRef(fieldEls, 'return-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
+			<div class="text">{{ t('components.return-skill.label') }}</div>
+			<CustomBox
+				id="return-skill"
 				v-tip="t('components.return-skill.tip')"
-				:ref="registryRef(fieldEls, 'return-skill')" type="skill" v-model="form.skill" />
-		<div class="text">{{ t('components.return-state.label') }}</div>
-		<CustomBox id="return-state"
+				:ref="registryRef(fieldEls, 'return-skill')"
+				type="skill"
+				v-model="form.skill"
+			/>
+			<div class="text">{{ t('components.return-state.label') }}</div>
+			<CustomBox
+				id="return-state"
 				v-tip="t('components.return-state.tip')"
-				:ref="registryRef(fieldEls, 'return-state')" type="state" v-model="form.state" />
-		<div class="text">{{ t('components.return-equipment.label') }}</div>
-		<CustomBox id="return-equipment"
+				:ref="registryRef(fieldEls, 'return-state')"
+				type="state"
+				v-model="form.state"
+			/>
+			<div class="text">{{ t('components.return-equipment.label') }}</div>
+			<CustomBox
+				id="return-equipment"
 				v-tip="t('components.return-equipment.tip')"
-				:ref="registryRef(fieldEls, 'return-equipment')" type="equipment" v-model="form.equipment" />
-		<div class="text">{{ t('components.return-item.label') }}</div>
-		<CustomBox id="return-item"
+				:ref="registryRef(fieldEls, 'return-equipment')"
+				type="equipment"
+				v-model="form.equipment"
+			/>
+			<div class="text">{{ t('components.return-item.label') }}</div>
+			<CustomBox
+				id="return-item"
 				v-tip="t('components.return-item.tip')"
-				:ref="registryRef(fieldEls, 'return-item')" type="item" v-model="form.item" />
-		<div class="text">{{ t('components.return-trigger.label') }}</div>
-		<CustomBox id="return-trigger"
+				:ref="registryRef(fieldEls, 'return-item')"
+				type="item"
+				v-model="form.item"
+			/>
+			<div class="text">{{ t('components.return-trigger.label') }}</div>
+			<CustomBox
+				id="return-trigger"
 				v-tip="t('components.return-trigger.tip')"
-				:ref="registryRef(fieldEls, 'return-trigger')" type="trigger" v-model="form.trigger" />
-		<div class="text">{{ t('components.return-light.label') }}</div>
-		<CustomBox id="return-light"
+				:ref="registryRef(fieldEls, 'return-trigger')"
+				type="trigger"
+				v-model="form.trigger"
+			/>
+			<div class="text">{{ t('components.return-light.label') }}</div>
+			<CustomBox
+				id="return-light"
 				v-tip="t('components.return-light.tip')"
-				:ref="registryRef(fieldEls, 'return-light')" type="light" v-model="form.light" />
-		<div class="text">{{ t('components.return-element.label') }}</div>
-		<CustomBox id="return-element"
+				:ref="registryRef(fieldEls, 'return-light')"
+				type="light"
+				v-model="form.light"
+			/>
+			<div class="text">{{ t('components.return-element.label') }}</div>
+			<CustomBox
+				id="return-element"
 				v-tip="t('components.return-element.tip')"
-				:ref="registryRef(fieldEls, 'return-element')" type="element" v-model="form.element" />
+				:ref="registryRef(fieldEls, 'return-element')"
+				type="element"
+				v-model="form.element"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -105,7 +146,8 @@ onMounted(() => {
 		{ name: 'False', value: false },
 		{ name: 'True', value: true }
 	]);
-	fieldEls.get('return-type')
+	fieldEls
+		.get('return-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'boolean', targets: [fieldEls.get('return-boolean')] },
@@ -140,5 +182,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

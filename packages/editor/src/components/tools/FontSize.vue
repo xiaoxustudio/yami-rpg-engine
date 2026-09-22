@@ -42,4 +42,3 @@ const onConfirm = () => {
 	bottom: 10px;
 }
 </style>
-

@@ -28,7 +28,8 @@ onMounted(() => {
 			<YMButton size="sm" @click="ym?.write(1)">设为 B</YMButton>
 		</div>
 		<p class="hint">
-			聚焦输入框后按下手柄按键捕获, Backspace 清除。当前: {{ button === null ? '未设置' : button }}
+			聚焦输入框后按下手柄按键捕获, Backspace 清除。当前:
+			{{ button === null ? '未设置' : button }}
 		</p>
 	</section>
 </template>

@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="showChoices"
-				:ref="registryRef(fieldEls, 'showChoices')" @confirm="onConfirm">
+	<WindowFrame id="showChoices" :ref="registryRef(fieldEls, 'showChoices')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.showChoices.title') }}
@@ -9,13 +8,20 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.showChoices-choices.label') }}</div>
-			<ParamList id="showChoices-choices"
+			<ParamList
+				id="showChoices-choices"
 				v-tip="t('components.showChoices-choices.tip')"
-				:ref="registryRef(fieldEls, 'showChoices-choices')" v-focus v-model="form.choices" />
+				:ref="registryRef(fieldEls, 'showChoices-choices')"
+				v-focus
+				v-model="form.choices"
+			/>
 			<div class="text">{{ t('components.showChoices-parameters.label') }}</div>
-			<TextBox id="showChoices-parameters"
+			<TextBox
+				id="showChoices-parameters"
 				:ref="registryRef(fieldEls, 'showChoices-parameters')"
-				v-tip="t('components.showChoices-parameters.tip')" v-model="form.parameters" />
+				v-tip="t('components.showChoices-parameters.tip')"
+				v-model="form.parameters"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -72,5 +78,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

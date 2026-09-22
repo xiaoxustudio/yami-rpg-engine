@@ -7,11 +7,17 @@
 		<div class="flex-box" id="copyProgress-flex">
 			<div class="text">{{ t('components.copyProgress-box.label') }}</div>
 			<div class="box" id="copyProgress-box">
-				<div class="box" id="copyProgress-bar"
-				:ref="registryRef(titleEls, 'copyProgress-bar')" />
+				<div
+					class="box"
+					id="copyProgress-bar"
+					:ref="registryRef(titleEls, 'copyProgress-bar')"
+				/>
 			</div>
-			<div class="text" id="copyProgress-info"
-				:ref="registryRef(titleEls, 'copyProgress-info')" />
+			<div
+				class="text"
+				id="copyProgress-info"
+				:ref="registryRef(titleEls, 'copyProgress-info')"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -57,4 +63,3 @@ onMounted(() => {});
 	background-color: var(--selected-background);
 }
 </style>
-

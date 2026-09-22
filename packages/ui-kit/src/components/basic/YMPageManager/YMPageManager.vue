@@ -94,19 +94,18 @@ onMounted(() => {
 	}
 	(element as PageManagerHost).switch = switchover;
 	(element as PageManagerHost).on = on;
-		for (const key of ['index', 'active', 'switchEventEnabled'] as const) {
-			Object.defineProperty(element, key, {
-				get: () => state[key],
-				set: (value: unknown) => {
-					state[key] = value as never;
-				},
-				configurable: true
-			});
-		}
-		element.addEventListener(
-			'switch',
-			(e: Event & { last?: unknown; value?: unknown }) => emit('switch', e.last, e.value)
-		);
+	for (const key of ['index', 'active', 'switchEventEnabled'] as const) {
+		Object.defineProperty(element, key, {
+			get: () => state[key],
+			set: (value: unknown) => {
+				state[key] = value as never;
+			},
+			configurable: true
+		});
+	}
+	element.addEventListener('switch', (e: Event & { last?: unknown; value?: unknown }) =>
+		emit('switch', e.last, e.value)
+	);
 	state.switchEventEnabled = true;
 });
 

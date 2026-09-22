@@ -8,17 +8,29 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.equipmentGetter-type.label') }}</div>
-			<SelectBox id="equipmentGetter-type"
+			<SelectBox
+				id="equipmentGetter-type"
 				v-tip="t('components.equipmentGetter-type.tip')"
-				:ref="fieldRef('equipmentGetter-type')" v-focus v-model="form.type" />
+				:ref="fieldRef('equipmentGetter-type')"
+				v-focus
+				v-model="form.type"
+			/>
 			<div class="text">{{ t('components.equipmentGetter-actor.label') }}</div>
-			<CustomBox id="equipmentGetter-actor"
+			<CustomBox
+				id="equipmentGetter-actor"
 				v-tip="t('components.equipmentGetter-actor.tip')"
-				:ref="fieldRef('equipmentGetter-actor')" type="actor" v-model="form.actor" />
+				:ref="fieldRef('equipmentGetter-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.equipmentGetter-slot.label') }}</div>
-			<SelectVar id="equipmentGetter-slot"
+			<SelectVar
+				id="equipmentGetter-slot"
 				v-tip="t('components.equipmentGetter-slot.tip')"
-				:ref="fieldRef('equipmentGetter-slot')" v-focus v-model="form.slot" />
+				:ref="fieldRef('equipmentGetter-slot')"
+				v-focus
+				v-model="form.slot"
+			/>
 			<div class="text">{{ t('components.equipmentGetter-equipmentId.label') }}</div>
 			<CustomBox
 				id="equipmentGetter-equipmentId"
@@ -95,5 +107,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

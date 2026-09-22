@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { YMButton, YMConfirmation } from '@ui-kit';
 
-
 type FrameElement = HTMLElement & { open?(): void; close?(): boolean };
 
 const openDialog = (id: string) => (document.getElementById(id) as FrameElement | null)?.open?.();
@@ -13,7 +12,6 @@ const onConfirm = (index: number) => {
 	lastChoice.value = index;
 	closeDialog('confirmation');
 };
-
 </script>
 
 <template>
@@ -21,7 +19,9 @@ const onConfirm = (index: number) => {
 		<h2>YMConfirmation</h2>
 		<p class="desc">确认窗口：最多 3 个按钮，屏幕居中，点击按钮通过 confirm(index) 回调。</p>
 		<div class="row">
-			<YMButton variant="primary" @click="openDialog('confirmation')">Open Confirmation</YMButton>
+			<YMButton variant="primary" @click="openDialog('confirmation')"
+				>Open Confirmation</YMButton
+			>
 			<span class="hint">last choice: {{ lastChoice }}</span>
 		</div>
 		<YMConfirmation

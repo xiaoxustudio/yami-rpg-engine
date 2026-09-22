@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="moveCamera"
-				:ref="registryRef(fieldEls, 'moveCamera')" @confirm="onConfirm">
+	<WindowFrame id="moveCamera" :ref="registryRef(fieldEls, 'moveCamera')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.moveCamera.title') }}
@@ -9,20 +8,36 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.moveCamera-mode.label') }}</div>
-			<SelectBox id="moveCamera-mode"
+			<SelectBox
+				id="moveCamera-mode"
 				v-tip="t('components.moveCamera-mode.tip')"
-				:ref="registryRef(fieldEls, 'moveCamera-mode')" v-focus v-model="form.mode" />
+				:ref="registryRef(fieldEls, 'moveCamera-mode')"
+				v-focus
+				v-model="form.mode"
+			/>
 			<div class="text">{{ t('components.moveCamera-position.label') }}</div>
-			<CustomBox id="moveCamera-position"
+			<CustomBox
+				id="moveCamera-position"
 				v-tip="t('components.moveCamera-position.tip')"
-				:ref="registryRef(fieldEls, 'moveCamera-position')" type="position" v-model="form.position" />
+				:ref="registryRef(fieldEls, 'moveCamera-position')"
+				type="position"
+				v-model="form.position"
+			/>
 			<div class="text">{{ t('components.moveCamera-actor.label') }}</div>
-			<CustomBox id="moveCamera-actor"
+			<CustomBox
+				id="moveCamera-actor"
 				v-tip="t('components.moveCamera-actor.tip')"
-				:ref="registryRef(fieldEls, 'moveCamera-actor')" type="actor" v-model="form.actor" />
+				:ref="registryRef(fieldEls, 'moveCamera-actor')"
+				type="actor"
+				v-model="form.actor"
+			/>
 			<div class="text">{{ t('components.moveCamera-easingId.label') }}</div>
-			<SelectBox id="moveCamera-easingId"
-				:ref="registryRef(fieldEls, 'moveCamera-easingId')" name="easing" v-model="form.easingId" />
+			<SelectBox
+				id="moveCamera-easingId"
+				:ref="registryRef(fieldEls, 'moveCamera-easingId')"
+				name="easing"
+				v-model="form.easingId"
+			/>
 			<div class="text">{{ t('components.moveCamera-duration.label') }}</div>
 			<NumberBox
 				id="moveCamera-duration"
@@ -34,8 +49,12 @@
 				v-model="duration"
 			/>
 			<div class="text">{{ t('components.moveCamera-wait.label') }}</div>
-			<SelectBox id="moveCamera-wait"
-				:ref="registryRef(fieldEls, 'moveCamera-wait')" name="wait" v-model="form.wait" />
+			<SelectBox
+				id="moveCamera-wait"
+				:ref="registryRef(fieldEls, 'moveCamera-wait')"
+				name="wait"
+				v-model="form.wait"
+			/>
 		</div>
 	</WindowFrame>
 </template>
@@ -73,11 +92,14 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('moveCamera-mode', ['position', 'actor'], (items) =>
-		fieldEls.get('moveCamera-mode')?.loadItems?.(items),
-		{ 'position': 'command.moveCamera.position', 'actor': 'command.moveCamera.actor' }
+	useLocalizedOptions(
+		'moveCamera-mode',
+		['position', 'actor'],
+		(items) => fieldEls.get('moveCamera-mode')?.loadItems?.(items),
+		{ position: 'command.moveCamera.position', actor: 'command.moveCamera.actor' }
 	);
-	fieldEls.get('moveCamera-mode')
+	fieldEls
+		.get('moveCamera-mode')
 		?.enableHiddenMode?.()
 		?.relate?.([
 			{ case: 'position', targets: [fieldEls.get('moveCamera-position')] },
@@ -108,5 +130,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>

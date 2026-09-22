@@ -1,6 +1,5 @@
 <template>
-	<WindowFrame id="loadScene"
-				:ref="registryRef(fieldEls, 'loadScene')" @confirm="onConfirm">
+	<WindowFrame id="loadScene" :ref="registryRef(fieldEls, 'loadScene')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.loadScene.title') }}
@@ -9,13 +8,22 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.loadScene-sceneId.label') }}</div>
-			<FileVar id="loadScene-sceneId"
+			<FileVar
+				id="loadScene-sceneId"
 				:ref="registryRef(fieldEls, 'loadScene-sceneId')"
-				v-tip="t('components.loadScene-sceneId.tip')" v-focus type="file" filter="scene" v-model="form.sceneId" />
+				v-tip="t('components.loadScene-sceneId.tip')"
+				v-focus
+				type="file"
+				filter="scene"
+				v-model="form.sceneId"
+			/>
 			<div class="text">{{ t('components.loadScene-transfer.label') }}</div>
-			<SelectBox id="loadScene-transfer"
+			<SelectBox
+				id="loadScene-transfer"
 				v-tip="t('components.loadScene-transfer.tip')"
-				:ref="registryRef(fieldEls, 'loadScene-transfer')" v-model="form.transfer" />
+				:ref="registryRef(fieldEls, 'loadScene-transfer')"
+				v-model="form.transfer"
+			/>
 			<div class="text">{{ t('components.loadScene-x.label') }}</div>
 			<NumberVar
 				id="loadScene-x"
@@ -70,9 +78,12 @@ onMounted(() => {
 	useLocalizedOptions('loadScene-transfer', [true, false], (items) =>
 		fieldEls.get('loadScene-transfer')?.loadItems?.(items)
 	);
-	fieldEls.get('loadScene-transfer')
+	fieldEls
+		.get('loadScene-transfer')
 		?.enableHiddenMode?.()
-		?.relate?.([{ case: true, targets: [fieldEls.get('loadScene-x'), fieldEls.get('loadScene-y')] }]);
+		?.relate?.([
+			{ case: true, targets: [fieldEls.get('loadScene-x'), fieldEls.get('loadScene-y')] }
+		]);
 });
 </script>
 
@@ -92,5 +103,4 @@ onMounted(() => {
 	right: 10px;
 	bottom: 10px;
 }
-
 </style>
