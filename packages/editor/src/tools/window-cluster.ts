@@ -1,5 +1,4 @@
 export { Scene } from '@app/scene/scene-window.ts';
-export { UI } from '@app/engine/ui/legacy/ui-window.ts';
 export { Animation } from '@app/animation/animation-window.ts';
 export { Particle } from '@app/particle/particle-window.ts';
 export { Inspector } from '@app/inspector/inspector.ts';

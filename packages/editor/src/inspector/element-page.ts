@@ -211,9 +211,11 @@ const SIZE_INPUT_IDS = [
 		// 再试一次 —— 绝不在元素为 null 的情况下继续往下读。
 		this.initialize!();
 		if (!this.pointerEvents) {
-			// `_openRetry` 首值是 `undefined`，而 `undefined < 10` 为 false —— `?? NaN` 保持这个既有语义
-			// （即「第一次 open 不重试」），不在类型轮里改变它。
-			if ((this._openRetry ?? NaN) < 10) {
+			// 第 92 轮修：原先写 `?? NaN`，而 `undefined < 10` ≡ `NaN < 10` 恒为 false
+			// ⇒ **首次 `open()`（控件尚未登记）根本不重试**，重试路径实际是死的；
+			// 可下一行偏偏写 `(this._openRetry ?? 0) + 1`，可见本意就允许 `undefined`。
+			// 改用 `?? 0`：首次 open 也进入重试（上限 10 次），与下一行的意图一致。
+			if ((this._openRetry ?? 0) < 10) {
 				this._openRetry = (this._openRetry ?? 0) + 1;
 				setTimeout(() => this.open!(node), 0);
 			}

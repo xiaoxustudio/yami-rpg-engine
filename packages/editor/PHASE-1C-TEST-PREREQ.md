@@ -1591,10 +1591,21 @@ head?: { view: { write(index: number): void } } | null;
 **推荐顺序**：声明形态（11 处）最机械 —— `let x: T;` 之后 tsc 会把「使用前未赋值」逐条报出来，
 是纯机械的、tsc 全程兜底的改动；剩下的按「每个都要先定契约」单独处理。
 
-另：`legacy-ui-refs` 轴当前 **1**（`tools/window-cluster.ts` 的 `import { uiWindowReady }`，
-以及 `stores/ui.ts:15` / `file-system-core.ts:14` 通过 `window-cluster → m.UI` 惰加载 UI 窗口）。
-把它清到 0 = 阶段 1c 的第 ① 步（**`loadUI` 直连 `ui-engine.ts`**），
-是**运行时高危改动**（UI 窗口正是本项目反复出崩溃的地方），应在能实机验证时单独做一轮。
+另：`legacy-ui-refs` 轴**原为 2**（`tools/window-cluster.ts` 的 `export { UI }` 再导出 +
+`import { uiWindowReady }`）。**第 ① 步已于 2026-09-21 第 94 轮落地，读数 2 → 1**
+（删掉了那行再导出；`UI` 改由 `stores/ui.ts` / `file-system-core.ts` / `LayoutPanel.vue`
+三处**内联 `import()`** 直连 `engine/ui/legacy/ui-window.ts`）。
+
+> ⚠️ **两处纠偏，写给接手的人**：
+>
+> 1. **这里原先写「应改成 `loadUI` 直连 `ui-engine.ts`」—— 那个写法不能执行**：
+>    `ui-engine.ts:2` 自己就 `import { loadUI } from '@app/stores/ui'`，把 `loadUI` 指向它是
+>    循环，且它 resolve 出来的是**模块命名空间对象**、不是 `UI` 实例 ⇒ `UI.drawBackground`
+>    恒 `undefined`，渲染会被静默打碎。① 的正确形态是**直连遗留窗口模块**（同附录三 ④ 的目标
+>    分开：① 只换「从哪取」，④ 才换「取到的还是不是遗留对象」）。`await clusterReady`
+>    **必须保留** —— 它等的是五个窗口全部就绪，只等 `uiWindowReady` 会缩短就绪契约。
+> 2. **这条轴只数静态依赖**：上面那三处现在都是内联 `import()`，**轴看不见它们**。
+>    所以「读到 1」**不等于**「只剩一个耦合点」。④ 收尾时请按这三处手工核对，别信读数。
 
 ## 交接（第 87 轮 · 当前真实数字与工作单）——**先读这一节**
 
@@ -1633,8 +1644,8 @@ head?: { view: { write(index: number): void } } | null;
 | `unknown-casts`                                                        | **89 处 / 76 文件**             | 会话起点 285 ⇒ 已减 196（第 91 轮又清 12：修声明 5 / `registryElement` 收窄 5 / `Reflect.set` 2）                                                                                                                              |
 | `any-hatches`                                                          | **52 处 / 26 文件**             | **实测起点就是 52**（索引签名 32 + `Record<string, any>` 20）。⚠️ 此前这里写的「起点 67」「跨行漏洞」均已被第 89 轮证伪 —— 见上方复核记录。**剩余全在承重形状上**（`SceneShape` / `DynamicShape` / `UIShape` / 粒子同名形状…） |
 | `legacy-ui-lines`                                                      | **2859 行 / 9 文件**            | 遗留单例层所在的**目录**（`dirname(uiWindowRel())`）。⚠️ 曾经假 0，见上方复核记录                                                                                                                                              |
-| `legacy-ui-refs`                                                       | **2 处 / 1 文件**（runtime=2）  | 全部落在 `tools/window-cluster.ts`。⚠️ 曾经假 0。**只抓静态依赖**，数不到 `getLazyWindow('ui', …m.UI)` 那 2 处（`file/file-system-core.ts`、`components/layout/LayoutPanel.vue`），1c 收尾时手工核对                           |
-| `1c-store-slot-gaps`                                                   | **41 个槽位**（`storeRefs=49`） | **第 90 轮新增**：store 引用了、但**实现只在遗留目录里**的槽位 = 1c 第 ③ 步的工作单（首轮实测 41，与附录三手工数出的 41 一致）                                                                                                 |
+| `legacy-ui-refs`                                                       | **1 处 / 1 文件**（runtime=1）  | 唯一剩项是 `tools/window-cluster.ts` 的 `import { uiWindowReady }`（`clusterReady` 必须等 UI 窗口就绪，属**正当依赖**，随 ④ 一起走）。⚠️ 曾经假 0。**只抓静态依赖**：1c ① 之后 `UI` 改由**三处内联 `import()`** 取（`stores/ui.ts`、`file/file-system-core.ts`、`components/layout/LayoutPanel.vue`），而动态 `import()` **不在这条轴的口径里** ⇒ **读数 1 不代表只剩 1 个耦合点**，④ 收尾必须按这三处手工核对 |
+| `1c-store-slot-gaps`                                                   | **41 个槽位**（`storeRefs=49`） | **第 90 轮新增**：store 引用了、但**实现只在遗留目录里**的槽位 = 1c 第 ③ 步的工作单（首轮实测 41，与附录三手工数出的 41 一致）。⚠️ **第 ③ 步开工前必须先读 `xr.md` 第 95 轮**：这条轴的口径只认「遗留目录**之外**出现 `UI.<slot> =` 文本」，所以「转发」与「纯移动」都不会让它下降；而常规做法（把绑定写进 `loadUI`）在真机上会被 `main/initialize.ts:91` 的 `primeWindows` 短路 —— **套件会绿着骗你** |
 | `ui-singleton-members`                                                 | 103 files=8 declared=134        | 属 P5-C/D，**等实机回归后才能动**（三条 1c 轴必须**同时**归零才算收口）                                                                                                                                                        |
 | `null-casts` / `dom-pending` / `stale-exemptions` / `ui-slot-coverage` | 全 0                            | —                                                                                                                                                                                                                              |
 | `unremovable-listeners` / `dom-on-exempted` / `dom-whitelist-size`     | 9 / 120 / 14                    | 只需不增                                                                                                                                                                                                                       |
@@ -1711,6 +1722,13 @@ head?: { view: { write(index: number): void } } | null;
 >   实测存量 **321** 个文件，实际被改写 **305** 个。
 > - 实测体量：`LayoutPanel.vue`（2109 行）单文件重排就是 **+1251 / −985 行** ——
 >   所以第 90 轮「顺手删 `#uiContainer-vue-mount` 那个死 id」被推迟，本轮仍留作下次同类清理的顺手项。
+>   > **〔第 95 轮复核：这个「死 id」的结论要收一收，别照删〕** 它**确实**没有任何渲染者
+>   > （也没有 `components/inspector/UIContainerPage.vue`），但它**不是「被误加的」**：
+>   > `AppShell.vue:263` 是**推导**出挂载点的 —— `#${value}-vue-mount`，而 `value` 由 SFC 文件名
+>   > 反推（`UIContainerPage.vue` → `uiContainer`）。也就是说：**哪天有人补上那个 SFC，
+>   > 它要的目标 id 恰好就是 `#uiContainer-vue-mount`**。同理 `inspector.ts:53` 用的是
+>   > **后缀选择器** `[id$="-vue-mount"]`，并不按名字读。所以它是**该页槽位的约定锚点**，
+>   > 删掉「今天安全、明天留坑」。结论：**不删**，理由写进 `xr.md` 第 95 轮。
 > - ⚠️ 收口后跑全量套件曾出现「**137 个文件 0 用例失败**」，报 `Electron failed to install correctly` ——
 >   **是环境问题不是回归**（同一个 spec 在 `git stash` 前后都失败）：`electron@43.2.0` 的 `index.js`
 >   在 require 时检查 `dist/` 二进制、缺失就当场下载，而本机下不到该版本。绕过办法见
@@ -1721,8 +1739,32 @@ head?: { view: { write(index: number): void } } | null;
 >   却 `exit 1`**（vitest 把 unhandled rejection 记成**套件级**错误）。已修 + 已加自证回归 spec。
 >   连带纠正：「必须独占跑」只对 `template-localized.spec.ts` 的**超时**成立，与本条无关。
 
-**仍待决策的 4 项**：④ `TextCommandShape.color` 的真实类型（决定 4 处 canvas 赋值是否真 bug）
-⑤ `ParamHistory` vs `IEditableHistory` 矛盾 ⑥ P6 三处行为缺陷 ⑦ P5-C/D 开工（前提是实机回归全过）。
+**仍待决策的 3 项**：④ `TextCommandShape.color` 的真实类型（决定 4 处 canvas 赋值是否真 bug）
+⑤ `ParamHistory` vs `IEditableHistory` 矛盾 ⑦ P5-C/D 开工（前提是实机回归全过）。
+
+> ✅ **⑥ 已关闭（2026-09-21 第 93 轮，用户选「都修」）**。下面这段是它关闭前的复核记录，保留作沿革：
+>
+> ⚠️ **⑥ 原先写的是「P6 三处行为缺陷」—— 这个标签指向不了任何地方，「三处」也已经过期**
+> （2026-09-21 第 92 轮核）。两处失真：
+>
+> - **「P6」查无内容**：全仓 `grep` + `git log -S`（全历史）里，`P6 三处行为缺陷` 只在本节与
+>   `xr.md` 各出现一次，**都没有清单**。`P6` 在本仓是 `xr.md` 的阶段名，指的是巨石渲染层重写
+>   （`command-api.ts` / `YMFileBodyPane.vue`），与这三处无关。唯一有清单的地方，是
+>   **本节开头声称已被自己取代的**那份「交接（第 62 轮）」§五第 2 条 —— 照本节指引去读的人
+>   永远看不到它。
+> - **「三处」实际只剩两处**：第 3 处（`progressPointermove` 的 `this` 标注撒谎）**已在第 45 轮
+>   当场改成 `this: HTMLElement`**（`inspector/file-audio-page.ts:428`，纯类型、产物不变），
+>   不是待办。
+>
+> 就地展开（2026-09-21 逐处在代码里核过）—— **两处已在第 93 轮修掉，并各配一条会自证的回归用例**：
+>
+> | #   | 位置                                   | 关闭前的代码事实                                                                                                                                                                                              | 第 93 轮的处置                                                                                                                                                                       |
+> | --- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | 1   | `inspector/element-page.ts:216`        | `(this._openRetry ?? NaN) < 10` —— `NaN < 10` 恒假 ⇒ **首次 `open()`（页面还没挂载时）根本不重试**；可下一行偏偏写 `(this._openRetry ?? 0) + 1`，可见本意允许 `undefined`，是判断那行漏了 `?? 0`               | 改 `?? 0`（首次 `open` 也进入重试）。`element-page-open-before-mount.spec.ts` 新增第 3 例：**把判断临时还原成 `?? NaN`，该例失败于 `expected undefined to be 1`** ⇒ 用例真的钉住了这条路径 |
+> | 2   | `inspector/file-audio-page.ts:417-421` | `pointer.time` 在首次 `pointermove` 之前是 `undefined`（Vue 页只设 element，不设 `time`），而 `time !== -1` 为真 ⇒ 把 `undefined` 交给 `audio.currentTime`（按 NaN 处理，播放头被拉到开头）                   | 加 `time !== undefined`（`-1` 哨兵照旧）；顺带去掉 `as number` 断言。新增 `file-audio-page-progress-down.spec.ts`（3 例）：**把判断还原成 `time !== -1` 后，`undefined` 那例失败于 `expected undefined to be 7`，`-1` 那例仍通过** ⇒ 正好只钉住新行为 |
+>
+> 两处都是**行为改动**，已按计划交用户判定（第 93 轮明确选「都修」）；`editor` 全量套件
+> **251 文件 / 2061 用例全绿、exit 0**（较改前 250/2057 恰好多出这 4 条新用例）。
 
 > ✅ **③ 已落地（2026-09-21）**：`pnpm -F @yami/ui-kit build:types` 已加进 CI 的 `gates` job
 > （此前 ui-kit 的 `.vue` **不在任何门禁里**）。
@@ -4494,7 +4536,7 @@ editor **2056** 测试、ui-kit **810** 测试、台账全部轴持平。
 | --------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `any-hatches`         | 64 处 / 35 文件   | 按第 39 轮的量化排序：① `YMParameterPane.vue` 的 **71** 个动态成员读点（需要把 `attachStateAccessors` 挂的字段枚举进类型）；② 三个「全局/核心形状」`types/shapes.ts`（`DynamicShape`，全删引发 990 个错误）、`types/history.ts`（`HistoryData`，31 个错误）、`particle/particle-window.ts`（`ParticleEmitterShape`，71 个错误）—— 必须与读侧分批改；③ 其余按「删签名 → tsc/vue-tsc 点名 → 逐个枚举」推进 |
 | `legacy-ui-lines`     | 2868 行 / 10 文件 | 阶段 1c：`src/ui/` 是 8 个域模块 + 1 个接线文件（附录三有拆分账）。收尾顺序见文末「删完之后应该发生什么」                                                                                                                                                                                                                                                                                                |
-| `legacy-ui-refs`      | 1                 | = 阶段 1c 第 ① 步：`stores/ui.ts` 的 `loadUI` 从 `window-cluster → m.UI` 改为直连 `ui-engine.ts`。**运行时高危**（UI 窗口是本项目反复出崩溃的地方），**必须实机回归**，不要在没有实机验证的会话里动                                                                                                                                                                                                      |
+| `legacy-ui-refs`      | **1**（第 94 轮 2 → 1） | ✅ **阶段 1c 第 ① 步已落地**：`window-cluster.ts` 那行 `export { UI }` 已删，`UI` 改由三处内联 `import()` 直连 `engine/ui/legacy/ui-window.ts`（`await clusterReady` 原样保留 ⇒ 可证行为等价）。⚠️ 原先这里写的「改为直连 `ui-engine.ts`」是**不能执行的写法**（循环 + `UI` 会变成命名空间对象，见上文纠偏）；且本轴**只数静态依赖**，数不到那三处，④ 收尾手工核对 |
 | `Record<string, any>` | 35 处 / 31 文件   | ✅ **已解决（2026-09-20 第 62 轮）**：口径已扩展并入 `any-hatches`，该轴随之 **32 → 67**，并显式记入新基线。理由：它与索引签名是**同一个逃生的两种写法**，只数一种的话把 `[k: string]: any` 改写成 `Record<string, any>` 就能凭空「归零」                                                                                                                                                                |
 
 ### 三、门禁怎么跑（本地 = CI 同一套）
@@ -4717,7 +4759,13 @@ pnpm build:vite
 > 数字为 2026-09-20 第 62 轮实测（此前本节写的 2820 / 4 是阶段 1b 前后的快照）。
 
 - `legacy-ui-lines` 轴：**2866 行 / 10 文件** → 0
-- `legacy-ui-refs` 轴：**1 → 0**（唯一剩项是 `tools/window-cluster.ts:2` 的 `export { UI }`）
+- `legacy-ui-refs` 轴：**1 → 0**（唯一剩项是 `tools/window-cluster.ts` 的 `import { uiWindowReady }`）
+
+> **〔第 94 轮补注〕** 上面这行原先写的是「唯一剩项是 `tools/window-cluster.ts:2` 的
+> `export { UI }`」—— 那句话**已被第 ① 步兑现**（那行再导出已删，轴 2 → 1）。现在剩下的
+> 是 `clusterReady` 对 `uiWindowReady` 的等待，它属于**正当依赖**，要随 ④ 一起走。
+> 别把「轴读到 1」当成「只剩一个耦合点」：① 之后 `UI` 由三处**内联 `import()`** 取，
+> 而这条轴只数静态依赖、看不见它们（口径已在 §1 的表里写明）。
 
 ### ✅ 替代轴已落地：`ui-singleton-members`（第 62 轮）
 

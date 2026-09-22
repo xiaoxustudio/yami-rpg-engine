@@ -17,12 +17,23 @@ import type { YamiElement } from '@app/types/element-api';
  * 调用 `UI.drawXxx()`（见该处注释——`Timer` 是裸调用，没有接收者），
  * 而直接 `import { UI } from '@app/engine/ui/legacy/ui-window.ts'` 会与 `ui-window.ts → ui-engine.ts`
  * 形成静态循环导入。这个惰加载代理只在**运行时**解析目标，天然避开循环。
+ *
+ * 阶段 1c ①（2026-09-21 第 94 轮）：`UI` 的来源由 `tools/window-cluster.ts` 的**再导出**
+ * 改为**直连遗留 UI 窗口模块** —— 桶文件里那行 `export { UI }` 已同步删除，
+ * 于是「取 UI 对象」这条接线不再经过它。
+ *
+ * ⚠️ `await clusterReady` **必须保留**：它等的是 Scene / UI / Animation / Particle / Palette
+ * 五个窗口**全部**就绪，而 UI 的动作会用到 `Scene.list` 一类。改成只等 `uiWindowReady`
+ * 会缩短就绪契约 —— 那是一条会**静默改变时序**的改动，不属于 ① 的范围。
  */
-export const loadUI = () =>
-	import('@app/tools/window-cluster').then(async (m) => {
-		await m.clusterReady;
-		return m.UI;
-	});
+export const loadUI = async () => {
+	const [uiWindow, cluster] = await Promise.all([
+		import('@app/engine/ui/legacy/ui-window.ts'),
+		import('@app/tools/window-cluster')
+	]);
+	await cluster.clusterReady;
+	return uiWindow.UI;
+};
 const UI = getLazyWindow('ui', loadUI);
 
 export const uiStateKeys = [
@@ -577,15 +588,17 @@ export const useUIStore = defineStore('ui', () => {
 	 * ——而那不是「间接层」，是 **`this` 绑定**（`UIEngine.requestRendering` 内部用
 	 * `this.renderingFunction`、`shiftAnchor` 内部用 `this.planToSave`）。
 	 *
-	 * 为什么现在就要把它们单列出来：阶段 1c 会把 `stores/ui.ts` 的 `loadUI` 从
-	 * `window-cluster → m.UI` 改为直连 `ui-engine.ts`（因为 `src/ui/` 要删）。
-	 * 那一步之后 `UI` 就不再被加载，这 7 个动作会**静默失效**（`UI?.x?.()` 返回 undefined）。
+	 * 为什么现在就要把它们单列出来：阶段 1c 的第 ④ 步会让 `stores/ui.ts` 的 `UI` 不再是
+	 * 遗留单例（`ui-window.ts` 的对象字面量退役），到那时 `UI` 就不再被加载，
+	 * 这 7 个动作会**静默失效**（`UI?.x?.()` 返回 undefined）。
 	 * 让它们改为直连 `UIEngine`，就把这 7 个从「依赖遗留层」移出去了：
-	 * `ui-slot-coverage` 轴的 `legacyOnly` 计数随之下降，1c ① 才真正可做。
+	 * `ui-slot-coverage` 轴的 `legacyOnly` 计数随之下降。
 	 *
+	 * ⚠️ 第 ① 步（2026-09-21 第 94 轮）已落地，但**只换了来源**：`UI` 仍是那个遗留对象
+	 * （改由 `loadUI` 直连 `engine/ui/legacy/ui-window.ts`，不再经 `window-cluster` 再导出）。
+	 * 所以下面这 7 个**现在仍必须以 `UI` 为接收者**；等 ④ 才换成直连 `UIEngine`。
 	 * 注意**不能**写成 `UIEngine.setZoom(…)`：那样 `this` 会变成 `UIEngine`，而实现里读的
-	 * 是 `this.planToSave` 等 UI 侧成员。必须以 `UI` 为接收者（`apply`），
-	 * 在 1c ① 之前 `UI` 仍是那个对象。
+	 * 是 `this.planToSave` 等 UI 侧成员。必须以 `UI` 为接收者（`apply`）。
 	 */
 	const uiEngineForwardKeys = [
 		'requestRendering',

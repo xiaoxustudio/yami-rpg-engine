@@ -894,12 +894,24 @@ yami-rpg-editor/
    **运行时高危区，必须先按 PHASE-1C 的 9 条实机回归清单点一遍**。
 2. `unknown-casts` ／ `any-hatches` 的继续收敛（手法库见 PHASE-1C §3；进度见「第 91 轮」）。
 3. 4 项待用户决策：`TextCommandShape.color` 真实类型 / `ParamHistory` vs `IEditableHistory` /
-   P6 三处行为缺陷 / 1c ③④ 是否开工。
+   第 45 轮两处行为缺陷（清单见 PHASE-1C 交接 §5⑥；原先此处只写「P6 三处」，那个标签全仓查无内容）/ 1c ③④ 是否开工。
 4. `format:check` 321 个文件（editor 249 + ui-kit 72）的处置：跑 `pnpm format` 收口并入 CI，或降级为非门禁。
 5. 「迁移分段注释」清理（`P4b` 204 处 / `P5b` 213 / `P1b` 111 / `P2b` 54，横跨约 400 文件）——
    **必须在 1c 之后做**：1c 会把 `engine/ui/legacy/*` 整个重写，先做等于白做。
    规则：承重理由（「为什么不能退回 `null`」这类）保留；只去掉阶段代号。
 6. `scripts/` 的一次性 codemod / 探针是否移进 `scripts/oneoff/`（**已不阻塞**：清洁度已在第 91 轮收口）。
+
+> **〔本节的状态更新，2026-09-21 第 93 轮补注 —— 上面的条目是第 90 轮当时的写法，按「沿革只增不改」保留〕**
+>
+> - 第 1 条：**闸门已放行，且第 ① 步已落地**。用户按 PHASE-1C 的 9 条实机回归清单跑完并确认
+>   **全部通过** ⇒ 1c 可以开工；① 已按「直连遗留窗口模块、保留 `clusterReady`」完成
+>   （见第 94 轮）。⚠️ 计划里 ① 的原写法「改直连 `ui-engine.ts`」**不能执行**：
+>   `ui-engine.ts:2` 本身就 import `loadUI`（循环），且 `loadUI` 返回的是模块命名空间、
+>   不是 `UI` 实例 ⇒ `UI.drawBackground` 恒 `undefined`，渲染被静默打碎。
+> - 第 3 条：**4 项 → 3 项**。第 45 轮那两处行为缺陷已在第 93 轮修掉（见该轮），
+>   剩下 `TextCommandShape.color` 真实类型 / `ParamHistory` vs `IEditableHistory` /
+>   P5-C/D 开工（属 1c 之后的事）。
+> - 第 4 条：**已关闭（第 91 轮）**：`format:check` 已收口为 0 并接进 CI。
 
 ### 七、一条**已知但本轮故意不动**的残留（附理由，避免下一个人重复探查）
 
@@ -989,3 +1001,249 @@ yami-rpg-editor/
   `ignorePatterns`：文档是本项目的**记忆**，格式门禁不该替它做决定。
   （本轮收口已把 3 份 `.md` 按 oxfmt 排过一遍：表格补白无害、围栏内的改写属上述副作用；
   下次这类「顺手格式化」不要再带上文档。）
+
+## 第 92 轮（2026-09-21）：交接节里一项**指向不了任何地方**的待决策（纯文档）
+
+### 一、症状：一个列在「唯一准确的现状」里、却查无内容的决策项
+
+交接节 §5 写「仍待决策的 4 项」，其中 ⑥ 是 `P6 三处行为缺陷`。想按它办事时发现**无处可查**：
+
+```bash
+# ① 全仓（含全历史）里，这个短语只在两处出现，且两处都只是「引用」
+git log --all -S '三处行为缺陷' --oneline      # → 只有 2 个提交，都是交接节的引用
+grep -rn 'P6 三处行为缺陷'                     # → 交接节 1 处 + xr.md 1 处，都没有清单
+# ② 「P6」在本仓另有定义，而且与这三处无关
+grep -n 'P6' xr.md                            # → 阶段 14 的「P6 收口」= 巨石渲染层重写
+```
+
+**真正的清单**在「交接（第 62 轮）」§五第 2 条（本文第 4707 行附近）—— 而交接节**开头就写着
+「本节取代下面那份『交接（第 62 轮）』」**。⇒ 越是照交接节的指引办事的人，越看不到那个清单。
+这是「**声称唯一准确 ⟹ 每个数字/引用都必须当场复核**」的**第三个样本**（前两个：`any-hatches`
+的「起点 67」、两条恒为假 0 的 UI 轴）。
+
+### 二、复核：清单本身也过期了 —— 「三处」实际只剩两处
+
+把清单展开后逐条在代码里核（**不能只信文档**）：
+
+| #   | 位置                                    | 复核结果                                                                                          |
+| --- | --------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 1   | `inspector/element-page.ts:216`         | ✅ **仍在**：`(this._openRetry ?? NaN) < 10`，`NaN < 10` 恒假 ⇒ 首次 `open()` 根本不重试        |
+| 2   | `inspector/file-audio-page.ts:417-421`  | ✅ **仍在**：`time !== -1` 对 `undefined` 为真 ⇒ 把 `undefined` 交给 `audio.currentTime`          |
+| 3   | `inspector/file-audio-page.ts:428`      | ❌ **已不是待办**：第 45 轮当场改成 `this: HTMLElement`（纯类型、产物不变），代码里就是这样      |
+
+⇒ 第 3 处**在写下这份清单的同一轮就修掉了**，清单却照旧写「三处」。**待决策项的条数也是要复核的数字。**
+
+### 三、处置与验证
+
+- 交接节 §5⑥ 就地展开成表（含「真修法的行为变化」一列），并写清上面这两处失真的来龙去脉；
+  `xr.md` 的对应引用同步改为指向交接节的清单。
+- **不擅自修那两处**：两处都是**行为改动**（首次 `open` 开始重试 / 没移动过就不跳转），
+  按计划必须交实机回归判定 ⇒ 当时仍留在待决策清单里（**下一轮用户选了「都修」，见第 93 轮**）。
+- 范围：纯文档（2 文件，+22/−2），无运行期改动。
+
+**验证**：`docs:check` OK（6 份文档）· `text:check` 0 命中 · `migration:check` 15 轴全部持平。
+
+## 第 93 轮（2026-09-21）：关闭待决策 ⑥ —— 修掉第 45 轮那两处行为缺陷，各配一条自证用例
+
+用户在「9 条实机回归全过」的同时选了「两处都修」，于是第 45 轮记下、第 92 轮才找回来的那
+两处行为缺陷同时收口。（第 3 处「`this` 标注撒谎」早在第 45 轮当场就改成 `HTMLElement` 了。）
+
+### 一、`element-page.ts`：首次 `open()` 的重试路径实际是死的
+
+```ts
+// 前：`undefined < 10` ≡ `NaN < 10` 恒假 ⇒ 首次 open 直接跳过重试，可下一行偏偏写 `?? 0`
+if ((this._openRetry ?? NaN) < 10) { this._openRetry = (this._openRetry ?? 0) + 1; setTimeout(…); }
+// 后：与下一行的意图一致，首次 open 也进入重试（上限 10 次）
+if ((this._openRetry ?? 0) < 10)   { … }
+```
+
+### 二、`file-audio-page.ts`：还没移动过就点进度条，会把 `undefined` 交给 `currentTime`
+
+```ts
+// 前：`undefined !== -1` 为真 ⇒ `audio.currentTime = undefined`（按 NaN 处理，播放头被拉到开头）
+if (time !== -1) { audio.currentTime = time as number; }
+// 后：`-1` 是 pointerleave 的哨兵，两者都视为「没有有效位置」；收窄后断言自然消失
+if (time !== undefined && time !== -1) { audio.currentTime = time; }
+```
+
+### 三、两条用例都自证（这一轮的重点，不是「跑绿了」）
+
+**用例必须能证否旧代码**，否则只是摆设。两条都实测过「把判断改回旧写法 ⇒ 用例失败」：
+
+| 用例                                        | 还原成旧写法后的失败信息                                     | 解读                                                     |
+| ------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------- |
+| `element-page-open-before-mount.spec.ts` 第 3 例 | `AssertionError: expected undefined to be 1`                 | `_openRetry` 始终是 `undefined` ⇒ 一次重试都没排         |
+| `file-audio-page-progress-down.spec.ts` 第 1 例  | `AssertionError: expected undefined to be 7`                 | `currentTime` 被写成 `undefined`                          |
+| 同文件第 2 例（`-1` 哨兵）/ 第 3 例（有效位置）  | **仍通过**                                                   | 证明用例只钉住**新**行为，没有把既有语义一起改掉         |
+
+> 第 2 例原来还覆盖不到「控件尚未登记」那条路径：它在 `open()` 之前就把控件登记好了，
+> 于是 `initialize()` 一次成功、根本进不了重试分支 —— **这就是缺陷能活下来的原因**。
+> 新用例故意**不**登记 `uiElement-name`，才真正走到那条分支。
+
+### 四、验证
+
+- 两条专项用例 **6/6 通过**；`editor` 全量套件 **251 文件 / 2061 用例全绿、exit 0**
+  （改前 250/2057 —— 差额恰是这 4 条新用例，无别的变化）。
+- `tsc` strict 0 · `lint` 0/0（1624 文件）· `format:check` 0 · `migration:check` 15 轴持平
+  （去掉的 `time as number` 是**单次**断言，不进 `unknown-casts` 口径，故持平是正确读数）。
+- 文档同步：PHASE-1C 交接节 §5 的待决策由 **4 项降为 3 项**，⑥ 就地标为已关闭。
+
+## 第 94 轮（2026-09-21）：阶段 1c 第 ① 步落地 —— 但计划里那个写法不能执行，换了形态
+
+用户确认 9 条实机回归全过（1c 闸门放行），并选定 ① 的形态。
+
+### 一、先纠一处**计划本身的自相矛盾**（这才是本轮最值钱的产出）
+
+附录三把 ① 写成「`stores/ui.ts` 的 `loadUI` 从 `window-cluster → m.UI` 改为**直连
+`ui-engine.ts`**」，而 ④ 又写「`stores/ui.ts` 改直连 `UIEngine`」—— 同一个目标写了两遍。
+去核对代码，发现 ① 那个写法**根本不能执行**：
+
+```txt
+ui-engine.ts:2   import { getUIStore, loadUI } from '@app/stores/ui';   ← 它自己就 import loadUI
+ui-engine.ts:21  const UI = getLazyWindow('ui', loadUI);
+```
+
+把 `loadUI` 指向 `ui-engine.ts` ⇒ ① 循环（动态 import 不报错，但语义成环）；
+② `loadUI` resolve 出来的是**模块命名空间对象**，不是 `UI` 实例 ⇒ `UI.drawBackground` 等
+恒为 `undefined`，而 store 的转发是 `UI?.x?.()` —— **静默返回、不报错**，正是附录四/六/七/八/九
+反复记的那一类「静默失效」，只不过这次会直接打碎渲染。
+
+**判别**：① 只换「**从哪取** UI」，④ 才换「取到的**还是不是遗留对象**」。两者不是同一步。
+
+### 二、① 的正确形态（已落地）
+
+```ts
+// stores/ui.ts —— 之前：经桶文件再导出
+export const loadUI = () => import('@app/tools/window-cluster').then(async (m) => {
+	await m.clusterReady; return m.UI;
+});
+// 现在：直连遗留窗口模块，**但保留 clusterReady**
+export const loadUI = async () => {
+	const [uiWindow, cluster] = await Promise.all([
+		import('@app/engine/ui/legacy/ui-window.ts'),
+		import('@app/tools/window-cluster')
+	]);
+	await cluster.clusterReady;
+	return uiWindow.UI;
+};
+```
+
+同时改掉另外两个取 `UI` 的点（`file/file-system-core.ts`、`components/layout/LayoutPanel.vue`），
+并删掉 `window-cluster.ts` 的 `export { UI } from '@app/engine/ui/legacy/ui-window.ts'`。
+
+**为什么必须保留 `await clusterReady`**：它等的是 Scene / UI / Animation / Particle / Palette
+**五个**窗口全部就绪，而 UI 的动作会用到 `Scene.list` 一类。换成只等 `uiWindowReady`
+会**缩短就绪契约** —— 那是一条会静默改时序的改动，不属于 ①。
+
+### 三、⚠️ 我自己的一个错误预判（记下来，因为它差点让我放弃一个正确的改动）
+
+动手前我读台账，看到 `legacy-ui-refs` 的棘轮**逐个子字段**都比（`total` / `runtime` / `files`），
+基线 `2 / 2 / 1`。我推断：① 会让三处「隐式依赖」变成「显式 `import`」，读数会涨到 `4 / 4 / 4`
+⇒ 撞棘轮 ⇒ 于是我先去问用户「是不是该改成先做 ③」。
+
+**实测推翻了这个预判**：① 之后读数是 **`1 / 1 / 1`**，`migration:check` 报
+「✓ 2 项指标下降（`legacy-ui-refs.total: 2 → 1`、`runtime: 2 → 1`）」。原因是这条轴
+`importRefs(src, /^@app\/engine\/ui\/legacy\//)` **只认静态 `import … from` / `export … from`**，
+而我把三处都换成了**内联 `import()`** —— 动态 import **不在它的口径里**。
+
+⇒ **教训**：`legacy-ui-refs` 此后会**少报**三处真实耦合点。已经写进 PHASE-1C §1 的表里：
+**「读到 1」不等于「只剩一个耦合点」**，④ 收尾必须按这三处手工核对，别信读数。
+（这是本仓第 N 次「仪器口径决定你看见什么」；前几次：假 0 的目录轴、`any-hatches` 的跨行漏洞误判。）
+
+### 四、验证
+
+- `legacy-ui-refs` **2 → 1**（`total` / `runtime` 均下降），其余 14 轴持平；
+  按台账提示跑 `--update-baseline` 把进步固化。
+- `tsc` strict 0（三处 loader 的返回类型与改前一致，都是同一个 `UI` 对象的类型）。
+- 文档同步：PHASE-1C 里 ① 的**所有**出现处（§1 表、第 89 轮小节、第 62 轮小结、文末计划）
+  都就地纠偏或加补注，避免下一个人再照着「直连 `ui-engine.ts`」动手。
+
+## 第 95 轮（2026-09-21）：把 ③ 的**机制**问清楚（先量再动），并收一收「死 id」那个结论
+
+这一轮不写运行时代码：③ 是运行时高危区，先把「台账要的到底是什么」量准，比先动手划算。
+
+### 一、③ 的机制：`1c-store-slot-gaps` 到底在数什么
+
+`scripts/lib/ui-slots.mjs` 的 `legacyOnlyStoreSlots()` 对**每个 store 引用到的槽位**做两个豁免，
+两个都不成立才计入那 41：
+
+```js
+if (/^UIEngine\.<slot>\s*=/m.test(engineSrc)) continue;   // ① 实现在 ui-engine.ts
+if (outsideLegacy.has(slot)) continue;                    // ② 遗留目录之外有赋值点
+```
+
+而 `outsideLegacy` 是用 `SLOT_ASSIGN_RES` 扫**遗留目录之外**的文件得到的，那四条正则**只认**：
+
+```js
+/\bUI\.([A-Za-z_$][\w$]*)\s*=/g          /\buiElClasses\.([A-Za-z_$][\w$]*)\s*=/g
+/\bUI\.([A-Za-z_$][\w$]*)\.[A-Za-z_$][\w$]*\s*=/g   /\(\s*UI\.([A-Za-z_$][\w$]*)\s*\)\.…/g
+```
+
+⇒ **关键结论（决定了 ③ 能怎么写）**：
+
+1. **把域模块从 `legacy/` 挪到 `engine/ui/` 会让这条轴掉**（它只看**目录**），
+   但那是**指标游戏**：文件照样 `UI.registerPreset = …` 地改单例，一行遗留语义都没少。
+   第 90 轮的教训（「挪了目录、仪器跟着瞎」）说的就是这一类，**不做**。
+2. **让 store「拥有实现」也还不够**：store 现在的写法是**转发**
+   （`function hasPrefab(n){ return UI?.hasPrefab?.(n); }`），转发**不产生** `UI.<slot> =` 文本
+   ⇒ 计不进去。要让这条轴掉，遗留目录之外必须**真的出现 `UI.<slot> =` 赋值**。
+3. 结合 ④ 的终态（`ui-window.ts` 的对象字面量退役），③ 与 ④ **必须是同一条路径上的两段**：
+   store 成为这些槽位的**赋值方**，遗留模块里对应的 `UI.x =` 随之删除。
+   这也解释了为什么原文写「③④ 需要运行时证据」——它们不能各自独立成立。
+
+**因此 ③ 不能靠「一次纯移动」或「大批转发」收口**，只能逐域做「实现搬进 store + 删掉遗留赋值 +
+把 `UI.x =` 的赋值方换成 store」这一个动作，每域一次、每次都能被上述两条轴量到。
+
+#### ⚠️ 而且「把赋值放进 `loadUI`」这条路**在真机上是死的**（本轮量出来的关键约束）
+
+我原本打算这么写：在 `loadUI` 里 `await cluster.clusterReady` 之后同步
+`bindStoreOwnedSlots(uiWindow.UI)`，于是「store 的代理一解析，槽位就已经绑好」。
+**查了一下，这条在真机上根本不会执行**：
+
+```ts
+// main/initialize.ts:89-91
+clusterRef = await import('@app/tools/window-cluster');
+await clusterRef.clusterReady;
+primeWindows(clusterRef as Record<string, unknown>);   // ← 这里
+
+// tools/window-registry.ts:82  按**小写键**直接塞进缓存，绕过 loader
+export function primeWindows(instances) { const name = key.toLowerCase(); windows.set(name, value); … }
+```
+
+`clusterRef` 里有 `UI` ⇒ `windows.set('ui', <那个对象>)` ⇒ **`loadUI` 与另外两处 loader
+全都被跳过**（`getLazyWindow` 的 `get` trap 只在缓存里没有实例时才调 loader）。
+所以绑定点必须选在**「UI 对象出现的所有路径」都必经**的位置，而不是 `loadUI`。
+可选的三个位置与各自的代价：
+
+| 候选位置                      | 真机会跑到吗 | 代价                                                                        |
+| ----------------------------- | ------------ | --------------------------------------------------------------------------- |
+| `loadUI` 内（我最初的方案）   | **不会**     | 被 `primeWindows` 短路 ⇒ store 的槽位永不赋值 ⇒ `UI.hasPrefab` 恒 `null` ⇒ 静默失效 |
+| `legacy/register.ts` 末尾     | 会           | 赋值文本落在**遗留目录内** ⇒ `1c-store-slot-gaps` **不会下降**（口径只看目录） |
+| 新建 `engine/ui/ui-slots.ts`（目录外）并被 `ui-window.ts` 引入 | 会 | 需要一个不产生静态环的接法（它要拿 store 的实现，而 store 又要惰加载 UI 窗口）——**这就是 ③ 真正的设计题** |
+
+⇒ ③ 的**第一步不是写代码，而是定下这个绑定点**。定错就是「静默失效」那一类
+（附录四/六/七/八/九记的全是这个形状），而且**测试套件抓不到**：vitest 里走的正是
+`loadUI` 路径、不是 `primeWindows` 路径 —— 也就是说**套件会绿着骗你**。
+
+> 这条也是本轮最该记住的方法论：**同一个对象有两条到达路径（惰加载 / 预热缓存）时，
+> 「在 loader 里做副作用」是错的。** 先问「它还会从哪来」。
+
+### 二、顺带收一收「`#uiContainer-vue-mount` 是死 id」这个结论（**不改代码**）
+
+第 90 轮判它「是后来被误加的」，本轮复核发现**证据不支持「误加」**：
+
+| 证据                                                     | 含义                                                                       |
+| -------------------------------------------------------- | -------------------------------------------------------------------------- |
+| 没有 `components/inspector/UIContainerPage.vue`          | ⇒ 今天确实没有任何 Teleport 落进这个 id（第 90 轮这点是对的）              |
+| `AppShell.vue:263` `#${value}-vue-mount`，`value` 由**文件名反推** | ⇒ 一旦补上那个 SFC，它要的目标 id **恰好**就是 `#uiContainer-vue-mount`    |
+| `inspector.ts:53` 用**后缀**选择器 `[id$="-vue-mount"]`  | ⇒ 全仓对这类 id 的读取本来就是**按约定**、不是按名字                        |
+| 它是同组 `page-frame` 里**唯一**没有 `:ref` 的那个       | ⇒ 差异的原因是「没有 SFC 去登记」，不是「多写了一个 id」                    |
+
+⇒ 它是**该页槽位的约定锚点**，删掉属于「今天安全、明天留坑」（补 SFC 的人会拿到一个不存在的目标）。
+**决定：不删**，并把理由就地写进 PHASE-1C。这类「清理项」的判据不是「现在有没有人读」，
+而是「它是不是某条约定的锚点」。
+
+### 三、本轮产出
+
+- 纯文档（PHASE-1C 一处补注 + 本节）；无运行期改动，台账 15 轴不变。
+- ③ 的下一步已经可以照着 §一 的机制逐域做，不需要再猜。
