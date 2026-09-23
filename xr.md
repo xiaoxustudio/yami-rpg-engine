@@ -1453,3 +1453,321 @@ if (uiDir.test(rel)) { /* 才算这份源码里的 this.x = … */ }   // uiDir 
 而且落点在 `primeWindows` 那条**没有任何测试覆盖**的路径上。
 附录四/六/七/八/九记的崩溃与静默失效，全是这一类改动造成的 ——
 所以 ④ 必须先有一次真机启动 + 走查，再谈收口。
+
+## 第 99 轮（2026-09-21）：写 ④ 的设计（零运行期改动），先把底数量准
+
+这一轮不碰运行时代码 —— ④ 的爆炸半径就是**启动本身**，先给下一个人一份可复核的设计。
+全文是 PHASE-1C 末尾的「附录十三：阶段 1c 第 ④ 步设计（对象字面量退役）」，
+交接节 §4 第 5 条也加了指针。这里只记底数与结论。
+
+### 一、底数（本轮实测，脚本可复跑）
+
+- `ui-singleton-members` **103 处 / 9 文件**：`legacy/ui-window.ts` 21（**全是镜像**）·
+  `ui-events` 21 · `ui-transform` 18 · `ui-file` 15 · `ui-list` 10 · `ui-pointer` 8 ·
+  `ui-slots` 6 · `ui-prefab` 3 · `ui-initialize` 1。另 `declared = 134`（字面量自身槽位）。
+- `ui-engine.ts` 读过 **30 个不同的 `this.<x>`** —— 这是引擎对单例的**成员契约**。
+  逐个核对「有没有新家」：**8 个**已有 store 键（`controlPointTexture` / `history` / `hover` /
+  `matrix` / `scrollLeft` / `scrollTop` / `scrollRight` / `scrollBottom`），**19 个没有**：
+
+  ```txt
+  body, centerOffsetX, centerOffsetY, centerX, centerY, controlPointActive, controlPointRotation,
+  controlPoints, marquee, outerHeight, outerWidth, paddingLeft, paddingTop, planToSave,
+  scale, scaleX, scaleY, screen, zoomTimer
+  ```
+
+  > **本节原先写「21」，本轮改成 19（口径收紧，不是成员变少）**：原 21 里含
+  > `renderingFunction` / `requestRendering` / `updateControlPoints`，而这三个由**引擎自己定义**
+  > （`ui-engine.ts` 里有 `UIEngine.<name> = …`，正是那 21 行镜像的来源）—— 它们的家就是引擎。
+  > 判据与 `legacyOnlyStoreSlots` 豁免 `engineBacked` 槽位同源。
+
+  ⇒ **这 19 个就是 ④ 的第一张工作单**。该口径已固化成**台账轴 `ui-facade-gaps`**
+  （首轮实测 19，带自证用例），所以 ④ 的进度从此和 ③ 一样有棘轮守着。
+
+### 二、结论：两条路线里推荐 A
+
+- **A（推荐）**：保留一个「UI 形状的 facade」普通对象，引擎函数继续以它为 `this` ——
+  `this` 绑定语义**逐字保持**，可分批。⚠️ facade 必须在 UI 对象**诞生的同一位置**装配，
+  否则重蹈第 95 轮（真机经 `primeWindows` 绕过 loader）。
+- **B**：把引擎函数改成显式接收 state 参数 —— 彻底，但改的是**行为语义**（附录一记过：
+  这些 `this` 绑定是承重的）。
+
+分步计划 ④-1…④-4、每步的台账信号（如 ④-2 应让 `ui-singleton-members` 103 → 82）
+与风险表见附录十三。
+
+### 三、顺手更正一处**已被证伪**的文档声明
+
+PHASE-1C 文末原写「`declaredSlots()` 与 `assignedSlots()` 改为按内容 / 按目录动态定位，
+**搬运前后读数一致**」。后半句只对**第 ② 步**成立（整个家族一起搬）——
+第 97 轮实测第 ③ 步那种**逐模块**搬运会让 `assigned` 从 153 掉到 144。已就地更正。
+
+### 四、验证
+
+`docs:check` OK（6 份文档）· `text:check` 0 命中 · `migration:check` 15 轴持平。
+**本轮零运行期改动**：只改了 `packages/editor/PHASE-1C-TEST-PREREQ.md` 与本节。
+
+> ⚠️ ④ 开工前的唯一有效验收仍是**真机启动 + 走查**：`primeWindows` 路径没有任何测试覆盖，
+> 套件只覆盖 `loadUI` 那条路（第 95 轮）。
+
+## 第 100 轮（2026-09-21）：④-1 落地 —— 把引擎的成员契约抽成单一真源（轴 19 → 0）
+
+上一轮把 ④ 量成了轴 `ui-facade-gaps`（19）。这一轮做 ④-1：给那 19 个成员**显式归属**。
+结果比预想的省事，因为**契约其实早就写好了，只是写在一个局部 interface 里**。
+
+### 一、发现：`ui-engine.ts` 里已经有一份完整的契约
+
+它早就声明了一个局部 `interface UIShape`（31 个成员，类型是照真实写入方写的：`screen:
+YamiElement`、`history: History`、`background: StageColor`、`matrix: Matrix`…），
+只是：
+1. **局部**（没有名字、没有第二个消费者）；
+2. 末尾挂着 `[k: string]: any`，于是漏声明与拼错**都通过编译**。
+
+所以 ④-1 = 把它抽成共享的单一真源，并**逐个核对读点**补全。
+
+### 二、核出一个真问题：原 interface **漏声明了两个成员**
+
+对照引擎的 30 个读点逐个核，发现这两个**从来没被声明过**，一直靠索引签名蒙过去：
+
+| 漏掉的成员 | 引擎怎么用的 | 实现在哪 |
+| --- | --- | --- |
+| `marquee` | `UI.marquee.resize()`（引擎与 `ui-transform`） | `legacy/ui-window.ts` 字面量 |
+| `planToSave` | 四处 `this.planToSave!()` | `ui-events.ts:20` |
+
+**这就是 ④ 要消灭的那类静默**：漏声明不会报错，只会让成员在某条路径上变 `undefined`。
+两个都已显式进契约（`marquee: YamiElement`、`planToSave: (() => void) | null`）。
+
+### 三、改动形态：**纯类型**，可自证
+
+新增 `engine/ui/ui-facade.ts`（`UIFacadeShape` + `ControlPoint` + `UIControlPoints`）；
+`ui-engine.ts` 删掉那三个局部声明、改为
+`interface UIShape extends UIFacadeShape { [k: string]: any }`。
+
+**diff 里只有 `import type` 与 interface 声明，没有一条运行期语句**（已核对）。
+顺带掉出 4 个因契约搬走而变成未使用的 import（`History` / `Matrix` / `StageColor` /
+`UIControlPoints`）—— `tsc` 的 `noUnusedLocals` 当场点名，已删。
+
+### 四、验证
+
+| 项 | 结果 |
+| --- | --- |
+| `ui-facade-gaps` | **19 → 0 ✅**（基线已固化） |
+| `ui-slot-coverage` | **持平**（`assigned` 153、`storeRefsUnassigned` 0 —— 没有槽位搬丢） |
+| `ui-singleton-members` | 103 / declared 134（持平，④ 的主体还没动） |
+| `tsc` strict | 0 |
+| `typecheck:vue` / `lint` / `format:check` / `docs:check` / `text:check` | 0 新增 / 0-0 / 0 / OK / 0 |
+| `migration:selftest` | 53/53 |
+
+> **诚实标注**：本轮的 `ui-facade-gaps` 归零**不等于 facade 已经在干活** —— 索引签名还在，
+> 漏声明仍只表现为运行期 `undefined`。**真正的收紧是 ④-1b：删掉那个索引签名**，
+> 让 `tsc` 把漏声明的成员逐个点出来（那时才可能发现更多像 `marquee` / `planToSave` 这样的洞）。
+> 这也是为什么 ④-1b 被单独列成一步：它才是契约开始有强制力的时刻。
+
+## 第 101 轮（2026-09-21）：④-1b —— 退役索引签名，让 `tsc` 点名（5 个洞 + 1 处真缺陷）
+
+把 `ui-engine.ts` 的 `interface UIShape extends UIFacadeShape { [k: string]: any }` 换成
+`type UIShape = UIFacadeShape` —— **逃生口退役**。
+
+### 一、`tsc` 当场点名 5 个从没在契约里的成员
+
+| 成员 | 类别 | 引擎怎么用的 |
+| --- | --- | --- |
+| `requestRendering` | 引擎自有 | 四处 `this.requestRendering!()` |
+| `updateControlPoints` | 引擎自有 | `this.updateControlPoints!()` |
+| `renderingFunction` | 引擎自有 | `Timer.appendUpdater!('stageRendering', this.renderingFunction)` |
+| `hover` | store 已持有 | `drawHoverWireframe` 比较它、读 `instance` |
+| `controlPointTexture` | store 已持有 | `drawControlPoints` 读它给 `gl.bindTexture` |
+
+全部补进 `UIFacadeShape`。**这里有一条容易混淆的区分**：台账轴 `ui-facade-gaps` 把后两个
+（store 键）与那三个（引擎自有）都算作「有家」，但引擎是用 `this.x` 读它们的 ⇒ 它们仍然必须
+在**类型上**显式在案。**「有家」与「在契约里」是两件事** —— 这正是 ④-1b 才暴露的一层。
+
+### 二、顺带暴露一个**真实缺陷**
+
+`texture.base.glTexture` 里 `ImageTexture.base` 在类型上**可空**，一直靠索引签名蒙过去。
+现用 `!` 把既有不变式写出（`ui-initialize.ts:88` 同样直接解引用 `.base`），运行期行为未变。
+
+> 这正是「去掉 `any`」的价值：**它不是洁癖，是把谎话逼出来**。第 45 轮 / 第 79 轮记的都是同一类。
+
+### 三、类型是「问出来的」，不是猜的——三次迭代都靠 `tsc`
+
+| 我的初始猜测 | `tsc` 的纠正 | 真相 |
+| --- | --- | --- |
+| `instance?: unknown` | `'instance' is of type 'unknown'` | 引擎读 `instance.visible` 并调 `instance.drawWireframe(color)` ⇒ 需要真形状 |
+| `renderingFunction: (timer: Timer) => void` | 不能赋给 `(deltaTime: number) => void` | 它的定义是 `function () {}`（**零参**）⇒ `() => void` 即可（TS 允许少参） |
+| `instance?: HoverInstance`（可选） | `'instance' is possibly 'undefined'` | 原代码本就没有守卫 ⇒ 声明**必填**才如实反映不变式 |
+| `HoverNode` 只有 `instance` + 索引签名 | TS2367：与 `UINodeShape \| null` **无重叠** | 它本来就是 UI 树节点 ⇒ 补 `class` / `children` |
+
+最后一版把索引签名写成 `[k: string]: unknown`（**不用 `any`**），所以没有制造新足迹 ——
+反过来，退役掉的那个 `[k: string]: any` 让 **`any-hatches` 52 → 51**。
+
+### 四、验证
+
+| 项 | 结果 |
+| --- | --- |
+| `tsc` strict | **0** |
+| `typecheck:vue` / `lint` / `format:check` / `docs:check` / `text:check` | 0 新增 / 0-0（1627 文件）/ 0 / OK / 0 |
+| `migration:selftest` | 53/53 |
+| `any-hatches` | **52 → 51**（基线已固化） |
+| `ui-facade-gaps` / `ui-slot-coverage` / `ui-singleton-members` | 0 / 持平 / 103 持平 |
+
+> **本轮没有重跑全套**，并说明依据：diff 里只有**注释、一个 `type` 别名、一个 `!`**，
+> **没有一条运行期语句**（已逐行核对 `git diff -U0`），产物 JS 与改前逐字相同 ——
+> 与 ③ 的搬运（改的是 import 路径，属运行期）不同，这一轮套件在原理上覆盖不到任何新东西。
+
+## 第 102 轮（2026-09-21）：④-2a —— 拆掉 store 对镜像的依赖（不需要真机的那一半）
+
+④-2 要删 `ui-window.ts` 的 21 行 `UI.x = UIEngine.x` 镜像（`ui-singleton-members` 103 → 82）。
+但删之前必须先解决一件事：**store 的 7 个引擎转发正靠那些镜像活着**。
+
+### 一、先撞上静态环
+
+最自然的写法是 `stores/ui.ts` 直接 `import { UIEngine }` —— **不行**：`ui-engine.ts:2`
+已经静态 `import { getUIStore, loadUI } from '@app/stores/ui'`，反向 import 就是一条静态环
+（`loadUI` 这个惰加载代理存在的理由，就是当初为了绕开环）。
+
+### 二、反过来：让引擎**注册自己**（依赖方向保持单向）
+
+```ts
+// stores/ui.ts —— 模块级
+let uiEngineRef: Record<string, unknown> | null = null;
+export function registerUIEngine(engine) { uiEngineRef = engine; }
+
+// engine/ui/ui-engine.ts —— **文件末尾**（所有挂载就位之后）
+registerUIEngine(UIEngine);
+```
+
+store 的 7 个引擎转发改为「**优先**从注册进来的 `UIEngine` 取函数，取不到回退到 `UI` 代理」：
+
+```ts
+const fn = fromEngine[key];
+if (typeof fn !== 'function') return undefined;
+return fn.apply(UI, args);   // ⚠️ 接收者两种情况都必须是 UI
+```
+
+**等价性怎么判**（不靠口头保证）：两条路拿到的是**同一个函数对象**（`UI.x` 就是 `UIEngine.x`
+的镜像），接收者也是**同一个**（都 `apply(UI, …)`，`this` 是那个惰加载代理）⇒ 行为逐字相同。
+唯一的差别是「函数从哪个对象上取」，而那两个对象上的这个属性此刻指向同一个函数。
+
+⚠️ 仍然**不能**把取到的函数用 `engine[key]` 那样直接调用：那样 `this` 会变成 `UIEngine`，而实现
+内部读的是 `this.planToSave` / `this.scale` 等 **UI 侧**成员 —— 这正是附录一记的那条坑。
+
+### 三、这一步买到什么
+
+现在删镜像时，store 这条路**已经不需要镜像了**。剩下的活（④-2b）是把镜像与引擎**内部**的
+`UI.drawXxx()` 调用点一起换掉 —— 那些在渲染路径上，**必须真机验证**。
+
+### 四、验证
+
+- `tsc` strict 0 · `lint` 0/0（1627 文件）· `format:check` 0 · `docs:check` OK · `text:check` 0 ·
+  `migration:check` 15 轴持平（本步**不**改任何读数：镜像还在）。
+- 先跑受影响的三条 spec（`ui-state` / `ui-slots` / `window-state`）44/44，再跑
+  `editor` 全量套件 **252 文件 / 2066 用例全绿、exit 0**。
+- 与上一轮不同，这**是**运行期改动（多了一次注册调用、转发器换了取函数的地方），
+  所以套件是必要的，不能像 ④-1b 那样跳过。
+
+## 第 103 轮（2026-09-21）：④-2 的计划更正 —— 那 21 行镜像**不是「删掉就行」**
+
+打算接着做 ④-2（删镜像 ⇒ `ui-singleton-members` 103 → 82）之前先量了一遍消费者。
+**结果是：原计划不成立，得改。**
+
+### 一、先确认「镜像 = 唯一真源」（这条成立）
+
+全仓 `UI.<镜像名> =` 的赋值共 **21 行，全部在 `ui-window.ts`，别处 0 行** ⇒
+`UI.x` 与 `UIEngine.x` 确实是同一个函数对象，④-2a 的等价性论证站得住。
+
+### 二、但消费者不止「字面量 `UI.x`」
+
+引擎方法会被**以 UI 为接收者**调用，也就是函数体里的 `this.x(…)` —— 这才是大头。
+全仓 `this.<镜像名>` 共 **259 处 / 42 文件**，**但大部分是假阳性**：
+
+- 场景 / 动画 / 粒子 / 过渡 / 精灵那几个窗口**各自也有**同名的 `requestRendering` /
+  `renderingFunction` / `stopRendering`（逐个核实过：`scene-window.ts`、`animation-window.ts`、
+  `particle-window.ts`、`transition-window.ts`、`sprite.ts` 都自声明了 `requestRendering`）；
+- `webgl-methods.ts` 里的 `this.drawElements` 其实是 **WebGL 上下文**的方法。
+
+⚠️ 第一版 grep 只查了 `UI.<名字>`（21 处 / 6 文件），差点因此得出「删掉很安全」的结论 ——
+**漏了 `this.` 这一整类**。这和本仓「仪器口径决定你看见什么」是同一个形状。
+
+### 三、可静态分离的真·UI 接收者子集
+
+声明了 `this: UIShape` 的文件恰好 **9 个**（全在 `engine/ui/`）：`ui-engine` / `ui-events` /
+`ui-file` / `ui-initialize` / `ui-list` / `ui-pointer` / `ui-prefab` / `ui-slots` / `ui-transform`。
+只有这些文件里的 `this.x` 才可能是 UI 单例的接收者。
+
+⇒ 实测工作单 **70 处**：字面量 `UI.<镜像名>` **21** 处（`ui-engine` 7 · `ui-initialize` 5 ·
+`ui-list` 3 · `ui-transform` 3 · `ui-events` 2 · `LayoutPanel.vue` 1）＋ UI 接收者的
+`this.<镜像名>` **49** 处（`ui-engine` 7 · `ui-events` 14 · `ui-pointer` 12 · `ui-transform` 10 ·
+`ui-initialize` 4 · `ui-file` 2）。
+
+### 四、计划怎么改
+
+| 原计划 | 改为 |
+| --- | --- |
+| ④-2 删镜像，103 → 82 | **④-2b** 先换 70 处调用点（`this.x()` → `UIEngine.x.call(this, …)`）→ **④-2c** 才删镜像 |
+
+理由：镜像就是「让 `this.requestRendering()` 这类调用成立」的**机制**。先删它，那 70 处会在
+运行期变 `undefined` —— 又一次静默失效，而且是全仓出过最多的那一类。
+**`ui-singleton-members` 的 103 里，这 21 行是「最后才该动」的一批，不是 ④-2 的起点。**
+
+### 五、本轮产出
+
+纯文档（PHASE-1C 附录十三的计划表与新增的「④-2 计划更正」一节 + 本节）；
+**零运行期改动**，台账 15 轴不变；`docs:check` OK · `text:check` 0。
+
+> 方法论上值得单记一条：**「某段代码是唯一真源」不等于「删掉它安全」** ——
+> 还要问「谁在**以它为接收者**调用」。前者用 `grep` 能答，后者要求先把接收者口径量清。
+
+## 第 104 轮（2026-09-21）：结案待决策 ④ —— `TextCommandShape.color` 就是 `string`
+
+第 79 轮发现一个「声明与用法不自洽」的疑点，并把它记成**待用户决策**（因为当时判断
+「改声明 = 改行为，必须实机回归」）。这一轮把它**量到底**，结论是：**声明是对的，不是 bug。**
+
+### 一、疑点是什么
+
+`printer.ts` 的 `TextCommandShape.color` 声明成 `string`，而占位命令写 `color: 0`（打包整数形状）；
+把声明放宽成 `string | number` 后，`tsc` 会在这 4 处报错：
+
+```txt
+context.fillStyle = color;   // ×4（drawText / drawTextWithShadow …）
+```
+
+于是当时的推断是「这个声明与文件自身用法不自洽，只是被 `as unknown as string` 盖住了」。
+
+### 二、量到底：值从来不是整数
+
+| 环节 | 事实 |
+| --- | --- |
+| 唯一写入点 | `drawBuffer()` 的 `command.color = this.colors[0]` |
+| `colors[0]` 由谁写 | `CSSRGBA(...)`（另一处在 `text-element.ts:230/340`，同样 `CSSRGBA(value)`） |
+| `CSSRGBA` 返回什么 | `ui-kit/src/utils/color.ts:9` 签名 **`(hex: string): string`**；用例断言 `CSSRGBA('10203040') === 'rgba(16, 32, 48, 64)'` |
+
+⇒ 运行期是 **CSS 颜色串**。**声明 `string` 正确，那 4 处 `fillStyle` 正确。**
+误导来自**同文件另一条独立的颜色通道**：效果颜色确实用
+`r + (g + (b + a * 256) * 256) * 256` 打包整数 —— 但它与 `fillStyle` 毫无关系。
+两条通道混在一个文件里，加上一个 `as unknown as` 的占位值，就成了一个看起来很硬的假疑点。
+
+### 三、动手：只改那个真谎言
+
+唯一真的错的是占位命令 `color: 0 as unknown as string` ⇒ 改成 `''`：
+
+- **类型上**：`string` 本来就对，`''` 无需断言 ⇒ 该处 `as unknown as` 消失；
+- **运行期等价**：`0` 与 `''` 对 canvas 同为**非法 fillStyle**（静默忽略，不抛），
+  且这个对象是**空白模板**、必然在绘制前被填上。
+
+顺带把两处注释（声明处、占位处）从「待决策」改写为**结论 + 证据链**，
+免得下一个人再走一遍这 25 轮的弯路。
+
+### 四、没动的那一半（如实记）
+
+同处还有 `drawingMethod: '' as unknown as (...args: unknown[]) => unknown`。它**不是**同一个问题：
+函数类型的诚实占位，要么改类型（`| null`，连带所有读点），要么改**失败行为**
+（静默 no-op 取代抛错）。这属于另一条更小的独立决策，本轮**不顺手改**。
+
+### 五、验证与账
+
+`unknown-casts` **89 → 88**（基线已固化）· `tsc` strict 0 · `lint` 0/0（1627 文件）·
+`format:check` 0 · `docs:check` OK · `text:check` 0 · `migration:selftest` 53/53 ·
+`editor` 全量套件 252 文件 / 2066 用例全绿、exit 0。
+
+> 方法上值得单记：**「声明与用法不自洽」这个判断，本身也要被验证。**
+> 本次的真相是「声明是对的，占位值是错的」—— 而当时把票投给了「声明错了」。
+> 判别手法很朴素：**把值的来源一路追到它的构造函数/签名**，而不是停在同文件里的相似写法。

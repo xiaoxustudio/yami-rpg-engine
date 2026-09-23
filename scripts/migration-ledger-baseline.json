@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-22T14:43:36.901Z",
+	"generatedAt": "2026-09-23T03:38:21.381Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -27,7 +27,7 @@
 			"label": "泛型逃生口 [k|key: string]: any / Record<string, any>",
 			"target": "zero",
 			"value": {
-				"total": 52,
+				"total": 51,
 				"files": 26
 			}
 		},
@@ -103,6 +103,13 @@
 				"total": 0
 			}
 		},
+		"ui-facade-gaps": {
+			"label": "引擎读的 UI 成员尚无显式归属（1c 第 ④ 步工作单）",
+			"target": "zero",
+			"value": {
+				"total": 0
+			}
+		},
 		"ui-singleton-members": {
 			"label": "遗留 UI 单例成员挂载（UI.<name> = 处数，不受目录影响）",
 			"target": "zero",
@@ -127,7 +134,7 @@
 			"label": "双重断言 as unknown as",
 			"target": "zero",
 			"value": {
-				"total": 89,
+				"total": 88,
 				"files": 76
 			}
 		},

@@ -46,7 +46,8 @@ import {
 	uiSlotCoverage,
 	declaredSlots,
 	uiWindowRel,
-	legacyOnlyStoreSlots
+	legacyOnlyStoreSlots,
+	uiFacadeGaps
 } from './lib/ui-slots.mjs';
 
 const BASELINE_FILE = join(ROOT, 'scripts', 'migration-ledger-baseline.json');
@@ -285,6 +286,30 @@ function buildAxes() {
 				return {
 					value: { total: slots.length, storeRefs: uiSlotCoverage().storeRefs },
 					detail: slots.map((rel) => ({ rel }))
+				};
+			}
+		},
+		{
+			id: 'ui-facade-gaps',
+			label: '引擎读的 UI 成员尚无显式归属（1c 第 ④ 步工作单）',
+			target: 'zero',
+			measure() {
+				// 为什么必须有这条轴（2026-09-21 第 99 轮实测）：
+				//
+				// ③ 收口后 `1c-store-slot-gaps` 归零，但那只说明**实现搬出了遗留目录**，
+				// 不说明谁**拥有**它们 —— `ui-singleton-members` 仍是 103 处。
+				// ④ 要退役对象字面量，而对象字面量今天是靠
+				// `} satisfies Partial<UIShape> as Partial<UIShape> as UIShape;` + `UIShape` 的
+				// `[k: string]: any` 索引签名兜着 —— **引擎读成员时没有任何类型契约**。
+				//
+				// 本轴把 ④ 的目标量成一个数：引擎以 `this` 读到的成员里，还没有「显式归属」
+				// （不在 store 的 `uiStateKeys`、也不在 facade 契约里）的有几个。首轮实测 **21**，
+				// 与第 99 轮手工核对的结果一致。**只暴露 total**（分母 engineReads 会随实现变化，
+				// 把它做成受棘轮的数字会误拦正确的改动）。
+				const { missing } = uiFacadeGaps();
+				return {
+					value: { total: missing.length },
+					detail: missing.map((name) => ({ rel: name }))
 				};
 			}
 		},

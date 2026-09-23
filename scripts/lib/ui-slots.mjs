@@ -300,3 +300,56 @@ export function legacyOnlyStoreSlots() {
 	}
 	return legacyOnly.sort((a, b) => a.localeCompare(b));
 }
+
+/**
+ * 阶段 1c 第 ④ 步的工作单：**引擎读的 UI 成员里，尚无「显式归属」的那些**。
+ *
+ * ## 为什么需要这条口径
+ *
+ * `ui-engine.ts` 以 `this` 为接收者读一批 UI 成员（这正是 `ui-window.ts` 里
+ * `UI.x = UIEngine.x` 那 21 行镜像的用途 —— 把 UI 侧状态喂给引擎）。这些成员今天能编译，
+ * **不是因为有类型契约**，而是因为对象字面量末尾写着
+ * `} satisfies Partial<UIShape> as Partial<UIShape> as UIShape;`，而 `UIShape` 带
+ * `[k: string]: any` 索引签名 —— **任何成员读写都通过编译，包括拼错的**。
+ *
+ * 所以 ④ 的目标可以量成一个数：把「引擎读到的成员」逐个**显式归属**（进 store 的
+ * `uiStateKeys`，或进 facade 契约 `engine/ui/ui-facade.ts`），最后让那个 `any` 索引签名退役。
+ *
+ * ## 口径
+ *
+ * - 读点：`ui-engine.ts` 的 `this.<name>`（代码区，去注释）。
+ * - 「有家」= 在 `stores/ui.ts` 的 `uiStateKeys` 里，**或**在 `ui-facade.ts` 里声明了同名字段，
+ *   **或**它本来就由引擎自己定义（`ui-engine.ts` 里有 `UIEngine.<name> = …`）——
+ *   最后这条与 `legacyOnlyStoreSlots` 豁免「engineBacked」槽位是同一个道理：
+ *   那些成员的家就是引擎，不是缺口。（`renderingFunction` / `requestRendering` /
+ *   `updateControlPoints` 属于这一类。）
+ * - 返回的 `missing` 就是缺口清单；`engineReads` 是分母（供自证用例断言扫描面没瞎）。
+ *
+ * @returns {{ engineReads: number, missing: string[] }}
+ */
+export function uiFacadeGaps() {
+	const engineSrc = codeOnly(
+		readSource(join(ROOT, 'packages', 'editor', 'src', 'engine', 'ui', 'ui-engine.ts'))
+	);
+	const reads = new Set([...engineSrc.matchAll(/\bthis\.([A-Za-z_$][\w$]*)/g)].map((m) => m[1]));
+
+	const storeSrc = readSource(join(ROOT, 'packages', 'editor', 'src', 'stores', 'ui.ts'));
+	const keysBlock = storeSrc.match(/export const uiStateKeys = \[([\s\S]*?)\]\s*as const;/);
+	const keys = new Set(
+		keysBlock ? [...keysBlock[1].matchAll(/'([^']+)'/g)].map((m) => m[1]) : []
+	);
+
+	// facade 契约还不存在时（④-1 之前）全部算缺口 —— 这正是「0 → N」该有的读数。
+	const facadeRel = join(ROOT, 'packages', 'editor', 'src', 'engine', 'ui', 'ui-facade.ts');
+	const facadeSrc = existsSync(facadeRel) ? codeOnly(readSource(facadeRel)) : '';
+
+	const hasHome = (name) =>
+		keys.has(name) ||
+		new RegExp(`\\b${name}\\??\\s*:`).test(facadeSrc) ||
+		new RegExp(`^UIEngine\\.${name}\\s*=`, 'm').test(engineSrc);
+
+	return {
+		engineReads: reads.size,
+		missing: [...reads].filter((name) => !hasHome(name)).sort((a, b) => a.localeCompare(b))
+	};
+}

@@ -1,5 +1,5 @@
 import { screenScrollData } from '../screen-scroll-data';
-import { getUIStore, loadUI } from '@app/stores/ui';
+import { getUIStore, loadUI, registerUIEngine } from '@app/stores/ui';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { engineEls } from '@app/engine/element-registry';
 import { getRelativeCoords } from '@app/utils/element-utils';
@@ -7,10 +7,8 @@ import { write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import type { History } from '@app/tools/history.ts';
-import type { Matrix } from '@app/engine/webgl/matrix2.ts';
-import type { StageColor } from '@app/utils/stage-color';
 import type { YamiElement } from '@app/types/element-api';
+import type { ControlPoint, UIFacadeShape } from './ui-facade.ts';
 import { clamp, roundTo, dist, modDegrees } from '@app/utils/math';
 
 /**
@@ -23,53 +21,15 @@ const UI = getLazyWindow('ui', loadUI);
 // oxlint-disable-next-line no-explicit-any
 export const UIEngine: Record<string, any> = {};
 
-interface ControlPoint {
-	x: number;
-	y: number;
-	angle: number;
-}
-
-interface UIControlPoints {
-	rotate: Record<'TL' | 'TR' | 'BL' | 'BR', ControlPoint>;
-	resize: Record<'T' | 'L' | 'R' | 'B' | 'TL' | 'TR' | 'BL' | 'BR', ControlPoint>;
-	list: ControlPoint[];
-}
-
-interface UIShape {
-	page: HTMLElement;
-	head: HTMLElement;
-	body: HTMLElement;
-	screen: YamiElement;
-	history: History;
-	controlPoints: UIControlPoints | null;
-	controlPointActive: ControlPoint | null;
-	controlPointRotation: number;
-	translationKey: number;
-	translationTimer: Timer | null;
-	zoomTimer: Timer | null;
-	background: StageColor;
-	foreground: StageColor;
-	matrix: Matrix;
-	scale: number;
-	scaleX: number;
-	scaleY: number;
-	outerWidth: number;
-	outerHeight: number;
-	scrollLeft: number;
-	scrollTop: number;
-	scrollRight: number;
-	scrollBottom: number;
-	centerX: number;
-	centerY: number;
-	centerOffsetX: number;
-	centerOffsetY: number;
-	padding: number;
-	paddingLeft: number;
-	paddingTop: number;
-	inspectorTypeMap: Record<string, string>;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
-}
+/**
+ * 引擎读 UI 成员的契约在 `ui-facade.ts`（**单一真源**，由台账轴 `ui-facade-gaps` 守着）。
+ *
+ * ④-1b（2026-09-21 第 101 轮）：**索引签名已退役**。原先这里挂着 `[k: string]: any`，
+ * 于是「漏声明的成员」与「拼错的成员名」都通过编译，只在运行期表现为 `undefined` ——
+ * 那正是本阶段要消灭的静默失效。现在 `this.<x>` 必须在 `UIFacadeShape` 里显式在案，
+ * `tsc` 会逐个点名；缺的是**补进契约**，不是把 `any` 加回来。
+ */
+type UIShape = UIFacadeShape;
 
 UIEngine.setZoom = (function IIFE() {
 	return function (this: UIShape, zoom: number) {
@@ -641,7 +601,10 @@ UIEngine.drawControlPoints = function (this: UIShape) {
 		gl.uniform1i(program.u_ColorMode, 0);
 		gl.uniform4f(program.u_Tint, 0, 0, 0, 0);
 		gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STREAM_DRAW, 0, vi);
-		gl.bindTexture(gl.TEXTURE_2D, texture.base.glTexture);
+		// `texture.base` 在类型上可空，但不变式是「贴图建好后 base 必然已挂上」
+		// （`ui-initialize.ts:88` 也是直接 `this.controlPointTexture.base.protected = true`）。
+		// 这里 `!` 只是把这条既有前提显式写出来 —— ④-1b 去掉索引签名后它才第一次被 tsc 看见。
+		gl.bindTexture(gl.TEXTURE_2D, texture.base!.glTexture);
 		gl.drawElements(gl.TRIANGLES, (vi / 16) * 6, gl.UNSIGNED_INT, 0);
 	}
 };
@@ -703,3 +666,9 @@ UIEngine.renderingFunction = function () {
 UIEngine.stopRendering = function (this: UIShape) {
 	Timer.removeUpdater!('stageRendering', this.renderingFunction);
 };
+
+// 阶段 1c 第 ④-2a 步（2026-09-21 第 102 轮）：把引擎自己的实现注册给 store，让它的 7 个引擎
+// 转发优先走这里、而不是 `ui-window.ts` 的镜像。**必须放在文件末尾**（上面所有挂载都已就位）。
+// 为什么用注册而不是让 store import 本模块：本模块已静态 import store，反向会成静态环。
+// 见 `stores/ui.ts` 里 `registerUIEngine` 的说明。
+registerUIEngine(UIEngine);

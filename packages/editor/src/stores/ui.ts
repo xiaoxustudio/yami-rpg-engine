@@ -36,6 +36,30 @@ export const loadUI = async () => {
 };
 const UI = getLazyWindow('ui', loadUI);
 
+/**
+ * 引擎自身实现的注册点（`UIEngine`）—— 阶段 1c 第 ④-2a 步（2026-09-21 第 102 轮）。
+ *
+ * ## 为什么用「引擎注册自己」而不是 `import { UIEngine }`
+ *
+ * `ui-engine.ts` 已经**静态** import 本文件（它要 `loadUI` 与 `getUIStore`）。
+ * 若这里反向静态 import `ui-engine.ts`，就成了一条静态环 —— 而本文件顶部那段注释
+ * 讲的正是这个坑（`loadUI` 存在的理由就是绕开静态环）。所以反过来：**由引擎在模块加载
+ * 末尾注册自己**，依赖方向仍然是单向的（引擎 → store）。
+ *
+ * ## 为什么这样就能不等 ④-2 的镜像删除
+ *
+ * 注册之前（或引擎尚未加载时）调用方**回退**到 `UI` 惰加载代理。两条路拿到的是
+ * **同一个函数对象**（`UI.x` 就是 `UIEngine.x` 的镜像）、**同一个接收者**（都以 `UI` 为
+ * `this`），所以行为等价 —— 这一点由 `stores/__tests__/ui-state.spec.ts` 的既有用例兜底。
+ * 于是本步先把 store 的 7 个引擎转发与镜像**解耦**，等 ④-2b 删镜像时它们已经不需要镜像了。
+ */
+let uiEngineRef: Record<string, unknown> | null = null;
+
+/** 由 `engine/ui/ui-engine.ts` 在模块加载**末尾**调用（那时它的挂载已全部就位）。 */
+export function registerUIEngine(engine: Record<string, unknown>): void {
+	uiEngineRef = engine;
+}
+
 export const uiStateKeys = [
 	'state',
 	'target',
@@ -560,6 +584,28 @@ export const useUIStore = defineStore('ui', () => {
 		};
 	};
 
+	/**
+	 * 引擎实现（`UIEngine`）的转发器 —— 与 `makeForwarder` 的区别只有**从哪里取函数**：
+	 *
+	 * - `makeForwarder`：从 `UI` 惰加载代理取（即 `ui-window.ts` 的**镜像**）；
+	 * - 本函数：优先从引擎**注册进来的** `UIEngine` 取，取不到才回退到 `UI`。
+	 *
+	 * ⚠️ 接收者**两种情况都必须是 `UI`**：这些实现内部读 `this.planToSave` / `this.scale` 等
+	 * UI 侧成员（见上面那段注释）。所以**绝不能**写成 `engine[key](...)`（那样 `this` 会变成
+	 * `UIEngine`）—— 必须 `.apply(UI, args)`。
+	 */
+	const makeEngineForwarder = (key: string) => {
+		return (...args: unknown[]) => {
+			const fromEngine = uiEngineRef;
+			if (fromEngine !== null) {
+				const fn = fromEngine[key];
+				if (typeof fn !== 'function') return undefined;
+				return fn.apply(UI, args);
+			}
+			return makeForwarder(key, () => UI as Record<string, unknown> | null)(...args);
+		};
+	};
+
 	const uiForwardKeys = [
 		'listChange',
 		'headPointerdown',
@@ -596,7 +642,10 @@ export const useUIStore = defineStore('ui', () => {
 	 *
 	 * ⚠️ 第 ① 步（2026-09-21 第 94 轮）已落地，但**只换了来源**：`UI` 仍是那个遗留对象
 	 * （改由 `loadUI` 直连 `engine/ui/legacy/ui-window.ts`，不再经 `window-cluster` 再导出）。
-	 * 所以下面这 7 个**现在仍必须以 `UI` 为接收者**；等 ④ 才换成直连 `UIEngine`。
+	 *
+	 * ✅ **第 ④-2a 步（2026-09-21 第 102 轮）**：这 7 个已改为优先走引擎**注册进来的**
+	 * `UIEngine`（`makeEngineForwarder`），不再依赖 `ui-window.ts` 的镜像 —— 于是 ④-2b 删镜像时
+	 * store 这条路已经不受影响。接收者仍是 `UI`（见 `makeEngineForwarder` 的说明）。
 	 * 注意**不能**写成 `UIEngine.setZoom(…)`：那样 `this` 会变成 `UIEngine`，而实现里读的
 	 * 是 `this.planToSave` 等 UI 侧成员。必须以 `UI` 为接收者（`apply`）。
 	 */
@@ -610,7 +659,7 @@ export const useUIStore = defineStore('ui', () => {
 		'setControlPoint'
 	] as const;
 	for (const key of uiEngineForwardKeys) {
-		forwarders[key] = makeForwarder(key, () => UI as Record<string, unknown> | null);
+		forwarders[key] = makeEngineForwarder(key);
 	}
 
 	function saveToConfig(config: { colors: Record<string, unknown> }) {

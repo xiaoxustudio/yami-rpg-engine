@@ -40,12 +40,21 @@ interface TextCommandShape {
 	font: string;
 	size: number;
 	/**
-	 * ⚠️ 待决策（第 79 轮发现）：这里声明成 `string`，但同一文件里 `command.color = this.colors[0]`，
-	 * 而 `colors[0]` 来自 `CSSRGBA(...)`；占位命令又用 `0`（打包整数）硬塞进来。
-	 * 把声明改成 `string | number` 后 `tsc` 立刻在 4 处 `context.fillStyle = color` 报 TS2322 ——
-	 * 也就是说**这个声明与文件自身的用法不自洽**，只是被 `as unknown as string` 盖住了。
-	 * 但它属于「真实取值到底是不是打包整数」的行为问题，改它 = 改行为，按计划必须交用户按实机回归判定，
-	 * 所以本轮**只记录、不修**。
+	 * 文本颜色 —— 值就是 **CSS 颜色串**（`'rgba(r, g, b, a)'`）。
+	 *
+	 * ✅ **第 104 轮结案**（原为第 79 轮的「待决策」）：声明成 `string` 是**对的**，
+	 * 4 处 `context.fillStyle = color` 也是对的。原先怀疑「真实取值是打包整数」，
+	 * 但把来源一路量到底即可排除：
+	 *
+	 * - 唯一写入点是 `drawBuffer` 的 `command.color = this.colors[0]`；
+	 * - `colors[0]` 由 `CSSRGBA(...)` 写入（`drawBuffer` 之外的写入点在
+	 *   `text-element.ts:230/340`，同样是 `CSSRGBA(value)`）；
+	 * - `ui-kit/src/utils/color.ts:9` 的签名是 `CSSRGBA(hex: string): string`，
+	 *   且 `ui-kit` 的用例断言 `CSSRGBA('10203040') === 'rgba(16, 32, 48, 64)'`。
+	 *
+	 * ⇒ 运行期从来不是整数。会让人误判的是**同文件另一条独立的颜色通道**（效果颜色用
+	 * `r + (g + (b + a * 256) * 256) * 256` 打包整数），那与 `fillStyle` 无关。
+	 * 唯一真正的谎言是占位命令里的 `0 as unknown as string`，已改为 `''`（见 `fetchCommand`）。
 	 */
 	color: string;
 	effect: TextEffectShape | null;
@@ -1223,9 +1232,11 @@ export class Printer {
 				y: 0,
 				font: '',
 				size: 0,
-				// ⚠️ 见 `TextCommandShape.color` 的注释：这里的 `0` 是打包整数形状的占位值，
-				// 与声明的 `string` 不自洽。改声明会连带 4 处 canvas 赋值，属行为问题 ⇒ 待用户决策。
-				color: 0 as unknown as string,
+				// 见 `TextCommandShape.color` 的注释：它真实类型就是 `string`（值来自 `CSSRGBA`），
+				// 所以这里写 `''` 即可，不再需要 `0 as unknown as string` 那种「打包整数」谎话。
+				// 这个对象是**空白模板**、必然在绘制前被填上；即便被提前读到，`0` 与 `''` 对 canvas
+				// 同样都是非法 fillStyle（静默忽略），故改动等价。
+				color: '',
 				effect: null as TextEffectShape | null,
 				image: null as ImageElementShape | null,
 				imageWidth: 0,

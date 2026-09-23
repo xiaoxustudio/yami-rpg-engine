@@ -30,7 +30,13 @@ import {
 	ROOT
 } from './scan.mjs';
 import { readDomWhitelist, loadDomWhitelist, WHITELIST_RATIONALE } from './dom-whitelist.mjs';
-import { uiWindowRel, legacyOnlyStoreSlots, storeReferencedSlots, uiDirRe } from './ui-slots.mjs';
+import {
+	uiWindowRel,
+	legacyOnlyStoreSlots,
+	storeReferencedSlots,
+	uiDirRe,
+	uiFacadeGaps
+} from './ui-slots.mjs';
 import { checkTextIntegrity, scanTextIntegrity } from './text-integrity.mjs';
 
 // ---------------------------------------------------------------------------
@@ -574,6 +580,44 @@ test('遗留层还在 ⟹ 与目录无关的挂载点轴非 0；且 1c-store-slo
 	ok(
 		!ledgerSrc.includes('^@app\\/ui\\/'),
 		'legacy-ui-refs 又用回了 @app/ui/ 前缀 —— 现路径是 @app/engine/ui/legacy/'
+	);
+});
+
+test('ui-facade-gaps：口径自证（三类「有家」都要认出来，其余的才算缺口）', () => {
+	// 这条轴是 1c 第 ④ 步的工作单，口径必须自己站得住。三类「有家」——
+	//   ① 在 store 的 `uiStateKeys` 里；② 在 facade 契约里声明；
+	//   ③ 引擎自己定义（`UIEngine.<name> =`，如 renderingFunction / requestRendering）
+	// ——都要被排除，其余才是缺口。下面三个样本各验一个方向。
+	const { engineReads, missing } = uiFacadeGaps();
+
+	ok(engineReads > 0, '引擎应当至少读一个 `this.<x>`；为 0 说明扫描面瞎了');
+	ok(
+		!missing.includes('renderingFunction'),
+		'`renderingFunction` 由 ui-engine 自己定义（那 21 行镜像的来源）⇒ 家就是引擎，不该算缺口'
+	);
+	ok(!missing.includes('hover'), '`hover` 已在 uiStateKeys 里 ⇒ 不该算缺口');
+
+	// ⚠️ 「必须算进来」这个方向**不能写死某个成员名** —— ④ 一推进它就有家了，用例会变成绊脚石
+	// （第 99 轮实测过：临时加一个声明了 `body` 的 facade，写死 `body` 的断言当场变红）。
+	// 改成断言**契约本身**：缺口里的每一项都必须真的「无家」——不在 store 键里、也非引擎自有。
+	// 这样它在 ④ 全过程中都成立，且口径一旦坏掉（例如 keys 正则失配）立刻能抓到。
+	const storeSrc = readSource(join(ROOT, 'packages', 'editor', 'src', 'stores', 'ui.ts'));
+	const keysMatch = storeSrc.match(/export const uiStateKeys = \[([\s\S]*?)\]\s*as const;/);
+	ok(keysMatch !== null, '没能解析出 uiStateKeys —— 口径的前提变了，请复核而不是删掉这条用例');
+	const keys = new Set([...keysMatch[1].matchAll(/'([^']+)'/g)].map((m) => m[1]));
+	const engineSrc = codeOnly(
+		readSource(join(ROOT, 'packages', 'editor', 'src', 'engine', 'ui', 'ui-engine.ts'))
+	);
+	for (const name of missing) {
+		ok(!keys.has(name), `缺口 \`${name}\` 其实已在 uiStateKeys 里 ⇒ 口径漏了`);
+		ok(
+			!new RegExp(`^UIEngine\\.${name}\\s*=`, 'm').test(engineSrc),
+			`缺口 \`${name}\` 其实由引擎自己定义 ⇒ 口径漏了`
+		);
+	}
+	ok(
+		missing.length < engineReads,
+		`缺口数（${missing.length}）应小于读点数（${engineReads}）—— 否则「有家」的判据全失效了`
 	);
 });
 
