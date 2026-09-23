@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-23T04:49:44.695Z",
+	"generatedAt": "2026-09-23T06:34:09.700Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -75,7 +75,7 @@
 			"label": "遗留层 UI 单例目录行数（engine/ui/legacy/*）",
 			"target": "zero",
 			"value": {
-				"total": 316,
+				"total": 302,
 				"files": 2
 			}
 		},
@@ -114,8 +114,8 @@
 			"label": "遗留 UI 单例成员挂载（UI.<name> = 处数，不受目录影响）",
 			"target": "zero",
 			"value": {
-				"total": 103,
-				"files": 9,
+				"total": 82,
+				"files": 8,
 				"declared": 134
 			}
 		},
@@ -125,7 +125,7 @@
 			"value": {
 				"total": 0,
 				"declared": 134,
-				"assigned": 153,
+				"assigned": 132,
 				"storeRefs": 49,
 				"engineBacked": 7
 			}

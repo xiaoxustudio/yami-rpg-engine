@@ -1,5 +1,7 @@
 import { UI } from './legacy/ui-window.ts';
 import type { UIShape, UINodeShape, UIPointerEvent } from './legacy/ui-window.ts';
+// ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
+import { UIEngine } from './ui-engine.ts';
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { getRelativeCoords, relate } from '@app/utils/element-utils.ts';
@@ -111,7 +113,7 @@ UI.marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
-			const { x, y } = this.getPointerCoords!(event);
+			const { x, y } = UIEngine.getPointerCoords!.call(this, event);
 			let object;
 			if ((event.ctrlKey || event.metaKey) && getUIStore().target) {
 				object = getUIStore().target;
@@ -128,7 +130,7 @@ UI.marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 				event.startY = object.transform.y;
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
-				this.requestRendering!();
+				UIEngine.requestRendering!.call(this);
 			}
 			this.setTarget!(object);
 			break;
@@ -147,17 +149,17 @@ UI.marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 UI.marqueePointermove = function (this: UIShape, event: UIPointerEvent) {
 	if (!this.dragging) {
 		this.marquee.pointerevent = event;
-		const { x, y } = this.getPointerCoords!(event);
+		const { x, y } = UIEngine.getPointerCoords!.call(this, event);
 		if (getUIStore().target) {
-			const point = this.selectControlPoint!(x, y);
+			const point = UIEngine.selectControlPoint!.call(this, x, y);
 			if (point) {
 				this.setHover!(null);
-				this.setControlPoint!(point);
+				UIEngine.setControlPoint!.call(this, point);
 				return;
 			}
 		}
 		if (this.controlPointActive) {
-			this.setControlPoint!(null);
+			UIEngine.setControlPoint!.call(this, null);
 		}
 		const object = this.selectObject!(x, y);
 		this.setHover!(object);
@@ -192,11 +194,11 @@ UI.pointerup = function (this: UIShape, event?: UIPointerEvent) {
 			case 'object-resize':
 				break;
 			case 'object-move':
-				this.requestRendering!();
+				UIEngine.requestRendering!.call(this);
 				break;
 			case 'ready-to-scroll':
 				if (event!.target === this.marquee) {
-					const { x, y } = this.getPointerCoords!(event!);
+					const { x, y } = UIEngine.getPointerCoords!.call(this, event!);
 					const object = this.selectObject!(x, y);
 					this.setTarget!(object);
 					this.menuPopup!(event!);
@@ -235,7 +237,7 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 					}
 					const transform = target.transform;
 					if (transform.rotation !== rotation) {
-						this.rotateTarget!(rotation);
+						UIEngine.rotateTarget!.call(this, rotation);
 					}
 					dragging.lastAngle = currentAngle;
 				}
@@ -334,7 +336,7 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 						(width !== undefined && transform.width !== width) ||
 						(height !== undefined && transform.height !== height)
 					) {
-						this.resizeTarget!(width, height);
+						UIEngine.resizeTarget!.call(this, width, height);
 					}
 				}
 				break;
@@ -381,7 +383,7 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 						y = Math.round(dragging.startY + distY);
 					}
 					if (transform.x !== x || transform.y !== y) {
-						this.shiftTarget!(x, y);
+						UIEngine.shiftTarget!.call(this, x, y);
 					}
 				}
 				break;
@@ -409,7 +411,7 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 
 UI.menuPopup = function (this: UIShape, event: UIPointerEvent) {
 	this.translationKeyup!();
-	const { x, y } = this.getPointerCoords!(event);
+	const { x, y } = UIEngine.getPointerCoords!.call(this, event);
 	const target = getUIStore().target;
 	const selected = !!target;
 	const pastable = (GlobalClipboard as GlobalClipboardHost).has('yami.ui.object');

@@ -3,6 +3,8 @@ import { getListConfig } from '@ui-kit';
 import { uiEls } from '@app/engine/ui/element-registry';
 import { UI } from './legacy/ui-window.ts';
 import type { UIShape, UINodeShape, UIControlPoints } from './legacy/ui-window.ts';
+// ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
+import { UIEngine } from './ui-engine.ts';
 import type { DynamicShape } from '@app/types/shapes.ts';
 import { addScrollbars, hide, on, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
@@ -113,10 +115,10 @@ UI.initialize = function (this: UIShape) {
 				const st = screen.scrollTop;
 				const cx = roundTo(this.centerX + x, 4);
 				const cy = roundTo(this.centerY + y, 4);
-				this.updateCamera!(cx, cy);
-				this.updateTransform!();
+				UIEngine.updateCamera!.call(this, cx, cy);
+				UIEngine.updateTransform!.call(this);
 				if (screen.scrollLeft !== sl || screen.scrollTop !== st) {
-					this.requestRendering!();
+					UIEngine.requestRendering!.call(this);
 					this.marquee.resize();
 					this.screen.updateScrollbars();
 				}
@@ -134,7 +136,7 @@ UI.initialize = function (this: UIShape) {
 				const time = elapsed / duration;
 				this.scale = start * (1 - time) + end * time;
 				this.resize!();
-				this.requestRendering!();
+				UIEngine.requestRendering!.call(this);
 			} else {
 				this.scale = timer.end;
 				return false;
@@ -235,7 +237,7 @@ UI.initialize = function (this: UIShape) {
 			list.setRecursiveStates(instance, 'visible', !newValue);
 		}
 		list.update();
-		UI.requestRendering!();
+		UIEngine.requestRendering!.call(UI);
 		UI.planToSave!();
 	};
 	History.processors['ui-object-locked'] = (
@@ -267,7 +269,7 @@ UI.initialize = function (this: UIShape) {
 		}
 		instances.resize();
 		UI.setTarget!(target);
-		UI.requestRendering!();
+		UIEngine.requestRendering!.call(UI);
 		UI.planToSave!();
 	};
 	History.processors['ui-target-shift'] = (
@@ -286,7 +288,7 @@ UI.initialize = function (this: UIShape) {
 		}
 		instances.resize();
 		UI.setTarget!(target);
-		UI.requestRendering!();
+		UIEngine.requestRendering!.call(UI);
 		UI.planToSave!();
 	};
 	History.processors['ui-target-resize'] = (
@@ -305,7 +307,7 @@ UI.initialize = function (this: UIShape) {
 		}
 		instances.resize();
 		UI.setTarget!(target);
-		UI.requestRendering!();
+		UIEngine.requestRendering!.call(UI);
 		UI.planToSave!();
 	};
 	History.processors['ui-target-rotate'] = (
@@ -322,7 +324,7 @@ UI.initialize = function (this: UIShape) {
 		}
 		instances.resize();
 		UI.setTarget!(target);
-		UI.requestRendering!();
+		UIEngine.requestRendering!.call(UI);
 		UI.planToSave!();
 	};
 

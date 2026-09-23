@@ -19,11 +19,14 @@ import { Editor } from '@app/services/project/editor.ts';
  *
  * ## 为什么盯 `uiWindowReady` 而不是 `loadUI`
  *
- * 真机上 UI 对象**不是**由 `loadUI` 到达的：`main/initialize.ts:91` 的
- * `primeWindows(clusterRef)` 按小写键直接塞进 `window-registry` 的缓存，`getLazyWindow` 的
- * get trap 于是永远不调 loader。而 `loadUI` 与 `primeWindows` **都要先 `await clusterReady`**，
- * `clusterReady` 里含 `uiWindowReady` ⇒ 后者是唯一能同时覆盖两条路径的汇合点。
- * （vitest 里走的本来就是 loader 路径，所以「在这里绿」不足以证明真机；见 `xr.md` 第 95 轮。）
+ * 原文此处写的是「真机上 UI 对象**不是**由 `loadUI` 到达的：`primeWindows` 直接塞缓存，
+ * get trap 于是永远不调 loader」。⚠️ **第 110 轮更正：这条短路已经不存在了** ——
+ * 第 ① 步（提交 `00729b15`）删掉了 `window-cluster.ts` 的 `export { UI }`，`primeWindows`
+ * 遍历的是该模块的命名空间，没有 `UI` 就没有 `'ui'` 键，真机与 vitest 一样走 `loadUI`。
+ * 该不变式由同目录的 `ui-window-arrival-path.spec.ts` 钉住（加回那行导出即变红）。
+ *
+ * 仍然盯 `uiWindowReady` 的理由不变：它是「`UI` 已建好」的**汇合点**（`clusterReady` 里含它），
+ * 绑定挂在这里就不必假设调用方是谁，也不必赌 loader 有没有真的被调用过。
  */
 describe('1c ③：目录外的 UI 槽位绑定', () => {
 	it('uiWindowReady 解析之后，两个槽位已被绑定（而不是对象字面量里的 null）', async () => {

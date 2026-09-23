@@ -3,7 +3,12 @@ import { uiEls } from '@app/engine/ui/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
 import { Scene } from '@app/scene/scene-window.ts';
-import { UIEngine } from '@app/engine/ui/ui-engine.ts';
+// ④-2c（第 114 轮）后本文件不再**用** UIEngine（21 行镜像已退役），但这条**副作用 import 必须留着**：
+// 它保证 `ui-engine.ts` 的模块体（末尾会 `registerUIEngine(UIEngine)`）在本文件**之前**求值。
+// 少了它，就可能出现「UI 对象已存在、但 `uiEngineRef` 还是 null」的窗口，而 store 的 7 个引擎转发
+// 在那种状态下会**静默返回 undefined**（`makeEngineForwarder` 的回退分支取不到任何函数）。
+// 见 `xr.md` 第 113 轮里那条等价性论证 —— 它的前提正是「读 UI 必先求值 UIEngine」。
+import '@app/engine/ui/ui-engine.ts';
 import { getUIStore } from '@app/stores/ui';
 
 import type { UINodeShape } from '@app/engine/ui/element-classes.ts';
@@ -262,35 +267,16 @@ for (const key of uiBridgeKeys) {
 	});
 }
 
-UI.setZoom = UIEngine.setZoom;
-UI.shiftAnchor = UIEngine.shiftAnchor;
-UI.shiftTarget = UIEngine.shiftTarget;
-UI.resizeTarget = UIEngine.resizeTarget;
-UI.rotateTarget = UIEngine.rotateTarget;
-UI.setControlPoint = UIEngine.setControlPoint;
-UI.updateControlPoints = UIEngine.updateControlPoints;
-UI.getPointerCoords = UIEngine.getPointerCoords;
-UI.updateCamera = UIEngine.updateCamera;
-UI.updateTransform = UIEngine.updateTransform;
-UI.drawBackground = UIEngine.drawBackground;
-UI.drawElements = UIEngine.drawElements;
-UI.drawCoordinateAxes = UIEngine.drawCoordinateAxes;
-UI.drawHoverWireframe = UIEngine.drawHoverWireframe;
-UI.drawTargetWireframe = UIEngine.drawTargetWireframe;
-UI.drawTargetAnchor = UIEngine.drawTargetAnchor;
-UI.drawControlPoints = UIEngine.drawControlPoints;
-UI.selectControlPoint = UIEngine.selectControlPoint;
-UI.requestRendering = UIEngine.requestRendering;
-UI.renderingFunction = UIEngine.renderingFunction;
-UI.stopRendering = UIEngine.stopRendering;
+// 阶段 1c 第 ④-2c 步（第 114 轮）：把引擎的 21 个方法镜像到 UI 上的那些行已退役 ——
+// 调用点直连 `UIEngine`、store 的 7 个转发改走注册进来的引擎（理由见 `xr.md` 第 112–114 轮）。
 
 export const uiWindowReady = Promise.all([
 	import('@app/engine/ui/element-register.ts'),
 	import('./register.ts'),
 	// 阶段 1c 第 ③ 步：目录外的槽位绑定模块。**必须动态 import** ——
-	// 它要读已经建好的 `UI`（静态 import 会先于本模块体求值，踩 TDZ），
-	// 且挂在 `uiWindowReady` 上才能同时覆盖 `loadUI` 与 `primeWindows` 两条到达路径。
-	// 见 `engine/ui/ui-slots.ts` 头部与 `xr.md` 第 95 轮。
+	// 它要读已经建好的 `UI`（静态 import 会先于本模块体求值，踩 TDZ）；
+	// 挂在 `uiWindowReady` 上是在 `UI` 建好之后求值，且不赌调用方是哪一条路
+	// （⚠️ 第 110 轮更正：原文写「覆盖 loadUI 与 primeWindows 两条路径」，该短路已在第 ① 步断掉）。
 	import('@app/engine/ui/ui-slots.ts')
 ])
 	.then(() => undefined)

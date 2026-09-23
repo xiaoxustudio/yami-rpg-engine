@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getUIStore, uiStateKeys } from '@app/stores/ui';
 import { UI } from '@app/engine/ui/legacy/ui-window.ts';
+import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import { uiEls } from '@app/engine/ui/element-registry';
 
 describe('useUIStore（UI 状态反转：store 为源）', () => {
@@ -56,11 +57,15 @@ describe('useUIStore（UI 状态反转：store 为源）', () => {
 		store.mode = null;
 	});
 
-	it('legacy 写入经 store 生效（store 为源）', () => {
+	it('引擎写入经 store 生效（store 为源）', () => {
 		const store = getUIStore();
-		UI.setZoom!(2);
+		// ⚠️ 阶段 1c 第 ④-2c 步（第 114 轮）起，`ui-window.ts` 不再把 `UIEngine.setZoom` 镜像到
+		// `UI.setZoom` 上，所以这里直连引擎、并显式传 `UI` 作接收者 —— 与镜像存在时的调用形态
+		// **逐字等价**（当时的 `UI.setZoom!(2)` 也是以 UI 为接收者调同一个函数对象）。
+		// 断言的东西没变：写入最终落到 store（`setZoom` 内部就是 `getUIStore().zoom = zoom`）。
+		UIEngine.setZoom!.call(UI, 2);
 		expect(store.zoom).toBe(2);
-		UI.setZoom!(0);
+		UIEngine.setZoom!.call(UI, 0);
 		expect(store.zoom).toBe(0);
 		UI.state = 'open';
 		expect(store.state).toBe('open');

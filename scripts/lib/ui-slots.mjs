@@ -190,13 +190,52 @@ export function storeReferencedSlots() {
 }
 
 /**
+ * `ui-slot-coverage` 的**候选集**：store 引用了、却没有任何模块给它赋值的槽位。
+ *
+ * ## 为什么把这条判据单独抽出来（2026-09-22 第 114 轮）
+ *
+ * 它原来是 `uiSlotCoverage()` 里的一行 `.filter()`。抽出来是为了让 `self-test.mjs`
+ * 能用**样本**直接自证 —— 否则这条判据只在「镜像已经删掉」之后才咬人，
+ * 在那之前它是**不可自证**的（真实仓库里那 7 个正因为有镜像赋值，读数才是 0）。
+ *
+ * ## `engineBacked` 为什么必须排除
+ *
+ * 阶段 1c 第 ④-2a 步之后，store 的 7 个引擎转发（`makeEngineForwarder`）**不再从 UI 槽位取函数**，
+ * 而是从引擎在模块加载末尾**注册进来的** `UIEngine` 取（`ui-engine.ts` 末尾 `registerUIEngine`）。
+ * 那 7 个槽位因此**不再是 UI 槽位依赖**。
+ *
+ * 但 `assignedSlots()` 把遗留目录里的 `UI.x = …`（即 `ui-window.ts` 的镜像）**也算赋值**
+ * ⇒ ④-2c 删掉那 21 行镜像时，这 7 个名字会立刻变成「引用了但没人赋值」：
+ * **实测 `storeRefsUnassigned` 会 0 → 7，一次正确的删除被棘轮挡下。**
+ * 另一条轴 `legacyOnlyStoreSlots()` 早就把 `engineBacked` 排除在外，只有本轴没跟上。
+ *
+ * ⚠️ 这正是「**改接线的时候要问一句：哪条轴的判据建立在旧接线上**」的实例
+ * （`xr.md` 第 113 轮）。口径与轴的历史值必须一起改：本次改口径**没有**改变终态读数（都是 0）。
+ *
+ * @param {Set<string>|Iterable<string>} refs store 引用到的槽位
+ * @param {Set<string>|Iterable<string>} assigned 全仓有任何赋值来源的槽位
+ * @param {Iterable<string>} engineBacked 实现就在 `ui-engine.ts` 里的槽位
+ * @returns {string[]} 排序后的未赋值槽位
+ */
+export function unassignedStoreSlots(refs, assigned, engineBacked) {
+	const has = (coll, s) => (typeof coll.has === 'function' ? coll.has(s) : [...coll].includes(s));
+	const backed = new Set(engineBacked);
+	return [...refs]
+		.filter((s) => !has(assigned, s) && !backed.has(s))
+		.sort((a, b) => a.localeCompare(b));
+}
+
+/**
  * 覆盖度报告。
  *
- * ## 指标语义（重要，改过一次）
+ * ## 指标语义（重要，改过两次）
  *
  * - **`storeRefsUnassigned` —— 本轴唯一有行动价值的数字。**
  *   「store 引用了、但全仓库没有任何模块赋值」的槽位。非 0 就意味着有动作会静默读到
  *   `undefined`（`UI?.x?.()` 不报错）。终态 0。
+ *   ⚠️ **2026-09-22 第 114 轮**：候选集改由 `unassignedStoreSlots()` 计算，并把
+ *   `engineBacked` 排除掉 —— 理由见该函数的文档（④-2a 之后 store 已不再从 UI 槽位取那 7 个函数），
+ *   **本次改口径不改变终态读数（改前改后都是 0）**。
  *
  * - `storeRefs` —— store 动作层引用到的槽位总数。**删掉 `src/ui/` 时，这一批会全部失效**
  *   （惰加载 `ui-window` 挂了 → `UI` 永远是 undefined），所以它才是「1c 还需处理多少」的口径。
@@ -227,14 +266,12 @@ export function uiSlotCoverage() {
 	const refs = storeReferencedSlots();
 	const engineSrc = readSource(join(ROOT, 'packages/editor/src/engine/ui/ui-engine.ts'));
 
-	const storeRefsUnassigned = [...refs]
-		.filter((s) => !assigned.has(s))
-		.sort((a, b) => a.localeCompare(b));
 	const engineBacked = [];
 	for (const s of refs) {
 		// 「UIEngine 自身实现」= 该槽位的**赋值**也在 ui-engine.ts 里（`UIEngine.x = …`）
 		if (new RegExp(`^UIEngine\\.${s}\\s*=`, 'm').test(engineSrc)) engineBacked.push(s);
 	}
+	const storeRefsUnassigned = unassignedStoreSlots(refs, assigned, engineBacked);
 
 	return {
 		declared: declared.length,

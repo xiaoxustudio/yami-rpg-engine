@@ -1,6 +1,8 @@
 import { UI } from './legacy/ui-window.ts';
 import { uiElClasses } from '@app/engine/ui/element-classes.ts';
 import type { UIShape, UINodeShape } from './legacy/ui-window.ts';
+// ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
+import { UIEngine } from './ui-engine.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { getUIStore } from '@app/stores/ui';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -44,13 +46,13 @@ UI.setSize = function (this: UIShape, width: number, height: number) {
 		getUIStore().height = height;
 	}
 	this.resize!();
-	this.requestRendering!();
+	UIEngine.requestRendering!.call(this);
 };
 
 UI.setHover = function (this: UIShape, hover: UINodeShape | null) {
 	if (this.hover !== hover) {
 		this.hover = hover;
-		this.requestRendering!();
+		UIEngine.requestRendering!.call(this);
 	}
 };
 
@@ -58,7 +60,7 @@ UI.setTarget = function (this: UIShape, target: UINodeShape | null) {
 	if (getUIStore().target !== target) {
 		getUIStore().target = target;
 		this.updateTargetItem!();
-		this.requestRendering!();
+		UIEngine.requestRendering!.call(this);
 		if (target) {
 			const map = this.inspectorTypeMap;
 			const key = map[target.class];
@@ -82,10 +84,10 @@ UI.revealTarget = (function IIFE() {
 				const screen = UI.screen;
 				const sl = screen.scrollLeft;
 				const st = screen.scrollTop;
-				UI.updateCamera!(x, y);
-				UI.updateTransform!();
+				UIEngine.updateCamera!.call(UI, x, y);
+				UIEngine.updateTransform!.call(UI);
 				if (screen.scrollLeft !== sl || screen.scrollTop !== st) {
-					UI.requestRendering!();
+					UIEngine.requestRendering!.call(UI);
 					UI.marquee.resize();
 					UI.screen.updateScrollbars();
 				}
@@ -193,7 +195,7 @@ UI.updateElementFont = function (this: UIShape) {
 						el._font = undefined;
 						el.font = '';
 					}
-					this.requestRendering!();
+					UIEngine.requestRendering!.call(this);
 				}
 			}
 			const children = element.children;
@@ -219,7 +221,7 @@ UI.updateElementLanguage = function (this: UIShape) {
 			}
 		};
 		update((getUIStore().root as UIRootApi | null)?.children ?? []);
-		this.requestRendering!();
+		UIEngine.requestRendering!.call(this);
 	}
 };
 
@@ -235,7 +237,7 @@ UI.updateElementTextScaling = function (this: UIShape) {
 			}
 		};
 		update((getUIStore().root as UIRootApi | null)?.children ?? []);
-		this.requestRendering!();
+		UIEngine.requestRendering!.call(this);
 	}
 };
 
@@ -246,7 +248,7 @@ UI.updateIndexedColor = function (this: UIShape, index: number) {
 		const update = (element: UINodeShape): void => {
 			if (element instanceof TextElement && regexp.test(element.content)) {
 				element.printer.reset();
-				this.requestRendering!();
+				UIEngine.requestRendering!.call(this);
 			}
 			const children = element.children;
 			const length = children.length;
@@ -330,7 +332,7 @@ UI.updateElement = function (this: UIShape, target: UINodeShape) {
 	if (instance) {
 		instance.appendChildTo(target.instance, nodes.indexOf(target));
 	}
-	this.requestRendering!();
+	UIEngine.requestRendering!.call(this);
 };
 
 UI.deleteElement = function (this: UIShape, target: UINodeShape) {
@@ -383,8 +385,8 @@ UI.resize = function (this: UIShape) {
 		this.marquee.style.width = `${outerWidth / dpr}px`;
 		this.marquee.style.height = `${outerHeight / dpr}px`;
 		GL.resize!(screenWidth, screenHeight);
-		this.updateCamera!();
-		this.updateTransform!();
+		UIEngine.updateCamera!.call(this);
+		UIEngine.updateTransform!.call(this);
 		// `root` 已迁到 store（`ui-file.ts` 里写入），`this.root` 是 `undefined`
 		// ⇒ `Cannot read properties of undefined (reading 'resize')`（2026-09-18）。
 		(getUIStore().root as UIRootApi | null)?.resize();

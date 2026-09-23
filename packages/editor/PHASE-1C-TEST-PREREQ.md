@@ -1776,6 +1776,13 @@ head?: { view: { write(index: number): void } } | null;
    > —— 那里有本轮实测的底数（103 处挂载的分布、引擎读的 30 个 `this.<x>` 里**21 个尚无新家**）、
    > 推荐路线（保留 UI 形状 facade）与分步计划（④-1…④-4），以及**CI 覆盖不到 `primeWindows`
    > 那条路径**这条硬限制。
+   > ⚠️ **2026-09-22 第 110 轮更正最后半句**：`primeWindows` 绕过 `loadUI` 这件事**已经不存在** ——
+   > 第 ① 步（提交 `00729b15`）删掉了 `window-cluster.ts` 的 `export { UI }`，而 `primeWindows`
+   > 遍历的正是该模块的**命名空间对象**，没有 `UI` 就没有小写 `'ui'` 键 ⇒ 真机取 UI 同样走
+   > `loadUI`，与 vitest 同一条路。该不变式已由 `engine/ui/__tests__/ui-window-arrival-path.spec.ts`
+   > 钉住（把 `export { UI }` 加回去，用例立刻变红）。
+   > ⇒ ④-2c / ④-3 / ④-4 的「需要真机」从**唯一有效验收**降为**推荐**；jsdom 仍覆盖不到真实渲染。
+   > 完整证据与改后的口径见**附录十三新增的 §7**。
 
 ### 5. 待用户决策（原 7 项 → **已降到 5 项**，2026-09-21 第 89 轮）
 
@@ -5074,7 +5081,158 @@ const files = collectFiles({ dirs: [dir], includeTests: true });
 
 ### 六、明确**不可**由 CI 验证的部分（写给下一个人，别拿绿灯当验收）
 
+> ⚠️ **本节的前提已被 §7 更正（2026-09-22 第 110 轮）**：`primeWindows` 那条绕过路径
+> 在第 ① 步之后就断了，真机与 vitest 同走 `loadUI`。**不要把本节当成「CI 验不了接线」的依据。**
+> 下面这段保留原文，只用来说明「曾经为什么这么判断」，以及**真实渲染**为什么仍需真机。
+
 `main/initialize.ts:91` 的 `primeWindows(clusterRef)` 按小写键直接 `windows.set('ui', …)`，
 **绕过 `loadUI`**。套件永远走 `loadUI`。所以 ④-2 / ④-3 / ④-4 的**唯一**有效验收是
 **真机启动 + 走查**：至少覆盖「启动不崩、UI 窗口画得出来、画布可平移缩放、点选有反应、
 打开/保存/撤销重做、预制体可建可设」。CI 绿只能证明 loader 那条路没坏。
+
+### 七、⚠️ 计划更正之二：上面那条「CI 覆盖不到 `primeWindows`」的硬限制，已被第 ① 步自己拆掉
+
+（2026-09-22 第 110 轮实测；本节更正 §五 风险表里的「CI 盲区」一行、§6，以及 §四 表格的「需要真机？」一列。）
+
+§6 把真机走查写成 ④-2 / ④-3 / ④-4 的**唯一**验收，理由是「真机走 `primeWindows` 绕过 `loadUI`，
+而 vitest 走 loader」。**这条理由今天不成立**，而且是被本阶段第 ① 步顺手拆掉的：
+
+| 环节 | 事实 |
+| --- | --- |
+| `primeWindows` 做什么 | `tools/window-registry.ts:82` 对入参做 `Object.entries`，键取 `key.toLowerCase()` |
+| 谁是生产调用点 | 全仓只此一处：`main/initialize.ts:91`，喂的是 `await import('@app/tools/window-cluster')` 的**命名空间对象** |
+| 该对象有哪些键 | 就是 `window-cluster.ts` 的 **41 个导出名**；`UI` **已不在其中** —— 第 ① 步 `00729b15` 的 diff 第一行即 `-export { UI } from '@app/engine/ui/legacy/ui-window.ts';` |
+| ⇒ 推论 | 没有 `UI` 就**没有小写 `'ui'` 键** ⇒ 缓存里永远没有 UI 预热项 ⇒ `getLazyWindow('ui', loadUI)` 与 `loadWindow('ui', loadUI)`（`stores/ui.ts:368`）在真机上**真的走到 `loadUI`** |
+
+⇒ **真机取 UI 对象走的就是 `loadUI`，与 vitest 同一条路。** 原先「套件会绿着骗你」的判断，
+在 1c ① 之后只剩一个残余版本：**套件跑在 jsdom 里，覆盖不到真实 WebGL 渲染**。
+
+**改后的口径**：
+
+- **接线正确性**（函数拿到的是不是那个 `this`、镜像退役后有没有漏掉的读点）⇒
+  **静态检查 + editor 全套**即可验收，不再属于「CI 验不了」。
+- **真实渲染**（画布画得出来、可平移缩放、点选有反应）⇒ 仍然只有真机能看。
+  §6 的走查清单因此**保留**，但它约束的是「画得对不对」，不是「接线接没接上」。
+
+不变式（会自证）：`engine/ui/__tests__/ui-window-arrival-path.spec.ts`
+—— 用例 A 证明 `primeWindows` 的预热机制本身有效；用例 B 断言 `window-cluster` 的键集里没有 `ui`。
+**实测自证**：把 `export { UI }` 加回 `window-cluster.ts`，用例 B 立刻红
+（`expected [ 'scene', 'ui', 'animation', …(39) ] to not include 'ui'`）；还原后绿。
+两个方向都钉住：只留 A 会漏「生产喂的对象变了」，只留 B 会漏「机制本身坏了」。
+
+### 八、⚠️ 计划更正之三：④-2b 的 70 处**不是一种改写，是三种** —— 其中 7 处与「连错三次」冲突
+
+（2026-09-22 第 111 轮实测；本节更正 §四 表格里 ④-2b 那一行的写法。）
+
+§四 把 ④-2b 写成一句话：「把这 9 个文件里以 UI 为接收者的调用改成直连
+**`UIEngine.x.call(this/UI, …)`**」。计划**已经**意识到接收者有两种（`this` 与 `UI`），
+但没写明「哪一批用哪个」——而照着「统一用 `this`」改写，会**直接复现**作者在
+`ui-engine.ts:637` 记下的那次事故。
+
+实测把 70 处按改写形态分成三类（`node scripts/oneoff/measure-4-2b.mjs` 的 D 段可复现）：
+
+| 类 | 形态 | 处数 | 接收者 | 改写形态 |
+| --- | --- | ---: | --- | --- |
+| **C1** | UI 接收者函数里的 `this.<镜像>` | **49** | `this`（在手） | `UIEngine.x.call(this, …)` |
+| **C2** | 普通方法里的字面量 `UI.<镜像>` | **14** | `UI` | `UIEngine.x.call(UI, …)` |
+| **C3** | **`renderingFunction` 里的**字面量 `UI.<镜像>` | **7** | **不存在** | 见下 |
+
+**C3 为什么是特殊类**：`renderingFunction` 由 `Timer` **裸调用**
+（`timer.ts:195` 的 `stageRendering(deltaTime)`），所以它自己的 `this` 恒为 **`undefined`** ——
+不是「指向错的对象」，是根本没有。那 7 行之所以能工作，恰恰因为 `UI.drawXxx!()` 是
+**方法调用**、`this` 自然绑到 UI 单例。`ui-engine.ts:639` 明文写着：
+
+> ⚠️ 必须通过 **`UI.drawXxx()`** 调用，不能写成 `UIEngine.drawXxx()` 或
+> `UIEngine.drawXxx.call(this)`。原因（2026-09-18，我在这里连错三次）……
+
+当年改成 `.call(this)` 并加 `if (!this?.renderingFunction) return` 作保护，后果是
+**每帧提前 return** ⇒ 「不报错，但整个 UI 画布一片黑」。
+
+**处置（本轮定下的口径）**：
+
+1. **先补仪器，再动这 7 行** —— 原来这条不变式**只写在注释里**，而注释不会失败。
+   新增 `engine/ui/__tests__/ui-rendering-receiver.spec.ts`：裸调用 `renderingFunction`，
+   断言 7 个 draw **全部执行**且**接收者都不是 `undefined`**。
+   判据故意**不**钉死具体对象（真实接收者是惰加载代理，不是 `import { UI }` 那个对象），
+   这样它**跨 ④-2b 的改写依然有效**。
+2. **C3 的改写形态取 `.call(UI)`**：接收者逐字等于原来的（`UI.drawXxx()` ⇔ `UIEngine.drawXxx.call(UI)`，
+   因为镜像就是同一个函数对象）。⇒ **④-2c 的 103 → 82 仍然可达**。
+   若最终决定 C3 保留 `UI.drawXxx()` 形态，则 ④-2c 的目标应改为 **103 → 89**（7 个镜像必须留下）。
+3. **自证两处**：把 `drawBackground` 那行改成 `.call(this)` ⇒ 新用例红在
+   「`drawBackground` 的接收者是 undefined；还原后绿」。
+
+> ⚠️ **仪器自己的假绿（本轮真实发生，值得单记）**：第一版用例把「裸调用」写成了
+> `UIEngine.renderingFunction()` —— 那是**属性调用**，`this` 被意外绑成 `UIEngine`，
+> 于是**连 `.call(this)` 那种错写法都能绿**。自证时才发现（突变后仍然通过）。
+> 真实约定是「`Timer` 存下函数引用、之后脱离接收者调」⇒ 必须先
+> `const render = UIEngine.renderingFunction` 再 `render()`。
+> **用例不仅要断言对，还要复现真实的调用约定**，否则它守的是一种并不存在的调用形态。
+
+#### ✅ ④-2b 已落地（2026-09-22 第 112 轮）
+
+70 处按上表三类分流改完（C1 49 · C2 14 · C3 7，另 2 处值引用）：
+`this.<镜像>(…)` → `UIEngine.<x>!.call(this, …)`；字面量 `UI.<镜像>(…)` →
+`UIEngine.<x>!.call(UI, …)`；**C3 取 `.call(UI)`**（理由见上，故 **④-2c 的 103 → 82 仍成立**）。
+
+- 改写由一次性 `scripts/oneoff/apply-4-2b.mjs` 完成（只改工作单所在的 8 个文件、**跳过注释行**、
+  括号按深度配对搬实参、**每文件断言预期条数、对不上整体中止**）。
+  dry-run 第一次就抓到「凭印象填的预期数」是错的（`ui-engine` 的 7 实为 5 + 2 个值引用）。
+- 工作单复测：**70 → 0**（`node scripts/oneoff/measure-4-2b.mjs`）。
+- **唯一动了守卫的地方**是 `LayoutPanel.vue` 的 `UI.requestRendering?.()`：镜子删掉后该守卫无法
+  原样保留，等价性由「`state` 只在 UI 窗口方法体内被置为 `open`」论证（`ui-file.ts:29`）。
+  反例已查实：`Timer.appendUpdater` 收 `undefined` 会**毒化槽位**（`undefined !== null` ⇒ 每帧
+  TypeError）⇒ 守卫必须逐个论证，不能当「防御性代码」一并清掉。
+- `ui-engine.ts` 那段「必须写成 `UI.drawXxx()`」的警告**已整段改写** —— 否则代码一改，
+  注释就成了假话，而门禁查不出这件事。
+
+**④-2c 的清单（2026-09-22 第 113 轮实测 —— `node scripts/oneoff/measure-4-2c.mjs`）**
+
+删 21 行镜像之前把「谁会因此坏掉」量了一遍。结论：**真正的拦路虎不是代码，是一条轴的口径。**
+
+0. ⚠️ **`ui-slot-coverage` 会把正确的删除判成回归。** 该轴的 `storeRefsUnassigned`（`total`，终态 0）
+   = store 引用了但全仓没人赋值的槽位；而 `assignedSlots()` 把遗留目录里的 `UI.x = …`
+   **也算赋值** ⇒ 镜子一删，那 7 个名字（`store` 的引擎转发清单）就变成「引用了但没人赋值」：
+   **实测 `storeRefsUnassigned` 会 0 → 7 ⇒ 撞棘轮。**
+   而这 7 个**恰好就是** `engineBacked` 集合 —— ④-2a 已经让 store 从注册进来的 `UIEngine` 取函数，
+   它们**不再是 UI 槽位依赖**（`legacyOnlyStoreSlots()` 早就是这么判的，只有这条轴没跟上）。
+   ⇒ ④-2c 必须先做一步**口径修正**：`storeRefsUnassigned` 排除 `engineBacked`，并为它补
+   **会自证**的用例（否则那条轴会把一次正确的删除挡下来）。这是「数字有棘轮、判断没有」的又一例。
+1. **文本剩下的只有 2 处**：`stores/__tests__/ui-state.spec.ts:61/63` 的 `UI.setZoom!(2)`。
+   意图是「引擎写进 store」，应改为 `UIEngine.setZoom!.call(UI, 2)`。删镜子后它会被 `tsc`
+   **点名**（`UIFacadeShape` 已无索引签名）⇒ 是安全的一处。
+2. **枚举/展开 `UI` 对象的地方：0 处**（`Object.keys/values/entries(UI)`、`{...UI}`、`for…in UI`、
+   `Object.assign(…, UI)` 全仓都没有）⇒ 删镜像不会让某个序列化/遍历悄悄少成员。
+3. **动态按名取值的只有 `stores/ui.ts` 那 7 个字符串键**（`uiEngineForwardKeys`）。
+   其中 `makeEngineForwarder` 的**回退分支**（`target[key]`）在删镜后会返回 undefined。
+   **但它行为等价，不必改**：`ui-window.ts:6` **静态** import `ui-engine.ts` ⇒
+   `uiEngineRef === null`（引擎未求值）⟹ `ui-window.ts` 未求值 ⟹ UI 窗口对象根本不存在
+   ⟹ 那个回退分支**本来也取不到函数**（`typeof fn !== 'function'` → undefined）。
+   两态返回值相同 ⇒ 保留回退零风险；反倒**不该**改成抛错（那会把一个静默 no-op 变成 TypeError，
+   是行为变化）。
+4. 账面上 ④-2c 的收益：`ui-singleton-members` **103 → 82**、`legacy-ui-lines` **316 → ~295**（均为下降）。
+
+#### ✅ ④-2c 已落地（2026-09-22 第 114 轮）
+
+按上面那条清单的「先改口径、再删镜像、最后改测试」做掉：
+
+- **口径修正**：`uiSlotCoverage()` 的候选集抽成导出的 `unassignedStoreSlots(refs, assigned, engineBacked)`
+  并排除 `engineBacked`。**抽出来是为了能自证**：样本版用例在镜像还在时就能咬人
+  （自证实测：去掉那条排除 ⇒ 红在「期望 `["c"]`，实际 `["b","c"]`」）。
+- **镜像退役**：`ui-window.ts` 的 21 行 `UI.x = UIEngine.x` 删除 ⇒
+  `ui-singleton-members` **103 → 82**（files 9 → 8）、`legacy-ui-lines` **316 → 302**、
+  `ui-slot-coverage.total` **0 → 0**（口径改对了），基线已固化。
+- **测试**：`ui-state.spec.ts` 的 2 行改为 `UIEngine.setZoom!.call(UI, 2)`，用例名改为
+  「引擎写入经 store 生效」（名字跟事实走）。
+
+⚠️ **顺带保住的另一条不变式**：删镜像后 `tsc` 会报 `ui-window.ts` 的 `UIEngine` 未使用，
+但**不能直接删那行 import** —— 第 113 轮论证 store 回退分支「两态等价」的前提正是
+「`ui-window.ts` **静态** import `ui-engine.ts`」（读 UI 必先求值 UIEngine）。已改为
+**副作用 import** 并写明理由。**`tsc` 只看到「未使用」，看不到「承重」。**
+
+⚠️ **自测的一条前提也随本轮死了**：「遗留层还在 ⟹ 挂载点轴非 0」里 ① 的原判据是
+「遗留目录里仍有 `UI.<name> =` 挂载」——实测那 21 行镜像是**最后一批**，删完全局读数恰好 0。
+这不是仪器坏、是里程碑（现在 82 处挂载全在 `engine/ui/` 的域模块）。
+判据已换成正向信号「单例本体仍在这里」（桥安装 + 嵌套挂载），并保留一条与目录无关的全局读数 `> 0`。
+
+**下一步是 ④-3**：逐域把域模块的 `UI.x = …`（82 处 / 8 文件）改为 facade 装配；
+之后 ④-4「退役对象字面量、删 `ui-window.ts` / `register.ts`」⇒ 两条轴同时归零。

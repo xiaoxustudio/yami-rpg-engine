@@ -1361,6 +1361,10 @@ import { getAnimationStore } from '@app/stores/animation';
 import { getSceneStore } from '@app/stores/scene';
 import { getParticleStore } from '@app/stores/particle';
 import { getUIStore } from '@app/stores/ui';
+// ④-2b（第 112 轮）：`UI.requestRendering?.()` 改为直连引擎。原 `?.` 守的是「UI 窗口还没加载」，
+// 而 `requestRendering` 内部第一行就是 `getUIStore().state === 'open'`，该状态只在 UI 窗口的
+// 方法体里（`ui-file.ts:29`）被置为 open ⇒ 窗口没加载时 state 必不为 open，内部同样直接返回。
+import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import { registerLayoutItems } from '@app/engine/layout/layout.ts';
 import { collectPaletteItems } from '@app/components/layout/palette-items';
@@ -1619,7 +1623,7 @@ const onUiVisibilityPointerdown =
 		}
 		list.update();
 		list.dispatchEvent(new Event('change', { bubbles: true }));
-		UI.requestRendering?.();
+		UIEngine.requestRendering!.call(UI);
 		UI.history!.save({
 			type: 'ui-object-hidden',
 			item: item,

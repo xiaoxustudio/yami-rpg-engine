@@ -35,7 +35,9 @@ import {
 	legacyOnlyStoreSlots,
 	storeReferencedSlots,
 	uiDirRe,
-	uiFacadeGaps
+	uiFacadeGaps,
+	uiSlotCoverage,
+	unassignedStoreSlots
 } from './ui-slots.mjs';
 import { checkTextIntegrity, scanTextIntegrity } from './text-integrity.mjs';
 
@@ -462,7 +464,7 @@ test('uiStateKeys 无重复项', () => {
 	eq(new Set(keys).size, keys.length, '重复的键会让 defineProperty 重复安装');
 });
 
-test('ui-window.ts 的每个 `UI.x = UIEngine.x` 都有真实同名定义', () => {
+test('UIEngine 桥：镜像若还在就必须指到真实成员；退役后 store 的引擎转发仍须有实现', () => {
 	// 这 21 行不是「间接层」而是 **this 绑定**：UIEngine 的方法内部会用 `this.planToSave` 等，
 	// 所以 UI 对象必须以接收者身份调用它们。若某个名字在 UIEngine 上不存在，
 	// 这行会把 UI 槽位置成 undefined —— 而 UIShape 的 `[k: string]: any` 不会报错。
@@ -472,14 +474,21 @@ test('ui-window.ts 的每个 `UI.x = UIEngine.x` 都有真实同名定义', () =
 	// 写死路径的版本读不到任何赋值，本用例当场红 —— 而且这条门禁当时**没被复跑**
 	// （`migration:check` 是绿的，红的只有 `migration:selftest`），
 	// 正是「挪了目录，仪器跟着瞎」的又一次实例。仪器只维护一份。
+	//
+	// ⚠️ **2026-09-22 第 114 轮改过**：原判据里有一条 `assigned.length > 0`（「镜像必须还在」）。
+	// 阶段 1c 第 ④-2c 步把 21 行镜像**退役**了，那条前提不再成立 —— 但它要守的东西还在，
+	// 而且换了形态、**更强**：store 的 7 个引擎转发不再经过镜像，直接从注册进来的 `UIEngine`
+	// 取函数（`makeEngineForwarder`）。所以下面加 ②：那 7 个必须在 `UIEngine` 上有实现，
+	// 否则它们会**静默**返回 undefined。① 保留成「若镜像还在（有人加回来）就必须指得对」。
 	const winRel = uiWindowRel();
 	ok(winRel !== null, '找不到 UI 单例对象字面量所在文件（uiWindowRel() 返回 null）');
 	const winSrc = readSource(join(ROOT, winRel));
 	const engineSrc = readSource(join(ROOT, 'packages/editor/src/engine/ui/ui-engine.ts'));
+
+	// ① 镜像若存在，每一条都必须指向真实存在的**同名**成员
 	const assigned = [
 		...winSrc.matchAll(/^UI\.([A-Za-z_$][\w$]*)\s*=\s*UIEngine\.([A-Za-z_$][\w$]*);/gm)
 	];
-	ok(assigned.length > 0, '找不到 `UI.x = UIEngine.x` 形式的赋值（结构可能已变，请复核本用例）');
 	const broken = assigned
 		.filter(
 			([, lhs, rhs]) =>
@@ -487,6 +496,24 @@ test('ui-window.ts 的每个 `UI.x = UIEngine.x` 都有真实同名定义', () =
 		)
 		.map(([line]) => line);
 	eq(broken, [], '这些 UI 槽位被赋成了不存在的 UIEngine 成员（运行时会读到 undefined）');
+
+	// ② 镜像退役后真正承重的那条：store 的引擎转发清单必须都能在 UIEngine 上找到实现
+	const storeSrc = readSource(join(ROOT, 'packages/editor/src/stores/ui.ts'));
+	const keysBlock = storeSrc.match(/const uiEngineForwardKeys = \[([\s\S]*?)\] as const;/);
+	ok(
+		keysBlock !== null,
+		'找不到 uiEngineForwardKeys —— store 的转发写法变了，请复核本用例而不是删掉它'
+	);
+	const engineKeys = [...keysBlock[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+	ok(engineKeys.length > 0, 'uiEngineForwardKeys 不该为空');
+	const missingImpl = engineKeys.filter(
+		(k) => !new RegExp(`^UIEngine\\.${k}\\s*=`, 'm').test(engineSrc)
+	);
+	eq(
+		missingImpl,
+		[],
+		'这些槽位被 store 当作「引擎实现」转发，但 UIEngine 上没有定义 ⇒ 运行时静默 undefined'
+	);
 });
 
 test('遗留层还在 ⟹ 与目录无关的挂载点轴非 0；且 1c-store-slot-gaps 的 0 必须被独立重算解释', () => {
@@ -521,15 +548,32 @@ test('遗留层还在 ⟹ 与目录无关的挂载点轴非 0；且 1c-store-slo
 		refs.total > 0,
 		'遗留 UI 单例应当仍被静态引用（若为 0：要么真删干净了，要么仪器漏了 `export … from`）'
 	);
-	// ① 「主体还在」：遗留目录里仍有对象字面量与挂载点 —— 用**与目录无关**的口径
-	// （`ui-singleton-members` 的 `UI.<name> =` 处数）证，纯移动骗不过它。
+	// ① 「主体还在」：**判据在 2026-09-22 第 114 轮换过一次，必须记下来。**
+	//    原判据是「遗留目录里仍有 `UI.<name> =` 挂载（用与目录无关的 ui-singleton-members 口径证）」。
+	//    阶段 1c 第 ④-2c 步退役了那 21 行 `UI.x = UIEngine.x` 镜像之后，实测遗留目录里
+	//    **一条直接挂载都不剩了**（它们是最后一批）⇒ 原判据前提消失，会一直红。
+	//    要守的东西没变：**不能因为仪器瞎了而把「已搬完」读成 0**。新的正向信号取「单例本体仍在这里」：
+	//      · 域槽位的**嵌套**挂载（`UI.list.copy = null` 这类，不属本轴口径，但证明对象字面量还在）；
+	//      · store 桥的安装（`Object.defineProperty(UI, key, …)`，见本文件另一条用例的口径说明）。
+	//    这两者可都在 ui-window.ts 里被搬走/掏空时立刻变红。
+	const legacySrc = codeOnly(legacyFiles.map(({ full }) => readSource(full)).join('\n'));
+	const hasSingletonBody =
+		/Object\.defineProperty\(\s*UI\s*,/.test(legacySrc) &&
+		/\bUI\.[A-Za-z_$][\w$]*\.[A-Za-z_$][\w$]*\s*=/.test(legacySrc);
+	ok(
+		hasSingletonBody,
+		'遗留目录里应仍是 UI 单例本体所在处（桥安装 + 嵌套挂载）；两者都读不到 ⇒ 扫描面瞎了，或本体已被搬走'
+	);
+	// 另留一条**与目录无关**的读数：全局挂载点轴仍非 0（全体 82 处都在 engine/ui/ 的域模块里）。
 	const singletonMembers = countCodeMatches(
-		legacyFiles.map(({ full }) => readSource(full)).join('\n'),
+		collectFiles({ dirs: SCAN_DIRS })
+			.map(({ full }) => readSource(full))
+			.join('\n'),
 		UI_SINGLETON_RE
 	);
 	ok(
 		singletonMembers > 0,
-		'遗留目录里还有对象字面量与挂载点；与目录无关的 ui-singleton-members 口径却读到 0 ⇒ 它也瞎了'
+		'全仓仍应有 UI 槽位挂载（1c ①–③ 的产物在 engine/ui/ 各域模块里）；读到 0 ⇒ ui-singleton-members 瞎了'
 	);
 
 	// ② 「轴为 0」必须能被独立重算解释（在遗留目录里直接翻 `UI.<slot> =`）。
@@ -580,6 +624,39 @@ test('遗留层还在 ⟹ 与目录无关的挂载点轴非 0；且 1c-store-slo
 	ok(
 		!ledgerSrc.includes('^@app\\/ui\\/'),
 		'legacy-ui-refs 又用回了 @app/ui/ 前缀 —— 现路径是 @app/engine/ui/legacy/'
+	);
+});
+
+test('ui-slot-coverage：engineBacked 的槽位不算「引用了却没人赋值」（样本自证，不依赖镜像是否已删）', () => {
+	// 为什么需要**样本版**：真实仓库里那 7 个槽位**当前**正因为还有镜像赋值而读数为 0，
+	// 所以「只断言真实读数」是**不可自证**的 —— 判据被改坏也看不出来。
+	// 样本版能当场咬人：
+	//   样本：refs = {a,b,c}；assigned = {a}；engineBacked = [b] ⇒ 只有 c 该算缺口。
+	eq(
+		unassignedStoreSlots(new Set(['a', 'b', 'c']), new Set(['a']), ['b']),
+		['c'],
+		'engineBacked 的 b 有家（实现在 ui-engine.ts）⇒ 不该算「引用了却没人赋值」'
+	);
+	// 反方向：把 b 从 engineBacked 里拿掉，它必须**出现** —— 证明确实是那条排除在起作用，
+	// 而不是「恰好被别的条件挡掉了」。
+	eq(
+		unassignedStoreSlots(new Set(['a', 'b', 'c']), new Set(['a']), []),
+		['b', 'c'],
+		'b 不再是 engineBacked ⇒ 它必须作为「引用了却没人赋值」被报出来'
+	);
+});
+
+test('ui-slot-coverage：真实仓库里 engineBacked 与 storeRefsUnassigned 不得相交（④-2c 的前置条件）', () => {
+	// 这条守的是 2026-09-22 第 113 轮量出来的那件事：`assignedSlots()` 把 ui-window.ts 的镜像
+	// 也算赋值 ⇒ ④-2c 删掉 21 行镜像时，那 7 个 engineBacked 槽位会**凭空**变成
+	// 「引用了但没人赋值」，一次**正确**的删除被棘轮挡下。
+	const { storeRefsUnassigned, engineBacked } = uiSlotCoverage();
+	const both = engineBacked.filter((s) => storeRefsUnassigned.includes(s));
+	eq(
+		both,
+		[],
+		'这些槽位由引擎自己实现、且 store 已改走注册进来的 UIEngine ⇒ 不算「没人赋值」；' +
+			'否则删镜像会被一条过时判据挡下'
 	);
 });
 

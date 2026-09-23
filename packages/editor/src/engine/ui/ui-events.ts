@@ -1,6 +1,8 @@
 import { screenScrollData } from '@app/engine/screen-scroll-data';
 import { UI } from './legacy/ui-window.ts';
 import type { UIShape } from './legacy/ui-window.ts';
+// ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
+import { UIEngine } from './ui-engine.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
@@ -29,12 +31,14 @@ UI.saveToConfig = function (this: UIShape, config: { colors: Record<string, stri
 UI.loadFromConfig = function (this: UIShape, config: { colors: Record<string, string> }) {
 	// `background` / `foreground` 的真源是 store 的 `loadFromConfig`（见 `stores/ui.ts`），
 	// 这里只维护遗留单例上的那一份，给仍读 `this.background` 的路径（如 `saveToConfig`）用。
-	this.background = new StageColor(config.colors.uiBackground, () => this.requestRendering!());
+	this.background = new StageColor(config.colors.uiBackground, () =>
+		UIEngine.requestRendering!.call(this)
+	);
 	this.foreground = new StageColor(config.colors.uiForeground, () => {
 		if (getUIStore().state === 'open') {
 			// `root` 已迁到 store；`this.root` 是 `undefined`（2026-09-18）。
 			getUIStore().root?.resize();
-			this.requestRendering!();
+			UIEngine.requestRendering!.call(this);
 		}
 	});
 };
@@ -50,12 +54,12 @@ UI.saveToProject = function (
 
 UI.loadFromProject = function (this: UIShape, project: { ui: { zoom: number } }) {
 	const { ui } = project;
-	this.setZoom!(ui.zoom);
+	UIEngine.setZoom!.call(this, ui.zoom);
 };
 
 UI.webglRestored = function (this: UIShape, _event: Event) {
 	if (getUIStore().state === 'open') {
-		UI.requestRendering!();
+		UIEngine.requestRendering!.call(UI);
 	}
 };
 
@@ -63,13 +67,13 @@ UI.windowResize = function (this: UIShape, _event: Event) {
 	this.updateHead!();
 	if (getUIStore().state === 'open') {
 		this.resize!();
-		this.updateCamera!();
-		this.requestRendering!();
+		UIEngine.updateCamera!.call(this);
+		UIEngine.requestRendering!.call(this);
 	}
 }.bind(UI);
 
 UI.themechange = function (this: UIShape, _event: Event) {
-	this.requestRendering!();
+	UIEngine.requestRendering!.call(this);
 }.bind(UI);
 
 UI.localizationchange = function (this: UIShape, _event: Event) {
@@ -135,7 +139,7 @@ UI.zoomFocus = function (this: UIShape, _event: Event) {
 };
 
 UI.zoomInput = function (this: UIShape, _event: Event & { value?: number }) {
-	UI.setZoom!(read(this));
+	UIEngine.setZoom!.call(UI, read(this));
 };
 
 UI.screenKeydown = function (this: UIShape, event: KeyboardEvent) {
@@ -239,7 +243,7 @@ UI.screenKeydown = function (this: UIShape, event: KeyboardEvent) {
 					if (event.ctrlKey || event.metaKey) {
 						const ax = roundTo(transform.anchorX - offsetX * 0.5, 4);
 						const ay = roundTo(transform.anchorY - offsetY * 0.5, 4);
-						return this.shiftAnchor!(ax, ay);
+						return UIEngine.shiftAnchor!.call(this, ax, ay);
 					}
 					if (event.shiftKey) {
 						offsetX *= 10;
@@ -247,20 +251,20 @@ UI.screenKeydown = function (this: UIShape, event: KeyboardEvent) {
 					}
 					const x = roundTo(transform.x + offsetX, 4);
 					const y = roundTo(transform.y + offsetY, 4);
-					this.shiftTarget!(x, y);
+					UIEngine.shiftTarget!.call(this, x, y);
 				}
 				break;
 			case 'Minus':
 			case 'NumpadSubtract':
-				this.setZoom!(getUIStore().zoom! - 1);
+				UIEngine.setZoom!.call(this, getUIStore().zoom! - 1);
 				break;
 			case 'Equal':
 			case 'NumpadAdd':
-				this.setZoom!(getUIStore().zoom! + 1);
+				UIEngine.setZoom!.call(this, getUIStore().zoom! + 1);
 				break;
 			case 'Digit0':
 			case 'Numpad0':
-				this.setZoom!(2);
+				UIEngine.setZoom!.call(this, 2);
 				break;
 		}
 	}
@@ -300,7 +304,7 @@ UI.screenWheel = function (this: UIShape, event: WheelEvent) {
 		event.preventDefault();
 		if (event.deltaY !== 0) {
 			const step = event.deltaY > 0 ? -1 : 1;
-			this.setZoom!(getUIStore().zoom! + step);
+			UIEngine.setZoom!.call(this, getUIStore().zoom! + step);
 		}
 	}
 }.bind(UI);
@@ -309,8 +313,8 @@ UI.screenUserscroll = function (this: UIShape, _event: Event) {
 	if (getUIStore().state === 'open') {
 		screenScrollData(this.screen).rawScrollLeft = this.screen.scrollLeft;
 		screenScrollData(this.screen).rawScrollTop = this.screen.scrollTop;
-		this.updateTransform!();
-		this.requestRendering!();
+		UIEngine.updateTransform!.call(this);
+		UIEngine.requestRendering!.call(this);
 		this.marquee.resize();
 		this.screen.updateScrollbars();
 	}

@@ -1,5 +1,7 @@
 import { UI } from './legacy/ui-window.ts';
 import type { UIShape, UIContextShape, UINodeShape } from './legacy/ui-window.ts';
+// ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
+import { UIEngine } from './ui-engine.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Particle } from '@app/particle/particle-window.ts';
 import { getUIStore } from '@app/stores/ui';
@@ -36,7 +38,7 @@ UI.open = function (this: UIShape, context: UIContextShape) {
 		show(this.body);
 		this.load!(context);
 		this.resize!();
-		this.requestRendering!();
+		UIEngine.requestRendering!.call(this);
 	} else {
 		Layout.manager.switch('directory');
 		Window.confirm!(
@@ -149,7 +151,7 @@ UI.close = function (this: UIShape) {
 		write(this.searcher, '');
 		clear(this.list);
 		hide(this.body);
-		this.stopRendering!();
+		UIEngine.stopRendering!.call(this);
 		UndoManager.setActive!(null);
 	}
 };

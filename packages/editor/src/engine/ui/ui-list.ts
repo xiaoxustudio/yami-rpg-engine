@@ -1,6 +1,8 @@
 import { getListConfig, elementDataOf } from '@ui-kit';
 import { UI } from './legacy/ui-window.ts';
 import type { UIShape, UINodeShape, UIPointerEvent } from './legacy/ui-window.ts';
+// ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
+import { UIEngine } from './ui-engine.ts';
 import type { MenuItem } from '@ui-kit';
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
 import { GlobalClipboard } from '@app/utils/clipboard';
@@ -369,7 +371,7 @@ UI.list.paste = function (
 	if (copy && this.data) {
 		callback?.(copy);
 		this.addNodeTo!(copy, dItem);
-		UI.requestRendering!();
+		UIEngine.requestRendering!.call(UI);
 	}
 };
 
@@ -377,7 +379,7 @@ UI.list.paste = function (
 UI.list.delete = function (this: UIShape, item: UINodeShape) {
 	if (item) {
 		this.deleteNode!(item);
-		UI.requestRendering!();
+		UIEngine.requestRendering!.call(UI);
 	}
 };
 
@@ -441,7 +443,7 @@ getListConfig(UI.list).onDelete = function (this: UIShape, item: UINodeShape) {
 	UI.deleteElement!(item);
 	UI.updateHover!();
 	UI.updateTarget!();
-	UI.requestRendering!();
+	UIEngine.requestRendering!.call(UI);
 } as (item: unknown) => void;
 
 // 列表 - 在恢复数据时回调

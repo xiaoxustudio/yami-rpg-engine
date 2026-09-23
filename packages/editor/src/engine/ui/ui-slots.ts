@@ -1,17 +1,26 @@
 /**
  * store 拥有的 UI 单例槽位 —— 阶段 1c 第 ③ 步的第一个切片（2026-09-21 第 96 轮）。
  *
- * ## 为什么要有这个文件，而不是把绑定写进 `loadUI`
+ * ## 这个文件为什么存在
  *
- * `1c-store-slot-gaps` 的口径是「遗留目录**之外**出现 `UI.<slot> =` 文本」。而把绑定写进
- * `loadUI` 在真机上是**死的**：`main/initialize.ts:91` 的 `primeWindows(clusterRef)` 会按小写键
- * 直接 `windows.set('ui', <那个对象>)`，`getLazyWindow` 的 get trap 于是永远不去调 loader
- * —— 而 vitest 走的正是 loader 路径，**套件会绿着骗你**（详见 `xr.md` 第 95 轮）。
+ * `1c-store-slot-gaps` 的口径是「遗留目录**之外**出现 `UI.<slot> =` 文本」，所以实现必须搬出
+ * `legacy/` —— 本文件存在的理由就是这个，它现在仍然成立。
+ *
+ * ⚠️ **但原始理由（第 95/96 轮）已在第 110 轮被证伪，必须写下来免得上一个人按它做判断。**
+ * 原文写的是「把绑定写进 `loadUI` 在真机上是**死的**：`main/initialize.ts:91` 的
+ * `primeWindows(clusterRef)` 会按小写键直接 `windows.set('ui', …)`，绕过 loader，而 vitest
+ * 走的正是 loader 路径 ⇒ **套件会绿着骗你**」。这条短路**在第 ① 步（提交 `00729b15`）删掉
+ * `window-cluster.ts` 的 `export { UI }` 之后就已经断了**：`primeWindows` 遍历的是那个模块的
+ * **命名空间对象**，键集就是它的导出名，没有 `UI` 就没有小写 `'ui'` 这一项
+ * ⇒ 真机的 UI 槽位同样由 `loadUI` 填充，与 vitest 同一条路。
+ * 该不变式现由 `__tests__/ui-window-arrival-path.spec.ts` 钉住（把 `export { UI }` 加回去即变红）。
  *
  * ## 为什么挂在 `uiWindowReady` 上，而不是静态 import 进 `ui-window.ts`
  *
- * 1. **必经**：`loadUI` 与 `primeWindows` 两条路径都要先 `await clusterReady`，而
- *    `clusterReady` 里含 `uiWindowReady` ⇒ 它是「UI 窗口就绪」的唯一交汇点。
+ * 1. **在 `UI` 建好之后求值，且不赌调用方**：`loadUI` 要先 `await clusterReady`，而
+ *    `clusterReady` 里含 `uiWindowReady` ⇒ 它是「UI 窗口就绪」的**汇合点**：绑定挂在这里，
+ *    既不必假设 UI 到底由哪条路取到，也不用把绑定塞进某一个调用方的函数体
+ *    （原始理由写的「`primeWindows` 也会经由它」在本轮已更正，见上）。
  * 2. **不踩 TDZ**：这里的 import 是**动态**的，求值发生在 `ui-window.ts` 模块体跑完之后，
  *    那时 `UI` 已经建好。若改成 `ui-window.ts` 顶部的静态 import，本文件（连带 Data/Editor）
  *    会先于 `UI` 求值。

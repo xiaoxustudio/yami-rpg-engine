@@ -12,8 +12,8 @@ import type { ControlPoint, UIFacadeShape } from './ui-facade.ts';
 import { clamp, roundTo, dist, modDegrees } from '@app/utils/math';
 
 /**
- * 惰加载的 UI 单例代理。`renderingFunction` 要以**方法调用**形态调 `UI.drawXxx()`，
- * 而那些 `drawXxx` 实现就在本文件、由 `ui-window.ts` 在模块加载期镜像到 UI 对象上。
+ * 惰加载的 UI 单例代理。`renderingFunction` 里那 7 个 draw 需要**显式的 UI 接收者** ——
+ * 原因见该函数内的注释（它自己被 `Timer` 裸调用，`this` 恒为 `undefined`）。
  * 不能 `import { UI } from '@app/engine/ui/legacy/ui-window.ts'`：那是静态循环导入；这个代理只在运行时解析。
  */
 const UI = getLazyWindow('ui', loadUI);
@@ -100,7 +100,7 @@ UIEngine.shiftAnchor = function (this: UIShape, anchorX: number, anchorY: number
 		instances.setProperty('transform-anchorX', anchorX);
 		instances.setProperty('transform-anchorY', anchorY);
 		instances.resize();
-		this.requestRendering!();
+		UIEngine.requestRendering!.call(this);
 
 		if (editor.target === target) {
 			write(editor, { anchorX, anchorY });
@@ -161,7 +161,7 @@ UIEngine.shiftTarget = function (this: UIShape, x: number, y: number) {
 			);
 		}
 		instances.resize();
-		this.requestRendering!();
+		UIEngine.requestRendering!.call(this);
 
 		if (editor.target === target) {
 			write(editor, {
@@ -207,7 +207,7 @@ UIEngine.resizeTarget = function (this: UIShape, width?: number, height?: number
 			instances.setProperty('transform-height', height);
 		}
 		instances.resize();
-		this.requestRendering!();
+		UIEngine.requestRendering!.call(this);
 
 		if (editor.target === target) {
 			write(editor, {
@@ -246,7 +246,7 @@ UIEngine.rotateTarget = function (this: UIShape, rotation: number) {
 		// transform.rotation = rotation
 		instances.setProperty('transform-rotation', rotation);
 		instances.resize();
-		this.requestRendering!();
+		UIEngine.requestRendering!.call(this);
 
 		if (editor.target === target) {
 			write(editor, { rotation });
@@ -559,7 +559,7 @@ UIEngine.drawControlPoints = function (this: UIShape) {
 	const target = getUIStore().target;
 	const texture = this.controlPointTexture;
 	if (target !== null && texture !== null) {
-		this.updateControlPoints!();
+		UIEngine.updateControlPoints!.call(this);
 		const POINT_RADIUS = 4 / this.scale;
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
@@ -630,41 +630,44 @@ UIEngine.selectControlPoint = function (this: UIShape, x: number, y: number) {
 
 UIEngine.requestRendering = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
-		Timer.appendUpdater!('stageRendering', this.renderingFunction);
+		Timer.appendUpdater!('stageRendering', UIEngine.renderingFunction);
 	}
 };
 
 UIEngine.renderingFunction = function () {
 	if (GL.width * GL.height !== 0) {
-		// ⚠️ 必须通过 **`UI.drawXxx()`** 调用，不能写成 `UIEngine.drawXxx()` 或
-		// `UIEngine.drawXxx.call(this)`。原因（2026-09-18，我在这里连错三次）：
+		// ⚠️ 这里是全仓**唯一**「接收者不在手」的地方，务必与别处的改写形态区分开。
 		//
 		//   · 本函数是由 `Timer` 直接调用的：`timer.ts:195` 是
 		//     `stageRendering(deltaTime)` —— **裸函数调用，没有接收者**，所以
-		//     `this` 是 `undefined`（不是"指向了错的对象"，是根本没有）。
-		//   · `ui-window.ts` 在模块加载期把 `UIEngine.drawXxx` 镜像成 `UI.drawXxx`，
-		//     所以 `UI.drawBackground!()` 是**方法调用**，`this` 自然绑定到 UI 单例
-		//     —— 那些实现里的 `this.scaleX` / `this.centerX` 等才取得到值。
-		//   · 曾一度改成 `UIEngine.drawXxx!.call(this)` 并加 `if (!this?.renderingFunction) return`
-		//     作保护：因为 `this` 恒为 `undefined`，那个保护**每帧都提前 return**，
-		//     表现是「不报错但整个 UI 画布一片黑」。教训：不要给"和原实现不一样的调用形态"
-		//     打补丁，先看清原来的接收者是谁。
+		//     本函数自己的 `this` 恒为 `undefined`（不是"指向了错的对象"，是根本没有）。
+		//   · 因此下面 7 个 draw 只能**显式**指定接收者，且只能是 `UI`
+		//     （实现里的 `this.scaleX` / `this.centerX` 等靠它取到值）。
+		//   · 曾一度（2026-09-18）改成 `UIEngine.drawXxx!.call(this)` 并加
+		//     `if (!this?.renderingFunction) return` 作保护：因为 `this` 恒为 `undefined`，
+		//     那个保护**每帧都提前 return** ⇒ **「不报错但整个 UI 画布一片黑」**（连错三次）。
+		//
+		// ⇒ 第 ④-2b 步（2026-09-22 第 112 轮）把全仓其余 63 处调用点改成
+		// `UIEngine.x!.call(this/UI, …)` 时，**这 7 处必须传 `UI`**，不能跟着写成 `.call(this)`：
+		// 别处的 `this` 是真实接收者，这里的 `this` 不存在 —— 形式相似，含义相反。
+		// 该不变式现在有会失败的用例兜着：`__tests__/ui-rendering-receiver.spec.ts`
+		// 裸调用本函数，断言 7 个 draw 全部执行且接收者都不是 `undefined`（改回 `.call(this)` 即红）。
 		//
 		// 数据源已经迁走：`drawBackground` 读 store 的 `background`、
 		// `drawElements` 读 store 的 `root`，所以这两处不再依赖 `this.*`；
-		// 其余几个仍读 `this.*`，因此保持方法调用形态。
-		UI.drawBackground!();
-		UI.drawElements!();
-		UI.drawCoordinateAxes!();
-		UI.drawHoverWireframe!();
-		UI.drawTargetWireframe!();
-		UI.drawTargetAnchor!();
-		UI.drawControlPoints!();
+		// 其余几个仍读 `this.*`，因此 `UI` 这个接收者依旧是承重的。
+		UIEngine.drawBackground!.call(UI);
+		UIEngine.drawElements!.call(UI);
+		UIEngine.drawCoordinateAxes!.call(UI);
+		UIEngine.drawHoverWireframe!.call(UI);
+		UIEngine.drawTargetWireframe!.call(UI);
+		UIEngine.drawTargetAnchor!.call(UI);
+		UIEngine.drawControlPoints!.call(UI);
 	}
 };
 
 UIEngine.stopRendering = function (this: UIShape) {
-	Timer.removeUpdater!('stageRendering', this.renderingFunction);
+	Timer.removeUpdater!('stageRendering', UIEngine.renderingFunction);
 };
 
 // 阶段 1c 第 ④-2a 步（2026-09-21 第 102 轮）：把引擎自己的实现注册给 store，让它的 7 个引擎
