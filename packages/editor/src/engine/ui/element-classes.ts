@@ -56,6 +56,60 @@ export interface UIElementInstance {
 }
 
 /**
+ * UI 元素的**变换数据**（画布上可拖拽的那组属性）。
+ *
+ * 2026-09-21 第 108 轮从 `inspector/element-page.ts` 的**局部** interface 提上来共享。
+ * 为什么必须共享：`stores/ui.ts` 的 `UINodeShape.transform` 与引擎的读点
+ * （`ui-engine.ts` 的 `transform.anchorX` / `ui-pointer.ts` 的 `transform.x` …）
+ * 都指向同一个对象，而局部类型拿不到 ⇒ 只能退回索引签名。提上来之后，
+ * `UINodeShape` 才可能把 `[key: string]: any` 换成**具名字段**。
+ *
+ * 字段照抄原处（15 个），末尾保留 `[k: string]: unknown`：元素类型各有扩展字段，
+ * 但值类型是 `unknown` 而不是 `any` —— 读侧必须先收窄，拼错键也不会静默变成 `any`。
+ */
+export interface UIElementTransform {
+	anchorX: number;
+	anchorY: number;
+	x: number;
+	x2: number;
+	y: number;
+	y2: number;
+	width: number;
+	width2: number;
+	height: number;
+	height2: number;
+	rotation: number;
+	scaleX: number;
+	scaleY: number;
+	skewX: number;
+	skewY: number;
+	opacity: number;
+	[k: string]: unknown;
+}
+
+/**
+ * 画布 **UI 树节点**（序列化形态：`class` + `children` + 各类扩展字段）。
+ *
+ * 2026-09-21 第 109 轮：**合并了两份同名声明**。此前 `legacy/ui-window.ts` 与 `stores/ui.ts`
+ * 各写一份 `UINodeShape`，靠各自的 `[k: string]: any` 索引签名「碰巧结构兼容」——
+ * 也就是说两边可以各自漂移而无人发现。第 108 轮把 store 那份改成具名字段后，
+ * `ui-transform.ts:59` 当场报「两者不兼容」，那是这个隐患第一次显形。
+ * 现在全仓只有这一处声明：`ui-window.ts` 只做再导出，`stores/ui.ts` 直接 import。
+ *
+ * ⚠️ 索引签名**暂时保留**：第 108 轮实测，把它换成具名字段后 `tsc` 会露出 31 处问题，
+ * 其中 **14 处是 `matrix` / `parent` 可空却被直接解引用**（`ui-engine` 6 + `ui-pointer` 8），
+ * 另有 `instance` 到底可不可空（`ui-engine.ts:363` 会把 `null` 赋给它）。
+ * 那些是**行为问题**（要么证明不变式、要么加守卫），必须实机判定，
+ * 不能靠补一批 `!` 蒙过去 —— 那正是本仓反复记的静默失效制造机。
+ */
+export type UINodeShape = {
+	class: string;
+	children: UINodeShape[];
+	// oxlint-disable-next-line no-explicit-any
+	[k: string]: any;
+};
+
+/**
  * 元素类的构造签名。
  *
  * `data` 用 `any` 而不是精确形状：13 个类的构造参数各不相同（`{ transform?, hidden? }`、

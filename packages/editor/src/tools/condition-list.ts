@@ -10,7 +10,7 @@ import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 const IfCondition = useIfConditionSchema();
 import { ParamHistory } from '@app/composables/useParamHistory';
 import { IListInterface } from '@app/types/list-interface.ts';
-import { IEditableHistory } from '@app/types/history.ts';
+import { IUndoRedoHistory } from '@app/types/history.ts';
 import type { History } from '@app/tools/history.ts';
 import { getYamiI18n } from '@app/i18n';
 import { applyLocalizedItems } from '@app/utils/localized-items';
@@ -54,7 +54,7 @@ export const form = reactive<ConditionForm>({
 export class ConditionListInterface implements IListInterface {
 	target!: HTMLElement | null;
 	type!: string;
-	history!: IEditableHistory | null;
+	history!: IUndoRedoHistory | null;
 	editor!: { target?: unknown } | null;
 	owner!: { history?: unknown } | null;
 
@@ -69,11 +69,12 @@ export class ConditionListInterface implements IListInterface {
 
 		const { editor, owner } = this;
 		if (editor && owner) {
+			// 第 105 轮：字段类型收窄成 `IUndoRedoHistory` 后不再需要 `as unknown as`（见 types/history.ts）。
 			this.history = new ParamHistory(
 				editor as { target: unknown },
 				owner as { history: History },
 				list
-			) as unknown as IEditableHistory;
+			);
 		}
 	}
 

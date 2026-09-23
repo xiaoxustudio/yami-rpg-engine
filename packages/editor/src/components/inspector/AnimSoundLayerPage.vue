@@ -60,16 +60,11 @@ onMounted(() => {
 		]);
 		const el = elPlaybackRate.value?.root;
 		if (el) {
-			bindInput(
-				[el],
-				animSoundLayer,
-				Animation as unknown as { history: unknown },
-				(data: Record<string, unknown>) => {
-					data.type = 'inspector-layer-change';
-					data.motion = animSoundLayer.motion;
-					data.direction = Animation.direction;
-				}
-			);
+			bindInput([el], animSoundLayer, Animation, (data: Record<string, unknown>) => {
+				data.type = 'inspector-layer-change';
+				data.motion = animSoundLayer.motion;
+				data.direction = Animation.direction;
+			});
 		}
 	}
 	const el = inspectorEls.get('animSoundLayer-vue-mount');

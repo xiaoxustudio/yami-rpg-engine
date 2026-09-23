@@ -1729,11 +1729,45 @@ head?: { view: { write(index: number): void } } | null;
    `text-element.ts` 2（`printer.images` 有两个**互补而非同形**的本地接口：`ImageElementShape` vs
    `EmbeddedImageShape` —— 要合并成一份具名形状，属设计改动）· 其余为零散 1–2 处的 `.vue` 组件。
    **第 91 轮已拿下 12 处**，手法与「为什么剩下的这些更难」记在 `xr.md` 的「第 91 轮」一节。
+   > ⚠️ **2026-09-21 第 106 轮刷新（当前 67 处 / 55 文件）**：上表只描述了「**难**的那批」，
+   > 而台账里还混着「**早就多余、只是忘了删**」的那批 —— 本轮一次清掉 **17 处**：
+   > 14 处是 `bindInput(elements, editor, Scene/Animation as unknown as { history: unknown })`
+   > （`InputOwner` 第 89 轮已放宽成 `object`，断言纯属多余），
+   > 3 处是 `common/{NumberBox,TextBox,TextArea}.vue` 改用 ui-kit **本就导出**的
+   > `HistoryInputElement` / `HistoryTextAreaElement` 做单次断言。
+   > ⇒ **不要再按「剩下的都难」估算这条轴**；按文件逐个量过再说。详见 `xr.md` 第 106 轮。
 3. **已确认「必须留 `unknown`」的三类**（要归零只能改写法或改类型设计）：
     - **interface → 索引签名**（`TreeListHost as Record<string, unknown>` 一类）：换 `Reflect.*`；
     - **类与接口漂移**：`ParticleElementLayer` vs 粒子层类（两条路都试过：TS2345 + TS2352）、
       `ParamHistory` vs `IEditableHistory`（缺 `stack`/`index`）—— 都是**真债务**，不是写法问题；
+      > ⚠️ **第 105 轮已结案**：`ParamHistory` 那条其实**不是债务** —— 该改的是消费方的类型
+      > （收窄成新的 `IUndoRedoHistory`），4 处断言已消失。**「真债务」这个标签也要复核。**
     - **payload 判别字段**：从 `{ [k: string]: unknown }` 断言到具体字段集时，目标里必须带 `type`（第 78 轮）。
+    > ⚠️ **`any-hatches` 已于第 107 轮逐条量过（51 处 / 26 文件）**，结论与 `unknown-casts` **相反**：
+    > 剩余项**基本确实承重**（`fs-bridge` 的注释记着两个实测差别含一个真实 `TypeError`；
+    > `YMParameterPane` 第 64 轮实测代价 41 处并已回退；`ui-window.ts` 的 3 处随 ④ 一起删）。
+    > **但有一个例外，且边界精确**：`stores/ui.ts` 的 `UINodeShape` 索引签名 ——
+    > 删掉后 `tsc` 只报 **6 个字段 / 27 处 / 5 文件**（`instance`·`instances`·`name`·`presetId`·
+    > `synchronous`·`transform`），属**可穷举的枚举活**（手法库第 2 条）。
+    > 卡点是 `transform` **没有可复用类型**（真实形状是 `element-page.ts:53` 那个局部
+    > `UIElementTransform`，15 个字段）⇒ **下一步先把那个局部类型提成共享类型，再照清单做完。**
+    > 判据：**「承重」不等于「不可枚举」—— 看删掉后 `tsc` 报 6 个还是近千个。**
+    > ⚠️ **第 108 轮：共享类型已提好，但「照清单做完」被证明是浅层估计 —— 已退回。**
+    > 6 个字段枚举上去后，原来的 27 处消失，却换来 **31 处 / 6 个根因**，其中三条是**真问题**：
+    > - **全仓有两个同名 `UINodeShape`**（`legacy/ui-window.ts` 与本 store 各一个），以前靠索引签名
+    >   「碰巧兼容」，形状一严就互不兼容（`ui-transform.ts:59`）；
+    > - **`instance` 并不必然存在**（`ui-engine.ts:363` 把 `null` 赋给它）；
+    > - **`matrix` / `parent` 可空却被直接解引用 14 处**（`ui-engine` 6 + `ui-pointer` 8）——
+    >   与第 101 轮 `texture.base` 同类，**属行为问题，必须实机判定**，不能靠补 `!` 蒙过去。
+    > ⇒ 真做完 = ① 合并两个 `UINodeShape`（设计活）＋ ② 裁决 14 处可空解引用（**要真机**）＋
+    > ③ 补全 `instances` 的真实类型（`UIInstanceList` 上没有 `set`）。详见 `xr.md` 第 108 轮。
+    > ✅ **① 已于第 109 轮完成**：`UINodeShape` 现在**只有一处声明**
+    > （`engine/ui/element-classes.ts`，与 `UIElementInstance` / `UIElementTransform` 同处），
+    > `ui-window.ts` 只再导出、`stores/ui.ts` 直接 import ⇒ 两份「碰巧兼容」的重复声明不可能再漂移，
+    > 且 `any-hatches` **51 → 50**。② ③ 仍是行为/真实类型问题，等实机。
+    > ⚠️ 另一条实测到的坑：**给遗留目录里的文件加注释会顶起 `legacy-ui-lines`**
+    > （第一版把 3 行说明写在 `ui-window.ts`，读数 316 → 319 被判上升；注释已挪到**声明处**，回到 316）。
+    > 在「行数棘轮」覆盖的目录里，**理由要写在被计数的地方之外**。
 4. **P3（52 处）**：都压在承重类型上（`SceneShape` 字段、`DynamicShape`、`UIShape`、粒子同名形状…）。
 5. **P5-C/D 与 P6**：**运行时高危，必须等用户按 9 项实机回归清单验证过再动**
    （清单全文见第 66 轮「下一步（1c 第 ③ 步）与实机回归清单」一节；原文此处写「10 项」是笔误 —— 该清单实测为 9 条）。
@@ -1771,8 +1805,22 @@ head?: { view: { write(index: number): void } } | null;
 >   却 `exit 1`**（vitest 把 unhandled rejection 记成**套件级**错误）。已修 + 已加自证回归 spec。
 >   连带纠正：「必须独占跑」只对 `template-localized.spec.ts` 的**超时**成立，与本条无关。
 
-**仍待决策的 2 项**：⑤ `ParamHistory` vs `IEditableHistory` 矛盾 ⑦ P5-C/D 开工
-（前提是实机回归全过）。
+**仍待决策的 1 项**：⑦ P5-C/D 开工（前提是实机回归全过）。
+（⑤ 已于第 105 轮关闭，④ 已于第 104 轮关闭 —— 见下。）
+
+> ✅ **⑤ 已关闭（2026-09-21 第 105 轮，靠证据判定，不需要用户拍板）**：
+> `ParamHistory` vs `IEditableHistory` 的「矛盾」**不是 `ParamHistory` 缺字段，而是接口对这批消费方偏宽**。
+> `ParamHistory` 是**委托型适配器**（栈在 `this.owner.history` 上、`History extends Array`），
+> 所以它**本就不该**有独立的 `stack` / `index`；而全仓把它当 `IEditableHistory` 用的地方
+> （`script-list` / `property-list` / `event-list` / `condition-list` / `list-interface`）**只调用方法**
+> （`save` / `restore` / `canUndo` / `canRedo` / `reset`）—— 实测 `history.index` / `history.stack`
+> 的读取点**没有一处**经由这些字段（命中的全是数组型 `History` 自己的 `history.index`）。
+>
+> 处置：新增**窄契约** `IUndoRedoHistory`（`IEditableHistory extends IUndoRedoHistory`，语义不变），
+> 把那 5 处消费方的字段类型收窄到它，于是 **4 处 `as unknown as IEditableHistory` 直接消失**
+> ⇒ `unknown-casts` **88 → 84**。同时更正了 `types/history.ts` 顶部那句把 `ParamHistory`
+> 一并列为「implements 栈式契约」的注释 —— 那正是「矛盾」的来源。
+> **没有**给 `ParamHistory` 硬加两个假的 `stack`/`index`（那会让「谁读谁拿到 undefined」的风险留在原地）。
 
 > ✅ **④ 已关闭（2026-09-21 第 104 轮，靠证据判定，不需要用户拍板）**：
 > `TextCommandShape.color` 的真实类型就是 **`string`** —— 声明与那 4 处 `context.fillStyle = color`

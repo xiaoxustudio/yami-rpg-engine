@@ -7,7 +7,7 @@ import { uiEls } from '@app/engine/ui/element-registry';
 import { StageColor } from '@app/utils/stage-color';
 import type { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import type { History } from '@app/tools/history.ts';
-import type { UIElementInstance } from '@app/engine/ui/element-classes.ts';
+import type { UIElementInstance, UINodeShape } from '@app/engine/ui/element-classes.ts';
 import type { YamiElement } from '@app/types/element-api';
 
 /**
@@ -84,12 +84,9 @@ export const uiStateKeys = [
 	'hover'
 ] as const;
 
-interface UINodeShape {
-	class: string;
-	children: UINodeShape[];
-	// oxlint-disable-next-line no-explicit-any
-	[key: string]: any;
-}
+// `UINodeShape` 的**唯一声明**在 `engine/ui/element-classes.ts`（2026-09-21 第 109 轮合并了
+// 此处与 `legacy/ui-window.ts` 的同名重复声明）。此前两份靠索引签名「碰巧兼容」，
+// 一旦其中一份收紧就会互不兼容（`ui-transform.ts:59` 曾当场报错）。
 
 interface UIContextShape {
 	meta: { guid: string; path: string };

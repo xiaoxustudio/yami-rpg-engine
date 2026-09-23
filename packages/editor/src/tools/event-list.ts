@@ -9,7 +9,7 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { IListInterface } from '@app/types/list-interface.ts';
-import { HistoryData, IEditableHistory } from '@app/types/history.ts';
+import { HistoryData, IUndoRedoHistory } from '@app/types/history.ts';
 import type { YamiElement, YamiElementApi } from '@app/types/element-api';
 
 interface EventListTargetShape {
@@ -77,7 +77,7 @@ export class EventListInterface implements IListInterface {
 	eventItem!: Record<string, unknown> | null;
 	editCallback!: (() => void) | null;
 	insertCallback!: (() => void) | null;
-	history!: IEditableHistory | null;
+	history!: IUndoRedoHistory | null;
 
 	constructor(editor?: unknown, owner?: unknown) {
 		this.editor = (editor as { target?: unknown } | null) ?? null;
@@ -102,7 +102,8 @@ export class EventListInterface implements IListInterface {
 
 		const { editor, owner } = this;
 		if (editor && owner) {
-			this.history = new ParamHistory(editor, owner, list) as unknown as IEditableHistory;
+			// 第 105 轮：字段类型收窄成 `IUndoRedoHistory` 后不再需要 `as unknown as`。
+			this.history = new ParamHistory(editor, owner, list);
 			// oxlint-disable-next-line unbound-method
 			this.history!.save = EventListInterface.historySave;
 		}

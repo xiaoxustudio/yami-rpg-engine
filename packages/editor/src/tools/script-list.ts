@@ -12,7 +12,7 @@ import { PluginManager } from '@app/plugin/plugin.ts';
 import { h } from 'vue';
 import { renderDetached } from '@app/utils/dom';
 
-import { IEditableHistory } from '@app/types/history.ts';
+import { IUndoRedoHistory } from '@app/types/history.ts';
 import { IScriptListInterface } from '@app/types/list-interface.ts';
 
 interface ScriptData {
@@ -57,7 +57,7 @@ export class ScriptListInterface implements IScriptListInterface {
 	script: ScriptData | null = null;
 	editor: { target?: ScriptListItem | null } | null = null;
 	owner: { history?: unknown } | null = null;
-	history: IEditableHistory | null = null;
+	history: IUndoRedoHistory | null = null;
 
 	constructor(editor?: { target?: ScriptListItem | null }, owner?: unknown) {
 		this.editor = editor ?? null;
@@ -73,11 +73,12 @@ export class ScriptListInterface implements IScriptListInterface {
 
 		const { editor, owner } = this;
 		if (editor && owner) {
-			// ⚠️ 这里必须保留 `unknown`：`ParamHistory` **结构上并不满足** `IEditableHistory`
-			// （没有 `stack` / `index` 字段，`save`/`restore` 形参也不同），单次断言 TS 直接拒绝。
-			// 而 `types/history.ts` 的注释却把 `ParamHistory` 列为「6 个 implements 该接口」之一 —— 两者矛盾，
-			// 属待决策项（谁读 `history.stack`/`history.index` 就会拿到 undefined），本轮只记录、不改行为。
-			this.history = new ParamHistory(editor, owner, list) as unknown as IEditableHistory;
+			// ✅ 第 105 轮结案：这里原先写 `as unknown as IEditableHistory`，理由是
+			// 「`ParamHistory` 结构上不满足 `IEditableHistory`（缺 `stack`/`index`）」。
+			// 量到底的结论是**接口对这批消费方偏宽**：`ParamHistory` 是委托型适配器
+			// （栈在 `owner.history` 上），而消费方只调用方法、从不读 `stack`/`index`。
+			// 所以字段类型收窄成 `IUndoRedoHistory` 之后，单次赋值即可，断言彻底消失。
+			this.history = new ParamHistory(editor, owner, list);
 		}
 
 		listScopes.get(list)?.off();

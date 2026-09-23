@@ -538,7 +538,7 @@ onMounted(() => {
 		'sceneParallax-tint-2-slider',
 		'sceneParallax-tint-3-slider'
 	]);
-	bindInput(elements, editor, Scene as unknown as { history: unknown });
+	bindInput(elements, editor, Scene);
 	bindSliders(sliders);
 	registryElements(inspectorEls, [
 		'sceneParallax-conditions',

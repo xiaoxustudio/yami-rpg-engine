@@ -6,6 +6,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import { getUIStore } from '@app/stores/ui';
 
+import type { UINodeShape } from '@app/engine/ui/element-classes.ts';
 import type { Timer } from '@app/utils/timer';
 import type { History } from '@app/tools/history.ts';
 import type { StageColor } from '@app/utils/stage-color';
@@ -61,8 +62,7 @@ export interface UIShape {
 	[k: string]: any;
 }
 
-// oxlint-disable-next-line no-explicit-any
-export type UINodeShape = { class: string; children: UINodeShape[]; [k: string]: any };
+export type { UINodeShape };
 
 export interface UIContextShape {
 	meta: { guid: string; path: string };

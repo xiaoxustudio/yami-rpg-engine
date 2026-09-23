@@ -1771,3 +1771,289 @@ context.fillStyle = color;   // ×4（drawText / drawTextWithShadow …）
 > 方法上值得单记：**「声明与用法不自洽」这个判断，本身也要被验证。**
 > 本次的真相是「声明是对的，占位值是错的」—— 而当时把票投给了「声明错了」。
 > 判别手法很朴素：**把值的来源一路追到它的构造函数/签名**，而不是停在同文件里的相似写法。
+
+## 第 105 轮（2026-09-21）：结案待决策 ⑤ —— 不是 `ParamHistory` 缺字段，是接口偏宽
+
+第 80 轮发现 `script-list.ts` 把 `new ParamHistory(...)` 当 `IEditableHistory` 用，而它「结构上不满足」
+（缺 `stack` / `index`），只好写 `as unknown as` 硬跨，并记成**待用户决策的类型设计债务**。
+这一轮把两边都量了一遍，结论反了过来：**该改的是消费方的类型，不是 `ParamHistory`。**
+
+### 一、先看双方到底差什么
+
+| `IEditableHistory` 要求 | `ParamHistory` 实际 |
+| --- | --- |
+| `stack: HistoryData[]` | ✗ 没有（也不该有） |
+| `index: number` | ✗ 同上 |
+| `reset` / `save` / `restore` / `canUndo` / `canRedo` | ✓ 都有（形参更宽/更窄处靠方法双变性通过） |
+
+### 二、关键是「谁真的需要 `stack` / `index`」
+
+- `ParamHistory` 是**委托型适配器**：它不持栈，`canUndo` 读的是 `this.owner.history[history.index]`
+  —— 栈在 owner 身上（`History extends Array`，**栈就是数组自身**，所以那边也没有独立的 `stack` 字段）。
+  也就是说：**它本就不该有 `stack` / `index`**，缺这两个字段不是缺陷，是它的形态。
+- 全仓把这类 history 当 `IEditableHistory` 用的 5 处（`script-list` / `property-list` / `event-list` /
+  `condition-list` / `list-interface`），**只调用方法**。
+- 实测 `history.index` / `history.stack` 的读取点（24 处）**没有一处**经由这些字段 ——
+  命中的全是数组型 `History` 自己的 `history.index`（scene/sprite/animation/枚举/变量/属性…），
+  加上 `ParamHistory` 内部读它 owner 的那两处。
+
+⇒ **接口对这批消费方偏宽**。原判断「`ParamHistory` 不满足接口」把因果弄反了。
+
+### 三、处置
+
+1. 新增窄契约 `IUndoRedoHistory`（`reset` / `save` / `restore` / `canUndo` / `canRedo`），
+   令 `IEditableHistory extends IUndoRedoHistory` —— **语义不变**，只是把两者分层；
+2. 5 处消费方的字段类型收窄到窄契约 ⇒ **4 处 `as unknown as IEditableHistory` 直接消失**；
+3. 更正 `types/history.ts` 顶部那句把 `ParamHistory` 一并列为「implements 栈式契约」的注释
+   —— 那正是「矛盾」的来源（文档把一个委托型适配器混进了持有栈的那一批）。
+
+**没有**给 `ParamHistory` 硬加 `stack`/`index`：那样只是把「谁读谁拿到 `undefined`」的风险留在原地，
+再配上一句「反正没人读」。收窄消费方才是让类型与现实一致的那种改法。
+
+### 四、验证与账
+
+`unknown-casts` **88 → 84**（files 76 → 72；基线已固化）· `tsc` strict 0 ·
+`typecheck:vue` 0 新增 · `lint` 0/0（1627 文件）· `format:check` 0 · `docs:check` OK ·
+`text:check` 0 · `migration:selftest` 53/53。
+
+> **本轮 diff 是纯类型**（`import` 的是 interface、字段标注、注释，以及被擦除的断言），
+> 故未重跑全套 —— 依据是逐行核对 `git diff -U0`：语句本身逐字未变。
+
+> 方法上两条，与第 104 轮同源：
+> ① **「A 不满足接口 B」要先问「谁真的需要 B 的全部成员」** —— 需要面窄就收窄接口，而不是改造 A；
+> ② **文档里的清单也要复核**：把 `ParamHistory` 列进「持有栈的那 6 个类」，
+> 就是这份「矛盾」的起点，而它一直没人查。
+
+### 五、待决策清单状态
+
+**原 7 项 → 现在只剩 1 项**：⑦ P5-C/D 开工（前提是实机回归全过）。
+（① format:check 第 91 轮关；② 测试 flake 第 89 轮证否并修；③ build:types 进门禁第 90 轮；
+④ `TextCommandShape.color` 第 104 轮；⑤ 本轮；⑥「P6 三处行为缺陷」第 92/93 轮。）
+
+## 第 106 轮（2026-09-21）：**修完声明忘了清调用点** —— 17 处多余断言，`unknown-casts` 84 → 67
+
+台账里 `unknown-casts` 还剩 84 处 / 72 文件，文档说「剩余全在承重形状上」。这句**又一次被量翻了**
+（前两次是 ④ 与 ⑤）：本轮什么都没设计，只是把**早就多余**的断言删掉，就掉了 17 处。
+
+### 一、大头：14 处挂在 `bindInput` 上的死断言
+
+```ts
+bindInput(elements, editor, Scene as unknown as { history: unknown });
+```
+
+`InputOwner` 早在**第 89 轮**就已经放宽成 `object`（`useInspectorInput.ts:24`），
+而 `Scene` / `Animation` 本来就是对象 ⇒ **这个断言完全多余，删掉即可**。`tsc` 一次都没报错 ——
+因为**多余的断言不是错误，只是噪声**：没有任何门禁会告诉你「这里其实不用断言」。
+
+分布：7 个 `Anim*Frame/LayerPage.vue`（`Animation`）+ 7 个 `Scene*Page.vue`（`Scene`）= **14 处**。
+
+### 二、⚠️ 文档当时**声称已经清干净了**，其实没有
+
+`useInspectorInput.ts` 的原注释写着：
+
+> 声明成 object（不假设任何键）后，**这 18 处断言全部消失**
+
+**实测：到本轮为止仍有 14 处**。也就是说这句「全部消失」是**改动当时的意图**被写成了「既成事实」，
+而这条注释一直没人对着代码核 —— 与第 104 轮「声明与用法不自洽」、第 105 轮「文档清单把
+`ParamHistory` 列进持有栈的那批」是**同一类**：**文档里的形容词（「全部」「都已」）从不复查。**
+已把该注释改成如实描述，并记下「漏了整整 17 轮」。
+
+### 三、小头：3 处用上了本来就为它导出的类型
+
+`components/common/{NumberBox,TextBox,TextArea}.vue` 里的
+
+```ts
+(input as unknown as { history: unknown }).history = new NumberHistory(input);
+```
+
+`ui-kit` **早就导出了** `HistoryInputElement` / `HistoryTextAreaElement`（`number-box-api.ts:46`
+的注释甚至写着「导出以便消费方不必各自写 as unknown as { history: unknown } —— 编辑器侧 3 个
+components/common/*.vue 曾各写一遍」）。于是改成单次断言 ⇒ 3 处双断言消失：
+`(input as HistoryInputElement).history = …`。**类型已经备好、注释已经写明，调用点却没跟上。**
+
+### 四、⚠️ 过程中的一次自伤（如实记）
+
+我用 node 脚本做那 14 处精确字符串替换（**逐字替换、不是正则**，并打印了每文件替换数）。
+但随后用编辑工具改 `common/*.vue` 时，**它把两个文件开头的 UTF-8 BOM 吃掉了** ——
+`git diff` 里表现为 `-<template>` / `+<template>`。发现方式就是**逐行看 diff**（`<template>` 凭空多出来
+是解释不通的），随后按「HEAD 有 BOM 而当前没有」逐个恢复，共 2 个文件。**教训：改 `.vue` 之后
+必须看一眼 diff 的第一行有没有编码层噪声。**
+
+### 五、验证与账
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **84 → 67**（files 72 → 55；基线已固化） |
+| `tsc` strict | 0 |
+| `typecheck:vue` | 0 新增（本轮改的多数是 `.vue`，所以这条必须跑） |
+| `lint` / `format:check` / `text:check` / `docs:check` | 0-0（1627 文件）/ 0 / 0 / OK |
+| `migration:selftest` | 53/53 |
+
+> **本轮 diff 是纯类型 + 格式化**：删断言、加 `type` 导入、oxfmt 因实参变短而把多行调用收成一行。
+> 故未重跑全套 —— 依据：`git diff -U0` 逐行核对，没有新增/删除任何运行期语句。
+
+> 方法论再记一条（与第 104/105 轮同源）：**「剩余的都是承重形状」这类结论要按文件量一遍再信。**
+> 本轮没做任何设计，只清「已经多余的断言」，就让这条轴掉了 20%——
+> 说明**「难」的那批与「忘了清」的那批混在同一个数字里**，而文档只描述了前者。
+
+## 第 107 轮（2026-09-21）：把 `any-hatches`（51 / 26 文件）**逐条量了一遍** —— 结论与上一轮相反
+
+上一轮在 `unknown-casts` 上「量一遍」量出了 17 处死断言。于是这一轮用同样手法量 `any-hatches`，
+**结论是反的：这条轴的剩余项基本确实是承重的。** 但量出了一个例外，而且它**边界精确**。
+
+### 一、51 处的构成（脚本逐行打印，不是抽样）
+
+| 形态 | 处数 | 说明 |
+| --- | ---: | --- |
+| `export const XxxEngine: Record<string, any> = {}` | **7** | `UIEngine` / `ParticleEngine` / `PaletteEngine` / `AutoTileEngine` / `SceneCameraEngine` / `SceneMarqueeEngine` / `AnimationWindowEngine` —— 同一形态的「方法注册表」 |
+| `[k: string]: any` 在某个 interface 里 | ~30 | 元素/场景/粒子/UI 节点等**异质载荷**形状 |
+| `Record<string, any>`（配置袋/桥接） | 若干 | 见下 |
+
+### 二、抽查到的都**有据可依**（这次文档是对的）
+
+- **`services/file-system/fs-bridge.ts`**：`FSP = (FS.promises ?? {}) as Record<string, any>`
+  的注释记着**两个实测差别** —— `writeFile` 的第三参被换成语义不兼容的布尔 `check`（约 30 个调用点形态还不统一），
+  以及它曾掩盖 `fs.promises.existsSync` 为 `undefined`（导致**文件浏览器重命名直接抛错**）。
+  注释还写明「收这条轴的正确做法是先定义 `FSP` 的对外面」——**这个判断是对的**。
+- **`YMParameterPane.vue`（5 处）**：第 64 轮实测过「枚举 `attachStateAccessors` 的字段」的代价是 41 处，**并已回退**。
+- **`ui-window.ts`（3 处）**：属遗留层，**④ 会连文件一起删**，现在动它是白做。
+- **`element-classes.ts` / `types/shapes.ts` / `particle-window.ts`**：注释里都写明了取舍（P2b-1 的教训、
+  「不重做元素系统的类型」），不是漏改。
+
+### 三、**例外**：`stores/ui.ts` 的 `UINodeShape` 索引签名 —— 承重，但**边界精确**
+
+本轮把它删掉跑 `tsc`，得到的是**可穷举**的结果（不是「990 个错误」那种）：
+
+```txt
+缺 6 个字段 / 27 处 / 5 个文件
+字段：instance · instances · name · presetId · synchronous · transform
+文件：usePresetElementWindow · ui-engine · ui-events · ui-pointer · ui-transform
+```
+
+⇒ **它不是一个「承重形状」，而是一件可执行的枚举活**（手法库第 2 条：删签名 → tsc 点名 → 逐个枚举）。
+之所以本轮**没做完**，是因为卡在其中一个字段上：
+
+> `transform` 目前**没有可复用的类型** —— 真实形状是 `element-page.ts:53` 那个**局部**的
+> `UIElementTransform`（`anchorX/anchorY/x/x2/y/y2/width/width2/height/height2/rotation/scaleX/scaleY/skewX/skewY/opacity`）。
+> 要给它一个诚实的类型，得先把它**提取成共享类型**，那是类型设计活，不是机械枚举。
+> 用 `Record<string, unknown>` 顶一下会让 `transform.x` 之类的读点变成 `unknown` 再炸一片 —— 那是拿一个坑换另一个坑。
+
+已恢复该签名（工作树与 HEAD 逐字相同）。**下一轮的正确起点是把 `UIElementTransform` 提成共享类型，
+然后照上面那份 6 字段清单一次做完。**
+
+### 四、本轮产出与账
+
+**零代码改动**（本轮的价值是「把 51 处逐条量清 + 给出一件边界精确的活 + 否掉一次可能的白工」）。
+`tsc` 0 · `migration:check` 15 轴持平 · `git status` 干净。
+
+> 方法论补一条，与上一轮**互为对照**：**「量一遍」既可能推翻「都很难」，也可能证实「确实难」。**
+> 第 106 轮量出 17 处是死的，第 107 轮量出基本是活的 —— **同一个动作，两个相反的结论**。
+> 所以结论不能从「上次量出了便宜货」推出来，只能从**这一次的实际测量**里读出来。
+> 另外：**「承重」不等于「不可枚举」** —— `UINodeShape` 就是承重但可枚举的例子，
+> 判据是「删掉后 `tsc` 报的是 6 个字段还是近千个错误」。
+
+## 第 108 轮（2026-09-21）：把上轮那件「6 字段的活」**真做了一半** —— 它比看上去深三层
+
+按第 107 轮的结论动手：先把 `UIElementTransform` 提成共享类型，再照 6 字段清单枚举 `UINodeShape`。
+**第一半做好了，第二半做完后发现 6 个字段只是最浅的一层** —— 于是把它退回，并把这三层如实记下。
+
+### 一、已落地：`UIElementTransform` 提成共享类型（纯类型移动）
+
+`inspector/element-page.ts` 里那个**局部** interface（15 字段）→ `engine/ui/element-classes.ts`
+（紧挨 `UIElementInstance`，同一领域），`element-page.ts` 改为 import。diff 里只有声明搬家，
+**没有一条运行期语句**。这是真进步：它是 `UINodeShape.transform` 能具名化的**前提**。
+
+### 二、做了一半、然后退回：`UINodeShape` 的枚举
+
+把 6 个字段按真实类型写上去（`instance: UIElementInstance` / `instances: UIInstanceList` /
+`transform: UIElementTransform` / `presetId?: string` / `name?: unknown` / `synchronous?: boolean`），
+原来的 27 处「属性不存在」**全消失** —— 但换来 **31 处新错误 / 6 个根因**，而且**每一条都是真信息**：
+
+| # | 根因 | 性质 |
+| --- | --- | --- |
+| A | `instances.set(…)` —— `UIInstanceList` 上**没有** `set` | 我拿的类型**不完整**（真实对象比 `element-instance-list.ts` 声明的更丰富） |
+| B | `matrix` / `parent` **可空却被直接解引用**（`ui-engine` 6 处 + `ui-pointer` 8 处） | **真实潜在崩溃**（与第 101 轮 `texture.base` 同类） |
+| C | `ui-engine.ts:363` **把 `null` 赋给 `instance`** | 说明 `instance` 并非「必然有主实例」 |
+| D | `HoverNode` 与新的 `UINodeShape` **无重叠**（TS2367） | 第 106 轮那个障碍**回来了**（因为形状变严） |
+| E | `ui-transform.ts:59`：**`ui-window.ts` 的 `UINodeShape` 与本地的 `UINodeShape` 不再兼容** | ⚠️ **全仓有两个同名 `UINodeShape`**，以前靠索引签名「碰巧兼容」 |
+| F | `presetId` 可选 vs 参数要 `string` | 小 |
+
+⇒ **第 107 轮那个「6 个字段 / 27 处」是浅层读数。** 真要做完 `UINodeShape` 归零，需要：
+① 把**两个** `UINodeShape` 合成一个（E）；② 弄清 `instance` 到底可不可空（C，而 B 的 14 处解引用
+全依赖这个答案）；③ 弄清 `instances` 的真实类型（A）；④ 再谈 D / F。
+
+### 三、为什么退回来，而不是硬做完
+
+B 与 C 是**行为问题**：那 14 处无守卫的解引用，要么证明不变式成立（补 `!`），要么加守卫（**改行为**）。
+我**没有**能证明不变式的证据（要真机跑），而「先补一批 `!` 让 `tsc` 变绿」正是本仓反复记的
+**静默失效制造机**（附录四/六/七/八/九全是这个形状）。所以：**只保留能证明是纯类型移动的那一半。**
+`stores/ui.ts` 已逐字还原，工作树里只剩 element-classes/element-page 两处改动。
+
+### 四、验证与账
+
+`tsc` strict 0 · `typecheck:vue` 0 新增 · `lint` 0/0（1627 文件）· `format:check` 0 ·
+`migration:check` 15 轴持平（**本轮的改动不改任何读数**：搬的是类型声明，`any-hatches` 仍是 51）·
+`docs:check` OK · `text:check` 0 · `migration:selftest` 53/53。
+本轮 diff 是**纯类型搬家**，故未重跑全套（依据：逐行核对 `git diff`，无运行期语句）。
+
+> **方法论（本轮最值钱的一条）**：**「删掉签名后 `tsc` 报了几个字段」量的是第一层，
+> 不是整件事的规模。** 6 个字段背后还压着「两个同名类型要合并」和「14 处可空解引用」——
+> 前者是设计活，后者是**行为问题、需要实机**。
+> 更好的判据不是「报了几个字段」，而是「**这些字段背后有几处需要行为判断**」。
+> 一个看起来 27 处的机械活，真做下去是「1 处类型合并 + 14 处行为裁决 + 1 处类型补全」。
+
+## 第 109 轮（2026-09-21）：合并两份同名 `UINodeShape` —— `any-hatches` 51 → 50
+
+上一轮把 `UINodeShape` 的活拆成三件，其中**「合并两个同名类型」是唯一不含行为判断的那件**，
+这一轮把它做掉。
+
+### 一、合并：全仓只剩一处声明
+
+`UINodeShape` 此前**被声明了两遍**：`legacy/ui-window.ts` 一份、`stores/ui.ts` 一份，
+各自带 `[k: string]: any`。两份靠索引签名「**碰巧**结构兼容」⇒ **可以各自漂移而无人发现**
+（第 108 轮把 store 那份收紧后，`ui-transform.ts:59` 当场报「两者不兼容」——那是隐患第一次显形）。
+
+现在唯一声明在 `engine/ui/element-classes.ts`（与 `UIElementInstance` / `UIElementTransform` 同处），
+`ui-window.ts` 只做再导出（域模块的 import 路径不变），`stores/ui.ts` 直接 import。
+
+**收益**：① 结构上不可能再漂移；② `any-hatches` **51 → 50**（两份索引签名并成一份）。
+索引签名**暂时保留** —— 理由写在声明处（第 108 轮的 14 处可空解引用是行为问题）。
+
+### 二、⚠️ 过程中的一个真正的新坑：**给遗留文件加注释会顶起 `legacy-ui-lines`**
+
+第一版我把 3 行「为什么合并」的注释写在了 `ui-window.ts`（**遗留目录内**），
+`migration:check` 立刻报：
+
+```txt
+legacy-ui-lines  316 → 319   ✗ 上升（棘轮不允许）
+```
+
+**这条轴数的是目录里的行数，注释也算。** 于是「写清楚为什么」这个动作本身会把一条棘轮弄红。
+处置：注释搬去**声明处**（`element-classes.ts`，目录外），`ui-window.ts` 里只留一行
+`export type { UINodeShape };` ⇒ 读数回到 **316（持平）**。
+
+> 教训值得单记：**在「行数棘轮」覆盖的目录里，解释性注释是有代价的。**
+> 不是不能写，而是**要写在被计数的地方之外**（声明处/设计文档），
+> 否则「把理由写下来」会和「别让数字变大」直接冲突 —— 而冲突的结果往往是悄悄不写理由。
+
+### 三、验证与账
+
+| 项 | 结果 |
+| --- | --- |
+| `any-hatches` | **51 → 50**（files 26 → 25；基线已固化） |
+| `legacy-ui-lines` | 316（持平 —— 第一版曾是 319，已按上面所述挪走注释） |
+| `tsc` strict / `typecheck:vue` / `lint` / `format:check` / `docs:check` / `text:check` | 0 / 0 新增 / 0-0（1627 文件）/ 0 / OK / 0 |
+| `migration:selftest` | 53/53 |
+
+本轮 diff 是**纯类型**（声明搬家 + import/再导出），故未重跑全套（依据：逐行核对 `git diff -U0`，
+无运行期语句）。
+
+### 四、`UINodeShape` 三件活的进度
+
+| # | 活 | 状态 |
+| --- | --- | --- |
+| ① | 合并两份同名声明 | ✅ **本轮完成** |
+| ② | 14 处 `matrix` / `parent` 可空解引用 + `instance` 可空性 | ⛔ **行为问题，等实机** |
+| ③ | 补全 `instances` 的真实类型（`UIInstanceList` 上没有 `set`） | 需要先弄清真实对象 |
+
+②③ 做完，那条索引签名才能退役（`any-hatches` 再 −1，且 `UINodeShape` 变成真形状）。

@@ -10,7 +10,7 @@ import { ParamHistory } from '@app/composables/useParamHistory';
 import { GameLocal } from '@app/local/local-object.ts';
 
 import { IListInterface } from '@app/types/list-interface.ts';
-import { IEditableHistory } from '@app/types/history.ts';
+import { IUndoRedoHistory } from '@app/types/history.ts';
 
 /** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
 export const objectAttributeEls = createElementRegistry();
@@ -40,7 +40,7 @@ export class AttributeListInterface implements IListInterface {
 	target!: HTMLElement | null;
 	type!: string;
 	group!: string;
-	history!: IEditableHistory | null;
+	history!: IUndoRedoHistory | null;
 	editor!: { target?: unknown } | null;
 	owner!: { history?: unknown } | null;
 
@@ -60,7 +60,8 @@ export class AttributeListInterface implements IListInterface {
 
 		const { editor, owner } = this;
 		if (editor && owner) {
-			this.history = new ParamHistory(editor, owner, list) as unknown as IEditableHistory;
+			// 第 105 轮：字段类型收窄成 `IUndoRedoHistory` 后不再需要 `as unknown as`。
+			this.history = new ParamHistory(editor, owner, list);
 		}
 	}
 

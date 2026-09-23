@@ -1,12 +1,41 @@
-// 编辑器操作历史共用接口。 项目中 CommandHistory / NumberHistory / TextHistory / ParamListHistory / ParamHistory 6 个 History 类重复实现同一组栈式 undo/redo 契约： stack / index / reset / save / restore / canUndo / canRedo 此处提取为 IEditableHistory 基础接口，供各 History 类 implements 复用， 消除字段重复声明与散落的 `history: any` / `owner.history: any` 耦合断言。 说明：未引入泛型化基类（避免改动 6 个已稳定运行的类继承链）， 仅以 interface 收敛类型契约，渐进式类型化下安全保守。
+// 编辑器操作历史共用接口。 项目中 CommandHistory / NumberHistory / TextHistory / ParamListHistory 等 History 类重复实现同一组栈式 undo/redo 契约： stack / index / reset / save / restore / canUndo / canRedo 此处提取为 IEditableHistory，供各 History 类 implements 复用， 消除字段重复声明与散落的 `history: any` / `owner.history: any` 耦合断言。 说明：未引入泛型化基类（避免改动 6 个已稳定运行的类继承链）， 仅以 interface 收敛类型契约，渐进式类型化下安全保守。
+//
+// ⚠️ 2026-09-21 第 105 轮更正：**`ParamHistory` 不在上面那批里**（原注释把它一并列出，正是「矛盾」的来源）。
+// 它是**委托型适配器** —— 自己不持栈，转发给 `this.owner.history`（`extends Array`，栈即数组自身），
+// 因此**没有也不该有** `stack` / `index`。它满足的是下面那个更窄的 `IUndoRedoHistory`。
+// 消费方（script-list / property-list / event-list / condition-list / list-interface）也已同步收窄。
 export type HistoryOperation = 'undo' | 'redo';
 
 // 操作历史基础契约（栈式 undo/redo）
-export interface IEditableHistory {
+export interface IEditableHistory extends IUndoRedoHistory {
 	stack: HistoryData[];
 	// 当前指针（-1 表示空）
 	index: number;
+}
 
+/**
+ * 「只需要撤销/重做**操作**」的窄契约 —— 比 `IEditableHistory` 少了 `stack` / `index`。
+ *
+ * ## 为什么需要它（2026-09-21 第 105 轮结案）
+ *
+ * 第 80 轮发现 `tools/script-list.ts` 等处把 `new ParamHistory(...)` 当 `IEditableHistory` 用，
+ * 而 `ParamHistory` 结构上**不满足**它（缺 `stack` / `index`），只能写
+ * `as unknown as IEditableHistory` 硬跨过去，于是被记成「待用户决策的类型设计债务」。
+ *
+ * 把它量到底得到的结论是：**`IEditableHistory` 对这批消费方偏宽**，不是 `ParamHistory` 缺东西。
+ *
+ * - `ParamHistory` 是**委托型适配器**：它不自己持栈，而是转发给 `this.owner.history`
+ *   （`History extends Array`，栈就是数组自身）—— 所以它**本就不该**有独立的 `stack` / `index`；
+ * - 全仓把这类 history 当 `IEditableHistory` 用的地方（`script-list` / `property-list` /
+ *   `event-list` / `condition-list` / `list-interface`），**只调用方法**
+ *   （`save` / `restore` / `canUndo` / `canRedo` / `reset`）；
+ * - 实测 `history.index` / `history.stack` 的读取点**没有一处**是经由这些字段的
+ *   （命中的全是数组型 `History` 自己的 `history.index`，以及 `ParamHistory` 内部读它 owner 的那个）。
+ *
+ * 所以正确的对齐方式是把**消费方**的类型收窄到它真正需要的契约，而不是给 `ParamHistory`
+ * 硬加两个假的 `stack` / `index`。改完之后那 4 处 `as unknown as` 直接消失。
+ */
+export interface IUndoRedoHistory {
 	reset(): void;
 
 	save(data: HistoryData): void;

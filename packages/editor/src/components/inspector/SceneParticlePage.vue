@@ -324,7 +324,7 @@ onMounted(() => {
 			'sceneParticle-opacity-slider',
 			'sceneParticle-priority-slider'
 		]);
-		bindInput(elements, editor, Scene as unknown as { history: unknown });
+		bindInput(elements, editor, Scene);
 		bindSliders(sliders);
 
 		registryElements(inspectorEls, [

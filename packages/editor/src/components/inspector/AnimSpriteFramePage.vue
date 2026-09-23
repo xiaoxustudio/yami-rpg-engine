@@ -396,16 +396,11 @@ onMounted(() => {
 		elTint2Slider.value?.root,
 		elTint3Slider.value?.root
 	].filter((el): el is HTMLElement => el != null);
-	bindInput(
-		elements,
-		animSpriteFrame,
-		Animation as unknown as { history: unknown },
-		(data: Record<string, unknown>) => {
-			data.type = 'inspector-frame-change';
-			data.motion = animSpriteFrame.motion;
-			data.direction = Animation.direction;
-		}
-	);
+	bindInput(elements, animSpriteFrame, Animation, (data: Record<string, unknown>) => {
+		data.type = 'inspector-frame-change';
+		data.motion = animSpriteFrame.motion;
+		data.direction = Animation.direction;
+	});
 	bindSliders(sliders);
 	Sprite.initialize();
 

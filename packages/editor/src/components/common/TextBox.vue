@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMTextBox } from '@ui-kit';
-import { TextHistory } from '@ui-kit';
+import { TextHistory, type HistoryInputElement } from '@ui-kit';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface TextBoxElement extends HTMLElement {
@@ -157,7 +157,8 @@ onMounted(() => {
 	const el = root.value as TextBoxElement | null;
 	const input = ym.value?.input ?? null;
 	if (!el || !input) return;
-	(input as unknown as { history: unknown }).history = new TextHistory(input);
+	// 与 `NumberBox.vue` 同形：用 ui-kit 导出的 `HistoryInputElement` 做单次断言。
+	(input as HistoryInputElement).history = new TextHistory(input);
 	attachElementApi(el, {
 		input,
 		read,

@@ -134,16 +134,11 @@ onMounted(() => {
 		elScaleY.value?.root,
 		elOpacity.value?.root
 	].filter((el): el is HTMLElement => el != null);
-	bindInput(
-		elements,
-		animJointFrame,
-		Animation as unknown as { history: unknown },
-		(data: Record<string, unknown>) => {
-			data.type = 'inspector-frame-change';
-			data.motion = animJointFrame.motion;
-			data.direction = Animation.direction;
-		}
-	);
+	bindInput(elements, animJointFrame, Animation, (data: Record<string, unknown>) => {
+		data.type = 'inspector-frame-change';
+		data.motion = animJointFrame.motion;
+		data.direction = Animation.direction;
+	});
 
 	const el = inspectorEls.get('animJointFrame-vue-mount');
 	if (el) {

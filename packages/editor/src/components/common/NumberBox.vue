@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMNumberBox } from '@ui-kit';
-import { NumberHistory } from '@ui-kit';
+import { NumberHistory, type HistoryInputElement } from '@ui-kit';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface NumberBoxElement extends HTMLElement {
@@ -117,7 +117,9 @@ onMounted(() => {
 	const el = root.value as NumberBoxElement | null;
 	const input = ym.value?.input ?? null;
 	if (!el || !input) return;
-	(input as unknown as { history: unknown }).history = new NumberHistory(input);
+	// `HistoryInputElement` 就是为这个用途导出的（见其注释）：单次断言即可，
+	// 不必再写 `as unknown as { history: unknown }`。
+	(input as HistoryInputElement).history = new NumberHistory(input);
 	attachElementApi(el, { input, read, write, enable, disable, getFocus, on });
 });
 </script>

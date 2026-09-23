@@ -276,7 +276,7 @@ onMounted(() => {
 		'sceneActor-angle-slider',
 		'sceneActor-scale-slider'
 	]);
-	bindInput(elements, editor, Scene as unknown as { history: unknown });
+	bindInput(elements, editor, Scene);
 	bindSliders(sliders);
 	registryElements(inspectorEls, [
 		'sceneActor-conditions',

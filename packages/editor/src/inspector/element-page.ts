@@ -7,6 +7,7 @@ import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { getUIStore } from '@app/stores/ui';
 import { UIOwner, type UIOwnerShape } from './ui-owner.ts';
+import type { UIElementTransform } from '@app/engine/ui/element-classes.ts';
 import type { YamiElement } from '@app/types/element-api';
 
 /** P1b：尺寸/变换控件的 id 列表（原先用 `document.querySelectorAll` 批量取） */
@@ -50,25 +51,9 @@ const SIZE_INPUT_IDS = [
 		_elementInitialized?: boolean;
 		_openRetry?: number;
 	}
-	interface UIElementTransform {
-		anchorX: number;
-		anchorY: number;
-		x: number;
-		x2: number;
-		y: number;
-		y2: number;
-		width: number;
-		width2: number;
-		height: number;
-		height2: number;
-		rotation: number;
-		scaleX: number;
-		scaleY: number;
-		skewX: number;
-		skewY: number;
-		opacity: number;
-		[k: string]: unknown;
-	}
+	// `UIElementTransform` 已于 2026-09-21 第 108 轮提成**共享类型**
+	// （`engine/ui/element-classes.ts`，见该处注释）：`stores/ui.ts` 的 `UINodeShape.transform`
+	// 与引擎读点指向同一个对象，局部类型别处拿不到，只能退回索引签名。
 	interface UIElementData {
 		id: string;
 		name: unknown;

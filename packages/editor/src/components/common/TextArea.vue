@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMTextArea } from '@ui-kit';
-import { TextHistory } from '@ui-kit';
+import { TextHistory, type HistoryTextAreaElement } from '@ui-kit';
 import { listenDraggingScrollbarEvent } from '@app/utils/element-utils';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
@@ -104,7 +104,8 @@ onMounted(() => {
 	const el = root.value as TextAreaElement | null;
 	const input = ym.value?.input ?? null;
 	if (!el || !input) return;
-	(input as unknown as { history: unknown }).history = new TextHistory(input);
+	// `HistoryTextAreaElement` 是 `HistoryInputElement` 的 textarea 版（同源导出）。
+	(input as HistoryTextAreaElement).history = new TextHistory(input);
 	listenDraggingScrollbarEvent(input);
 	attachElementApi(el, { input, read, write, insert, enable, disable, getFocus, on });
 });

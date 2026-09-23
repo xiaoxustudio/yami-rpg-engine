@@ -171,16 +171,11 @@ onMounted(() => {
 		elScale.value?.root,
 		elSpeed.value?.root
 	].filter((el): el is HTMLElement => el != null);
-	bindInput(
-		elements,
-		editor,
-		Animation as unknown as { history: unknown },
-		(data: Record<string, unknown>) => {
-			data.type = 'inspector-frame-change';
-			data.motion = editor.motion;
-			data.direction = Animation.direction;
-		}
-	);
+	bindInput(elements, editor, Animation, (data: Record<string, unknown>) => {
+		data.type = 'inspector-frame-change';
+		data.motion = editor.motion;
+		data.direction = Animation.direction;
+	});
 
 	sync();
 });

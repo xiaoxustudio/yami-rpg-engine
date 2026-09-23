@@ -369,7 +369,7 @@ onMounted(() => {
 		'sceneTilemap-parallaxFactorY',
 		'sceneTilemap-opacity'
 	]);
-	bindInput(elements, editor, Scene as unknown as { history: unknown });
+	bindInput(elements, editor, Scene);
 	elLayer.value?.on('input', editor.layerInput!);
 	registryElements(inspectorEls, [
 		'sceneTilemap-conditions',

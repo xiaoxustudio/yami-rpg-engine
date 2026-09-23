@@ -368,7 +368,7 @@ onMounted(() => {
 		'sceneAnimation-opacity-slider',
 		'sceneAnimation-priority-slider'
 	]);
-	bindInput(elements, editor, Scene as unknown as { history: unknown });
+	bindInput(elements, editor, Scene);
 	bindSliders(sliders);
 	registryElements(inspectorEls, [
 		'sceneAnimation-conditions',

@@ -181,7 +181,7 @@ onMounted(() => {
 			elWidth.value?.root,
 			elHeight.value?.root
 		].filter((el): el is HTMLElement => el != null);
-		bindInput(elements, editor, Scene as unknown as { history: unknown });
+		bindInput(elements, editor, Scene);
 
 		[elConditions.value?.root, elEvents.value?.root, elScripts.value?.root]
 			.filter((el): el is HTMLElement => el != null)
