@@ -111,7 +111,9 @@ Scene.list.toggle = function (this: typeof Scene, item: SceneItem) {
 		});
 		item.enabled = !item.enabled;
 		this.update();
-		dispatchChangeEvent(this as unknown as HTMLElement);
+		// 第 124 轮：`dispatchChangeEvent` 的形参早就是 `unknown`（内部自己收窄到 `EventTarget`），
+		// 这里那次 `as unknown as HTMLElement` 是**签名放宽后忘了清的调用点** ⇒ 直接删。
+		dispatchChangeEvent(this);
 		Scene.requestRendering!();
 	}
 };

@@ -27,20 +27,12 @@ interface FileEntityPage {
 
 function createFileEntityPage(name: string, inspectorKey: string): FileEntityPage {
 	const domKey = 'file' + name;
-	const entity = {
-		target: null,
-		meta: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		listChange: null
-	} as unknown as FileEntityPage;
+	// 第 123 轮：6 个方法**先各自定义、再在一个对象字面量里一次成型**（手法库第 4 条的一般形态）。
+	// 原来是先写一张 8 键的 `null` 占位表、再逐个填 —— 那张表的 `null` 与接口要求的函数不兼容，
+	// 于是只能 `as unknown as FileEntityPage`：**断言在替「表里先写 null」这一步背书**。
+	const initialize = function () {};
 
-	entity.initialize = function () {};
-
-	entity.create = function (this: FileEntityPage) {
+	const create = function (this: FileEntityPage) {
 		return {
 			icon: '',
 			clip: [0, 0, 32, 32],
@@ -51,7 +43,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		};
 	};
 
-	entity.open = function (this: FileEntityPage, target: FileEntityData, meta: { file: unknown }) {
+	const open = function (this: FileEntityPage, target: FileEntityData, meta: { file: unknown }) {
 		if (this.meta !== meta) {
 			this.target = target;
 			this.meta = meta;
@@ -64,7 +56,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		}
 	};
 
-	entity.close = function (this: FileEntityPage) {
+	const close = function (this: FileEntityPage) {
 		if (this.target) {
 			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
@@ -76,7 +68,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		}
 	};
 
-	entity.update = function (
+	const update = function (
 		this: FileEntityPage,
 		target: FileEntityData,
 		key: string,
@@ -99,8 +91,23 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		}
 	};
 
-	entity.listChange = function (this: FileEntityPage, _event: Event) {
+	const listChange = function (this: FileEntityPage, _event: Event) {
 		File.planToSave!(entity.meta);
+	};
+
+	// ⚠️ 上面 `listChange` 读的是闭包里的 `entity`（下面几行才声明）。**安全**：方法体只在
+	// **调用时**求值，那时 `entity` 早已就绪（TDZ 只作用于求值那一刻）。
+	// 保留原写法是为了**逐字等价** —— 改成 `this.meta` 虽然更合本文件的惯例（`update` 就是），
+	// 但那是**行为变化**：脱离接收者调用时会从「读闭包变量」变成「抛 TypeError」。
+	const entity: FileEntityPage = {
+		target: null,
+		meta: null,
+		initialize,
+		create,
+		open,
+		close,
+		update,
+		listChange
 	};
 
 	Inspector[inspectorKey] = entity;

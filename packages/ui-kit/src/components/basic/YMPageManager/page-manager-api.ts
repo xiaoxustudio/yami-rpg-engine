@@ -37,14 +37,20 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 		if (last !== value) {
 			let target: HTMLElement | null = null;
 			if (value !== null) {
-				for (const child of el.childNodes as unknown as PageFrameElement[]) {
+				// 第 122 轮：原来写的是 `el.childNodes as unknown as PageFrameElement[]`。两处都换了：
+				//  · 遍历 `children`（元素集合）而不是 `childNodes`：**可证等价** —— 循环体只在
+				//    `hasClass(child, 'page-frame')` 为真时才继续，而 `hasClass` 对没有 `classList`
+				//    的节点（文本/注释节点）直接返回 false（见其实现）⇒ 那些节点原本就走不到里面。
+				//  · 断言压到真正需要它的那一处（`target` 声明为 `HTMLElement`），并降为**单次**
+				//    `as`：`Element` 与 `HTMLElement` 可比，tsc 会真的检查这次收窄。
+				for (const child of el.children) {
 					if (hasClass(child, 'page-frame')) {
 						const data = frameData(child);
 						if (data.dataValue === undefined) {
 							data.dataValue = child.getAttribute('value');
 						}
 						if (data.dataValue === value) {
-							target = child;
+							target = child as HTMLElement;
 							break;
 						}
 					}

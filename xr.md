@@ -2753,3 +2753,495 @@ remove() {
 3. **既有用例不红，可能只是因为它没走到那一行。** `new Container()` 不带 node ⇒
    `destroy()` 提前返回。补用例时**必须构造真实路径的前置状态**（这里就是「带 node」），
    否则新用例会复制旧用例的盲区。
+
+## 第 118 轮（2026-09-22）：合并两份「各写一半」的类型 —— 两处 `as unknown as` **整条消失**（63 → 61）
+
+> 计划里点名过这一处，但只写了一句判断：「`text-element.ts` 2（`printer.images` 有两个
+> **互补而非同形**的本地接口：`ImageElementShape` vs `EmbeddedImageShape` —— 要合并成一份具名形状，
+> 属设计改动）」。本轮把它做掉，并顺手验证了那句判断对不对。
+
+### 一、判断是对的，而且比它写的更清楚
+
+两个接口描述的是**同一个运行期对象**（`printer.ts` 里 `new uiElClasses.Image!(…)` 造出来的图片元素），
+但各写了一个**子集**：
+
+| 出处 | 写了哪些成员 |
+| --- | --- |
+| `printer/printer.ts` 的 `ImageElementShape` | `image` `display` `clip` `destroy`（+ `startX` `startY` `transform`） |
+| `engine/ui/text-element.ts` 的 `EmbeddedImageShape` | `parent` `connected` `draw` `resize`（+ 同三个公共字段） |
+
+两处**各自都对**，但谁也看不见另一半 ⇒ 读侧只能 `as unknown as` **跳到对方的名字上**
+（`text-element.ts:402` 要 `draw()`、`:452` 要 `resize()`/`parent`/`connected`）。
+
+### 二、合并成一份具名形状，放在 `element-classes.ts`
+
+新增 `UIImageElementShape`（`UIElementInstance` / `UIElementTransform` 的同一个家）。
+选这里的理由：两个文件**本来就都** import 这个模块（`printer.ts:7`、`text-element.ts:5`）
+⇒ **零新增依赖边**；而且「UI 元素实例的形状」本来就该和 `UIElementInstance` 放在一起。
+
+**刻意不写成 `extends UIElementInstance`** —— 那个接口带 `[k: string]: any`，
+继承它等于把这些成员的检查全部交还给索引签名。那只是**把索引签名换个名字保留**，
+正是本仓反复记的那种「指标好看、真实状态没变」。合并后的成员全是具名的，拼错键会当场报错。
+
+### 三、结果：两处断言**整条消失**，不是缩短
+
+| 位置 | 之前 | 之后 |
+| --- | --- | --- |
+| `text-element.ts`（draw 循环） | `…images as unknown as EmbeddedImageShape[]` | `…images` |
+| `text-element.ts`（resize 循环） | `…images as unknown as EmbeddedImageShape[] & { changed: boolean }` | `…images` |
+
+之所以能整条删掉：`printer.images` 的**声明**与读侧现在是**同一个类型**
+（`UIImageElementShape[] & { changed?: boolean }`），`changed` 的读/写对可选布尔都成立。
+⇒ 这是「合并类型」相对「缩短断言」的本质差别：**缩短只是换写法，合并是把事实对齐。**
+
+> 顺带一个自证信号：删完之后 `tsc` 报 `text-element.ts` 的 `UIImageElementShape`
+> **未被使用**（`TS6133`）——正好证明那两处是**彻底**不需要它了，而不是还在偷偷引用。
+
+### 四、账与验证
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **63 → 61**（files 52 → 51；基线已固化） |
+| 其余 15 条轴 | 持平 |
+| `tsc` / `typecheck:vue` | 0 / 0 新增 |
+| 受影响 spec（`src/printer` + `ui.spec.ts`） | 2 文件 / 18 用例全绿 |
+| editor 全套 | **未跑** —— 依据：逐行核对 `git diff -U0`，改动只有**接口声明**、**类型标注**与**被擦除的断言**，没有一条运行期语句（产出的 JS 不变） |
+
+### 五、教训
+
+1. **「两份各写一半的类型」是索引签名的另一种形态。** 它们互相看不见，于是读侧只能用
+   `as unknown as` **跨过去**。识别信号很具体：**断言的来源类型与目标类型，是同一个运行期
+   对象的两个子集**（而不是「类型写错了」或「类型不兼容」）。
+2. **合并 vs 缩短，判别标准是「声明与读侧是不是同一个类型」。** 能合并到这一步，断言就**整条**
+   没了；只是把 `as unknown as T` 降成 `as T`，说明事实还没对齐。
+3. **合并时不要顺手继承带索引签名的基类型。** 那会把刚赢来的具名检查立刻还回去 ——
+   与第 111 轮那条「别为了好看牺牲检查」同源。
+
+## 第 119 轮（2026-09-22）：按**形态**重盘 P4 —— 用自家手法库第 4 条一次清掉 3 处（61 → 58）
+
+> 上一轮找到的判别信号只解决了一处。这一轮先**按形态**把剩下 61 处盘一遍，
+> 结果发现有一族完全是本仓**手法库第 4 条**的教科书案例。
+
+### 一、先盘点：按「目标类型是不是本文件里的局部类型」分类
+
+脚本 `scripts/oneoff/measure-p4-shapes.mjs`（只读）。61 处的分布：
+
+| 类 | 判据 | 处数 |
+| --- | --- | ---: |
+| **A** | 目标类型是**本文件里声明的** `interface` / `type` | **17** |
+| **B** | 目标类型是别处的具名类型 | 30 |
+| **C** | 目标是匿名/字面量/交叉/泛型（`Record<…>`、`never[]`、`ConstructorParameters<…>`…） | 14 |
+
+A 类最值得先看：它正是第 118 轮那种「两处各写一半」的高发区。
+
+### 二、A 类里有一族一眼可认：**空数组 + 游标字段**
+
+```ts
+let elements = [] as unknown as ListItem[] & ListData;
+elements.versionId = 0;
+elements.count = 0;
+elements.start = -1;
+elements.end = -1;
+elements.head = null;
+elements.foot = null;
+```
+
+——**断言完紧接着写字段**。这正是本仓**手法库第 4 条**点名要换的形态：
+「换 `Object.assign([], {...})`，**零断言**」。本轮把 ui-kit 里这样写的 3 处按它改掉：
+
+| 文件 | 之前 | 之后 |
+| --- | --- | --- |
+| `basic/YMCommonList/YMCommonList.vue:46` | `[] as unknown as ListItem[] & ListData` + 6 行赋值 | `const elements: ListItem[] & ListData = Object.assign([], {…6 个字段…})` |
+| `basic/YMSelectList/select-list-api.ts:114` | `[] as unknown as SelectListApi['elements']` + 6 行 | `box.elements = Object.assign([], {…})` |
+| `business/YMFileNavPane/YMFileNavPane.vue:760` | `[] as unknown as FolderElements` + 6 行 | `elements = Object.assign([], {…})` |
+
+### 三、为什么这是「真的清了」而不是「换个写法」
+
+1. **断言整条消失**（不是 `as unknown as` → `as`）；
+2. **行为逐字等价**：`[]` 再写 6 个属性 ⇔ `Object.assign([], {6 个字段})` —— 新数组、同属性、同值；
+3. **检查反而变强了**：以前是 6 行赋值**各自**只检查一个字段；现在
+   `const elements: ListItem[] & ListData = Object.assign([], {…})` 让 `tsc` 检查
+   **`Object.assign` 的返回类型是否真的满足那个交叉类型**（少一个字段会立刻报错）。
+
+### 四、账与验证
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **61 → 58**（files 51 → 49；基线已固化） |
+| 形态分布变化 | A 17 → **14**；B 30、C 14 未动（总数 61 → 58） |
+| 其余 15 条轴 | 持平 |
+| `tsc`（editor） | 0 |
+| `vue-tsc`（**ui-kit 的 `build:types`**，即 CI 里那一步） | 0 |
+| `lint` / `format:check` / `docs:check` / `text:check` / `migration:selftest` | 0-0（1635 文件）· 0 · OK · 0 · 55/55 |
+| **ui-kit 套件** | **115 文件 / 811 用例全绿** |
+| editor 套件 | **254 文件 / 2070 用例全绿**（改动落在 ui-kit 且是运行期语句 ⇒ 两个套件都跑了） |
+
+> ⚠️ **顺带查实一件事：ui-kit 的 115 个 spec 不在 editor 套件里。**
+> 根 `package.json` **没有** `test` 脚本；只有 CI 的 `pnpm -F @yami/ui-kit test` 那一步会跑它们。
+> ⇒ 以后再动 `packages/ui-kit/`，**必须显式跑那个套件**，否则「套件全绿」是假的。
+> （这一点在 PHASE-1C 里也补了一句。）
+
+### 五、教训
+
+1. **手法库是要被用的，不是要被读的。** 第 4 条早就写好了，而这一族正是它的教科书案例 ——
+   说明前几轮的盘点只按「难不难」找，没按**形态**找。**盘点口径本身就是一种工具。**
+2. **分类口径决定能不能一次清一批。** 按「目标类型是不是局部类型」分类，A 类里立刻露出一族
+   形状完全相同的站点；按文件或按难度看，它们散在 3 个文件里、根本不像一族。
+3. **改 ui-kit 必须跑 ui-kit 的套件**（本轮差点漏掉）：editor 套件全绿证明不了组件库没事，
+   而组件库有 **811 个用例**在等着被跑。
+
+## 第 120 轮（2026-09-22）：同一族再清 3 处（58 → 55），并查实一处「声明后安装」**不是** bug
+
+> 上一轮按形态找到「空数组 + 游标字段」这一族、清了 3 处。这一轮把这一族的**落伍者**扫干净。
+
+### 一、本轮的三个站点
+
+| 文件 | 之前 | 之后 |
+| --- | --- | --- |
+| `YMParamList.vue:207` | `elements: [] as unknown as ParamElements,` | `elements: Object.assign([], {…6 个游标字段…}),` |
+| `YMParamList.vue:208` | `selections: [] as unknown as ParamSelections,` | `selections: Object.assign([], { count: 0 }),` |
+| `YMFileBodyPane.vue:1988` | `elements = [] as unknown as typeof elements;` + 4 行赋值 | `elements = Object.assign([], {…4 个字段…});` |
+
+`YMParamList` 那两处特别值得记：**同一个文件里早就有正确的写法** —— `onMounted` 里（第 84 轮改过）
+已经是 `self.elements = Object.assign([], {…})`，只有**初始 state 的字面量**还留着旧断言。
+⇒ 这是「**同一个事实在同一个文件里说了两遍，其中一遍是旧的**」。
+修法就是把初始值也写成同形，连注释都能沿用第 84 轮那条。
+
+**行为不变的依据**（不是「看起来没事」）：`onMounted` 随后会用同形的 `Object.assign` 覆盖它；
+模板里不引用 `elements` / `selections`（实测：全文件只有接口声明与脚本里的方法读它们）；
+唯一差别是「挂载前若有人读 `state.elements.count`」——以前 `undefined`、现在 `0`，而全仓没有这样的读点。
+
+### 二、查实一处「看着像 bug、其实不是」
+
+`tools/window-object.ts:59` 也是 `[] as unknown as HTMLElement[] & { append(…); remove(…) }`，
+而且**后面没有字段赋值** —— 形态上与第 117 轮那个真崩溃（`instances.remove`）**一模一样**。
+
+查证：该文件 `:428` 起在**模块顶层**逐个 `Object.defineProperty(frames, 'append' | 'remove', …)`
+（`:461` / `:487`）把两个方法真装了上去 ⇒ **断言是诚实的**，本轮不动它。
+
+> 这正是第 117 轮那条教训的**反面用法**：形态可疑 ⇒ **必须去查「那个成员到底有没有被装上」**，
+> 而不是照着形态直接判死刑。查完两种结果都要写下来 —— 否则下一个人会把同一处再查一遍。
+
+### 三、这个家族的另一半事实：`Object.assign([], …)` 写法**早就存在**
+
+全仓本来就有 4 处：`particle-engine.ts:374`/`375`、`scene-window.ts:1003`、`command-api.ts:3249`/`3257`。
+⇒ 上一轮那 3 处 + 本轮这 3 处，是**同一族里的落伍者**，不是新发明。
+**家族盘点 = 先找到「同族里已经修好的样本」，再逐个对齐** —— 比逐个重新设计又快又稳。
+
+### 四、账
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **58 → 55**（files 49 → 47；基线已固化） |
+| 其余 15 条轴 | 持平 |
+| `tsc`（editor） / `vue-tsc`（ui-kit `build:types`） | 0 / 0 |
+| `lint` / `format:check` / `docs:check` / `text:check` / `migration:selftest` | 0-0（1635 文件）· 0 · OK · 0 · 55/55 |
+| ui-kit 套件 / editor 套件 | **115 文件 / 811 用例** · **254 文件 / 2070 用例**（改动落在 ui-kit 且是运行期语句 ⇒ 两个都跑） |
+
+### 五、教训
+
+1. **「同文件里已有一处对的写法」是最好的修复模板。** `YMParamList` 的初始 state 之所以是落伍者，
+   正是因为第 84 轮只改了 `onMounted` 那一处 —— **改一处时要问「同一事实还有几处写法」**。
+2. **形态可疑 ⇒ 查证据，别照着形态判。** `window-object.ts` 差点被当成第二个 `instances.remove`：
+   两者的**形状**一样，**事实**相反（一个有安装、一个没有）。判别动作只有一个：去 grep 那个成员有没有被装上。
+3. **家族盘点要找「已修好的样本」。** 本轮三处全部照抄同族的既有写法，改动小、不需要新设计。
+
+## 第 121 轮（2026-09-22）：断言在替一个**从不存在的必填字段**背书 —— 又清 1 处（55 → 54）
+
+> 入口是「新建后装饰」这一族里唯一的生产站点。它需要的不是「把断言写短」，而是
+> **先把类型里的一个谎言删掉**。
+
+### 一、现场
+
+```ts
+element = document.createElement('div') as unknown as FolderElement;
+addClass(element, 'file-nav-item');
+element.file = file;
+element.context = context;
+```
+
+按手法库第 4 条看，`file` / `context` 紧接着就写 ⇒ 本该能一次成型。那为什么原本需要 `unknown` 跳板？
+
+### 二、答案：类型里有个**从不存在的必填字段**
+
+`FolderElement = HTMLElement & { file; context; indent: number; … }`，而 `indent` 是
+**P4b「字段搬进元素数据（WeakMap）」之后没跟着删掉的残留**：
+
+- 全文件对 `indent` 的访问**只有** `data.indent`（写于 `:297`、读于 `:345`）；
+- 元素上的 `el.indent` **从来没有被写过**。
+
+⇒ 类型在说谎（说 `el.indent` 是 `number`，实际读出来是 `undefined`），
+而**那个必填字段正是断言存在的理由** —— 断言在替谎言背书。
+
+### 三、修法：先删谎言，再删断言
+
+1. 删掉 `indent: number`（把「为什么它该删」写在声明处，免得被当成误删加回来）；
+2. `createFolderElement` 改成 `Object.assign(document.createElement('div'), { file, context })`
+   ⇒ **零断言**（`file` / `context` 是仅剩的必填成员）。
+
+`changed` / `expanded` 等**可选**字段同理住在元素数据里，但它们不必填、不挡构造，本轮不动
+（留给 P4b 的收尾）。
+
+### 四、同形态站点逐个查事实：3 个里只有 1 个该改
+
+| 站点 | 事实 | 处置 |
+| --- | --- | --- |
+| `YMFileNavPane.vue:285` | `file`/`context` **紧接**就写；必填的 `indent` 从不存在 | ✅ 删字段 + 零断言 |
+| `scroll-bar-api.ts:164` | `ScrollThumb` 的 `left/top/width/height` 在 `:93`–`:109`（**另一批函数**里）才写 | ⏸ 诚实的「先声明、后填充」，`unknown` 跳板必要 |
+| 全仓「新建后装饰」18 处 | **17 处在 `__tests__`**（造假 DOM 的测试惯用法） | ⏸ 测试面，台账不数 |
+
+### 五、新类别：**「必填字段的残留」**
+
+把「类型里的必填字段」与「运行期真的写过的字段」对一遍，能同时拿到两样收益：
+① 类型不再说谎；② **依赖它的断言会整条消失**（而不是缩短）。
+
+可复用的判别动作：`grep -n "\.<字段>" <文件>` —— 若只有 `data.<字段>`、没有 `el.<字段>`，
+那这个字段就该从元素类型里删。**下一轮可以用它去扫 `elementDataOf` 家族**
+（`*Data` 接口与元素类型重名的那些文件）。
+
+### 六、账
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **55 → 54**（files 47 → 46；基线已固化） |
+| 其余 15 条轴 | 持平 |
+| `tsc`（editor） / `vue-tsc`（ui-kit `build:types`） | 0 / 0 |
+| `lint` / `format:check` / `docs:check` / `text:check` / `migration:selftest` | 0-0（1635 文件）· 0 · OK · 0 · 55/55 |
+| ui-kit 套件 / editor 套件 | **115 文件 / 811 用例** · **254 文件 / 2070 用例**（改动落在 ui-kit ⇒ 两个都跑） |
+
+### 七、教训
+
+1. **「这里为什么需要 `unknown`」的答案，有时是类型里的一个错字段。**
+   追问「**这个断言在替谁背书**」比追问「能不能把断言写短」有用得多 ——
+   本轮减掉的那 1 分，是靠**先删字段**换来的。
+2. **删字段之前把「谁读它」查干净。** 本轮的证据是「只有 `data.indent`、没有 `el.indent`」——
+   它既是删除的依据，也是「删掉不改变行为」的证明。
+3. **同形态 ≠ 同事实。** 这一族 3 个站点里，1 个是真残留（改）、2 个是诚实的（不动）。
+   形态只用来**找候选**，判决必须逐处查。
+
+## 第 122 轮（2026-09-22）：挖出 3 处「**同一个收窄写了两遍**」—— 54 → 51
+
+> 先按上一轮的承诺去扫 `elementDataOf` 家族；扫完发现那条线索**到此为止**，
+> 于是回到 A 类站点，逐个问「这个断言在替谁收窄」。
+
+### 一、先扫家族：4 处候选，逐处查全是误报或不该动
+
+新探针 `scripts/oneoff/measure-element-data-residue.mjs`：找「**必填** + 只以 `data.<字段>` 出现」
+（即从没写到元素上）的字段。结果：
+
+| 候选 | 查证结论 |
+| --- | --- |
+| `useVariableGetterWindow.ts` 的 `VariableGetterForm.commonKey/presetKey/globalKey`（3 处） | **误报**：`VariableGetterForm` 是**表单**类型，那里的 `data` 是无关的局部变量（探针把任意 `data.` 都算上了）。假阳性模式已记在探针头部 |
+| `scene-window.ts` 的 `SceneListItem.class` | **不该动**：该 interface 与 `scene-list.ts` 的 `SceneItem` **成对维护**（注释写明），且没有任何断言依赖它 |
+
+⇒ **第 121 轮那条线索到此为止**：家族里没有第二处「必填字段残留」。
+**这本身是结论**，写下来免得下一轮重扫同一个面。
+
+### 二、回到 A 类：3 处都是「同一个收窄写了两遍」
+
+| 站点 | 之前 | 之后 | 为什么能去掉 |
+| --- | --- | --- | --- |
+| `menu-list.ts:65` | 调用方 `el as unknown as MenuListElement` | `return attachMenuListApi(el)` ⇒ **零断言** | 该 helper **内部已经**有一处单次 `as`（`:31`，形参是 `HTMLElement` ⇒ 可比）。调用方那处之所以**必须** `unknown`：它手上的 `el` 是 `createDetachedElement(): HTMLDivElement`，与 `MenuListElement` **两个方向都不可比**（TS2352）。⇒ 让 helper **返回**它，契约收在一处 |
+| `page-manager-api.ts:40` | `el.childNodes as unknown as PageFrameElement[]` | `for (const child of el.children)` + `target = child as HTMLElement`（**单次**） | ① 遍历 `children` **可证等价**（见下）；② 断言压到真正需要它的那一处，并降为单次（`Element` 与 `HTMLElement` 可比） |
+| `YMFileBrowser.vue:263` | `headEl.value as unknown as FileHeadApi` | `headEl.value as FileHeadApi \| undefined`（**单次**） | **同文件 `:387` 早就这么写了**（同一个 `headEl.value`、同一个目标类型）⇒ 那处 `unknown` 不是必需，只是漏改 |
+
+**`children` vs `childNodes` 的等价性论证**（必须落在具体守卫上，不能只说「差不多」）：
+循环体只在 `hasClass(child, 'page-frame')` 为真时才继续，而 `hasClass` 的实现是
+`if (!target || !target.classList) return false;` ⇒ 没有 `classList` 的节点（文本/注释节点）
+**原本就走不进循环体** ⇒ 换成只含元素子节点的 `children`，行为不变。
+（没有那一行守卫，这个替换就是行为变化。）
+
+### 三、「同一个收窄写了两遍」是一个可复用的判别信号
+
+本轮 3 处都不是「类型写错了」，而是**同一个运行期事实被收窄了两次**：
+一次在 helper / 另一处（单次 `as` 就够），一次在调用点（被迫用 `unknown`）。
+
+⇒ 判别动作：**在文件里搜同名类型 / 同形断言**，看是不是已经有一处更弱的写法。
+这与第 120 轮那条「同文件里已有一处对的写法」是同一个教训的**第二次**出现 —— 说明它不是巧合。
+
+### 四、账
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **54 → 51**（files 46 → 44；基线已固化） |
+| 其余 15 条轴 | 持平 |
+| `tsc`（editor） / `vue-tsc`（ui-kit `build:types`） | 0 / 0 |
+| `lint` / `format:check` / `docs:check` / `text:check` / `migration:selftest` | 0-0（1636 文件）· 0 · OK · 0 · 55/55 |
+| ui-kit 套件 / editor 套件 | **115 文件 / 811 用例** · **254 文件 / 2070 用例**（editor 与 ui-kit 都改了 ⇒ 两个都跑） |
+
+### 五、教训
+
+1. **探针找出的候选全是误报，也是结论** —— 写下来（连同假阳性模式），下一轮不必重扫。
+   一个「扫完没有」的结论，价值不低于一个「扫出一堆」的结论。
+2. **「同一个收窄写了两遍」的正确修法，是让已经收窄好的那处把值交出来**
+   （helper 返回 / 与同文件既有写法对齐），而不是在调用点再写一遍更强的断言。
+3. **等价性论证要落在具体的守卫行上。** 本轮 `children`↔`childNodes` 的等价，靠的是
+   `hasClass` 里 `if (!target.classList) return false` 那一行；没有它，替换就是行为变化。
+
+## 第 123 轮（2026-09-22）：占位表族收口 —— 工厂改成「先定义、后组装」（51 → 50）
+
+> 上一轮点名的「占位表」族只有一处站点；这一轮把它按**换结构**（而不是换断言写法）修掉，
+> 并顺带实测了另一处、结论是**不能用单次 `as`**。
+
+### 一、`file-entity-page.ts`：断言在替「表里先写 `null`」背书
+
+旧形态（113 行的文件里占 81 行）：
+
+```ts
+const entity = {
+	target: null, meta: null, initialize: null, create: null,
+	open: null, close: null, update: null, listChange: null
+} as unknown as FileEntityPage;
+
+entity.initialize = function () {};
+entity.create = function (…) {…};
+// … 另外 4 个方法依次赋值
+```
+
+那张表里 6 个方法位先写 `null`，而接口要求的是函数 ⇒ 不兼容 ⇒ 只能 `unknown`。
+**断言在替「表里先写 `null`」这一步背书。**
+
+新形态（手法库第 4 条的一般形态 —— **先定义、后组装**）：
+
+```ts
+const initialize = function () {};
+const create = function (…) {…};   // … 另外 4 个同样改成 const
+const entity: FileEntityPage = {
+	target: null,
+	meta: null,
+	initialize,
+	create,
+	open,
+	close,
+	update,
+	listChange
+};
+```
+
+⇒ 断言**整条消失**；而且对象字面量现在由 `tsc` **整体**校验（少一个成员、名字写错都会报），
+以前是 6 次逐字段赋值各管各的。
+
+**行为等价**：差别只有语句顺序（函数先定义、对象后组装）；没有任何代码观察得到「半填的 entity」。
+
+**一个必须写下来的细节**：`listChange` 的方法体读的是闭包里的 `entity`（现在在它**下面**几行才声明）。
+这**是安全的** —— 方法体只在**调用时**求值，TDZ 只作用于求值那一刻。
+**故意没有**把它改成 `this.meta`：那更合本文件惯例（`update` 就是 `this.meta`），
+但属于**行为变化**（脱离接收者调用时会从「读闭包变量」变成「抛 `TypeError`」）。
+两条都写进了代码注释 —— 否则下一个人会「顺手修好」它。
+
+### 二、顺带实测：`eslints.ts:173` 的 `unknown` 跳板是**承重的**
+
+该站点已经是 `Object.assign(Array.from(rendered), { count, lineClassEnabled })`（item 4 的形态），
+断言把 `Element[]` 变成 `CommandListShape`。试着改成单次 `as` ⇒ `tsc` 报：
+
+```txt
+'number' index signatures are incompatible.
+  Type 'Element' is not comparable to type 'CommandItemElement & { fold?; mark?; buffer? }'.
+    Type 'Element' is missing … accessKey, and 253 more.
+```
+
+⇒ **确实需要 `unknown`**（两边索引签名不可比）。已还原，并把这段结论写在站点上，免得下一轮再试。
+**这是本轮唯一一处「试了不行」的改动 —— 试错结论和成功结论一样值得留档**：
+它把这条轴从「可能是漏改」变成「已实测承重」。
+
+### 三、账
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **51 → 50**（files 44 → 43；基线已固化） |
+| 其余 15 条轴 | 持平 |
+| `tsc`（editor） | 0 |
+| `lint` / `format:check` / `docs:check` / `text:check` / `migration:selftest` | 0-0（1636 文件）· 0 · OK · 0 · 55/55 |
+| editor 套件 | **254 文件 / 2070 用例全绿**（改动是**运行期**重排 ⇒ 必须跑；`file-entity-page` 本身没有专属 spec，靠套件兜） |
+
+### 四、教训
+
+1. **「占位表」的正确修法是换结构，不是换断言写法。** 先写 `null` 再逐字段填，
+   本质上就是「声明与事实不一致」；把函数先定义成 `const`、最后组装，表就不必存在。
+2. **先定义后组装会引入前向引用**（`listChange` 读 `entity`）。它安全，但**必须把「为什么安全」
+   和「为什么不改成 `this`」一起写下来** —— 否则下一个人会顺手改成「更一致」的写法而改变行为。
+3. **试错也要留档。** 本轮那处承重实测（253 个缺失属性）把一条轴从「疑似漏改」变成「已判定」，
+   省掉下一个人重复尝试的时间。
+
+## 第 124 轮（2026-09-22）：清 6 处（50 → 44），并顺手修掉一行**编码事故留下的乱码**
+
+> 本轮先按「目标类型」给剩下 50 处分类（决策用），然后按「**断言在替谁干活**」找族 ——
+> 结果 6 处全落在两个族里，其中一族是第 106 轮那个坑的复发。
+
+### 一、先分类（决策用）：50 = A 8（本文件局部类型）+ B 29（别处的具名类型）+ C 14（匿名/字面量/交叉/泛型）
+
+分类本身**没有**直接给出答案 —— 真正有用的是下一个问题（见三）。
+
+### 二、清掉的 6 处，两个族
+
+**族 A：形参早就是 `unknown`，调用点那次断言纯粹多余**（第 106 轮同一个坑的复发）
+
+| 站点 | 之前 | 之后 |
+| --- | --- | --- |
+| `scene-list.ts:114` | `dispatchChangeEvent(this as unknown as HTMLElement)` | `dispatchChangeEvent(this)` |
+| `scene-events-list.ts:35` | `read(this as unknown as HTMLElement)` | `read(this)` |
+
+两个函数的形参本来就是 `unknown`（内部自己收窄）⇒ 那两次断言是**签名放宽后忘了清的调用点**。
+判别动作：**把调用点的断言与形参的声明类型对一下**。
+
+**族 B：用交叉断言（手法库第 6 条）替代 `unknown` 跳板**
+
+| 站点 | 之前 | 之后 |
+| --- | --- | --- |
+| `ui-kit/utils/dom.ts:7` | `el as unknown as { focus(…) }` | `el as Element & { focus(…) }` —— 保留对象类型、只补缺口那一支 |
+| `particle-motion.ts:138` | `head.children as unknown as HTMLElement[]` | `Array.from(head.children) as HTMLElement[]`（`HTMLCollection` 与数组两向不可比；`Array.from` 先得 `Element[]`，与 `HTMLElement[]` 可比） |
+
+**外加两处「断言替谎言背书」**（第 117 / 121 / 123 轮那类）：
+
+- `element-page.ts:124`：`(alignElements as unknown as HTMLElement[]).forEach(…)` ——
+  `$('.…')`（非 `#` 选择器）返回 `NodeListOf<YamiElement>`，**NodeList 自带 `forEach`**，
+  而 `on` 的第一个形参本来就是 `any` ⇒ 直接调即可，**零断言**。
+- `element-utils.ts:161`：`clear(el): HTMLElement` 的返回类型**在说谎** —— `if (!el)` 那一支
+  真的返回 `null` / `undefined`（`return el as unknown as HTMLElement` 就是替谎背书）。
+  已放宽为 `HTMLElement | null | undefined`；依据是**全仓没有任何调用方取用它的返回值**
+  （`= clear(` / `return clear(` / `clear(…).x` 三种形态实测都是 0 处）⇒ 无涟漪。
+
+### 三、⚠️ 顺带修掉一行**编码事故留下的乱码**（本轮最意外的发现）
+
+改 `element-page.ts:124` 时，紧邻的上一行注释长这样：
+
+```txt
+// 18 闂備胶顢婇惌鍥磼濞戝崬浠?input 缂?Vue 婵犵妗呴崹顏堝礈濠靛棭鐔嗘俊顖滅帛婵粍銇勯幒鍡椾壕閻熸粍婢橀崐鍧楁瀹ュ鎹堕柣顐ゆ敘magePage.vue @input 闂?UIElement.paramInput闂?
+```
+
+即 **GBK ↔ UTF-8 误解码**的产物。三步处理：
+
+1. **量范围**：拿这条文本里的 7 个特征 n-gram（`闂備胶` / `閻熸粍` / `濞戝崬` / `鐔嗘俊` / `婵犵` …）
+   全仓搜 —— **只命中这一处** ⇒ 局部事故，不是系统性污染。
+2. **逐字恢复**：`git log -L 127,127:packages/editor/src/inspector/element-page.ts` 直接给出演化史 ——
+   `54a7d809`（"chore: add safe any type 3"）把它毁了一次，`3f259bc9` 又在乱码上再毁一次；
+   `54a7d809^` 的原文是
+   `// 18 控件 input 经 Vue 模板转发（UIImagePage.vue @input → UIElement.paramInput）`
+   ⇒ 照抄恢复。
+3. **记下门禁缺口**：`text:check` 的 **7 条规则都不管乱码**（乱码里既没有控制字符、也没有 U+FFFD），
+   所以这一行躺了**不知多少轮**而所有门禁全绿 —— 与那节注释里写的失败模式完全同类
+   （「语法合法，tsc/oxlint/oxfmt/vitest 全都看不见」）。
+   ⇒ **一条可自证的 `mojibake` 规则**是明确的下一步；上面那段乱码原文留作**自证样本**
+   （规则必须先在它身上报红）。
+
+### 四、账
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **50 → 44**（files 43 → 37；基线已固化） |
+| 其余 15 条轴 | 持平 |
+| `tsc`（editor） / `vue-tsc`（ui-kit `build:types`） | 0 / 0 |
+| `lint` / `format:check` / `docs:check` / `text:check` / `migration:selftest` | 0-0（1636 文件）· 0 · OK · 0 · 55/55 |
+| editor 套件 | **254 文件 / 2070 用例全绿**（`particle-motion` / `element-page` 是运行期语句 ⇒ 必须跑） |
+
+### 五、教训
+
+1. **按「目标类型」分类不如按「断言在替谁干活」分类。** 前者只告诉我「目标是局部的还是别处的」，
+   后者立刻把 6 处归成两族（多余的调用点断言 / 交叉断言可替代），并指出修法。
+2. **乱码不会被任何现有门禁抓到**，而且比「代码被吞进注释」更隐蔽 —— 后者读代码时刺眼，
+   乱码看起来只是「我看不懂的一段中文」。文本类事故应当有一条**能自证**的乱码规则。
+3. **修复乱码的标准动作是「历史版本逐字恢复」**，工具是 `git log -L <行>,<行>:<文件>`；
+   这一招值得写进手法库（它同时给出了**污染发生在哪两次提交**，便于判断有没有同类残留）。
+4. **改文件时留意工具的副作用**：本轮用 PowerShell `Set-Content` 重写文件时把**整份文件变成了
+   CRLF**（仓库是纯 LF），提交前查出来并归一化。⇒ 机械改写的收尾检查清单里应加一条
+   「行尾/BOM 是否与仓库一致」。

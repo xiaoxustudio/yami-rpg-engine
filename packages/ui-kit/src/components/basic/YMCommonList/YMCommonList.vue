@@ -43,13 +43,16 @@ interface ListItemData {
 
 const itemData = (el: unknown): ListItemData => elementDataOf<ListItemData>(el);
 
-let elements = [] as unknown as ListItem[] & ListData;
-elements.versionId = 0;
-elements.count = 0;
-elements.start = -1;
-elements.end = -1;
-elements.head = null;
-elements.foot = null;
+// 手法库第 4 条（「断言完紧接着写字段」）：改用 `Object.assign([], {…})` 一次成型 ⇒ **零断言**。
+// 原来是 `[] as unknown as ListItem[] & ListData`，紧接着 6 行逐字段赋值。
+const elements: ListItem[] & ListData = Object.assign([], {
+	versionId: 0,
+	count: 0,
+	start: -1,
+	end: -1,
+	head: null,
+	foot: null
+});
 let selection: HTMLElement | null = null;
 let writeEventEnabled = false;
 let selectEventEnabled = false;

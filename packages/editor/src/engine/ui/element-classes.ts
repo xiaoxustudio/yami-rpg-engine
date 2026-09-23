@@ -56,6 +56,38 @@ export interface UIElementInstance {
 }
 
 /**
+ * **UI 图片元素实例**的形状（打印时嵌进文本里的那种图）。
+ *
+ * 2026-09-22 第 118 轮：**合并了两份「各写一半」的局部形状**。此前同一个运行期对象
+ * （`new uiElClasses.Image!(…)`）被两处各描述了一个**子集**：
+ *
+ * - `printer/printer.ts` 的 `ImageElementShape` —— `image` / `display` / `clip` / `destroy`；
+ * - `engine/ui/text-element.ts` 的 `EmbeddedImageShape` —— `parent` / `connected` / `draw` / `resize`。
+ *
+ * 两处都「对」，但谁也用不上另一半 ⇒ 读侧只能 `as unknown as` 跳到**对方的名字**上
+ * （`text-element.ts:402` / `:452`）。合并成一份**具名**形状之后，那两处断言**直接消失**
+ * （不是缩短成单次 `as`）——因为 `printer.images` 的声明与读侧现在是同一个类型。
+ *
+ * ⚠️ 刻意**不**写成 `extends UIElementInstance`：那个接口带 `[k: string]: any`，
+ * 继承它等于把这些成员的检查全部交还给索引签名 —— 那只是把索引签名换个写法保留下来。
+ * 这里的成员全是具名的，**拼错键会当场报错**。
+ */
+export interface UIImageElementShape {
+	startX: number;
+	startY: number;
+	transform: { x: number; y: number; width: number; height: number };
+	image: string;
+	display?: string;
+	clip: { set(clip: number[]): void };
+	/** 父元素。类型沿用原声明的 `unknown` —— 收紧它是独立的一件事，本轮不夹带。 */
+	parent: unknown;
+	connected: boolean;
+	draw(): void;
+	resize(): void;
+	destroy(): void;
+}
+
+/**
  * UI 元素的**变换数据**（画布上可拖拽的那组属性）。
  *
  * 2026-09-21 第 108 轮从 `inspector/element-page.ts` 的**局部** interface 提上来共享。

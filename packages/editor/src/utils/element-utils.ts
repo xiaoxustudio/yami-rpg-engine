@@ -158,8 +158,17 @@ export function rect(el: unknown): DOMRect {
 	return (el as Element).getBoundingClientRect();
 }
 
-export function clear(el: Node | null | undefined): HTMLElement {
-	if (!el) return el as unknown as HTMLElement;
+/**
+ * 清空元素内容。
+ *
+ * ⚠️ 第 124 轮：返回类型原来是 `HTMLElement`，但 `if (!el)` 那一支**真的返回 `null` / `undefined`**
+ * —— 类型在说谎，`return el as unknown as HTMLElement` 就是替这个谎背书。
+ * 已放宽为 `HTMLElement | null | undefined`。依据：全仓**没有任何调用方取用它的返回值**
+ * （实测 `= clear(` / `return clear(` / `clear(…).x` 三种形态都是 0 处）⇒ 无涟漪。
+ * 同时那一支与末尾那两个断言都不再需要。
+ */
+export function clear(el: Node | null | undefined): HTMLElement | null | undefined {
+	if (!el) return el;
 	const element = el as HTMLElement & { clear?: () => unknown };
 	// 列表/面板自带 `clear()` 时必须走它：直接 `textContent = ''` 会把**行元素/子组件**从 DOM 里
 	// 摘掉，Vue 的节点表随即失真 —— 之后任何一次 patch 都会以 null 容器 insert，
@@ -172,7 +181,7 @@ export function clear(el: Node | null | undefined): HTMLElement {
 		return element;
 	}
 	el.textContent = '';
-	return element as HTMLElement;
+	return element;
 }
 
 // oxlint-disable-next-line no-explicit-any

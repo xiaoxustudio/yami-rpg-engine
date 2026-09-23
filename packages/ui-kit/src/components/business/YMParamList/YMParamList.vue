@@ -204,8 +204,19 @@ const state = {
 	object: null,
 	type: null as string | null,
 	data: null as (ParamDataItem | null)[] | null,
-	elements: [] as unknown as ParamElements,
-	selections: [] as unknown as ParamSelections,
+	// 手法库第 4 条：与 `onMounted` 里那两处（第 84 轮改过）**同形** —— 初始值也一次成型。
+	// 原来写的是 `[] as unknown as ParamElements`：一个**声称有 6 个游标字段、实际一个都没有**
+	// 的数组（断言替它撒了谎）。`onMounted` 随后会用同形的 `Object.assign` 覆盖它，
+	// 所以这里改成同形只是让初始值不再说谎，行为不变。
+	elements: Object.assign([], {
+		versionId: 0,
+		count: 0,
+		start: -1,
+		end: -1,
+		head: null,
+		foot: null
+	}),
+	selections: Object.assign([], { count: 0 }),
 	start: null as number | null,
 	end: null as number | null,
 	origin: null as unknown,

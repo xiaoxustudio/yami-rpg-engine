@@ -121,10 +121,14 @@ const SIZE_INPUT_IDS = [
 
 		on(Inspector.manager, 'switch', this.pageSwitch!);
 		const alignElements = $('.uiElement-transform-align');
-		(alignElements as unknown as HTMLElement[]).forEach((el) =>
-			on(el, 'click', this.alignmentClick!)
-		);
-		// 18 闂備胶顢婇惌鍥磼濞戝崬浠?input 缂?Vue 婵犵妲呴崹顏堝礈濠靛棭鐔嗘俊顖滅帛婵粍銇勯幒鍡椾壕閻熸粍婢橀崐鍧楀极瀹ュ鎹堕柣顐ゆ敘magePage.vue @input 闂?UIElement.paramInput闂?
+		alignElements.forEach((el) => on(el, 'click', this.alignmentClick!));
+		// 18 控件 input 经 Vue 模板转发（UIImagePage.vue @input → UIElement.paramInput）
+		// 第 124 轮：上面那行注释在 `54a7d809` 被**编码事故**毁成乱码（GBK↔UTF-8 误解码），
+		// 之后 `3f259bc9` 又在乱码上再毁一次；文本门禁当时看不见它（7 条规则都不管乱码）。
+		// 已按 `54a7d809^` 的历史版本**逐字恢复**。
+		// 顺带：这里原来的 `(alignElements as unknown as HTMLElement[])` 是多余的 ——
+		// `.…`（非 `#` 选择器）返回 `NodeListOf<YamiElement>`，**NodeList 自带 `forEach`**，
+		// 而 `on` 的第一个形参本来就是 `any` ⇒ 直接调即可，**零断言**。
 		// P1b：控件批量绑定焦点/失焦——改按 id 列表读 inspectorEls（原先 document.querySelectorAll）
 		const otherElements = registryElements(inspectorEls, [
 			'uiElement-name',

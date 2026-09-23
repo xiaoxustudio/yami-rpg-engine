@@ -260,7 +260,10 @@ function update(): void {
 	syncDisplayState();
 	const body = bodyEl.value?.el as FileBodyApi;
 	body?.updateFiles?.();
-	(headEl.value as unknown as FileHeadApi)?.updateAddress?.();
+	// 与 `:387` 同形（那里本来就是**单次** `as`）——同一个 `headEl.value`，两处不该写法不同。
+	// 第 122 轮：原来这里是 `as unknown as FileHeadApi`，而 `:387` 的 `as FileHeadApi | undefined`
+	// 已经证明单次 `as` 就够（`HTMLElement` 与 `FileHeadApi` 可比）。
+	(headEl.value as FileHeadApi | undefined)?.updateAddress?.();
 }
 
 function searchFiles(kw: RegExp | string): void {

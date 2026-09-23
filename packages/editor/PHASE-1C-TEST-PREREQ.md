@@ -1747,6 +1747,74 @@ head?: { view: { write(index: number): void } } | null;
    > 第 5 处 `custom-command-window.ts:227` **故意留着**：它有「归到 P3 的 `any` 别名批次」的决策记录。
    > ⇒ 剩下 63 处**全是 `TS2352`**（两边类型不可比，跳板在做实事），要再动只能改**类型设计**：
    > 即下面第 3 条那三类。
+   > ✅ **第 118 轮做掉一处具名形状合并**：`text-element.ts` 那 2 处（`printer.images` 的
+   > `ImageElementShape` vs `EmbeddedImageShape` 两个**互补子集**）已合并为
+   > `UIImageElementShape`（`engine/ui/element-classes.ts`）⇒ 两处断言**整条消失**（不是缩短），
+   > `unknown-casts` **63 → 61**、files 52 → 51。判别信号：**断言的来源类型与目标类型是同一个
+   > 运行期对象的两个子集** ⇒ 该合并，不该缩短。详见 `xr.md` 第 118 轮。
+   > ✅ **第 119 轮按形态重盘并清掉 3 处**（`unknown-casts` **61 → 58**）：形态分布
+   > A（目标类型是本文件里的局部类型）17 · B（别处的具名类型）30 · C（匿名/交叉/泛型）14；
+   > A 类里立刻露出一族「**空数组 + 游标字段**」：`[] as unknown as X[] & CursorData` 后紧跟
+   > 6 行逐字段赋值 —— 正是**手法库第 4 条**（「断言完紧接着写字段 ⇒ 换 `Object.assign([], {…})`，
+   > 零断言」）的教科书案例。已改 `ui-kit` 的 `YMCommonList.vue:46` / `select-list-api.ts:114` /
+   > `YMFileNavPane.vue:760`（A 17 → 14）。**教训：手法库是要被用的，盘点口径本身也是工具。**
+   > ✅ **第 120 轮把这一族的落伍者扫干净**（`unknown-casts` **58 → 55**）：
+   > `YMParamList.vue:207`/`208`（**初始 state** 的旧断言 —— 同文件的 `onMounted` 里第 84 轮就改成
+   > `Object.assign` 了，只有初始值没跟上）与 `YMFileBodyPane.vue:1988`。
+   > 另查实 `tools/window-object.ts:59` 的 `[] as unknown as HTMLElement[] & { append; remove }`
+   > **不是** bug：该文件 `:461`/`:487` 在模块顶层用 `Object.defineProperty` 真把两个方法装上了
+   > ⇒ 形态可疑时必须去 grep「那个成员到底有没有被装上」，别照着形态判死刑。
+   > 家族里 `Object.assign([], …)` 的既有样本本就有 4 处（`particle-engine` / `scene-window` /
+   > `command-api`）⇒ **家族盘点 = 找已修好的样本再逐个对齐**。详见 `xr.md` 第 120 轮。
+   > ✅ **第 121 轮：搞清楚了一处断言「在替谁背书」**（`unknown-casts` **55 → 54**）。
+   > `YMFileNavPane.vue:285` 的 `document.createElement('div') as unknown as FolderElement` 之所以
+   > 需要 `unknown` 跳板，是因为 `FolderElement` 里有个**从不存在的必填字段** `indent` ——
+   > 它是 P4b「字段搬进元素数据（WeakMap）」后**没跟着删掉**的残留（全文件只有 `data.indent`，
+   > 没有 `el.indent`）。删掉该字段后那处断言**整条消失**（改 `Object.assign(createElement('div'),
+   > { file, context })`）。
+   > ⇒ **新类别：`elementDataOf` 家族的「必填字段残留」** —— 判别动作：
+   > `grep -n "\.<字段>" <文件>`，若只有 `data.<字段>`、没有 `el.<字段>`，则该字段应从元素类型里删；
+   > 收益是「类型不再说谎」＋「依赖它的断言整条消失」。**下一轮用这个动作去扫那个家族。**
+   > 同形态的另两处经查**是诚实的、不动**：`scroll-bar-api.ts:164`（字段在另一批函数里才写）、
+   > 全仓 18 处「新建后装饰」里的 17 处（在 `__tests__` 里，造假 DOM 的测试惯用法）。
+   > ✅ **第 122 轮：那条线索扫完了，到此为止**（新探针 `scripts/oneoff/measure-element-data-residue.mjs`）——
+   > 家族里只有 4 处候选，逐处查**全是误报或不该动**（3 处是表单类型里的同名局部 `data`；
+   > 1 处 `SceneListItem.class` 与 `scene-list.ts` 的 `SceneItem` 成对维护）。**「扫完没有」也是结论。**
+   > 于是回到 A 类站点，又清 3 处（`unknown-casts` **54 → 51**），它们同属一个新信号：
+   > **「同一个收窄写了两遍」** ——
+   > `menu-list.ts:65`（helper 内部已有单次 `as`，让它**返回**即可 ⇒ 零断言）、
+   > `page-manager-api.ts:40`（遍历 `children` 代替 `childNodes`，等价性靠 `hasClass` 里
+   > `if (!target.classList) return false` 那行守卫；断言压到 `target = child as HTMLElement`）、
+   > `YMFileBrowser.vue:263`（**同文件 `:387` 早就用单次 `as`**）。
+   > ⇒ 判别动作：**在文件里搜同名类型/同形断言，看是不是已有一处更弱的写法**
+   > （这是第 120 轮那条教训的第二次出现）。详见 `xr.md` 第 122 轮。
+   > ✅ **第 123 轮：占位表族收口**（`unknown-casts` **51 → 50**）。`inspector/file-entity-page.ts`
+   > 的工厂原来是「先写一张 8 键 `null` 占位表、再逐个填方法」⇒ 只能 `as unknown as FileEntityPage`；
+   > 已按手法库第 4 条的**一般形态**改成「**先定义、后组装**」（6 个方法先各自 `const`，最后在一个
+   > 对象字面量里一次成型）⇒ 断言整条消失，且字面量由 `tsc` 整体校验。
+   > ⚠️ 改后 `listChange` 会**前向引用** `entity`（调用时求值，安全）；**故意没**改成 `this.meta`
+   > ——那是行为变化（脱离接收者调用时会抛）。两条都写在代码注释里。
+   > ⚠️ 另**实测**了 `eslints.ts:173`：改成单次 `as` 会被 tsc 拒绝（`Element` 比 `CommandItemElement`
+   > 少 253 个属性 ⇒ 索引签名不可比）⇒ 该处 `unknown` **承重**，已还原并把结论写在站点上。
+   > **试错结论也算留档**：它把这条轴从「疑似漏改」变成「已判定」。
+   > ✅ **第 124 轮清 6 处**（`unknown-casts` **50 → 44**），全落在两族：
+   > ① **形参早就是 `unknown`、调用点断言多余**（第 106 轮那个坑的复发）——
+   > `scene-list.ts:114`（`dispatchChangeEvent`）、`scene-events-list.ts:35`（`read`）；
+   > ② **交叉断言（手法库第 6 条）替代 `unknown` 跳板** —— `ui-kit/utils/dom.ts:7`
+   > （`Element & { focus(…) }`）、`particle-motion.ts:138`（`Array.from(children) as HTMLElement[]`）。
+   > 外加两处「断言替谎言背书」：`element-page.ts:124`（`NodeList` 自带 `forEach`、`on` 形参是 `any`
+   > ⇒ **零断言**）、`element-utils.ts:161`（`clear` 的返回类型在说谎：`if (!el)` 真的返回 null/undefined
+   > ⇒ 放宽为 `HTMLElement | null | undefined`，依据是全仓无调用方取用其返回值）。
+   > ⚠️ **同一轮还修掉一行「编码事故乱码」**：`element-page.ts:127` 的注释是 GBK↔UTF-8 误解码的产物，
+   > 用 `git log -L 127,127:<file>` 定位到污染发生在 `54a7d809`（后又被 `3f259bc9` 二次毁坏），
+   > 按 `54a7d809^` **逐字恢复**。
+   > ⇒ **门禁缺口**：`text:check` 的 7 条规则**都不管乱码**（无控制字符、无 U+FFFD）⇒
+   > 加一条**可自证的 `mojibake` 规则**是下一步（乱码原文已留在 `xr.md` 第 124 轮作自证样本）。
+   > 另记：机械改写要查**行尾/BOM**（本轮 PowerShell 重写把整份文件变成 CRLF，提交前已归一化）。
+   > ⚠️ **另记一条基础设施事实**：**ui-kit 的 115 个 spec 不在 editor 套件里** ——
+   > 根 `package.json` **没有** `test` 脚本，只有 CI 的 `pnpm -F @yami/ui-kit test` 会跑它们
+   > （`ci.yml:119`）。⇒ 任何改动落在 `packages/ui-kit/` 时，**必须显式跑那个套件**，
+   > 否则「套件全绿」是假的。详见 `xr.md` 第 119 轮。
 3. **已确认「必须留 `unknown`」的三类**（要归零只能改写法或改类型设计）：
     - **interface → 索引签名**（`TreeListHost as Record<string, unknown>` 一类）：换 `Reflect.*`；
     - **类与接口漂移**：`ParticleElementLayer` vs 粒子层类（两条路都试过：TS2345 + TS2352）、

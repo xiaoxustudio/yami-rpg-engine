@@ -50,7 +50,14 @@ interface FileItemContext {
 type FolderElement = HTMLElement & {
 	file: FileItem;
 	context: FileItemContext;
-	indent: number;
+	// ⚠️ 2026-09-22 第 121 轮：这里原来还有 `indent: number`（**必填**）——
+	// 它是 P4b「字段搬进元素数据（WeakMap）」之后**没跟着删掉的残留**：
+	// 全文件对 `indent` 的访问只有 `data.indent`（写于 `:297`、读于 `:345`），
+	// 元素上的 `el.indent` **从来没有被写过**。于是类型在说谎（说元素有 `indent: number`，
+	// 实际读出来是 `undefined`），而且它逼着 `createFolderElement` 只能
+	// `document.createElement('div') as unknown as FolderElement` —— 断言替这个谎言背书。
+	// 删掉它之后那处断言**整条消失**（见 `:285`）。`changed` / `expanded` 等可选字段同理住在
+	// 元素数据里，但它们**不必填**，不挡构造，本轮不动（留给 P4b 的收尾）。
 	changed?: boolean;
 	fileIcon?: HTMLElement;
 	folderMark?: HTMLElement;
@@ -282,10 +289,11 @@ function createFolderElement(file: FileItem, indent: number): FolderElement {
 	const context = file.getContext(el.value!);
 	let element = context.element;
 	if (element === undefined) {
-		element = document.createElement('div') as unknown as FolderElement;
+		// 手法库第 4 条：`file` / `context` 本来就在下一行紧接着写 ⇒ 一次成型，**零断言**。
+		// （原来写的是 `document.createElement('div') as unknown as FolderElement`，
+		// 那个断言之所以需要，正是因为类型里有个**从不存在的**必填字段 `indent` —— 已删。）
+		element = Object.assign(document.createElement('div'), { file, context });
 		addClass(element, 'file-nav-item');
-		element.file = file;
-		element.context = context;
 		context.element = element;
 
 		const { selections: sels } = { selections };
@@ -757,13 +765,15 @@ onMounted(() => {
 		timer.running = false;
 	};
 
-	elements = [] as unknown as FolderElements;
-	elements.versionId = 0;
-	elements.count = 0;
-	elements.start = -1;
-	elements.end = -1;
-	elements.head = null;
-	elements.foot = null;
+	// 手法库第 4 条（「断言完紧接着写字段」）：`Object.assign([], {…})` 一次成型 ⇒ **零断言**。
+	elements = Object.assign([], {
+		versionId: 0,
+		count: 0,
+		start: -1,
+		end: -1,
+		head: null,
+		foot: null
+	});
 
 	textBox = createTextBox();
 	node.textBox = textBox;

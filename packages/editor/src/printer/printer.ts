@@ -5,6 +5,9 @@ import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { uiElClasses } from '@app/engine/ui/element-classes.ts';
+// 合并后的具名形状（第 118 轮）：本文件原先只写了一半的 `UIImageElementShape`，
+// 另一半在 `engine/ui/text-element.ts` ⇒ 那边只能 `as unknown as` 跳过来说话。见该接口的注释。
+import type { UIImageElementShape } from '@app/engine/ui/element-classes.ts';
 import { getUIStore } from '@app/stores/ui';
 import { Title } from '@app/title/title-bar.ts';
 import { Texture as PrinterTexture } from '@app/engine/webgl/texture.ts';
@@ -21,16 +24,6 @@ interface TextEffectShape {
 	shadowOffsetY?: number;
 	strokeWidth?: number;
 	color?: string | number;
-}
-
-interface ImageElementShape {
-	startX: number;
-	startY: number;
-	image: string;
-	display?: string;
-	clip: { set(clip: number[]): void };
-	transform: { x: number; y: number; width: number; height: number };
-	destroy(): void;
 }
 
 interface TextCommandShape {
@@ -58,7 +51,7 @@ interface TextCommandShape {
 	 */
 	color: string;
 	effect: TextEffectShape | null;
-	image: ImageElementShape | null;
+	image: UIImageElementShape | null;
 	imageWidth: number;
 	imageHeight: number;
 	imageSpacing: number;
@@ -72,7 +65,7 @@ export class Printer {
 	static print: ((...args: unknown[]) => void) | null = null;
 	texture!: PrinterTexture | null;
 	// images 运行时挂上 .changed 标志（L56/L200/L469 读写）
-	images!: ImageElementShape[] & { changed?: boolean };
+	images!: UIImageElementShape[] & { changed?: boolean };
 	canvas!: HTMLCanvasElement;
 	// CanvasRenderingContext2D 运行时挂上 .paddingItalic/.paddingVertical/.size 扩展（printer 内赋值）
 	context: CanvasTextContext | null;
@@ -115,7 +108,7 @@ export class Printer {
 		// oxlint-disable-next-line unbound-method
 		texture.base!.onRestore = Printer.restoreTexture;
 		this.texture = texture;
-		this.images = [] as Array<ImageElementShape> & { changed?: boolean };
+		this.images = [] as Array<UIImageElementShape> & { changed?: boolean };
 		this.images.changed = false;
 		this.canvas = document.createElement('canvas');
 		this.canvas.width = 0;
@@ -449,7 +442,7 @@ export class Printer {
 			this.newLine!();
 		}
 
-		const imageElement: ImageElementShape = new uiElClasses.Image!(
+		const imageElement: UIImageElementShape = new uiElClasses.Image!(
 			new Inspector.uiText.create()
 		);
 		imageElement.startX = this.getRawX!();
@@ -1238,7 +1231,7 @@ export class Printer {
 				// 同样都是非法 fillStyle（静默忽略），故改动等价。
 				color: '',
 				effect: null as TextEffectShape | null,
-				image: null as ImageElementShape | null,
+				image: null as UIImageElementShape | null,
 				imageWidth: 0,
 				imageHeight: 0,
 				imageSpacing: 0,

@@ -32,16 +32,6 @@ interface TextDataShape {
 	blend?: string;
 }
 
-interface EmbeddedImageShape {
-	startX: number;
-	startY: number;
-	transform: { x: number; y: number; width: number; height: number };
-	parent: unknown;
-	connected: boolean;
-	draw(): void;
-	resize(): void;
-}
-
 uiElClasses.Text = class TextElement extends uiElClasses.Element! {
 	texture: ImageTexture | null;
 	printer: Printer | null;
@@ -399,7 +389,7 @@ uiElClasses.Text = class TextElement extends uiElClasses.Element! {
 				this.textOuterHeight
 			);
 
-			for (const image of this.printer!.images as unknown as EmbeddedImageShape[]) {
+			for (const image of this.printer!.images) {
 				image.draw();
 			}
 		}
@@ -449,9 +439,10 @@ uiElClasses.Text = class TextElement extends uiElClasses.Element! {
 	}
 
 	resizeEmbeddedImages(offsetX: number, offsetY: number) {
-		const images = this.printer!.images as unknown as EmbeddedImageShape[] & {
-			changed: boolean;
-		};
+		// 第 118 轮：这里原来是 `as unknown as EmbeddedImageShape[] & { changed: boolean }`。
+		// 合并成一份具名形状后**整条断言都不需要了**：`printer.images` 已经是
+		// `UIImageElementShape[] & { changed?: boolean }`，`changed` 的读/写对可选布尔都成立。
+		const images = this.printer!.images;
 		if (images.changed) {
 			images.changed = false;
 			for (const image of images) {

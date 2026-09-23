@@ -170,6 +170,12 @@ function renderedRowsOf(list: {
 	return Object.assign(Array.from(rendered), {
 		count: rendered.length,
 		lineClassEnabled: true
+		// ⚠️ 2026-09-22 第 123 轮**实测过**：这里不能用单次 `as` ——
+		// `Array.from(rendered)` 是 `Element[]`，而 `CommandListShape` 的数值索引签名要求
+		// `CommandItemElement & { fold?; mark?; buffer? }`；tsc 报「Type 'Element' is missing
+		// the following properties … accessKey, and 253 more」⇒ 索引签名不可比 ⇒ `unknown` 跳板**承重**。
+		// （`renderedRowsOf` 的产物确实是 `.command-item` 命中的那些行，运行期没问题；
+		// 只是「查询出来的是 Element」这个类型事实绕不过去。）
 	}) as unknown as CommandListShape & { lineClassEnabled?: boolean };
 }
 

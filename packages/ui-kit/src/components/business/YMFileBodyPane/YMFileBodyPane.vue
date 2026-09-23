@@ -1985,11 +1985,14 @@ onMounted(() => {
 		timer.running = false;
 	};
 
-	elements = [] as unknown as typeof elements;
-	elements.count = 0;
-	elements.start = -1;
-	elements.end = -1;
-	elements.cpl = -1;
+	// 手法库第 4 条（「断言完紧接着写字段」）：`Object.assign([], {…})` 一次成型 ⇒ **零断言**。
+	// 原来是 `[] as unknown as typeof elements` 再逐字段赋值。
+	elements = Object.assign([], {
+		count: 0,
+		start: -1,
+		end: -1,
+		cpl: -1
+	});
 
 	content.range = new Uint32Array(2);
 	Object.defineProperty(content, 'countPerLine', {

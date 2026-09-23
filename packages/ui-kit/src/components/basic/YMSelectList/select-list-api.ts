@@ -111,13 +111,15 @@ export function createSelectListApi(
 
 	box.state = 'closed';
 	data.target = null;
-	box.elements = [] as unknown as SelectListApi['elements'];
-	box.elements.versionId = 0;
-	box.elements.count = 0;
-	box.elements.start = -1;
-	box.elements.end = -1;
-	box.elements.head = null;
-	box.elements.foot = null;
+	// 手法库第 4 条（「断言完紧接着写字段」）：`Object.assign([], {…})` 一次成型 ⇒ **零断言**。
+	box.elements = Object.assign([], {
+		versionId: 0,
+		count: 0,
+		start: -1,
+		end: -1,
+		head: null,
+		foot: null
+	});
 	data.selection = null;
 
 	const read = (): unknown => itemDataOrUndefined(data.selection)?.dataValue;

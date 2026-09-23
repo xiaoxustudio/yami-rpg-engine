@@ -4,7 +4,10 @@ export const clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max);
 
 export const focusWithOptions = (el: Element | null | undefined, options?: FocusOptions): void => {
-	(el as unknown as { focus(options?: FocusOptions): void }).focus(options);
+	// 第 124 轮：`unknown` 跳板换成**交叉断言**（手法库第 6 条：保留对象类型、只补缺口那一支）——
+	// `Element & { focus(…) }` 与 `Element` 可比，所以 `tsc` 会**真的检查**这次收窄；
+	// `as unknown as` 则把这条检查一并绕掉。行为不变（断言只影响类型）。
+	(el as Element & { focus(options?: FocusOptions): void }).focus(options);
 };
 
 export const addClass = (
