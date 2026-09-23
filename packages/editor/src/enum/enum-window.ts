@@ -141,7 +141,7 @@ function ensureDomBound() {
 	Enum.inputs.value = enumEls.get('enum-value') as YamiElement;
 	Enum.inputs.note = enumEls.get('enum-note') as YamiElement;
 	bindListClipboardMethods({
-		module: Enum as unknown as Parameters<typeof bindListClipboardMethods>[0]['module'],
+		module: Enum as Parameters<typeof bindListClipboardMethods>[0]['module'],
 		list: Enum.list,
 		clipboardKey: 'yami.data.enumeration'
 	});

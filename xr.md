@@ -2464,3 +2464,292 @@ legacy-ui-lines  316 → 319   ✗ 上升（棘轮不允许）
    分辨方法是一样的：**把「它要守什么」与「它怎么写」分开** —— 守的东西还在，就换写法，别删用例。
 3. **改口径要连用例一起给。** 抽 `unassignedStoreSlots()` 出来，是为了让这条判据**在镜像还在时**
    就能自证；否则它要等 ④-2c 落地后才第一次咬人 —— 而那正是最不该才发现判据写错的时候。
+
+## 第 115 轮（2026-09-22）：④-3 动手前先量 —— 82 处挂载里只有 **10 处**有测试信号，且字面量其实是张「占位表」
+
+> ④-2c 让 103 → 82，下一步就是 ④-3（逐域把 `UI.x = …` 改成 facade 装配）。
+> 照例先量：`scripts/oneoff/measure-4-3.mjs`（只读）。
+
+### 一、工作单的分布与「被 spec 直接引用」情况
+
+| 域模块 | 挂载 | 被 spec 直接引用 |
+| --- | ---: | ---: |
+| `ui-events.ts` | 21 | **0** |
+| `ui-transform.ts` | 18 | 2 |
+| `ui-file.ts` | 15 | **0** |
+| `ui-list.ts` | 10 | 1 |
+| `ui-pointer.ts` | 8 | **0** |
+| `ui-slots.ts` | 6 | **6**（100%） |
+| `ui-prefab.ts` | 3 | **0** |
+| `ui-initialize.ts` | 1 | **1**（100%） |
+| **合计** | **82** | **10（12%）** |
+
+### 二、结论一：④-3 的改动面里 **88% 没有任何测试信号**
+
+三条独立证据（都来自脚本，不是印象）：
+
+1. 82 个挂载函数里只有 **10** 个被任何 `*.spec.ts` 以 `UI.<name>` / `this.<name>` 引用过。
+2. spec 里出现的 `UI.<name>` **绝大多数是状态/桥成员**（`meta` `state` `target` `zoom` `hover`
+   `width` `height` `list` `mode`）与元素类（`Root` `Text` `Image` `Container`）——
+   **不是**这 82 个挂载函数。
+3. 另有 **5 个 spec 干脆 `vi.mock` 掉整个 `legacy/ui-window`**
+   （`animation` / `scene` / `ui` / `webgl` / `printer-draw`）⇒ 它们**故意不碰**这个单例。
+
+耦合也重（同一脚本量出）：单模块 `this.` 读最多 **71** 处（`ui-file`）、`this.` 写最多 16 处
+（`ui-initialize`）、模块内 `UI.*` 交叉引用最多 **54** 处（`ui-list`），还有 **1 处链式赋值**
+（`uiElClasses.createElement = UI.createElement = …`，`ui-prefab.ts:48`）。
+
+⇒ ④-3 的失效模式（`this` 绑错 / 就绪时序 / 处理器不触发）**恰好落在套件看不见的地方**。
+这与第 110 轮那条「`primeWindows` 盲区已被修正」**不是同一件事**：那条是「仪器读错了路径」，
+这条是「这 72 个成员本来就没被测过」。前者能靠加用例解决，后者只能靠真机走查。
+
+### 三、结论二：④-4 不是机械活 —— 字面量是一张**占位表（vtable）**
+
+读了 `ui-window.ts:104`–`240`：那 134 个槽位里绝大多数是
+
+```ts
+initialize: null, open: null, load: null, save: null, close: null, … setZoom: null, …
+```
+
+——**给域模块「先声明、后填充」的占位**（外加 `105`–`111` 行的几个 DOM 元素引用）。
+
+⇒ ④-4「退役对象字面量」的真实含义不是「删一个对象」，而是
+**把这 134 个占位换成有类型的 facade**，成员由各域的成员对象 + store 桥装配而成。
+这也解释了台账为什么坚持 `declared`（134）与挂载点（82）**必须同时归零**：
+占位表一天不拆，成员就一天没有真正的**类型归属**。
+
+### 四、结论三：④-4 的接线面**很小**（这是好消息）
+
+外部取 `UI` 对象的非测试点只有 **3 处**：
+
+- `stores/ui.ts:31` —— `loadUI` 里的 inline `import(...)`，取 `m.UI`；
+- `LayoutPanel.vue:1382` —— 惰加载代理的 loader；
+- `file-system-core.ts:16` —— 同上。
+
+另加 `window-cluster.ts:47`（只要 `uiWindowReady`，不要 `UI`）。其余引用全是 8 个域模块自己的
+相对 import。⇒ **换成一个 facade 对象，不需要动多少调用方**；难的是那 134 个占位与 72 个无信号的成员。
+
+### 五、建议的执行顺序（按「有信号 → 无信号」排）
+
+| 次序 | 域 | 挂载 | 信号 | 做完之后 |
+| ---: | --- | ---: | --- | --- |
+| 1 | `ui-slots` | 6 | 6/6 | 套件可兜底 |
+| 2 | `ui-initialize` | 1 | 1/1 | 套件可兜底（但它是 DOM/定时器引导，`this` 63 读 / 16 写） |
+| 3 | `ui-list` | 10 | 1/10 | **需真机** |
+| 4 | `ui-transform` | 18 | 2/18 | **需真机** |
+| 5 | `ui-prefab` | 3 | 0/3 | **需真机**（含那 1 处链式赋值） |
+| 6 | `ui-pointer` | 8 | 0/8 | **需真机** |
+| 7 | `ui-file` | 15 | 0/15 | **需真机**（`this` 71 读 / 13 写） |
+| 8 | `ui-events` | 21 | 0/21 | **需真机**（最大一域） |
+
+并且建议**先**跑一遍那 9 项实机回归清单、建立 known-good 基线再动第 3 步以后的任何一域：
+本会话至今**从未启动过真机**，现在没有任何「改之前是好的」的证据；没有基线，
+④-3 之后的任何异常都**无法归因**（是这次改坏的，还是本来就这样）。
+
+### 六、结论四：⚠️ ④-3 的轴信号**可以靠改写法白拿** —— 定义需要先收紧
+
+`ui-singleton-members` 数的是 `UI.<name> =` 这个**文本**。实测四种写法（`countCodeMatches` +
+`UI_SINGLETON_RE`，样本各一行）：
+
+| 写法 | 命中 |
+| --- | ---: |
+| 现在域模块里的 `UI.hasPrefab = function (…) {}` | **1** |
+| `Object.assign(UI, { hasPrefab(…) {} })` | **0** |
+| `for (const [k, v] of Object.entries(members)) UI[k] = v;` | **0** |
+| `Object.defineProperty(UI, 'hasPrefab', { value: fn })` | **0** |
+
+⇒ **把 82 行挂载改写成成员对象 + 一次 `Object.assign`，这条轴就会读到 0，
+而所有权一点没变**（还是同一个遗留对象在装配、域模块还是 `import { UI }` 去改它）。
+这正是台账自己写过的规矩：「**度量只应对真实状态敏感，不该对写法敏感**」
+（它当年就是因为 `legacyOnly` 对写法敏感才把它删掉的）。
+
+所以 ④-3 在动手前必须先把**「什么才算这一域搬完了」**说清楚。两条路：
+
+- **(a) 只认轴**：接受「成员搬进成员对象 + 集中装配」为完成 —— 好处是简单，坏处是上面那条白拿路径敞着，
+  棘轮会为一次纯改写报喜。
+- **(b) 轴 + 一条对「真实依赖」敏感的伴随判据**（本轮提议，尚未实现）：
+  「域模块是否还静态 `import { UI }` 去改单例」。真正的 facade 装配里，域模块应当只**提供**成员、
+  不再依赖单例对象本身。实测今天 **8/8 个域模块**都还 `import { UI } from './legacy/ui-window.ts'`
+  ⇒ 这条判据的起点是 8、终态 0，且**改写法拿不到**它（成员对象不需要那个 import）。
+  代价：多一条轴 + 一条自证用例。
+
+> 建议按 (b) 走：本仓已有「一条轴可以被便宜的写法满足」的教训（`legacyOnly`、以及
+> `unknown-casts` 那批「早就多余只是忘了删」的断言），值得多花一条判据把 ④-3 钉在真实状态上。
+> 但这是**设计决定**，应当和 ④-3 的定义一起定下来，而不是由我在这轮里顺手加一条轴。
+
+### 七、教训
+
+1. **「先量后做」第三次拦下东西** —— 这次拦下的既不是假回归、也不是写法错误，而是
+   **一个不该盲目开始的大步**。
+2. 该量的判据是：**改动面里有多少被任何用例直接引用过**。这个数 30 秒就能算出来，
+   却能决定「这一步能不能靠套件兜住」。本仓 `--json --axis` 与 spec 扫描都已具备，
+   缺的只是把两者对起来（`measure-4-3.mjs` 做的就是这件事）。
+3. **「需要真机」这个判断也要分层**：第 110 轮证明「接线可由 CI 验收」，
+   本轮证明「**这 72 个成员连接线都没被测过**」。两句话不矛盾，但结论完全不同 ——
+   前者说「真机是锦上添花」，后者说「真机是唯一信号」。
+
+## 第 116 轮（2026-09-22）：P4 剩余 67 处**逐处判了一遍** —— 62 处承重，只有 5 处多余（已清 4 处）
+
+> ④-3 在等一个设计决定，于是先啃计划里**不需要真机**的那批：`unknown-casts`（P4）。
+> 照例先量 —— 这一次量的是「哪些断言已经是多余的」。
+
+### 一、方法：一次 `tsc` 就能判完 67 处
+
+判据：把 `expr as unknown as T` 降成 `expr as T`，若 `tsc` 仍然过 ⇒ 那个 `unknown` 跳板是**多余**的。
+
+关键在于**每处的类型判定是局部且独立的**（`TS2352` 会落在该处所在行），所以可以
+**一次性把 67 处全部降级、只跑一次 `tsc`**，再按行号把判决收回来 —— 不必跑 67 次。
+实验脚本：`scripts/oneoff/probe-p4-dead-casts.mjs`（`--apply` 改写，判完 `git checkout -- .` 还原；
+它同时报告「原始文本 130 处 vs 真实代码 67 处」—— 差的 63 处全在注释/字符串里，台账不数它们）。
+
+判决：**58 处报 `TS2352`（承重）**，9 处看起来干净。
+
+### 二、⚠️ 9 处「干净」里有 **4 处是假阳性** —— 多行表达式的报错落在**表达式起点行**
+
+| 站点所在行 | `tsc` 报错所在行 | 事实 |
+| --- | --- | --- |
+| `engine/ui/ui-transform.ts:326` | **323** | `const node = find({ … } as unknown as UINodeShape)` 跨 4 行 |
+| `inspector/file-entity-page.ts:39` | **30** | 对象字面量跨 10 行 |
+| `module/eslints.ts:173` | **170** | `Object.assign(…) as unknown as …` 跨 4 行 |
+| `ui-kit/src/utils/history.ts:26` | **21** | `new Timer({ … }) as unknown as …` 跨 6 行 |
+
+⇒ **用行号把报错映射回站点时，必须容忍「同一个表达式跨多行」**，否则会把承重的断言当成多余的删掉。
+这是批量判定法的固有风险，写下来给下一次用同一招的人。
+
+### 三、真正多余的 5 处，清掉 4 处（`unknown-casts` 67 → 63）
+
+| 站点 | 处置 |
+| --- | --- |
+| `commands/command-tip.ts:302` | ✅ 去掉跳板（`CommandTargetShape` 与 `HTMLElement` 可比） |
+| `enum/enum-window.ts:144` | ✅ 去掉跳板 |
+| `module/eslints.ts:62` | ✅ 去掉跳板 |
+| `scene/scene-window.ts:990` | ✅ 去掉跳板，**并改掉注释里那句假声明**（见下） |
+| `commands/custom-command-window.ts:227` | ⏸ **留着**：该行上方 223–226 有明确的「归到 P3 的 `any` 别名批次去处理，**不在 P4 里硬做**」决策记录 —— 尊重它，不为 1 个读数去动它 |
+
+`scene-window.ts` 那条注释原文写着「**这是本文件里唯一真正需要 `unknown` 的地方**」。
+**实测不成立**：对**未约束**的类型参数 `T`，`[] as T` 本身就通过（`TS2352` 只在两边类型不可比时报），
+所以那个跳板多余。已去掉并就地更正注释 —— 与第 110/113 轮同一类问题：**注释里的「必须」也要被量过。**
+
+### 四、为什么「单次 `as`」比「`as unknown as`」好（所以这不是在刷指标）
+
+`as unknown as T` 会把「两边类型是否**可比**」这条检查**一并绕掉**（TS 只对双重断言放行），
+而单次 `as T` 要求 `tsc` 认为两边可比 ⇒ 改动**被编译器真的检查过**。
+这也正是 P4 的定义：这条轴数的是**双重**断言，单次断言是正常、可复核的写法。
+
+### 五、剩下 63 处的性质（给下一轮的结论）
+
+全部是 `TS2352`（两边类型不可比）—— 也就是 `unknown` 跳板在**做实事**：
+`YamiElement`→`HTMLElement`、`string`→`Uint8Array`、`SceneLight`→`LightData`、
+`never[]`→带游标数组、`SelectBoxApi`→`HTMLElement & …` 等等。
+
+⇒ **「不要再按剩下的都难估算」这句话本身也该被量过。** 第 106 轮清掉 17 处「早就多余」的之后，
+剩下的确实是硬骨头（本轮实测 **62/67 承重**）。要再动它们，只能改**类型设计** ——
+即计划里已列的三类：interface→索引签名、类与接口漂移、payload 判别字段。
+
+### 六、账
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **67 → 63**（files 55 → 52；基线已固化） |
+| 其余 15 条轴 | 持平 |
+| `tsc` / `typecheck:vue` | 0 / 0 新增 |
+| `migration:selftest` / `lint` / `format:check` / `docs:check` / `text:check` | 55/55 · 0-0 · 0 · OK · 0 |
+| editor 全套 | **未跑** —— 依据：逐行核对 `git diff -U0`，改动只有**被擦除的断言**（`as unknown as X` → `as X`）与注释，没有一条运行期语句 |
+
+### 七、教训
+
+1. **「逐处判」不必逐处跑。** 只要判定**局部独立**，就能一次性改完、只跑一次、再按行号收回判决。
+2. **但「收回判决」这一步会引入新错误**：多行表达式让行号错位，9 个「干净」里有 4 个是假的。
+   批量法的风险不在改，而在**读结果**。
+3. **有明确决策记录的站点不要动。** `custom-command-window.ts:227` 少减 1 个读数，但保住了一条
+   「为什么现在不做」的信息 —— 上一轮刚吃过「前提死了要分辨」的教训，这里同理。
+4. **注释里的「必须」也要量。** 本轮第三处 `unknown` 是被一句「这里必须绕」保住的，
+   而实测它根本不用绕。
+
+## 第 117 轮（2026-09-22）：查 `UINodeShape` ③ 时揪出一个**真崩溃** —— `instances.remove` 从来不存在
+
+> 原计划：④-3 在等设计决定，于是啃 `UINodeShape` ③「补全 `instances` 的真实类型」。
+> 结果前提先被证伪，而真正的问题比「类型不全」严重得多。
+
+### 一、③ 的前提被证伪：那处 `set` 不是调用，是**调试探测**
+
+计划写「`UIInstanceList` 上没有 `set`」。实测全仓 `.instances` 上用到的方法：
+
+| 方法 | 次数 |
+| --- | ---: |
+| `setProperty` | 50 |
+| `resize` | 10 |
+| **`set`** | **2** |
+| `length` / `map` / `push` / `remove` | 各 1 |
+
+那 2 处 `set` 都在 `ui-engine.ts:155`–`156`，属于 `[DEBUG-instances]` 诊断块里
+**探测运行期形状**的读取（`typeof instances.set` / `instances.set?.name`），**不是调用**。
+⇒ 「没有 `set`」是把那行诊断读成了调用。真正缺的是 **`remove`**。
+
+### 二、`remove` 是一处**真崩溃**，被两层东西同时掩盖
+
+- `element-base.ts:209` 的 `destroy()` 里写着 `node.instances.remove(this)`；
+- 运行期 `node.instances` 是 `new UIInstanceList()`，而那个类只有 `setProperty` / `resize`；
+- `element-base.ts:16` 把 `instances` **声明**成 `{ remove: (element: unknown) => void }`
+  —— **类型在说谎**，于是 `tsc` 认为方法一定存在；
+- 既有用例 `new Container()` **不带 node**，`destroy()` 在 `if (!node) return;` 就返回了；
+  而真实路径（`ui-transform.ts` 的 `deleteElement` → `target.instance.destroy()`、
+  `ui-file.ts` 的 `context.editor.root!.destroy()`）**一定带 node**。
+
+**实测复现**（先写用例、确认它红）：
+
+```txt
+TypeError: node.instances.remove is not a function
+  209|   node.instances.remove(this);
+```
+
+### 三、修法与先例
+
+给 `UIInstanceList` 补 `remove(element)`，实现**委托**给 `@app/utils/array` 的同名自由函数
+（避免同一个 `indexOf` + `splice` 写两遍）。这不是新花样 —— 本仓 `timer.ts:102` 早就是这个形态：
+
+```ts
+remove() {
+	remove(Timer.timers, this);
+	return this;
+}
+```
+
+新用例放在既有 `ui.spec.ts` 的 `UI.Container` 下：造一个**带 node** 的元素、把它 push 进
+`instances`、调 `destroy()`，断言它已被摘掉。**修前红、修后绿**（`ui.spec.ts` 15/15）。
+
+### 四、同类扫了一遍：没有第二处
+
+全仓 `.remove(` 调用点逐个看过：绝大多数是 DOM（`classList.remove` / `Element.remove`）
+或 `Timer.remove`（已定义）；`element-page.ts:120` 那四处是**注释**；
+`animation-motion.ts:1095` / `event-editor-commands.ts:170` 的 `nodes[i].remove()` 是 DOM 节点。
+⇒ 这一类只有 `instances` 一处。
+
+### 五、⚠️ 顺带更正：索引签名退役的真实代价是 **79 处 / ~20 字段 / 11 文件**
+
+把 `element-classes.ts:105` 的 `[k: string]: any` 去掉实测：**79 处 `TS2339`**、11 个文件、
+约 20 个字段 —— `presetId` `instances` `transform` `instance` `name` `synchronous` `destroy`
+`parent` `enabled` `visible` `node` `isPointIn` `appendChild` `shadowText` `printer` `_font`
+`font` `updateTextContent` `updatePrinter` `content` `update`。
+
+**为什么计划里只有「6 字段 / 27 处 / 5 文件」**：第 108 轮量的是 **`stores/ui.ts` 那份局部
+`UINodeShape`**，而第 109 轮把两份**合并成了一处共享声明** —— 同一个索引签名从此同时承重
+所有域模块。两条结论：
+
+1. 计划里 ②/③ 的底数要按 **79 处**重估（不是 6 字段）；
+2. 那 20 个字段里约 **7 个是元素专有**的（`printer` `_font` `font` `content` `updateTextContent`
+   `updatePrinter` `shadowText` 属文本元素；`visible` / `node` / `isPointIn` 属 hover 对象）。
+   把它们**全部**堆到共享的 `UINodeShape` 上，等于把索引签名**换个写法保留下来** ——
+   真正的解法是**用法处收窄/分型**，而不是列一张 21 项的表。这条已写进 PHASE-1C。
+
+### 六、教训
+
+1. **「补一个类型」的任务，先去问那个方法运行期到底存不存在。** 本轮的入口是类型，
+   出口是一个崩溃；如果直接照计划「补全类型」，就会给一个不存在的方法写上漂亮的签名 ——
+   把谎言从「索引签名」升级成「具名字段」。
+2. **类型在说谎时，`tsc` 的沉默不是证据。** `element-base.ts:16` 与 `element-page.ts:64`
+   描述的是同一个对象的不同子集（一个只写 `remove`，一个只写 `setProperty`/`resize`）——
+   两处都「对」，合起来却是错的。
+3. **既有用例不红，可能只是因为它没走到那一行。** `new Container()` 不带 node ⇒
+   `destroy()` 提前返回。补用例时**必须构造真实路径的前置状态**（这里就是「带 node」），
+   否则新用例会复制旧用例的盲区。

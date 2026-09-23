@@ -59,7 +59,7 @@ export function updateCommandElement(
 		element.lines[i] = line;
 	}
 
-	const list = ((this as unknown as { elements?: CommandListShape }).elements ??
+	const list = ((this as { elements?: CommandListShape }).elements ??
 		(CommandList.prototype.elements as unknown as
 			| CommandListShape
 			| undefined)) as CommandListShape;

@@ -983,11 +983,14 @@ Scene.open = function (this: SceneShape, context: SceneContextShape) {
  * 列表型容器：运行期就是「**空数组** + 窗口游标（`count`/`start`/`end`/`head`/`foot`/`versionId`）」，
  * 游标由 `common-list` 家族助手稍后填写。
  *
- * 类型上必须带游标字段（否则助手读不到），但**声明这一刻它们确实还不存在** —— 这是本文件里唯一
- * 真正需要 `unknown` 的地方。与其在每个站点各写一遍 `[] as unknown as X`，不如收敛到这一个工厂，
- * 把「为什么这里必须绕」写在唯一的地方。
+ * 类型上必须带游标字段（否则助手读不到），但**声明这一刻它们确实还不存在**。
+ * 与其在每个站点各写一遍断言，不如收敛到这一个工厂，把「为什么这里是谎」写在唯一的地方。
+ *
+ * ⚠️ **2026-09-22 第 116 轮更正**：原文写「这是本文件里唯一真正需要 `unknown` 的地方」——
+ * **实测不成立**。对**未约束**的类型参数 `T`，`[] as T` 本身就通过（tsc `TS2352` 只在两边
+ * 类型不可比时报），所以那个 `unknown` 跳板是**多余**的，已去掉。
  */
-const emptyListWithCursor = <T>(): T => [] as unknown as T;
+const emptyListWithCursor = <T>(): T => [] as T;
 
 Scene.load = function (this: SceneShape, context: SceneContextShape) {
 	const firstLoad = !context.editor;

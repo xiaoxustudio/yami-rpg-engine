@@ -1736,6 +1736,17 @@ head?: { view: { write(index: number): void } } | null;
    > 3 处是 `common/{NumberBox,TextBox,TextArea}.vue` 改用 ui-kit **本就导出**的
    > `HistoryInputElement` / `HistoryTextAreaElement` 做单次断言。
    > ⇒ **不要再按「剩下的都难」估算这条轴**；按文件逐个量过再说。详见 `xr.md` 第 106 轮。
+   > ⚠️ **2026-09-22 第 116 轮：逐处量完了（当前 63 处 / 52 文件）** —— 方法是「把每处
+   > `as unknown as T` 降成 `as T`，跑**一次** `tsc`，按行号收回逐处判决」
+   > （`scripts/oneoff/probe-p4-dead-casts.mjs`）；判据是类型判定**局部独立**。
+   > 结论：**67 处里 58 处报 `TS2352`（承重）**，9 处看似多余 —— 但其中 **4 处是假阳性**
+   > （多行表达式的报错落在**表达式起点行**：`ui-transform` 326/报错 323、`file-entity-page` 39/30、
+   > `eslints` 173/170、`ui-kit/history` 26/21）。真正多余 **5 处**，已清 **4 处**：
+   > `command-tip.ts:302`、`enum-window.ts:144`、`eslints.ts:62`、`scene-window.ts:990`
+   > （最后一处连注释里「这里必须 `unknown`」的**假声明**一起更正 —— 对未约束的 `T`，`[] as T` 本来就过）。
+   > 第 5 处 `custom-command-window.ts:227` **故意留着**：它有「归到 P3 的 `any` 别名批次」的决策记录。
+   > ⇒ 剩下 63 处**全是 `TS2352`**（两边类型不可比，跳板在做实事），要再动只能改**类型设计**：
+   > 即下面第 3 条那三类。
 3. **已确认「必须留 `unknown`」的三类**（要归零只能改写法或改类型设计）：
     - **interface → 索引签名**（`TreeListHost as Record<string, unknown>` 一类）：换 `Reflect.*`；
     - **类与接口漂移**：`ParticleElementLayer` vs 粒子层类（两条路都试过：TS2345 + TS2352）、
@@ -1765,6 +1776,19 @@ head?: { view: { write(index: number): void } } | null;
     > （`engine/ui/element-classes.ts`，与 `UIElementInstance` / `UIElementTransform` 同处），
     > `ui-window.ts` 只再导出、`stores/ui.ts` 直接 import ⇒ 两份「碰巧兼容」的重复声明不可能再漂移，
     > 且 `any-hatches` **51 → 50**。② ③ 仍是行为/真实类型问题，等实机。
+    > ⚠️ **第 117 轮：上面那个「6 个字段 / 27 处 / 5 文件」已过期，真实代价是 79 处 / ~20 字段 / 11 文件。**
+    > 直接删 `element-classes.ts:105` 的 `[k: string]: any` 实测 **79 处 `TS2339`**：`presetId` `instances`
+    > `transform` `instance` `name` `synchronous` `destroy` `parent` `enabled` `visible` `node` `isPointIn`
+    > `appendChild` `shadowText` `printer` `_font` `font` `updateTextContent` `updatePrinter` `content` `update`。
+    > 原因：第 108 轮量的是 **`stores/ui.ts` 那份局部 `UINodeShape`**，而第 109 轮把两份**合并成一处共享声明**
+    > —— 同一个索引签名从此同时承重所有域模块。**② 的底数要按 79 处重估。**
+    > ⚠️ 且其中约 **7 个字段是元素专有**的（`printer` `_font` `font` `content` `updateTextContent`
+    > `updatePrinter` `shadowText` 属文本元素；`visible`/`node`/`isPointIn` 属 hover 对象）——
+    > **把它们全堆到共享 `UINodeShape` 上等于把索引签名换个写法保留**；真解法是用法处收窄/分型。
+    > ⚠️ **③ 的前提被证伪**：计划写「`UIInstanceList` 上没有 `set`」，实测那 2 处 `set` 在
+    > `ui-engine.ts:155`–`156` 的 `[DEBUG-instances]` 诊断块里**探测运行期形状**，不是调用。
+    > 真正缺的是 **`remove`** —— 那是一个**真崩溃**（`element-base.ts:209` 的
+    > `node.instances.remove(this)` 抛 `TypeError`），已修 + 补会自证的用例（`xr.md` 第 117 轮）。
     > ⚠️ 另一条实测到的坑：**给遗留目录里的文件加注释会顶起 `legacy-ui-lines`**
     > （第一版把 3 行说明写在 `ui-window.ts`，读数 316 → 319 被判上升；注释已挪到**声明处**，回到 316）。
     > 在「行数棘轮」覆盖的目录里，**理由要写在被计数的地方之外**。
@@ -5236,3 +5260,55 @@ const files = collectFiles({ dirs: [dir], includeTests: true });
 
 **下一步是 ④-3**：逐域把域模块的 `UI.x = …`（82 处 / 8 文件）改为 facade 装配；
 之后 ④-4「退役对象字面量、删 `ui-window.ts` / `register.ts`」⇒ 两条轴同时归零。
+
+#### ⚠️ ④-3 / ④-4 的**动手前实测**（2026-09-22 第 115 轮，`node scripts/oneoff/measure-4-3.mjs`）
+
+**结论一：④-3 的改动面里 88% 没有任何测试信号。**
+
+| 域 | 挂载 | 被 spec 直接引用 |
+| --- | ---: | ---: |
+| `ui-events` | 21 | **0** |
+| `ui-transform` | 18 | 2 |
+| `ui-file` | 15 | **0** |
+| `ui-list` | 10 | 1 |
+| `ui-pointer` | 8 | **0** |
+| `ui-slots` | 6 | **6** |
+| `ui-prefab` | 3 | **0** |
+| `ui-initialize` | 1 | **1** |
+| **合计** | **82** | **10（12%）** |
+
+spec 里出现的 `UI.<name>` 绝大多数是**状态/桥成员**（`meta` `state` `target` `zoom` `hover` …）
+与元素类，**不是**这些挂载函数；另有 **5 个 spec 直接 `vi.mock` 掉整个 `legacy/ui-window`**。
+耦合：单模块 `this.` 读最多 71 处、模块内 `UI.*` 交叉引用最多 54 处、1 处链式赋值（`ui-prefab.ts:48`）。
+
+⇒ 这与第 110 轮那条「`primeWindows` 盲区已被修正」**不是同一件事**：那条是仪器读错路径（能靠加用例解决），
+这条是**这 72 个成员本来就没被测过**（只能靠真机走查）。
+
+**结论二：④-4 不是机械活 —— 字面量是一张占位表（vtable）。** `ui-window.ts:104`–`240` 的 134 个槽位里
+绝大多数是 `initialize: null, open: null, … setZoom: null` 这类**给域模块先声明、后填充的占位**
+（外加 105–111 行的 DOM 元素引用）。⇒ ④-4 = 把 134 个占位换成**有类型的 facade**，成员由各域成员对象 +
+store 桥装配；这也解释了台账为什么坚持 `declared`(134) 与挂载点(82) **必须同时归零**。
+
+**结论三：④-4 的接线面很小（好消息）。** 外部取 `UI` 的非测试点只有 3 处：
+`stores/ui.ts:31`（`loadUI` 的 inline import）、`LayoutPanel.vue:1382`、`file-system-core.ts:16`；
+另加 `window-cluster.ts:47`（只要 `uiWindowReady`）。其余全是 8 个域模块自己的相对 import。
+
+**建议次序（有信号 → 无信号）**：`ui-slots`(6) → `ui-initialize`(1) → `ui-list`(10) →
+`ui-transform`(18) → `ui-prefab`(3) → `ui-pointer`(8) → `ui-file`(15) → `ui-events`(21)。
+前两域（共 7 处）套件可兜底；**从第 3 域起每域做完必须真机走查**。
+并且**先**跑一遍 9 项实机回归清单建立 known-good 基线 —— 本会话至今从未启动过真机，
+没有基线则 ④-3 之后的任何异常都无法归因。
+
+**结论四（动手前必须先定）：④-3 的轴信号可以靠改写法白拿。**
+`ui-singleton-members` 数的是 `UI.<name> =` 文本；实测 `Object.assign(UI, { x() {} })`、
+`for (… ) UI[k] = v`、`Object.defineProperty(UI, 'x', …)` 三种写法**命中都是 0**。
+⇒ 把 82 行挂载改写成「成员对象 + 一次 `Object.assign`」，轴就归零，而**所有权一点没变**
+（仍是同一个遗留对象在装配、域模块仍 `import { UI }` 去改它）。
+这违反台账自己那条规矩「**度量只应对真实状态敏感，不该对写法敏感**」。两条路：
+
+- **(a) 只认轴**：简单，但那条白拿路径敞着，棘轮会为纯改写报喜。
+- **(b) 轴 + 伴随判据**（**建议**，尚未实现）：「域模块是否还静态 `import { UI }` 去改单例」——
+  真正的 facade 装配里域模块只**提供**成员、不依赖单例对象本身。实测今天 **8/8** 个域模块都还
+  `import { UI } from './legacy/ui-window.ts'` ⇒ 起点 8、终态 0，且**改写法拿不到它**。
+
+⇒ **④-3 开工前请先定 (a) 还是 (b)**（并顺带定下那 9 项实机回归清单要不要先跑一遍建立基线）。

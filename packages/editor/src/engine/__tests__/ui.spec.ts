@@ -344,6 +344,33 @@ describe('UI.Container', () => {
 		container.destroy();
 		expect(spy).toHaveBeenCalled();
 	});
+
+	it('destroy 会把自己从 node.instances 里摘掉（`instances.remove` 必须真的存在）', () => {
+		// 2026-09-22 第 117 轮：这条用例守的是一个**一直存在但没人测到**的崩溃。
+		//
+		// `element-base.ts` 的 `destroy()` 里写着 `node.instances.remove(this)`，
+		// 而 `UIElementShape` 第 16 行把 `instances` **声明**成 `{ remove: (element) => void }`
+		// —— 于是 tsc 认为那个方法一定存在。但运行期 `node.instances` 是
+		// `new UIInstanceList()`（`element-instance-list.ts`），那个类只有 `setProperty` / `resize`，
+		// **没有 `remove`** ⇒ 一旦 `node` 存在，`destroy()` 就抛
+		// `TypeError: node.instances.remove is not a function`。
+		//
+		// 上面那条既有用例测不到它：它 `new Container()` **不带 node**，`destroy()` 在
+		// `if (!node) return;` 就返回了。而真实路径（`ui-transform.ts` 的 `deleteElement`、
+		// `ui-file.ts` 的 `context.editor.root!.destroy()`）**一定带 node**。
+		const container = new (uiElClasses.Container as any)();
+		const instances = new UIInstanceList();
+		instances.push(container);
+		(container as { node?: unknown }).node = {
+			class: 'container',
+			children: [],
+			instances
+		};
+
+		container.destroy();
+
+		expect(instances).not.toContain(container);
+	});
 });
 
 describe('UI.Text 构造', () => {
