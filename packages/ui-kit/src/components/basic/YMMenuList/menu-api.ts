@@ -489,7 +489,8 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		}
 	}
 
-	attachApi<MenuApi>(menu as unknown as HTMLElement, {
+	// `menu` 是菜单的**状态对象**（上面的对象字面量），不是元素 —— `attachApi` 现在接受任意对象。
+	attachApi<MenuApi>(menu, {
 		windowBlur,
 		windowKeydown,
 		windowPointerdown,

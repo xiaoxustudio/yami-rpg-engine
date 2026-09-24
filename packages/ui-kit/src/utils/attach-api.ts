@@ -12,10 +12,16 @@
  *   有的走 HTML 属性、有的在别处补挂），所以不能要求"必须全覆盖"。
  *
  * ⚠️ **新调用点必须写出类型参数**：不写的话 `Api` 会从实参推断，校验随即失效（退化成旧行为）。
+ *
+ * **P4（第 129 轮）：目标类型从 `HTMLElement` 放宽到 `object`。** 本函数做的事情只有
+ * `Reflect.set(target, key, value)`，而 `Reflect.set` 对**任何对象**都成立 —— 原先写
+ * `HTMLElement` 是**过窄**的契约，代价是 `menu-api.ts` 里那处 `menu as unknown as HTMLElement`
+ * （那里的 `menu` 是菜单的**状态对象**，不是元素；把 API 挂在状态对象上是这个函数的既有用法）。
+ * 放宽只会让既有调用点继续成立（元素本来就是对象）。
  */
-export function attachApi<Api extends object>(el: HTMLElement, api: Partial<Api>): void {
+export function attachApi<Api extends object>(target: object, api: Partial<Api>): void {
 	const source = api as Record<string, unknown>;
 	for (const key of Object.keys(source)) {
-		Reflect.set(el, key, source[key]);
+		Reflect.set(target, key, source[key]);
 	}
 }

@@ -3644,3 +3644,474 @@ if (latest) this.pointermove(latest);
 3. **同一句 `unknown` 跳板可能有两种相反的用途**：第 127 轮那 4 处是「补上缺的成员」，
    `scene-tilemap-page.ts:210` 却是「丢掉一个错的声明」—— 后者换成交叉断言会更糟。
    ⇒ 判据不能只看形状，还要看**源类型对不对**。
+
+## 第 129 轮（2026-09-22）：⚠️ 轴说 32，编译器说不行 —— 最终 35 → 33
+
+本轮挑了三处「看着像谎话」的 `unknown` 跳板。最后两处修好、一处**必须保留**，
+而保留的理由是**编译器**给的，不是推理给的。
+
+### 一、先记最值钱的部分：一次「差点被骗过去」的改动
+
+`YMTitleBar.vue:7`：
+
+```ts
+(window as unknown as Window & { Window?: { close(id?: string): void } }).Window
+```
+
+看着完全可以机械去 `unknown`（我当时的理由还写着「ui-kit playground 的 `App.vue:105` 一直这么写」）。
+改成单个 `as` 之后，`vue-tsc` 直接报：
+
+```txt
+TS2352: Conversion of type '{ new (): Window; prototype: Window; }' to type
+'{ close(id?: string): void }' may be a mistake because neither type sufficiently overlaps …
+```
+
+原因：`window` 的静态类型是 `Window & typeof globalThis` ⇒ **`window.Window` 静态上就是全局
+`Window` 构造器**（`{ new(): Window; prototype: Window }`），它**不是**我们要的那个宿主 API
+（那个是运行期用 `Reflect.set(window, 'Window', …)` 挂上去的，见 `window-object.ts:517`）。
+所以这里的 `unknown` 是在**丢掉一个错的静态类型** —— 与 `scene-tilemap-page.ts:210` **同类**，
+不是可机械改的那一类。写成 `window as Window & { Window?: … }` 同样被拒（那个成员与构造器同名不可比）。
+
+⇒ 已改回 `unknown`，并把这条证据（含 TS2352 原文与「为什么」）写进就地注释，免得下一轮再试一次。
+⇒ 附带收获：那句「playground 一直这么写」是**伪证据** —— `tsconfig.build.json` 只 `include`
+`src/**`，**playground 根本不在类型检查范围内**。**没被检查过的先例不能当先例。**
+
+### 二、两条真的修好了
+
+**（1）`attachApi` 的契约过窄 → 放宽到 `object`**（第 124 轮 `clear()` 那种「契约说谎」）
+
+```ts
+export function attachApi<Api extends object>(el: HTMLElement, api: Partial<Api>): void {
+	for (const key of Object.keys(api)) Reflect.set(el, key, …);
+}
+```
+
+实现里只有 `Reflect.set(target, key, value)`，而 `Reflect.set` 对**任何对象**都成立 ——
+`HTMLElement` 是**过窄**的契约。暴露它的是 `menu-api.ts`：那里的 `menu` 是菜单的**状态对象**
+（一个对象字面量），根本不是元素，所以调用点被迫写 `menu as unknown as HTMLElement`。
+放宽成 `object`：既有调用点**全部继续成立**（元素本来就是对象），跳板消失。
+
+**（2）`scroll-bar-api.ts:164`：`thumb as unknown as ScrollThumb` → `thumb as HTMLDivElement & ScrollThumb`**
+
+`ScrollThumb extends HTMLElement`（外加 `left`/`width`/`top`/`height` 四个 expando 字段），
+而 `thumb` 就是 `document.createElement('div')` ⇒ 真实类型是「div **加上**那几个字段」。
+交叉断言保住 div 的类型、只补缺口（单个 `as` 不行：`HTMLDivElement` 与 `ScrollThumb` 互不 assignable）。
+
+### 三、账
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | 35 → **33**（files 30 → 28） |
+| ⚠️ 过程值 | 中间一度显示 **32** —— 那是把第一节那处**不该改**的也改了的结果。**轴更小的那个数是错的** |
+| `any-hatches` 等其余轴 | 持平 |
+| `vue-tsc`（ui-kit `build:types`） / `tsc`（editor） | 0 / 0 |
+| ui-kit 套件 / editor 套件 | 见提交说明（都跑过） |
+
+### 四、教训
+
+1. **「看着能机械改」必须过编译器那一关**，而且要留下记录：这次是 `vue-tsc` 拦下来的，
+   不是我推出来的 —— 我当时的理由（playground 先例）是错的。
+2. **没被检查过的先例不是先例**：`playground/` 不在 `tsconfig.build.json` 的 include 里，
+   它写了什么都不能当证据。
+3. **轴降了不等于改对了**（第 128 轮刚说过「轴是坏味道的代理量」，本轮就撞上了一次实例：
+   只看台账会得到 32 这个更好看但错误的数字）。
+
+## 第 130 轮（2026-09-22）：给 `any-hatches` 换一把**量得准**的尺子（并拆掉一把量不准的）
+
+前几轮一直在 `unknown-casts` 上推进。本轮转向另一条类型轴 `any-hatches`（50 处 / 25 文件），
+结果第一件事是**发现仓库现有的清单工具会指错地方**。
+
+### 一、差点照着错清单去删声明
+
+`scripts/any-hatch-inventory.mjs` 旧版按「站点行往上找最近的 interface」归属。我写了个实验
+（把 50 处一次性摘掉、跑一次 tsc、按报错里的类型名归属，`unknown-casts` 那边这么干过、很有效），
+结果 tsc 先报了一堆 **TS1005 语法错**：
+
+```txt
+src/palette/auto-tile.ts(51,14): error TS1005: ';' expected.   （连着十几行）
+```
+
+原因：`auto-tile.ts:49` 那一行**根本不是接口成员**，而是
+
+```ts
+export const AutoTile: Record<string, any> = {
+```
+
+—— **一个常量自己的类型注解**。把它注释掉，整个对象字面量就崩了。而旧清单把这一站归给了它
+**上面**的 `AutoTileOpenParams`（`@L41`，一个毫不相干的类型）。**如果我照那张表去「删
+`AutoTileOpenParams` 的签名」，删掉的是另一个声明。**
+
+### 二、尺子换好了：先看种类，再归属
+
+`any-hatch-inventory.mjs` 现在先读**站点自己的文本**：
+
+| 种类 | 形态 | 归属到 |
+| --- | --- | --- |
+| `INDEX_SIG` | `[k: string]: any` | **它所在的那个接口**（原逻辑正确） |
+| `RECORD_ANNOT` | `Record<string, any>` | 可能是常量注解 / 接口**成员**注解 / 类型别名 / 参数·返回类型；能认出 `const·let·var` 的归给**那个常量自己**，否则才退回上层声明 |
+
+新增 `--kinds` 直接给两张表（宿主常量 / 宿主接口），默认模式打印**站点原文**（归属对错的判据就在这里）。
+
+实测分布（50 处）：**`RECORD_ANNOT` 28 / `INDEX_SIG` 22**。其中 7 处是引擎空壳：
+
+```ts
+export const XEngine: Record<string, any> = {};
+```
+
+（`AnimationWindowEngine` / `AutoTileEngine` / `PaletteEngine` / `ParticleEngine` /
+`SceneCameraEngine` / `SceneMarqueeEngine` / `UIEngine`），另有 `Palette` / `AutoTile` / `TileFrame`
+三个遗留单例是「注解 + 一长串成员」。⇒ **引擎/单例这 10 处就是 ④ 那类「有类型的 facade」工作单**。
+
+### 三、那把量不准的尺子已删（结论留在这里）
+
+「一次性摘掉全部、按报错类型名归属」在这里**不成立**，两条原因都是实测的：
+
+1. **两种站点的摘法不同**（删索引签名那一行 vs 去掉常量注解），混在一起直接把文件写成语法错误；
+2. **代价出现在使用点**，而使用点散落全仓 ⇒ 「报错所在的文件」≠「声明的文件」，按文件归属也不成立。
+
+⇒ 实验脚本已删除；**要量某一处的代价，只能单独摘、单独跑 tsc**（脚本已写明这条纪律）。
+
+### 四、明确留着的：`YMParameterPane.vue` 的 5 处看着便宜、其实不便宜
+
+该文件有 5 处 `HTMLElement & { [k: string]: any }`。`paneState` 的 14 个字段确实是运行期
+`Object.defineProperty` 挂上去的（声明出来即可）—— 但读完全文发现 `self`/`el` 上还挂着
+**11 个由编辑器挂的方法**：`getData` / `update` / `clear` / `recycle` / `createParamInput` /
+`applyAffix` / `appendHeadPad` / `createDetailBox` / `updateParamDisplay` / `updateParamInput` /
+`onResize`，而**这套元素 API 目前没有任何声明**（该目录只有 `ParamScriptListElement` 等子元素形状）。
+要修得先设计这套方法签名 ⇒ 属于 ④ 那类 facade 工作，不该在这一轮半做。
+
+### 五、账
+
+| 项 | 结果 |
+| --- | --- |
+| `any-hatches` | 50 处**不变**（本轮**没有动业务代码**，只换尺子） |
+| 其余轴 | 持平 |
+| 工具 | `any-hatch-inventory.mjs` 增种类与正确归属（自证见第一节：旧归 `AutoTileOpenParams`，新归 `AutoTile`）；删掉量不准的批量实验脚本 |
+
+### 六、教训
+
+1. **工具指错地方比没有工具更危险**：那份清单精确到行号，看起来无懈可击，我差一点就照着它
+   去删另一个声明。
+2. **换轴之前先验那条轴的清单**：口径对了（台账与清单用的都是 `ANY_HATCH_RE`）**不等于归属对了**。
+3. **在一条轴上很有效的实验法，换一条轴可能不成立**（摘法不同 + 代价在使用点）。
+   方法论也得按轴重新验证 —— 这一条比本轮修掉任何一处都值钱。
+
+### 七、⚠️ 方法论更正：上面两条「发现」，前几轮早就付过学费了
+
+写完上面才想起来去翻 `PHASE-1C-TEST-PREREQ.md` —— 那条轴的沿革已经有 40 多轮，我自己以为的
+「新发现」有两条**早已写在里面**：
+
+- **第 63 轮**（第 3912 行）：「探针要按**站点形态**分批做。「索引签名」与「`Record<string, any>`」…」
+  —— 正是本轮「两种摘法不同、不能混着批量做」的结论；
+- **第 37 轮**：整批替换索引签名 → **788 个错误**；**第 64 / 39 轮**：`YMParameterPane` 的实测代价
+  **41 / 71 个读点** —— 正是本轮「那 5 处不便宜」的结论；
+- **第 89 轮**（第 4860 行起）已经列好 `Record<string, any>` 的 20 处 / 13 文件工作单，
+  连「A 组 · 引擎命名空间对象 10 处（个位数就走本地窄类型）」都分好了组。
+
+⇒ **教训（本轮最值钱的一条）：动手量之前，先读那条轴自己的沿革。**
+`grep <轴名> packages/editor/PHASE-1C-TEST-PREREQ.md` 应该是开新轴的第一个动作 ——
+本轮白花的时间，仓库已经用 40 轮记录替我付过了。
+
+### 八、真正新的东西：清单的**归属**是错的，而且已经外溢成文档错误
+
+上面那两条是重复劳动，这一条不是。旧 `any-hatch-inventory.mjs` 按「站点行往上找最近的 interface」
+归属，于是：
+
+| 站点 | 旧清单 | 实际是什么 |
+| --- | --- | --- |
+| `palette/auto-tile.ts:49` | 接口 `AutoTileOpenParams` @L41 | `export const AutoTile: Record<string, any> = {` —— **常量自己的类型注解** |
+| `YMParameterPane.vue:164 / 201 / 982` | `Props`（L130 接口） | 组件内的 `let el`、`attachStateAccessors` 的**形参**、`self` —— **没有一个是 `Props` 的成员** |
+
+第二行那处**已经写进了文档的工作单**（PHASE-1C 第 4821 行：「`YMParameterPane.vue` 3 处 ——
+`Props`（L130 接口 / L164、L201、L971 站点）」）⇒ 错归属**早已外溢成文档错误**。
+
+证据链（三条，互相独立）：
+1. 旧清单输出如上；
+2. 我照旧清单去删，`tsc` 直接报 **TS1005 语法错**（证明那一行是**声明行**，不是接口成员）；
+3. 新清单对同一站点给出 `[RECORD_ANNOT] 归属 AutoTile (export) @L49`。
+
+⇒ 已修：按**站点自身文本**分 `INDEX_SIG`（接口里的索引签名）/ `RECORD_ANNOT`（注解），
+常量站点归给**它自己**，默认输出带**站点原文**（归属对不对，判据就在原文里），并加 `--kinds` 汇总。
+实测分布：**`RECORD_ANNOT` 28 / `INDEX_SIG` 22**；其中 7 处是引擎空壳
+（`AnimationWindowEngine` / `AutoTileEngine` / `PaletteEngine` / `ParticleEngine` /
+`SceneCameraEngine` / `SceneMarqueeEngine` / `UIEngine` —— 与第 89 轮「A 组 10 处」对得上）。
+
+## 第 131 轮（2026-09-22）：`any-hatches` 50 → 49 —— 照仓库自己的工作单做，并量出「便宜的那个只有一个」
+
+### 零、先做上一轮学到的那件事：动手前先读那条轴的沿革
+
+这次先读了 PHASE-1C 的 `any-hatches` 工作单（第 89 轮那份）。它直接给了：A 组 10 处的路径、
+两条「试过并回退」的记录、以及「camera / marquee 是真承重，别当白捡」的警告。
+
+**这一读立刻省掉两次白干**：
+- `ParticleEngine` 被列入 A 组，但**第 63 轮已经试过并回退**（它的成员引用文件下方的 class，
+  存在「先建空壳、等下面声明完再挂」的时序依赖）⇒ 不重试；
+- `scene-camera-engine` / `scene-marquee-engine` 是第 65 轮实测的**真承重**（≈30 个字段）⇒ 跳过。
+
+### 一、先把 A 组 10 处的「成员个数」量出来（脚本实测）
+
+| 对象 | 文件行数 | 挂载点 |
+| --- | ---: | ---: |
+| `engine/animation/animation-window-engine.ts` | 839 | **29** |
+| `engine/palette/palette-engine.ts` | 730 | **22** |
+| `engine/particle/particle-engine.ts` | 1311 | 3 ← **第 63 轮试过并回退，别重试** |
+| `engine/scene/scene-camera-engine.ts` | 192 | 12 ← 计划已警告「真承重」 |
+| `engine/scene/scene-marquee-engine.ts` | 196 | 10 ← 同上 |
+| `engine/ui/ui-engine.ts` | 677 | **25** ← ④ 相关 |
+| `palette/auto-tile.ts` | 974 | **47** |
+| `palette/tile-frame-index.ts` | 375 | 13 |
+| `palette/palette.ts` | 142 | 0（成员分散在**其他文件**里挂 ⇒ 组装式单例） |
+| `engine/palette/auto-tile-engine.ts` | 141 | **5** ✅ 本轮拿下 |
+
+⇒ **「个位数就走本地窄类型」这条判据，在 A 组 10 处里只对 1 处成立。** 其余都是十到几十个成员的
+命名面（逐成员枚举那一档），`palette.ts` 更是跨文件的组装式单例。
+
+### 二、拿下 `auto-tile-engine.ts`（5 个成员）
+
+做法：声明**本地成员表** `AutoTileEngineShape`（5 个成员，各带 `this: typeof AutoTile`），
+`export const AutoTileEngine = {} as AutoTileEngineShape;`，**5 个实现一行不动**。
+
+为什么保留赋值式写法而不是改成对象字面量：`scene-draw-engine.ts` 第 63 轮那个成功案例的前提是
+「成员全是上方 import 进来的函数」；这里的成员是**内联函数表达式**。两种都可行，但保留赋值式能把
+改动**限制在声明上**（diff 只有声明与注释），风险最小。
+
+顺手删掉上方那行 `// oxlint-disable-next-line no-explicit-any` —— 第 38 轮立的规矩：删签名必须
+一并删豁免注释，否则 `stale-exemptions` 会多出一处。实测该轴**保持 0** ✓。
+
+### 三、⚠️ 本轮真正值得记的一手：`any` 还压着一个 **lint** 信号
+
+声明成员表之后，`lint` 从 0 变成 **5 个警告**：
+
+```txt
+typescript(unbound-method) @ packages/editor/src/palette/auto-tile.ts:110–114
+```
+
+—— 正是那 5 行「逐条镜像」（`AutoTile.updateCanvas = AutoTileEngine.updateCanvas;` …）。
+`AutoTileEngine` 还是 `Record<string, any>` 时，这 5 个引用是 `any`，规则**看不见**；
+成员一旦有了类型，规则立刻认出「这是方法引用」并警告 `this` 可能丢。
+
+**运行期没有问题**（那 5 个函数本来就靠调用点 `AutoTile.x()` 提供 `this`），但这说明：
+**索引签名 / `any` 不只在 `tsc` 上开洞，也在 lint 上开洞。** 类型轴的收益不止类型检查。
+
+修法（而不是加 5 条 disable 注释）：把成员表从**方法简写**改成**函数属性**
+（`x: (this: T, …) => R`）—— 它们本来就是「赋值上去、被逐条搬运的函数值」，不是方法；
+属性写法保留 `this` 约束与全部参数检查，且不触发 `unbound-method` ⇒ `lint` 回到 0。
+
+### 四、账
+
+| 项 | 结果 |
+| --- | --- |
+| `any-hatches` | **50 → 49**（files 25 → 24；基线已固化） |
+| `stale-exemptions` | 0 持平（豁免注释与签名同时删） |
+| `tsc` / `lint` / `format:check` / `text:check` / `docs:check` / `migration:selftest` | 0 / 0-0 / 0 / 0 / OK / 58/58 |
+| editor 套件 | **255 文件 / 2074 用例全绿** |
+| 改动性质 | **纯类型擦除**（`git diff -U0` 只有声明与注释） |
+
+### 五、教训
+
+1. **先读沿革 = 直接拿到「哪几个别碰」。** 本轮靠它跳过了 `ParticleEngine`（第 63 轮已回退）
+   与 camera / marquee（第 65 轮实测承重）—— 上一轮记的那条教训，(这轮就换回两次白干)。
+2. **别人的判据要按对象量一遍再用。** 「个位数就走本地窄类型」听着像一条通用规则，
+   实测在 A 组 10 处里只对 1 处成立。
+3. **类型轴与 lint 是一条绳上的**：`any` 静默掉的不只是类型错误。⇒ 汇报口径应当包含
+   「lint 是否因此能看见新东西」（本轮就是能：5 条 `unbound-method`）。
+
+## 第 132 轮（2026-09-22）：`any-hatches` 49 → 48 —— 一处拿下，另一处**验证了计划是对的**
+
+### 一、先挑「空壳 + N 个方法」那一族
+
+A 组剩下的对象里，空壳型（`= {}` 后面挂方法）的成员个数（实测，脚本按
+`^\s*\w+\.\w+\s*=\s*(function|\()` 去重计数）：
+
+| 对象 | 成员数 | 备注 |
+| --- | ---: | --- |
+| `engine/palette/auto-tile-engine.ts` | 5 | 第 131 轮已拿下 |
+| `engine/scene/scene-marquee-engine.ts` | **10** | 本轮拿下 |
+| `engine/scene/scene-camera-engine.ts` | **8** | 本轮试过并回退（见第三节）。⚠️ 此前记的「12」是把 `this.scrollCenterX = (…)` 这类**带括号的赋值**误计进去了 |
+| `engine/palette/palette-engine.ts` | 22 | 逐成员枚举档 |
+| `engine/ui/ui-engine.ts` | 25 | ④ 相关 |
+| `engine/animation/animation-window-engine.ts` | 29 | 逐成员枚举档 |
+
+另一类是**有数据字段的组装式单例**（`palette/auto-tile.ts` 47 个成员、`palette/palette.ts` 的成员
+分散在其他文件里挂），与 `SceneShape` 同类。
+引用数（全仓实测）：每个成员只被引用 **2–6 次**，形态都是「1 处定义 + 1 处镜像」⇒ 看着都很便宜。
+
+### 二、拿下 `SceneMarqueeEngine`（10 个成员）
+
+手法与第 131 轮同：声明本地成员表 + `{} as`，**10 个实现一行不动**；成员写成**函数属性**
+（第 131 轮的结论：方法简写会让 `unbound-method` 在镜像点报警）⇒ 实测 `lint` 保持 0。
+
+它的 `this` 是 `typeof Scene.marquee` —— 一个**独立**的松散对象；实现里的默认值取自 `this.x` 等
+（走索引签名 ⇒ 推断为 `any`），所以形参声明成 `number`/`string` 后实现侧照样可赋，
+而 `scene.spec.ts` 里那 4 处 `.call(Scene.marquee, 5, 10, 20, 30)` 本来就传数字 ⇒ 零级联。
+
+### 三、⚠️ 接着试 `SceneCameraEngine`：撞上了计划预告的那堵墙 —— **我的估计错了**
+
+我原本的推断是：计划把 camera / marquee 标成「真承重（≈30 个字段、含写入）」，
+说的是**窗口**（`this`）那边的成本；而我只声明引擎自己的成员表（`this: typeof Scene` 原样不动），
+应该同样便宜。marquee 确实便宜，**camera 不是**。声明之后 `tsc` 立刻报：
+
+```txt
+src/engine/__tests__/scene.spec.ts(399,65): error TS2345: Argument of type
+'{ …63 more…; renderingFunction: Mock<…> }' is not assignable to parameter of type 'SceneShape'.
+  … missing the following properties from type 'SceneShape': page, head, body, searcher, and 18 more.
+```
+
+原因：`scene.spec.ts:361` 用 `vi.mock('@app/scene/scene-window.ts', () => ({ Scene }))` 把
+scene-window **换成了一个部分 mock**。而 camera 引擎的成员签名是 `this: typeof Scene`
+⇒ 类型一旦落地，`.call(Scene, …)` 就要求那个 mock 满足**整个** `SceneShape`（它缺 22 个成员）。
+**这正是计划说的「≈30 个字段」**：camera 的成员读的是真窗口的字段，要让它们可被 mock 满足，
+就得给每个成员写**只包含它真正读的那些字段**的本地窄 `this` 类型（8 个成员各 5–15 个字段，
+还牵到 `this.getGridContext()` 这类方法）—— 那才是这一处的真实成本。
+
+⇒ **已回退**（`git checkout`），并如实记下：本轮假设「计划的警告对引擎成员表不适用」，
+在 marquee 上对、在 camera 上**错**。两处的差别**不在成员个数，而在 `this` 指向谁**：
+
+| | 成员签名的 `this` | 测试/调用点手里是什么 | 结果 |
+| --- | --- | --- | --- |
+| `SceneMarqueeEngine` | `typeof Scene.marquee` | 就是那个对象（`Scene.marquee`） | 便宜 ✅ |
+| `SceneCameraEngine` | `typeof Scene` | 一个**部分 mock**（缺 22 个成员） | 贵 ❌ |
+
+⇒ **判据修正**：看 `this: typeof Y` 里的 **Y 是不是「调用点/测试手里本来就有的那个对象」**，
+而不是看成员个数。
+
+### 四、账
+
+| 项 | 结果 |
+| --- | --- |
+| `any-hatches` | **49 → 48**（files 24 → 23；基线已固化） |
+| `stale-exemptions` | 0 持平（豁免注释与签名同时删） |
+| `tsc` / `lint` / `format:check` / `text:check` / `docs:check` / `migration:selftest` | 0 / 0-0 / 0 / 0 / OK / 58/58 |
+| editor 套件 | 255 文件 / 2074 用例全绿 |
+| 回退 | `scene-camera-engine.ts` 已 `git checkout` 还原（无残留） |
+
+### 五、教训
+
+1. **判据要按 `this` 指向谁分，而不是按成员个数分**（第三节那张两行表）。
+2. 「先量再动手」也要**量对指标**：我量了成员个数（对了），但真正的成本在 `this` 的满足关系上（量错了）。
+3. **回退也要留证据**：这一处现在有明确的「为什么不能机械改」（tsc 原文 + mock 的位置 + 两处对照表），
+   下一轮不会有人再试一次 —— 这正是第 41 轮「先读沿革」想避免的浪费。
+
+## 第 133 轮（2026-09-22）：**不降轴的一轮** —— 补齐那把量单处的尺子，并把最大一处的底数重新量清
+
+本轮**没有改业务代码**（`any-hatches` 48 持平）。交的是三样东西：一把可复用的尺子、
+一份**决策就绪**的底数、以及「下一处该拿哪个」的确切理由。
+
+### 一、先把尺子补齐：`scripts/oneoff/measure-any-hatch-site.mjs`
+
+第 130 轮的「一次摘全部」被证伪（两种摘法混在一起会把文件写成语法错误；代价出现在**使用点**，
+「报错文件」≠「声明文件」），当时的结论是「要量某一处，只能单独摘、单独跑 tsc」——那把尺子本轮补上了：
+按**站点种类用对应的摘法**（索引签名=注释掉那一行；注解=去掉 `: Record<string, any>`），
+摘**一处** → 跑一次 tsc → 按「错误码 / 属性名 / 文件」三张表归类 → **写回原样并逐字复核**。
+
+```bash
+node scripts/oneoff/measure-any-hatch-site.mjs <相对路径> <行号>
+```
+
+### 二、重新量计划里「剩下的最大一处」：`UINodeShape` 的索引签名
+
+```bash
+node scripts/oneoff/measure-any-hatch-site.mjs packages/editor/src/engine/ui/element-classes.ts 141
+```
+
+实测：**79 条报错，全部是 `TS2339`（属性不存在）**，落在 **20 个字段 / 10 个文件**上：
+
+| 字段 | 处数 | 字段 | 处数 | 字段 | 处数 |
+| --- | ---: | --- | ---: | --- | ---: |
+| `transform` | 14 | `enabled` | 6 | `printer` | 3 |
+| `instance` | 13 | `node` | 3 | `_font` | 2 |
+| `presetId` | 13 | `parent` | 3 | 其余 11 个字段各 1 处 | 11 |
+| `instances` | 10 | | | | |
+
+文件集中度：`ui-engine` 16 · `ui-transform` 16 · `ui-pointer` 12 · `ui-initialize` 11 · `ui-slots` 8 ·
+`ui-file` 6 · `ui-list` 4 · `ui-prefab` 3 · `usePresetElementWindow` 2 · `ui-events` 1。
+（与第 117 轮记的「79 处 / ~20 字段 / 11 文件」**逐项对上**，文件数本轮读到 10 —— 差的那一个应是统计口径。）
+
+⚠️ **本轮最值钱的读数：这一阶段 `0` 条可空解引用**（没有 `TS18047` / `TS2531`）。
+计划里那句「14 处 `matrix` / `parent` 可空却被直接解引用」**不会在删索引签名这一步出现** ——
+它们要等那些字段**被声明成可空类型之后**才浮出来。⇒ 与计划的判断一致（这一处**卡在一个需要实机的
+裁决**上），但**顺序**必须写清：**先声明字段 → 才会看见可空问题**。
+所以「79 处」**不是**「79 个机械补声明」；把工期按纯机械估会估错。本轮只刷新底数并留档，
+这一处仍按计划与 ④ 一起处理。
+
+### 三、顺带产出：剩余引擎壳的「cascade 风险表」（第 132 轮那条判据的落地）
+
+判据（第 132 轮）：看 `this: typeof Y` 里的 **Y 在调用点/测试手里是不是一个能被类型满足的对象**。
+于是把每个引擎 spec 的 mock 形态查了一遍：
+
+| 引擎 | 成员数 | spec 里喂给 `this` 的实参 | 结论 |
+| --- | ---: | --- | --- |
+| `auto-tile-engine` | 5 | 无 `.call` 调用点 | ✅ 已拿下（第 131 轮） |
+| `scene-marquee-engine` | 10 | 真 `Scene.marquee` | ✅ 已拿下（第 132 轮） |
+| **`palette-engine`** | 22 | `const palette: any = { … }`（**`any` 型 mock**） | 🟡 **cascade 无风险**；剩下的是 22 个签名的抄写活 |
+| `scene-camera-engine` | 8 | 具体的部分 `Scene` mock | ❌ 已试过并回退（第 132 轮） |
+| `animation-window-engine` | 29 | `vi.mock(… Animation: { … })` 具体对象字面量 | ❌ 预计同 camera（未试） |
+
+⇒ **下一处该拿的是 `palette-engine`**，而且它是唯一「cascade 无风险」的 —— 代价明确写在表里（22 个签名）。
+
+### 四、账
+
+| 项 | 结果 |
+| --- | --- |
+| `any-hatches` / `unknown-casts` | 48 / 33 **持平**（本轮不改业务源码） |
+| 新增 | `scripts/oneoff/measure-any-hatch-site.mjs`（可复用；自动写回并逐字复核） |
+| `lint` / `format:check` / `text:check` / `docs:check` / `migration:selftest` | 0-0 / 0 / 0 / OK / 58/58 |
+| 测试套件 | 未跑（无源码改动） |
+
+### 五、教训
+
+1. **顺序也是结论的一部分。** 「14 处可空解引用」不在删签名那一步出现（本轮实测 0 条），而在
+   **声明字段之后**。同一句话，写成「79 处待补声明」和写成「79 处里有一步需要决策、且它排在声明之后」
+   会让下一批人估出完全不同的工期。
+2. **「不降轴的一轮」也得交东西**，而且要交**能改变下一轮决策**的东西：本轮是
+   「一把能单独量任意站点的尺子」+「最大一处的分字段底数」+「下一处（`palette-engine`）与确切理由」。
+3. 量完立刻**写回并复核**（脚本里 `try/finally` + 逐字比对）—— 第 37 轮那次「探针删错行」的事故
+   就是没有这一步。
+
+### 六、尺子的边界：`type X = Record<string, any>` **不可机械测量**
+
+复测探针时随手量了 `useSetStringCommandSchema.ts:15`（`export type SetStringOperand = Record<string, any>`），
+探针**拒绝执行**——这是对的，现在它会把理由说清：
+
+> 类型别名必须指向某个类型，换任何具体类型都会改变测量结果 ⇒ 属设计工作，不能机械测。
+
+⇒ 这条边界值得写进工具本身（已写），也值得记在这里：**「这一处量不出来」本身就是一个结论** ——
+它把该站点从「待测量」直接划到「待设计」（第 89 轮的工作单正是这么标注它的）。
+
+顺带量到的两个参考值（供下一批挑活）：
+- `palette/tile-frame-index.ts:13`（`export const TileFrame: Record<string, any> = {…}`）：摘掉注解
+  **82 条**报错，且**错误码混杂**（`TS2339` 39 · `TS2322` 18 · `TS2769` 10 · `TS2721` 6 ·
+  `TS2345` 4 · `TS2531` 3 · `TS2349` 2）—— 混杂说明它不只是「补声明」，还牵动赋值与可空 ⇒ **贵**。
+- `scene-marquee-engine.ts` / `auto-tile-engine.ts`（已拿下）当时是**零报错**。
+
+### 七、⚠️ 附带发现：全仓 **172 个文件带 UTF-8 BOM**（不是孤例）
+
+复核探针写回时，字节级检查在 `useSetStringCommandSchema.ts` 上看到 `BOM=True`。于是把扫描面
+（`packages/editor/src`、`packages/ui-kit/src`、`packages/editor/main`、`scripts`）整体扫了一遍：
+
+```txt
+带 BOM 的文件数 = 172
+```
+
+分布很有特征：**`composables/commands/*` 那一批命令 schema 几乎整族都在里面**，另有
+`components/common/*`、`stores/*`、以及若干 `__tests__`。⇒ 像是**某次批量写入**留下的，
+而不是零散编辑（第 125 轮我只抽查过自己动过的文件，全是无 BOM，于是误以为「仓库是纯无 BOM」）。
+
+怎么看待它：
+- **对工具链无害**：`tsc` / Vite / esbuild / vitest / oxfmt 都会忽略文件开头的 BOM，
+  `oxfmt` 也认为它们「格式正确」（`format:check` 全绿），所以**没有任何门禁看得见它**；
+- **但它是隐形的差异源**：改写同一个文件时，BOM 的有无会变成 diff 里的噪声（甚至让「我改了什么」
+  这句话变难回答）；本会话新建的文件都是无 BOM，于是仓库现在是**混着**的。
+- ⇒ 处理方式有两条，**都超出「本轮顺手能做完」的范围，摆在这里等人决定**：
+  (a) 一次性剥掉 172 个 BOM（纯字节改动，`tsc`/产物逐字节等价，但会产生 172 文件的 diff，
+      在迁移中途做会淹没真正的改动）；
+  (b) 给台账加一条 `bom-files` 轴（`不增`，基线 172），先**止住扩散**、再逐批收 ——
+      这正是本仓对「只许减少的清收」惯用的做法（如 `dom-on-exempted`）。
+
+### 八、教训（补）
+
+4. **「仓库整体是什么状态」不能靠抽查自己动过的文件来推断**：第 125 轮我只查了手改的文件
+   （全无 BOM），就得出了「仓库是纯无 BOM」的印象；本轮全扫才发现 172 个带 BOM。
+   ⇒ 凡是要写进文档的全仓断言，都要**全扫**（与第 133 轮第一节那条「顺序」并列）。
+5. **工具的拒绝要带理由**：探针第一次只说「没找到可摘的注解」，读的人会以为工具坏了；
+   现在它直接说明「类型别名不可机械摘」——**把边界写进工具，比写进文档更容易被下一批人读到**。

@@ -12,8 +12,62 @@ interface SceneMarqueeData {
 }
 const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
-// oxlint-disable-next-line no-explicit-any
-export const SceneMarqueeEngine: Record<string, any> = {};
+/**
+ * `SceneMarqueeEngine` 的成员表 —— 口径收紧（2026-09-22，`any-hatches` 收口，第 132 轮）。
+ *
+ * 此前是 `export const SceneMarqueeEngine: Record<string, any> = {}` 后面跟 10 行赋值。
+ * `any` 的代价与 `auto-tile-engine` 同：唯一的消费方 `scene-marquee.ts` 是**逐条镜像**
+ * 到 `Scene.marquee` 上（10 条 `Scene.marquee.x = SceneMarqueeEngine.x;`）——
+ * 拼错一条就静默挂个 `undefined`。
+ *
+ * 10 个成员各自独立（不互相引用、也不引用文件下方的声明），所以按「个位数/十位数就走本地窄类型」
+ * 的办法：**声明本地成员表，10 个实现一行不动**（与第 131 轮 `AutoTileEngine` 同一手法）。
+ * 写成**函数属性**而不是方法简写：它们是赋值上去、被逐条搬运的函数值，方法简写会让
+ * `typescript(unbound-method)` 在镜像点报警（第 131 轮的实测结论）。
+ *
+ * 形参给 `number`/`string`：实现里的默认值取自 `this.x` 等（走 `Scene.marquee` 的索引签名
+ * ⇒ 推断为 `any`），因此实现侧照样可赋；这等于把**调用点**的契约收紧（`scene.spec.ts` 里那 4 处
+ * `.call(Scene.marquee, 5, 10, 20, 30)` 本来就传数字）。
+ */
+interface SceneMarqueeEngineShape {
+	save: (this: typeof Scene.marquee, key?: string) => void;
+	switch: (this: typeof Scene.marquee, key: string) => void;
+	resize: (this: typeof Scene.marquee) => void;
+	clear: (this: typeof Scene.marquee) => void;
+	select: (
+		this: typeof Scene.marquee,
+		x?: number,
+		y?: number,
+		width?: number,
+		height?: number
+	) => void;
+	selectInPencilMode: (
+		this: typeof Scene.marquee,
+		x: number,
+		y: number,
+		width: number,
+		height: number
+	) => void;
+	selectInRectMode: (
+		this: typeof Scene.marquee,
+		x: number,
+		y: number,
+		width: number,
+		height: number
+	) => void;
+	selectInCopyMode: (
+		this: typeof Scene.marquee,
+		x: number,
+		y: number,
+		width: number,
+		height: number
+	) => void;
+	selectInObjectMode: (this: typeof Scene.marquee, x: number, y: number) => void;
+	/** 返回图块数据；真正的形状还没收窄（`this.tiles` 仍走索引签名）⇒ 声明为 `unknown`。 */
+	getTiles: (this: typeof Scene.marquee, raw: boolean) => unknown;
+}
+
+export const SceneMarqueeEngine = {} as SceneMarqueeEngineShape;
 // 选框 - 保存状态
 SceneMarqueeEngine.save = function (this: typeof Scene.marquee, key = 'default') {
 	let data;

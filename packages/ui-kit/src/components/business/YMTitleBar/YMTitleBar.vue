@@ -4,6 +4,14 @@ import { clamp, hasClass, rect, rasterize, relate } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
 
 function getWindow(): { close(id?: string): void } | undefined {
+	// `window.Window` 是宿主（编辑器）用 `Reflect.set(window, 'Window', …)` 挂上去的窗口 API
+	// （见 editor 的 `tools/window-object.ts:517`），可能不存在 ⇒ 声明为可选。
+	// ⚠️ 这里**必须**保留 `unknown` 跳板：`window` 的静态类型是 `Window & typeof globalThis`，
+	// 所以 `window.Window` 静态上看是全局 **`Window` 构造器**（`{ new(): Window; prototype: Window }`）
+	// —— 它**不是**我们要的东西，单个 `as` 会被拒（实测 TS2352：「Conversion of type
+	// '{ new (): Window; prototype: Window; }' … neither type sufficiently overlaps」；
+	// 写成 `window as Window & { Window?: … }` 同样被拒，因为那个成员与构造器同名不可比）。
+	// ⇒ 这是「丢掉一个错的静态类型」那一类跳板，与 `scene-tilemap-page.ts:210` 同类，不是可机械改的。
 	return (window as unknown as Window & { Window?: { close(id?: string): void } }).Window;
 }
 

@@ -161,7 +161,10 @@ export function attachScrollBarApi(
 		const inner = document.createElement('div');
 		addClass(inner, 'scroll-thumb-inner');
 		thumb.appendChild(inner);
-		el.appendChild((data.thumb = thumb as unknown as ScrollThumb));
+		// 交叉断言（手法库第 6 条）：这个 div 之后会被挂上 `ScrollThumb` 的几个 expando 字段
+		// （`left`/`width`/`top`/`height`，见上面 update*Thumb）—— 保留 `HTMLDivElement`
+		// 只补缺口，而不是用 `unknown` 跳板把 div 的类型整块丢掉。
+		el.appendChild((data.thumb = thumb as HTMLDivElement & ScrollThumb));
 		data.target = target;
 		bar.type = type;
 		addClass(el, type);

@@ -4818,7 +4818,7 @@ pnpm build:vite              # 构建
 > | `scene/scene-window.ts`              | **5** | `SceneShape`×3（L74 声明）+ `PresetNodeShape` + `SceneMarqueeData`；marquee 待对齐 `saveData` 两个写入方，list 需 19 签名 / 45 处 `!`                                          |
 > | `engine/particle/particle-engine.ts` | **3** | `ParticleLayerData` / `ParticleEmitterShape` / `ParticleElementLayerData` —— 要枚举 **35–40 个叶字段**（`data.color` / `data.sprite` / `data.area` 自身又是形状），级联实测 62 |
 > | `particle/particle-window.ts`        | **3** | `ParticleElementShape` / `ParticleLayerShape` / `ParticleEmitterShape`，级联实测 71                                                                                            |
-> | `ui-kit/.../YMParameterPane.vue`     | **3** | `Props`（L130 接口 / L164、L201、L971 站点）—— **只能靠 `typecheck:vue` 量**                                                                                                   |
+> | `ui-kit/.../YMParameterPane.vue`     | **3** | ⚠️ **第 130 轮更正：这一行的归属是错的。** 旧 `any-hatch-inventory` 按「往上找最近的 interface」归属，把该文件的站点记成了 `Props`（L130 接口）—— 但那几处**都不是 `Props` 的成员**：`L164` 是组件内的 `let el`、`L201` 是 `attachStateAccessors` 的**形参**、`L982` 是 `self`（`Props` 的成员只在 `L135`，即 `dataManifest` 的返回值）。旧工具已修（按站点自身文本分 `INDEX_SIG` / `RECORD_ANNOT`，常量与局部归给它们自己），现输出为 `Props`(L135) / `el`(L164) / `attachStateAccessors`(L201) / `getManifest`(L245) / `self`(L982) —— **5 处**，不是 3 处。详见 `xr.md` 第 130 轮第八节。 |
 > | `animation/animation-window.ts`      | **3** | `AnimationElement` / `AnimationFileContext` / `AnimationShape`                                                                                                                 |
 > | `composables/useCommandParse.ts`     | **3** | `CommandObjectShape` / `CommandNode` / `TextContent`，级联实测 67                                                                                                              |
 > | `ui/ui-window.ts`                    | **3** | `UIShape` / `UINodeShape` / `UIContextShape`                                                                                                                                   |
@@ -4875,6 +4875,58 @@ pnpm build:vite              # 构建
       ⚠️ `ui-engine.ts:24` 与 `useSetStringCommandSchema.ts:15` 顶上各有一行
       `// oxlint-disable-next-line no-explicit-any`：**删签名时必须一并删掉豁免注释**，
       否则 `stale-exemptions` 轴会多出一处陈旧豁免（第 38 轮已立此规矩）。
+      > ✅ **第 131 轮：`auto-tile-engine.ts` 已拿下（`any-hatches` 50 → 49）。**
+      > 做法=本地成员表 `AutoTileEngineShape` + `{} as`（5 个实现一行不动），豁免注释与签名同时删，
+      > `stale-exemptions` 实测保持 0。
+      > **A 组 10 处的挂载点个数（第 131 轮实测，按 `^\s*\w+\.\w+\s*=\s*(function|\()` 去重计数）**：
+      > `animation-window-engine` **29** · `palette-engine` **22** · `particle-engine` **3**
+      > （⚠️ 第 63 轮试过并回退：成员引用文件下方的 class —— **别重试**）· `scene-camera-engine` **12** ·
+      > `scene-marquee-engine` **10**（后两者本行已警告「真承重」）· `ui-engine` **25**（④ 相关）·
+      > `palette/auto-tile` **47** · `palette/tile-frame-index` **13** · `palette/palette` **0**
+      > （成员分散在**其他文件**里挂 ⇒ 组装式单例，与 `SceneShape` 同类）。
+      > ⇒ **「个位数就走本地窄类型」这条判据在这 10 处里只对 1 处成立**（已拿下）；其余属于
+      > 「逐成员枚举」那一档，别按「一轮一个」估工期。
+      > ⚠️ **附带发现（值得单独记）**：成员一旦有类型，`typescript(unbound-method)` 会在**搬运点**
+      > 报出来（`AutoTile.updateCanvas = AutoTileEngine.updateCanvas` 那 5 行）—— `any` 时代这个信号
+      > 被一起吞掉了。**修法是把成员写成函数属性**（`x: (this: T, …) => R`）而不是方法简写，
+      > 别加 disable 注释。⇒ 类型轴的汇报口径应包括「lint 是否因此能看见新东西」。
+      > ✅ **第 132 轮：`scene-marquee-engine.ts` 也已拿下（`any-hatches` 49 → 48）**，手法同上
+      > （10 个成员，函数属性写法，零级联）。
+      > ❌ **`scene-camera-engine.ts` 第 132 轮试过并回退** —— 本行「真承重」的警告**是对的**，
+      > 而第 132 轮一开始的假设（「那句话说的是窗口，引擎成员表应该很便宜」）**在 camera 上错了**。
+      > 依据：声明成员表之后 `tsc` 报 `scene.spec.ts(399,65) … is not assignable to parameter of type
+      > 'SceneShape' … missing … page, head, body, searcher, and 18 more` —— 因为该 spec 第 361 行用
+      > `vi.mock('@app/scene/scene-window.ts', () => ({ Scene }))` 把窗口换成了**部分 mock**，
+      > 而 camera 成员的 `this` 是 `typeof Scene` ⇒ 类型一落地，`.call(Scene, …)` 就要求那个 mock
+      > 满足**整个** `SceneShape`。要让它们可被 mock 满足，得给 8 个成员各写**只含它真正读的字段**的
+      > 本地窄 `this`（5–15 个字段/个，还牵到 `this.getGridContext()` 这类方法）—— 那才是真成本。
+      > ⇒ **判据修正**：看 `this: typeof Y` 里的 **Y 是不是「调用点/测试手里本来就有的那个对象」**，
+      > 而不是看成员个数。marquee 的 `this` 是 `Scene.marquee`（测试直接传它）⇒ 便宜；
+      > camera 的 `this` 是 `Scene`（测试传部分 mock）⇒ 贵。详见 `xr.md` 第 132 轮。
+      > 🔎 **第 133 轮把这条判据落成了一张表（每个引擎 spec 的 mock 形态实测）**：
+      > `auto-tile-engine` 5 ✅（无 `.call` 点）· `scene-marquee-engine` 10 ✅（真 `Scene.marquee`）·
+      > **`palette-engine` 22 🟡（spec 里是 `const palette: any = {…}` ⇒ cascade 无风险，剩下 22 个签名的抄写活）** ·
+      > `scene-camera-engine` 8 ❌（具体部分 mock，已回退）· `animation-window-engine` 29 ❌（`vi.mock` 返回
+      > 具体对象字面量，预计同 camera）。
+      > ⇒ **下一处该拿 `palette-engine`**。
+      > 🔎 **同一轮还给 `UINodeShape` 的索引签名做了决策就绪的复量**（新工具
+      > `scripts/oneoff/measure-any-hatch-site.mjs <路径> <行号>`，按站点种类用对应摘法、单独摘、
+      > 单独跑 tsc、自动写回并逐字复核）：`element-classes.ts:141` 摘掉后 **79 条全是 TS2339**，
+      > 分布在 20 个字段 / 10 个文件（`transform` 14 · `instance` 13 · `presetId` 13 · `instances` 10 ·
+      > `enabled` 6，其余 15 个字段合计 23）。⚠️ **这一阶段 `0` 条可空解引用** —— 计划里那句
+      > 「14 处 `matrix`/`parent` 可空被直接解引用」**要等字段声明之后**才浮出来
+      > ⇒ 「79 处」里**有一步需要实机裁决**，不是纯机械补声明。这一处仍按计划与 ④ 一起处理。
+      > ⚠️ **同轮两个附带结论**：
+      > 1. 那把尺子对 `type X = Record<string, any>`（类型别名）**拒绝测量**（换任何具体类型都会改变
+      >    结果 ⇒ 属设计工作）——「量不出来」本身就是结论，它把该站点从「待测量」划到「待设计」
+      >    （第 89 轮的工作单正是这么标的）。参考值：`palette/tile-frame-index.ts:13` 摘注解后
+      >    **82 条、错误码混杂**（2339/2322/2769/2721/2345/2531/2349）⇒ 贵；
+      >    `auto-tile-engine` / `scene-marquee-engine` 当时是**零报错**。
+      > 2. **全仓 172 个文件带 UTF-8 BOM**（扫描面全扫；`composables/commands/*` 几乎整族都在里面）
+      >    —— 对工具链无害且**没有任何门禁看得见**，但它让「BOM 有无」成为 diff 噪声源。
+      >    两条处理路线（一次性剥 172 个 / 加一条 `bom-files`「不增」轴先止住扩散）**都等人决定**，
+      >    见 `xr.md` 第 133 轮第七节。⚠️ 第 125 轮「机械改写收尾清单：查行尾/BOM」那条要按此更新：
+      >    **仓库不是纯无 BOM**，抽查自己动过的文件推不出全仓状态。
     - **B 组 · 型态变体（6 处，各需单独设计）**：
       `particle/particle-window.ts:49`（`Array<Record<string, any>> & { count: number }`）·
       `particle/particle-window.ts:253`（`stage`）·
@@ -5440,3 +5492,29 @@ C 匿名或泛型 11**。下一步最省力的两族：③「被调方形参声�
   实参有共同成员，`Event` 没有 `value`）而打断 Vue 模板绑定 ⇒ 需要先定「这类处理器怎么建模」。
 
 下一族建议从 ④「动态键取成员」8 处动手，但**先**决定它与 `any-hatches` 轴谁让步。详见 `xr.md` 第 127 轮。
+
+#### `unknown-casts` 35 → 33（2026-09-22 第 129 轮）：两处真修 + 一处**必须保留**（编译器判的）
+
+- **契约说谎 → 放宽形参**：`ui-kit/src/utils/attach-api.ts` 的 `attachApi(el: HTMLElement, …)`
+  实现只有 `Reflect.set(target, key, value)`（对**任何对象**都成立）⇒ `HTMLElement` 过窄。
+  暴露它的是 `menu-api.ts:492`：那里的 `menu` 是菜单的**状态对象**（对象字面量），不是元素。
+  放宽成 `target: object` 后既有调用点全部继续成立，`menu as unknown as HTMLElement` 消失。
+  这就是第 124 轮 `clear()` 那类「契约修正」，**优先找这种**（改一处声明，去掉调用点的谎话）。
+- **交叉断言**：`scroll-bar-api.ts:164` 的 `thumb as unknown as ScrollThumb` →
+  `thumb as HTMLDivElement & ScrollThumb`（`ScrollThumb extends HTMLElement` + 四个 expando 字段，
+  而 `thumb` 是 `createElement('div')`）。
+- ⚠️ **必须保留的一处**：`YMTitleBar.vue:7` 的 `window as unknown as Window & { Window?: … }`。
+  去 `unknown` 会被 `vue-tsc` 拒（TS2352）：`window` 的静态类型是 `Window & typeof globalThis`，
+  所以 `window.Window` 静态上就是全局 **`Window` 构造器**，不是宿主挂的那个 API
+  ⇒ 这里 `unknown` 是在**丢掉一个错的静态类型**（与 `scene-tilemap-page.ts:210` 同类）。
+  已在就地注释里写明证据。**轴的中间值一度是 32，那个数是错的。**
+
+⇒ 目前「**必须**保留 `unknown`」的站点已明确记录在案的有三处：
+`window-object.ts:59`（数组实例加方法）、`scene-tilemap-page.ts:210`（丢错的 `this` 声明）、
+`YMTitleBar.vue:7`（丢错的全局构造器类型）。判据：**先看源类型对不对，再看形状。**
+
+⇒ 附带一条通用教训：`ui-kit/playground/` **不在** `tsconfig.build.json` 的 include 里
+（只 `src/**`）⇒ 那里写了什么都不受类型检查，**不能当先例**。
+
+剩下 33 处仍按第 126 轮那张表分族（A/B/C），最省力的 ③ 已收口；下一步是 ④（8 处，先定它与
+`any-hatches` 谁让步），以及两族计划内债务（monaco 的环境形状、codec 的 `string ↔ Uint8Array`）。
