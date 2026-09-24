@@ -8,8 +8,53 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
 import { clamp, roundTo, dist, radians } from '@app/utils/math';
 
-// oxlint-disable-next-line no-explicit-any
-export const AnimationWindowEngine: Record<string, any> = {};
+/**
+ * `AnimationWindowEngine` 的成员表（第 160 轮把 `Record<string, any>` 收成具名形状）。
+ *
+ * 与隔壁 `scene-camera-engine.ts` / `scene-marquee-engine.ts` **同一手法**（第 159 / 131 轮的结论）：
+ * 27 条成员**全部在本文件内各挂一次**，消费方只有 `animation-window.ts`
+ * （27 行逐条镜像到 `Animation` 上）⇒ 形状可以完全从这里逆推，没有跨文件的形状分歧。
+ *
+ * 写成**函数属性**而不是方法简写：它们是被逐条搬运的函数值，
+ * 方法简写会让 `typescript(unbound-method)` 在那 27 个镜像点报警。
+ *
+ * 断言 `{} as AnimationWindowEngineShape` 与事实相符：27 条在模块求值结束时必然都已挂上。
+ */
+type AnimationWindowEngineShape = {
+	updateCamera: (this: typeof Animation, x?: number, y?: number) => void;
+	updateTransform: (this: typeof Animation) => void;
+	updateMatrix: (this: typeof Animation) => void;
+	drawBackground: (this: typeof Animation) => void;
+	drawOnionskins: (this: typeof Animation) => void;
+	drawSpriteLayers: (this: typeof Animation, contexts?: AnimationContextList) => void;
+	drawEmitters: (this: typeof Animation) => void;
+	emitParticles: (this: typeof Animation, deltaTime: number) => void;
+	updateParticles: (this: typeof Animation, deltaTime: number) => void;
+	drawBackParticles: (this: typeof Animation) => void;
+	drawFrontParticles: (this: typeof Animation) => void;
+	drawCoordinateAxes: (this: typeof Animation) => void;
+	drawJointNodes: (this: typeof Animation) => void;
+	drawJointArrows: (this: typeof Animation) => void;
+	drawJointSpinner: (this: typeof Animation) => void;
+	drawHoverWireframe: (this: typeof Animation) => void;
+	drawTargetWireframe: (this: typeof Animation) => void;
+	drawSpriteWireframe: (this: typeof Animation, context: AnimationContext, color: number) => void;
+	drawEmitterWireframe: (
+		this: typeof Animation,
+		context: AnimationContext,
+		color: number
+	) => void;
+	drawTargetAnchor: (this: typeof Animation) => void;
+	drawSpriteControlPoints: (this: typeof Animation) => void;
+	requestAnimation: (this: typeof Animation) => void;
+	updateAnimation: (this: typeof Animation, deltaTime: number) => void;
+	stopAnimation: (this: typeof Animation) => void;
+	requestRendering: (this: typeof Animation) => void;
+	renderingFunction: (this: typeof Animation) => void;
+	stopRendering: (this: typeof Animation) => void;
+};
+
+export const AnimationWindowEngine: AnimationWindowEngineShape = {} as AnimationWindowEngineShape;
 
 let animationWindow: typeof Animation | null = null;
 
@@ -39,6 +84,13 @@ type AnimationContext = {
 	parent: AnimationContext | null;
 	[k: string]: unknown;
 };
+
+/**
+ * `player.contexts`：按索引取帧上下文，另有 `count`。
+ * 只声明**用到的那两件事**（索引 + `count`），不假装它是 `Array` ——
+ * 全仓的用法就只有 `contexts[i]` 与 `contexts.count`（见 animation-timeline / animation-motion）。
+ */
+type AnimationContextList = { count: number; [index: number]: AnimationContext };
 
 AnimationWindowEngine.updateCamera = function (
 	this: typeof Animation,

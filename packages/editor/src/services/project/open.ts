@@ -191,7 +191,9 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 	GameLocal.initialize();
 
 	// 打开开发服务器 SettingConfig.config 在 SettingConfig 实例化期 load() 从 yami-config.json 载入；但若 load() 抛错或文件缺失未兜底，config.server 可能是 undefined，裸取 .auto 会炸
-	const serverConfig = SettingConfig.config?.server ?? {};
+	// 第 158 轮：`?? {}` 让这里成了联合类型，所以把本地形状标注出来（只用到 `auto`）。
+	// 行为一字未改：仍然是「取不到就当作没开自动启动」。
+	const serverConfig: { auto?: boolean } = SettingConfig.config?.server ?? {};
 	if (serverConfig.auto) WebServer.start(path);
 }
 

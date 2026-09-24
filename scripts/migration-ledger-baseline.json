@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-24T13:58:35.378Z",
+	"generatedAt": "2026-09-24T16:45:50.717Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -27,8 +27,8 @@
 			"label": "泛型逃生口 [k|key: string]: any / Record<string, any>",
 			"target": "zero",
 			"value": {
-				"total": 34,
-				"files": 22
+				"total": 29,
+				"files": 18
 			}
 		},
 		"dom-on-exempted": {
@@ -134,8 +134,8 @@
 			"label": "双重断言 as unknown as",
 			"target": "zero",
 			"value": {
-				"total": 6,
-				"files": 5
+				"total": 5,
+				"files": 4
 			}
 		},
 		"unremovable-listeners": {

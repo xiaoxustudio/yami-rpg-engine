@@ -5,9 +5,29 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { radians } from '@app/utils/math';
 import { append, remove } from '@app/utils/array';
 
+/**
+ * 「元素」的公共面（第 164 轮收口）。
+ *
+ * 此前这里是**空接口 + `[k: string]: any`** —— 本文件 `:249` 那条 2026-09-18 的注释写得很清楚：
+ * 「索引签名让 tsc 在这一层**完全瞎**」。本轮按实测把它收成 7 个成员：把索引签名摘掉后，
+ * `tsc` 报的 **20 条 TS2339 全部在这一个文件里**，点名要的正是这 7 个
+ * （`parent`9 · `connect`3 · `resize`3 · `connected`2 · `destroy` · `disconnect` · `draw`）。
+ *
+ * `draw` 声明成**可选**，与上面 `requestResizing` 同一处理（`:54`）：基类实例本身没有它
+ * （只有具体元素类有），而 `remove()` 会把 `this`（基类实例）传进 `this.parent!.children`
+ * 这类 `UIElementShape[]` 里。调用点配 `?.`（`:217`）—— 实际 children 全是具体元素类，
+ * 所以那条路径运行期不会走到，`?.` 只是把「类型看不见的事实」写成不崩的形态。
+ *
+ * 写成**函数属性**而不是方法简写 —— 与同文件 `:16` / `:54` 的写法一致。
+ */
 interface UIElementShape {
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	parent: UIParentShape | null;
+	connected: boolean;
+	connect: () => void;
+	disconnect: () => void;
+	draw?: () => void;
+	resize: () => void;
+	destroy: () => void;
 }
 
 interface UINodeShape {
@@ -198,7 +218,7 @@ uiElClasses.Element = class UIElement {
 		const children = this.children;
 		const length = children.length;
 		for (let i = 0; i < length; i++) {
-			children[i].draw();
+			children[i].draw?.();
 		}
 	}
 
@@ -250,7 +270,7 @@ uiElClasses.Element = class UIElement {
 				remove(element.parent!.children, element);
 			}
 			if (element.parent instanceof uiElClasses.Window!) {
-				element.parent!.requestResizing();
+				element.parent!.requestResizing?.();
 			}
 			element.parent = this;
 			this.children.splice(index, 0, element);

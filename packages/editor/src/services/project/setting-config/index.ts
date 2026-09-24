@@ -7,13 +7,16 @@ import nodeFs from 'node:fs';
 import nodePath from 'node:path';
 import { SettingRenderer } from './renderer.ts';
 import { settingSchema, buildDefaultConfig } from './schema.ts';
+import type { SettingConfigShape } from './types.ts';
 import type { YamiElement } from '@app/types/element-api';
 
 export const path = nodePath;
 
 export const SettingConfig = new (class {
-	// oxlint-disable-next-line no-explicit-any
-	config: Record<string, any> = {};
+	// 第 158 轮：`Record<string, any>` → 具名形状（形状与三条约定见 `types.ts`）。
+	// `{}` 只是占位：构造函数第一句就 `load()`，而下面的 `renderer` 字段只存引用、不读它
+	// ⇒ 初值不可观测。这里的断言表达的是与 `apply()` 相同的前提（加载后各分区都在）。
+	config: SettingConfigShape = {} as SettingConfigShape;
 	private _rendered = false;
 	private _localizeBound = false;
 	private renderer = new SettingRenderer(this, settingSchema);
@@ -106,7 +109,10 @@ export const SettingConfig = new (class {
 			}
 			return _t_obj;
 		};
-		this.config = patch(this.defaultConfig, this.config);
+		// `patch()` 的返回是 `Record<string, unknown>`（它按 `defaultConfig` 的键补齐目标），
+		// 而 `defaultConfig` 由 `settingSchema` 生成、7 个顶层分区必在 ⇒ 补齐后形状与
+		// `SettingConfigShape` 的前提一致，这次断言是**与事实相符**的，不是「可能说谎」。
+		this.config = patch(this.defaultConfig, this.config) as SettingConfigShape;
 		for (const key of Object.keys(this.defaultConfig)) {
 			this.config[key] ??= {};
 			const defaultSection = this.defaultConfig[key] as Record<string, unknown>;

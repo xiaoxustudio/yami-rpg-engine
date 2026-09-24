@@ -1364,8 +1364,10 @@ Scene.create = function (this: SceneShape, kind: string, x: number, y: number) {
 	const dItem = this.getDefaultObjectFolder!(kind);
 	const map = this.inspectorTypeMap;
 	const key = map[kind];
-	// oxlint-disable-next-line no-explicit-any
-	const editor = (Inspector as Record<string, any>)[key];
+	// `map` 的值就是 `Inspector` 的成员名（见本文件 `:580` 的初始化表）：这里用一次**收窄断言**
+	// 把它点明，好过整块 `Record<string, any>` —— 后者连下一行的 `editor.create()` 都不检查。
+	// （手法库第 139 条：断言可能说谎，但比 `any` 诚实；运行期这个值确实取自那张表。）
+	const editor = Inspector[key as keyof typeof Inspector];
 	const object = editor.create();
 	object.x = x;
 	object.y = y;

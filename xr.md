@@ -5775,3 +5775,446 @@ ParameterPane.vue(7,4): TS2322   ← :data-manifest="dataManifest"
 2. **删掉注解 ≠ 关掉逃生口**：成员位删注解得到隐式 `any`，代价被记在**被改的那一行**上。
    ⇒ 凡是报错**全部落在刚改的那一行**，都该先当**仪器故障**处理；语法族报错同理。
 3. **自检要写进仪器**：这次不是靠人眼，而是让工具对**自己的输出**做一次「这读数像不像真的」检查。
+
+## 第 158 轮（2026-09-22）：`SettingConfig.config` 收成具名形状（`any-hatches` 34 → 33）
+
+### 一、从第 157 轮修好的尺子上挑活
+
+复扫后**最便宜且无已知障碍**的一处：`services/project/setting-config/index.ts` 的
+`SettingConfig.config: Record<string, any> = {}`（类字段，代价 **17**）。
+
+### 二、为什么不能靠删注解
+
+它必须收成**具名形状**，而**类型层没有真源**：`settingSchema` 是运行期数据
+（`SettingSection[]`，`id: string`），`buildDefaultConfig()` 只返回 `Record<string, unknown>`
+⇒ 形状只能**按读者逆推**。于是先把 8 个读者文件抄了一遍（表在 PHASE #32），得出 7 个顶层分区：
+**server / apkbuild / signed / other / recent / github / update**。
+
+巧的是这 7 个与 `settingSchema` 的顶层 `id` **逐个对齐** —— 而 `buildDefaultConfig()`
+保证每个分区都存在 ⇒ 后面 `patch()` 那次断言是**与事实相符**的，不是「断言可能说谎」。
+
+### 三、动手（3 个文件）
+
+1. `types.ts` 新增 `SettingConfigShape`（**`type` 别名**：7 个分区 + 顶层索引签名）；
+2. `index.ts`：字段换成它（`{} as SettingConfigShape`）；`patch()` 那次赋值补断言并写明**为什么相符**；
+3. `open.ts`：`config?.server ?? {}` 成了联合类型，把本地形状标注成 `{ auto?: boolean }`
+   —— 行为一字未改（仍然是「取不到就当作没开自动启动」）。
+
+### 四、三条约定（写进类型注释的「别随手改」）
+
+1. **顶层索引签名的值类型必须可再索引**（`Record<string, unknown>`，不是 `unknown`）——
+   `load()` 要写 `config[key][sub]` 与 `config[key] ??= {}`；
+2. **已知分区不标 `?`** —— `apply()` 裸取 `config.server.port`；标成可选就逼着改那行，
+   而改成 `?.` 是把「config 尚未加载」从**抛错**变成**静默写入 `undefined`**（行为变化）。
+   类型在这里表达的是**调用前提**（`apply()` 只从 `save()` 进，而 `save()` 前必先 `load()`）；
+3. **用 `type` 而非 `interface`** —— `renderer.ts` 的 `SettingHost.config` 是
+   `Record<string, unknown>`，TS 只对**对象类型别名**推断隐式索引签名（第 156 轮同一族坑）。
+
+### 五、账与验证
+
+| 项 | 结果 |
+| --- | --- |
+| `any-hatches` | **34 → 33**（files 22 → 21） |
+| editor `tsc` | **0 错，一次过** |
+| `typecheck:vue` | 0 新错（baseline 0） |
+| 行为变化 | **0**（`as` 编译期即消失；`?? {}` 处的本地注解不改语义） |
+| 门禁 | lint / format / text / docs / 棘轮 |
+
+### 六、教训
+
+1. **先抄读者，再写形状**：形状的真源不在 schema 里，在**读者的用法**里 —— 抄完读者，
+   形状自己就出来了（7 个分区，一个不多一个不少）。
+2. **运行期 schema 给不了类型**：别指望「从 schema 派生类型」，那是把运行期与编译期混为一谈；
+   但 schema 的 `id` 可以拿来**校验**手写形状有没有多 / 少（本轮正是靠它确认了 7 个分区）。
+3. **断言分两种**：「可能说谎的断言」（第 139 轮）与**与前提相符的断言**（本轮 `patch()` 那次）。
+   后者必须把**为什么相符**写出来，否则下一个人只看到一个 `as`，不知道能不能删。
+
+## 第 159 轮（2026-09-22）：`SceneCameraEngine` 收成员表（`any-hatches` 33 → 32）
+
+### 一、挑活
+
+复扫表里代价 20 的有两处：`element-base.ts:10`（**登记为故意保留**）与
+`scene-camera-engine.ts:9`（未勘探）。取后者。
+
+### 二、勘探结果：它和 `particle-engine` 看着一样，其实**不是同一类**
+
+| | `particle-engine.ts:12`（第 154 轮已记录受阻） | `scene-camera-engine.ts:9`（本轮） |
+| --- | --- | --- |
+| 成员 | ~16 个，**赋值来自视图层多个不同形状** | **8 个，全部在本文件内各挂一次** |
+| 消费方 | 多处，视图与引擎形状分歧 | 只有 `scene-camera.ts`（8 条整体拷到 `Scene`）+ 1 个 spec |
+| 真实工作量 | 实测 **79 条 / 8 文件** | **2 条**（且已用更好的办法消掉，见五） |
+
+⇒ **「代价 20」同样是入口代价，不是工作量**：那 20 条是「删掉注解让 TS 去推 `{}`」的报错，
+而正确改法是把 8 个成员**声明出来**，一次全消。**读数相同的两个站点，工作量差 40 倍。**
+
+### 三、动手
+
+一个模块内的 `type SceneCameraEngineShape`（8 条方法，`this` 一律 `typeof Scene`）
++ `export const SceneCameraEngine: SceneCameraEngineShape = {} as SceneCameraEngineShape;`
+—— 断言**与事实相符**：8 条在模块求值结束时必然都已挂上（全部是无条件赋值）。
+
+### 四、唯一的两条报错，以及比「给夹具打补丁」更好的做法
+
+第一轮 typecheck 只报 2 条，全在 `scene.spec.ts`：夹具是**局部 mock**，而
+`rasterizeScrollPosition.call(Scene, …)` 现在要求 `this` 是整只 `SceneShape`，mock 缺 22 个字段。
+
+顺手的改法是给夹具加一个 `as unknown as`。**没这么干** —— 声明贴事实更值钱：
+那个函数从头到尾只读 6 个字段（`scaleX/scaleY/scrollLeft/scrollTop/scrollRight/scrollBottom`），
+于是抽出 `type RasterizeScrollThis = Pick<typeof Scene, …那 6 个…>`，**声明与实现两边都用它**。
+⇒ 夹具**一行没改**，而契约比原来更准。
+
+过程里踩到一次：只改声明不改实现会报 TS2322 —— **`this` 参数的检查是逆变的**，两边必须一致。
+所以别把 `this` 形状内联在声明里，**抽成类型别名**才可能两边同源。
+
+### 五、类型一收口，`lint` 就看见了新东西：8 条 `unbound-method`
+
+`tsc` 干净之后 `lint` 却报 **8 条 `typescript(unbound-method)`**，全在镜像点
+（`scene-camera.ts:10-17` 那 8 行 `Scene.x = SceneCameraEngine.x;`）。原因很直白：
+成员原来是 `any`，这条**类型敏感**的规则根本看不见它们；一收成具名形状，它立刻就看见了。
+
+这不是噪音，而是**类型收紧的必然副作用**，而且本仓已经解决过 —— 去搜规则名就找到了同形写法
+（`scene-marquee-engine.ts`、`palette-engine.ts`、`auto-tile-engine.ts` 都是同一手法）：
+**成员写成「函数属性」而不是「方法简写」**（`name: (this: X, …) => R`，不是 `name(this: X, …): R`）。
+方法简写会被 `unbound-method` 命中；函数属性不会。改完 `lint` 回到 **0 warning 0 error**，
+**一条豁免注释都不需要**。
+
+⇒ 这比「给那 8 行各加一个 `oxlint-disable-next-line`」好得多：既没留豁免债，也和隔壁文件同形。
+
+### 六、账与验证
+
+| 项 | 结果 |
+| --- | --- |
+| `any-hatches` | **33 → 32**（files 21 → 20） |
+| editor `tsc` | 0 错 |
+| `typecheck:vue` | 0 新错 |
+| `lint` | **0 warning 0 error**（含上面的 `unbound-method` 处置） |
+| editor 测试 | 255 文件 / 2075 全绿 |
+| 行为变化 | **0**（本轮改动全是类型注解，编译期即消失） |
+
+### 七、教训
+
+1. **同读数 ≠ 同工作量**：两处都读「20」，一处是 10 行声明、一处是 79 条级联。
+   读数可以用来**排序**，估工必须先勘探**成员数 + 赋值来源**。
+2. **「成员全部在本文件内各挂一次」是分水岭**：这正是 `particle-engine` 做不到的
+   （它的赋值来自多个视图形状，一收口就暴露视图/引擎的形状分歧）。
+3. **`this` 声明要贴事实**：读 6 个字段就声明 6 个 —— 既不苛求夹具，也不放松检查；
+   而**逆变**决定了它必须与实现共享同一个类型别名。
+4. **收 `any` 会打开 `lint` 的新视野**：类型敏感的规则此前对 `any` 是瞎的。收口后新增的
+   报警**先当成信息**（这里正是真问题：搬运点丢 `this`），再找**同形写法**解决 ——
+   本轮靠搜规则名找到隔壁文件的既有手法，一条豁免都没加。
+
+## 第 160 轮（2026-09-22）：`AnimationWindowEngine` 收成员表（`any-hatches` 32 → 31）
+
+### 一、判据第二次生效（这次是**先预测、后验证**）
+
+拿第 159 轮定下的两条判据去量 `animation-window-engine.ts:12`（代价 **54**）：
+
+| 判据 | 结果 |
+| --- | --- |
+| ① 成员是否**全部在本文件内各挂一次** | ✅ **27 条全部**（改动前该文件第 43~837 行） |
+| ② 消费方是否**只有一处** | ✅ 只有 `animation-window.ts`（27 行逐条镜像到 `Animation`） |
+
+⇒ 预测「这是与 `scene-camera-engine` 同一手法，工作量≈10 行声明」——**实测就是如此**，
+而且**一次 typecheck 就 0 错**（连第 159 轮那 2 条 spec 报错都没有：没有 spec 碰这 27 条）。
+
+**代价 54 同样是入口代价**：那 54 条 = 「删掉注解让 TS 去推 `{}`」的报错（源文件 27 + 消费方 27）。
+
+### 二、动手
+
+一个模块内的 `type AnimationWindowEngineShape`（27 条**函数属性**）+ `{} as …`；
+另加一个 `type AnimationContextList = { count: number; [index: number]: AnimationContext }` ——
+`drawSpriteLayers` 的 `contexts` 参数。
+
+**只声明用到的那两件事**（索引 + `count`），**不假装它是 `Array`**：全仓的用法就只有
+`contexts[i]` 与 `contexts.count`。声明贴事实，第二次。
+
+### 三、账与验证
+
+| 项 | 结果 |
+| --- | --- |
+| `any-hatches` | **32 → 31**（files 20 → 19） |
+| editor `tsc` | **0 错，一次过** |
+| `lint` | **0 warning 0 error** —— 函数属性写法再次让 27 个镜像点**不报** `unbound-method`（预测命中） |
+| `typecheck:vue` | 0 新错 |
+| editor 测试 | 255 文件 / 2075 全绿 |
+| 行为变化 | **0**（改动全是类型注解） |
+
+### 四、教训
+
+1. **判据可以「先预测」了**：前两轮是「勘探后决定」，本轮是**先按判据预测、再用实测验证**，
+   连「会不会有 spec 报错」都预测准了（没有 spec 碰这 27 条）。
+   ⇒ 一套判据成熟的标志就是：它开始能**提前**回答问题，而不只是事后解释。
+2. **注册表写法是一条产线**：`scene-marquee-engine`（10）/ `scene-camera-engine`（8）/
+   `animation-window-engine`（27）三处同形、**零级联**；而 `particle-engine` 卡在判据①
+   （赋值来自多个视图形状）。剩下的 registry 袋（`ui-engine` 93 / `tile-frame-index` 82 /
+   `auto-tile` 307 / `palette` 696）都用**同两条判据**逐一筛，别按代价排序直接上。
+3. **函数属性写法要当默认**：本轮 27 个镜像点如果写成方法简写，会多出 27 条 `unbound-method`
+   警告，且每条都要么加豁免、要么绕开。**声明形态在这里决定 lint 成本**。
+
+## 第 161 轮（2026-09-22）：把「注册表袋」一次筛完 —— 本轮**没有降账**，但把两类活钉死了
+
+### 一、动机
+
+第 159/160 轮连摘三处同形注册表，于是想按同样的路子把剩下的几个一次做完。
+结果四个袋子全被**实测或结构**挡住。这一轮的价值不在账上，在**不让人重复挑错活**。
+
+### 二、筛选表（判据①②来自第 159 轮）
+
+| 候选 | 本文件内挂载 | 外部消费方 | 结论 |
+| --- | --- | --- | --- |
+| `TileFrame`（82） | 13 | 2（`auto-tile.ts` / `palette-initialize.ts`） | ⛔ 见四 |
+| `UIEngine`（93） | 21 | 10（全是「读」） | ⛔ 见三 |
+| `AutoTile`（307） | 62 | 10 | ⛔ 大对象字面量 + 被 `Palette` 家族共引用 |
+| `Palette`（696） | 20（字面量成员） | **~40 个文件** | ⛔ 排除 |
+
+`UIEngine` 与 `TileFrame` 都**满足前两条判据**（外部没有 `X.y = …`，也没有动态 `X[…]`；
+`UIEngine` 那两处「读了但没挂」的 `drawXxx` / `x` 经查只是**注释里的散文**，不是代码）。
+
+### 三、`UIEngine` 实测挡住：**64 条 / 8 文件**（已回退）
+
+声明 21 条成员后 `tsc` 报 64 条，**全是同一句**：
+
+```
+Argument of type 'UIShape' is not assignable to parameter of type 'UIFacadeShape'.
+  Type 'UIShape' is missing: marquee, planToSave, requestRendering, updateControlPoints, and 3 more.
+```
+
+根因：成员声明的 `this: UIShape` 是**本文件里**的 `type UIShape = UIFacadeShape`（引擎读 UI 的契约），
+而**调用点传进来的接收者**是 `engine/ui/legacy/ui-window.ts:34` 那个**同名但更窄**的 `UIShape`
+（它没有那 7 个成员）。`UIEngine.x` 原来是 `any`，`.call(接收者, …)` 根本没检查；一收口就全暴露。
+连 `ui-engine.ts` 自己那 7 处 `.call(UI)`（第 699~705 行）也中招。
+
+⇒ **这正是 ④-3/④-4 的接缝**（遗留 UI 单例 vs facade 契约）。已 `git checkout` 回退，
+按仓库规矩不硬上半个级联。**它反过来是那条待决策问题的最硬证据**：④-4 不做，`ui-engine`(93)
+与 `ui-window`(452) 这两处都动不了。
+
+### 四、另两个：一个是**类**索引签名，一个是**自指**形状
+
+- `schema.ts:88`（21）：不是「普通字段忘了声明」，而是**类**索引签名，账里混着 4 个
+  「每个 schema 动态挂上去的处理器」——`targetWrite` / `operationWrite` / `typeWrite` / `writeHandler`
+  （`useRegisterEventCommandSchema.ts:412-414`、`useSetBooleanCommandSchema.ts:198`）。
+  它们的签名**互相分歧**：`(e: { value: string }) => void` 与 `(e: { value?: unknown }) => void`。
+  函数属性的参数检查是**逆变**的 ⇒ 声明成一个类型就会让另一批挂载点报错。**得先定处理器契约**。
+- `TileFrame`（82）实测构成：`TS2339` 39 + `TS2322` 18 + `TS2769` 10 + `TS2721` 6 + …，
+  缺的字段是 `x` `y` `scaleX` `scaleY` `mode` `screen` `scrollLeft` … —— 因为它的成员写成
+  `this: typeof TileFrame`（**自指**），所以「成员表」还得顺带声明**一批数据字段**，
+  另有 43 条是重载/可空/不可调用。这是 `element-base` 那一类，不是前三轮那一类。
+
+### 五、教训：给筛选加**第三条**判据
+
+1. ① 成员是否全部在定义文件内挂载？② 消费方是否只有一处 / 是否只读？
+2. **③ 成员契约与调用点/挂载点是否同一份形状？**
+   —— `this: X` 里的 `X` 是否**就是**调用点传的那个类型；动态挂上去的处理器是否只有一种签名。
+   前两条过、第三条不过，就是 `UIEngine` 这种「看着白拿、一收口 64 条」。
+   **前两条判据筛的是「形状能不能逆推」，第三条筛的是「逆推出来的形状有没有人认」。**
+
+### 六、本轮账
+
+**不变**（`any-hatches` 仍 31 · files 19）。工作树已回退干净（`tsc` 0 错），
+`git status` 无残留。下一轮改从**未被这三条判据否掉的**站点里挑，别再从代价表直接取。
+
+## 第 162 轮（2026-09-22）：重审一处登记保留项 —— `unknown-casts` 6 → 5
+
+### 一、换轴：`any-hatches` 的便宜站点确实挑完了
+
+第 161 轮把四个注册表袋筛完（两处实测阻挡、两处结构性排除）后，`any-hatches` 剩下的全是大件
+（452 / 539 / 696 / 897 / 1180 / 1455）或已记录受阻项。于是换到最小的一条**从没动过**的轴：
+`unknown-casts`（6 处 / 5 文件）。
+
+### 二、先看清单，再逐处问「**当初让它必须断言的那个缺口，还在不在**」
+
+6 处里 5 处是有记录的保留项（`eslints` ×2 的 253 属性错配、`custom-command-window:227` 的
+`any` 且可空的别名、monaco 两处的模块解析 / 无声明文件）。**第 6 处**——
+`components/command-list.ts:51`——**恰好被第 158 轮改过上游**：
+
+```ts
+settingConfig: SettingConfig as unknown as { config: { other: { copyAsTextKeepEmptyLine: boolean } } },
+```
+
+ui-kit 的契约（`command-api.ts:231`）要求 `config.other.copyAsTextKeepEmptyLine` **非可选**，
+而第 158 轮我写 `SettingConfigShape.other` 时只声明了 `browserSearchHistoryLimit`，
+另一支靠 `[key: string]: unknown` 兜着 ⇒ 落到 `unknown`，不满足 `boolean` ⇒ 只好双层断言。
+
+### 三、动手（2 个文件）
+
+1. `types.ts`：给 `other` 补上 `copyAsTextKeepEmptyLine: boolean` —— 它**确实是 schema 字段**
+   （`schema.ts` 的 `other` 分区，checkbox，默认 `true`），而 `load()` 会按 schema 补默认值
+   ⇒ 加载后必然存在（与 `server.port` 同一前提，注释里写明）；
+2. `command-list.ts`：**整段去掉** `as unknown as`，写成 `settingConfig: SettingConfig`，
+   并注明这是按手法库第 148/155 条做的重审。
+
+### 四、账与验证
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **6 → 5**（files 5 → 4） |
+| `any-hatches` | 31 · files 19（持平，本轮不动它） |
+| editor `tsc` / `lint` / `typecheck:vue` | 0 错 / 0 warning 0 error / 0 新错 |
+| editor 测试 | 255 文件 / 2075 全绿 |
+| 行为变化 | **0**（去掉的是断言，编译期就消失） |
+
+### 五、教训
+
+1. **「登记保留」不是永久豁免**：它记的是「**当时**那个缺口」，缺口一补就该重审。
+   本轮 6 处里唯一**没**被登记的，恰好是被我第 158 轮解锁的那一处 —— 等于说
+   **我刚做的改动让另一处保留项过期了**。⇒ 收口一处之后，顺手扫一遍**同族的登记项**。
+2. **重审要问具体那一句**：不是「它还在不在用」，而是「**当初让它必须断言的那个缺口，还在不在**」。
+   这里缺口就是 `other.copyAsTextKeepEmptyLine` 的类型，而第 158 轮恰好绕过了它。
+3. **补字段是补契约，不是补断言**：这个字段是从 ui-kit 的**读点**逆推的（第 158 轮「形状按读者逆推」），
+   而它在 `schema.ts` 里有真身 ⇒ 把断言换成声明，两头都对得上。
+
+## 第 163 轮（2026-09-22）：量了 `Data` 那处「代价 539」的真实债务 = **619**（未落地）
+
+### 一、动机：找「两个半形状」的同类
+
+第 162 轮的教训是「保留项会过期」，但我也想确认大件里有没有便宜的。`data-object.ts:67`（代价 539）
+看着正像「同一个运行期对象的两个半形状」（手法库 #118 / #144 / #145）：
+
+- `DataModule` 只声明**方法**（27 条），`[k: string]: any` 让 26 个**数据字段**漏出去；
+- `stores/data.ts` 的 `DataShape` 正好声明那 26 个字段**且带真类型**（`ManifestShape | null` 等），
+  还被 `dataKeys` 与 store 的 `setData` 一起用着 ⇒ **它才是真源**。
+
+两半的字段集合**逐个对得上**（`Data` 字面量那 26 个 = `DataShape` 的 26 个）⇒ 合并是正解。
+
+### 二、实测：合并 = **619 条**（已回退）
+
+把 `DataModule` 改成 `DataShape & DataMethods` 后跑 `tsc`：
+
+`TS18047` **302**（possibly null）· `TS18046` 71 · `TS2345` 63 · `TS2339` **51** · `TS2322` 25 ·
+`TS18048` 18 · `TS2531` 18 · `TS2769` 17。前几个文件：`data-object` 70 · `log/related-references` 48 ·
+`enum/enum-window` 34 · `attribute/attribute-window` 31 · `engine/scene/draw-object` 27 …
+
+⇒ **539 是入口代价，619 才是债务**（与第 157 轮同向）。**已回退**，未落地。
+
+### 三、两条路，代价不同（需要决策）
+
+- (a) 合并 + 在 302 处补 `!`（或加守卫）：五十来个文件、三百处断言 —— **断言不带安全性**，
+  机械加 `!` 只是把「编译器看得见」换成「人肉保证」，未必比留着 `any` 好；
+- (b) 合并 + 让读点改读**真源 store**（`getDataStore().data`，已是 `DataShape | null`）：更干净，
+  但要动的读点更多，且牵出「这份数据该归谁」的架构问题。
+
+无论哪条，**先得把 `DataShape` 缺的那 51 个字段补上**。
+
+### 四、教训
+
+1. **「两个半形状」的前提是两半合起来就完整**：#118 之所以便宜，是因为合成即全貌；这里合成**仍缺 51 个字段**
+   ⇒ 合并本身不解决问题。⇒ 同类站点的**第三个前置问题：真源完整吗？**
+2. **大件的正确开法就是「先量债务、再谈路线」**：本轮没降账，但把「539」换成了「619 + 两条路线各自的代价」，
+   下一个动它的人不必再试一遍。
+
+## 第 164 轮（2026-09-22）：重审第二处登记保留项 —— `any-hatches` 31 → 30
+
+### 一、动机：把第 162 轮的教训再用一次
+
+第 162 轮重审 `unknown-casts` 的登记项时发现「**我刚做的改动让另一处保留项过期了**」。
+于是本轮拿同一问法去扫 `any-hatches` 里登记为「**故意保留**」的那一处 —— `element-base.ts:10`（代价 20）。
+
+### 二、一问就发现它根本不是「保留」，是**没人量过**
+
+`UIElementShape` 是个**空接口 + `[k: string]: any`**，而文件里 `:249` 有一句 2026-09-18 的注释：
+
+> `UIElementShape` 是 `[k: string]: any`，所以 tsc 永远看不见（2026-09-18）
+
+**它自己就写着这是个洞**。量一下（摘掉索引签名）：**20 条 TS2339，全部在这一个文件里**，
+点名要的只有 **7 个成员**（`parent`9 · `connect`3 · `resize`3 · `connected`2 · `destroy` · `disconnect` · `draw`）。
+
+### 三、动手：声明 7 个成员 + 两处 `?.`
+
+- 必填 6 个 + `draw` **可选**（与同文件 `requestResizing` 同一处理）；
+- 配套两处：`children[i].draw?.()`（`:217`）、`element.parent!.requestResizing?.()`（`:269`）。
+  后者**不是本轮的新决定** —— 同文件 `remove()`（`:287`）早就写成 `?.` 了，
+  `requestResizing` 的注释（`:54`）也写明「声明成可选即如实描述；调用点配 `?.`，
+  `instanceof Window` 守卫就是它安全的理由」。⇒ 这两处是**把同文件已定的规矩补齐**。
+
+### 四、账与验证
+
+| 项 | 结果 |
+| --- | --- |
+| `any-hatches` | **31 → 30**（files 19 → 18） |
+| editor `tsc` / `lint` / `typecheck:vue` | 0 错 / 0 warning 0 error / 0 新错 |
+| editor 测试 | 255 文件 / 2075 全绿 |
+| 行为变化 | **0**（`?.` 只在成员真缺失时生效，而 children 全是具体元素类 ⇒ 那条路径运行期走不到） |
+| 门禁 | format / text / docs / 棘轮 |
+
+### 五、教训
+
+1. **「登记为故意保留」也要定期质疑，判据是看它描述的是谁**：
+   本轮这处登记的理由是「索引签名让 tsc 看不见」—— 那**不是理由，是症状**。
+   ⇒ **如果一条保留的理由描述的是「洞本身」而不是「洞外面有什么」，那它就不是保留，是欠账。**
+2. **同文件已有的规矩要补齐**：`requestResizing` 的「可选 + `?.`」早在第 152 轮就定了，
+   另一处调用点当时被 `any` 挡着没跟上。⇒ 收口 `any` 的**直接收益之一**就是
+   **发现旧规矩没落实到的地方** —— 这也是「收 `any` 会打开 lint 新视野」（第 159 轮）的同族现象。
+
+## 第 165 轮（2026-09-22）：把「保留项」扫完 + 一处动态读取（`any-hatches` 30 → 29）
+
+### 一、按第 164 轮的判据扫剩余保留项
+
+| 站点 | 判定 | 依据（都是实测或代码原文） |
+| --- | --- | --- |
+| `fs-bridge.ts:29` | ✅ **真保留** | 理由描述的是**洞外面**：两条语义差别（`writeFile` 的布尔 `check` vs node 的 options；`fs.promises` 上没有的成员曾被静默放过并**真出过一次 `TypeError`**）+ 约 30 个调用点 |
+| `element-classes.ts:169` `UIElementCtor` | ✅ **真保留** | 13 个元素类的构造参数各不相同、都要登记进同一张表；收窄成联合会制造长期维护点（P2b-1 批评过） |
+| `animation-window.ts:14` `AnimationElement` | ✅ **真保留** | **实测 163 条 / 8 文件**（`animation-timeline` 98），字段散布 `x`38 `y`30 `layer`30 `length`27 `pointerevent`9 … ⇒「避免穷举」的理由成立 |
+| `element-classes.ts:156` `UINodeShape` | ⚠️ 混着**读错类型**的债 | 见下 |
+
+⇒ **NO-STRIP 那一族（15 处）到此判完**：真保留 13 处，另 2 处是「读错类型」或「已可枚举」。
+
+### 二、`UINodeShape`：计划书里的「下一步」**已经过期**
+
+计划书「剩下的活」第 2 条的 ⚠️ 写着（第 107 轮）：
+
+> `UINodeShape` 索引签名删掉后只报 **6 个字段 / 27 处 / 5 文件**，属**可穷举的枚举活**；
+> 卡点是 `transform` 没有可复用类型（`element-page.ts:53` 的局部 `UIElementTransform`）
+> ⇒ **下一步先把那个局部类型提成共享类型，再照清单做完。**
+
+按它动手，第一件事就发现**两处都变了**：
+
+1. **那个「下一步」早在第 108 轮就做完了**：`element-page.ts:10` 现在 `import type { UIElementTransform }
+   from '@app/engine/ui/element-classes.ts'`（该文件 `:117` 导出、`:54` 的注释写着「已于 2026-09-21
+   第 108 轮提成共享类型」）⇒ **前提不在了**。**计划书自己的「下一步」也会过期。**
+2. **债务长大了**：现在删掉它是 **79 条 / 21 个字段 / 8 文件**（不再是 6/27/5）。而且 21 个字段里
+   **12 个是「元素类的方法」而不是「节点数据」**（`appendChild` · `appendChildTo` · `isPointIn` ·
+   `destroy` · `printer` · `font` · `_font` · `content` · `shadowText` · `update` · `updatePrinter` ·
+   `updateTextContent`）⇒ **把它们声明进 `UINodeShape` 会让「节点数据」这个类型说谎**；
+   正解是把那些读点改成对着**元素类型**读（落在 `ui-transform` / `ui-pointer` / `ui-initialize`），
+   那是设计工作，不是枚举活。
+
+⇒ 两条更正已写回计划书（手法库 #39），免得下一个照旧清单动手。
+
+### 三、顺手拿下一处：动态读取用**收窄断言**，而不是整块 `Record<string, any>`
+
+`scene-window.ts` 的 `Scene.create` 原来是：
+
+```ts
+const editor = (Inspector as Record<string, any>)[key];
+const object = editor.create();   // ← 这一行**完全不被检查**
+```
+
+而 `map` 的值本来就是 `Inspector` 的成员名（同文件 `:580` 的初始化表）⇒ 改成一次**收窄断言**：
+
+```ts
+const editor = Inspector[key as keyof typeof Inspector];
+```
+
+⇒ `any-hatches` **30 → 29**，而且 `editor.create()` **从此受检查**。
+这是手法库第 139 条第 N 次复用：**`Record<string, any>` 的问题不是「它也是断言」，
+而是它连断言都不给** —— 断言之后至少还有类型，`any` 之后什么都没有。
+
+### 四、账与验证
+
+| 项 | 结果 |
+| --- | --- |
+| `any-hatches` | **30 → 29**（files 18 持平 —— 同文件另有一处站点） |
+| editor `tsc` / `lint` / `typecheck:vue` | 0 错 / 0 warning 0 error / 0 新错 |
+| editor 测试 | 255 文件 / 2075 全绿 |
+| 行为变化 | **0**（断言编译期消失；`key` 的来源与取值没变） |
+| 门禁 | format / text / docs / 棘轮 |
+
+### 五、教训
+
+1. **计划书里的「下一步」也会过期**：与第 162 / 164 轮的「保留项会过期」是**同一条**，
+   只是这次过期的是**计划书自己** ⇒ **动手前按代码复核前提与数字**，别照抄清单。
+2. **「可枚举」不等于「该往里塞」**：12 个字段枚举出来很容易，但塞进 `UINodeShape` 会让类型说谎。
+   ⇒ 枚举之后还要问一句：**这个成员属于这个类型吗？**
+3. **`any` 与「收窄断言」要讲清区别**：两者都不是零代价，但 `Record<string, any>` 之后的读点
+   **不被检查**，`as keyof typeof T` 之后的读点**被检查** —— 后者把「运行期事实」变成了
+   「编译期可验证的收窄」。
