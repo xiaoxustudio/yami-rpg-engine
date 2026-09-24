@@ -1971,6 +1971,15 @@ head?: { view: { write(index: number): void } } | null;
     - 本轮摘掉的 `element-classes.ts:55`：`UIElementInstance` 的索引签名只被
       `draw` / `resize`（无参必填）与 `addReference` / `tryUpdateReferenceElements`
       （只有根元素有 ⇒ 可选，三个调用点补 `!`）用到 —— 「重审登记保留项」再次命中。
+    > ⚠️ **2026-09-22 第 157 轮更正（本表的「代价」列有两处是仪器故障，不是机会）**：
+    > 上面全表里最便宜的两处 —— `1` `particle-window` 的 `stage` 与 `2` `stores/data` 的
+    > `Data.config` —— 实测下来的报错**全部落在被改的那一行**：
+    > `stage` 是 **TS7008（隐式 `any`，接口成员摘掉注解后逃生口没关）**，
+    > `Data.config` 是 **TS1131 + TS1128（`config: Record<string, any> | null` 摘掉注解后
+    > 写成 `config | null;`，根本不是合法声明）**。
+    > ⇒ 这两处**不是**便宜站点，它们要的是设计工作（具名形状）；表把它们排在最前面，
+    > 正是第 155 轮「撞墙」的原因。**尺子已修**（见手法库 #31）：`RECORD_ANNOT` 只对
+    > 「带初始化式的声明」可机械测，其余一律拒绝并给出落点类别。
 
 30. **跨包契约的收口顺序：先写宿主侧的上游，再把契约放进「两边都能引用」的模块**（第 156 轮，36 → 34）：
     - 症状（第 155 轮撞墙）：ui-kit 侧把 `guidMap` 的值收成具名 `ManifestEntry` 后账降到 35，
@@ -1987,6 +1996,53 @@ head?: { view: { write(index: number): void } } | null;
     - 两个形状坑（都实测）：**别留索引签名** —— 收成具名形状时，若源是**类实例**
       （`InstanceType<…>`），带 `[k: string]: unknown` 的目标会**拒收**它；**契约类型跨包导入不算层次倒挂**
       —— UI 契约从 ui-kit 导入好过两边各写一份。
+
+31. **「删掉注解」只在两种落点上等于「关掉逃生口」；其余落点的读数必须拒绝**（第 157 轮，账不变、工作单被修正）：
+    - 症状：代价表里最便宜的两处（`1` `stage`、`2` `Data.config`）读数无效 ——
+      `stage: Record<string, any>;`（**接口成员**）摘掉注解后是 `stage;` = **隐式 `any`**
+      （TS7008 打在本行，下游 0 条错）；`config: Record<string, any> | null;`（**联合位**）
+      摘掉注解后是 `config | null;` = **语法错**（TS1131 + TS1128，全在本行）。
+      两者都因此被读成「极便宜」，而实际要的是**设计工作**（具名形状）。
+    - **判据**：`RECORD_ANNOT` 只有摘掉后仍是「**带初始化式的声明**」
+      （`const|let|var x = …` 或类字段 `[修饰符] x = …`）才可机械测 —— 那时类型由初值推断，
+      删注解才真的关掉了 `any`。成员 / 参数位（隐式 `any`）与联合 / 交叉 / 数组位（语法错）一律拒绝。
+    - **仪器自检**（防再犯的关键）：若报错**全部**是语法族（TS1xxx）或隐式 `any`（TS7006/TS7008），
+      把读数标成 `suspect`，CLI 与扫描表都打 ⚠️「不得当便宜用」。触发条件用 `every`（真实代价
+      几乎必然含 TS2339 / TS2322，故不误伤）。
+    - **通用教训**：报错**全部落在刚改的那一行**、或**全是语法族**时，先当**仪器故障**，别当结论；
+      「最便宜」的读数要先怀疑自己的摘法，再怀疑代码。
+    - **复扫结果（第 157 轮，全 34 处）**：**19 处可机械测**，读数与旧表**逐位一致**
+      （1180 · 1455 · 897 · 696 · 539 · 452 · 307 · 93 · 89 · 82 · 79 · 71 · 67 · 54 · 21 · 20 · 20 · 19 · 17）
+      ⇒ 证明这次只删掉了**两个假读数**，真实读数一位没变；**15 处拒绝** = 13 处别名 / 交叉 / 断言
+      + 2 处本轮新拒。可测里最便宜且未被障碍挡住的是 `setting-config/index.ts:16`（**17**，下一轮候选）。
+    - **诚实边界**：自检的**正向触发端到端 0 次**（前置闸先拦住了那两类落点）；规则本身用归档的
+      真实报错串做了 5 条断言自证（含「0 条报错不得误判」）。别把「本轮没触发」说成「端到端验证过」。
+
+32. **工作单：`setting-config/index.ts` 的 `SettingConfig.config`（代价 17，目前最便宜且无已知障碍）**：
+    - 站点：`services/project/setting-config/index.ts:16` `config: Record<string, any> = {}`（**类字段**，
+      带初始化式 ⇒ 第 157 轮的新尺子确认它**可机械测**，读数 **17**）。
+    - 为什么不是「删掉注解」：它必须收成**具名形状**，而**没有类型层的真源** ——
+      `settingSchema` 是**运行期数据**（`SettingSection[]`，`id: string`），
+      `buildDefaultConfig()` 只返回 `Record<string, unknown>` ⇒ 形状只能**按读者手写**。
+    - 读者清单（全部实测 grep 过，8 个文件）与所需字段：
+      | 字段 | 读者 |
+      | --- | --- |
+      | `server.port` / `server.auto` | `index.ts:138` · `services/project/open.ts:194-195` |
+      | `other.browserSearchHistoryLimit` | `index.ts:119-124` · `module/browser-search-history.ts:66` · `__tests__/search-history-dropdown.spec.ts:16` |
+      | `github.accelerationNode` | `module/resource.ts:38` · `:101` |
+      | `recent.statsMode` | `title/home-page.ts:131-132` |
+      | `update.checkOnStart` | `module/constants.ts:81` |
+      | `apkbuild` / `signed`（整体展开） | `title/menu-bar.ts:849-850` |
+      | 动态两级索引 `config[key][sub]` | `index.ts:110-118`（`??= {}` 与补默认值） |
+    - **两个已知坑（都属第 156/157 轮学到的那一族）**：
+      1. **用 `type` 别名，不要用 `interface`** —— `renderer.ts:30` / `:35` 把 `this.host.config`
+         赋给 `Record<string, unknown>`；TS 只对**匿名对象类型 / 对象类型别名**推断隐式索引签名，
+         `interface` **不**推断 ⇒ 写成 interface 会在这里报错。
+      2. **索引签名的值类型必须仍然可索引** —— `index.ts:110-118` 要做 `config[key][sub]`，
+         所以顶层索引签名得是 `Record<string, unknown>`（不是 `unknown`），否则那两行先炸。
+    - 验收：`pnpm migration:check` 的 `any-hatches` **34 → 33**（站点本身消失，尺子的 17 条只是
+      入口代价）；editor `tsc` / `typecheck:vue` **0 新错**；editor 测试 2075 全绿；
+      lint / format / text / docs 全过。做完再按第 157 轮的新尺子复扫一次（确认没有新假读数）。
 
 ### 4. 剩下的活（按性价比排序）
 

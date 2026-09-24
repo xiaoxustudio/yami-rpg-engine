@@ -68,9 +68,10 @@ for (const site of picked) {
 	}
 	const props = [...r.byProp].sort((a, b) => b[1] - a[1]);
 	const files = [...r.byFile].sort((a, b) => b[1] - a[1]);
-	results.push({ ...site, n: r.errors.length, props, files });
+	results.push({ ...site, n: r.errors.length, props, files, suspect: Boolean(r.suspect) });
 	console.log(
-		`${String(r.errors.length).padStart(3)} 条${r.errors.length === 0 ? '  ← 可直接摘' : ''}`
+		`${String(r.errors.length).padStart(3)} 条${r.errors.length === 0 ? '  ← 可直接摘' : ''}` +
+			(r.suspect ? '  ⚠️ 自检：全是语法族 / 隐式 any，读数无效' : '')
 	);
 }
 
@@ -85,6 +86,7 @@ for (const r of [...results].sort((a, b) => a.n - b.n || a.rel.localeCompare(b.r
 		.map(([f, n]) => `${f.split('/').slice(-2).join('/')}×${n}`)
 		.join(' ');
 	console.log(`  ${String(r.n).padStart(3)}  ${r.kind.padEnd(12)} ${r.rel}:${r.line}`);
+	if (r.suspect) console.log('        ⚠️ 自检无效（语法族 / 隐式 any）—— 不得当「便宜」用');
 	if (props) console.log(`        字段：${props}`);
 	if (files) console.log(`        文件：${files}`);
 }
