@@ -336,7 +336,7 @@ onMounted(() => {
 				{ name: readOption('sceneTilemap-blend', 'subtract'), value: 'subtract' }
 			]);
 		} catch {
-			// 璇█鍒囨崲涓棿鎬侊細t()/DOM 璁块棶鍙兘澶辫触锛岃烦杩囨湰娆″埛鏂?
+			// 语言切换中间态：t()/DOM 访问可能失败，跳过本次刷新
 		}
 	};
 	if (elLight.value) {

@@ -155,10 +155,9 @@ SceneCameraEngine.updateCamera = function (this: typeof Scene, x = this.meta.x, 
 	const scrollY = y * this.scaledTileHeight + this.paddingTop;
 	const toleranceX = this.scaledTileWidth * 0.0001;
 	const toleranceY = this.scaledTileHeight * 0.0001;
-	const screenExt = screen as unknown as { rawScrollLeft: number; rawScrollTop: number };
-	screenScrollData(screenExt).rawScrollLeft =
+	screenScrollData(screen).rawScrollLeft =
 		clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - GL.width) / dpr;
-	screenScrollData(screenExt).rawScrollTop =
+	screenScrollData(screen).rawScrollTop =
 		clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - GL.height) / dpr;
 	screen.scrollLeft = (scrollX - (GL.width >> 1) + toleranceX) / dpr;
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceY) / dpr;

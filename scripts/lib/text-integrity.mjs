@@ -13,17 +13,24 @@
 //   - 注释体里又开了一个块注释起始符，把整整 9 行原样重复一遍
 //     （`src/inspector/element-registry.ts`，由 `cdfc80e9` 的批量改写引入）。
 //
-// 这三类**全部通过了 `tsc` / `oxlint` / `oxfmt` / vitest** —— 没有任何既有门禁看得见它们。
+// 第 125 轮又补上**第四类**：`GBK ↔ UTF-8` 误解码（整句中文变成乱码）。它比前三类更隐蔽 ——
+// 前三类是「语法合法」，它是**「看起来就是中文」**：乱码由稀有汉字组成，读者只会以为自己
+// 不认得那几个字。第 124 轮在 `element-page.ts` 上撞见，第 125 轮实测全仓还有 17 处，
+// 包括一条在 3 个文件里复制的注释、以及 2 条**测试用例名**。
+//
+// 这四类**全部通过了 `tsc` / `oxlint` / `oxfmt` / vitest** —— 没有任何既有门禁看得见它们。
 // 所以必须专门量。这也是本仓反复强调的「仪器要自证」：本文件的口径由
 // `self-test.mjs` 用**故意写坏**的样本逐条验证。
 //
 // ## 为什么不用「一切可疑字符都报」
 //
-// 每条规则都在**当前全仓（1577 文件）实测过零误报**，取舍逐条记在规则上。
-// 过宽的规则会被无视（本仓已有先例：一条永远红的 `format:check` 教人忽略门禁）。
+// 每条规则都在**当前全仓实测过零误报**（文件数见门禁输出 —— 写死在注释里必然过期），
+// 取舍逐条记在规则上。过宽的规则会被无视（本仓已有先例：一条永远红的 `format:check`
+// 教人忽略门禁；`mojibake` 的阈值就是这么定下来的：降到「1 个中文」会命中 885 行）。
 
 import { readdirSync, statSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { detectMojibake } from './gbk-mojibake.mjs';
 
 /** 扫描面：源码 + 脚手架。刻意**不含** `Project/Templates`（第三方产物）与 `dist/build`。 */
 export const TEXT_SCAN_DIRS = [
@@ -80,6 +87,15 @@ export const GLUED_STATEMENT_RE =
 export const NESTED_COMMENT_OPENER_RE = /^\s*\*.*\/\*\*\s*$/;
 
 /**
+ * `mojibake` 规则的阈值：一段至少要还原出这么多中文才算数。
+ *
+ * 定在 2 是**量**出来的：降到 1，全仓立刻命中 885 行（字节错位碰巧解出一两个中文字），
+ * 规则当场失去可信度；定在 2，全仓命中 17 行、逐行核对**全是真事故**。
+ * 实现在 `lib/gbk-mojibake.mjs`（判据是可逆性，不是稀有字黑名单）。
+ */
+export const MOJIBAKE_MIN_CHARS = 2;
+
+/**
  * 规则表。`id` 稳定、可用于白名单与自测；`match(line, ctx)` 返回 `null` 或一段细节说明。
  *
  * `ctx` = `{ lines, index, isComment }`，供需要跨行判断的规则使用。
@@ -107,6 +123,25 @@ export const TEXT_RULES = [
 			const at = line.indexOf('\uFFFD');
 			if (at < 0) return null;
 			return `第 ${at + 1} 列起（共 ${line.split('\uFFFD').length - 1} 处）`;
+		}
+	},
+	{
+		id: 'mojibake',
+		label: 'GBK ↔ UTF-8 误解码（整句中文变成乱码）',
+		why:
+			'编码事故的另一半：UTF-8 字节被当成 GBK 解码，一句中文注释变成一串稀有汉字。' +
+			'第 124 轮在 `element-page.ts` 上撞见，第 125 轮实测全仓还有 17 处（含 3 个文件里复制的' +
+			'同一条注释、2 条测试用例名），**全部通过了此前所有门禁**。' +
+			'为什么 `replacement-char` 看不见它：那次事故的解码器把解不出的字节对写成**半角 `?`**，' +
+			'不是 U+FFFD —— 现有规则只认后者。' +
+			'判据用**可逆性**（见 `lib/gbk-mojibake.mjs`）：把这一行的字符编回 GBK 字节，' +
+			'若能按 UTF-8 解出中文，它必然是这个方向的误解码 —— 而且判据**顺带把原文还回来**，' +
+			'修的时候不用猜。修法：`git log -L <行>,<行>:<文件>` 找到写坏前的版本照抄',
+		match(line, _ctx) {
+			const hit = detectMojibake(line, { minChars: MOJIBAKE_MIN_CHARS });
+			if (hit === null) return null;
+			const shown = hit.segments.join('…').slice(0, 48);
+			return `能还原出「${shown}」（共 ${hit.recoveredCjk} 个中文）`;
 		}
 	},
 	{

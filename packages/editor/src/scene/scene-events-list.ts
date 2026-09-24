@@ -89,7 +89,7 @@ Scene.listSelect = function (this: typeof Scene, event: Event & { value: SceneIt
 			Scene.setTarget!(null);
 			break;
 		case 'tilemap':
-			// 姝ｅ湪缂栬緫鍥惧潡鏃剁洿鎺ユ墦寮€鐡︾墖鍦板浘 鍥惧潡缁勫叧闂椂鎵撳紑鐡︾墖鍦板浘妫€鏌ュ櫒
+			// 正在编辑图块时直接打开瓦片地图 图块组关闭时打开瓦片地图检查器
 			if (Scene.tilemap) {
 				if (Palette.state === 'closed') {
 					Scene.setTarget!(item);

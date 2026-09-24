@@ -5380,3 +5380,63 @@ store 桥装配；这也解释了台账为什么坚持 `declared`(134) 与挂载
   `import { UI } from './legacy/ui-window.ts'` ⇒ 起点 8、终态 0，且**改写法拿不到它**。
 
 ⇒ **④-3 开工前请先定 (a) 还是 (b)**（并顺带定下那 9 项实机回归清单要不要先跑一遍建立基线）。
+
+#### ✅ 文本门禁补上 `mojibake` 规则（2026-09-22 第 125 轮）
+
+第 124 轮发现 `text:check` 看不见「GBK ↔ UTF-8 误解码」，本轮补上（规则 7 → 8 条，自证 55 → 58），
+并顺带修掉全仓 **17 处**乱码（含 2 条测试用例名）。要点：
+
+- 判据是**可逆性**，不是「稀有字黑名单」：把一行的字符编回 GBK 字节，能按 UTF-8 解出中文即为误码
+  —— `TextDecoder` 只能解不能编，于是**反过来枚举** `0x81..0xFE × 0x40..0xFE` 得到编码表（24 ms）。
+  实现：`scripts/lib/gbk-mojibake.mjs`；规则挂在 `scripts/lib/text-integrity.mjs`。
+- 阈值是量出来的：降到「1 个中文」全仓命中 881 行（噪音），「≥2 个中文 + 中文占多数」命中 17 行
+  **全是真事故**。
+- 修法：**先在写坏那次提交的父提交里搜 `corrupt(X) == 现文` 的行** —— 命中的 X 就是原文，不用猜
+  （17 处里 15 处逐字取回；`property-list.ts:225` 是写入时即乱码，按同族约定还原）。
+  陷阱：写坏的那些提交同时搬了目录，父提交路径要先按 rename 解析。
+- 对 ④-3 无影响：本轮只改注释与用例名，17 条轴全部持平。详见 `xr.md` 第 125 轮。
+
+#### ✅ P4 尾部：`unknown-casts` 44 → 40（2026-09-22 第 126 轮）
+
+剩下的 44 处**都是跳板承重的**（「降级成单次 `as` 再跑 tsc」的批量实验早做过），所以本轮只能
+**改类型**。用第 124 轮那把尺子（「这个断言在替谁干活」）判完 4 处：
+
+| 站点 | 判定 | 依据 |
+| --- | --- | --- |
+| `title/new-project-window.ts:365` | **真 bug**：`template != (['arpg-ts-english','arpg-ts-chinese'] as unknown as string)` 运行期是与数组 join 出的字符串比 ⇒ 条件恒真、`else`（资源缺失提示）是死代码 | `891cf657` 引入；修法=抽纯函数 + 4 条用例（已验红） |
+| `tools/color-picker-window.ts:357` | 声明写错了那一侧 | 生产者 `RadioBox.vue` 用 `numberPattern`+`parseFloat` 归一化成 **number**；同族 `eslints.ts:256` / `auto-tile.ts:352` 也按 number |
+| `engine/scene/scene-camera-engine.ts:158` | 断言多余（只喂 `screenScrollData(el: unknown)`） | 同族 `particle-motion.ts:203` / `ui-engine.ts:387` 本来就写成 `screenScrollData(screen)` |
+| `setting-config/renderer.ts:139` | 已有 `Reflect.has` 探成员 ⇒ 用 `Reflect.get` 取 | `EventTarget` 有没有 `value` 是运行期事实 |
+
+**显式留着不动**：`engine/ui/element-base.ts:148` —— 基类方法读子类才有的 `blend`，要动得先定
+「`blend` 属不属于基类」以及 `blend` 为 `undefined` 时 `GL.blend` 的行为（`webgl-methods.ts:1149`
+用 `updaters[blend]()` 查表）⇒ **必须真机确认**。
+
+剩下 40 处的形状（`node scripts/oneoff/measure-p4-shapes.mjs`）：**A 局部类型 7 / B 别处具名 22 /
+C 匿名或泛型 11**。下一步最省力的两族：③「被调方形参声明过窄」（`Parameters<typeof X.open>[0]` ×2、
+`ConstructorParameters` ×2）、④「动态键取成员」8 处 —— 但 ④ 要先解决它与 `any-hatches` 轴
+「索引签名」的互相拉扯。详见 `xr.md` 第 126 轮。
+
+#### ✅ 族 ③ 已收口：`unknown-casts` 40 → 36（2026-09-22 第 127 轮）
+
+四处形状完全一致（`X as unknown as Parameters<typeof f>[0]` / `ConstructorParameters<typeof C>[0]`），
+修法统一为**交叉断言**：`X as unknown as P` → `X as X & P`（手法库第 6 条）。
+
+- 为什么不是骗轴：`unknown` 跳板对目标类型**零检查**（`as unknown as 任何东西` 都合法），
+  而 `X & P` 要求 P 是 X 的扩展 ⇒ tsc 真的判可比性（四处都过了）⇒ **检查是变多的**。
+
+> ⚠️ **更正（第 128 轮，对照实验）**：上面这句「tsc 真的判可比性 / 检查是变多的」**说得太满**。
+> 实测 `o as A & Date`、`o as A & { a: string }` 都能过（交叉断言的目标按构造就是源类型的子类型，
+> 永远是一次合法的向下断言，TS 不核对 P 与源类型是否相容）。
+> 交叉断言**真正**的收益是**结果类型保住源类型**：`(o as A & { b: string }).a` 通过，
+> 而 `(o as unknown as { b: string }).a` 报 `TS2339`。四处改动仍然成立，理由换成这一条。
+> ⇒ `unknown-casts` 是**坏味道的代理量**，不等于正确性。详见 `xr.md` 第 128 轮。
+- 运行期证据：`command-list.ts:67` 期望的成员在 ui-kit `command-api.ts` 上实数存在
+  （`elements`:415 / `findString`:506 / `scrollToRow`:339，契约:237 只承诺 `HTMLElement`）；
+  `custom-box-opts.ts:103` 两侧接口差**只有可空性**；`scene-context.ts:324/367` 的形参
+  就是场景节点本身（构造函数第一句 `this.data = data`）。
+- **没顺手改**：`LayoutPanel.vue:1966/1969`（`{ value } as unknown as Event`）。机械换成交叉断言
+  能过 tsc，但那只是把谎话写规整。真正的契约修法会踩 TS weak-type 规则（全可选的形参类型要求
+  实参有共同成员，`Event` 没有 `value`）而打断 Vue 模板绑定 ⇒ 需要先定「这类处理器怎么建模」。
+
+下一族建议从 ④「动态键取成员」8 处动手，但**先**决定它与 `any-hatches` 轴谁让步。详见 `xr.md` 第 127 轮。

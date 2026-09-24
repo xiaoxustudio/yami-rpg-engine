@@ -128,7 +128,7 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 				audio.src = File.route!(path);
 
 				removeClass(this.progress, 'visible');
-				// 婵烇絽娲︾换鍕汲閳ь剟鎮楅悽娈挎敯缂佺粯鍨垮畷鍫曟倷閸偆鏆犻梺鍛婎焽閸犲酣锝為幁娓瀘mise闂佹眹鍔岀€氼剛妲愰埡鍛仺?婵炲濮伴崕鎵矚閸洖鐭楁い鏍ㄧ懁缁ㄤ即鏌涘▎鎰缂佸顥撻幉鎾晲閸モ晛鐏ｉ梻鍌氾攻婵炲﹪銆傞崼鏇炴瀬闁绘鐗嗙粊锕傛煟閵娿儱顏柟濂告敱閹?
+				// 保留对返回的原始promise的引用 以便可以取消解码音频数据的操作
 				const promise = (this.promise = AudioManager.getWaveform!(meta!.guid));
 				void promise.then((url) => {
 					if (this.promise === promise) {
@@ -324,7 +324,7 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 			intervalSum += intervals[j];
 			intensityAverage += intensities[j];
 			intensityCount++;
-			// 闂佸憡鐟﹂悧妤€銆掗懜鍨氦?50ms闂佹眹鍔岀€氼剙顔忔潏銊﹀劅闁挎洍鍋撻梺瑙ｆ櫊瀹曟悂宕惰閸?濡ょ姷鍋犲▍鏇犲垝閿旇姤浜ら柛銉ｅ妽鐠?
+			// 取最近150ms的强度平均值(平滑过渡)
 			if (intervalSum >= 150) {
 				break;
 			}

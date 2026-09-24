@@ -353,8 +353,12 @@ Color.indexedColorInput = function (this: typeof Color, event: Event & { value?:
 Color.indexedColorPointerdown = function (this: typeof Color, event: PointerEvent) {
 	switch (event.button) {
 		case 2: {
-			const element = event.target as YamiElement & { dataValue?: string };
-			const index = element.dataValue as unknown as number;
+			// `dataValue` 由 RadioBox 归一化：数字串（模板里的 `value="0"`）会落成 **number**
+			// （RadioBox.vue 的 onMounted 用 numberPattern + parseFloat）。这里就是拿它当数组下标，
+			// 同族的 `eslints.ts:256` / `auto-tile.ts:352` 也都按 number 声明
+			// ⇒ 原先写的 `dataValue?: string` 是错的那一侧。
+			const element = event.target as YamiElement & { dataValue: number };
+			const index = element.dataValue;
 			const indexedColor = Data.config.indexedColors[index];
 			const get = (key: string) => t('menuIndexedColor.' + key);
 			Menu.popup(

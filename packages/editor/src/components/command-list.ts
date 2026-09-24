@@ -64,7 +64,12 @@ const options = {
 	},
 	searchString: {
 		open: (list: HTMLElement) =>
-			SearchString.open(list as unknown as Parameters<typeof SearchString.open>[0])
+			// 交叉断言（手法库第 6 条）：保留对象类型、只补缺口那一支。契约（ui-kit
+			// `command-api.ts:237`）只承诺 `HTMLElement`，而 `SearchString.open` 要的是
+			// `SearchableList` —— 运行期那个对象两样都是（它正是命令列表元素：`elements` /
+			// `findString` / `scrollToRow` 都在 `command-api.ts` 上）。用 `unknown` 跳板会让
+			// **任何**目标类型都能通过；交叉断言则要求目标确实是源类型的扩展。
+			SearchString.open(list as HTMLElement & Parameters<typeof SearchString.open>[0])
 	},
 	menuPopup: (popupOptions: MenuOptions, items: MenuItem[]) => Menu.popup(popupOptions, items),
 	getVariable,

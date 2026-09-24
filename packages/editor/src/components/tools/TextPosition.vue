@@ -1,5 +1,5 @@
 <template>
-	<!-- 璁剧疆鏂囧瓧浣嶇疆 -->
+	<!-- 设置文字位置 -->
 	<WindowFrame id="textPosition" @confirm="onConfirm">
 		<template #title
 			><TitleBar

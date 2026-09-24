@@ -3245,3 +3245,402 @@ const entity: FileEntityPage = {
 4. **改文件时留意工具的副作用**：本轮用 PowerShell `Set-Content` 重写文件时把**整份文件变成了
    CRLF**（仓库是纯 LF），提交前查出来并归一化。⇒ 机械改写的收尾检查清单里应加一条
    「行尾/BOM 是否与仓库一致」。
+
+## 第 125 轮（2026-09-22）：给「乱码」补上**可自证**的门禁，并把全仓 17 处乱码修掉
+
+第 124 轮结尾记下一件事：`text:check` 的 7 条规则**看不见乱码**。本轮去补这条缺口，
+结果发现那行乱码**不是孤例** —— 全仓还躺着 17 处，包括一条在 3 个文件里复制的注释、
+以及 2 条**测试用例名**。
+
+### 一、先查清「那次事故为什么躲过了 `replacement-char`」
+
+`replacement-char` 认的是 U+FFFD。把 `54a7d809` 引入的真实乱码取出来逐码点看：
+**一个 U+FFFD 都没有**，丢字处是**半角 `?`**：
+
+```txt
+// 18 闂佺鐭囬崒娑卞仺 input 缂?Vue 濠碘槅鍨崜婵嗩熆濡粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶閻攢magePage.vue …
+```
+
+Node 的 `gbk` 解码器遇到无法映射的字节对写 U+FFFD，而当年那个解码器写 `?` ——
+规则认错了字符，所以整整一族事故从它眼皮底下走过去，还一路全绿。
+
+### 二、判据不用「稀有字黑名单」，用**可逆性**
+
+直觉做法是列一批「只可能出现在乱码里」的稀有汉字。实测可行但不牢靠：那本质是**口味**
+（哪些字够稀有），而且黑名单本身是一串乱码字符，放进被扫面里会被自己抓到。
+这里改用语义判据 —— 误解码是**可逆的**：
+
+```txt
+UTF-8 字节 --(当成 GBK 解码)--> 乱码 --(编回 GBK 字节)--> 原字节 --(严格 UTF-8 解码)--> 原文
+```
+
+中间那步 Node 没给（`TextDecoder` 只能解不能编），但可以**反过来枚举**：把
+`0x81..0xFE × 0x40..0xFE` 两万多组字节对喂给严格的 `gbk` 解码器，就得到「字符 → 字节对」表
+（实测 **24 ms**，惰性建表）。于是判据是一句可执行的话：
+
+> **这一行的字符编回 GBK 字节后，若能按 UTF-8 解出中文 ⇒ 这行就是误解码的产物。**
+
+它没有主观量，而且**顺带把原文还回来**（门禁直接打印还原结果，修的时候不用猜）。
+
+### 三、两个阈值/过滤器都是量出来的，不是拍的
+
+| 选择 | 实测 |
+| --- | --- |
+| 阈值「一段至少还原出 1 个中文」 | 全仓命中 **881 行**（字节错位碰巧解出一两个字）⇒ 规则当场失去可信度 |
+| 阈值「≥2 个中文」 | 全仓命中 **17 行**，逐行核对**全是真事故** |
+| 「像文本」过滤器（中文占多数） | 必须有：宽松解码会把错位字节解出 `€` 之类残渣 |
+| 一刀切「整段通篇合法」 | 会**漏掉 3 处**（丢字最严重的那三处还原结果里有 `€`）⇒ 改成**比例**阈值 |
+
+最后一条是这一轮最值得记的取舍：**残渣是事故的标志，不是「不是事故」的理由**。
+
+### 四、全仓 17 处，每一处的原文都取自**写坏之前**
+
+定位手段是一条决定性的判据式：**在写坏那次提交的父提交里搜 `corrupt(X) == 现文` 的行** ——
+`corrupt` 就是「UTF-8 字节按 GBK 解码」，所以命中的 X 必然是原文，不靠眼看。
+可重跑的仪器：`scripts/oneoff/lookup-mojibake-origins.mjs`（判据式 + rename 解析）、
+`scripts/oneoff/apply-mojibake-fixes.mjs`（改了什么、每处的原文出处都写在 `source` 上）。
+
+| 站点 | 现文（乱码）→ 原文 | 原文来源 |
+| --- | --- | --- |
+| `TextPosition.vue:2` | `璁剧疆鏂囧瓧浣嶇疆` → `设置文字位置` | `1ebf7427^` 同文件第 2 行（判据式命中） |
+| `Variable.vue:2` | `鍙橀噺绐楀彛` → `变量窗口` | `96303b39^` 同文件第 2 行（判据式命中） |
+| `palette-pointer.ts:38` | `濡傛灉姝ｅ湪淇敼鍥惧潡缁勫楂橈紝璁╁畠绔嬪嵆鐢熸晥` → `如果正在修改图块组宽高，让它立即生效` | `4e15d838^` 同文件第 37 行（判据式命中） |
+| `YMTitleBar.vue:34` | `闃叉ā鍧楃骇 dragging …` → `防模块级 dragging 残留（拖拽中 pointerup 丢失时阻断后续所有窗口拖拽）` | `f7d16bd2^` 同文件第 34 行（判据式命中） |
+| `SceneTilemapPage.vue:339` | `璇█鍒囨崲涓棿鎬侊細t()/DOM …` → `语言切换中间态：t()/DOM 访问可能失败，跳过本次刷新` | `1ebf7427^` 同文件第 284 行 |
+| `scene-events-list.ts:92` | `姝ｅ湪缂栬緫鍥惧潡鏃剁洿鎺ユ墦寮€鐡︾墖鍦板浘 …` → `正在编辑图块时直接打开瓦片地图 图块组关闭时打开瓦片地图检查器` | `223cc4c0^` 的 `scene/scene-events.ts` 第 1339 行 |
+| `element-button-page.ts:207` | `闂佺儵鏅涢悺銊ф暜…` → `直接复制，更新语言包中的内容` | `54a7d809^` legacy 版第 353 行 |
+| `element-dialog-page.ts:92` | 同上 → 同上 | `54a7d809^` legacy 版第 154 行 |
+| `element-text-page.ts:156` | 同上 → 同上 | `54a7d809^` legacy 版第 218 行 |
+| `file-audio-page.ts:131` | `婵烇絽娲︾换鍕汲…` → `保留对返回的原始promise的引用 以便可以取消解码音频数据的操作` | `54a7d809^` legacy 版第 104 行 |
+| `file-audio-page.ts:327` | `闂佸憡鐟﹂悧妤€銆掗懜鍨氦?50ms…` → `取最近150ms的强度平均值(平滑过渡)` | `54a7d809^` legacy 版第 298 行 |
+| `inspector.ts:386` | `濡傛灉鏄粦鍔ㄦ绫诲瀷鍒欒烦鍒癲efault` → `如果是滑动框类型则跳到default` | `54a7d809^` legacy 版第 294 行 |
+| `inspector.ts:475` | `鍥犳闇€瑕佸垽鏂璵anager.focusing` → `因此需要判断manager.focusing` | `54a7d809^` legacy 版第 382 行 |
+| `animation-action-page.ts:60` | `濠殿喗绺块崐鏇…select…` → `此处不能unselect并update Animation.list.unselect(this.target) Animation.updateTarget!()` | `54a7d809^` legacy 版第 88 行 |
+| `property-list.ts:225` | `key write 缁?Vue 妯℃澘杞彂…` → `key write 经 Vue 模板转发（ObjectAttribute.vue @write → AttributeListInterface.keyWrite）` | **父提交无此行**（写入时就是乱码）⇒ 按同族约定还原：`attribute-window.ts:353` 的 `name/key input 经 Vue 模板转发（…）` + `element-page.ts:124` |
+| `scroll-bar-api.spec.ts:20` | `…on target锛?.48 鍥炲綊鈥斺€攎arquee 鍚屾閾撅級` → `…on target（9.48 回归——marquee 同步链）` | `f5e9607c^` 同文件第 17 行 |
+| `scroll-bar-api.spec.ts:60` | `…(denom fallback鈥斺€?.46 鍥炲綊)` → `…(denom fallback——9.46 回归)` | `f5e9607c^` 同文件第 54 行 |
+
+路径难点：写坏的那些提交同时把 `legacy/inspector/*` 搬到了 `inspector/*`，父提交里得先按
+rename 解析出旧路径（`git show --name-status -M`），否则 `git show <commit>^:<path>` 直接报
+「exists on disk, but not in …」。
+
+### 五、门禁自证（三条，缺一不可）
+
+1. **无丢字样本必须精确可逆**：`'// 控件'` 误解码一个字节都不丢 ⇒ 断言还原结果**一字不差**。
+   （为什么挑这两个字：实测 `控件` 的误解码形态无 U+FFFD —— 选谁由
+   `scripts/oneoff/find-lossless-mojibake.mjs` 量出来，不是挑着顺眼。）
+2. **真实事故形态必须命中，且只有它能命中**：把样本里的 U+FFFD 换成**半角 `?`**（当年那个
+   解码器的形态），断言命中的规则**恰好是 `['mojibake']`** —— 这就是「此前 7 条规则全都看不见它」
+   的可执行证明：把这条规则摘掉，断言立刻变成 `[]`。
+3. **样本现场生成，不以乱码字面量落盘**：乱码字面量写进源码，既是仓库里的新乱码，
+   又会被这条规则自己抓到。转义写法（`'\u95ba…'`）另有一条用例守着 —— 它守的是**自指的坑**：
+   门禁自己的源码与自证样本就躺在被扫面里。
+
+### 六、一处「第 124 轮留下的错误做法」的更正
+
+第 124 轮把乱码原文留在文档里当自证样本。**这个做法本身是错的**：写文档的通道又把它转码了
+两次 —— 现在 `xr.md` 里那段是**两层乱码**（`闂備胶顢婇惌鍥磼濞戝崬浠?` 比 `54a7d809` 的
+原始乱码还长）。这恰好证明：**乱码不可以字面量形式存进任何文件**。判据改成现场生成之后，
+样本不再需要落盘，这条错误做法也就不必保留了。
+
+（顺带一个口径确认：`xr.md` 这类仓库根目录的文档**不在** `text:check` 的扫描面里
+—— 扫描面是 `packages/editor/src`、`packages/ui-kit/src`、`packages/editor/main`、`scripts`。
+所以文档里那两行乱码不是门禁问题，纯粹是记录事故。）
+
+### 七、账
+
+| 项 | 结果 |
+| --- | --- |
+| 全仓 mojibake 站点 | **17 → 0**（`scripts/oneoff/measure-mojibake-sites.mjs` 复测） |
+| `text:check` | 规则 **7 → 8**（新增 `mojibake`）；命中 0 |
+| `migration:selftest` | **55 → 58**（3 条新用例） |
+| `unknown-casts` 等 17 条轴 | 全部持平（本轮只动注释与用例名） |
+| `tsc` / `vue-tsc` | 0 / 0 |
+| `lint` / `format:check` / `docs:check` | 0-0（1645 文件）· 0 · OK |
+| editor 套件 / ui-kit 套件 | **254 文件 / 2070 用例** · **115 文件 / 811 用例**，全绿 |
+
+### 八、教训
+
+1. **「语法合法」之外还有一层「看起来像正常中文」。** 前三类文本污染（控制字符、被吞进注释、
+   注释重复）读代码时刺眼；乱码不刺眼，它看起来只是「我不认得那几个字」—— 所以隐蔽度更高。
+2. **判据优先找「可逆」这类结构性性质，而不是「哪些字可疑」这类口味。** 前者自带自证样本
+   （现场生成即可），后者既难自证又会过期。
+3. **修历史乱码要把「当时那个解码器」的性格也算进去**：它丢字写 `?` 还是 U+FFFD，决定了
+   还原是精确的还是有损的。有损的部分只能靠 `git log -L` 取旧版，别去猜。
+4. **本仓的 `no-misused-spread` 是有道理的**：`[...s]` 在字符串上是按码点切，
+   `migration-ledger.mjs:539` 早就写着「用 for-of 逐码点累加，而不是 `[...String(s)]`」——
+   这轮新写的模块踩了同一个坑，被 `lint` 拦住，改成 for-of 才对。
+5. **门禁的扫描面要写清楚**：知道 `xr.md` 不在扫描面里，才不会把「文档里留着乱码样本」
+   误判成门禁漏洞（也就不会为了一个不存在的问题去放宽规则）。
+
+## 第 126 轮（2026-09-22）：`unknown-casts` 44 → 40，其中一处藏着**真 bug**
+
+第 124 轮把「按目标类型分类」换成「按**断言在替谁干活**分类」。本轮用同一把尺子量剩下的 44 处。
+
+**先说清一件事**：这 44 处**不可能靠删断言解决** —— 「把 `expr as unknown as T` 降成 `expr as T`
+再跑 tsc」那个批量实验早就做过，留下的正是**跳板承重**的那些。所以本轮的目标只能是**改类型**：
+要么声明写错了（改声明），要么断言多余（删断言），要么是真正的架构债（记下来别动）。
+
+为此先让 `scripts/oneoff/probe-p4-dead-casts.mjs` 打印**整行**（原先只打印命中处之后的片段，
+判断不了哪一侧该动）。逐处问那句判据后，4 处当场判完：
+
+### 一、`new-project-window.ts`：`as unknown as string` 把**数组**塞进字符串比较 ⇒ `else` 是死代码
+
+```ts
+(template == 'arpg-ts-english' && noResourceObj['arpg-ts-english'].check) ||
+(template == 'arpg-ts-chinese' && noResourceObj['arpg-ts-chinese'].check) ||
+template != (['arpg-ts-english', 'arpg-ts-chinese'] as unknown as string)
+```
+
+第三项的本职是「模板**不是**那两个 ARPG 时也放行」—— 模板列表里确实还有第三项
+`minimized-project`（见 `initialize` 的 `loadItems`）。但 `!= <数组>` 在运行期是拿 `template`
+和数组 `join` 出来的 `'arpg-ts-english,arpg-ts-chinese'` 比，**对任何真实模板值都成立**
+⇒ 整个条件恒真 ⇒ `else` 里那句 `alert(t('confirmation.resource-not-found'))` **永远不会执行**：
+资源包缺失时也照样新建项目。`891cf657`（本地化重构）引入。
+
+修法：把判定抽成纯函数 `newProjectConfirmAllowed(template, isResourceReady)`，让这张四行真值表
+能被用例钉住（`src/title/__tests__/new-project-confirm.spec.ts`，4 条）。
+
+### 二、`color-picker-window.ts`：声明写错了**那一侧**
+
+```ts
+const element = event.target as YamiElement & { dataValue?: string };
+const index = element.dataValue as unknown as number;   // 拿它当数组下标
+```
+
+两个证据都指向「声明是错的那一侧」：
+
+- **生产者**：`dataValue` 由 RadioBox 归一化 —— `value="0"` 这种数字串经
+  `numberPattern` + `parseFloat` 落成 **number**（`RadioBox.vue` 的 `onMounted`）；
+- **同族**：`eslints.ts:256` 的 `elementDataOf<{ dataValue?: number }>`、`auto-tile.ts:352` 的
+  `{ class: 'common-item', '.dataValue': i }` 都按 number。
+
+⇒ 改成 `{ dataValue: number }`，断言从「双重」直接变零（`YamiElementApi` 本来没有 `dataValue`，
+所以这里的交叉声明是真的在补缺口，不是绕）。
+
+### 三、`scene-camera-engine.ts`：断言只喂给一个 `unknown` 形参 —— 与第 124 轮**族 A 同一个坑**
+
+```ts
+const screenExt = screen as unknown as { rawScrollLeft: number; rawScrollTop: number };
+screenScrollData(screenExt).rawScrollLeft = …
+```
+
+而 `screenScrollData(el: unknown)`（见 `engine/screen-scroll-data.ts`）**形参就是 `unknown`**，
+且同族引擎（`particle-motion.ts:203`、`ui-engine.ts:387`…）**本来就写成 `screenScrollData(screen)`**。
+⇒ 删除局部变量与断言，与同族对齐即可（这也再次证明第 124 轮那条判别动作好用：
+**把调用点的断言与形参的声明类型对一下**）。
+
+### 四、`setting-config/renderer.ts`：已有 `Reflect.has` 探成员，就用同一个口取出来
+
+```ts
+if (e.target && Reflect.has(e.target, 'value'))
+	return (e.target as unknown as { value: string | number | boolean }).value;
+```
+
+`EventTarget` 上有没有 `value` 本来就是**运行期事实**，探到了就用 `Reflect.get` 取
+—— 比「断言成某个形状」更贴事实，而且少一层 `unknown`。
+
+### 五、⚠️ 自证时我自己先错了一次（这条比结论值钱）
+
+新用例写完，我要证明它「在旧语义下是红的」。第一次的临时改写**忘了删掉前面两个提前 `return`**，
+于是旧表达式根本没机会执行 —— 用例**照旧全绿**，而我在那一刻已经准备把「用例是红的」写进文档。
+删干净重跑，才看到该看到的那一行：
+
+```txt
+× ARPG 模板 + 资源缺失 ⇒ 拦下（改之前这里恒为 true）
+AssertionError: expected true to be false
+```
+
+⇒ 教训：**自证是「跑出来的」不是「推出来的」**。凡是要在文档里写「这条用例能抓住它」，
+就必须真的看它红一次；凭推理认为「这样写肯定红」正是这一轮差点犯的错。
+
+### 六、明确**留着的**（不是忘了，是判过不该动）
+
+`element-base.ts:148`：`drawDefaultImage()` 是**基类**方法，却在读 `blend`
+—— 而 `blend` 只声明在子类（`image-element.ts:28` / `text-element.ts:59` /
+`progress-bar-element.ts:37` / `video-element.ts:7`）。要修得决定「`blend` 到底属不属于基类」，
+并且 `GL.blend = this.blend` 在 `blend` 为 `undefined` 时的行为（`webgl-methods.ts:1149`
+用 `updaters[(blend = this.blend)]()` 查表）**必须真机确认**才能动。⇒ 留给 ④ 系列之后。
+
+### 七、账
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **44 → 40**（files 37 → 33；基线已固化） |
+| 其余 16 条轴 | 持平 |
+| 新增用例 | `src/title/__tests__/new-project-confirm.spec.ts`（4 条，已在旧语义下验红） |
+| `tsc` / `lint` / `format:check` / `text:check` / `docs:check` / `migration:selftest` | 0 / 0-0（1642 文件）· 0 · 0 · OK · 58/58 |
+
+剩下 40 处的形状分布（`scripts/oneoff/measure-p4-shapes.mjs` 实测）：
+**A 局部类型 7 处 / B 别处具名 22 处 / C 匿名或泛型 11 处**。按「断言在替谁干活」可归成四类：
+
+1. **第三方环境形状**（`monaco.ts:11`、`monaco-dts.ts:10`）—— 计划内既定债务；
+2. **codec 的 `string ↔ Uint8Array`**（`codec.ts:82,135`）—— 计划内既定债务；
+3. **被调方形参声明过窄**（`Parameters<typeof X.open>[0]` ×2、`ConstructorParameters` ×2）——
+   要放宽的是**被调方**的契约，得逐个调用点复核（与本轮第三条同一族，但更贵）；
+4. **动态键/成员枚举**（`printer.ts:408,1239`、`incremental.ts:364`、`history.ts:757`、
+   `window-object.ts:59`、`YMParameterPane.vue:693`、`YMFileBrowser.vue:433`、`list-events.ts:47`、
+   `variable.ts:162`）—— 都是「按字符串键取遗留形状对象上的成员」，需要先给那类对象一个
+   诚实的索引签名（而索引签名正是 `any-hatches` 轴在压的东西）⇒ 两条轴在这里**互相拉扯**，
+   动之前得先想清楚哪一边让步。
+
+### 八、教训
+
+1. **同一把尺子可以反复用。** 第 124 轮的判据（「这个断言在替谁干活」+「把调用点的断言与形参
+   的声明类型对一下」）在本轮又抓到一处同族（第三条），说明它是可复用的动作，不是一次性技巧。
+2. **「保留下来」的每一处都要写清理由**，否则下一轮会把「已经判过不该动」再判一遍
+   （第五节那条 `blend` 就是显式判过并留档的）。
+3. **自证必须真跑**（见第五节）。这是本轮唯一一个「差点写进文档的错误」。
+
+## 第 127 轮（2026-09-22）：`unknown-casts` 40 → 36 —— 收掉「被调方形参声明过窄」那一族
+
+第 126 轮把剩下 40 处归成四族，其中「被调方形参声明过窄」一族最省力（4 处），本轮收掉。
+四处的形状完全一致：`X as unknown as Parameters<typeof f>[0]` / `ConstructorParameters<typeof C>[0]`。
+
+### 一、这四处的 `unknown` 跳板在替谁干活
+
+四处都是「参数**确实**是那个东西，只是 TS 看不出来」：
+
+| 站点 | 被调方要什么 | 调用方手里是什么 | 差在哪 |
+| --- | --- | --- | --- |
+| `command-list.ts:67` | `SearchString.open(eventWindow: SearchableList)` | 契约给的 `HTMLElement` | 契约只承诺 `HTMLElement`，而实际对象两样都是 |
+| `custom-box-opts.ts:103` | `ArrayList.open(target: ArrayListTarget)` | `GetterElement` | **只有可空性**：`Node \| null` vs `Node`、`string \| null` vs `string` |
+| `scene-context.ts:324` | `new Light(data: LightData)` | `SceneLight`（场景节点） | `LightData` 的字段旧格式直接挂在节点上 |
+| `scene-context.ts:367` | `new Parallax(...)` | `SceneParallax` | 同上 |
+
+### 二、修法：**交叉断言**（手法库第 6 条），不是删断言
+
+`X as unknown as P` → `X as X & P`。
+
+为什么这不是「换个写法骗轴」：**`unknown` 跳板对目标类型没有任何检查** ——
+`x as unknown as 任何东西` 都合法（这正是它危险的地方）；而 `X & P` 要求 P 是 X 的**扩展**，
+tsc 会真的判可比性。本轮 4 处全部通过 `tsc --noEmit`，也就是说这一步把「凭空断言」
+换成了「**有约束的收窄**」—— 轴降下去的同时，检查是**变多**的。
+
+### 三、逐处的运行期证据（沿用判据：形态可疑 ⇒ grep 那个成员有没有被装上）
+
+- `command-list.ts:67`：期望的成员在 ui-kit 的 `command-api.ts` 上**实数存在** ——
+  `elements`(:415)、`findString`(:506)、`scrollToRow`(:339)，而契约(:237)只承诺 `HTMLElement`
+  ⇒ 那个对象确实是「两样都是」，交叉断言说的是事实；
+- `custom-box-opts.ts:103`：两个接口逐字段对过，差**只有可空性**。所以交叉断言的主张
+  （「调用点这两个字段非空」）与原先的 `unknown` 跳板**完全一致**，只是不再丢掉源类型；
+- `scene-context.ts:324/367`：`Light`/`Parallax` 的形参就是场景节点本身（旧格式把光照/视差参数
+  直接挂在节点上，构造函数体第一句就是 `this.data = data`）⇒ 「节点也是 `LightData`」
+  是这两个类**既有的前提**，不是本轮新加的假设。
+
+### 四、⚠️ 明确**没有**顺手改的两处：`LayoutPanel.vue:1966/1969`
+
+它们也是同一种形状（`{ value } as unknown as Event`），机械换成交叉断言同样能过 tsc，但**没换**：
+那种换法只是把「手搓的对象冒充 `Event`」这句谎话写得更规整，谎话本身还在。
+
+真正的修法是「让被调方的形参只声明它**读**的东西」（第 124 轮 `clear()` 那种契约修正）。但
+`easingIdWrite` / `easingIdInput` 要同时接两种实参：Vue 模板转发的**真事件**（`@input`）
+与这里**手搓的 `{ value }`**。直接把形参收成 `{ value?: unknown }` 会踩 TS 的 weak-type 规则
+（目标全是可选成员时，实参必须至少与它有一个共同成员，而 `Event` 没有 `value`）⇒
+会**打断模板绑定**。所以这需要先决定「这类处理器怎么建模」（例如统一走 `YamiEvent` 并给出手搓
+事件的构造辅助），留给单独一轮，不在本轮硬凑。
+
+### 五、账
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **40 → 36**（files 33 → 31；基线已固化） |
+| 其余 16 条轴 | 持平 |
+| 改动性质 | **纯类型擦除**（`git diff -U0` 里只有断言目标与注释，没有增删任何表达式） |
+| `tsc` | 0（四处交叉断言的可比性由 tsc 判过） |
+| `lint` / `format:check` / `text:check` / `docs:check` / `migration:selftest` | 0-0 · 0 · 0 · OK · 58/58 |
+
+### 六、教训
+
+1. **「按形状归族」比「逐处硬啃」划算**：这四处一个字都没差（`as unknown as Parameters<…>[0]`），
+   于是证据只要取一次、修法只要想一次 —— 上一轮列族的那张表直接变成了这一轮的工作单。
+2. **换写法要先答「检查是变多还是变少」**：`unknown` → 交叉断言之所以成立，是因为 tsc 从
+   「不检查」变成「判可比性」。反过来，若某种改法只是让轴好看而检查没变多，那就是骗轴
+   （第 115 轮 `ui-singleton-members` 那条白拿路径就是反例）。
+3. **「能机械改」不等于「该改」**：`LayoutPanel` 那两处能过 tsc，但改了只是把谎话写规整
+   （见第四节）—— 留下的每一处都要能说清「为什么留」。
+
+## 第 128 轮（2026-09-22）：⚠️ 更正第 127 轮的一个论断 —— 交叉断言**不**增加兼容性检查
+
+### 一、先更正：第 127 轮把交叉断言的好处说大了
+
+第 127 轮的原话是「`X & P` 要求 P 是 X 的**扩展**，tsc 会真的判可比性 …… 轴降下去的同时，
+**检查是变多的**」。本轮用一个**对照实验**把它证伪了：
+
+| 写法 | tsc |
+| --- | --- |
+| `o as A & { b: string }` | 通过 |
+| `o as A & { a: string }`（自相矛盾） | **通过** |
+| `o as A & Date`（毫无关系） | **通过** |
+| 对照组 `const n: number = 'x'` | 报错 `TS2322`（**证明编译器确实在检查**） |
+
+原因：交叉断言的**目标类型**按构造就是源类型的子类型（`X & P` 一定是 `X` 的子类型），
+所以它永远是一次合法的「向下断言」—— TS **不会**去核对 P 与源类型是否相容。
+
+（对照组是必须的：没有它，就分不清「编译器没检查」和「编译器没在跑」。）
+
+### 二、那它到底买到了什么（可执行证据）
+
+一句话：**结果类型里保住了源类型的成员**（而 `unknown` 跳板会把源类型**抹掉**）：
+
+| 写法 | 之后还能不能用源类型的成员 |
+| --- | --- |
+| `(o as A & { b: string }).a` | ✅ 通过 |
+| `(o as unknown as { b: string }).a` | ❌ `TS2339: Property 'a' does not exist on type '{ b: string; }'` |
+
+所以第 127 轮那 4 处改动**仍然成立**，但理由要换成上面这一条：`unknown` 跳板断言完，
+表达式只剩 P 的成员（源类型从此不可见、后续访问也就无从检查），交叉断言把它留着。
+这是「**类型信息变多**」，不是「断言被检查」。
+
+⇒ 台账那条轴是**坏味道的代理量**，不等于正确性。把轴降下去时必须同时说清「换来的到底是什么」，
+否则就是第 115 轮警告过的「靠改写法白拿信号」。
+
+### 三、顺手修掉一处 `never` 谎言：`palette-pointer.ts:96`
+
+```ts
+this.pointermove((event as unknown as { latest: never }).latest);
+```
+
+`latest` 是 `Palette.pointermove` 装在**这个事件对象**上的「最新一次指针事件」
+（`dragging.latest = event`，见 :400 / :483），而 `this.dragging` 就是它（:87）
+⇒ 真实类型是 `PointerEvent`，`never` 是纯谎话。改成：
+
+```ts
+const latest = (event as PointerEvent & { latest?: PointerEvent }).latest;
+if (latest) this.pointermove(latest);
+```
+
+**为什么加这个 `if` 不改变行为**：`never` 把「第一次 pointermove 之前还没装上」也一起藏了；
+那种情况下原来会 `pointermove(undefined)`，而 `relate` 的实现是 `!!a && a.pointerId === b?.pointerId`
+（对 `b` 用了可选链）⇒ `relate(dragging, undefined)` 本来就返回 `false`，进了函数也是立刻返回
+（`relate` 判断之前没有任何副作用）。所以显式跳过与「进去再空转」**可观察等价**。
+
+### 四、本轮明确留下的两处（不是忘了）
+
+- `window-object.ts:59`：`[] as unknown as HTMLElement[] & { append; remove }` ——
+  `append`/`remove` 装在**该数组实例**上，而且必须**不可枚举**（否则会被 `for…of` / `length` 看见）。
+  TS 没有「数组实例加方法」的表达法，单个 `as` 会被拒（批量降级实验早验过）。要真去掉，
+  得把 :461/:487 的 `defineProperty` 搬到构造处 —— 那是**运行期**改动，得真机。
+- `scene-tilemap-page.ts:210`：`const element = this as unknown as HTMLElement` ——
+  这里 `unknown` 是在**丢掉一个错的声明**（签名写 `this: typeof SceneTilemap`，运行期 `this` 是元素，
+  见就地注释）。换成交叉断言反而**加强**了一句假话。真正的修法是把 `this` 声明对，
+  但那要连 `this.changes = …` 这套「把字段挂在元素上」的旧约定一起理，留给 ④ 之后。
+
+### 五、账
+
+| 项 | 结果 |
+| --- | --- |
+| `unknown-casts` | **36 → 35**（files 31 → 30；基线已固化） |
+| 其余 16 条轴 | 持平 |
+| `tsc` | 0 |
+| palette 相关 spec | 5 文件 / 25 用例绿（`src/palette` + `engine/__tests__/palette.spec.ts`） |
+| 文档 | 第 127 轮的论断已就地更正（PHASE-1C 的族③ 摘要也加了更正行） |
+
+### 六、教训
+
+1. **写进文档的技术论断也要能复测。** 「检查是变多的」听着合理、当时四处也确实都过了 tsc ——
+   但它把「碰巧都过」当成了「因为被检查所以过」。3 行对照实验就推翻了。
+2. **代理量要标清是代理量**（见第二节末）。这是本轮真正的收获：比多清 1 处断言值钱。
+3. **同一句 `unknown` 跳板可能有两种相反的用途**：第 127 轮那 4 处是「补上缺的成员」，
+   `scene-tilemap-page.ts:210` 却是「丢掉一个错的声明」—— 后者换成交叉断言会更糟。
+   ⇒ 判据不能只看形状，还要看**源类型对不对**。

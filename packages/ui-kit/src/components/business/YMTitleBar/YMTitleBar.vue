@@ -31,7 +31,7 @@ const pointerdown = (event: PointerEvent): void => {
 		return;
 	}
 	if (dragging) {
-		// 闃叉ā鍧楃骇 dragging 娈嬬暀锛堟嫋鎷戒腑 pointerup 涓㈠け鏃堕樆鏂悗缁墍鏈夌獥鍙ｆ嫋鎷斤級
+		// 防模块级 dragging 残留（拖拽中 pointerup 丢失时阻断后续所有窗口拖拽）
 		(dragging as PointerEvent & { cancel?(event?: Event): void }).cancel?.();
 		dragging = null;
 	}

@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-23T17:36:15.767Z",
+	"generatedAt": "2026-09-24T04:33:23.980Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -134,8 +134,8 @@
 			"label": "双重断言 as unknown as",
 			"target": "zero",
 			"value": {
-				"total": 44,
-				"files": 37
+				"total": 35,
+				"files": 30
 			}
 		},
 		"unremovable-listeners": {

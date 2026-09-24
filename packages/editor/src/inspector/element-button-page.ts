@@ -204,7 +204,7 @@ import { registryElement } from '@app/utils/element-registry';
 				}
 				break;
 			case 'content':
-				// 闂佺儵鏅涢悺銊ф暜鐎涙ê绶炵€广儱鎳庨悡鎴︽煥濞戞ɑ婀版繛鎻掓健瀵剟骞忓畝濠傛闁荤喎鐨濋崑鎾绘煕閺嵮勫櫢闁煎灚鍨块幆鍐礋椤愩垺鏆ラ柣?
+				// 直接复制，更新语言包中的内容
 				node[key] = value;
 				// element[key] = value
 				node.instances.setProperty(key, value);

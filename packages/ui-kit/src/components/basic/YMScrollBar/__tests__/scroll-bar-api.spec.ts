@@ -17,7 +17,7 @@ describe('createScrollBarElement', () => {
 		expect(typeof el.updateHorizontalBar).toBe('function');
 	});
 
-	it('drag dispatches userscroll on target锛?.48 鍥炲綊鈥斺€攎arquee 鍚屾閾撅級', () => {
+	it('drag dispatches userscroll on target（9.48 回归——marquee 同步链）', () => {
 		const el = createScrollBarElement() as unknown as ScrollBarApi;
 		const target = document.createElement('div');
 		target.style.cssText = 'width:100px;height:100px;overflow-y:auto;';
@@ -57,7 +57,7 @@ describe('createScrollBarElement', () => {
 		target.remove();
 	});
 
-	it('drag works when bar size is 0 (denom fallback鈥斺€?.46 鍥炲綊)', () => {
+	it('drag works when bar size is 0 (denom fallback——9.46 回归)', () => {
 		const el = createScrollBarElement() as unknown as ScrollBarApi;
 		const target = document.createElement('div');
 		target.style.cssText = 'width:100px;height:100px;overflow-y:auto;';

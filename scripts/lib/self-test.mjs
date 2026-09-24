@@ -40,6 +40,7 @@ import {
 	unassignedStoreSlots
 } from './ui-slots.mjs';
 import { checkTextIntegrity, scanTextIntegrity } from './text-integrity.mjs';
+import { detectMojibake } from './gbk-mojibake.mjs';
 
 // ---------------------------------------------------------------------------
 // 极简测试框架（够用就好：一个用例 = 一个函数 + 一句断言）
@@ -803,6 +804,60 @@ test('duplicated-comment-block：连续 3 行注释被逐字重复时命中', ()
 		checkTextIntegrity(bad).some((i) => i.rule === 'duplicated-comment-block'),
 		'整段注释被重复时应当命中'
 	);
+});
+
+// 复现误解码：UTF-8 字节被当成 GBK 解码。门禁要抓的就是这个变换，
+// 所以自证样本由它现场生成 —— 而不是把一段乱码抄进源码（抄进来的乱码本身就是污染）。
+const mojibakeOf = (s) => new TextDecoder('gbk').decode(Buffer.from(s, 'utf8'));
+
+test('mojibake：无丢字的样本能一字不差还原（判据是可逆的）', () => {
+	// 样本**现场生成**，不硬编码乱码字面量 —— 硬编码的乱码本身就成了仓库里的一处乱码，
+	// 而且会被这条规则自己抓到（这正是第 125 轮学到的一课：样本要存就存可再生的形式）。
+	const good = '// 控件';
+	const bad = mojibakeOf(good);
+	// 挑「控件」这两个字是有理由的：这一串字节按 GBK 解码**一个字节都不丢**（无 U+FFFD），
+	// 所以它只触发 `mojibake`，而且判据必须**精确可逆**。丢字的形态在下一个用例。
+	eq(
+		checkTextIntegrity(`${bad}\n`).map((i) => i.rule),
+		['mojibake']
+	);
+	eq(detectMojibake(bad)?.text, good);
+	// 好文本不能被误报
+	eq(checkTextIntegrity(`${good}\n`), []);
+});
+
+test('mojibake：真实事故的两种形态（丢字写半角 ? / 在乱码上再乱一次）仍然命中', () => {
+	// 形态一：本仓那次事故的解码器把解不出的字节对写成**半角 `?`**（不是 U+FFFD），
+	// 所以 `replacement-char` 规则放过了它；丢字会让后面的字节流全部错位。
+	const good = '// 直接复制，更新语言包中的内容';
+	const once = mojibakeOf(good);
+	ok(once.includes('\uFFFD'), '这条样本本身应当含丢字留下的 U+FFFD');
+	const lossy = once.replaceAll('\uFFFD', '?');
+	// 只触发 `mojibake`：这就是「此前 7 条规则全都看不见它」的可执行证明
+	// （把这条规则摘掉，本断言会变成 [] 并失败 —— 规则是自证的，不是声明自证的）。
+	eq(
+		checkTextIntegrity(`${lossy}\n`).map((i) => i.rule),
+		['mojibake']
+	);
+	// 丢字处的 2 个字节永久丢失 ⇒ 判据只保证「没丢字的部分」精确：
+	// 能读出来的中文必须是对的，但不可能整句一字不差（真实修复靠 `git log -L` 取旧版）。
+	const hit = detectMojibake(lossy);
+	ok(
+		hit !== null && hit.text.includes('直接复制') && hit.text.includes('更新语'),
+		`丢字形态下也应当还原出可读片段，实际 ${JSON.stringify(hit?.text)}`
+	);
+	// 形态二：在乱码上再误解码一次（`3f259bc9` 就是这么毁第二次的），仍须命中
+	const twice = mojibakeOf(once);
+	ok(
+		checkTextIntegrity(`${twice}\n`).some((i) => i.rule === 'mojibake'),
+		'两层乱码仍须命中'
+	);
+});
+
+test('mojibake：以 \\u 转义写下的乱码字符不算污染（样本要存就存转义）', () => {
+	// 这条守的是一个**自指的坑**：门禁自己的源码与自证样本就躺在被扫面里。
+	// 乱码以转义形式存放时，文件里只有 ASCII ⇒ 既不被误报，也不会被二次转码。
+	eq(checkTextIntegrity("const s = '\\u95ba\\u5099\\u80f6'; // 乱码样本\n"), []);
 });
 
 test('文本污染：当前全仓零命中（规则不能靠「够宽」来制造工作量）', () => {

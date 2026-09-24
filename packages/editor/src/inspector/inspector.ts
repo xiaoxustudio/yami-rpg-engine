@@ -383,7 +383,7 @@ Inspector.managerKeydown = function (this: typeof Inspector, event: KeyboardEven
 	switch (element.tagName) {
 		case 'INPUT':
 		case 'TEXTAREA':
-			// 濡傛灉鏄粦鍔ㄦ绫诲瀷鍒欒烦鍒癲efault
+			// 如果是滑动框类型则跳到default
 			if (element.type !== 'range') {
 				if (event.ctrlKey || event.metaKey) {
 					switch (event.code) {
@@ -472,7 +472,7 @@ Inspector.inputBlur = function (
 ) {
 	return function (this: YamiElement & { changes?: InspectorChange[] }, _event: Event) {
 		if (Window.activeElement === null) {
-			// 鍥犳闇€瑕佸垽鏂璵anager.focusing
+			// 因此需要判断manager.focusing
 			const { manager } = Inspector;
 			const managerView = managerData(manager);
 			if (managerView.focusing === null) {

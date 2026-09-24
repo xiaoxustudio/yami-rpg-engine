@@ -1,5 +1,5 @@
 <template>
-	<!-- 鍙橀噺绐楀彛 -->
+	<!-- 变量窗口 -->
 	<WindowFrame
 		id="variable"
 		:ref="registryRef(variableEls, 'variable')"

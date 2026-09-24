@@ -100,7 +100,11 @@ export const customBoxOptions: CustomBoxApiOptions = {
 			PresetObject.open!(el as Parameters<NonNullable<typeof PresetObject.open>>[0]),
 		'preset-element': (el: GetterElement) => PresetElement.open!(el),
 		array: (el: GetterElement) =>
-			ArrayList.open(el as unknown as Parameters<typeof ArrayList.open>[0]),
+			// 交叉断言（手法库第 6 条）：`GetterElement` 与 `ArrayListTarget` 要的成员几乎同源，
+			// 差的只是可空性（`previousSibling: Node | null` vs `Node`、`filter: string | null`
+			// vs `string`）—— 断言说的就是「调用点这两个字段非空」，与原先的 `unknown` 跳板
+			// 是同一个主张，但保留了源类型。
+			ArrayList.open(el as GetterElement & Parameters<typeof ArrayList.open>[0]),
 		attribute: (el: GetterElement) => Attribute.open(el, 'attribute'),
 		'attribute-group': (el: GetterElement) => Attribute.open(el, 'group'),
 		'enum-group': (el: GetterElement) => Enum.open(el, 'group'),

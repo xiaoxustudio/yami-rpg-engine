@@ -43,7 +43,9 @@ console.log(`  规则：${TEXT_RULES.map((r) => r.id).join(' / ')}`);
 console.log('');
 
 if (issues.length === 0) {
-	console.log('  ✓ 无命中 —— 没有控制字符污染、没有被吞进注释的代码、没有重复的注释块。');
+	console.log(
+		'  ✓ 无命中 —— 没有控制字符污染、没有乱码、没有被吞进注释的代码、没有重复的注释块。'
+	);
 	console.log('');
 	process.exit(0);
 }

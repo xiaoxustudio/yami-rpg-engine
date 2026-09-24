@@ -321,7 +321,9 @@ Scene.loadActorContext = function (this: typeof Scene, actor: SceneActor) {
 Scene.loadLightContext = function (this: typeof Scene, light: SceneLight) {
 	Object.defineProperty(light, 'instance', {
 		configurable: true,
-		value: new Light(light as unknown as ConstructorParameters<typeof Light>[0])
+		// 交叉断言（手法库第 6 条）：`Light` 的形参是 `LightData`，而传进去的就是这个场景节点本身
+		// （旧格式把光照参数直接挂在节点上）—— 保留 `SceneLight` 只补缺口，不用 `unknown` 跳板。
+		value: new Light(light as SceneLight & ConstructorParameters<typeof Light>[0])
 	});
 };
 
@@ -364,7 +366,8 @@ Scene.loadParallaxContext = function (this: typeof Scene, parallax: SceneParalla
 	}
 	Object.defineProperty(parallax, 'player', {
 		configurable: true,
-		value: new Parallax(parallax as unknown as ConstructorParameters<typeof Parallax>[0])
+		// 同上：`Parallax` 的形参也是场景节点本身。
+		value: new Parallax(parallax as SceneParallax & ConstructorParameters<typeof Parallax>[0])
 	});
 };
 

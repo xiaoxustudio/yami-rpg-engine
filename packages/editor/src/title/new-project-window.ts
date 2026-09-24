@@ -354,16 +354,35 @@ NewProject.confirm = function (this: typeof NewProject, ..._args: unknown[]) {
 		});
 };
 
+/**
+ * 「确认新建」的放行判定。
+ *
+ * 模板一共三项（见 `initialize` 的 `loadItems`）：两个 ARPG 模板 + 「最小化当前项目」。
+ * 只有「选中的是 ARPG 模板、而它对应的资源不存在」才拦下来（提示 `resource-not-found`），
+ * 其余一律放行。
+ *
+ * ⚠️ 这段判定此前是**恒真的死逻辑**：第三项写成
+ * `template != (['arpg-ts-english', 'arpg-ts-chinese'] as unknown as string)` ——
+ * 数组被当成字符串参与比较，运行期退化成 `template != 'arpg-ts-english,arpg-ts-chinese'`，
+ * 对任何真实模板值都成立 ⇒ `else` 分支（资源不存在的提示）**永远不会执行**（`891cf657` 引入）。
+ * 抽成纯函数是为了让这张四行真值表能被用例钉住
+ * （`src/title/__tests__/new-project-confirm.spec.ts`）。
+ */
+export function newProjectConfirmAllowed(
+	template: string | null | undefined,
+	isResourceReady: (template: string) => boolean
+): boolean {
+	if (template == 'arpg-ts-english') return isResourceReady('arpg-ts-english');
+	if (template == 'arpg-ts-chinese') return isResourceReady('arpg-ts-chinese');
+	return true;
+}
+
 const newProjectConfirmOriginal = NewProject.confirm;
 
 NewProject.confirm = function (this: typeof NewProject) {
 	const template = read(titleEls.get('newProject-template') as YamiElement);
 	const noResourceObj = isNoResource();
-	if (
-		(template == 'arpg-ts-english' && noResourceObj['arpg-ts-english'].check) ||
-		(template == 'arpg-ts-chinese' && noResourceObj['arpg-ts-chinese'].check) ||
-		template != (['arpg-ts-english', 'arpg-ts-chinese'] as unknown as string)
-	) {
+	if (newProjectConfirmAllowed(template, (key) => noResourceObj[key]?.check === true)) {
 		newProjectConfirmOriginal!.call(Title);
 	} else {
 		alert(t('confirmation.resource-not-found'));

@@ -33,13 +33,19 @@ for (const { full, rel } of files) {
 	// 逐处记录行号（用于把 tsc 报错映射回具体那一处）
 	const lineOf = (idx) => src.slice(0, idx).split('\n').length;
 	for (const h of hits) {
+		const lineStart = src.lastIndexOf('\n', h.index) + 1;
+		const lineEnd = src.indexOf('\n', h.index);
 		sites.push({
 			rel: rel.replace(/\\/g, '/'),
 			full,
 			index: h.index,
 			len: h[0].length,
 			line: lineOf(h.index),
-			snippet: src.slice(h.index, src.indexOf('\n', h.index)).trim().slice(0, 96)
+			snippet: src
+				.slice(h.index, lineEnd < 0 ? undefined : lineEnd)
+				.trim()
+				.slice(0, 96),
+			text: src.slice(lineStart, lineEnd < 0 ? undefined : lineEnd).trim()
 		});
 	}
 }
@@ -53,6 +59,14 @@ const byFile = new Map();
 for (const s of sites) byFile.set(s.rel, (byFile.get(s.rel) ?? 0) + 1);
 for (const [rel, n] of [...byFile].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))) {
 	console.log(`  ${String(n).padStart(2)}  ${rel}`);
+}
+
+// 逐处清单：P4 剩下的都是「`unknown` 跳板承重」的（降级实验早就做过），
+// 所以下一步不是删断言，而是**改类型** —— 需要看整行才能判断哪一侧该动。
+console.log('\n=== 逐处清单（含整行）===');
+for (const s of [...sites].sort((a, b) => a.rel.localeCompare(b.rel) || a.line - b.line)) {
+	console.log(`\n  ${s.rel}:${s.line}`);
+	console.log(`      ${s.text}`);
 }
 
 if (!APPLY) {

@@ -222,7 +222,7 @@ export class AttributeListInterface implements IListInterface {
 			{ name: 'True', value: true }
 		]);
 
-		// key write 缁?Vue 妯℃澘杞彂锛圤bjectAttribute.vue @write 鈫?AttributeListInterface.keyWrite锛?
+		// key write 经 Vue 模板转发（ObjectAttribute.vue @write → AttributeListInterface.keyWrite）
 	}
 
 	static keyWrite(event: { value: string }) {
