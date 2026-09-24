@@ -4,6 +4,8 @@ import { inspectorEls } from './element-registry.ts';
 import { clear, read, write } from '@app/utils/element-utils';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
+import type { InspectorChange } from '@app/inspector/inspector.ts';
+import type { YamiElement } from '@app/types/element-api';
 import { Scene } from '@app/scene/scene-window.ts';
 
 /** P4b：inspector 页管理器元素上的元素数据（`focusing` 原先靠原型访问器透明落到 WeakMap） */
@@ -18,7 +20,18 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 		tip?: string;
 		value: string | number;
 	}
-	interface SceneTilemapLightBox {
+	/**
+	 * light 选择框元素（`#sceneTilemap-light`）的视图。
+	 *
+	 * 第 148 轮：从 `interface` 改成 `type = YamiElement & {…}` 的**交叉**写法 —— 它本来就是
+	 * 一个 DOM 元素（本文件的 `SceneTilemap` 用 `inspectorEls.get()` 拿到它），原声明却是纯手写
+	 * 形状、连 `HTMLElement` 都不含，于是「写变更记录」处（`input: lightBox`）无法满足
+	 * `InspectorChange.input: YamiElement`（实测 TS2322：`SceneTilemapLightBox` 缺 318 个成员）。
+	 * 交叉写法一次补上元素身份与 API 面，又不必让本地这几个成员去和 `YamiElementApi` 的宽松
+	 * 签名逐一兼容（换成 `interface extends YamiElement` 会报「incorrectly extends」：
+	 * 本地的 `update(): void` 与基类的 `update(...args: unknown[]): Loose` 不兼容）。
+	 */
+	type SceneTilemapLightBox = YamiElement & {
 		lightItems: {
 			all: SceneTilemapLightItem[];
 			tile: SceneTilemapLightItem[];
@@ -35,7 +48,7 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 			  ) => void)
 			| null;
 		[k: string]: unknown;
-	}
+	};
 	/** P4b：light 选择框元素上的元素数据（`dataItems` 原先靠原型访问器透明落到 WeakMap） */
 	interface SceneTilemapLightData {
 		dataItems: SceneTilemapLightItem[] | null;
@@ -204,11 +217,16 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 		}
 	};
 
-	SceneTilemap.layerInput = function (this: typeof SceneTilemap, _event: Event) {
-		// 运行时 `this` 是 lightBox 元素（SceneTilemapPage.vue 把本方法注册为 elLayer 的 input 监听），
-		// 方法签名仍沿用 `this: typeof SceneTilemap`，故比较前先按元素取视图
-		const element = this as unknown as HTMLElement;
-		if (managerData(Inspector.manager).focusing === element) {
+	SceneTilemap.layerInput = function (
+		this: YamiElement & { changes?: InspectorChange[] },
+		_event: Event
+	) {
+		// 运行时 `this` 是 lightBox 元素（`SceneTilemapPage.vue:373` 把本方法注册成 elLayer 的
+		// `input` 监听），并有元素成员 `changes`（inspector 的历史处理器读它）。
+		// 第 148 轮：`this` 形参按**读/写点**如实声明（与 `inspector.ts:473` 的
+		// `Inspector.inputBlur` 返回值同一手法）⇒ 原先那句
+		// `const element = this as unknown as HTMLElement` 整条消失。
+		if (managerData(Inspector.manager).focusing === this) {
 			const lightBox = SceneTilemap.lightBox!;
 			const value = read(lightBox);
 			for (const item of lightData(lightBox).dataItems ?? []) {

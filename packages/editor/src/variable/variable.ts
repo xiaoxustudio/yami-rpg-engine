@@ -159,8 +159,7 @@ function ensureDomBound() {
 	Variable.list.restoreScroll = Variable.list_restoreScroll;
 	Variable.list.cancelSearch = Variable.list_cancelSearch;
 	Variable.list.createFolder = Variable.list_createFolder;
-	(Variable.list as unknown as { createVariable: () => unknown }).createVariable =
-		Variable.list_createVariable;
+	Variable.list.createVariable = Variable.list_createVariable;
 	getListConfig(Variable.list).onCreate = Variable.list_onCreate;
 	getListConfig(Variable.list).onDelete = Variable.list_onDelete;
 	getListConfig(Variable.list).onResume = Variable.list_onResume;

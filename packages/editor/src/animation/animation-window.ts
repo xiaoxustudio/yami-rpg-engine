@@ -2,6 +2,7 @@ import { elementDataOf } from '@ui-kit';
 import type { YamiElement } from '@app/types/element-api';
 import { animationEls } from '@app/animation/element-registry';
 import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
+import type { History } from '@app/tools/history.ts';
 import { getAnimationStore } from '@app/stores/animation';
 import {
 	AnimationWindowEngine,
@@ -74,8 +75,26 @@ export type AnimationFileContext = {
 		motions: AnimationMotion[];
 		[k: string]: unknown;
 	};
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/**
+	 * 编辑器状态（**由 tab 传入的上下文在 `open` / `load` 时才挂上**，所以是可选的 ——
+	 * 与 `particle-window.ts` 里 `ParticleContextShape.editor` 的注释同源）。
+	 *
+	 * 第 153 轮补声明：原先靠 `[k: string]: any` 索引签名兜着，摘掉后 tsc 指出 5 处访问
+	 * （全在 `animation-file.ts`），逐条落在这些成员上。`player` 直接复用
+	 * `Animation.player` 的类型（同一个实例在两边流转：`load` 里 `this.player = editor.player`、
+	 * `destroy` 里 `editor.player = this.player`），避免再写第三份局部形状。
+	 */
+	editor?: {
+		motion: AnimationMotion | null;
+		target: unknown;
+		player: NonNullable<typeof Animation.player>;
+		history: History;
+		centerX: number;
+		centerY: number;
+		selectionX: number;
+		selectionLength: number;
+		listScrollTop: number;
+	};
 };
 export type AnimationFrameData = { copies: AnimationFrame[]; length: number };
 

@@ -1710,6 +1710,283 @@ head?: { view: { write(index: number): void } } | null;
    多读点各自 `as unknown as` 时先问「是不是同一个事实被解释了 N 遍」。
 8. **「同名方法换签名」无解**（第 91 轮）：`WebGLRenderingContext.prototype.bufferData` 那种
    重载补丁连单次 `as` 都会被 TS2352 挡住 ⇒ 换机制（`Reflect.set`），而不是换写法。
+9. **「同一批挂载里只有一条要断言」⇒ 先查接口漏了哪一行声明**（第 135 轮）：`variable.ts:158–163`
+   连着 6 条挂载，`saveScroll`/`restoreScroll`/`cancelSearch`/`createFolder` 四条直接通过、
+   只有 `createVariable` 要 `as unknown as` —— 差别是 `YamiElementApi` 里**漏了那一行**。
+   补上后 `variable.ts` 与 `list-events.ts` **两处**断言整条消失。
+   ⇒ 判别动作：把「要断言的那条」与**同一个对象上不用断言的邻居**对一下。
+   这是第 122 轮「同文件里已有一处更弱的写法」的加强版（那次同文件，这次同对象同批挂载）。
+   ⚠️ **边界（同轮实测）**：只有 `any` 源的断言才真多余；
+   `Record<string, any>` 源去断言一个**带必填成员**的目标会被 `TS2741` 挡住
+   （索引签名不满足必填属性）⇒ 那种断言是**承重的**（例：`command-list.ts:51` 桥
+   `SettingConfig` 的 schema 驱动 config 到 ui-kit 契约）。动手前先跑一个 6 行控制实验。
+10. **「注释说这里必须保留 `unknown`」⇒ 定期抽检，注释会过期**（第 136 轮，约 40 秒/处）：
+    本轮抽检三处，结论分三种 ——
+    - `transition-window.ts:187`：注释理由是**过时**的（说「`typeof Easing.list` 是字面量 `null`」，
+      而形状里 `list` 早有真实声明 `:83`；实测真实阻塞是缺 9 个成员）⇒ 换交叉断言
+      `list as NonNullable<typeof Easing.list>` ⇒ 断言消失，注释按实测改写；
+    - `eslints.ts:63`：**真的承重**，但理由是**类侧松散**（`CommandList.prototype.elements` 的静态类型是
+      `(...args: any[]) => any` ⇒ TS2352），与同文件 `:173` 那条「253 个属性不可比」**不是**同一件事
+      ⇒ 就地补上理由（试错结论也算留档）；
+    - `menu-list.ts:58–64`：注释**准确**（解释第 122 轮删掉的调用点）⇒ 放过。
+    ⇒ 抽检的价值在**把三种结论分开**，不在于每次都能降一处；也提醒：**一条注释别套到两处上**。
+11. **「断言去掉后 tsc 不响」⇒ 去查真值，可能藏着恒真的死守卫**（第 137 轮）：
+    来源面是 `any`（`GL`、`Scene` 这类）时，`as unknown as T` 去掉之后 tsc **一声不响**
+    —— 这时别急着判「多余」，先回答「这个值**运行时**到底是什么」。
+    本轮实例：`scene-animate-engine.ts` 的 `hasRenderableCanvas()` 读 `Scene.screen.width` / `.height`，
+    而 `Scene.screen` 是 `<div class="box" id="scene-screen">`（`LayoutPanel.vue`）——**div 没有
+    `width`/`height` 属性**，`undefined !== 0` **恒真** ⇒ 那条「0×0 时跳过绘制」的守卫
+    **从未生效过**，断言只是把误读圆了过去（本意：读 `GL.canvas`）。
+    - 动作：**凡是「真值守卫」形状**（`x !== null` / `x !== undefined` / `x !== 0`）里出现的断言，
+      先确认被读对象**有没有那个属性**；DOM 侧尤其常错 —— `width`/`height` 只有
+      `canvas`/`img`/`video` 有，`div` 得用 `clientWidth`/`offsetWidth`。
+    - 终点不是「删掉断言」，而是**读对的东西 + 留下实测理由**：只删断言会留下一条**恒真的死代码**，
+      比断言更糟（断言至少看得见）。
+    - 红证明的坑（第 128 轮的规矩）：复现件要保留**真实形态**（本轮靠 spec 里那个
+      div 形态的 `scene.screen` mock 才红）；写成「那个字段干脆不存在」会**假绿** ——
+      旧实现换个理由（`screen !== undefined`）也能返回同一结果。
+12. **「读一个注入到 `window` 的全局」⇒ 补声明，别断言**（第 138 轮，2 处断言一次消掉）：
+    `window as unknown as Record<string, unknown>` 的唯一作用就是绕过「TS 不许访问未知属性」；
+    而 `src/preload-env.d.ts` **早就**为同一类注入 augment 过 `Window`（`yami?: YamiBridgeApi`）
+    ⇒ 在同一处补 `__nodeRequire?: (moduleId: string) => unknown;` 与 `__SKIP_AUTO_INIT__?: boolean;`
+    （注入点：`index.html:5` / `:21`），两处断言一起消失，**且不需要任何新断言**。
+    - **可选性要如实**：`typeof window.__nodeRequire !== 'function'` 那个守卫在 vitest/jsdom 下
+      是**真守卫**（不加载 index.html ⇒ 确实 `undefined`）⇒ 补声明时别把守卫顺手删了。
+    - 派生收益：`components/__tests__/global-mounting.spec.ts` 的 `window as unknown as` 读模式
+      白名单**从 4 条缩到 1 条**（其中 `Window: typeof Window` 一条实测陈旧、匹配不到任何行）。
+    - ⇒ 一般判据：先问「这个全局为什么没有类型」，答案若是「没人写」，就写；断言是最后手段。
+13. **断言可能是在「说谎」，而不只是「不够」**（第 139 轮，`codec.ts` 2 处）：
+    前几轮的断言都是**不够**（缺声明 / 缺成员 / 索引签名不可比），这两处是**反的** ——
+    `scene.terrains`（`SceneData.terrains?: string`）与 `tilemap.code`（`TilemapData.code?: string`）
+    运行时确实是 **string**（`encodeTerrains` 返回 string，赋值在 `:74`），却被断言成 `Uint8Array`。
+    而 `decodeTerrains` / `decodeTiles` 的形参**本来就收 `Uint8Array | string`** ⇒ 删掉断言即可。
+    - **判据要问两端**：源头的**生产者**（谁赋的值、它的返回类型）+ 被调方的**形参联合**；
+      只看读取侧只有一个 `!`，看不出任何问题。
+    - **`as` 没有运行时作用** ⇒ 这类改动不需要红/绿证明，只需要 tsc 干净 + 该文件 spec 绿
+      （本轮 `codec.spec.ts` 19/19）⇒ 优先找「源类型与目标类型看着不相干、但形参本来就收它」的形状。
+    - 反例警示：**「类型更窄」的断言最容易骗过 review**（没人会怀疑一个更具体的类型）⇒
+      看到 `as` 后的类型比 `as` 前**更具体**时，先问「运行时真是这个吗」。
+14. **「基类方法读子类字段」⇒ 在基类 `declare` 一个可选字段**（第 140 轮，`element-base.ts:148`）：
+    `drawDefaultImage()` 读 `this.blend`，而 `blend` 只在四个子类里声明（image / text /
+    progress-bar / video；调用点也正好只有这三处，`parallax.ts` 那个是它自己的同名方法）
+    ⇒ 原写法 `(this as unknown as { blend: string }).blend`。补法三处分寸：
+    - **可选**（`blend?`）：不是所有元素都有它 ⇒ 必填是撒谎；
+    - **`declare`**：普通字段（无初始化器）在 `useDefineForClassFields` 下**仍会** defineProperty
+      ⇒ 给所有实例凭空加一个自有键、`Object.keys` 面就变了；`declare` 不发射代码（本文件已有
+      `declare node` / `declare resize` 先例）。**判据一句话：「这次改动该不该让
+      `Object.keys(instance)` 变化？」不该就用 `declare`。**
+    - **不用 `this` 形参**：`uiElClasses.Element` 的声明类型是 `(new (data?: any) => any) &
+      Record<string, any>`（实例面 `any`），基类实例类型全靠**推断**；写显式 `this: UIElement & …`
+      等于把承重的推断换成显式引用，收益相同而风险更大。
+    ⇒ 「缺声明」的三个落点：**接口**（第 135 轮）/ **方法形参**（第 136 轮）/ **类字段**（本轮）；
+      选择依据是**读点范围**：多处会读 ⇒ 类字段，只此一处 ⇒ 形参。
+15. **「对象被声明成 DOM 事件」⇒ 写载荷类型，删掉事件外衣**（第 141 轮，2 处一次消掉）：
+    模板 `@write="handler"` 传的是子组件 emit 的**载荷对象**（`SelectBox.vue` emit
+    `write: [value: unknown]`），而处理器声明写成 `YamiEvent` / `Event`
+    ⇒ 调用点只能 `{ value } as unknown as Event`。改法：
+    ```ts
+    export type EasingIdPayload = Pick<EventPayloadFields, 'value'>;
+    ```
+    —— **复用 `editor-event.ts:15` 那个 `Loose = any` 单点豁免**，不新增 `any` 字面量
+    （也不动 `any-hatches` 口径）；接口 / 实现 / 单例形状各改一处，调用点直接 `{ value }`。
+    - 判据：断言两侧**结构上毫无交集**（`Event` vs `{ value }`）⇒ 不是「不够窄」，是**说错了对象**。
+    - **附带红利（本轮实测）**：收窄载荷类型会**照出被 `any` 吞掉的错误声明** ——
+      `Curve.index` 原声明 `number | null | ''`，真实值是缓动 **id**（`string | null`）：
+      三处证据（`index = id` 赋值 / 当字符串键 `Data.easings.map[id]` / spec `toBe('easing-1')`），
+      改正后 **tsc 0 级联**。
+    - ⚠️ **夹带的条件**：一次 tsc 能判定「0 级联」才夹带；级联出一片就单独成轮。
+16. **跨包「适配器」契约要按注册点的真实事件类型写**（第 142 轮）：ui-kit 的 `SelectionAdapter`
+    原写 `(event: Event) => void` ×4，而它的注册点是
+    `addEventListener('keydown' | 'keyup' | 'pointerdown' | 'pointerup', …)`
+    ⇒ DOM 给的是 `KeyboardEvent` ×2 + `PointerEvent` ×2。写宽之后，宿主（editor 的 `Selection`，
+    静态类型就是 `SelectionShape`，处理器按真实事件签名）与契约**互不重叠**，只能 `as unknown as`
+    谎报。收窄契约 ⇒ 断言消失，且方向是**收紧**。
+    - 判据：同一文件里「单次 `as` 能过、`as unknown as` 不能过」= 不是缺成员，是**参数类型冲突**。
+    - ⚠️ ui-kit 的改动不在**根目录脚本**的覆盖内（根 `package.json` 没有 `test` 脚本，
+      只有 `ci.yml:119` 跑）⇒ 必须显式
+      `pnpm -F @yami/ui-kit test`，并跑 `-F @yami/ui-kit run build:types` 与 editor 的
+      `typecheck:vue`（跨包契约改动会同时落在三条检查上）。
+17. **「名字 → 方法」的间接层：给表一个取值面**（第 143 轮，`printer.ts` 2 处一次消掉）：
+    `static drawingMethods: Record<string, string>`（效果类型 → 方法名）配上取值时的
+    `Printer as unknown as Record<string, (...args) => unknown>`。修法：定义
+    `type DrawingMethodName = 'drawText' | 'drawTextWithShadow' | …`（四个**真实**方法名）与
+    `type DrawingMethod = (context, command, text) => void`（四者共同签名，取自**唯一调用点**），
+    表声明成 `Record<string, DrawingMethodName>` ⇒ `Printer[name]` 直接就是 `DrawingMethod`。
+    - 收益不是「少一处断言」，而是**新增检查**：表里拼错方法名 ⇒ 编译期报错。
+    - 占位值若也是断言（`'' as unknown as 函数`），先在**同族**里找替身（本文件 `:471` 早有
+      `fnEmpty`）；并写清那层行为变化（不可能路径上「抛错 → 无操作」）。
+18. **「各写一半」的形状病：接口里的一行 vs 另一个接口**（第 144 轮，2 处）：
+    `ScriptEditor.getModel()` 的返回只写 `{ getLanguageId(): string }`，而 `ScriptModel` 只写
+    `setValue` / `getValue` / `getAlternativeVersionId` —— **同一个 monaco `ITextModel` 的两个
+    互不相交子集** ⇒ `as unknown as` 用来从半边跳到另半边。合并成一份（补 `getLanguageId`）、
+    把返回类型改成 `ScriptModel | null` ⇒ 断言消失。
+    - 与第 118 轮同族（那次是两份**具名**形状），本轮的变体是「**接口里的一行**」与「另一个接口」。
+      判据相同：**把两侧成员并起来看，是否恰好等于同一个运行期对象**。
+    - 同轮另一处：`as unknown as YamiElement & CallEventInputApi` —— 目标里多带了一个**对本次
+      赋值毫无贡献**的 `YamiElement`（要求整套 `YamiElementApi`），把「可比的」变成「不可比」。
+      ⇒ 写断言前逐个检查：**目标里每个交叉项都是必需的吗**。
+19. **「试过并回退」的注释要带错误原文**（第 145 轮）：`particle-engine.ts` 第 87 轮留下
+    「直接传 `this` 报 TS2345、降成单次断言又报 TS2352 ⇒ 类与接口漂移，正解是把两者对齐」——
+    方向正确但**没量**，于是搁置了三轮才被一次 tsc 变成可执行清单：
+    `ParticleLayerData` 缺 `lifetime` / `lifetimeDev` / `fadeout` / `anchor` 等 **9** 个成员。
+    - **错误信息一次只报一个属性** ⇒ 修完 `data` 才轮到 `easing`；级联的每一层都要当**独立结论**
+      核实（那层其实是被 `any` 吞掉的另一个错误声明：`easing` 声明成 `Float32Array | null`，
+      实际赋/读的都是 `Easing.get(...)` 的 `ease()`）。
+    - **合并两份声明比修单点断言更值钱**：删掉的那份自带 `[k: string]: any` ⇒ 一次收口同时动
+      `unknown-casts` 与 `any-hatches` 两条轴。
+    - 不变式的两种写法选**不改变行为**的：`if (!x) return;` 把抛错变成静默少做一次；
+      `x!` + 注释保持当场抛错（与第 143 轮 `fnEmpty` 的取舍相反 —— 那里「占位对象」本就该静默）。
+20. **「用断言骗过某条检查」⇒ 找那条检查的内建出口**（第 146 轮，ui-kit `history.ts` 2 处）：
+    - `delete` 只能删**可选**属性 ⇒ 别把接口成员改成可选（调用点立刻报「可能为 undefined」，
+      等于把债换个地方），用 **`Reflect.deleteProperty(target, key)`**（内建签名、行为等价，
+      与手法库第 5 条同源）。
+    - `Omit<T, 'k'> & {…}` 这种「换签名 / 补字段」的写法：**先确认 `k` 在 `T` 上真的存在**
+      （`Timer` 根本没有 `start` ⇒ 那是空操作），再**实测**单次 `as` 是否就够 ——
+      本轮推断的「私有成员导致不可比」被实测证伪，`as Timer & {…}` 直接通过。
+    - ⇒ 通用判据：**这个断言在骗哪条检查？那条检查有没有官方出口？**
+      （可选性 → `Reflect`；事件形参 → 按注册点的真实事件类型声明；
+      必填属性 → 补声明或 `Pick<EventPayloadFields, …>`。）
+21. **「运行期挂上的成员」⇒ 收成具名读点面，把 `unknown` 降级为单次 `as`**（第 147 轮，ui-kit 2 处）：
+    - `YMFileBrowser.dragstart`：四个成员（`pressing` / `activeFile` / `selections` / `textBox`）全是
+      两个 pane 用 `Object.defineProperty` 运行期挂上的 ⇒ 静态推不出来。收成
+      `interface ActivePage extends HTMLElement`（注释写明提供方与可选项），调用点写
+      `as ActivePage | null`；顺带删掉 `(page as { selections }).selections` 那处**冗余**断言。
+    - `YMParameterPane.createRepeatableGroup`：第 86 轮的注释**自己写好了两条拆法**
+      （「让 `RepeatableGroupInput` 直接 `extends HTMLDivElement`」或「先建后补」）⇒ 照做第一条。
+      动手前先量影响面：该接口只在本文件被声明与构造（grep 4 处）⇒ 改父类零外溢。
+    - **判据：断言的目标是「补成员」还是「跨类型」？跨类型 = 目标类型选错了**（该收成具名读点面，
+      只写一遍契约，而不是在每个调用点内联一个字面量）。
+22. **重审「记录在案」的保留项：先在本仓找同形状的既有写法**（第 148 轮，2 处）：
+    - `scene-tilemap-page.ts` 的 `this as unknown as HTMLElement`：`inspector.ts:473` **早就有**
+      标准答案 `function (this: YamiElement & { changes?: InspectorChange[] }, …)` ⇒ 导出
+      `InspectorChange` 后照抄，断言消失；随后 tsc 报出下一层（本地 lightBox 视图连 `HTMLElement`
+      都不含）⇒ 用**交叉** `type X = YamiElement & {…}` 补身份（`interface extends` 会因本地
+      `update(): void` 与基类宽松签名不兼容而报「incorrectly extends」）。
+    - `window-object.ts` 的 `[] as unknown as HTMLElement[] & {…}`：源是 `never[]`，与交叉**两头都不
+      满足** ⇒ 改成**两级单次 `as`**（第一级 `as HTMLElement[]` 是可验证的真话，第二级只主张
+      「`append`/`remove` 稍后由 `Object.defineProperty` 装上」）。
+    - 判据：保留项要区分**「现在真的无解」**与**「当时无解」**；同仓同形状的既有写法优先复用。
+23. **「全局没有声明」⇒ 补声明，但要一次想清三件事**（第 149 轮，2 处）：
+    ui-kit 的 `YMTitleBar.getWindow()` 读宿主挂的 `window.Window`，档案原写「必须保留 `unknown`
+    （TS2352：该成员与全局 `Window` 构造器同名、不可比）」。真解法是补声明 + 窄化，三件事缺一不可：
+    1. **成员**：`declare global { interface Window { Window?: { close(id?: string): void } } }`
+       —— 可选是如实（宿主未挂载时确实不存在），也让 `delete` 合法。
+    2. **落点**：声明所在文件必须进**当期程序**，而本仓有**三个**程序会编译该组件：
+       ① ui-kit 自己的 tsconfig（`build:types`）；② 编辑器侧 `typecheck:vue`（只按**模块图 +
+       自己的 glob** 收文件）；③ **oxlint 的类型感知规则**。实测：独立 `.d.ts`（无人 import）
+       ⇒ ② 看不见（TS2551）；写进 `.vue` 里 ⇒ ③ 看不见（同样 TS2551）。最终落在
+       `src/types/host-globals.ts`（**真 `.ts` 模块**）+ 桶文件 `import './types/host-globals';`。
+    3. **读点**：补声明**不够** —— `window` 是 `Window & typeof globalThis`，`typeof globalThis`
+       上那个同名构造器会把成员相交掉（直读 / 写 / 删分别报 TS2741 / TS2322 / TS2790，均实测）
+       ⇒ 仍需一行**窄化赋值** `const host: Window = window;`（可赋，不是断言）。
+    - ⚠️ 写注释别拼出 `*/`：`src` 下的通配写法里 `**/` 会**提前闭合块注释**（本轮实测 31 个语法
+      错误）；`text:check` 的 `nested-comment-opener` 只查多余 `/*`，查不出这种 ⇒ 用文字描述。
+    - 同族判据：**约束要分「语义必需」与「书写时假设」**（`readPayload<T extends object>` 属后者；
+      删前先确认调用点**全部显式给类型实参**）。
+24. **保留项复核：先试单次 `as`，让 tsc 给出缺项清单**（第 150 轮，2 处确认 + 1 处收掉）：
+    - `utils/monaco.ts`：`as MonacoApi` 单次 ⇒ TS2352，且 tsc 列出缺
+      `createWebWorker` / `css` / `html` / `json` + 2（本模块只注册了 typescript / json 贡献）⇒ 保留。
+    - `module/monaco-dts.ts`：去掉断言 ⇒ TS2339 —— `languages.typescript` 被声明成
+      `{ deprecated: true }`，而语言服务类型**无处可 import**：贡献模块的 `.d.ts` 内容就是一行
+      `export {}`（实际打开确认过）⇒ 保留。
+    - `services/updater/incremental.ts`：**模板字面量索引签名**收掉 —— 类上写
+      `` [version: `1.0.${number}`]: ((update: boolean) => void) | undefined; ``
+      （`| undefined` 如实表达「版本连续、处理器有空档」，`if (handler)` 因此不再可疑），
+      并把 `` const version = `1.0.${minorVer}` `` **标注**成 `` `1.0.${number}` ``
+      （模板字面量表达式的类型由**上下文类型**决定 ⇒ 标注而非断言）。
+    - 判据：保留理由要写成**可复核的事实**（缺哪几个成员 / 哪个文件是空的），不要停在「类型缺口」。
+25. **`any-hatches` 开工顺序：先量种类、再量单点代价**（第 151 轮，2 处，46 → 44）：
+    `node scripts/any-hatch-inventory.mjs --kinds` 给**种类**（RECORD_ANNOT = 常量注解 /
+    INDEX_SIG = 接口里的索引签名，改法不同）；`node scripts/oneoff/measure-any-hatch-site.mjs
+    <相对路径> <行号>` 给**该点的 tsc 代价**。
+    - ⚠️ **两个脚本都按行号** ⇒ 文件改过之后必须重新 grep 定位（本轮第一次就量到了注释行）。
+    - 本轮两处：`ParticleLayerData` 的索引签名（摘掉后 12 条 TS2339、全在本文件 ⇒ 逆推六个字段
+      `sort` / `blend` / `light` / `image` / `count` / `color`）；`ParticleEmitterShape` 的索引签名
+      （**摘掉后 0 条** ⇒ 直接删）。
+    - 关键因果：**第 145 轮那次「合并两份各写一半的形状」让第 151 轮这处索引签名变成可摘的** ——
+      接口一旦具体，索引签名就从逃生口退化成赘余。⇒ 修「重复声明」常给后续修「索引签名」铺路。
+    - `color` 的取舍（四组运行期互斥、按「全组可读」声明以免十来个非空断言）要**明写 + 给反证位置**
+      （`inspector/particle-layer-page.ts:285`），不要留成默认。
+    - 下一步（未做）：同文件的 `ParticleEngine: Record<string, any>`（第 12 行，RECORD_ANNOT）——
+      实测 19 条 TS2339，涉及三张子表 `Emitter`（12）/ `Element`（5）/ `Layer`（2），
+      分布在 engine（3）/ particle-initialize（3）/ particle.spec（13）。
+26. **`any-hatches`：用代价扫描表挑站点**（第 152 轮，44 → 41）：
+    `node scripts/oneoff/scan-any-hatch-costs.mjs [--limit N] [--all] [--kind INDEX_SIG|RECORD_ANNOT]`
+    —— 枚举复用 `lib/scan.mjs`（与台账**同源**；`--limit 0` 自证总数相等 = 44），单点测量复用
+    `measure-any-hatch-site.mjs` 导出的 `measureAnyHatchSite()`（**同一份摘法**）。输出按代价升序。
+    - **第一次扫描的结论**：便宜的是**小数据形状**（1–5 条）；贵的是**单例 / 被上百处访问的大接口**
+      （`Data` 539、`Animation` 1179、`schema.ts:71` 89、`CommandObjectShape` 67）
+      ⇒ 第 151 轮「按文件名猜」的三处里两处属于贵的。
+    - 本轮摘掉最便宜的三行：`CommandNode`（索引签名**降级**成 `[k: string]: unknown`，不进轴但收紧）、
+      `TextContent`（补 `children?: CommandNode[]`）、`UIParentShape`（补 `parent` /
+      `requestResizing?`，后者配合 `instanceof Window` 守卫写 `?.`）。
+    - ⚠️ 扫描会临时改写被探文件（逐字复核写回）⇒ **扫描期间不要并行编辑仓库**，也别并发跑两个扫描。
+    - 下一批候选（表里 5–21 名）：`animation-window.ts:78`（5 条，editor×5）、
+      `element-base.ts:10`（20 条，已知有意保留）、`schema.ts:88`（21 条）。
+27. **`any-hatches` 两批扫描的对比结论：便宜区已摘完**（第 153 轮，41 → 40）：
+    - **INDEX_SIG 批**（21 处）：便宜区 1 / 2 / 2 / 5 条 —— 多为**小数据形状**；
+      第 151 / 152 / 153 轮已摘 4 处。
+    - **RECORD_ANNOT 批**（25 处，已量前 8）：**最便宜 19 条，且是被挡住的** `particle-engine.ts:12`
+      （跨视图统一，见第 152 轮记录的 4 文件清单）；其余 20 / 54 / 93 / 307 条分别为
+      spec mock 挡住的两处引擎表、④ 所有的 `ui-engine`、以及 `auto-tile`。
+      ⇒ 结论：**「便宜区」已摘完**。继续推进要么做那个跨视图统一，要么等 ④-3 的决策。
+    - 本轮摘掉 INDEX_SIG 里 5 条那处：`AnimationFileContext` 补**可选** `editor?`
+      （tab 传入、open/load 才挂），九个成员全部从读点逆推；`player` 写
+      `NonNullable<typeof Animation.player>` 复用类型（同一实例两边流转）；
+      读点一处 `context.editor!`（`firstLoad` 分支刚保证它存在）。
+    - 剩余候选与代价（供下次决策）：`element-base.ts:10` 20 条（已知有意保留，`UIElementShape`）、
+      `schema.ts:88` 21 条（`CommandSchema` 类上的索引签名，动态成员 `targetWrite` / `writeHandler` …）。
+28. **`any-hatches` 完整代价表 + 粒子跨视图统一的工作单**（第 154 轮，40 → 37；顺带 `legacy-ui-lines` 302 → 300）：
+    - **完整表**（`INDEX_SIG` 全部已量；`RECORD_ANNOT` 已量前 8）：
+      `0` ×3（`ui-window.ts:86` / `particle-window.ts:43` / `:55` —— 本轮摘掉）、`7`（`element-classes.ts:55`）、
+      `20`（`element-base.ts:10`，有意保留）、`21`（`schema.ts:88`）、`67`、`71`（`particle-window.ts:77`
+      = 发射器视图）、`79`、`89`、`452`、`539`、`897`、`1180`、`1455`。
+      ⇒ **「便宜区已摘完」这个结论以前只建立在半个表上**（前两轮各只扫前 10 / 前 8）——
+      扫完之后立刻浮出三处 0 条。**扫描要么一次扫完，要么在结论里写明只量了前 N 个。**
+    - **粒子跨视图统一的工作单**（本轮试过、量到 79 条后回退）：主因是 `ParticleEmitterShape`
+      （71 条），需要给它补约 16 个运行期成员：`hasArea`、`outerLeft/Top/Right/Bottom/Width/Height`、
+      `active`、`selected`、`disabled`、`isEmpty`、`layer`、`draw`、`emitParticles`、`updateParticles`、
+      `getLayer`；`ParticleElementRef` 还要补 `x` / `y` / `anchorX` / `anchorY` / `rotationAngle` /
+      `scaleFactor`；另有注册表消费点 3 处 `!` + spec 13 处 `!`。
+      ⇒ 两份**数据/图层**视图（`particle-window.ts:43` / `:55`）本来就是零代价的，本轮已摘；
+      剩下那处发射器视图才需要那套成员声明。
+    - 一次改动可能同时动两条轴：`ui-window.ts:86` 在遗留层目录里，摘它顺带把 `legacy-ui-lines`
+      从 302 拉到 300。⇒ 挑站点时可优先看**同时落在多条轴口径里**的位置。
+29. **`RECORD_ANNOT` 全表 + 三处「被挡住的便宜站点」**（第 155 轮，37 → 36）：
+    - 全表（本轮补完）：`0` `YMParameterPane:153` / `:263`（`guidMap` 的值）、
+      `1` `particle-window:249`（`stage`）、`2` `stores/data:149`（`Data.config`）、
+      **`7` `element-classes:55`（本轮摘掉）**、`17` `setting-config:16`、`19` `particle-engine:12`、
+      `20` `scene-camera-engine:9`、`54` `animation-window-engine:12`、`82` `tile-frame-index:13`、
+      `93` `ui-engine:22`、`307` `auto-tile:49`、`696` `palette.ts:4`（另有 13 处不可机械测）。
+    - 三处**被别的债挡住**的便宜站点（动手前先修上游更划算）：
+      ① `guidMap` 那对：ui-kit 侧写具名 `ManifestEntry` 后账降到 35，但宿主侧
+         `Data.manifest.guidMap` 的值是 `FileMeta = InstanceType<typeof Meta>`，而
+         **`Meta.parameters` 是 `unknown[] | null`、`langMap` / `overview` 未声明**
+         （`langMap` 在编辑器侧出现 0 次）⇒ 跨包契约的上游没写全。
+      ② `stage`：两条赋值线索（`particle-file.ts:23` 存 `Particle`、`scene-window.ts:945` 存
+         `Scene`）+ 唯一读点 `.multiply(stage.matrix)`，而 `SceneShape` 没有具名 `matrix`
+         ⇒ 转成**行为判定**（场景当舞台时 `.matrix` 是否保证非空）。
+      ③ `Data.config`：降级成 `unknown` ⇒ 7 条（updater 读 `config.event.startup` 等具体字段）
+         ⇒ 需要的是**具名形状**，不是降级。
+    - 本轮摘掉的 `element-classes.ts:55`：`UIElementInstance` 的索引签名只被
+      `draw` / `resize`（无参必填）与 `addReference` / `tryUpdateReferenceElements`
+      （只有根元素有 ⇒ 可选，三个调用点补 `!`）用到 —— 「重审登记保留项」再次命中。
+
+30. **跨包契约的收口顺序：先写宿主侧的上游，再把契约放进「两边都能引用」的模块**（第 156 轮，36 → 34）：
+    - 症状（第 155 轮撞墙）：ui-kit 侧把 `guidMap` 的值收成具名 `ManifestEntry` 后账降到 35，
+      但宿主 `:data-manifest` 绑定报 **TS2322** —— 宿主的值是 `FileMeta = InstanceType<typeof Meta>`，
+      而 `Meta.parameters` 是 `unknown[] | null`、`langMap` / `overview` **未声明**。
+    - **顺序**（照这个顺序做，一次过）：
+      ① 先量宿主侧的读写点：`.parameters` 在编辑器 `.ts` 里读点 **0 处**、写点 2 处
+         ⇒ 级联预期为零（实测为零，所以这轮很便宜）；
+      ② 收紧 `Meta.parameters` 成 `ParamDef[] | null`（`ParamDef` **从 ui-kit 导入** —— 是同一份契约，
+         两边各写一份必漂），并按 ui-kit 的**读点**补 `declare langMap` / `declare overview?`；
+      ③ 把 `.vue` 里的 `interface` 搬到**独立模块**（`manifest-entry.ts`）并从 barrel 导出 ——
+         写在 `.vue` 里的 interface 宿主**引用不到**（第 155 轮 TS2322 的另一半原因）；
+      ④ 宿主的注解改用**同一份**类型；⑤ 读点写 `?!.length`（`parameters` 可为 `null`）。
+    - 两个形状坑（都实测）：**别留索引签名** —— 收成具名形状时，若源是**类实例**
+      （`InstanceType<…>`），带 `[k: string]: unknown` 的目标会**拒收**它；**契约类型跨包导入不算层次倒挂**
+      —— UI 契约从 ui-kit 导入好过两边各写一份。
 
 ### 4. 剩下的活（按性价比排序）
 
@@ -4909,6 +5186,16 @@ pnpm build:vite              # 构建
       > `scene-camera-engine` 8 ❌（具体部分 mock，已回退）· `animation-window-engine` 29 ❌（`vi.mock` 返回
       > 具体对象字面量，预计同 camera）。
       > ⇒ **下一处该拿 `palette-engine`**。
+      > ✅ **第 134 轮：`palette-engine.ts` 已拿下（`any-hatches` 48 → 47）** —— 风险表直接生效：
+      > 20 个成员写成函数属性成员表 + `{} as`，实现一行不动，豁免注释与签名同删（`stale-exemptions` 0）。
+      > ⚠️ **计数更正：这处是 20 个成员，不是 22** —— 第 133 轮表里的「22」是按**赋值行**数的，
+      > 按**唯一成员名**去重后是 20（差的 2 个是成员体里 `this.xxx = (…)` 这类带括号的赋值被误计；
+      > 与第 132 轮 camera「12 → 8」同一个坑）⇒ **量成员数一律按唯一名字去重。**
+      > ⚠️ 剩余仍未动的：`scene-camera-engine`（❌ 已试过并回退）、`animation-window-engine`（29 个成员，
+      > 其 spec 用 `vi.mock` 返回具体对象字面量 ⇒ 预计同 camera）、`ui-engine`（25，属 ④）、
+      > `particle-engine`（3，第 63 轮已回退：成员引用文件下方的 class）。
+      > 也提醒一句：**类型可以前向引用、class 不可以** —— 这是 `particle-engine` 回退的原因，
+      > 也是 `palette-engine` 能在文件顶部声明成员表的依据。
       > 🔎 **同一轮还给 `UINodeShape` 的索引签名做了决策就绪的复量**（新工具
       > `scripts/oneoff/measure-any-hatch-site.mjs <路径> <行号>`，按站点种类用对应摘法、单独摘、
       > 单独跑 tsc、自动写回并逐字复核）：`element-classes.ts:141` 摘掉后 **79 条全是 TS2339**，

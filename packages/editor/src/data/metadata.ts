@@ -1,7 +1,8 @@
-﻿import { Data } from './data-object.ts';
+import { Data } from './data-object.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Updater } from '@app/services/updater/updater.ts';
+import type { ParamDef } from '@ui-kit';
 
 export const Meta = (function IIFE() {
 	const typeMapToGroupName = () => ({
@@ -40,7 +41,22 @@ export const Meta = (function IIFE() {
 		declare dataMap: Record<string, object> | null;
 		x: number | null = null;
 		y: number | null = null;
-		parameters: unknown[] | null = null;
+		/**
+		 * 脚本参数定义（只有 `script` 类型会赋值，见构造函数）—— 原先声明成 `unknown[] | null`。
+		 *
+		 * 第 156 轮：收紧成 `ParamDef[] | null`（类型从 ui-kit 导入，与参数面板的契约同源）。
+		 * 起因是 ui-kit 的 `YMParameterPane` 会**直接读**清单条目的 `parameters`（`:349-350`），
+		 * 而 `unknown[]` 与它要的 `ParamDef[]` 不相容 ⇒ 跨包 prop 绑定报 TS2322。
+		 * 实测：编辑器侧对 `.parameters` 的读写点只有本文件的两处（声明 + `= []`）⇒ 级联为零。
+		 */
+		parameters: ParamDef[] | null = null;
+		/**
+		 * 语言映射（运行期由元数据装载写入，编辑器侧没有静态写点）。
+		 * 形状取自 ui-kit 的读点：`meta.langMap.update().get(key)`（`YMParameterPane.vue:351/378`）。
+		 */
+		declare langMap: { update(): { get(key: string | undefined): string } };
+		/** 概览信息（运行期写入；ui-kit 只读 `overview.deprecated`，见 `:353-356`） */
+		declare overview?: { deprecated?: string };
 		// script 类型运行时由 Object.defineProperty 挂载（非枚举）
 		declare code: string;
 

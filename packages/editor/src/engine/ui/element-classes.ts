@@ -34,11 +34,17 @@ import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 /**
  * 元素实例的最小形状。
  *
- * 为什么带索引签名：这些元素本来就是**带动态成员**的载体——`element-base.ts` 自己的
+ * 为什么带索引签名（历史，保留）：这些元素本来就是**带动态成员**的载体——`element-base.ts` 自己的
  * `UIElementShape` / `UIParentShape`，以及 `data/transition-window.ts` 等处都有同类签名；
  * 元素会因为 class 不同而挂上 `image` / `text` / `color` … 等成员。
- * 这里刻意与既有约定保持一致，**不新造一套更严的类型体系**——本轮的目标是拆掉遗留层的
- * 引用面，而不是重做 WebGL 元素系统的类型（那是独立的一件事）。
+ * 当时刻意与既有约定保持一致，**不新造一套更严的类型体系**——那时的目标是拆掉遗留层的引用面，
+ * 而不是重做 WebGL 元素系统的类型（那是独立的一件事）。
+ *
+ * 第 155 轮复核（代价扫描表里这一处是 **7 条**）：那行索引签名实际只被四个成员用到 ——
+ * `draw` / `resize`（`element-base.ts:201` / `:209` 按 `children` 循环调用，均**无参**），
+ * 以及 `addReference` / `tryUpdateReferenceElements`（**只有根元素有**：`root-element.ts:42` / `:59`）。
+ * ⇒ 四个成员写出来、索引签名去掉（这一处在 `any-hatches` 口径里归零）；其它动态成员
+ * （`image` / `text` / `color` …）不在本视图的读点里，故不必兜着。
  */
 export interface UIElementInstance {
 	x: number;
@@ -51,8 +57,17 @@ export interface UIElementInstance {
 	children: UIElementInstance[];
 	visible: boolean;
 	connected: boolean;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/** 子元素重绘 / 重算尺寸（`element-base.ts` 的 `children` 循环，均无参） */
+	draw(): void;
+	resize(): void;
+	/**
+	 * 只有根元素有这两个方法（`root-element.ts:42 addReference` / `:59 tryUpdateReferenceElements`）；
+	 * `UIElementInstance` 是根与普通元素的**共同视图** ⇒ 声明为可选。
+	 * 参数类型写成 `unknown`：各个调用点传的是**各自的局部形状**（`PrefabElementShape` 在两个文件里
+	 * 各有一份），收窄任何一支都会拒绝另外两支。
+	 */
+	addReference?(prefabElement: unknown): void;
+	tryUpdateReferenceElements?(element: unknown): void;
 }
 
 /**

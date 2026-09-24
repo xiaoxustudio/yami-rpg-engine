@@ -6,11 +6,27 @@ import { Animation } from '@app/animation/animation-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
-import type { YamiEvent } from '@app/types/editor-event';
+import type { EventPayloadFields, YamiEvent } from '@app/types/editor-event';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
 import { registryElement } from '@app/utils/element-registry';
 
 export type CurveState = 'closed' | 'open' | 'suspended';
+
+/**
+ * 第 141 轮：`easingIdWrite` / `easingIdInput` 收到的是**载荷对象** `{ value }`，**不是 DOM 事件**。
+ *
+ * 调用方是模板里的 `@write="onEasingIdWrite"` / `@input="onEasingIdInput"`（`SelectBox` 的 emit 载荷，
+ * 见 `components/layout/LayoutPanel.vue`），运行期传进来的就是 `{ value }` 这个普通对象。
+ * 原先两处声明写的是 `YamiEvent`（`Event & 载荷字段`），于是调用点被迫写
+ * `{ value } as unknown as Event` —— 断言的来源与目标根本不是同一类东西（一个是普通对象，
+ * 一个是 DOM 事件），只是为了骗过形参。
+ *
+ * 形状直接取 `EventPayloadFields.value`（`editor-event.ts` 的单点宽松别名），与事件载荷的读法一致；
+ * 这里**刻意不收紧成 `string`**：`easingIdWrite` 会把值存进 `index`，而 `index` 的声明是
+ * `number | null | ''`（`curve-window.ts:20`）—— 收紧 `value` 会当场暴露那个声明问题，
+ * 那是独立的一件事（见第 141 轮文档的「已知但本轮不动」）。
+ */
+export type EasingIdPayload = Pick<EventPayloadFields, 'value'>;
 
 export interface CurveFrame {
 	easingId?: string;
@@ -47,7 +63,16 @@ interface CurveWindow {
 	list: CurveList | null;
 	canvas: CurveCanvas | null;
 	target: CurveFrame | null;
-	index: number | null | '';
+	/**
+	 * 当前选中的缓动 **id**（`Data.easings.map` 的键），不是帧下标。
+	 *
+	 * 第 141 轮修正：这里原先声明 `number | null | ''` —— 与真实值冲突了三个地方：
+	 * `easingIdWrite` 把 `event.value`（缓动 id）写进来（`:396`）、当字符串键用
+	 * （`Data.easings.map[id]`）、并与 `''` 比较；`__tests__/useCurveWindow.spec.ts:200`
+	 * 也断言 `toBe('easing-1')`。之所以一直没报错，是因为 `event.value` 走
+	 * `EventPayloadFields.value?: Loose`（`any`），赋值方向被 `any` 吞掉了。
+	 */
+	index: string | null;
 	curveMap: CurveMapInstance | null;
 	initialize: () => void;
 	open: () => void;
@@ -66,8 +91,8 @@ interface CurveWindow {
 	windowResize: (event?: Event) => void;
 	themechange: (event: YamiEvent) => void;
 	datachange: (event: YamiEvent) => void;
-	easingIdWrite: (event: YamiEvent) => void;
-	easingIdInput: (event: YamiEvent) => void;
+	easingIdWrite: (event: EasingIdPayload) => void;
+	easingIdInput: (event: EasingIdPayload) => void;
 	settingsPointerdown: (event: PointerEvent) => void;
 }
 
@@ -77,7 +102,7 @@ let head: HTMLElement | null = null;
 let list: CurveList | null = null;
 let canvas: CurveCanvas | null = null;
 let target: CurveFrame | null = null;
-let index: number | null | '' = null;
+let index: string | null = null;
 let curveMap: CurveMapInstance | null = null;
 
 const initialize = (): void => {
@@ -374,7 +399,7 @@ const datachange = (event: YamiEvent): void => {
 	}
 };
 
-const easingIdWrite = (event: YamiEvent): void => {
+const easingIdWrite = (event: EasingIdPayload): void => {
 	const id = event.value;
 	if (index !== id) {
 		index = id;
@@ -395,7 +420,7 @@ const easingIdWrite = (event: YamiEvent): void => {
 	}
 };
 
-const easingIdInput = (event: YamiEvent): void => {
+const easingIdInput = (event: EasingIdPayload): void => {
 	Animation.planToSave!();
 	Animation.history.save({
 		type: 'animation-easing-change',

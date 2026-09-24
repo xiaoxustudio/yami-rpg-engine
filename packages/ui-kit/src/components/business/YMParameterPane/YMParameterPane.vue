@@ -13,6 +13,7 @@ import {
 import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf } from '../../../utils/element-data';
 import { createParamPaneCore, type ParamDef } from './param-pane-core';
+import type { ManifestEntry } from './manifest-entry';
 import { readPayload } from '../../../utils/payload-event';
 
 const core = createParamPaneCore();
@@ -40,11 +41,20 @@ interface TypeRegistryConfig {
 	create(pane: HTMLElement, parameter: ParamDef): ParamWrap | null;
 }
 
+/**
+ * 文本框的选区适配器。
+ *
+ * 第 142 轮：四个形参从 `Event` 收窄成**注册点真实的 DOM 事件类型**（`createTextBox` 里就是
+ * `keydown` / `keyup` / `pointerdown` / `pointerup` 四条注册，见本文件 :607-618）。
+ * 写宽成 `Event` 的代价是：宿主侧那些**按事件类型签名**的处理器（编辑器里 `Selection` 的
+ * `inputKeydown(event: KeyboardEvent)` …）与它「互不重叠」，宿主只能写
+ * `Selection as unknown as { inputKeydown?: (event: Event) => void; … }` 把值谎报一遍。
+ */
 interface SelectionAdapter {
-	inputKeydown?: (event: Event) => void;
-	inputKeyup?: (event: Event) => void;
-	inputPointerdown?: (event: Event) => void;
-	inputPointerup?: (event: Event) => void;
+	inputKeydown?: (event: KeyboardEvent) => void;
+	inputKeyup?: (event: KeyboardEvent) => void;
+	inputPointerdown?: (event: PointerEvent) => void;
+	inputPointerup?: (event: PointerEvent) => void;
 }
 
 interface PluginAdapter {
@@ -118,7 +128,16 @@ interface RecycleWrap {
 	children: ParamWrap[];
 }
 
-interface RepeatableGroupInput extends HTMLElement {
+/**
+ * 可重复参数组（元素是 `div.repeatable-group`）。
+ *
+ * 第 147 轮改 `extends HTMLElement` → `extends HTMLDivElement`：这正是第 86 轮注释里
+ * 指出的两条拆法之一（当时实测「写成 `HTMLElement & RepeatableGroupInput` 也不行」——
+ * 因为源是 `HTMLDivElement`，交叉要求源对整体可比）。源与接口同族之后，构造点那句
+ * `container as unknown as RepeatableGroupInput` 降级为单次 `as`（断言只剩「补上运行期
+ * 接着就挂上的那五个成员」，见 `createRepeatableGroup` 里紧跟着的赋值）。
+ */
+interface RepeatableGroupInput extends HTMLDivElement {
 	setTooltip: () => void;
 	parameters: Record<string, unknown> | null;
 	key: string | null;
@@ -132,7 +151,7 @@ interface Props {
 	controls?: PaneControlFactory | null;
 	typeRegistry?: { get(type: string): TypeRegistryConfig | undefined } | null;
 	// oxlint-disable-next-line no-explicit-any
-	dataManifest?: (() => { guidMap: Record<string, any> } | null) | null;
+	dataManifest?: (() => { guidMap: Record<string, ManifestEntry> } | null) | null;
 	plugin?: PluginAdapter | null;
 	localize?: ((key: string) => string) | null;
 	selection?: SelectionAdapter | null;
@@ -241,8 +260,8 @@ const createControl = (kind: keyof PaneControlFactory): HTMLElement | null => {
 const getTypeConfig = (type: string): TypeRegistryConfig | undefined =>
 	props.typeRegistry?.get(type);
 
-// oxlint-disable-next-line no-explicit-any
-const getManifest = (): { guidMap: Record<string, any> } | null =>
+// 值的形状见 `ManifestEntry`（第 156 轮：从 `Record<string, any>` 收成具名条目）
+const getManifest = (): { guidMap: Record<string, ManifestEntry> } | null =>
 	props.dataManifest ? props.dataManifest() : null;
 
 const getPlugin = (): PluginAdapter | null => props.plugin;
@@ -323,7 +342,9 @@ const update = (): void => {
 			changed = true;
 		}
 		const paramList = meta.parameters;
-		if (!paramList.length) continue;
+		// `?.`：`parameters` 在非 script 条目上是 `null`（见 `Meta` 的声明）；旧写法直接
+		// `.length` 会抛 —— 这是「不可能路径上由抛错改成跳过」的那类等价改动（第 143 轮同款）。
+		if (!paramList?.length) continue;
 		const langMap = meta.langMap.update();
 		const parameters = script.parameters;
 		if (meta.overview?.deprecated && paramList.length) {
@@ -686,11 +707,11 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 	addBtn.className = 'add-row-btn';
 	container.appendChild(rowsEl);
 	container.appendChild(addBtn);
-	// ⚠️ 保留 `unknown`（第 86 轮实测）：`RepeatableGroupInput extends HTMLElement`，而源是
-	// `HTMLDivElement`；写成 `HTMLElement & RepeatableGroupInput` 也**不行**（TS 要求源对交叉整体可比，
-	// 于是报「缺少 setTooltip/parameters/key/read/write」）。要拆得让 `RepeatableGroupInput`
-	// 直接 `extends HTMLDivElement`，或把构造点改成先建后补 —— 两者都是结构性改动。
-	const input = container as unknown as RepeatableGroupInput;
+	// 第 147 轮：`RepeatableGroupInput` 已改成 `extends HTMLDivElement`（第 86 轮注释里指出的
+	// 拆法之一）⇒ 源与接口同族，断言从 `as unknown as` 降级为单次 `as`。
+	// 剩下这层单次 `as` 只主张「紧接着要在它上面挂那五个成员」（下面三行 + `read` / `write`），
+	// 属于本文件既有的「先建后补」写法；写法本身与 legacy 一致（legacy 也是元素先建、成员后挂）。
+	const input = container as RepeatableGroupInput;
 	input.setTooltip = () => {};
 	const data = inputData(input);
 	data.parameters = null;

@@ -3,7 +3,8 @@ import {
 	type CurveCanvas,
 	type CurveFrame,
 	type CurveList,
-	type CurveState
+	type CurveState,
+	type EasingIdPayload
 } from '@app/composables/useCurveWindow';
 
 export type { CurveCanvas, CurveFrame, CurveList, CurveState };
@@ -17,7 +18,8 @@ interface CurveShape {
 	list: CurveList | null;
 	canvas: CurveCanvas | null;
 	target: CurveFrame | null;
-	index: number | null | '';
+	/** 当前选中的缓动 id（不是帧下标）；第 141 轮与 `useCurveWindow().index` 一起修正。 */
+	index: string | null;
 	curveMap: unknown;
 	initialize: (() => void) | null;
 	open: (() => void) | null;
@@ -36,8 +38,8 @@ interface CurveShape {
 	windowResize: ((event?: Event) => void) | null;
 	themechange: ((event: Event) => void) | null;
 	datachange: ((event: Event) => void) | null;
-	easingIdWrite: ((event: Event) => void) | null;
-	easingIdInput: ((event: Event) => void) | null;
+	easingIdWrite: ((event: EasingIdPayload) => void) | null;
+	easingIdInput: ((event: EasingIdPayload) => void) | null;
 	settingsPointerdown: ((event: PointerEvent) => void) | null;
 }
 

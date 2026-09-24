@@ -1,5 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import '@app/utils/math';
+import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 vi.mock('@app/utils/element-utils', () => ({
 	relate: () => true,
@@ -107,6 +108,9 @@ vi.mock('@app/engine/webgl/webgl-init.ts', () => {
 	const mockGL = {
 		width: 800,
 		height: 600,
+		// 真画布（`webgl-init.ts` 里 `document.createElement('canvas')`）：
+		// `hasRenderableCanvas` 读的就是它的 width/height。
+		canvas: { width: 800, height: 600 },
 		flip: -1,
 		maxTexSize: 4096,
 		arrays: [
@@ -561,5 +565,26 @@ describe('SceneAnimateEngine', () => {
 		Scene.state = 'closed';
 		SceneAnimateEngine.requestRendering!.call(Scene);
 		expect(mockTimer.appendUpdater).not.toHaveBeenCalled();
+	});
+
+	/**
+	 * `#scene-screen` 是 `<div class="box">`（`LayoutPanel.vue`），div 没有 `width`/`height`
+	 * 属性；本文件 mock 的 `Scene.screen` 正是这个形态（只有 clientWidth/clientHeight）。
+	 * 旧实现读 `Scene.screen.width/height` ⇒ `undefined !== 0` 恒真 ⇒ 守卫失效、0×0 照画。
+	 */
+	it('updateAnimation 在真画布 0×0 时跳过绘制', () => {
+		const drawScene = Scene.drawScene;
+		drawScene.mockClear();
+		mockTimer.updaters.stageRendering = null; // ≠ Scene.renderingFunction，走绘制分支
+
+		GL.canvas.width = 0;
+		GL.canvas.height = 0;
+		SceneAnimateEngine.updateAnimation!.call(Scene, 0);
+		expect(drawScene).not.toHaveBeenCalled();
+
+		GL.canvas.width = 800;
+		GL.canvas.height = 600;
+		SceneAnimateEngine.updateAnimation!.call(Scene, 0);
+		expect(drawScene).toHaveBeenCalledTimes(1);
 	});
 });

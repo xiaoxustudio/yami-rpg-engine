@@ -181,10 +181,14 @@ function ensureDomBound() {
 	if (Easing.list) return;
 	const list = dataEls.get('easing-list') as YamiElement;
 	if (!list) return;
-	// ⚠️ 这处**只能**保留 `unknown`：`typeof Easing.list` 解析出来是字面量 `null`（该属性在
-	// 形状里就是初始化的 `null`），与 `YamiElement` 完全不可比。要拆得先给 `Easing.list`
-	// 一个真实声明（类型设计活），不在 P4 顺手做。
-	Easing.list = list as unknown as typeof Easing.list;
+	// ⚠️ 这处原先写的理由是「`typeof Easing.list` 解析出来是字面量 `null`」—— **第 136 轮实测证伪**：
+	// 形状里 `list` 是 `EasingSlots.list`（一个带 9 个成员的联合类型，见上方 `:83`），
+	// 不去断言时 tsc 的真实报错是 **缺那 9 个成员**
+	// （`read` / `rename` / `restoreSelection` / `addNodeTo` / `deleteNode` / `select` / `update` /
+	// `saveSelection` / `clear`），与 `null` 无关。原因是刚取出来的是**裸 `YamiElement`**
+	// （那 9 个成员由 ui-kit 的列表组件在运行期挂上，紧随其后的 190–193 行又补了 4 个）。
+	// ⇒ 按手法库第 6 条用**交叉断言**：保留 `YamiElement`、只补缺口那一支，`unknown` 跳板不再需要。
+	Easing.list = list as NonNullable<typeof Easing.list>;
 	Easing.curve = registryElement<EasingCanvasShape>(dataEls, 'easing-curve-canvas');
 	Easing.preview = registryElement<EasingCanvasShape>(dataEls, 'easing-preview-canvas');
 	list.saveSelection = Easing.list_saveSelection;

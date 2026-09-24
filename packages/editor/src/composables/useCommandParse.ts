@@ -33,8 +33,12 @@ interface CommandNode {
 	id: string;
 	params?: CommandObjectShape;
 	children?: CommandNode[];
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/**
+	 * 命令节点还会带若干动态成员（脚本侧写入），故保留索引签名 —— 但**用 `unknown` 而不是 `any`**
+	 * （本仓既有写法，见 `element-classes.ts` 的 `UINodeShape`）：拼错键不会静默变成 `any`，
+	 * 读侧必须先收窄。第 152 轮从 `[k: string]: any` 降级来的（`any-hatches` 只数 `any`）。
+	 */
+	[k: string]: unknown;
 }
 
 interface TextContent {
@@ -43,8 +47,12 @@ interface TextContent {
 	tooltip?: string;
 	class?: string;
 	color?: string;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/**
+	 * 嵌套的子命令（`fetchVariables` 会递归进去 —— 分支/条件块就是这样放进子命令的）。
+	 * 第 152 轮：原先靠 `[k: string]: any` 兜着这个字段，摘掉索引签名后 tsc 直接指出
+	 * 它被当成 `CommandNode[]` 使用（`:140` 传给 `fetchVariables(commands: CommandNode[])`）。
+	 */
+	children?: CommandNode[];
 }
 
 interface CommandBridgeShape {

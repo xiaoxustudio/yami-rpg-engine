@@ -23,7 +23,7 @@ export const HistoryTimer = new Timer({
 	callback: (timer: Timer) => {
 		(timer as Timer & { complete: boolean }).complete = true;
 	}
-}) as unknown as Omit<Timer, 'start'> & {
+}) as Timer & {
 	complete: boolean;
 	type: string;
 	start: (type: string) => void;
@@ -754,10 +754,14 @@ export class CommandHistory implements ICapacityHistory {
 				this.restore('redo');
 				steps--;
 			}
-			const proxy = list as unknown as Record<string, unknown>;
-			delete proxy.update;
-			delete proxy.select;
-			delete proxy.scrollToSelection;
+			// 第 146 轮：改用 `Reflect.deleteProperty`（手法库第 5 条：「索引签名写入 / 解锁只读」
+			// 用 `Reflect.*`）—— 原先靠 `list as unknown as Record<string, unknown>` 把三个
+			// **已声明为必需**的方法说成可删，只是为了骗过 `delete` 的可选性检查；
+			// `Reflect.deleteProperty` 是内建签名（`(target: object, key: PropertyKey) => boolean`），
+			// 行为与 `delete` 完全相同，而断言消失。
+			Reflect.deleteProperty(list, 'update');
+			Reflect.deleteProperty(list, 'select');
+			Reflect.deleteProperty(list, 'scrollToSelection');
 			return true;
 		}
 		return false;

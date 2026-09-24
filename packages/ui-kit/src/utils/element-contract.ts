@@ -68,6 +68,17 @@ export interface YamiElementApi {
 	cancelSearch(...args: unknown[]): Loose;
 	searchNodesDebounced(...args: unknown[]): Loose;
 	createFolder(...args: unknown[]): Loose;
+	/**
+	 * 列表元素上运行期挂载的「新建变量」（`variable.ts` 里
+	 * `Variable.list.createVariable = Variable.list_createVariable`）。
+	 *
+	 * 与 `createFolder` 紧挨着，是因为**它此前漏了声明**：同一次挂载里
+	 * `saveScroll` / `restoreScroll` / `cancelSearch` / `createFolder` 四条都能直接赋值，
+	 * 只有 `createVariable` 要在调用点写 `as unknown as { createVariable: … }`
+	 * —— 缺的不是断言，是这一行声明（第 121 轮「声明缺成员」的同类，方向相反：那次是多余字段，
+	 * 这次是漏字段）。补上之后 `variable.ts` 与 `list-events.ts` 两处断言**整条消失**。
+	 */
+	createVariable(...args: unknown[]): Loose;
 	createAttribute(...args: unknown[]): Loose;
 	createItem(...args: unknown[]): Loose;
 	addNodeTo(...args: unknown[]): Loose;

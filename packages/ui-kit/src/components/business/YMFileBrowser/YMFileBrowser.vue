@@ -70,6 +70,21 @@ type FileBodyApi = HTMLElement & {
 	selections?: unknown[];
 	[key: string]: unknown;
 };
+/**
+ * 拖拽起点所在「页」的**读点面**。
+ *
+ * 第 147 轮：原先这四处成员是在调用点内联写成字面量再 `as unknown as`（`HTMLElement` 与它
+ * 「互不重叠」，只能靠 `unknown` 跨过去）。四个成员**全是运行期挂上的**（两个 pane 都用
+ * `Object.defineProperty` 暴露 `pressing`，见 `YMFileNavPane.vue` / `YMFileBodyPane.vue`；
+ * `selections` / `textBox` 由 body 侧提供），静态推导不出来 ⇒ 收成一处**具名**类型，
+ * 断言从「跨类型跳跃」降级成「补上运行期成员」的单次 `as`，且契约只写一遍。
+ */
+interface ActivePage extends HTMLElement {
+	pressing?: unknown;
+	activeFile?: unknown;
+	selections: unknown[];
+	textBox: { parentNode: Node | null };
+}
 interface FileHeadApi extends HTMLElement {
 	updateAddress?(): void;
 	/** 头部搜索框（YMTextBox 元素 API）：close 用 legacy 的 `searcher.write('')` 清关键字 */
@@ -430,19 +445,12 @@ function pointerdown(_event: PointerEvent): void {
 
 function dragstart(event: DragEvent): void {
 	const node = el.value as FileBrowserApi;
-	const page = getActivePage(event) as unknown as {
-		pressing?: unknown;
-		activeFile?: unknown;
-		selections: unknown[];
-		textBox: { parentNode: Node | null };
-	};
+	const page = getActivePage(event) as ActivePage | null;
 	if (page && !dragging) {
 		if (page.pressing) {
 			page.pressing = null;
 		}
-		const files = page.activeFile
-			? [page.activeFile]
-			: (page as { selections: unknown[] }).selections;
+		const files = page.activeFile ? [page.activeFile] : page.selections;
 		if (!files.includes(Directory?.assets) && !page.textBox.parentNode) {
 			const { relativePaths, absolutePaths } = getFilePaths(files);
 			dragging = event as Dragging;

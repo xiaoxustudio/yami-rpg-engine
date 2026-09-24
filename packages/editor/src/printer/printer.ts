@@ -26,6 +26,28 @@ interface TextEffectShape {
 	color?: string | number;
 }
 
+/**
+ * 绘制一条文本命令的方法签名 —— 四个实现完全相同（`drawText` / `drawTextWithShadow` /
+ * `drawTextWithStroke` / `drawTextWithOutline`，签名见各 `static` 定义），调用点也只有一个：
+ * `executeCommands()` 里的 `drawingMethod(context, command, string[i])`（`context` 来自
+ * `this.context!`，类型就是 `CanvasTextContext`）。
+ */
+type DrawingMethod = (context: CanvasTextContext, command: TextCommandShape, text: string) => void;
+
+/**
+ * `drawingMethods` 的**取值面**：只能是这四个绘制方法名。
+ *
+ * 第 143 轮：这张表原本声明成 `Record<string, string>`，于是「表里的名字」与「类上真有这个方法」
+ * 之间没有任何检查，取值只能靠 `Printer as unknown as Record<string, (...args: unknown[]) => unknown>`
+ * 把整个 `Printer` 谎报成一张函数字典。收成方法名联合之后：① 表里写错名字当场报错；
+ * ② `Printer[name]` 直接得到 `DrawingMethod`，断言与那句谎一起消失。
+ */
+type DrawingMethodName =
+	| 'drawText'
+	| 'drawTextWithShadow'
+	| 'drawTextWithStroke'
+	| 'drawTextWithOutline';
+
 interface TextCommandShape {
 	string: string;
 	x: number;
@@ -47,7 +69,8 @@ interface TextCommandShape {
 	 *
 	 * ⇒ 运行期从来不是整数。会让人误判的是**同文件另一条独立的颜色通道**（效果颜色用
 	 * `r + (g + (b + a * 256) * 256) * 256` 打包整数），那与 `fillStyle` 无关。
-	 * 唯一真正的谎言是占位命令里的 `0 as unknown as string`，已改为 `''`（见 `fetchCommand`）。
+	 * 唯一真正的谎言是占位命令里的 `0 as unknown as string`，已改为 `''`（见 `fetchCommand`）；
+	 * 第 143 轮又把同一处的 `drawingMethod: '' as unknown as …` 改成 `fnEmpty` ⇒ 占位对象零断言。
 	 */
 	color: string;
 	effect: TextEffectShape | null;
@@ -56,7 +79,7 @@ interface TextCommandShape {
 	imageHeight: number;
 	imageSpacing: number;
 	horizontalWidth: number;
-	drawingMethod: (...args: unknown[]) => unknown;
+	drawingMethod: DrawingMethod;
 }
 
 type FontNameList = string[];
@@ -404,9 +427,7 @@ export class Printer {
 		command.color = color;
 		command.effect = effect;
 		command.horizontalWidth = horizontal ? measureWidth : measureHeight;
-		command.drawingMethod = (
-			Printer as unknown as Record<string, (...args: unknown[]) => unknown>
-		)[Printer.drawingMethods![effect.type]];
+		command.drawingMethod = Printer[Printer.drawingMethods![effect.type]];
 
 		Printer.lineWidth = 0;
 
@@ -999,7 +1020,7 @@ export class Printer {
 	static commands: TextCommandShape[] | null = null;
 	static commandCount = 0;
 	static commandMaximum = 0;
-	static drawingMethods = null as Record<string, string> | null;
+	static drawingMethods = null as Record<string, DrawingMethodName> | null;
 	/**
 	 * 运行期在这条数组上还挂着一个 `signature`（上一批导入字体的指纹，用来跳过重复导入）。
 	 * 声明里写清它，读点就不必再写一次 `as unknown as { signature: string }`。
@@ -1236,7 +1257,10 @@ export class Printer {
 				imageHeight: 0,
 				imageSpacing: 0,
 				horizontalWidth: 0,
-				drawingMethod: '' as unknown as (...args: unknown[]) => unknown
+				// 第 143 轮：占位值改用 `fnEmpty`（与 :471 那条路径同一个「空实现」），
+				// 于是原先那句 `'' as unknown as (...args: unknown[]) => unknown` 消失 ——
+				// 占位对象里现在一处断言都没有。
+				drawingMethod: fnEmpty
 			};
 			if (count < this.commandMaximum) {
 				this.commands![count] = command;

@@ -82,8 +82,6 @@ export interface UIContextShape {
 	fontChanged?: boolean;
 	languageChanged?: boolean;
 	scalingChanged?: boolean;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 }
 
 export type UIPointerEvent = YamiMouseEvent & {

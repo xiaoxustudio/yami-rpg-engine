@@ -39,7 +39,7 @@ describe('全局挂载审计（window/globalThis 挂载点清除固化）', () =
 		expect(violations).toEqual([]);
 	});
 
-	it('window as unknown 类型断言的读模式仅保留白名单', () => {
+	it('window as unknown 类型断言的读模式已清零（仅剩布局调试钩子豁免）', () => {
 		const files = walk(SRC).filter(
 			(p) => p !== __filename && !p.endsWith('bridge-integrity.spec.ts')
 		);
@@ -47,9 +47,9 @@ describe('全局挂载审计（window/globalThis 挂载点清除固化）', () =
 		for (const p of files) {
 			const code = stripComments(readFileSync(p, 'utf8'));
 			for (const line of code.split('\n')) {
-				if (line.includes('__SKIP_AUTO_INIT__')) continue;
-				if (line.includes('__nodeRequire')) continue;
-				if (line.includes('Window: typeof Window')) continue;
+				// 第 138 轮：`__SKIP_AUTO_INIT__` / `__nodeRequire` 已改为在
+				// `preload-env.d.ts` 里给 `Window` 补声明，两条豁免随之删除；
+				// 原 `Window: typeof Window` 一条实测**匹配不到任何行**（陈旧豁免），一并删掉。
 				// 布局调试钩子 __yamiLayoutDebug：layout.ts 有意保留，供控制台手动输出布局诊断
 				if (line.includes('__yamiLayoutDebug')) continue;
 				if (line.includes('window as unknown as') || line.includes('(window as any)')) {

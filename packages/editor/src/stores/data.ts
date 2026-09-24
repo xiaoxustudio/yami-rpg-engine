@@ -145,6 +145,10 @@ export interface DataShape {
 	localization: LocalizationShape | null;
 	plugins: Record<string, unknown> | null;
 	commands: DataListShape | null;
+	// ⚠️ 保留 `Record<string, any>`（第 155 轮实测）：降级成 `unknown` 后当场报 7 条错误，
+	// 全部在 `services/updater/config.ts`（读 `config.event.startup` / `loadGame` / `initScene` /
+	// `showText` / `showChoices` 等**具体字段**）⇒ 说明它不是「动态包」而是**有形状的项目配置**。
+	// 要收口得先把它声明成具名形状（`script` / `save` / `event` / `gameId` …），那是独立的一件事。
 	// oxlint-disable-next-line no-explicit-any
 	config: Record<string, any> | null;
 }

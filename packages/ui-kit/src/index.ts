@@ -1,3 +1,6 @@
+// 宿主全局声明（`window.Window`）：必须**被 import** 才进程序，见该文件头部说明。
+import './types/host-globals';
+
 export { default as YMButton } from './components/basic/YMButton/YMButton.vue';
 export { default as YMCheckBox } from './components/basic/YMCheckBox/YMCheckBox.vue';
 export { default as YMSwitchItem } from './components/basic/YMSwitchItem/YMSwitchItem.vue';
@@ -78,6 +81,9 @@ export { default as YMTabBar } from './components/business/YMTabBar/YMTabBar.vue
 export { default as YMParamList } from './components/business/YMParamList/YMParamList.vue';
 export { ParamListHistory } from './components/business/YMParamList/param-history';
 export { default as YMParameterPane } from './components/business/YMParameterPane/YMParameterPane.vue';
+// 参数定义形状 + 清单条目形状：宿主（编辑器）声明清单条目时要用同一份（第 156 轮）
+export type { ParamDef } from './components/business/YMParameterPane/param-pane-core';
+export type { ManifestEntry } from './components/business/YMParameterPane/manifest-entry';
 export { default as YMCommandList } from './components/business/YMCommandList/YMCommandList.vue';
 export {
 	createCommandListApi,

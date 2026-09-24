@@ -40,7 +40,8 @@ uiElClasses.Reference = class ReferenceElement extends uiElClasses.Element! {
 				this.loadElement(preset.data, this);
 				if (this.children.length !== 0) {
 					this.prefab = this.children[0];
-					getUIStore().root!.addReference(this.prefab);
+					// 同 `element-base.ts`：`addReference` 只有根元素有，`!` 与既有惯例一致
+					getUIStore().root!.addReference!(this.prefab);
 					if (this.synchronous) {
 						this.lockTransform();
 						this.setToPrefabSize();

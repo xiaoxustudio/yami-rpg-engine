@@ -307,7 +307,17 @@ UI.updateElement = function (this: UIShape, target: UINodeShape) {
 		nodes = rootNodes;
 		instance = root;
 	} else {
-		const find = (node: UINodeShape): UINodeShape | null => {
+		/**
+		 * 查找时**实际用到**的节点面：`children` 用于递归下钻，`instance` 用于回传。
+		 *
+		 * 第 145 轮：原先把「合成的根包装对象」`{ instance: root, children: rootNodes ?? [] }`
+		 * 断言成 `UINodeShape`（还得走 `unknown`）—— 而它**根本不是**一个节点：没有 `class`、
+		 * 也没有序列化成员，只是为了把 store 的 root 与 nodes 凑成一次查找的入口。
+		 * 按读点收成这个局部形状之后，包装对象与递归用的真实节点都能传进来（断言消失）——
+		 * 与 `SceneAnimateThis` / `SceneSelectionThis` 是同一手法。
+		 */
+		type FindNode = { children: UINodeShape[]; instance?: UIRootApi | null };
+		const find = (node: FindNode): FindNode | null => {
 			const children = node.children;
 			if (children.includes(target)) {
 				return node;
@@ -320,10 +330,7 @@ UI.updateElement = function (this: UIShape, target: UINodeShape) {
 			}
 			return null;
 		};
-		const node = find({
-			instance: root,
-			children: rootNodes ?? []
-		} as unknown as UINodeShape);
+		const node = find({ instance: root, children: rootNodes ?? [] });
 		if (node) {
 			nodes = node.children;
 			instance = node.instance;

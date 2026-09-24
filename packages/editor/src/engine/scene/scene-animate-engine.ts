@@ -52,11 +52,22 @@ SceneAnimateEngine.requestAnimation = function (this: SceneAnimateThis) {
 /**
  * 绘制缓冲是否可渲染：页面隐藏 / 窗口最小化 / 布局重建瞬间画布会退化为 0×0，
  * 此时继续 `gl.clear` 会持续刷 `GL_INVALID_FRAMEBUFFER_OPERATION: Attachment has zero size`。
- * 渲染循环据此跳过绘制（尺寸恢复后自动继续，无需重挂 updater）。
+ * 渲染循环据此跳过绘制。`stageRendering` 是**一次性** updater（`timer.ts:195` 调用后即置 null），
+ * 被跳过的这一帧不会自己回来 —— 但尺寸恢复必然走 `Scene.windowResize`，它 `resize()` 之后
+ * 立刻 `requestRendering()`（`scene-events-window.ts:12`），上下文丢失恢复同理由 `webglRestored`
+ * 重挂；动画播放期间另有持续性的 `stageAnimation` 逐帧 `drawScene`。
+ *
+ * 读的是 `GL.canvas` —— `webgl-init.ts` 里 `document.createElement('canvas')` 造的真画布
+ * （初值 0×0，由 `GL.resize` 撑开），全仓 `GL.canvas` 取的就是它（`layout.ts` 还会把它插进 DOM）。
+ *
+ * 第 137 轮实测修正：这里原本读 `Scene.screen.width/height`，但 `#scene-screen` 是
+ * `<div class="box" id="scene-screen">`（`components/layout/LayoutPanel.vue`），div 没有
+ * `width`/`height` 属性（`undefined`），`undefined !== 0` 恒真 ⇒ 整条守卫从未生效，
+ * 那个 `as unknown as HTMLCanvasElement | null | undefined` 只是把这次误读圆了过去。
  */
 const hasRenderableCanvas = (): boolean => {
-	const screen = Scene.screen as unknown as HTMLCanvasElement | null | undefined;
-	return screen !== null && screen !== undefined && screen.width !== 0 && screen.height !== 0;
+	const canvas = GL.canvas;
+	return canvas.width !== 0 && canvas.height !== 0;
 };
 
 SceneAnimateEngine.updateAnimation = function (this: SceneAnimateThis, deltaTime: number) {

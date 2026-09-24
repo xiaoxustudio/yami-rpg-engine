@@ -97,14 +97,17 @@ describe('YMTitleBar', () => {
 		closeBtn.classList.add('close');
 		el.appendChild(closeBtn);
 		let closed = null;
-		(window as unknown as Window & { Window?: { close(id?: string): void } }).Window = {
+		// 与 `getWindow()` 同一手法：`window` 的实际类型是 `Window & typeof globalThis`，
+		// 而其中同名构造器会把 `Window` 成员相交掉 ⇒ 先窄化到 `Window` 接口再读写。
+		const host: Window = window;
+		host.Window = {
 			close: (id: string) => (closed = id)
 		};
 		closeBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 		expect(closed).toBe('test-window');
 		closeBtn.remove();
 		frame.remove();
-		delete (window as unknown as Window & { Window?: { close(id?: string): void } }).Window;
+		delete host.Window;
 	});
 
 	it('click on maximize toggles frame maximized', () => {

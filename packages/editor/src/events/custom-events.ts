@@ -54,10 +54,7 @@ export function onCustom<K extends CustomEventName>(
 	listener: (payload: CustomEventPayloads[K], event: Event) => void
 ): () => void {
 	const handler = (event: Event): void =>
-		listener(
-			readPayload<Record<string, unknown>>(event) as unknown as CustomEventPayloads[K],
-			event
-		);
+		listener(readPayload<CustomEventPayloads[K]>(event), event);
 	window.addEventListener(type, handler);
 	return () => window.removeEventListener(type, handler);
 }

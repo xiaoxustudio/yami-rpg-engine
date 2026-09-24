@@ -16,8 +16,71 @@ interface SceneMarqueeData {
 }
 const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
-// oxlint-disable-next-line no-explicit-any
-export const PaletteEngine: Record<string, any> = {};
+/**
+ * `PaletteEngine` 的成员表 —— 口径收紧（2026-09-22，`any-hatches` 收口，第 134 轮）。
+ *
+ * 此前是 `export const PaletteEngine: Record<string, any> = {}` 后面跟 20 行赋值。
+ * `any` 的代价与已收口的 `AutoTileEngine` / `SceneMarqueeEngine` 同一个：**成员名与形参表都不受检查**
+ * （拼错一个名字，调用点静默拿到 `undefined`）。
+ *
+ * 20 个成员各自独立（不互相引用、也不引用文件下方的声明）；`this` 一律 `typeof Palette`
+ * —— 注意 `Palette` 自己仍是 `Record<string, any>`（`palette.ts:4`），本轮不动它，
+ * 所以这里的 `this: typeof Palette` 就是 `Record<string, any>`，与各实现的标注逐字一致。
+ * 写法沿用前两轮的结论：**函数属性**（不是方法简写），避免 `typescript(unbound-method)`
+ * 在 `palette.ts:110–119` 那批搬运点报警（见 `xr.md` 第 131 轮）。
+ * ⚠️ 本文件的 spec（`palette.spec.ts:133`）把 mock 声明成 `const palette: any`，
+ * 且 `.call(palette, new PointerEvent(…))` 传的是真的 `PointerEvent` ⇒ **不会**出现第 132 轮
+ * camera 那种「部分 mock 不满足窗口形状」的级联（判据见 `xr.md` 第 132/133 轮）。
+ */
+interface PaletteEngineShape {
+	/** 事件坐标 → 图块坐标；返回**复用的缓存对象**（IIFE 闭包里的 `point`）。 */
+	getTileCoords: (
+		this: typeof Palette,
+		event: PointerEvent,
+		clamp?: boolean
+	) => { x: number; y: number };
+	/** `x`/`y` 缺省时取 `this.meta.x` / `this.meta.y`。 */
+	updateCamera: (this: typeof Palette, x?: number, y?: number) => void;
+	updateTransform: (this: typeof Palette) => void;
+	updateBackground: (this: typeof Palette) => void;
+	/** 首次调用时**建**画布并挂上 `fontSize` / `entries` / `positions` 等（见 `MarkCanvasShape`）。 */
+	createMarkCanvas: (this: typeof Palette) => MarkCanvasShape;
+	rebuildMarkCanvas: (this: typeof Palette, canvas: MarkCanvasShape) => void;
+	ensureMarkPosition: (
+		this: typeof Palette,
+		canvas: MarkCanvasShape,
+		text: string,
+		key?: string
+	) => MarkPosition;
+	drawTileset: (this: typeof Palette) => void;
+	drawTiles: (this: typeof Palette) => void;
+	drawTileGrid: (this: typeof Palette) => void;
+	drawPriorities: (this: typeof Palette) => void;
+	drawTags: (this: typeof Palette) => void;
+	drawTerrains: (this: typeof Palette) => void;
+	selectTiles: (
+		this: typeof Palette,
+		x: number,
+		y: number,
+		width: number,
+		height: number
+	) => void;
+	copyTilesFromScene: (
+		this: typeof Palette,
+		x: number,
+		y: number,
+		width: number,
+		height: number
+	) => void;
+	flipTiles: (this: typeof Palette) => void;
+	scrollToSelection: (this: typeof Palette, shiftKey: boolean) => void;
+	requestRendering: (this: typeof Palette) => void;
+	/** 作为 `Timer` 的 updater 使用（本文件内先 `.bind(this)` 再挂）。 */
+	renderingFunction: (this: typeof Palette) => void;
+	stopRendering: (this: typeof Palette) => void;
+}
+
+export const PaletteEngine = {} as PaletteEngineShape;
 
 interface MarkPosition {
 	text: string;

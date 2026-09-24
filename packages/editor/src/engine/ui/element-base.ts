@@ -25,8 +25,17 @@ interface UIParentShape {
 	opacity: number;
 	matrix: Matrix;
 	children: UIElementShape[];
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/**
+	 * 父元素。第 152 轮补声明：`contains()` 沿它上溯（`:312` 的 `element = element.parent`），
+	 * 原先靠 `[k: string]: any` 索引签名兜着。基类字段本身就是 `UIParentShape | null`（`:61`）。
+	 */
+	parent: UIParentShape | null;
+	/**
+	 * 请求重算尺寸 —— **只有窗口类元素**有它：调用点 `remove()` 在
+	 * `this.parent instanceof uiElClasses.Window` 之后才调（`:257`）。
+	 * 声明成可选即如实描述；调用点配 `?.`（那个 `instanceof` 守卫就是它安全的理由）。
+	 */
+	requestResizing?: () => void;
 }
 
 interface TransformShape {
@@ -57,6 +66,15 @@ uiElClasses.Element = class UIElement {
 	height: number;
 	matrix: Matrix;
 	opacity: number;
+	/**
+	 * 第 140 轮补声明：基类的 `drawDefaultImage()` 会读它，但**不是所有**元素都有 ——
+	 * 真正声明它的是 `image-element` / `text-element` / `progress-bar-element` / `video-element`
+	 * （各自 `blend: string`）。所以这里用可选 + `declare`（与上面 `node` / `resize` 同一手法）：
+	 * 只说「基类方法会读到一个可能是 string 的 blend」，**不产生任何运行期字段**（无 defineProperty、
+	 * 不改实例自有键集合），也不新增断言 —— 原先读侧写的是
+	 * `(this as unknown as { blend: string }).blend`。
+	 */
+	declare blend?: string;
 	transform: TransformShape;
 	parent: UIParentShape | null;
 	children: UIElementShape[];
@@ -145,7 +163,7 @@ uiElClasses.Element = class UIElement {
 
 	drawDefaultImage() {
 		GL.alpha = this.opacity;
-		GL.blend = (this as unknown as { blend: string }).blend;
+		GL.blend = this.blend;
 		GL.matrix.set(getUIStore().matrix!).multiply(this.matrix);
 		GL.fillRect(this.x, this.y, this.width, this.height, 0x80ffffff);
 	}
@@ -228,7 +246,7 @@ uiElClasses.Element = class UIElement {
 	appendChildTo(element: UIElementShape, index: number) {
 		if (element instanceof uiElClasses.Element!) {
 			if (element.parent instanceof uiElClasses.Element!) {
-				getUIStore().root!.tryUpdateReferenceElements(element.parent);
+				getUIStore().root!.tryUpdateReferenceElements!(element.parent);
 				remove(element.parent!.children, element);
 			}
 			if (element.parent instanceof uiElClasses.Window!) {
@@ -240,15 +258,17 @@ uiElClasses.Element = class UIElement {
 				if (!element.connected) element.connect();
 				element.resize();
 			}
-			getUIStore().root!.tryUpdateReferenceElements(this);
+			// `tryUpdateReferenceElements` 只有根元素有（`UIElementInstance` 是共同视图 ⇒ 可选）；
+			// 这里拿的就是 `getUIStore().root` ⇒ 按本仓惯例用 `!`（保持不变式破坏时当场抛错的行为）
+			getUIStore().root!.tryUpdateReferenceElements!(this);
 		}
 	}
 
 	remove() {
 		if (this.parent instanceof uiElClasses.Element! && remove(this.parent!.children, this)) {
-			getUIStore().root!.tryUpdateReferenceElements(this.parent);
+			getUIStore().root!.tryUpdateReferenceElements!(this.parent);
 			if (this.parent instanceof uiElClasses.Window!) {
-				this.parent!.requestResizing();
+				this.parent!.requestResizing?.();
 			}
 			this.parent = null;
 			if (this.connected) {

@@ -59,6 +59,10 @@ export function updateCommandElement(
 		element.lines[i] = line;
 	}
 
+	// ⚠️ 第 136 轮实测：内层这处**不能**降成单次 `as` —— `CommandList.prototype.elements` 的静态类型是
+	// `(...args: any[]) => any`（类侧是松散类型），与 `CommandListShape` 不可比 ⇒ `TS2352:
+	// neither type sufficiently overlaps`，`unknown` 跳板**承重**。（外层那处单次 `as` 是第 116 轮加上的，
+	// 两处作用不同：外层把「`elements` 或 `prototype.elements`」这个联合收成 `CommandListShape`。）
 	const list = ((this as { elements?: CommandListShape }).elements ??
 		(CommandList.prototype.elements as unknown as
 			| CommandListShape

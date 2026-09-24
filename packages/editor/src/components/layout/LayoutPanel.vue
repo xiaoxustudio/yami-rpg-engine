@@ -1963,10 +1963,10 @@ const onSceneMarqueeDoubleclick = (event: PointerEvent) => {
 	Scene?.marqueeDoubleclick?.(event);
 };
 const onEasingIdWrite = (value: unknown) => {
-	Curve?.easingIdWrite?.({ value: value as string } as unknown as Event);
+	Curve?.easingIdWrite?.({ value });
 };
 const onEasingIdInput = (value: unknown) => {
-	Curve?.easingIdInput?.({ value } as unknown as Event);
+	Curve?.easingIdInput?.({ value });
 };
 const onUiListChange = (event: Event) => {
 	UI?.listChange?.(event);

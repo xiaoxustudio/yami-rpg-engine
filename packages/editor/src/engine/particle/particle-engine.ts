@@ -18,6 +18,19 @@ interface ParticleEmitterData {
 	[k: string]: unknown;
 }
 
+/**
+ * 粒子图层数据（`layer.data`）。
+ *
+ * 第 145 轮合并：此前这里有**两份**声明描述同一个运行期对象 —— 本接口只写引擎发射逻辑用到的
+ * `interval` / `delay` / `area`，而 `ParticleElementLayerData`（原 `:95`）写元素读到的
+ * `lifetime` / `anchor` / `rotation` / … —— 于是 `new ParticleElement(this)` 处
+ * `this` 不满足 `ParticleElementLayer`（`TS2345`：`ParticleLayerData` 缺 `lifetime`、
+ * `lifetimeDev`、`fadeout`、`anchor` 等 9 个成员），只能写 `this as unknown as ParticleElementLayer`
+ * 从半边跳到另半边（与第 118/144 轮同一病症）。合并成一份之后两处共用它，断言消失。
+ *
+ * 字段类型取原 `ParticleElementLayerData` 的写法：随机参数字段是 `[standard, deviation]` 元组，
+ * 纯值字段是 `number`。
+ */
 interface ParticleLayerData {
 	interval: number;
 	delay: number;
@@ -29,70 +42,6 @@ interface ParticleLayerData {
 		height?: number;
 		radius?: number;
 	} & Record<string, unknown>;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
-}
-
-interface OuterRect {
-	left: number;
-	top: number;
-	right: number;
-	bottom: number;
-	width: number;
-	height: number;
-	hasArea: boolean;
-}
-
-interface ParticleElementRef {
-	initialize: () => void;
-	// oxlint-disable-next-line no-explicit-any
-	update: (deltaTime: number) => any;
-	updateMethods: () => void;
-	draw: (vi: number) => void;
-	scaleFactor: number;
-	spriteX: number;
-	spriteY: number;
-}
-
-interface ParticleEmitterShape {
-	speed: number;
-	opacity: number;
-	scale: number;
-	angle: number;
-	startX: number;
-	startY: number;
-	layers: ParticleLayerShape[];
-	matrix: Matrix | null;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
-}
-
-interface ParticleLayerShape {
-	emitter: ParticleEmitterShape;
-	data: ParticleLayerData;
-	texture: ImageTexture | null;
-	textureWidth: number;
-	textureHeight: number;
-	unitWidth: number;
-	unitHeight: number;
-	elapsed: number;
-	easing: Float32Array | null;
-	capacity: number;
-	count: number;
-	stocks: number;
-	elements: ParticleElementRef[] & { count: number };
-	reserves: ParticleElementRef[] & { count: number };
-	/** 引擎装配时把 `ParticleEngine.*` 的实现挂到图层对象上（读点见 render/update 循环） */
-	emitParticles: (deltaTime: number) => void;
-	updateParticles: (deltaTime: number) => number;
-	draw: (opacity: number) => void;
-	updateEasing: () => void;
-	clear: () => void;
-	destroy: () => void;
-}
-
-// 粒子元素层数据对象（layer.data，与 particle-layer.ts 的 ParticleLayerData 共享） 注：随机参数字段运行时是 [standard, deviation] 元组；纯值字段是 number
-interface ParticleElementLayerData {
 	lifetime: number;
 	lifetimeDev: number;
 	fadeout: number;
@@ -139,8 +88,95 @@ interface ParticleElementLayerData {
 		vframes: number;
 		interval: number;
 	};
+	// —— 以下六个字段是第 151 轮**从读点逆推**出来的：本接口原先靠 `[k: string]: any` 兜着，
+	//    摘掉那行索引签名后 tsc 只报了 12 条 TS2339、全在本文件，正好给出候选清单 ——
+	/** 排序模式：`draw` 里 `switch (data.sort)` 的三个 case（值来自工程数据，故不收成联合类型） */
+	sort: string;
+	/** 混合模式：直接赋给 `gl.blend` */
+	blend: string;
+	/** 光照模式键：`ParticleLayer.lightSamplingModes` 的下标 */
+	light: string;
+	/** 贴图 guid：`loadTexture` 里与 `texture.base.guid` 比对 */
+	image: string;
+	/** 元素数量：`updateCount` 里 `0` 表示不限（改成 `1e16`） */
+	count: number;
+	/**
+	 * 颜色分组：`mode` 决定用哪一组（`fixed`→`rgba`、`random`→`min`/`max`、
+	 * `easing`→`easingId`+`start*`/`end*`、`texture`→`tint`）。
+	 *
+	 * ⚠️ 四组在运行期**互斥存在**（inspector 切模式时会删掉不用的组，见
+	 * `inspector/particle-layer-page.ts:285`），但引擎只在**对应 mode 的分支**里读对应那组
+	 * （`updateMethods` 按 mode 装载 `setStartColor*`）⇒ 这里按「全组可读」声明，
+	 * 以免给十来个字段各加一次非空断言；这条取舍是明写的，不是默认。
+	 */
+	color: {
+		mode: string;
+		tint: number[];
+		easingId: string;
+		rgba: number[];
+		min: number[];
+		max: number[];
+		startMin: number[];
+		startMax: number[];
+		endMin: number[];
+		endMax: number[];
+	};
+}
+
+interface OuterRect {
+	left: number;
+	top: number;
+	right: number;
+	bottom: number;
+	width: number;
+	height: number;
+	hasArea: boolean;
+}
+
+interface ParticleElementRef {
+	initialize: () => void;
 	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	update: (deltaTime: number) => any;
+	updateMethods: () => void;
+	draw: (vi: number) => void;
+	scaleFactor: number;
+	spriteX: number;
+	spriteY: number;
+}
+
+interface ParticleEmitterShape {
+	speed: number;
+	opacity: number;
+	scale: number;
+	angle: number;
+	startX: number;
+	startY: number;
+	layers: ParticleLayerShape[];
+	matrix: Matrix | null;
+}
+
+interface ParticleLayerShape {
+	emitter: ParticleEmitterShape;
+	data: ParticleLayerData;
+	texture: ImageTexture | null;
+	textureWidth: number;
+	textureHeight: number;
+	unitWidth: number;
+	unitHeight: number;
+	elapsed: number;
+	easing: { ease(t: number): number } | null;
+	capacity: number;
+	count: number;
+	stocks: number;
+	elements: ParticleElementRef[] & { count: number };
+	reserves: ParticleElementRef[] & { count: number };
+	/** 引擎装配时把 `ParticleEngine.*` 的实现挂到图层对象上（读点见 render/update 循环） */
+	emitParticles: (deltaTime: number) => void;
+	updateParticles: (deltaTime: number) => number;
+	draw: (opacity: number) => void;
+	updateEasing: () => void;
+	clear: () => void;
+	destroy: () => void;
 }
 
 interface ParticleEmitterRef {
@@ -153,14 +189,21 @@ interface ParticleEmitterRef {
 
 export interface ParticleElementLayer {
 	emitter: ParticleEmitterRef;
-	data: ParticleElementLayerData;
+	data: ParticleLayerData;
 	/** 渲染尺寸：由精灵帧尺寸算出（读点见 render 循环，赋点见 unitWidth/unitHeight） */
 	unitWidth: number;
 	unitHeight: number;
 	textureWidth: number;
 	textureHeight: number;
-	/** 缓动器：只用到 ease(0..1)（Easing 是值不是类型，故按结构写） */
-	easing: { ease(t: number): number };
+	/**
+	 * 缓动器：只用到 `ease(0..1)`（`Easing` 是值不是类型，故按结构写）。
+	 *
+	 * 第 145 轮补 `| null`：图层只在 `color.mode === 'easing'` 时才赋值（`:632`），
+	 * 而元素侧 `updateColor` 也只在同一模式下被装成 `updateColorEasing`（`:1057`）
+	 * ⇒ 读点（`:1281`）带 `!` 表达这条不变式；这样「类可空、元素要求非空」不再互斥，
+	 * `new ParticleElement(this)` 的断言得以删除，且不变式一旦被破坏仍是**当场抛错**（与改动前一致）。
+	 */
+	easing: { ease(t: number): number } | null;
 }
 
 class ParticleEmitter {
@@ -351,7 +394,14 @@ class ParticleLayer {
 	unitWidth: number;
 	unitHeight: number;
 	elapsed: number;
-	easing!: Float32Array | null;
+	/**
+	 * 颜色缓动器。第 145 轮修正：原先声明 `Float32Array | null`，但 `:626` 赋的是
+	 * `Easing.get(color.easingId)`（`transition-window.ts:121` 的 `EasingMapInstance`，
+	 * 有 `ease(time): number`）；`:1268` 的读点也确实是 `easing.ease(...)`。
+	 * 声明成 `Float32Array` 之所以一直没报错，是因为赋值右侧是 `any` 面 —— 又一次
+	 * 「被 `any` 吞掉的错误声明」（同第 141 轮 `Curve.index`）。
+	 */
+	easing!: { ease(t: number): number } | null;
 	capacity: number;
 	count: number;
 	stocks: number;
@@ -410,14 +460,7 @@ class ParticleLayer {
 					}
 				}
 				for (let i = this.capacity; i < maximum; i++) {
-					// ⚠️ 保留 `unknown`（第 87 轮两条路都试过）：直接传 `this` 报 TS2345
-					// （`this` 不满足 `ParticleElementLayer`），降成单次断言又报 TS2352
-					// （「两个类型都不足以重叠」）⇒ 说明**类与接口已经漂移**：`ParticleElementLayer`
-					// 的 `data`/`emitter` 等成员与该类的实际声明对不上。
-					// 正解是把两者对齐（类型设计活），与 `ParamHistory` / `IEditableHistory` 属同一类债务。
-					elements[eCount++] = new ParticleElement(
-						this as unknown as ParticleElementLayer
-					);
+					elements[eCount++] = new ParticleElement(this);
 					this.capacity = i + 1;
 					count--;
 					stocks--;
@@ -694,7 +737,7 @@ class ParticleLayer {
 class ParticleElement {
 	emitter!: ParticleEmitterRef;
 	layer!: ParticleElementLayer;
-	data!: ParticleElementLayerData;
+	data!: ParticleLayerData;
 	elapsed!: number;
 	appeared!: boolean;
 	lifetime!: number;
@@ -1270,7 +1313,10 @@ class ParticleElement {
 		const start = color.start!;
 		const end = color.end!;
 		const clamp = ParticleElement.sharedClampedArray;
-		const time = Math.min(easing.ease(this.elapsed / this.lifetime), 1);
+		// 不变式：本方法只在 `color.mode === 'easing'` 时被装成 `updateColor`（`:1057`），
+		// 而该模式下图层的 `easing` 必然已赋值（`:632`）—— 故此处 `!` 不是「圆过去」，
+		// 而是把「谁保证了它非空」写在了读点上；若不变式被破坏，行为与改动前完全相同（抛错）。
+		const time = Math.min(easing!.ease(this.elapsed / this.lifetime), 1);
 		color.changed = true;
 		clamp[0] = start[0] * (1 - time) + end[0] * time;
 		clamp[1] = start[1] * (1 - time) + end[1] * time;

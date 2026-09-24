@@ -39,8 +39,6 @@ export type ParticleElementShape = {
 	anchorY: number;
 	rotationAngle: number;
 	scaleFactor: number;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 };
 
 export interface ParticleLayerShape {
@@ -51,8 +49,6 @@ export interface ParticleLayerShape {
 	unitHeight: number;
 	texture: unknown;
 	draw: (opacity?: number) => void;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 }
 
 export interface ParticleEmitterShape {
@@ -249,6 +245,18 @@ export interface ParticleShape {
 	};
 	Element: {
 		new (layer: ParticleElementLayer): ParticleElementShape;
+		/**
+		 * 元素类的静态共享面（`ParticleElement.stage`）—— **当前舞台**。
+		 *
+		 * ⚠️ 保留 `Record<string, any>`（第 155 轮实测 → 转成**行为问题**）：三条线索都要收 ——
+		 * `particle-file.ts:23` 存 `Particle` 单例、`scene-window.ts:945` 存 `Scene` 单例，
+		 * 而唯一读点是 `particle-engine.ts:571` 的 `.multiply(ParticleElement.stage.matrix)`。
+		 * 两份单例形状都试过：写任一都会在另一条赋值处报错；收成读点面 `{ matrix: Matrix }` 又暴露
+		 * **`SceneShape` 根本没有具名的 `matrix`**（运行期确实有：`scene-window.ts:195` 初始化成
+		 * `null`、`:578` 赋 `new Matrix()`，一直靠索引签名兜着）。
+		 * ⇒ 要收口得先判定「场景当舞台时 `.matrix` 是否保证非空」（读点直接进 `multiply`，传 `null`
+		 * 会当场抛）—— 那是行为判定，不能靠类型猜。
+		 */
 		// oxlint-disable-next-line no-explicit-any
 		stage: Record<string, any>;
 	};

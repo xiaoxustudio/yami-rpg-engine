@@ -65,7 +65,9 @@ Animation.load = function (this: typeof Animation, context: AnimationFileContext
 			listScrollTop: 0
 		};
 	}
-	const { animation, editor } = context;
+	// `editor` 是可选的（tab 传入的上下文，open/load 才挂它）；上面的 `firstLoad` 分支刚保证它存在
+	const editor = context.editor!;
+	const { animation } = context;
 
 	getAnimationStore().mode = animation.mode;
 	this.sprites = animation.sprites;

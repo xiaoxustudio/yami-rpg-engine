@@ -12,7 +12,7 @@ export const GlobalPath =
 	typeof Path.resolve === 'function' ? Path.resolve(GlobalPathForDir, ConfigDir) : '';
 
 export const loadConfigPromise: Promise<EditorConfigShape> | undefined = (() => {
-	if (typeof (window as unknown as Record<string, unknown>).__nodeRequire !== 'function') {
+	if (typeof window.__nodeRequire !== 'function') {
 		return undefined;
 	}
 	const dir = Path.resolve(GlobalPath);

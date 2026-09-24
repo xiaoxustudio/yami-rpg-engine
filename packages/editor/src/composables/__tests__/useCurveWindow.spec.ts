@@ -277,7 +277,7 @@ describe('useCurveWindow（动画过渡曲线窗口 composable：渲染状态机
 		const frame = { easingId: 'easing-1', key };
 		CurveController.load!(frame);
 		expect(CurveController.target).toBe(frame);
-		CurveController.easingIdWrite?.({ value: 'easing-2' } as unknown as Event);
+		CurveController.easingIdWrite?.({ value: 'easing-2' });
 		expect(CurveController.index).toBe('easing-2');
 		CurveController.close!();
 		expect(CurveController.state).toBe('closed');
