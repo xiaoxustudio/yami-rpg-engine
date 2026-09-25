@@ -6496,3 +6496,250 @@ import('@app/engine/ui/ui-members.ts').then((m) => Object.assign(UI, m.uiMembers
    仪器里每换一个扫描原语，都要问它吃不吃什么。
 3. **每接一个域都要重跑三条轴**：②③④ 三次失明都发生在「接下一个域」这一步 ——
    同样的动作，第二次仍然会踩到新的口径缺口（因为每个域的写法细节不同）。
+
+## 第 171 轮（2026-09-22）：第 3 个域 `ui-list` 的前提核实 —— 它需要**第二种装配形态**（未落地）
+
+### 一、`ui-list` 与前两域不是同一类
+
+按老办法先摸清它的形状（454 行）：
+
+- **10 处顶层挂载**（`UI.searcherInput` / `listKeydown` / `listPointerdown` / `listSelect` /
+  `listRecord` / `listPopup` / `listOpen` / `listRename` / `listChange` / `listPageResize`）
+  —— 这部分与前两域同形，可机械搬；
+- ⚠️ **另有 7 处对「成员的成员」的赋值**：`UI.marquee.resize` · `UI.list.copy` · `UI.list.paste` ·
+  `UI.list.delete` · `UI.list.toggle` · `UI.list.cancelSearch` · `UI.list.updateHead`
+  —— 实测这 7 处**缩进全是 0**（**模块顶层语句**，不是函数体内部）。
+
+⇒ 差别就在这 7 处：它们要的是**单例本体**（更准确说：单例上那两个**子对象** `list` / `marquee`），
+而「成员对象」形态只能表达「往单例上挂哪些键」，**表达不了「往子对象上挂」**。
+
+### 二、因此第 3 个域要的是「成员对象 + attach 钩子」
+
+自然形态：域模块导出
+
+```ts
+export const uiListMembers: UIListMembers = { searcherInput, listKeydown, … };   // 10 项
+export function attachUiList(target: UIShape): void {                            // 7 项子对象
+	target.marquee.resize = …; target.list.copy = …; …
+}
+```
+
+由 `ui-members.ts` 在装配时两者都调 —— 域模块**依旧不需要 `import { UI }`**（接收者由参数传入）✓。
+⇒ 这是**第 2 种装配形态**（前两域只有第 1 种），`ui-members.ts` 的「汇总对象」要把 attach 钩子也列上。
+
+### 三、要先算的两笔账（下一轮动手前）
+
+1. **仪器**：那 7 处子对象赋值今天由 `SLOT_ASSIGN_RES` 的第 3 条（`UI.x.y =`）算成「槽位 x 被赋值」。
+   改成 `target.list.copy = …` 后这条不再匹配 ⇒ 要确认 `list` / `marquee` **仍能从别处**拿到
+   「已赋值」的证据（据查 `ui-initialize.ts` 里有 `this.list = uiEls.get('ui-list')` /
+   `this.marquee = …`，而它已是家族成员 ⇒ 应该仍算）——**但这必须实测，不能靠推断**。
+2. **`Object.assign(UI, …)` 的识别面**：attach 钩子**不是** `Object.assign`，而是「传入 target 后逐个赋值」。
+   如果那些赋值写成 `target.list.copy = …`，`assignedSlots` 的 `this.x =` 家族分支也不认（`target.` 不是 `this.`）
+   ⇒ 要么让钩子内部用 `Object.assign(target.list, { copy, paste, … })`（仪器认 `Object.assign(UI, …)` 只认
+   **第一个参数是字面 `UI`**，所以还得扩口径），要么接受「这些子槽位的证据来自别处」。
+   **两条都要先量，别先改。**
+
+### 四、本轮账
+
+**不变**（`ui-singleton-members` 75 · companion 6 · 17 轴持平）。交付物是**核实过的形状**
+（10 + 7，且 7 处是模块顶层 —— 这是决定性事实）与**两笔要先算的账**。
+
+### 五、教训
+
+1. **「同一个动作」这话要限定范围**：第 167/170 两轮之后我以为「接域」已经标准化，
+   但那只对**只有顶层挂载**的域成立；`ui-list` 一出现「成员的成员」就换了形态。
+   ⇒ 判据：**先数「顶层挂载」与「子对象赋值」各几处**，两者都存在时不能用第 1 种形态。
+2. **形态的边界由「谁提供接收者」决定**：成员对象能表达「挂到单例」，表达不了「挂到单例的子对象」；
+   后者必须让装配点把**接收者传进来**（钩子），这恰好仍然满足「域模块不依赖单例」的终态要求。
+
+## 第 172 轮（2026-09-22）：第 3 个域的**转换规则**核实 —— 一句 `this.` 会静默改行为（未落地）
+
+### 一、查出来的坑：那 7 处的 `this: UIShape` **是谎话**
+
+第 171 轮已确认 `ui-list` 有「10 处顶层挂载 + 7 处子对象赋值」。本轮要定的是**转换规则**：
+体内那些 `UI.x` 到底该改成 `this.x` 还是「捕获的 `target.x`」。查调用点，结论泾渭分明：
+
+- **10 处顶层挂载**的调用点都是 `UI.x(…)`（store 转发 · `LayoutPanel` · `ui-initialize` 的 `on(…, this.x)`）
+  ⇒ `this === UI` ⇒ 体内 `UI.x` → `this.x` **等价** ✓（与前两域同）。
+- **7 处子对象成员**（`UI.list.copy` / `.paste` / `.delete` / `.toggle` / `.cancelSearch` / `.updateHead`
+  / `UI.marquee.resize`）的调用点是 **`list.copy(item)` 这种「子对象当接收者」**：
+  实测 `ui-list.ts:210/224/225/233/241/257`、`ui-file.ts:172/182/253/258`，以及 `scene-*` ·
+  `variable` · `attribute` · `enum` · `plugin` 等处**全是这个形状**。
+  ⇒ 运行期 `this` 是**子对象**，而它们源码里写的 `this: UIShape` **是谎话**（「断言可能说谎」那一家族）。
+
+**若照老办法一律 `this.`，这 7 处会在运行期从 list 对象上读 `history` / `marqueePointermove`
+（都是 `undefined`）⇒ 复制/粘贴/删除/折叠/搜索清空整片静默失效，而套件未必抓得住** ——
+这正是本仓反复记的那类「不报错的静默失效」。
+
+### 二、正确规则（写进手法库 #45 的第 3 个必查项）
+
+- 10 处顶层挂载：`UI.x` → `this.x` ✓（`this === UI`，调用点可证）；
+- 7 处子对象成员 + `getListConfig(UI.list).onCreate/onRemove/onDelete/onResume` 那几个回调
+  （`:429/436/441/450`，接收者也不是 UI）：一律用**钩子参数捕获的 `target`** ——
+  `target.history!.save(…)` · `target.marqueePointermove!(…)`，**不能**写 `this.…`。
+
+**判据（可复用）**：**改 `UI.x` 之前先看调用点是不是 `UI.x(…)`**；只要接收者是子对象
+（`list.` / `marquee.`），就只能用捕获的 `target`。
+
+### 三、另两笔账也顺带定了
+
+- 子槽位证据（第 171 轮的账①）：`list` / `marquee` 在 `ui-initialize.ts` 里有
+  `this.list = uiEls.get('ui-list')` / `this.marquee = …`，而该文件已是**家族成员**（第 170 轮的修法）
+  ⇒ 即使 `UI.x.y =` 那 7 条不再匹配，两个槽位**仍有证据** ✓（落地后用 `migration:check` 复核 `assigned` 是否仍 132）；
+- 账②（要不要扩口径）：**不需要** —— 钩子内部写成 `target.list.copy = …`（而不是
+  `Object.assign(target.list, …)`）就不涉及新形态，仪器只需「子槽位证据来自别处」这一点成立 ✓。
+
+### 四、本轮账
+
+**不变**（75 / 6 / 17 轴持平）。交付物是**转换规则**与**一个会静默改行为的坑**的定位 ——
+下一轮按它实施即可，且不必再试错。
+
+### 五、教训
+
+1. **「同样的动作」在第三个域就不成立了**，而**它的失败方式是静默的**：不是编译错，是运行期读 `undefined`。
+   ⇒ 每接一个域，先问**「这些成员的调用点长什么样」**，而不是照抄上一轮的手法。
+2. **`this: X` 标注不能当证据**：本仓早就有「断言可能说谎」这条（#139），这次它落在**方法接收者**上 ——
+   唯一的证据是**调用点**。查一次调用点（一条 grep）就能抵掉一整轮运行期排错。
+
+## 第 173 轮（2026-09-22）：`ui-list` 先搬**声明**（75 → 65），把 `this` 那一问留给证据
+
+### 一、动手时撞上一个「验不了」的点，于是换了切法
+
+按第 172 轮的规则做整域转换（10 处顶层用 `this.`、7 处子对象用捕获的 `target`）。脚本化改写后**自检**，
+发现一处**必须先证伪**的地方：`ui-initialize.ts` 用 `on(list, 'keydown', this.listKeydown)` 之类注册了
+这些挂载，而 `on()` 对自定义元素是**转调 `el.on(type, listener)`** —— 接收者由**各组件自己的实现**决定。
+也就是说：那 10 个函数到底以谁为接收者被调用，**在 `on()` 这一层看不出来**。
+
+支持「`this === UI`」的**旁证**是文件里**本来就**有 `this.copy!` / `this.data`（作者一直当它是 UI）；
+但那是**推断**，不是证据。⇒ 在验明之前，**不把体内 `UI.x` 改成 `this.x`**（那是会静默改行为的改法，
+第 172 轮刚记过这一类）。
+
+于是换一个**零风险**的切法：**本轮只搬声明、不动函数体**。
+
+### 二、切法与收益
+
+- 10 处 `UI.name = function (…) {…}` → `const name = function (…) {…}` + 文件末尾
+  `export const uiListMembers = { searcherInput, …, listPageResize }`（简写键 —— 第 170 轮补的
+  「简写」口径在这里正好用上 ✓）；
+- 函数体**一个字符没动**（`UI.` 原地保留）⇒ **行为逐字不变**；
+- `ui-members.ts` 加一条 `...uiListMembers`。
+
+账：`ui-singleton-members` **75 → 65**（files 6 → 5，**一次降 10，是目前最大的一步**）；
+伴随判据 **6 持平** —— 这是**如实**的：域模块**仍然** `import { UI }`（函数体还在用它），
+所以它没有满足 (b) 的终态，只是「成员由域提供、装配由 facade 完成」这一半已经达成 ✓。
+
+### 三、账与验证
+
+| 项 | 结果 |
+| --- | --- |
+| `ui-singleton-members` | **75 → 65**（files 6 → 5） |
+| `ui-domain-singleton-imports` | 6 持平（**如实**：域模块仍 import UI） |
+| `legacy-ui-lines` / `1c-store-slot-gaps` / `ui-slot-coverage` | 全部持平（`assigned` 仍 132，0 盲区） |
+| editor `tsc` / 全套 2075 用例 | 0 错 / 全绿 |
+
+### 四、教训
+
+1. **「验不了」不等于「做不了」**：把一次改动**切成「只搬声明」与「搬语义」两步**，
+   前者零风险且照样能把轴推进 10 点；后者等证据齐了再做。**这一步的收益并不小**（本轮是最大的一步）。
+2. **旁证 ≠ 证据**：文件里已有的 `this.copy!` 是很强的旁证，但**同一个函数还有 `UI.setTarget!`**
+   —— 两种写法并存说明「谁是接收者」这件事在作者那边也没有一致口径。⇒ 并存本身就是**要查的信号**。
+3. **脚本化改写必须带自检**：本轮脚本自带了「10 处声明是否都改到」的断言（少一处就 `exit 2`），
+   并在跑完后用**大小写敏感**的 grep 复核「体内 `UI.` 仍在（46 处）」。第 37 轮那次「脚本把 349 行改坏」
+   的教训，靠的就是这种**改完立刻数两遍**。
+
+## 第 174 轮（2026-09-22）：接收者那一问**没能在本仓闭合**——它是跨包的（未降账）
+
+### 一、查了四层，结论是「权威不在编辑器里」
+
+第 173 轮留下的那一问：`ui-initialize.ts` 用 `on(list, 'keydown', this.listKeydown)` 注册的那些挂载，
+**运行期到底以谁为接收者**（决定体内 `UI.x` 能不能改 `this.x`）。本轮逐层查：
+
+| 层 | 查到什么 |
+| --- | --- |
+| `utils/element-utils.ts` | `on()` 对自定义元素走 `el.on(type, listener, options)`（`:48`）——**只是转调** |
+| 编辑器侧 SFC | 一律是 `ym.value?.on(type, listener, options)`（`WindowFrame` / `CommonList` / `SelectBox` / `TextBox` … 20+ 处）⇒ **实现在别处** |
+| `ui-kit/src` | `on(type, listener)` **只有声明**（`YMFont` / `YMRename` / `YMZoom`…）；且**找不到任何派发点**：`.call(this/el/target)` 与 `listener(` / `cb(` 在 ui-kit 里 **0 命中** |
+| 运行期 | `template-arpg/runtime/Script/ui.ts:3147` 有 `input.on(type, listener)` ⇒ 元素/事件系统落在**运行时或 ui-kit 的元素工厂**，编辑器里看不到派发语义 |
+
+⇒ **跨包语义不要靠推断**。第 173 轮那条旁证（文件里已有 `this.copy!`）本轮**不成立**：
+同一个函数里 `this.copy!` 与 `UI.setTarget!` **并存**，只能说明作者那边也没有一致口径，
+不能推出「`this` 就是 UI」。
+
+### 二、下一步（按成本排序，已写进 PHASE）
+
+- **(a) 写一条能红的 spec**（本仓惯用「靠一次判定」）：在 jsdom 里走 `on(list, 'keydown', handler)`
+  的真实注册路径，在 handler 内断言 `this === UI` —— **最直接、可复现**；
+- (b) 读 `template-arpg/runtime/Script/ui.ts` 的 `on` 实现与派发点（权威在运行期，但要读懂跨包调用）；
+- (c) 若 (a) 判定「`this` 不是 UI」，则这 10 个挂载**保持** `UI.` 写法（第 173 轮已是如此），
+  并把终态从「依赖 `this`」改成「**显式接收者**」。
+
+### 三、本轮账
+
+**不变**（65 / 6 / 17 轴持平）。交付物是**把问题定位到跨包**、排除了一个不成立的旁证，
+并把三条下一步按成本排序钉下来 —— 免得下一轮又从「读编辑器代码」开始绕。
+
+### 四、教训
+
+1. **推断链要标注强度**：第 173 轮的旁证在写下来时就该标成「旁证，未验」；本轮一查就不成立。
+   ⇒ **凡是没写「怎么证伪」的旁证，都不要拿它当决策依据。**
+2. **「在本仓找不到」本身就是结论**：四层查完、每层都有明确「0 命中」，这就把问题**限定**在
+   运行时/元素工厂那一层 —— 比继续在编辑器里翻要有价值。
+3. **跨包语义优先用 spec 判定，而不是读实现**：读三个包要跟调用链，而一条 spec 只有十几行，
+   而且**能红**（这才是证据）。
+
+## 第 175 轮（2026-09-22）：判定完成 —— `this` 是**元素**，而那个函数**故意用两个接收者**
+
+### 一、决定性证据：一行实现
+
+不用写 spec，`ui-kit` 里就有答案（第 174 轮之所以没找到，是因为搜索的是 `on(type, listener)` 的**声明**；
+实现写成 `const on = (` 才躲开了）：
+
+```ts
+// ui-kit/src/components/basic/YMCommonList/YMCommonList.vue:219
+const on = (type, listener, options) => {
+	const el = root.value;
+	if (!el) return;
+	el.addEventListener(type, listener, options);   // ← 原生 addEventListener
+	…
+};
+```
+
+⇒ 浏览器派发时 **`this` = 那个 DOM 元素**，**不是单例** ✓。
+凡经 `on(el, …)` 注册的挂载，体内 `UI.x` 改 `this.x` 会在运行期从元素上读 `history` / `setTarget`
+（`undefined`）⇒ **静默失效**。**第 173 轮「只搬声明、不动函数体」因此被证据确认是对的。**
+
+### 二、又推翻了我自己的一个推断（这次是「缺陷」）
+
+看到 `listKeydown` 里有 `if (!this.data) return;`（`:29`）时，我推断「元素接收者 ⇒ `this.data` 为
+`undefined` ⇒ 早退 ⇒ **列表快捷键静默失效**」。全仓 `grep` 一次就把它推翻了：
+
+- **兄弟模块全都把 `this` 注成元素**：`Attribute.listKeydown(this: TreeListElement)` ·
+  `Enum` · `Localization` · `PluginManager` · `Easing.listKeydown(this: YamiElement)` ·
+  `Particle.listKeydown(this: ParticleShape['list'])` · `useTeamWindow.listKeydown(this: TeamListElement)`；
+  而 `command-tip.ts` 干脆**不写 `this`**。**只有 `ui-list.ts` 这一处注成 `this: UIShape`** ⇒ 注错的是它。
+- `this.copy!` / `this.delete!` / `this.toggle!` / `this.cancelSearch!` / `this.data` 是**元素自己的 API**
+  —— 同文件 `:224/225/241` 就是 `list.copy(item)` 这种在元素上调用，别处模块也一样。
+
+⇒ `listKeydown` 体内**两种接收者并存是刻意的**：`this` = 列表元素（`this.copy!` 等）、`UI` = 单例
+（`UI.setTarget!` / `UI.history!`）。**第 173 轮那条脚本若真把 `UI.` 全换成 `this.`，就会当场改坏它。**
+
+### 三、结论与终态
+
+- 这 10 个挂载**保持** `UI.` 写法 ✓（现状即正确）；
+- 终态是「**显式接收者**」：把元素侧写成参数 / `target`，不再依赖 `this` 与 `UI` 两种**隐式**来源；
+- `this: UIShape` 这个**错误标注**应改（属类型债，不是行为债，可单独立项）。
+
+### 四、本轮账
+
+**不变**（65 / 6 / 17 轴持平）。交付物是**判定**（一行实现）+ **第二次自我推翻**（推断的缺陷不存在）
++ 明确的终态。**两轮之内推翻了两个自己的推断**（第 174 轮推翻旁证，本轮推翻缺陷假设）——
+两次都靠**一次 grep / 一次读实现**，而不是靠推理链。
+
+### 五、教训
+
+1. **「两种写法并存」有两种解释，必须先排除「刻意为之」**：第 173 轮我把它读成「口径不一致」，
+   实际是「**两个接收者**」。⇒ 判据：并存时先问**「它们各自指向谁」**（元素 vs 单例），而不是先判混乱。
+2. **搜「声明」会漏掉「实现」**：第 174 轮找 `on(type, listener)` 只找到声明，本轮换成 `const on = (`
+   一行就命中。⇒ **找实现要搜赋值形态，不是签名形态**（同一族的教训：判据不能认写法）。
+3. **推断越顺，越要先找反例**：本轮那个「静默失效」的故事讲得通、也符合本仓历史，
+   但它错在**没查兄弟模块怎么注 `this`** —— 一次全仓 grep 就够了。

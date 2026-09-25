@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-25T04:55:40.497Z",
+	"generatedAt": "2026-09-25T05:18:48.906Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -121,8 +121,8 @@
 			"label": "遗留 UI 单例成员挂载（UI.<name> = 处数，不受目录影响）",
 			"target": "zero",
 			"value": {
-				"total": 75,
-				"files": 6,
+				"total": 65,
+				"files": 5,
 				"declared": 134
 			}
 		},

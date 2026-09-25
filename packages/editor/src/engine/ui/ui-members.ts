@@ -23,6 +23,7 @@
  */
 import { uiSlotsMembers } from './ui-slots.ts';
 import { uiInitializeMembers } from './ui-initialize.ts';
+import { uiListMembers } from './ui-list.ts';
 import type { UIShape } from './legacy/ui-window.ts';
 
 /**
@@ -35,7 +36,9 @@ export const uiMembers = {
 	// 预制体域（第 167 轮）
 	...uiSlotsMembers,
 	// DOM 引用与定时器初始化域（第 170 轮）
-	...uiInitializeMembers
+	...uiInitializeMembers,
+	// 列表交互域（第 173 轮：只搬了 10 处顶层声明，函数体内的 `UI.` 原地保留）
+	...uiListMembers
 };
 
 /** 装配入口：`ui-window.ts` 在 UI 诞生处调用它（动态 import 之后）。 */

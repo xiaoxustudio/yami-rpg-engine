@@ -2289,6 +2289,115 @@ head?: { view: { write(index: number): void } } | null;
       `inspectorTypeMap` / `controlPoints`（这四个**只**在 `ui-initialize.ts` 里以 `this.x =` 赋值，
       正是第 7 类失明的探针）。
 
+45. **工作单：第 3 个域 `ui-list` 要的是「成员对象 + attach 钩子」**（第 171 轮，**未落地**，形状已核实）：
+    - **形状实测（454 行）**：**10 处顶层挂载**（`searcherInput` · `listKeydown` · `listPointerdown` ·
+      `listSelect` · `listRecord` · `listPopup` · `listOpen` · `listRename` · `listChange` ·
+      `listPageResize`）+ ⚠️ **7 处「成员的成员」赋值**（`UI.marquee.resize` · `UI.list.copy` ·
+      `UI.list.paste` · `UI.list.delete` · `UI.list.toggle` · `UI.list.cancelSearch` · `UI.list.updateHead`），
+      而这 7 处**缩进全是 0 —— 模块顶层语句**（决定性事实：它们要的是单例上的**子对象** `list` / `marquee`）。
+    - **形态**：域模块导出 `uiListMembers`（10 项）+ **`attachUiList(target: UIShape)`**（7 项子对象，
+      写成 `target.list.copy = …`）。由 `ui-members.ts` 在装配时两者都调；域模块**仍不需要 `import { UI }`**
+      ⇒ 这是**第 2 种装配形态**（前两域只有第 1 种）。
+    - **先算的两笔账（别先改）**：
+      ① 那 7 处今天是 `SLOT_ASSIGN_RES` 第 3 条（`UI.x.y =`）算成「槽位 x 被赋值」；改成 `target.…` 后不再匹配
+      ⇒ 要**实测** `list` / `marquee` 是否仍从别处拿到证据（`ui-initialize.ts` 有 `this.list = …` /
+      `this.marquee = …`，而它已是家族成员 ⇒ 看起来仍算）；
+      ② 钩子内部若写 `Object.assign(target.list, { copy, paste, … })`，口径只认「第一个参数是字面 `UI`」
+      ⇒ 需要扩口径，或接受「子槽位证据来自别处」。**两条都先量。**
+    - **判据**：接一个域前先数「顶层挂载」与「子对象赋值」各几处；**两者都有就不能用第 1 种形态** ——
+      成员对象能表达「挂到单例」，表达不了「挂到单例的子对象」。
+    > ⚠️ **第 172 轮补：这 7 处**不能**改成 `this.x`（会静默改行为）—— 转换规则按**接收者类别**分**：
+    > · **10 处顶层挂载**：调用点是 `UI.x(…)`（store 转发 / `LayoutPanel` / `ui-initialize` 的
+    >   `on(…, this.x)` 都是这个形状）⇒ `this === UI` ⇒ 体内 `UI.x` 可改 `this.x` ✓；
+    > · **7 处子对象成员**（`UI.list.copy` / `.paste` / `.delete` / `.toggle` / `.cancelSearch` /
+    >   `.updateHead` / `UI.marquee.resize`）：**调用点是 `list.copy(item)` 这种「子对象当接收者」**
+    >   （实测：`ui-list.ts:210/224/225/233/241/257`、`ui-file.ts:172/182/253/258`、`scene-*`、`variable`、
+    >   `attribute`、`enum`、`plugin` 等全是这个形状）⇒ `this` 是**子对象**，而它们的 `this: UIShape`
+    >   标注**是谎话**（属「断言可能说谎」那一家族）。⇒ 这 7 处必须用**钩子参数捕获的 `target`**：
+    >   `target.history!.save(…)` / `target.marqueePointermove!(…)`，**不能**写 `this.history` ——
+    >   后者会在运行期从 list 对象上读 `history`（`undefined`）而**静默失效**，套件未必抓得住。
+    > · 同理 `getListConfig(UI.list).onCreate = function (this: UIShape, item) {…}` 那几个回调
+    >   （`:429/436/441/450`）的接收者也不是 UI ⇒ 一律用 `target.`。
+    > **判据（可复用）**：**改 `UI.x` 前先看调用点是不是 `UI.x(…)`；只要接收者是子对象（`list.` / `marquee.`），
+    > 就只能用捕获的 `target`。** 这条是第 45 条工作单的第 3 个必查项。
+    > ✅ **第 173 轮：先做「只搬声明」那一步（零风险，75 → 65）**。
+    > 整域转换动手时发现一处**验不了**的点：这些挂载由 `ui-initialize.ts` 的
+    > `on(list, 'keydown', this.listKeydown)` 之类注册，而 `on()` 对自定义元素是转调 `el.on(type, listener)`
+    > ⇒ **接收者由各组件自己的实现决定**，在 `on()` 这一层看不出来。文件里 `this.copy!` 与 `UI.setTarget!`
+    > **并存**本身就是信号（作者那边也没有一致口径）。⇒ 在验明之前**不动函数体**。
+    > **已落地**：10 处 `UI.name = function` → `const name = function` + 末尾
+    > `export const uiListMembers = { … }`（简写键，第 170 轮的口径正好接住），函数体一字未改 ⇒
+    > 行为逐字不变；`ui-members.ts` 加 `...uiListMembers`。
+    > 账：`ui-singleton-members` **75 → 65**（一次降 10）；伴随判据 **6 持平**（**如实**：域模块仍 `import { UI }`）。
+    > **剩余工作（下一轮）**：① 验明那 10 个挂载的接收者（读具体组件的 `on` 实现，或看 store 转发与
+    > 事件注册谁真正在调）；② 7 处子对象改成 `attachUiList(target)` 钩子形态。两者都做完，伴随判据才会
+    > 从 6 降 5。
+    > ⚠️ **第 174 轮：接收者这一问**没能在编辑器/ui-kit 内部**闭合，已定位到是**跨包**问题**。已查清：
+    > · `element-utils.ts` 的 `on()` 对自定义元素走 `el.on(type, listener, options)`（`element-utils.ts:48`）；
+    > · 编辑器侧 SFC 一律是转发形态 `ym.value?.on(type, listener, options)`（`WindowFrame` / `CommonList` /
+    >   `SelectBox` / `TextBox` … 20+ 处），即**真正的实现不在编辑器**；
+    > · `ui-kit/src` 里 `on(type, listener)` **只有声明**（`YMFont` / `YMRename` / `YMZoom` …），
+    >   且**找不到任何监听派发点**（`.call(this|el|target)` 与 `listener(`/`cb(` 在 ui-kit 里 0 命中）；
+    > · 运行期侧 `template-arpg/runtime/Script/ui.ts:3147` 有 `input.on(type, listener)` —— 说明
+    >   **元素/事件系统的实现落在运行时（或 ui-kit 的元素工厂）**，编辑器里看不到派发语义。
+    > ⇒ **下一步（三选一，按成本排序）**：
+    > (a) **写一条 spec 判定**（本仓惯用「靠一次判定」）：在 jsdom 里走 `on(list, 'keydown', handler)`
+    >     的真实注册路径，在 handler 内断言 `this === UI` —— **这是最直接、可复现的证据**；
+    > (b) 读 `template-arpg/runtime/Script/ui.ts` 的 `on` 实现与派发点（权威在运行期，但要读懂跨包调用）；
+    > (c) 若 (a) 判定「`this` 不是 UI」，则这 10 个挂载**保持** `UI.` 写法（本轮已如此），
+    >     并把 (b) 的终态改为「显式接收者」而非依赖 `this`。
+    > **判据**：跨包语义**不要靠推断**（本轮 `this.copy!` 与 `UI.setTarget!` 并存的旁证并不成立）——
+    > 写一条能红的 spec，比读三个包的实现更快也更可靠。
+    > ✅ **第 175 轮：判定完成 —— `this` **不是** UI，是 DOM 元素**（决定性证据，只需读一处实现）：
+    > `ui-kit/src/components/basic/YMCommonList/YMCommonList.vue:219` 的 `on` 实现是
+    > ```ts
+    > const el = root.value;
+    > if (!el) return;
+    > el.addEventListener(type, listener, options);     // ← 原生 addEventListener
+    > ```
+    > ⇒ 浏览器派发时 **`this` = 那个 DOM 元素**，**不是单例**。凡经 `on(el, …)` 注册的挂载，
+    > 体内 `UI.x` 改成 `this.x` 都会在运行期从元素上读 `history` / `setTarget`（undefined）⇒ **静默失效**。
+    > **结论：这 10 个挂载保持 `UI.` 写法**（第 173 轮已如此 ⇒ 那一轮的决定被证据确认 ✓），
+    > 并且**终态**从「依赖 `this`」改成「**显式接收者**」（`UIEngine.x.call(UI, …)` 那种形状）。
+    > ⚠️ **顺带查清（本轮同一批证据）：不存在缺陷 —— 那个函数**故意**用两个接收者**。
+    > 一开始我以为 `listKeydown` 里 `this.data`（`:29` 的早退）在元素接收者下必然为 `undefined`，
+    > 于是「列表快捷键静默失效」。**这个推断是错的**，全仓 `grep` 一次就推翻：
+    > · **兄弟模块全都把 `this` 注成元素**：`Attribute.listKeydown(this: TreeListElement)`（`:587`）·
+    >   `Enum`（`:531`）· `Localization`（`:509`）· `PluginManager`（`:18`）· `Easing.listKeydown(this: YamiElement)`
+    >   （`transition-window.ts:879`）· `Particle.listKeydown(this: ParticleShape['list'])`（`:16`）·
+    >   `useTeamWindow` 的 `listKeydown(this: TeamListElement)`（`:273`）· 而 `command-tip.ts:390`
+    >   干脆**不写 `this`** —— **只有 `ui-list.ts` 这一处注成 `this: UIShape`** ⇒ **注错的是它**。
+    > · `this.copy!` / `this.delete!` / `this.toggle!` / `this.cancelSearch!` / `this.data` 是**元素自己的 API**
+    >   （同文件 :224/225/241 就是 `list.copy(item)` 这种在元素上调用；别处模块也一样）。
+    > ⇒ 所以 `listKeydown` 体内**两种接收者并存是刻意的**：`this` = 列表元素、`UI` = 单例（`UI.setTarget!` /
+    >   `UI.history!`）。**第 173 轮那条脚本若真把 `UI.` 全换成 `this.`，就会当场改坏它** ✓ 幸而只搬了声明。
+    > **结论**：这 10 个挂载的终态是「**显式接收者**」——把元素侧写成参数或 `target`，而不是继续依赖
+    >   `this`/`UI` 两种隐式来源；`this: UIShape` 这个错误标注也应改（属类型债，不是行为债）。
+    > **判据（可复用）**：**`on(el, type, handler)` 注册的 handler，`this` 是元素** ——
+    > 凡是要读单例成员的 handler，只能走「显式接收者」或闭包捕获的 `target`，**永远不能依赖 `this`**。
+
+46. **工作单：第 4 个域 `ui-prefab`（3 处挂载）—— 接收者已逐个查明**（第 176 轮，形状已核实，未落地）：
+    - **形状**：`ui-prefab.ts` 114 行，只剩 **3 个槽位**：`createPrefabItem`（`:17`）·
+      **链式赋值** `uiElClasses.createElement = UI.createElement = function …`（`:48`）· `loadElement`（`:106`）。
+      前 6 个槽位（`registerPreset` 等）已在第 ③ 步搬去 `ui-slots.ts` ✓ —— 所以这域的**备注里那句
+      「本文件只剩 3 个尚未搬走的槽位」就是现成的工作单**。
+    - ⚠️ **链式赋值**：`:48` 一行同时给**两个目标**赋值（`uiElClasses` 与 `UI`）。改成成员对象时**必须拆开**：
+      `const createElement = function (…) {…}; uiElClasses.createElement = createElement;`（保留）
+      + 成员对象里加 `createElement` ✓。（这也解释了 `ui-singleton-members` 的口径为什么用 `\b` 而不是行首锚定。）
+    - **接收者（本轮实测）**：编辑器侧的调用点全是 `UI.x(…)` 形式 ——
+      `UI.createPrefabItem!(null, x, y)`（`ui-pointer:496`）· `UI.createPrefabItem!(item)`（`ui-list:194`）·
+      `UI.loadElement!(item)`（`ui-list:431/452`）· 自递归 `UI.loadElement!(child, instance)`（`:112`）
+      ⇒ **`this === UI`** ✓ 除两处例外：
+      ① `createPrefabItem` 里嵌套的 `const click = function (this: { data: UINodeShape }) {...}`（`:26`）
+      —— **非箭头**、`this` 是菜单项 ⇒ 体内 `UI.createPrefab!`（`:27`）**必须保持 `UI.`**（或换成捕获的
+      `target.`）—— **又是「两个接收者」**（第 175 轮那条结论的第二次现身）；
+      ② `createElement` 的体内**不用 `this`** ⇒ 怎么搬都安全 ✓（虽然它经 `uiElClasses.createElement(…)`
+      调用时 `this` 是注册表对象）。
+    - **注意别被同名的运行期 `UI` 骗**：`template-arpg/runtime/Script/ui.ts:221` 与 `command.ts:5153` 里的
+      `UI.createElement(presetId)` 是**游戏模板自己的 `UI`**，与编辑器的单例无关 ⇒ 不能当调用点证据。
+    - **预期账**：`ui-singleton-members` **65 → 62**；伴随判据 **6 → 5**（本域改完可彻底去掉
+      `import { UI }`，因为它没有 `on()` 注册、也没有子对象赋值）。
+
 ### 4. 剩下的活（按性价比排序）
 
 1. ~~**`any-hatches` 口径漏洞先修**~~ —— ❌ **该任务已于 2026-09-21（第 89 轮）撤销：漏洞不存在。**

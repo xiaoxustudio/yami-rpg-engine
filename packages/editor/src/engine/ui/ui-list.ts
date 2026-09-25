@@ -18,14 +18,14 @@ import { Menu } from '@app/components/menu-list.ts';
 import { Reference } from '@app/log/related-references.ts';
 import type { YamiMouseEvent } from '@app/types/editor-event';
 
-UI.searcherInput = function (this: UIShape, event: InputEvent) {
+const searcherInput = function (this: UIShape, event: InputEvent) {
 	if (event.inputType !== 'insertCompositionText') {
 		const text = this.input!.value;
 		UI.list.searchNodesDebounced(text);
 	}
 };
 
-UI.listKeydown = function (this: UIShape, event: KeyboardEvent) {
+const listKeydown = function (this: UIShape, event: KeyboardEvent) {
 	if (!this.data) {
 		return;
 	}
@@ -66,7 +66,7 @@ UI.listKeydown = function (this: UIShape, event: KeyboardEvent) {
 	}
 };
 
-UI.listPointerdown = function (this: UIShape, event: PointerEvent) {
+const listPointerdown = function (this: UIShape, event: PointerEvent) {
 	switch (event.button) {
 		case 3:
 			this.cancelSearch!();
@@ -74,11 +74,11 @@ UI.listPointerdown = function (this: UIShape, event: PointerEvent) {
 	}
 };
 
-UI.listSelect = function (this: UIShape, event: YamiMouseEvent) {
+const listSelect = function (this: UIShape, event: YamiMouseEvent) {
 	UI.setTarget!(event.value);
 };
 
-UI.listRecord = function (this: UIShape, event: YamiMouseEvent) {
+const listRecord = function (this: UIShape, event: YamiMouseEvent) {
 	const response = event.value;
 	switch (response.type) {
 		case 'rename':
@@ -105,7 +105,7 @@ UI.listRecord = function (this: UIShape, event: YamiMouseEvent) {
 	}
 };
 
-UI.listPopup = function (this: UIShape, event: YamiMouseEvent) {
+const listPopup = function (this: UIShape, event: YamiMouseEvent) {
 	const list = UI.list;
 	const item = event.value;
 	const menuItems: MenuItem[] = [];
@@ -311,11 +311,11 @@ UI.listPopup = function (this: UIShape, event: YamiMouseEvent) {
 	);
 };
 
-UI.listOpen = function (this: UIShape, event: YamiMouseEvent) {
+const listOpen = function (this: UIShape, event: YamiMouseEvent) {
 	UI.revealTarget!(event.value);
 };
 
-UI.listRename = function (
+const listRename = function (
 	this: UIShape,
 	response: { item: UINodeShape; oldValue: string; newValue: string }
 ) {
@@ -338,11 +338,11 @@ UI.listRename = function (
 	});
 };
 
-UI.listChange = function (this: UIShape, _event: YamiMouseEvent) {
+const listChange = function (this: UIShape, _event: YamiMouseEvent) {
 	UI.planToSave!();
 };
 
-UI.listPageResize = function (this: UIShape, _event: YamiMouseEvent) {
+const listPageResize = function (this: UIShape, _event: YamiMouseEvent) {
 	UI.list.updateHead();
 	UI.list.resize();
 };
@@ -452,3 +452,24 @@ getListConfig(UI.list).onResume = function (this: UIShape, item: UINodeShape) {
 	UI.loadElement!(item);
 	UI.updateElement!(item);
 } as (item: unknown) => void;
+
+/**
+ * 本域提供的 10 个**顶层**成员（第 ④-3 步：域模块只提供成员对象，装配见 `ui-members.ts`）。
+ *
+ * ⚠️ 本轮**只搬声明、不动函数体**：体内的 `UI.x` 原地保留 ⇒ 行为逐字不变（零风险），
+ * 而 `this` 到底是不是 UI 这一点**尚未定论**（挂载由 `ui-initialize.ts` 的 `on(el, …, this.x)` 等
+ * 注册，`on()` 对自定义元素转调 `el.on(...)`，接收者取决于各组件实现）—— 在验明之前
+ * **不**把体内 `UI.x` 改成 `this.x`。详见 xr.md 第 173 轮与 PHASE 手法库 #45。
+ */
+export const uiListMembers = {
+	searcherInput,
+	listKeydown,
+	listPointerdown,
+	listSelect,
+	listRecord,
+	listPopup,
+	listOpen,
+	listRename,
+	listChange,
+	listPageResize
+};
