@@ -99,11 +99,32 @@ export function uiDirRe() {
  */
 export function declaredSlots() {
 	const rel = uiWindowRel();
-	if (rel === null) return [];
-	const src = readSource(join(ROOT, rel));
+	if (rel === null) {
+		// ⚠️ **不能返回 `[]`**（2026-09-22 第 186 轮）：那会让 `declared` 从 134 掉到 0、报表写
+		// 「✓ 已完成」—— 而**这恰恰是 ④-4 删掉字面量那一轮必然发生的事**。
+		// 「真的删干净了」与「仪器瞎了」必须可区分 ⇒ 缺锚就炸，逼出换锚（见 PHASE-1C 第 185 轮）。
+		throw new Error(
+			'declaredSlots()：全仓找不到 `export const UI … = {` 字面量。' +
+				'这不是「已归零」，而是**仪器失锚**：字面量若已被 ④-4 删除，' +
+				'必须先把本轴的锚换成「提供者并集」再重跑棘轮。'
+		);
+	}
+	return declaredSlotsFrom(readSource(join(ROOT, rel)));
+}
+
+/**
+ * `declaredSlots()` 的**纯函数内核**：只吃源码文本，不看文件在哪。
+ *
+ * 抽出来是为了让「缺锚」这件事**可自证**（`self-test.mjs`）：纯函数能喂合成样本，
+ * 不必去动真实仓库。两条判据 —— 缺字面量 / 花括号不配平 —— **都必须抛错**，不能返回 `[]`：
+ * 一个静默的空数组正是这条轴历史上翻过两次车的原因（「仪器瞎了，却表现为指标变好」）。
+ * @param {string} src
+ * @returns {string[]}
+ */
+export function declaredSlotsFrom(src) {
 	const code = codeOnly(src);
 	const m = /export const UI\s*(?::[^=]*)?=\s*\{/.exec(code);
-	if (!m) return [];
+	if (!m) throw new Error('declaredSlotsFrom()：源码里没有 `export const UI … = {` 字面量');
 	const open = code.indexOf('{', m.index);
 	let depth = 0;
 	for (let k = open; k < code.length; k++) {
@@ -116,7 +137,48 @@ export function declaredSlots() {
 			}
 		}
 	}
-	return [];
+	throw new Error('declaredSlotsFrom()：字面量的花括号没有配平（源码可能被截断）');
+}
+
+/**
+ * ④-4 的**前置判据**：今天若删掉字面量，哪些槽位会失去唯一的「家」。
+ *
+ * 口径 = 「**除字面量本身以外**，还有谁提供它」：
+ *   ① `assignedSlots()` —— 域成员对象（经装配点解析）/ 家族文件里的 `this.x =` /
+ *      嵌套挂载 `UI.a.b =` / store 桥；
+ *   ② `UIEngine.<name> =` —— 引擎实现（④-2c 退役镜像的落地点）。
+ *
+ * 用途：`declaredSlots() − providedSlots()` 就是 ④-4 动手前**必须先安排住处**的清单。
+ *
+ * ⚠️ **这不是新的轴锚**。④-4 删掉字面量后 `declaredSlots()` 会抛错（第 186 轮加的守卫），
+ * 新锚应当指向**新的契约文件** —— 它同样是一个 `export const … = {` 字面量，
+ * `declaredSlotsFrom()` 能直接读。本函数只回答「删之前，有没有漏掉谁」。
+ *
+ * ⚠️ 第 ② 条把 `UIEngine` 的**全部**赋值都算进来，包括不属 UI 槽位的方法 ⇒ 本函数是
+ * 「有家」的**上界**（偏保守：只会少报缺口）。要收紧得先给 `UIEngine` 一份槽位清单，
+ * 而那正是 ④-4 要产出的契约。
+ * @returns {Set<string>}
+ */
+export function providedSlots() {
+	const provided = new Set(assignedSlots());
+	const engineSrc = codeOnly(
+		readSource(join(ROOT, 'packages/editor/src/engine/ui/ui-engine.ts'))
+	);
+	for (const m of engineSrc.matchAll(/^UIEngine\.([A-Za-z_$][\w$]*)\s*=/gm)) provided.add(m[1]);
+	// ⚠️ 引擎内部也有**以 `this` 为接收者**写的槽位（实测：`controlPointActive`
+	// 在 `ui-engine.ts:258-259` 写作 `this.controlPointActive = point`）。只认 `^UIEngine\.`
+	// 会把它漏掉，于是「缺口」会报出一个**并不存在**的待办 —— 第 187 轮实测：虚假缺口 1 个。
+	for (const m of engineSrc.matchAll(/^\s*this\.([A-Za-z_$][\w$]*)\s*=/gm)) provided.add(m[1]);
+	return provided;
+}
+
+/**
+ * `declaredSlots()` 里 `providedSlots()` **覆盖不到**的那些 —— ④-4 的待安排清单。
+ * @returns {string[]} 按字面量声明顺序
+ */
+export function declaredWithoutProvider() {
+	const provided = providedSlots();
+	return declaredSlots().filter((s) => !provided.has(s));
 }
 
 /**

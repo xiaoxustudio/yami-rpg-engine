@@ -32,6 +32,10 @@ import {
 import { readDomWhitelist, loadDomWhitelist, WHITELIST_RATIONALE } from './dom-whitelist.mjs';
 import {
 	uiWindowRel,
+	declaredSlots,
+	declaredSlotsFrom,
+	providedSlots,
+	declaredWithoutProvider,
 	legacyOnlyStoreSlots,
 	storeReferencedSlots,
 	uiDirRe,
@@ -289,6 +293,63 @@ test('成员的成员不算单例挂载', () => {
 // 那是**状态同步**，不是成员挂载，故有意不计入本轴。
 test('Object.defineProperty(UI, key, …) 不计入本轴', () => {
 	eq(countCodeMatches('Object.defineProperty(UI, key, { get, set });', UI_SINGLETON_RE), 0);
+});
+
+// ④-4 动手前必查（2026-09-22 第 186 轮）：`declaredSlots()` 的锚**钉在即将被删的字面量身上**。
+// 字面量一删，旧实现返回 `[]` ⇒ `declared` 134 → 0、报表写「✓ 已完成」——与 PHASE 开头记的
+// 「假绿三连」同型。**必须让「缺锚」与「真的删干净了」可区分**，所以缺锚=抛错。
+process.stdout.write('\n④-4 前提 —— 缺锚必须炸，不能静默归零\n');
+test('declaredSlotsFrom：写法免疫地取名；缺字面量/括号不配平必须抛错', () => {
+	// 写法自证：类型标注可有可无（历史上「技法 5」改声明行就让旧实现瞎过一次）
+	eq(
+		declaredSlotsFrom('export const UI: UIShape = {\n\ta: null,\n\tb: null\n};\n'),
+		['a', 'b'],
+		'带类型标注的字面量应当照常取名'
+	);
+	eq(
+		declaredSlotsFrom(
+			'export const UI = {\n\tx: 1\n} satisfies Partial<UIShape> as UIShape;\n'
+		),
+		['x'],
+		'`satisfies` 写法应当照常取名'
+	);
+	// 缺锚自证：这两条才是本用例存在的理由
+	let missingThrew = false;
+	try {
+		declaredSlotsFrom('// 这里没有字面量\n');
+	} catch {
+		missingThrew = true;
+	}
+	ok(missingThrew, '缺字面量时必须抛错 —— 静默返回 [] 会让 ④-4 的归零无法与「仪器瞎了」区分');
+	let unbalancedThrew = false;
+	try {
+		declaredSlotsFrom('export const UI = {\n\ta: null\n');
+	} catch {
+		unbalancedThrew = true;
+	}
+	ok(unbalancedThrew, '花括号不配平（源码截断/解析错）时也必须抛错');
+	// 真实仓库：此刻字面量还在，读数必须非空（④-4 删掉它之后，这条会主动炸 ⇒ 逼出换锚）
+	ok(declaredSlots().length > 0, '真实仓库里 declaredSlots() 此刻必须非空（134）');
+});
+
+// ④-4 前置判据（2026-09-22 第 187 轮）：删字面量**之前**，先问「谁还会提供这个槽位」。
+// `providedSlots()` 只看提供者（域成员对象 / 家族文件里的 `this.x =` / store 桥 / `UIEngine` 实现），
+// **完全不碰字面量** ⇒ 它若读到空，那是提供者口径瞎了，而不是「没有提供者」。
+process.stdout.write('\n④-4 前置判据 —— 删之前，谁还会提供它\n');
+test('providedSlots()：134 个声明槽位必须**全部**另有提供者（缺口=0）', () => {
+	const declared = declaredSlots();
+	const provided = providedSlots();
+	ok(provided.size > 0, 'providedSlots() 读到空 ⇒ 提供者口径瞎了（它本不该依赖字面量）');
+	// 自证它不是 declaredSlots() 的同义反复：字面量**从未声明**的运行期成员也必须被看见
+	ok(
+		[...provided].filter((s) => !declared.includes(s)).length > 0,
+		'providedSlots() 看不见字面量之外的运行期成员 ⇒ 它退化成 declaredSlots() 的同义反复'
+	);
+	eq(
+		declaredWithoutProvider(),
+		[],
+		'这些槽位一旦删掉字面量就失去唯一的家 ⇒ ④-4 必须先给它们安排住处'
+	);
 });
 
 // ⚠️ 上面那条测试记的是**本轴的盲区**（不是「这样写没问题」）：三种等价写法都读 0，

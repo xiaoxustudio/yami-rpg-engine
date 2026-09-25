@@ -6321,3 +6321,223 @@ C 匿名或泛型 11**。下一步最省力的两族：③「被调方形参声�
 
 剩下 33 处仍按第 126 轮那张表分族（A/B/C），最省力的 ③ 已收口；下一步是 ④（8 处，先定它与
 `any-hatches` 谁让步），以及两族计划内债务（monaco 的环境形状、codec 的 `string ↔ Uint8Array`）。
+
+#### ✅ ④-3 声明层收口 + 伴随判据的**归零时机裁定**（2026-09-22 第 183/184 轮）
+
+**账**：`ui-singleton-members` **29 → 0**（files 2 → 0，`declared` 仍 134）—— 声明层收口。
+伴随判据 `ui-domain-singleton-imports` **持平 5**。
+
+##### 裁定：伴随判据归零的时机是 ④-4，不是 ④-3（本节原话已过期）
+
+本节上文写着「与 `ui-singleton-members` **同生共死**，两条同时归零才算 ④-3 收口」。
+按第 183 轮实测，**这句在实现层面不成立**，证据是伴随判据自己的口径：
+
+```
+isLegacySingletonUiImport = !typeOnly && /legacy\/ui-window(?:\.ts)?$/.test(specifier)
+                            && importedNames(text).includes('UI')
+```
+
+它认的是 **`legacy/ui-window.ts` 这个说明符**。只要域模块还需要**单例对象本身**
+（跨域调用、单例状态、单例持有的 DOM 元素），import 就不可能通过「把访问改走 `this`/参数」
+整体消除；它只能等 ④-4 把 `legacy/ui-window.ts` 退役、改从新 facade 取用时才归零。
+⇒ 诚实的切分是：**④-3 = 声明层（已 0）**，**④-4 = 依赖层（伴随判据 + `declared` + 删文件）**。
+
+（同型先例：手法库里那条「计划自己的下一步会过期」——目标达成的那一刻，
+守卫/判据的前提会一起失效；此时要换锚，不能删判据。第 183 轮的 selftest 红灯就是这个。）
+
+##### 工作单：5 个域各自还差什么（第 184 轮实测，`stripComments` 后逐行）
+
+| 域 | 剩余引用 | 性质 |
+| --- | ---: | --- |
+| `ui-list.ts` | 44 处 / 21 名 | **双接收者**（第 173 轮已定）：`this.copy!` 是元素、`UI.setTarget!` 是单例 |
+| `ui-events.ts` | 9 处 / 6 名 | 跨域调用 + 单例状态 + 单例 DOM 元素 |
+| `ui-pointer.ts` | 5 处 / 5 名 | 全是跨域调用 / 单例状态 |
+| `ui-transform.ts` | 3 处 / 2 名 | 在 `Timer` 的 `update` 回调（嵌套箭头）里读 `UI.screen` / `UI.marquee` |
+| `ui-file.ts` | 1 处 | `UndoManager.setActive!(UI)`（`ui-file.ts:115`，`open` 体内） |
+
+**逐条**（行号为第 184 轮实测）：
+
+- `ui-transform.ts`：`84 const screen = UI.screen;` · `91 UI.marquee.resize();` ·
+  `92 UI.screen.updateScrollbars();` —— 都在 `Timer` 回调内，要闭合必须把 screen/marquee
+  以**参数**递进回调（调用点在别的域）。
+- `ui-pointer.ts`：`78 UI.matrix` · `496 UI.createPrefabItem!` · `567 UI.hasPrefab!` ·
+  `572 UI.setAsPrefab!` · `580 UI.unsetAsPrefab!`。
+- `ui-events.ts`：`52 UI.clearInvalidPrefabs!` · `84 UI.dragging` · `90`/`117 UI.switchSettings!` ·
+  `99 UI.keydown` · `104`/`105`/`138 UI.screen` · `130 UI.create!`。
+
+##### ⚠️ `ui-file.ts:115` **不能**用 `this` 顶替（一个容易被"顺手"掉的坑）
+
+`UI` 在这一行是**故意的**，不是漏改：
+
+- 同一个 `open` 函数体内，别的单例成员一律走 `this.`（`this.setTarget!` `this.list.update()`
+  `this.context` …），**只有这一行写 `UI`** —— `UI` 与 `this` 在同一体内并存即「两种接收者」；
+- 全仓 **`UI.open(` 没有任何静态调用点** ⇒ 无法证明 `this === UI`。
+
+按第 173 轮 `ui-list` 的结论（双接收者并存是刻意的，一律转换会改行为），此处**保持原样**，
+留到 ④-4 由新 facade 一起解决。判据同前：**证明不了就不改**。
+
+##### ④-4 动手前的必查项（沿用前述实测）
+
+删 `ui-window.ts` 之前必须实测：store 桥与 `loadUI` **不会在装配之前枚举 `Object.keys(UI)`**
+（`declared 134 → 0` 会让 `legacy-ui-lines` 一起下降：此前镜像退役那一步实测过 300 → 294。）
+
+#### ✅ ④-4 动手前实测（之二）：字面量的真实体积与两处必查项（2026-09-22 第 185 轮）
+
+**必查项一（原计划点名的那条）：全仓没有任何地方枚举单例。** 实测
+`Object.keys(UI)` / `Object.entries(UI)` / `Object.getOwnPropertyNames(UI)` / `...UI` / `for (const k in UI)`
+在 `packages/editor/src` 与 `packages/ui-kit/src` 里**命中 0 处** ⇒ store 桥与 `loadUI`
+**不会在装配之前枚举 `Object.keys(UI)`**。这条**通过**（属「实测过的前提」，不是推理）。
+
+**必查项二：字面量不是「134 行实现」，是「123 个空占位 + 10 个真值 + 39 行类型契约」。**
+
+| 项 | 数 | 说明 |
+| --- | ---: | --- |
+| `declaredSlots()` | 134 | 轴读数（对象字面量的键） |
+| 运行时条目 | 133 | 另 1 个是 `createShortcut`（末条**无尾逗号**，逐行解析会漏——仪器须容错） |
+| 其中 `null` 占位 | **123** | 值由**域成员对象 / 引擎镜像 / store 桥 / 嵌套挂载**在装配时填 |
+| 其中有实际初值 | **10** | 见下 |
+| 同文件 `UIShape` 类型签名 | **39 行**（`ui-window.ts:23`–`73`） | 是**契约**不是实现，删字面量时必须一起搬家 |
+
+10 个有实际初值的槽位（`ui-window.ts:103`–`114`）：
+
+- **7 个 DOM 元素引用**：`page` `head` `body` `screen` `marquee` `searcher` `list`
+  （`uiEls.get('ui' | 'ui-head' | …)`，`body` 还过了 `hide()`；`marquee` / `list` 带 `|| {}` 兜底）；
+- **2 个状态**：`dragging`（`null as UIPointerEvent | null`）、`hover`（`null as UINodeShape | null`）；
+- **1 个位标志**：`translationKey: 0b0000`。
+
+⇒ **④-4 的真实内容不是「搬 134 行」**，而是：
+
+1. 搬 7 个 DOM 引用 + 2 个状态 + 1 个位标志 + 39 行类型契约（**这才是实现面**）；
+2. 逐个确认 123 个占位**都有提供者**（`assignedSlots()` 已 132/134，其余见下）；
+3. 删字面量 + `register.ts`；
+4. 重接 ~10 处 import，并**先给以 `uiWindowRel()` 为锚的仪器换锚**。
+
+⚠️ **第 4 条是 ④-4 当轮最大的陷阱**：`declaredSlots()` 靠 `uiWindowRel()` 定位「含单例字面量的文件」。
+字面量一删/一搬，它会**静默返回空数组**（`declared` 从 134 掉到 0，报表写「✓ 已完成」）——
+与本文件开头记的那次「假绿三连」同型。**④-4 必须先给仪器换锚，再动字面量**，否则那一轮的归零
+无法与「真的删干净了」区分。这正是第 183 轮 selftest 红灯的同一条教训：
+**归零的那一刻，先问仪器还能不能看见。**
+
+**未分配槽位**（`declaredSlots() − assignedSlots()`，④-4 前必须给一个交代，哪怕证明它无害）：
+controlPointActive setZoom shiftAnchor shiftTarget resizeTarget rotateTarget setControlPoint updateControlPoints getPointerCoords updateCamera updateTransform drawBackground drawElements drawCoordinateAxes drawHoverWireframe drawTargetWireframe drawTargetAnchor drawControlPoints selectControlPoint requestRendering renderingFunction stopRendering
+> ⚠️ 上一段那 23 个名字**不要按名字下结论**：其中一部分看上去是 ④-2c 已退役的引擎镜像
+> （`setZoom` `updateCamera` `updateTransform` `drawElements` `requestRendering` `stopRendering` …）
+> 与控件点 API（`shiftAnchor` `setControlPoint` `getPointerCoords` …），但**名字不是证据**。
+> 下一轮须逐条判定「它到底是"没人赋值"还是"赋值走了别的口径"」。
+> ⚠️ **更正（2026-09-22 第 186 轮）：上一段那个「23 个」「21 个」是错的，真值是 22 / 20。**
+> 第 185 轮我用**肉眼数**打印出来的名字列表得 23，并据此反推 21；第 186 轮用 `.length` 得 **22 / 20**。
+> 差 1 的原因就是手数 —— 这段更正本身保留在案，作为「数字必须由仪器给」的反面样本。
+
+#### ✅ ④-4 的**前置判据**落地：缺口 = 0（2026-09-22 第 187 轮）
+
+新增两件仪器（`scripts/lib/ui-slots.mjs`）：
+
+- `providedSlots()`：**只看提供者** —— `assignedSlots()`（域成员对象 / 家族文件里的 `this.x =` /
+  嵌套挂载 / store 桥）∪ `UIEngine` 的实现（含引擎内以 `this` 为接收者写的槽位）。
+  **完全不碰字面量** ⇒ 它若读到空，那是提供者口径瞎了，而不是「没有提供者」。
+- `declaredWithoutProvider()`：`declaredSlots() − providedSlots()`，即 ④-4 的待安排清单。
+
+**实测：`declared = 134`，缺口 `= 0`。** 134 个声明槽位**全部另有提供者**
+⇒ **删字面量不会丢成员** —— 这就是 ④-4 的前置条件，**已满足**。
+
+##### ⚠️ 途中一个**虚假缺口**：报忧的仪器也会瞎
+
+首版 `providedSlots()` 只认 `^UIEngine\.`，于是报出 `controlPointActive`「没有家」。查下去：
+它写在 `ui-engine.ts:258-259` 的 `this.controlPointActive = point` —— **有家，只是这个家以 `this`
+为接收者**。补上引擎内的 `this.x =` 后，缺口从 1 归 0。
+
+⇒ 教训：**「待办清单」里的每一条都可能是仪器造出来的**。缺口不为 0 时，第一个要怀疑的是探测器，
+不是代码。第 183/186 轮记的是「轴报喜」，这次是「轴报忧」—— **两个方向都会错，而报忧的更隐蔽，
+因为你会照单去做。**
+
+##### 用法说明
+
+`providedSlots()` = 159 是**上界**（把 `UIEngine` 里不属于 UI 槽位的内部字段也算进来了）
+⇒ 它的用法是「**缺口 = 0**」，不是「159 有意义」。self-test 66/66 已把「缺口 = 0」与
+「它不是 `declaredSlots()` 的同义反复」两条都钉住。
+
+#### ⚠️ ④-1b 的真实规模：370 个编译错 → **100 个待声明成员**（2026-09-22 第 188 轮实测）
+
+**做法（纯类型实验，完全可逆）**：删掉 `legacy/ui-window.ts` 里 `interface UIShape`（34–68 行）中
+第 67 行的 `[k: string]: any;` **一行** → 跑 `pnpm -F @yami/editor run typecheck` → 收集错误 →
+`git checkout` 回退。（复跑方式：删那一行，抓 `error TS2339` 的
+`Property 'X' does not exist on type 'UIShape'`。）
+
+| 项 | 值 |
+| --- | ---: |
+| `tsc` error 行数 | **370** |
+| TS2339 / TS2551 / TS2352 / TS2353 | 359 / 8 / 2 / 1 |
+| **去重后的待声明成员** | **100** |
+| 其中：字面量声明过的槽位 | 84 |
+| 其中：**字面量从未声明**的运行期成员 | **16** |
+
+那 16 个是：`data` `mode` `state` `target` `zoom` `width` `height` `input` `display`
+`controlPointTexture` `addNodeTo` `cancelSearch` `deleteNode` `expandToSelection`
+`scrollToSelection` `update` —— **只活在 store 桥与元素 API 里**。
+
+⇒ **④-4 的契约不可能只照字面量写**。这一点现在有**两条互相独立的证据**：
+第 186 轮的「20 个 only-assigned」与本周期的「16 个字面量外的待声明成员」。
+
+⇒ **④-1b 不是「删一行」，是「删一行 → 逐条补 100 个声明」。** 本轮**没有落地**它
+（370 个错不可能在一轮里补完**并**通过全套验证）—— 按本仓规矩**回退，不留半成品**，
+但把它的**边界**量了出来：契约内容从此由 `tsc` 枚举，不由人猜。
+
+#### ⚠️ ④-4 的契约：68 个「可派生」是**假省力** —— 循环引用挡住了（2026-09-22 第 189 轮实测）
+
+**测量**：把第 188 轮那 100 个待声明成员，用**正式仪器**（`resolveMemberKeys` 解析 9 个域成员对象，
+共 **82** 个键）逐一对照 ⇒ 拆成 **68 个「可由域成员对象派生」+ 32 个「需手写」**。
+
+> ⚠️ 中途我先用**自己写的正则**量了一次，报 `uiListMembers(0)` —— 因为它是**简写键**
+> `{ listRename, … }`。这正是 `resolveMemberKeys` 存在的理由（本仓记过的「5 类失明」之一）。
+> **仓库里已经有正式仪器的地方，不要临时写一个。** 记在这里当反面样本。
+
+**实验**：既然 68 个「有现成类型」，就把它们派生进契约 —— `import type { uiMembers }` +
+`type UIDomainMembers = typeof uiMembers` + `interface UIShape extends UIDomainMembers`。
+**`tsc` 当场拒收**：
+
+```
+ui-window.ts(36,6): error TS2456: Type alias 'UIDomainMembers' circularly references itself.
+ui-window.ts(38,18): error TS2310: Type 'UIShape' recursively references itself as a base type.
+ui-events.ts(66,7): error TS7022: 'windowResize' implicitly has type 'any' …
+ui-members.ts(40,14): error TS7022: 'uiMembers' implicitly has type 'any' …
+```
+
+**原因**：域成员函数的签名里写着 `this: UIShape` ⇒ `typeof uiMembers` **依赖 `UIShape`**，
+而 `UIShape` 又要 `extends` 它 ⇒ **成环**。⇒ **「由域成员对象派生」不是省力，是不通。**
+
+**三条路（代价已量出）**：
+
+1. **手写 100 个声明**（原计划）—— 唯一已被证明可行，可按 `tsc` 错误数**分批验收**；
+2. **先给域成员对象写显式接口**（签名里不含 `this: UIShape`），之后才有派生可言 —— 前置量未知；
+3. 两者混用（先派生不含 `this: UIShape` 的那几个域，其余手写）。
+
+本轮**未落地**（`tsc` 5 错 ⇒ 按本仓规矩回退，不留半成品）。
+
+#### ④-1b 的第二条路：`UIShape extends UIFacadeShape` —— 只差 10 处，而 10 处**都是真分歧**（2026-09-22 第 190 轮实测）
+
+`ui-facade.ts` 的 `UIFacadeShape` **不 import 引擎的任何东西**（只 import 元素 / 历史 / 矩阵 / 纹理等类型）
+⇒ 无环。加上 `extends` 后的实测：
+
+| 实验 | `tsc` error |
+| --- | ---: |
+| 只删索引签名（第 188 轮基线） | 370 |
+| **只加 `extends`**（索引签名仍在） | **10** |
+| 两者都做 | **341** |
+
+⇒ `extends` 一次消掉 **29** 个错；**剩下的 10 个是真分歧，不是写法问题**。分三类：
+
+1. **可空性被打死**（2 处）：字面量里是 `null` 占位，facade 却声明成非空
+   （`ui-window.ts:184` `Type 'null' is not assignable to type '(() => void) | undefined'`、
+   `ui-window.ts:240` 同类）。
+   ⇒ **设计规则：装配前以 `null` 起始的成员，契约必须允许 `null`。**
+   否则**字面量永远满足不了契约** —— 这是第 1 顺位该修的。
+2. **`hover` 节点类型不一致**（2 处）：facade 用 `HoverNode`（引擎真正碰到的**最小**形状），
+   代码侧是 `UINodeShape`（`ui-window.ts:112`、`ui-transform.ts:54`）。
+3. **类型缺口**（3 处）：`ui-pointer.ts:151/170/171` 报
+   `Property 'pointerevent' does not exist on type 'YamiElement'` ⇒ facade 侧元素类型少声明。
+
+另有 `ui-initialize.ts:99` 一处 `Object is possibly 'null'`，与 1 处 TS2430（继承本身不合规 ——
+它就是上面三类在接口层的汇总表现）。
+
+**下一步（已可执行）**：先修第 1 类（纯契约可空性），它是「字面量能否满足契约」的前提；
+再做第 3 类（补元素类型声明）；第 2 类需要先定「引擎侧最小形状 vs 代码侧完整形状」哪边为准。
