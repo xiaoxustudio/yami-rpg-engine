@@ -6,7 +6,19 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 const CONTRACT = 'packages/editor/src/engine/ui/ui-domain-contract.ts';
 const out = readFileSync('.tmp-vue.txt', 'utf8');
-const hits = [...out.matchAll(/^\s*\+ (\S+?):(\d+):(\d+): (TS\d+)/gm)];
+const TYPE_CODES = new Set([
+	'TS2345',
+	'TS2322',
+	'TS2554',
+	'TS2769',
+	'TS2721',
+	'TS2352',
+	'TS2739',
+	'TS2430'
+]);
+const hits = [...out.matchAll(/^\s*\+ (\S+?):(\d+):(\d+): (TS\d+)/gm)].filter(([, , , , code]) =>
+	TYPE_CODES.has(code)
+);
 if (!hits.length) {
 	console.log('无 .vue 新错');
 	process.exit(0);
@@ -24,7 +36,6 @@ const deferM = c.match(/\/\/ 待定 (\d+) 条：([^\n]*)/);
 const deferred = new Set(deferM ? deferM[2].split(/\s+/).filter((x) => x && x !== '(无)') : []);
 const add = new Set();
 for (const [, file, ln, , code] of hits) {
-	if (!file.endsWith('.vue')) continue; // vue-tsc 的输出也含 .ts 错误；本脚本只处理 .vue（第 204 轮的视野教训）
 	const rel = existsSync(file)
 		? file
 		: existsSync('packages/editor/' + file)

@@ -24,7 +24,9 @@ function saveConfig(this: typeof Editor) {
 		getTitleStore().saveToConfig(config);
 		Layout.saveToConfig!(config as LayoutConfigShape);
 		getSceneStore().saveToConfig(config);
-		useUIStore().saveToConfig(config as { colors: Record<string, string> });
+		// `colors` 已由本函数的 `config.colors ??= {}` 兜底成对象，但**值仍是不可信的 JSON**：
+		// UI 侧契约收 `Record<string, unknown>`（消费方 `safeHex` 自己判类型），所以这里只断言"在"。
+		useUIStore().saveToConfig(config as { colors: Record<string, unknown> });
 		getAnimationStore().saveToConfig(config);
 		useParticleStore().saveToConfig(config as { colors: Record<string, string> });
 
@@ -86,7 +88,7 @@ function loadConfig(this: typeof Editor) {
 	getTitleStore().loadFromConfig(config!);
 	Layout.loadFromConfig!(config! as LayoutConfigShape);
 	getSceneStore().loadFromConfig(config!);
-	useUIStore().loadFromConfig(config! as { colors: Record<string, string> });
+	useUIStore().loadFromConfig(config! as { colors: Record<string, unknown> });
 	getAnimationStore().loadFromConfig(config!);
 	useParticleStore().loadFromConfig(config! as { colors: Record<string, string> });
 }

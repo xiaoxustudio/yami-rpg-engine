@@ -2,10 +2,10 @@
  * ④-4 契约（生成物 —— 由 scripts/oneoff/gen-contract-members.mjs 产出，第 193 轮）。
  *
  * 成员类型来自类型检查器对 `uiMembers` 的**推断**（源码里没有可抬的注解）。
- * 生成 76 条；跳过 4 条（原因见生成器输出）。
+ * 生成 75 条；跳过 7 条（原因见生成器输出）。
  */
 import type { UINodeShape } from './element-classes.ts';
-import type { UIPointerEvent } from './legacy/ui-window.ts';
+import type { UIPointerEvent } from './ui-singleton.ts';
 import type { YamiMouseEvent } from '../../types/editor-event.ts';
 
 export interface UIDomainMembers {
@@ -19,8 +19,8 @@ export interface UIDomainMembers {
 	menuPopup: ((event: UIPointerEvent) => void) | null;
 	switchSettings: (() => void) | null;
 	planToSave: (() => void) | null;
-	saveToConfig: ((config: { colors: Record<string, string> }) => void) | null;
-	loadFromConfig: ((config: { colors: Record<string, string> }) => void) | null;
+	saveToConfig: ((config: { colors: Record<string, unknown> }) => void) | null;
+	loadFromConfig: ((config: { colors: Record<string, unknown> }) => void) | null;
 	saveToProject:
 		| ((project: {
 				ui: { zoom?: number } & Record<string, unknown>;
@@ -34,7 +34,6 @@ export interface UIDomainMembers {
 	localizationchange: ((_event: Event) => void) | null;
 	keydown: ((event: KeyboardEvent) => void) | null;
 	headPointerdown: ((event: PointerEvent) => void) | null;
-	switchPointerdown: ((event: PointerEvent) => void) | null;
 	shortcutPointerdown: ((event: PointerEvent) => void) | null;
 	zoomFocus: ((_event?: Event) => void) | null;
 	zoomInput: ((_event: Event & { value?: number }) => void) | null;
@@ -50,13 +49,10 @@ export interface UIDomainMembers {
 	create: ((kind: string, x: number, y: number) => void) | null;
 	createPrefab:
 		| ((
-				prefab: {
-					name: string;
-					presetId: string;
-					transform: { x: number; y: number; [k: string]: unknown };
-					[k: string]: unknown;
-				},
-				parent: UINodeShape | null,
+				prefab:
+					| UINodeShape
+					| { name: string; presetId: string; transform: { x: number; y: number } },
+				parent?: UINodeShape | null,
 				x?: number,
 				y?: number
 		  ) => void)
@@ -101,14 +97,14 @@ export interface UIDomainMembers {
 	listSelect: ((event: Event) => void) | null;
 	listRecord: ((event: Event) => void) | null;
 	listPopup: ((event: Event) => void) | null;
-	listOpen: ((event: Event) => void) | null;
+	listOpen: ((_event: Event) => void) | null;
 	listRename:
 		| ((response: { item: UINodeShape; oldValue: string; newValue: string }) => void)
 		| null;
 	listChange: ((_event: Event) => void) | null;
 	listPageResize: ((_event: YamiMouseEvent) => void) | null;
 	initialize: (() => void) | null;
-	hasPrefab: ((node: UINodeShape) => boolean) | null;
+	hasPrefab: ((node: UINodeShape | { presetId?: string }) => boolean) | null;
 	clearInvalidPrefabs: ((uiPrefabs: string[]) => void) | null;
 	registerPreset: ((node: UINodeShape) => void) | null;
 	unregisterPreset: ((node: UINodeShape) => void) | null;
@@ -117,8 +113,8 @@ export interface UIDomainMembers {
 }
 
 // ④-4 接线（**贪心**，第 198 轮）：只接不会让全仓变红的成员；其余留在 UIDomainMembers 里待定。
-// 待定 3 条：hasPrefab loadFromConfig saveToConfig
-declare module './legacy/ui-window.ts' {
+// 待定 0 条：(无)
+declare module './ui-singleton.ts' {
 	interface UIShape extends Pick<
 		UIDomainMembers,
 		| 'selectObject'
@@ -131,6 +127,9 @@ declare module './legacy/ui-window.ts' {
 		| 'menuPopup'
 		| 'switchSettings'
 		| 'planToSave'
+		| 'saveToConfig'
+		| 'loadFromConfig'
+		| 'saveToProject'
 		| 'loadFromProject'
 		| 'webglRestored'
 		| 'windowResize'
@@ -138,7 +137,6 @@ declare module './legacy/ui-window.ts' {
 		| 'localizationchange'
 		| 'keydown'
 		| 'headPointerdown'
-		| 'switchPointerdown'
 		| 'shortcutPointerdown'
 		| 'zoomFocus'
 		| 'zoomInput'
@@ -152,6 +150,7 @@ declare module './legacy/ui-window.ts' {
 		| 'paste'
 		| 'duplicate'
 		| 'create'
+		| 'createPrefab'
 		| 'createShortcut'
 		| 'delete'
 		| 'toggle'
@@ -175,6 +174,7 @@ declare module './legacy/ui-window.ts' {
 		| 'deleteElement'
 		| 'updateHead'
 		| 'resize'
+		| 'createPrefabItem'
 		| 'loadElement'
 		| 'searcherInput'
 		| 'listPointerdown'
@@ -182,9 +182,11 @@ declare module './legacy/ui-window.ts' {
 		| 'listRecord'
 		| 'listPopup'
 		| 'listOpen'
+		| 'listRename'
 		| 'listChange'
 		| 'listPageResize'
 		| 'initialize'
+		| 'hasPrefab'
 		| 'clearInvalidPrefabs'
 		| 'registerPreset'
 		| 'unregisterPreset'

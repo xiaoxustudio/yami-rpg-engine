@@ -9,7 +9,7 @@ vi.mock('@app/engine/webgl/texture.ts', () => ({ Texture: class Texture {} }));
 vi.mock('@app/data/data-object.ts', () => ({ Data: { config: { indexedColors: [], text: {} } } }));
 vi.mock('@app/file/file-system-core.ts', () => ({ File: {} }));
 vi.mock('@app/inspector/inspector.ts', () => ({ Inspector: {} }));
-vi.mock('@app/engine/ui/legacy/ui-window.ts', () => ({ UI: {} }));
+vi.mock('@app/engine/ui/ui-singleton.ts', () => ({ UI: {} }));
 vi.mock('@app/title/title-bar.ts', () => ({ Title: {} }));
 
 import { Printer } from '@app/printer/printer.ts';

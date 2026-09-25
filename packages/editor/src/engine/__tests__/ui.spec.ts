@@ -184,7 +184,7 @@ vi.mock('@app/engine/webgl/webgl-init.ts', () => ({ GL: mockGL }));
 
 /**
  * 矩阵替身。`vi.mock` 的工厂会被提升到 import 之前，因此**不能在工厂里引用它**，
- * 只能各自构造一份（下面 `@app/engine/ui/legacy/ui-window` 的 mock 里另有一份等价的）。
+ * 只能各自构造一份（下面 `@app/engine/ui/ui-singleton` 的 mock 里另有一份等价的）。
  * 这里放在模块作用域，供 `@app/stores/ui` 的 mock 使用。
  */
 const matrixStub = {
@@ -211,7 +211,7 @@ vi.mock('@app/stores/ui', () => ({
 	})
 }));
 
-vi.mock('@app/engine/ui/legacy/ui-window.ts', () => {
+vi.mock('@app/engine/ui/ui-singleton.ts', () => {
 	const Matrix = {
 		set: vi.fn().mockReturnThis(),
 		multiply: vi.fn().mockReturnThis(),

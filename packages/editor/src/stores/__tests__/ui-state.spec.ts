@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getUIStore, uiStateKeys } from '@app/stores/ui';
-import { UI } from '@app/engine/ui/legacy/ui-window.ts';
+import { UI } from '@app/engine/ui/ui-singleton.ts';
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import { uiEls } from '@app/engine/ui/element-registry';
 

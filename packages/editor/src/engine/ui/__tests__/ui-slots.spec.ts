@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { UI, uiWindowReady } from '@app/engine/ui/legacy/ui-window.ts';
+import { UI, uiWindowReady } from '@app/engine/ui/ui-singleton.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Editor } from '@app/services/project/editor.ts';
 

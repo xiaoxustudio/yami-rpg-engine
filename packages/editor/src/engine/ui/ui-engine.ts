@@ -14,7 +14,7 @@ import { clamp, roundTo, dist, modDegrees } from '@app/utils/math';
 /**
  * 惰加载的 UI 单例代理。`renderingFunction` 里那 7 个 draw 需要**显式的 UI 接收者** ——
  * 原因见该函数内的注释（它自己被 `Timer` 裸调用，`this` 恒为 `undefined`）。
- * 不能 `import { UI } from '@app/engine/ui/legacy/ui-window.ts'`：那是静态循环导入；这个代理只在运行时解析。
+ * 不能 `import { UI } from '@app/engine/ui/ui-singleton.ts'`：那是静态循环导入；这个代理只在运行时解析。
  */
 const UI = getLazyWindow('ui', loadUI);
 

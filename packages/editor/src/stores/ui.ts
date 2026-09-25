@@ -4,7 +4,7 @@ import { computed, markRaw, shallowRef } from 'vue';
 import { pinia } from './pinia';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { uiEls } from '@app/engine/ui/element-registry';
-import { StageColor } from '@app/utils/stage-color';
+import { StageColor, safeHex } from '@app/utils/stage-color';
 import type { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import type { History } from '@app/tools/history.ts';
 import type { UIElementInstance, UINodeShape } from '@app/engine/ui/element-classes.ts';
@@ -15,7 +15,7 @@ import type { YamiElement } from '@app/types/element-api';
  *
  * 导出给 `engine/ui/ui-engine.ts`：它的 `renderingFunction` 需要以**方法调用**形态
  * 调用 `UI.drawXxx()`（见该处注释——`Timer` 是裸调用，没有接收者），
- * 而直接 `import { UI } from '@app/engine/ui/legacy/ui-window.ts'` 会与 `ui-window.ts → ui-engine.ts`
+ * 而直接 `import { UI } from '@app/engine/ui/ui-singleton.ts'` 会与 `ui-window.ts → ui-engine.ts`
  * 形成静态循环导入。这个惰加载代理只在**运行时**解析目标，天然避开循环。
  *
  * 阶段 1c ①（2026-09-21 第 94 轮）：`UI` 的来源由 `tools/window-cluster.ts` 的**再导出**
@@ -28,7 +28,7 @@ import type { YamiElement } from '@app/types/element-api';
  */
 export const loadUI = async () => {
 	const [uiWindow, cluster] = await Promise.all([
-		import('@app/engine/ui/legacy/ui-window.ts'),
+		import('@app/engine/ui/ui-singleton.ts'),
 		import('@app/tools/window-cluster')
 	]);
 	await cluster.clusterReady;
@@ -85,7 +85,7 @@ export const uiStateKeys = [
 ] as const;
 
 // `UINodeShape` 的**唯一声明**在 `engine/ui/element-classes.ts`（2026-09-21 第 109 轮合并了
-// 此处与 `legacy/ui-window.ts` 的同名重复声明）。此前两份靠索引签名「碰巧兼容」，
+// 此处与 `ui-singleton.ts` 的同名重复声明）。此前两份靠索引签名「碰巧兼容」，
 // 一旦其中一份收紧就会互不兼容（`ui-transform.ts:59` 曾当场报错）。
 
 interface UIContextShape {
@@ -140,7 +140,7 @@ export const useUIStore = defineStore('ui', () => {
 	 * 控制点贴图（WebGL 资源）。原先只挂在遗留单例 `UI.controlPointTexture` 上，
 	 * 由 `ui-initialize.ts:87` 在异步载图回调里赋值、`animation-window-engine.ts:716` 读取。
 	 *
-	 * 升进 store 的理由：它正是让 `animation-window-engine` 摆脱 `@app/engine/ui/legacy/ui-window.ts` 的
+	 * 升进 store 的理由：它正是让 `animation-window-engine` 摆脱 `@app/engine/ui/ui-singleton.ts` 的
 	 * 唯一阻塞点（那个文件只用到这一个成员）。
 	 *
 	 * 为什么写入能同步过来：`stores/ui.ts:63` 是 `u?.initialize?.()`，接收者就是 UI 单例，
@@ -152,7 +152,7 @@ export const useUIStore = defineStore('ui', () => {
 	 * class 名 → 检查器类型 的映射表。由 `ui-initialize.ts:149` 以对象字面量整体赋值
 	 * （`this.inspectorTypeMap = { … }`），所以按**整体替换**语义存取即可，不需要深层响应式。
 	 *
-	 * 升进 store 的理由：它是 `update/updater-hooks.ts` 摆脱 `@app/engine/ui/legacy/ui-window.ts` 的唯一阻塞点。
+	 * 升进 store 的理由：它是 `update/updater-hooks.ts` 摆脱 `@app/engine/ui/ui-singleton.ts` 的唯一阻塞点。
 	 * 同一个名字在 Scene / Animation 单例上各有一份互不相干的表，这里只接 UI 那一份。
 	 */
 	const inspectorTypeMap = shallowRef<Record<string, string> | null>(null);
@@ -638,7 +638,7 @@ export const useUIStore = defineStore('ui', () => {
 	 * `ui-slot-coverage` 轴的 `legacyOnly` 计数随之下降。
 	 *
 	 * ⚠️ 第 ① 步（2026-09-21 第 94 轮）已落地，但**只换了来源**：`UI` 仍是那个遗留对象
-	 * （改由 `loadUI` 直连 `engine/ui/legacy/ui-window.ts`，不再经 `window-cluster` 再导出）。
+	 * （改由 `loadUI` 直连 `engine/ui/ui-singleton.ts`，不再经 `window-cluster` 再导出）。
 	 *
 	 * ✅ **第 ④-2a 步（2026-09-21 第 102 轮）**：这 7 个已改为优先走引擎**注册进来的**
 	 * `UIEngine`（`makeEngineForwarder`），不再依赖 `ui-window.ts` 的镜像 —— 于是 ④-2b 删镜像时
@@ -663,26 +663,10 @@ export const useUIStore = defineStore('ui', () => {
 		UI?.saveToConfig?.(config);
 	}
 
-	/**
-	 * 配置颜色的合法性兜底 + 归一化。
-	 *
-	 * `StageColor` 的 `input()` 是**8 位 RGBA hex** 的解析器：
-	 * `slice(0,2)/slice(2,4)/slice(4,6)` 取 RGB，`slice(6,8)` 取 **alpha**
-	 * （`getGLRGBA()` 用 alpha 与 `GL.BACKGROUND_*` 做混合）。
-	 * 所以只给 6 位 hex 会得到 `alpha = NaN`，进而把 NaN 交给 WebGL —— 实测
-	 * `'ff1e1e1e'` 与 `'ffffff'` 都是坏输入（2026-09-18）。
-	 *
-	 * 这里按「6 位补 `ff`、8 位原样、其余退回 fallback」归一化。
-	 * 默认配置给的就是 8 位（`services/project/config.ts` 的
-	 * `uiBackground: '00000000'` / `uiForeground: '000000ff'`）。
-	 */
-	const safeHex = (value: unknown, fallback: string): string => {
-		if (typeof value !== 'string') return fallback;
-		if (/^[0-9a-fA-F]{8}$/.test(value)) return value;
-		// 6 位视为不透明：alpha 补 ff，而不是留一个 NaN
-		if (/^[0-9a-fA-F]{6}$/.test(value)) return `${value}ff`;
-		return fallback;
-	};
+	// 配色归一化 `safeHex` 已挪到 `@app/utils/stage-color`（**唯一实现**，第 211 轮）：
+	// 它属于「`StageColor` 的输入格式」，而此前只有本文件做归一化，
+	// `ui-events.ts` 的 `UI.loadFromConfig` 拿到同一份 config 时**不归一化**
+	// （直接 `new StageColor(config.colors.…, …)`）⇒ 同一输入在两侧算出不同的 alpha（6 位 hex ⇒ NaN）。
 
 	function loadFromConfig(config: { colors: Record<string, unknown> }) {
 		// ⚠️ store 侧必须**自己**建 StageColor，不能只转发给 `UI.loadFromConfig`：
@@ -693,8 +677,14 @@ export const useUIStore = defineStore('ui', () => {
 		//
 		// 两份 StageColor 由同一份 config 驱动、回调语义一致（改色即请求重绘），
 		// 因此不会漂移；store 这份才是 `drawBackground` 的真源。
-		// `UI.loadFromConfig` 继续调用是为了兼容仍读 `UI.background` 的遗留路径
-		// （例如 `saveToConfig` 的 `config.colors.uiBackground = this.background.hex`）。
+		// `UI.loadFromConfig` 继续调用是为了兼容仍读 `UI.background` / `UI.foreground` 的遗留与插件路径。
+		//
+		// ⚠️ 这个转发**可能被静默跳过**：`'ui'` 槽位由 `loadUI` 异步填充（第 ① 步 00729b15 之后
+		// `window-cluster` 不再导出 `UI`，`primeWindows` 不再预热它），而 `main/initialize.ts` 的
+		// `loadConfig()` 早于它到位 —— 此刻 `getLazyWindow` 的 get trap 返回 undefined，
+		// `?.()` 什么也不做。**不要在别处依赖「这次转发一定执行过」**：
+		// `ui-events.ts` 的 `saveToConfig` 曾因此读到 `undefined.hex`（退出时报错、配置写不出去），
+		// 现已改为以 store 为准取值。
 		background.value = new StageColor(safeHex(config.colors.uiBackground, '00000000'), () =>
 			requestRendering()
 		);

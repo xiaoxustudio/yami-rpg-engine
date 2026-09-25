@@ -1,6 +1,6 @@
 import { getListConfig, elementDataOf } from '@ui-kit';
-import { UI } from './legacy/ui-window.ts';
-import type { UIShape, UINodeShape, UIPointerEvent } from './legacy/ui-window.ts';
+import { UI } from './ui-singleton.ts';
+import type { UIShape, UINodeShape, UIPointerEvent } from './ui-singleton.ts';
 import type { YamiElement } from '@app/types/element-api';
 // ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';

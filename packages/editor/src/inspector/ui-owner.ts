@@ -3,7 +3,7 @@
  *
  * 背景：`inspector/element-*.ts`（11 个页面）与 `inspector.ts` 都要求页面上的 `owner` 满足
  * 同一组契约，而旧的 `owner: UI` 直接指向遗留单例 `@app/ui/ui-window.ts`
- * （现已平移到 `@app/engine/ui/legacy/ui-window.ts`，见 PHASE-1C 第 66 轮）：
+ * （现已平移到 `@app/engine/ui/ui-singleton.ts`，见 PHASE-1C 第 66 轮）：
  *
  *   - `ParamHistoryOwner`（`composables/useParamHistory.ts`）：`history` / `setTarget` / `planToSave`
  *   - `Inspector`（`inspector.ts:24,42`）：`setTarget(target, meta?)` —— 比上面多一个可选 `meta`

@@ -1,5 +1,5 @@
 import { uiElClasses } from '@app/engine/ui/element-classes.ts';
-import type { UIShape, UINodeShape } from './legacy/ui-window.ts';
+import type { UIShape, UINodeShape } from './ui-singleton.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { getYamiI18n } from '@app/i18n';

@@ -12,10 +12,19 @@ const require_ = createRequire(new URL('../../packages/editor/package.json', imp
 const ts = require_('typescript');
 import { readFileSync, readdirSync, writeFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { parseMembers } from './contract-parse.mjs';
 
 const ROOT = process.cwd();
 const cfg = ts.readConfigFile(join(ROOT, 'packages/editor/tsconfig.strict.json'), ts.sys.readFile);
 const parsed = ts.parseJsonConfigFileContent(cfg.config, ts.sys, join(ROOT, 'packages/editor'));
+// 剥离接线块（第 207 轮）：生成物里的 `declare module … extends Pick<…>` 会改变 `UIShape`，
+// 而成员签名里带 `this: UIShape` ⇒ **上一次生成的状态会反过来改变这一次的类型打印**（实测漂移 77↔76↔75）。
+// 先剥掉再建 program，生成才与上次状态无关。
+const stripped =
+	readFileSync('packages/editor/src/engine/ui/ui-domain-contract.ts', 'utf8')
+		.replace(/\n\/\/ ④-4 接线[\s\S]*$/, '')
+		.trimEnd() + '\n';
+writeFileSync('packages/editor/src/engine/ui/ui-domain-contract.ts', stripped, 'utf8');
 const program = ts.createProgram(parsed.fileNames, parsed.options);
 const checker = program.getTypeChecker();
 
@@ -50,15 +59,41 @@ const walk = (d) => {
 walk(join(ROOT, 'packages/editor/src'));
 
 const OPTIONAL_FIRST = new Set(['screenBlur', 'zoomFocus']);
-const EVENT_WIDE = new Set(['listChange', 'listOpen', 'listPopup', 'listRecord', 'listSelect']);
-const nullPlaceholders = new Set(
+// 形状覆盖表（第 210 轮）：`hasPrefab` 的实现**只读 `node.presetId`**，而两个调用方给的形状不同 ——
+// `stores/ui.ts:122` 传**故意收窄**的局部视图（`PrefabRefShape`），`ui-pointer.ts` 传完整 `UINodeShape`。
+// 收窄成 `{ presetId?: string }` 会让 `UINodeShape` 侧报 TS2559（weak type）；
+// ⇒ 契约的正确形状是**两者的并集**（"收完整节点或局部视图，只读 presetId"）。
+const SHAPE_OVERRIDES = new Map([
+	['hasPrefab', '((node: UINodeShape | { presetId?: string }) => boolean)'],
+	// 形状覆盖表（第 211 轮）：`createPrefab` 的**实现**要 `name` / `presetId` / `transform`
+	// （`ui-file.ts` 三处都读），而两个调用方给的静态形状不同 ——
+	// `stores/ui.ts:417` 传 `UIPrefabShape`（就是实现要的那个形状），
+	// `ui-prefab.ts:36` 传**菜单项的 `data: UINodeShape`**（运行期它确实是预置节点，
+	// 但静态类型只写了 `class` / `children`，**索引签名也补不上缺的三个必需属性** —— 实测
+	// TS2345「missing name, presetId, transform」）。
+	// ⇒ 与 `hasPrefab` 同族：契约写成**两个调用方都会传的形状的并集**。
+	// ⚠️ `parent` 必须是**可选**的：`ui-prefab.ts` 是 `createPrefabItem(parent?: …)` 的参数直传，
+	// 实参静态类型含 `undefined`（实测 TS2345「Type 'undefined' is not assignable to 'UINodeShape | null'」），
+	// 而实现只是把它转交给 `list.addNodeTo(reference, parent)` —— 改调用方（补 `?? null`）会
+	// **改变运行期语义**（`undefined` 与 `null` 对列表不是一回事），故按调用事实写可选。
 	[
-		...readFileSync(
-			join(ROOT, 'packages/editor/src/engine/ui/legacy/ui-window.ts'),
-			'utf8'
-		).matchAll(/^\t([A-Za-z_$][\w$]*)\s*:\s*null\s*,?/gm)
-	].map((m) => m[1])
-);
+		'createPrefab',
+		'((prefab: UINodeShape | { name: string; presetId: string; transform: { x: number; y: number } }, parent?: UINodeShape | null, x?: number, y?: number) => void)'
+	]
+]);
+const EVENT_WIDE = new Set(['listChange', 'listOpen', 'listPopup', 'listRecord', 'listSelect']);
+// 门面成员**一律可空**（第 212 轮改口径，见下）。
+//
+// 旧口径：哪些成员可空，靠**读单例字面量里的 `x: null` 占位行**决定
+// （`nullPlaceholders`）。那是一条「把仪器接在被拆对象上」的耦合：④-4 一旦退役占位表，
+// 这个集合就变成**空集** ⇒ 75 个成员全部丢掉 `| null` ⇒ 实测（第 194 轮）会打红 **49 处**消费侧
+// （`registerWindowKeydown('ui', UI.keydown)` 这类把"可能为空"当"一定不为空"用的调用）。
+//
+// 新口径的**依据是事实**：成员不是字面量声明的，而是 `uiWindowReady` 里 `Object.assign(UI, …)`
+// 在**模块加载之后**注入的 ⇒ 在那之前 `UI.x` **确实**不存在（今天的占位表只是把它从 `undefined`
+// 变成 `null`，两者在 `UI?.x?.()` / `this.x!` 下行为相同）。所以「可空」是这个门面的固有属性，
+// 与字面量里写了什么无关。改口径**不改变终态读数**（改前 75 条本来就全带 `| null`）。
+const ALWAYS_NULLABLE = true;
 const UIOUT = 'packages/editor/src/engine/ui/ui-domain-contract.ts';
 const lines = [];
 const importsNeeded = new Set();
@@ -78,6 +113,10 @@ for (const prop of checker.getPropertiesOfType(membersType)) {
 		.replace(/this:\s*UIShape\b/g, '');
 	if (s.length > 600) {
 		skipped.push(`${prop.name}: 类型过长(${s.length})`);
+		continue;
+	}
+	if (/\bany\b/.test(s)) {
+		skipped.push(`${prop.name}: 类型含 any（不进契约：any-hatches 是棘轮轴）`);
 		continue;
 	}
 	if (/\bUIShape\b|\bUIContextShape\b/.test(s)) {
@@ -125,12 +164,9 @@ for (const prop of checker.getPropertiesOfType(membersType)) {
 	// 显式覆盖表（第 201 轮）：这几个成员在 .vue 侧是按原生 Event 调用的（UI?.listSelect?.(event)、
 	// event: Event），契约里的具体事件类比调用方窄。只放开**参数**类型，不动实现。
 	if (OPTIONAL_FIRST.has(prop.name)) s = s.replace(/\((_?[a-z]\w*): /, '($1?: ');
+	if (SHAPE_OVERRIDES.has(prop.name)) s = SHAPE_OVERRIDES.get(prop.name);
 	if (EVENT_WIDE.has(prop.name)) s = s.replace(/(\([^)]*?): [A-Za-z_$][\w$]*/, '$1: Event');
-	const emitted = nullPlaceholders.has(prop.name)
-		? s.includes('=>')
-			? `(${s}) | null`
-			: ` | null`
-		: s;
+	const emitted = ALWAYS_NULLABLE ? (s.includes('=>') ? `(${s}) | null` : `${s} | null`) : s;
 	lines.push(`\t${prop.name}: ${emitted};`);
 }
 const rel = (mod) => {
@@ -162,7 +198,7 @@ lines.slice(0, 3).forEach((l) => console.log(l.slice(0, 100)));
 		.split('\n')
 		.filter((l) => !/=> any\b/.test(l))
 		.join('\n');
-	const n = cleaned.split('\n').filter((l) => /^\t[A-Za-z_$][\w$]*:/.test(l)).length;
+	const n = parseMembers(cleaned).length;
 	cleaned = cleaned.replace(/生成 \d+ 条/, `生成 ${n} 条`);
 	writeFileSync(f, cleaned);
 	console.log(`收尾清理后：${n} 条声明`);

@@ -42,6 +42,18 @@ import {
 const LEGACY_WINDOW_REL = 'packages/editor/src/ui/ui-window.ts';
 
 /**
+ * **遗留层目录** —— 阶段 1c 的拆除对象。
+ *
+ * ⚠️ **第 212 轮起它是常量**，不再由「单例文件在哪」推导（`.kilo` 之前那版是
+ * `dirname(uiWindowRel())`）。理由：④-4 把单例从 `legacy/` 搬出去之后，那个推导会指向
+ * **整个 `engine/ui/`** —— `legacy-ui-lines` 会从 210 行暴涨到全目录的行数（假回归），
+ * 而 `legacyOnlyStoreSlots()` 会把每个域模块都当成"遗留层"（`1c-store-slot-gaps` 假回归）。
+ * ⇒ 这条轴问的是「**那层遗留还在不在**」，所以目录必须写死成遗留层自己的名字。
+ * 历史沿革：P5-B 把 `src/ui/` 挪到 `src/engine/ui/legacy/`（第 66 轮），④-4 把这个目录整个删掉。
+ */
+export const LEGACY_UI_DIR = 'packages/editor/src/engine/ui/legacy';
+
+/**
  * UI 单例对象字面量所在文件 —— **动态定位，不能写死路径**。
  *
  * ⚠️ 为什么必须动态（2026-09-20，本文件记的第二次同类事故）：
@@ -50,8 +62,12 @@ const LEGACY_WINDOW_REL = 'packages/editor/src/ui/ui-window.ts';
  * 掉到 0，`ui-slot-coverage` 报「改善」——而遗留代码一行没少。这正是本文件头部
  * 已经为「技法 5 改写声明行」记过一次的那种失败：**仪器瞎了，却表现为指标变好。**
  *
- * 定位方式：先试旧路径；否则在扫描面里找含 `export const UI … = {` 声明的那个文件。
+ * 定位方式：先试历史路径；否则在扫描面里找含 `export const UI … = {` 声明的那个文件。
  * 声明行怎么写都不影响（类型标注可选），与 `declaredSlots()` 的定位逻辑同源。
+ *
+ * ⚠️ 找到的**文件位置**对槽位口径**不再有任何影响**：家族目录判据已改用常量
+ * `LEGACY_UI_DIR`，`assignedSlots()` 另有「域模块」判据（见 `inFamily`）。本函数只负责回答
+ * 「单例字面量在哪」。
  * @returns {string|null} 相对 ROOT 的路径
  */
 export function uiWindowRel() {
@@ -63,26 +79,13 @@ export function uiWindowRel() {
 }
 
 /**
- * 「UI 单例家族」所在的目录 —— 用来界定「`this.x = …` 只在单例家族内部才算槽位赋值」。
+ * 「遗留层」的路径前缀正则 —— 由**常量** `LEGACY_UI_DIR` 构造（理由见该常量）。
  *
- * 同样**不能写死** `^packages/editor/src/ui/`：1c 搬运之后，域模块里的
- * `this.controlPointTexture = …` 会不再被计入 `assigned`，于是 `storeRefsUnassigned`
- * **凭空变非空**、`ui-slot-coverage` 报上升 —— 搬运会被一条假回归挡住。
- * 按「UI 窗口所在目录」界定则搬运前后一致。
- *
- * 取舍：同目录里若混进非家族文件，它们的 `this.x = ` 也会被算进来 ⇒ `assigned` 偏大 ⇒
- * 告警**偏少**（保守方向，与文件头部对 `uiElClasses` 的取舍一致）。
- *
- * **导出**：`self-test.mjs` / `audit-ui-slots.mjs` 都用它，别在各自文件里再抄一份写死的
- * `^packages/editor/src/ui/` —— 2026-09-20 的 P5-B 纯移动把 `src/ui/` 搬成
- * `src/engine/ui/legacy/` 时，抄了副本的地方**当场全瞎**（见 PHASE-1C 第 66 轮）。
+ * 用途：`legacyOnlyStoreSlots()`（哪些槽位的实现只在遗留层）与 `assignedSlots()` 的家族判据之一。
+ * @returns {RegExp}
  */
 export function uiDirRe() {
-	const rel = uiWindowRel();
-	// 「永不匹配」用 `(?!)`（一个恒假的零宽断言），而不是往正则里塞控制字符当哨兵：
-	// 后者会被 `eslint/no-control-regex` 判为坏味道，语义上也并不需要。
-	if (rel === null) return /(?!)x/;
-	return new RegExp(`^${dirname(rel).replace(/\\/g, '/')}/`);
+	return new RegExp(`^${LEGACY_UI_DIR.replace(/\\/g, '/')}/`);
 }
 
 /**
@@ -141,6 +144,68 @@ export function declaredSlotsFrom(src) {
 }
 
 /**
+ * 单例字面量里的**占位槽位** —— 第 212 轮新增的口径，④-4 的验收线。
+ *
+ * ## 定义（判据是「谁实现它」，不是「值是不是 null」）
+ *
+ * > 占位 = 出现在单例字面量里、而**实现由别处提供**的键
+ * > （装配入口 `ui-members.ts` 汇总的域成员对象 ∪ `UIEngine.x = …`）。
+ *
+ * 这正是历史上那 123 行 `initialize: null` / `open: null` / … 的性质：**先在这里声明、后由域模块填充**。
+ * 第 ④-3 步改成「域模块只提供成员对象、由 `uiWindowReady` 装配」之后，这张表**没有任何写入方需要用**了。
+ *
+ * ## 为什么不用「值 == null」当判据（第一版就是这么写的，被实测否掉）
+ *
+ * 那样会把 `dragging: null as UIPointerEvent | null` 也算成占位（实测 4 条：
+ * `dragging` / `hover` / `translationTimer` / `zoomTimer`）—— 可它们是单例**自己真的持有**的状态字段，
+ * 初值 `null` 有语义（`UI.dragging === null` 就是 ui-events 的判断，改成 `undefined` 会**改变行为**）。
+ * ⇒ 「值是不是 null」与「实现是不是在别处」是两件事，本轴要回答的是后者。
+ *
+ * ## 为什么把「声明数」拆出「占位数」
+ *
+ * 旧读数只有一个 `declared`（全部键数，起始 134）。要退役的从来不是"字面量一条不剩" ——
+ * 单例真持有的字段（7 个 DOM 引用 + `dragging`/`hover` + 两个定时器 + `translationKey`）必须留着，
+ * 所以 `declared` 到不了 0；而「占位表退役」这件事在旧读数里**看不出来**（134 → 12，既不是 0，
+ * 也没人知道剩下那 12 条为什么合法）。把占位数单列之后：
+ * **`placeholders == 0` 是 ④-4 该段的验收线**，`declared` 继续回答「字面量里还剩几条」。
+ *
+ * @param {string} src 字面量所在文件全文
+ * @param {Set<string>|Iterable<string>} provided 「实现由别处提供」的名字集合
+ * @returns {string[]} 占位键，按字面量声明顺序
+ */
+export function placeholdersAmong(src, provided) {
+	const has = (s) =>
+		typeof provided.has === 'function' ? provided.has(s) : [...provided].includes(s);
+	return declaredSlotsFrom(src).filter(has);
+}
+
+/**
+ * `placeholdersAmong()` 的定位版本（与 `declaredSlots()` 同一把锚：`uiWindowRel()`）。
+ *
+ * ⚠️ **两个来源都必须非空**：装配成员清单读到空（例如 `resolveMemberKeys()` 换了写法就不认），
+ * 会让这条判据**恒报 0** —— 那正是「仪器瞎了却表现为指标达标」。故这里做硬断言。
+ * @returns {string[]}
+ */
+export function singletonPlaceholders() {
+	const rel = uiWindowRel();
+	if (rel === null) {
+		throw new Error(
+			'singletonPlaceholders()：全仓找不到 `export const UI … = {` 字面量。' +
+				'这不是「占位数已归零」，而是**仪器失锚**（同 `declaredSlots()`）。'
+		);
+	}
+	const assembly = assemblyProvidedSlots();
+	const engine = engineImplementedSlots();
+	if (assembly.size === 0 || engine.size === 0) {
+		throw new Error(
+			`singletonPlaceholders()：提供者清单读到空（assembly=${assembly.size} engine=${engine.size}）` +
+				' ⇒ 本判据会恒报 0，先修仪器再读数字。'
+		);
+	}
+	return placeholdersAmong(readSource(join(ROOT, rel)), new Set([...assembly, ...engine]));
+}
+
+/**
  * ④-4 的**前置判据**：今天若删掉字面量，哪些槽位会失去唯一的「家」。
  *
  * 口径 = 「**除字面量本身以外**，还有谁提供它」：
@@ -161,14 +226,8 @@ export function declaredSlotsFrom(src) {
  */
 export function providedSlots() {
 	const provided = new Set(assignedSlots());
-	const engineSrc = codeOnly(
-		readSource(join(ROOT, 'packages/editor/src/engine/ui/ui-engine.ts'))
-	);
-	for (const m of engineSrc.matchAll(/^UIEngine\.([A-Za-z_$][\w$]*)\s*=/gm)) provided.add(m[1]);
-	// ⚠️ 引擎内部也有**以 `this` 为接收者**写的槽位（实测：`controlPointActive`
-	// 在 `ui-engine.ts:258-259` 写作 `this.controlPointActive = point`）。只认 `^UIEngine\.`
-	// 会把它漏掉，于是「缺口」会报出一个**并不存在**的待办 —— 第 187 轮实测：虚假缺口 1 个。
-	for (const m of engineSrc.matchAll(/^\s*this\.([A-Za-z_$][\w$]*)\s*=/gm)) provided.add(m[1]);
+	// 引擎实现（含引擎内以 `this` 为接收者写的那些）—— 判据收在 `engineImplementedSlots()` 一处。
+	for (const name of engineImplementedSlots()) provided.add(name);
 	return provided;
 }
 
@@ -431,6 +490,49 @@ function facadeMemberNames(files) {
 	return names;
 }
 
+/**
+ * **装配入口注入的成员名**：`ui-members.ts` 汇总的域成员对象（可能多源、用 `{ ...a, ...b }` 传递展开，
+ * 故用 `resolveMemberKeys()` 解析）∪ 装配点上内联对象字面量的键。
+ *
+ * 抽出来是为了让「占位槽位」有**唯一**的判据来源（`singletonPlaceholders()`），
+ * 而不是在别处再写一遍装配语法解析 —— 那台仪器已经因为写法变化失明过五次（见 `ui-members.ts` 文件头）。
+ * @param {Array<{full: string, rel: string}>} [files]
+ * @returns {Set<string>}
+ */
+export function assemblyProvidedSlots(files) {
+	const all = files ?? collectFiles({ dirs: SCAN_DIRS });
+	const ids = new Set();
+	const inlineKeys = [];
+	for (const { full } of all) {
+		const src = readSource(full);
+		for (const site of facadeAssemblySites(src)) {
+			if (site.name) ids.add(site.name);
+			else inlineKeys.push(...keysOfObjectAt(src, site.open));
+		}
+	}
+	const out = resolveMemberKeys(all, ids);
+	for (const k of inlineKeys) out.add(k);
+	return out;
+}
+
+/**
+ * **实现就在引擎里**的槽位：`UIEngine.<name> = …`，以及引擎内**以 `this` 为接收者**写的那些。
+ *
+ * ⚠️ 后半条不能省：实测 `controlPointActive` 写在 `ui-engine.ts:258-259` 的
+ * `this.controlPointActive = point` —— 只认 `^UIEngine\.` 会把它漏掉，
+ * 于是「缺口」会报出一个**并不存在**的待办（第 187 轮实测：虚假缺口 1 个）。
+ * @returns {Set<string>}
+ */
+export function engineImplementedSlots() {
+	const engineSrc = codeOnly(
+		readSource(join(ROOT, 'packages/editor/src/engine/ui/ui-engine.ts'))
+	);
+	const out = new Set();
+	for (const m of engineSrc.matchAll(/^UIEngine\.([A-Za-z_$][\w$]*)\s*=/gm)) out.add(m[1]);
+	for (const m of engineSrc.matchAll(/^\s*this\.([A-Za-z_$][\w$]*)\s*=/gm)) out.add(m[1]);
+	return out;
+}
+
 /** 赋值：全仓库对 UI 单例槽位的写入 */
 export function assignedSlots(files) {
 	const all = files ?? collectFiles({ dirs: SCAN_DIRS });
@@ -453,16 +555,8 @@ export function assignedSlots(files) {
 
 	// 第一遍：facade 装配点（`Object.assign(UI, …)`，**可多源**）。源既可能是具名成员对象
 	// （跨文件、且可能再 `{ ...other }` 汇总 ⇒ 用 `resolveMemberKeys` 传递解析），
-	// 也可能是内联字面量（直接取键）。
-	const facadeIds = new Set();
-	const facadeInlineKeys = [];
-	for (const { full } of all) {
-		for (const site of facadeAssemblySites(readSource(full))) {
-			if (site.name) facadeIds.add(site.name);
-			else facadeInlineKeys.push(...keysOfObjectAt(readSource(full), site.open));
-		}
-	}
-	const facadeKeys = resolveMemberKeys(all, facadeIds);
+	// 也可能是内联字面量（直接取键）。两者的解析收在 `assemblyProvidedSlots()` 一处。
+	const facadeKeys = assemblyProvidedSlots(all);
 
 	for (const { full, rel } of all) {
 		const src = readSource(full);
@@ -474,7 +568,6 @@ export function assignedSlots(files) {
 		}
 	}
 	for (const k of facadeKeys) assigned.add(k);
-	for (const k of facadeInlineKeys) assigned.add(k);
 	return assigned;
 }
 

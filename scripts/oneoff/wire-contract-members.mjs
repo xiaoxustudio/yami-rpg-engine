@@ -8,6 +8,7 @@
 import { createRequire } from 'node:module';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { parseMembers } from './contract-parse.mjs';
 const require_ = createRequire(new URL('../../packages/editor/package.json', import.meta.url));
 const ts = require_('typescript');
 const ROOT = process.cwd();
@@ -18,7 +19,7 @@ const makeProgram = () => ts.createProgram(parsed.fileNames, parsed.options);
 
 const src0 = readFileSync(CONTRACT, 'utf8');
 const base = src0.replace(/\n\/\/ ④-4 接线(?:（贪心）)?[\s\S]*$/, '').trimEnd();
-const members = [...base.matchAll(/^\t([A-Za-z_$][\w$]*): (.+);$/gm)].map((m) => [m[1], m[2]]);
+const members = parseMembers(base);
 const typeOf = new Map(members);
 const all = members.map(([n]) => n);
 console.log(`契约成员 ${all.length} 条`);
@@ -40,7 +41,7 @@ for (let round = 1; round <= 8; round++) {
 		base +
 			`\n\n// ④-4 接线（**贪心**，第 198 轮）：只接不会让全仓变红的成员；其余留在 UIDomainMembers 里待定。\n` +
 			`// 待定 ${excluded.size} 条：${[...excluded].toSorted((a, b) => a.localeCompare(b)).join(' ') || '(无)'}\n` +
-			`declare module './legacy/ui-window.ts' {\n\tinterface UIShape extends Pick<UIDomainMembers, ${pick}> {}\n}\n`,
+			`declare module './ui-singleton.ts' {\n\tinterface UIShape extends Pick<UIDomainMembers, ${pick}> {}\n}\n`,
 		'utf8'
 	);
 	const program = makeProgram();

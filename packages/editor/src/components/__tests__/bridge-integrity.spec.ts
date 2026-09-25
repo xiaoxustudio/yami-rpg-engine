@@ -21,13 +21,17 @@ describe('迁移桥接目标完整性（防迁移遗漏/拼写错误——9.101 
 		// 空目录一被删掉，`readdirSync` 直接 ENOENT ⇒ 用例红。
 		// 两种表现都不对，所以下面加了「根目录必须存在」的显式断言：
 		// **宁可红在「清单过期」，也不要绿在「覆盖变小」。**
+		//
+		// 2026-09-25 第 212 轮（④-4 收口）：单例从 `engine/ui/legacy/` 搬到 `engine/ui/`、
+		// `legacy/` 整个删除 ⇒ 本清单把 `'engine/ui/legacy'` 换成 **`'engine/ui'`**
+		// （覆盖面**变大**了：域模块也进了审计面。这正是那条断言的用意 —— 它红了，我就得更新清单）。
 		const legacyRoots = [
 			'animation',
 			'attribute',
 			'audio',
 			'components',
 			'data',
-			'engine/ui/legacy',
+			'engine/ui',
 			'enum',
 			'file',
 			'inspector',

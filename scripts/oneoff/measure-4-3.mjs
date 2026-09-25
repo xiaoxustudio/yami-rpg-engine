@@ -83,7 +83,7 @@ for (const { full, rel } of all) {
 console.log('  （spec 里 mock/import 的另有 6 个文件，不在此列）');
 
 console.log('\n=== 五：ui-window.ts 自身规模 ===');
-const winRel = perFile.find((f) => f.rel.endsWith('legacy/ui-window.ts'));
+const winRel = perFile.find((f) => f.rel.endsWith('ui-singleton.ts'));
 if (winRel) {
 	const lines = readFileSync(join(ROOT, winRel.rel), 'utf8').split('\n');
 	console.log(`  ${winRel.rel}：${lines.length} 行；直接挂载 ${winRel.names.length} 处`);

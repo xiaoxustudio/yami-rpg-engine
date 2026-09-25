@@ -14,7 +14,7 @@
  *
  * 也就是：**类的定义其实就在引擎目录里**，只是「寄存」在 `ui-window.ts` 的 `UI` 单例上。
  * 于是 14 个引擎文件为了拿到彼此（以及自己的基类），都得 `import { UI } from '@app/ui/ui-window.ts'`
- * （该文件已平移到 `@app/engine/ui/legacy/ui-window.ts`，见 PHASE-1C 第 66 轮）——
+ * （该文件已平移到 `@app/engine/ui/ui-singleton.ts`，见 PHASE-1C 第 66 轮）——
  * 遗留层的最大一块引用面就是这么来的。
  *
  * 本模块把落点换成一个**引擎自己的**注册表：定义留在原文件，登记到这里，
@@ -137,7 +137,7 @@ export interface UIElementTransform {
 /**
  * 画布 **UI 树节点**（序列化形态：`class` + `children` + 各类扩展字段）。
  *
- * 2026-09-21 第 109 轮：**合并了两份同名声明**。此前 `legacy/ui-window.ts` 与 `stores/ui.ts`
+ * 2026-09-21 第 109 轮：**合并了两份同名声明**。此前 `ui-singleton.ts` 与 `stores/ui.ts`
  * 各写一份 `UINodeShape`，靠各自的 `[k: string]: any` 索引签名「碰巧结构兼容」——
  * 也就是说两边可以各自漂移而无人发现。第 108 轮把 store 那份改成具名字段后，
  * `ui-transform.ts:59` 当场报「两者不兼容」，那是这个隐患第一次显形。

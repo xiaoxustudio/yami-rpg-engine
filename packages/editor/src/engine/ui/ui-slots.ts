@@ -11,7 +11,7 @@
  * 此前本文件在模块顶层逐个 `UI.hasPrefab = …` 地**自我绑定**（这正是 `ui-singleton-members`
  * 数的 82 处之一，也是伴随判据 `ui-domain-singleton-imports` 要看的那条 `import { UI }`）。
  * 现在本文件只导出 `uiSlotsMembers`，装配点移到 **UI 诞生的那个模块**
- * （`legacy/ui-window.ts` 的 `uiWindowReady`）：
+ * （`ui-singleton.ts` 的 `uiWindowReady`）：
  *
  * ```ts
  * import('@app/engine/ui/ui-slots.ts').then(({ uiSlotsMembers }) => Object.assign(UI, uiSlotsMembers))
@@ -41,7 +41,7 @@
 import { Data } from '@app/data/data-object.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
-import type { UIShape, UINodeShape } from './legacy/ui-window.ts';
+import type { UIShape, UINodeShape } from './ui-singleton.ts';
 
 /** 本域提供的 6 个槽位签名（手写，理由见文件头「类型为什么手写一份」） */
 export type UISlotMembers = {

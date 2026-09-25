@@ -1,13 +1,13 @@
 import { screenScrollData } from '@app/engine/screen-scroll-data';
-import { UI } from './legacy/ui-window.ts';
-import type { UIShape } from './legacy/ui-window.ts';
+import { UI } from './ui-singleton.ts';
+import type { UIShape } from './ui-singleton.ts';
 // ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { hasClass, read } from '@app/utils/element-utils.ts';
-import { StageColor } from '@app/utils/stage-color';
+import { StageColor, safeHex } from '@app/utils/stage-color';
 import { getUIStore } from '@app/stores/ui';
 import { roundTo } from '@app/utils/math';
 
@@ -23,18 +23,50 @@ const planToSave = function (this: UIShape) {
 	File.planToSave!(this.meta);
 };
 
-const saveToConfig = function (this: UIShape, config: { colors: Record<string, string> }) {
-	config.colors.uiBackground = this.background.hex;
-	config.colors.uiForeground = this.foreground.hex;
+/**
+ * 形参口径（第 211 轮，④-4 接线的最后两条之一）：`colors` 的值类型是 **`unknown`，不是 `string`**。
+ *
+ * 依据是**调用方今天就在传什么**：唯一调用方是 `stores/ui.ts`（它自己声明 `Record<string, unknown>`），
+ * 而那份 config 来自 `config.json` 的解析结果（`EditorConfigShape.colors`）——**不可信的 JSON**，
+ * 任何值类型都可能出现。契约写 `string` 只是让 `services/project/config.ts` 的
+ * `as { colors: Record<string, string> }` 顶住，而实现**本来就必须自己判类型**
+ * （`safeHex` 的第一句就是 `typeof value !== 'string' ⇒ fallback`）。
+ * ⇒ 写成 `unknown` 不是放松，而是把"值未经校验"这件事如实写下来，并把归一化的责任放回实现里。
+ */
+const saveToConfig = function (this: UIShape, config: { colors: Record<string, unknown> }) {
+	// 真源是 store 的 `background` / `foreground`（`ui-engine.ts` 的 `drawBackground` 也读它，
+	// 菜单栏改色走的也是 `getUIStore().background`）。`this.background` 是遗留单例上的**影子副本**，
+	// 只在 `UI.loadFromConfig` 里建一次，所以它既可能**根本不存在**，也可能停在**开机时的旧值**：
+	//
+	// - 不存在：第 ① 步（提交 00729b15）删掉 `window-cluster.ts` 的 `export { UI }` 后，
+	//   `primeWindows` 不再预热 `'ui'` 槽位，`main/initialize.ts` 的 `loadConfig()` 执行时
+	//   `UI.loadFromConfig` 取到 undefined，`stores/ui.ts` 那句 `UI?.loadFromConfig?.(…)`
+	//   **不报错地什么也没做**（代理不为 null，`?.` 挡不住），于是这里读 `this.background.hex`
+	//   抛 `Cannot read properties of undefined (reading 'hex')`，并连带让
+	//   `services/project/config.ts` 的整条 `saveConfig` 中断（后续配色保存与 config.json 落盘都不执行）；
+	// - 旧值：改色只写 store，影子副本不跟随 ⇒ 采信它会把本次会话的配色改动写回开机时的值。
+	//
+	// 故一律以 store 为准，遗留字段仅作 store 取不到时的兜底；两者都没有时保持 config 原值不动。
+	const store = getUIStore();
+	const background = store.background ?? this.background;
+	const foreground = store.foreground ?? this.foreground;
+	if (background) config.colors.uiBackground = background.hex;
+	if (foreground) config.colors.uiForeground = foreground.hex;
 };
 
-const loadFromConfig = function (this: UIShape, config: { colors: Record<string, string> }) {
+const loadFromConfig = function (this: UIShape, config: { colors: Record<string, unknown> }) {
 	// `background` / `foreground` 的真源是 store 的 `loadFromConfig`（见 `stores/ui.ts`），
-	// 这里只维护遗留单例上的那一份，给仍读 `this.background` 的路径（如 `saveToConfig`）用。
-	this.background = new StageColor(config.colors.uiBackground, () =>
+	// 这里只维护遗留单例上的那一份，给仍读 `this.background` 的遗留/插件路径用
+	// （`saveToConfig` 已改为读 store，不再依赖它是否被调用到——见上面的说明）。
+	//
+	// ⚠️ **必须归一化**（第 211 轮）：`StageColor` 的入参是 8 位 RGBA hex，6 位会让 `alpha = NaN`。
+	// 这条规则此前只有 store 侧有（`safeHex`），于是同一个 config 在这里会造出一份 alpha 为 NaN
+	// 的影子副本 —— 索引签名与 `Record<string, string>` 一起把这件事挡了几十轮。
+	// 契约改成 `unknown` 之后，这一处**不再是可选的**：类型说"值未校验"，实现就得校验。
+	this.background = new StageColor(safeHex(config.colors.uiBackground, '00000000'), () =>
 		UIEngine.requestRendering!.call(this)
 	);
-	this.foreground = new StageColor(config.colors.uiForeground, () => {
+	this.foreground = new StageColor(safeHex(config.colors.uiForeground, '000000ff'), () => {
 		if (getUIStore().state === 'open') {
 			// `root` 已迁到 store；`this.root` 是 `undefined`（2026-09-18）。
 			getUIStore().root?.resize();

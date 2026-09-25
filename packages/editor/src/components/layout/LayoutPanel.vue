@@ -1378,9 +1378,7 @@ const { t } = useI18n();
 
 const loadCluster = () => import('@app/tools/window-cluster');
 const Scene = getLazyWindow('scene', () => loadCluster().then((m) => m.Scene));
-const UI = getLazyWindow('ui', () =>
-	import('@app/engine/ui/legacy/ui-window.ts').then((m) => m.UI)
-);
+const UI = getLazyWindow('ui', () => import('@app/engine/ui/ui-singleton.ts').then((m) => m.UI));
 const Animation = getLazyWindow('animation', () => loadCluster().then((m) => m.Animation));
 const Particle = getLazyWindow('particle', () => loadCluster().then((m) => m.Particle));
 const Inspector = getLazyWindow('inspector', () => loadCluster().then((m) => m.Inspector));

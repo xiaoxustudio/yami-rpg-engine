@@ -44,7 +44,7 @@ import '@app/commands/event-editor-register.ts';
 import '@app/plugin/register.ts';
 
 import { sceneWindowReady } from '@app/scene/scene-window.ts';
-import { uiWindowReady } from '@app/engine/ui/legacy/ui-window.ts';
+import { uiWindowReady } from '@app/engine/ui/ui-singleton.ts';
 import { animationWindowReady } from '@app/animation/animation-window.ts';
 import { particleWindowReady } from '@app/particle/particle-window.ts';
 import { paletteReady } from '@app/palette/palette.ts';

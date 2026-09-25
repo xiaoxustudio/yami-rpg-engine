@@ -1,6 +1,6 @@
-import { UI } from './legacy/ui-window.ts';
+import { UI } from './ui-singleton.ts';
 import { uiElClasses } from '@app/engine/ui/element-classes.ts';
-import type { UIShape, UINodeShape } from './legacy/ui-window.ts';
+import type { UIShape, UINodeShape } from './ui-singleton.ts';
 // ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';
 import { Easing } from '@app/data/transition-window.ts';

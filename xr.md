@@ -7679,3 +7679,624 @@ screenBlur zoomFocus`。
 2. **同名方法不等于同一个方法**：`Animation.saveToConfig` / `Layout.saveToConfig` / `UI.saveToConfig`
    是三个不同的东西。**检索调用点时，必须把"接收者是谁"一起看**——这与第 202/205 轮
    "接收者问题"是同一条主线的第三次现形。
+## 第 206 轮（2026-09-22）：最后 3 条里有两条是真问题，一条是我仪器的脆弱
+
+### 一、`hasPrefab`：不是类型噪声，是「弱类型」问题（已还原）
+
+实现只读 `node.presetId`；store 侧 `PrefabRefShape { presetId?: string }` 是**故意收窄**的（注释在案）。
+按「契约应收实际需要的形状」收窄实现形参后，**`UINodeShape` 侧报 TS2559**：
+`Type 'UINodeShape' has no properties in common with type 'PrefabRefLike'`
+—— 「只有一个可选属性」的类型是 **weak type**，而 `UINodeShape` **根本没有 `presetId`**
+（它此前能编过，靠的是索引签名）。补索引签名能让两边都过，但那一刻**接线反而退回 4 条待定**。
+⇒ **这是设计问题（`UINodeShape` 与"局部视图"的关系），不是机械修法。本轮还原。**
+
+### 二、仪器的脆弱点（本轮发现）
+
+生成器的收尾清理**逐行**过滤 `=> any`，而 **`createPrefab` 的签名跨行**
+⇒ 它会删掉跨行签名的续行、改坏一个条目。证据：**同一份源码两次生成的声明数不同（77 ↔ 76）**。
+⇒ 下一轮改成**按条目**过滤。（本轮把契约文件还原到已提交的绿色状态。）
+
+### 三、`saveToConfig` / `loadFromConfig`：藏着一真·缺陷
+
+同一个 config：**store 侧用 `safeHex` 归一化后建 `StageColor`，UI 侧直接 `new StageColor(...)` 不归一化**
+（实现 `ui-events.ts:26/31`，store `stores/ui.ts:662` + 注释 688–696）。
+类型不合（`unknown` vs `string`）只是把这件事**暴露**出来 ——
+**索引签名一直在替一条潜在的运行期问题挡着。**
+
+### 四、账与教训
+
+**接线 73 / 待定 3 不变**（两处实验/改动已还原）· `tsc` 0 · `vue-tsc` 0 新错 · `lint` 0/0 ·
+17 轴持平 · selftest 66/66。仪器改进保留：`defer-vue-breaking-members.mjs` 改为**按类型兼容性错码**归因。
+
+1. **"类型不合"有时是"行为不合"的影子**：`unknown` vs `string` 的背后是"一边归一化、一边没归一化"。
+   **顺着类型错误往下看，能看到运行期的问题** —— 这是索引签名遮住的东西被掀开的样子。
+2. **弱类型（全可选属性）是一个真陷阱**：`UINodeShape`（无 `presetId`）到 `{ presetId?: string }`
+   的赋值会被 TS2559 挡住，而它此前靠索引签名蒙过。**收窄契约前先确认对方不是 weak type。**
+3. **我的仪器有脆弱点**：逐行过滤在跨行签名上会改坏数据，**而下场是"看起来更干净"**（声明数少一条）。
+   ⇒ 又一次同型教训：**仪器的错误往往表现为"指标变好"**。
+## 第 207 轮（2026-09-22）：生成器此前不是幂等的 —— 而误差方向是「看起来更好」
+
+### 一、根因：一条反馈环
+
+生成物里的 `declare module … extends Pick<…>` **改变 `UIShape`**，而成员签名里带 **`this: UIShape`**
+⇒ **上一次生成的结果会反过来影响这一次的类型打印**。证据：同一份源码连跑，声明数漂移
+**77 → 76 → 75**。修法：**先剥掉接线块再建 program** ⇒ 连跑三次**读数一致（75）**。
+
+### 二、另两处脆弱
+
+- 收尾清理按**行**过滤 `=> any`，而 `createPrefab` 签名跨行 ⇒ 删掉续行、留下半个条目。
+  修法：**`any` 拒绝提前到发射之前**（清理退化为空操作）。
+- `wire-contract-members.mjs` 的成员解析改为**跨行累积**（oxfmt 折行会让逐行正则漏掉整条）。
+
+### 三、修好之后：诚实读数是 75 / 72 接 / 4 待定
+
+**少的那两条不是退步，是幻觉消失** —— 旧读数里含**被删掉半截的条目**。
+⇒ **这个 bug 的方向是让数字"更好看"**（声明更多、可接更多），而条目本身是坏的。
+
+### 四、教训
+
+1. **幂等性是仪器的第一性质**：同一个输入跑两次给出不同输出，说明**输出反哺了输入**（这里是
+   `UIShape` 被增强 ⇒ 成员签名里的 `this: UIShape` 变了）。**回归测试里的"重复执行"能抓到它。**
+2. **bug 不都往"坏"的方向偏**：这次偏"好"（虚高的声明数）。**与"仪器瞎了报好"同族** ——
+   所以"数字变好了"永远值得再问一次"它凭什么变好"。
+3. **测试长期只用 `--update-baseline` 会掩盖它**：漂移只在**连跑**时才现形（本轮就是这么抓到的）。
+   **凡是"生成物"，都要幂等自证。**
+## 第 208 轮（2026-09-22）：差点错误地接上 createPrefab —— 归因器自己也有同一个脆弱点
+
+### 一、我怎么差点做错
+
+修完生成器（207 轮）后待定变 4 条，`createPrefab` 是新的。我据"全接线只报 3 条错误"判断
+它是**循环多排除的**，于是**手工加进 `Pick`** —— 当场 `tsc` **1 错**。**循环是对的，我的判断是错的。**
+
+### 二、错在归因器：同一个脆弱点的第三次现形
+
+`classify-deferred-members.mjs` 读成员用的是**逐行正则**，而 `createPrefab` 的条目被 oxfmt **折行**
+⇒ 它的"临时全接线"**根本没接上 `createPrefab`** ⇒ 少报一条错误。
+
+| 序 | 文件 | 症状 |
+| --- | --- | --- |
+| 1 | `gen-contract-members.mjs`（清理） | 删折行续行、留半个条目（声明数漂移） |
+| 2 | `wire-contract-members.mjs`（解析） | 折行条目被静默漏掉 |
+| 3 | **`classify-deferred-members.mjs`（解析）** | **临时全接线漏接 ⇒ 归因表少报** |
+
+⇒ **三是同一个根因的三次现形**：三处各写一份"读契约"的正则，就会各瞎一次。
+下一轮应抽成**唯一实现**（`scripts/oneoff/contract-parse.mjs`），三处共用。
+
+### 三、账
+
+**接线 72 / 待定 4**（全部如实）· `tsc` 0 · `vue-tsc` 0 新错 · `lint` 0/0 · 17 轴持平 · selftest 66/66。
+本轮无代码改动落地（手工接 `createPrefab` 已还原）。
+
+### 四、教训
+
+1. **"数据说只有 3 条"之前，先确认数据里包含了全部条目**：归因器少报不是因为它看到的错少，
+   而是因为**它没把那条接上**。**"少报"与"没看"在输出上长得一模一样。**
+2. **同一个手法的副本会各瞎一次**：跨行解析写了三份 ⇒ 瞎三次。
+   **一处能力只应有一处实现** —— 这条对仪器比对产品代码更硬。
+3. **循环比人稳**：本轮贪心循环拒绝接 `createPrefab` 是对的，而我想"修正"它。
+   **当自动化与判断冲突时，先用一次实验判定谁对**（本轮就是那一次 `tsc` 1 错）。
+## 第 209 轮（2026-09-22）：契约解析抽成唯一实现 —— 并发现仪器有隐藏前置条件
+
+### 一、做了什么
+
+新增 `scripts/oneoff/contract-parse.mjs`（`parseMembers` / `memberTypes`），
+把「读契约成员表」收成**一处实现**，三个脚本共用（生成器统计 / wire 成员表 / 归因表）。
+口径：逐行起步，**括号配平 + 以 `;` 收尾**才算一条结束（对象类型里也有 `;`，不能遇 `;` 就停）。
+
+**直接证据**：归因器修好后报 **4 条**（此前 3 条），多出来的正是 `createPrefab`
+（`self.createPrefab!(this.data, parent, x, y)`）—— 第 208 轮我"据 3 条错误去手工接它"的根因被找回来了。
+
+### 二、⚠️ 新发现：仪器有隐藏前置条件
+
+归因器修好后**第一次**运行报的是 **"全接线 0 条错误"**（假干净）。原因：生成器现在会**剥掉接线块**，
+契约里没有 `Pick` 子句时，归因器的"临时全接线"替换**静默什么也没做** ⇒ `UIShape` 没被增强。
+
+⇒ **`0 错` 与 `没生效` 在输出上长得一模一样**（与第 208 轮"少报与没看长得一样"同族）。
+⇒ 凡是"临时改写后测量"的仪器，都必须**先自证改写生效**（例如断言替换后文本确实变了）。
+
+### 三、三条同族教训的合集（208/209 两轮）
+
+| 表面 | 实质 |
+| --- | --- |
+| 归因表少报一条 | 它的临时状态**没接上**那条 |
+| 全接线 0 错 | 它的临时状态**没生效** |
+| 生成器声明数漂移 | 它的输出**反哺**了输入 |
+
+**三者都是"仪器自己的状态"在骗人** —— 而它们全都表现为**安静的数字**。
+
+### 四、账
+
+**接线 72 / 待定 4** · `tsc` 0 · `vue-tsc` 0 新错 · `lint` 0/0 · 17 轴持平 · selftest 66/66。
+待定 4 条的形状已入档（`createPrefab` / `hasPrefab` 是形状不合；`saveToConfig` / `loadFromConfig`
+是 config 的 `unknown` vs `string`）。
+## 第 210 轮（2026-09-22）：接线 72 → 73 —— hasPrefab 用「并集形状」收下
+
+### 一、问题与做法
+
+实现只读 `node.presetId`，但两个调用方给的形状不同：store 传**故意收窄**的局部视图，
+`ui-pointer.ts` 传完整 `UINodeShape`。收窄会让 `UINodeShape` 侧报 TS2559（weak type）。
+
+给生成器加**形状覆盖表**，把契约写成**两者的并集**：
+
+```js
+SHAPE_OVERRIDES = new Map([['hasPrefab', '((node: UINodeShape | { presetId?: string }) => boolean)']]);
+```
+
+⇒ 两侧都通过，**接线 73 / 待定 3**（`.ts` 侧收敛；`.vue` 阶段无新错）。
+
+### 二、这是同一条主线的第 4 次应用
+
+| 次 | 轮 | 做法 | 依据 |
+| --- | --- | --- | --- |
+| 1 | 201 | `EVENT_WIDE`：形参放开成 `Event` | 调用方**今天就在传** `Event` |
+| 2 | 203 | `OPTIONAL_FIRST`：未使用的形参改可选 | 实现**不读**它 |
+| 3 | 205 | 惰性实参：去掉调用侧多传的 | 实现**收 0 个参数** |
+| 4 | **210** | **`SHAPE_OVERRIDES`：并集形状** | **两边都会传，实现只读其中一项** |
+
+⇒ 主线一句话：**契约描述的是「调用方怎么调它」，不是「实现当初顺手写的类型」。**
+
+### 三、账
+
+**接线 73 / 待定 3** · `tsc` 0 · `vue-tsc` 0 新错 · `lint` 0/0 · 17 轴持平 · selftest 66/66。
+
+### 四、教训
+
+1. **"收窄"与"放宽"之间的第三条路是"并集"**：收窄会让另一侧编不过，放宽到 `unknown` 会丢信息；
+   **并集既如实又不丢**。**当两个调用方给的形状不同时，先想并集。**
+2. **Weak type（全可选属性）是收窄路上的固定陷阱**（第 206 轮踩过、本轮绕开）：
+   只要还有第二种形状要收，就该考虑并集而不是收窄。
+3. **覆盖表要长在生成器里，并写清依据**：本轮的四张表（`EVENT_WIDE` / `OPTIONAL_FIRST` /
+   `SHAPE_OVERRIDES` / `nullPlaceholders`）每一张都对应一条**可复核的调用事实**，
+   而不是"让它编过"的权宜。
+## 第 211 轮（2026-09-25）：④-4 接线 72 → 75（待定 0）—— 三条待定全是「实现那一侧写错了」
+
+### 一、先把账对正：契约是 **75** 条，不是 76
+
+开工前用 `parseMembers()` 实测：契约 **75** 条。三个时点的分项：
+
+| 时点 | 接线 | 待定 | 合计 |
+| --- | ---: | ---: | ---: |
+| HEAD（第 209 轮） | **71** | 4 | **75** ✓ |
+| 工作树（第 210 轮接上 `hasPrefab`） | **72** | 3 | **75** ✓ |
+| 本轮收口 | **75** | **0** | **75** ✓ |
+
+⇒ 第 207 轮那句「75 条声明 / 72 接 / 4 待定」（=76）与第 210 轮的「接线 73 / 待定 3」（=76）
+**各自多算了 1**：第 207 轮是"诚实读数"那一轮，却把总数与分项写成了互相矛盾的一组数，
+第 210 轮又沿着它继续 +1。
+**教训：总数与分项要各自量，并用「分项之和 == 总数」互校** ——「以脚本为准」还不够，
+脚本给的是分项，没人替你做加法。
+
+### 二、三条待定的**完整**错因（探针取全文，不靠猜）
+
+| 成员 | 报错点 | 完整文本（实测） |
+| --- | --- | --- |
+| `createPrefab` | `ui-prefab.ts:36` | ① `UINodeShape` 缺 `name` / `presetId` / `transform`；② 补上并集后**又露出第二层**：`parent` 实参含 `undefined` |
+| `saveToConfig` / `loadFromConfig` | `stores/ui.ts:663` / `:713` | `Record<string, unknown>` → 契约的 `Record<string, string>`：`'string' index signatures are incompatible` |
+
+⇒ 「一条成员 = 一条错 = 一个形状分歧」只是**待定的初值，不是它的形状**：
+`createPrefab` 的第二层**只在第一层消失之后才现形**。
+
+### 三、`saveToConfig` / `loadFromConfig`：不是"契约该改还是调用该改"，是**实现写错了**
+
+第 203 轮把这两条登记成"真·形状分歧，要人判"。本轮按「契约描述调用方怎么调它」判完，
+结论与登记时的假设相反：**分歧的两侧里，错的是实现**。
+
+- **调用方只有一个**：`stores/ui.ts:662/687`，它声明 `{ colors: Record<string, unknown> }`，
+  数据来自 `config.json` 的解析结果（`EditorConfigShape.colors` —— 可选字段、无索引签名）——
+  **不可信的 JSON**，值的类型根本没被校验过。
+- 实现写 `Record<string, string>` 并没有换来任何检查，只换来
+  `services/project/config.ts:27/89` 那两句 `as { colors: Record<string, string> }`
+  ——**契约让调用方说了句谎**。
+- ⇒ 修**实现**（`ui-events.ts` 两个形参改成 `{ colors: Record<string, unknown> }`）；
+  **契约是生成物，跟着变**（**不需要覆盖表**）。这是本轮与 `hasPrefab` 的关键差别：
+  **能改实现时，不要用覆盖表去描述一个并不存在的调用事实。**
+
+#### ⚠️ 类型一放开，**真缺陷**立刻现形：同一个 config，两侧两个答案
+
+`StageColor` 的入参是 **8 位 RGBA hex**（`slice(6,8)` 是 alpha）。归一化 `safeHex`
+此前**只写在 store 侧**（`stores/ui.ts` 的 store setup 里），而 `ui-events.ts` 的 `loadFromConfig`
+直接把 `config.colors.uiBackground` 喂给 `new StageColor(…)`：
+
+| 输入 | store 侧（`safeHex` 之后） | UI 侧（裸值） |
+| --- | --- | --- |
+| `'1e1e1e'` | `'1e1e1eff'` ⇒ alpha **1** | `'1e1e1e'` ⇒ `slice(6,8) === ''` ⇒ alpha **NaN** |
+| `'not-a-color'` | `'00000000'` | 原样塞进 `parseInt` ⇒ 三个通道全 NaN |
+
+**它一直是"静默失效"家族的成员**：`Record<string, string>` 与索引签名合起来替它挡了几十轮
+（类型说"值一定是 string"，于是没人问"这个 string 合法吗"）。
+
+修法：`safeHex` 挪到**它保护的那个解析器旁边**（`@app/utils/stage-color.ts`）成为**唯一实现**，
+store 与 `ui-events.ts` 共用。契约改成 `unknown` 之后，这一处**不再是可选的**：
+类型说"值未经校验"，实现就得校验。
+
+**守它的用例（先红后绿地验过）**：`engine/ui/__tests__/ui-config-colors.spec.ts` 新增 2 例 ——
+把两处 `safeHex(…)` 换回裸值 ⇒ **2 例红**（`expected '1e1e1e' to be '1e1e1eff'`），恢复 ⇒ 全绿。
+
+### 四、`createPrefab`：并集形状（同族第 5 次）+ `parent` 必须可选
+
+- **形状**：实现读 `name` / `presetId` / `transform` 三项；`stores/ui.ts:417` 传的 `UIPrefabShape`
+  恰好就是它要的形状，而 `ui-prefab.ts:36` 传的是**菜单项的 `data`**（静态类型 `UINodeShape`，
+  运行期确实是预置节点）。
+  ⚠️ `UINodeShape` **带索引签名也补不上那三个必需属性**（实测）—— 与"有索引签名就万事大吉"的直觉相反。
+  ⇒ 契约写**两个调用方都会传的形状的并集**（`UINodeShape | { name; presetId; transform }`），
+  与第 210 轮 `hasPrefab` 同一手法。
+- **`parent?:`**：`ui-prefab.ts` 是把 `createPrefabItem(parent?: …)` 的形参直传，实参静态类型含
+  `undefined`。**没有**去调用方补 `?? null` —— 那会改变运行期语义（`undefined` 与 `null`
+  对 `list.addNodeTo` 不是一回事），属于"修症状"。
+- ⚠️ **登记一条遗留的谎**：菜单项的 `data: UINodeShape` 实际是预置节点（`Data.uiPresets[guid].data`）。
+  并集**掩盖**了这一点，而不是修好它。真正的修法是给"预置节点"一个具名形状并用在菜单项上
+  （连带 `createPrefabItem` 的返回类型与菜单 API）—— **单独一轮做**，别夹带。
+
+### 五、另一个会话的 `saveToConfig` 崩溃修复（本轮一并提交，如实归因）
+
+工作树里有一份**本轮之前、由另一个会话**落下的未提交改动：`ui-events.ts` 的 `saveToConfig`
+改为**以 store 为准**取值（`store.background ?? this.background`）。原因是一次真实崩溃：
+
+```
+TypeError: Cannot read properties of undefined (reading 'hex')
+  at Proxy.saveToConfig (ui-events.ts) → stores/ui.ts → saveConfig (config.ts) → quit
+```
+
+第 ① 步之后 `primeWindows` 不再预热 `'ui'` 槽位，`loadConfig()` 里那句
+`UI?.loadFromConfig?.(config)` 会被**静默跳过** ⇒ 遗留影子副本根本不存在；
+而 `saveConfig` 整条被 try/catch 包着 ⇒ **异常之后的配色保存与 config.json 落盘全都不执行**。
+该会话同时新增了 `ui-config-colors.spec.ts`（2 例）。本轮把它一并纳入提交，并在本节记录归属 ——
+它与上面那条归一化缺陷**同源**（都在"影子副本"那条线上）。
+
+### 六、账
+
+**接线 75 / 待定 0**（契约 75 条全部接上）· `tsc` **0 错** · `typecheck:vue` **0 新错** ·
+`lint` 0/0 · `format:check` 通过 · **17 轴持平** · `selftest` 66/66 ·
+editor **256 文件 2079/2079** · ui-kit **115 文件 811/811**。
+
+### 七、下一步：④-4 的最后一关（退役对象字面量）
+
+接线归零**不等于** ④-4 收口：`declared` 仍是 **134**、`legacy-ui-lines` 仍是 **300**（2 文件）。
+删字面量之前必须先做两件**仪器侧**的事（否则归零无法与"仪器瞎了"区分）：
+
+1. `declaredSlots()` 靠 `uiWindowRel()` 定位"含单例字面量的那个文件" —— 字面量一搬/一删，
+   它**静默返回空数组**（`declared` 134 → 0，报表写"✓ 已完成"）；
+2. `gen-contract-members.mjs` 的 `nullPlaceholders` **直接读 `legacy/ui-window.ts` 的 `null` 行**
+   —— 同一个失效模式（读到空集合 ⇒ 所有成员都被当成非空 ⇒ 契约整体变严）。
+
+⇒ **归零的那一刻，先问仪器还能不能看见**（第 183/207 轮同一条教训的第三次应用）。
+
+### 八、教训
+
+1. **分项与总数要各自量，并互校**：本轮之前有两处"+1"，都是**沿着上一轮的错数继续加**得来的。
+2. **"契约该改还是调用该改"有第三种答案：实现该改** —— 当契约是**生成物**时尤甚。
+   覆盖表只该用来描述"两个调用方真的不一样"，不该用来掩盖"实现写错了"。
+3. **类型一放开，缺陷会自己浮出来**：`Record<string, string>` → `unknown` 不是放松，
+   而是**取消一个虚假保证**；它立刻暴露了一条 NaN alpha 的真实路径。
+4. **同一条规则写两处 = 两套行为**：凡是"越界的输入要先归一化"这类规则，
+   必须和它保护的那个解析器住在一起。
+5. **第一层错误消失后，第二层才现形**（`createPrefab` 的 `parent?:`）——
+   "一条成员一条错"只是**待定的初值**。
+## 第 212 轮（2026-09-25）：④-4 第一段 —— **占位表退役**（123 行），并把验收线换成 `placeholders`
+
+### 一、做了什么
+
+`legacy/ui-window.ts` 的单例字面量从 **134 条**收到 **12 条**：删掉的是
+`initialize: null` / `open: null` / … 那 **123 行「先声明、后填充」的占位**，
+留下的是单例**自己真的持有**的字段 —— 7 个 DOM 引用（`page`/`head`/`body`/`screen`/`marquee`/
+`searcher`/`list`）+ `dragging` + `hover` + `translationKey` + `translationTimer` + `zoomTimer`。
+元素上的挂载（`UI.marquee.resize = null`、`UI.list.copy/paste/… = null`、
+`elementDataOf(UI.list).page/head`、`EventBus.once('editor_loaded', …)`）与本文件其余部分**一字未动**。
+
+**为什么现在删是安全的**（三条都是**实测**，不是推理）：
+
+| 依据 | 出处 | 结论 |
+| --- | --- | --- |
+| 全仓**没有任何地方枚举**这个单例（`Object.keys/entries/getOwnPropertyNames(UI)` · `...UI` · `for…in UI` 命中 **0**） | 第 185 轮「必查项一」 | 「表里有几条」对外不可观测 |
+| **134 个声明槽位全部另有提供者**（`declaredWithoutProvider()` 缺口 **0**） | 第 187 轮 | 删掉字面量不会丢成员 |
+| 读侧一律 `UI?.x?.()` / `this.x!` | 本轮复核 | `undefined` 与 `null` 在这两种写法下**行为相同**（都是 falsy） |
+
+⚠️ **不能顺带删那 4 个"值也是 null"的状态字段**：`UI.dragging === null` 是 `ui-events.ts` 的判断
+（`undefined` 会让它变 false ⇒ **行为变更**），`hover`/两个 `Timer` 同理。判据是「谁实现它」，不是「值是不是 null」
+（见第三节）。
+
+### 二、仪器先换锚：验收线从「声明数」改成「**占位数**」
+
+旧读数只有一个 `declared`（全部键数）。而 ④-4 要退役的从来不是"字面量一条不剩" ——
+单例真持有的字段必须有初值，所以 `declared` **到不了 0**；删掉 123 行之后它只是 134 → 12，
+既不是 0（会被读成"没做完"），又得靠人去分辨「剩下这 12 条为什么合法」。
+⇒ 本轮把占位数**单列**（台账轴 `ui-singleton-members` 的 `declared=12 placeholders=0`），
+**`placeholders == 0` 才是 ④-4 该段的验收线**。
+
+新增/改造（都在 `scripts/lib/ui-slots.mjs`，且**各自只有一处实现**）：
+
+- `placeholdersAmong(src, provided)` —— 纯函数内核（可喂合成样本自证）；
+- `singletonPlaceholders()` —— 定位版，**两道硬断言**：① 失锚（找不到字面量）⇒ 抛错；
+  ② **提供者清单读到空 ⇒ 抛错**（否则判据会**恒报 0**，那正是「仪器瞎了却表现为达标」）；
+- `assemblyProvidedSlots()` / `engineImplementedSlots()` —— 把原先散在
+  `assignedSlots()` 与 `providedSlots()` 里的两段解析抽出来共用（装配语法解析这台仪器
+  已经因为写法变化失明过五次，不能再抄第二份）。
+
+### 三、⚠️ 第一版判据是错的，**被自己的 selftest 当场抓住**
+
+第一版把占位定义成「值是 `null` 的键」。跑真实仓库，它报 **4 条**：
+`dragging` / `hover` / `translationTimer` / `zoomTimer` —— 可这 4 条是单例**真持有**的状态字段。
+**「值是不是 null」与「实现是不是在别处」是两件事**，本轴要回答的是后者：
+
+> 占位 = 出现在字面量里、而**实现由别处提供**的键（装配入口 `ui-members.ts` 汇总的域成员对象 ∪ `UIEngine.x = …`）。
+
+改判据后：**123 → 0**。⇒ 教训：**给新口径写"真实仓库此刻必须等于 X"的断言，是让错误定义现形的最短路径**
+（第一版如果只写"合成样本"的用例，它会带着一个错误的定义通过）。
+
+### 四、生成器也解开了对字面量的依赖（否则它会在同一轮变成"契约整体变严"）
+
+`gen-contract-members.mjs` 判断"哪些成员可空"原来是**读字面量里的 `x: null` 行**（`nullPlaceholders`）。
+占位表一退役，这个集合就成空集 ⇒ 75 个成员全部丢掉 `| null` ⇒ 实测（第 194 轮）会打红 **49 处**消费侧。
+⇒ 改成 `ALWAYS_NULLABLE`（依据是事实：成员由 `uiWindowReady` 的 `Object.assign` 在**模块加载之后**注入，
+在那之前 `UI.x` 确实不存在）。
+
+**自证**：重跑生成器 + 重接线后，契约文件与 HEAD **逐字节相同**（`git diff` 空）
+⇒ 「改口径不改变终态读数」这条规矩在这两处都成立。
+
+### 五、账
+
+**`legacy-ui-lines` 300 → 210** · **`declared` 134 → 12**（`ui-singleton-members` 与 `ui-slot-coverage` 两处）
+· **`placeholders` 123 → 0** · 其余 16 轴全部持平（`assigned=132` / `storeRefs=49` / `engineBacked=7` 未变）
+· `selftest` 66 → **67** · `tsc` 0 · `typecheck:vue` 0 新错 · `lint` 0/0 · `format:check` · `text:check` ·
+`docs:check` · editor **256 文件 2079/2079** · ui-kit **115 文件 811/811** · 基线已 `--update-baseline`
+（3 项下降：见上）。
+
+### 六、还剩什么（④-4 第二段：搬迁与删文件）
+
+占位表退役**不等于** ④-4 收口 —— 本文件仍在 `legacy/` 下。第二段是**纯搬迁**（已量清）：
+
+- 新建 `engine/ui/ui-singleton.ts`（把本文件原样搬出 `legacy/`，`register.ts` 的域加载顺序内联进去）；
+- 重接 import：**14 个源文件**（8 个域模块 + `ui-domain-contract.ts` 的 `declare module` 目标 +
+  `stores/ui.ts` / `tools/window-cluster.ts` / `file/file-system-core.ts` / `LayoutPanel.vue`）
+  与 **9 个 spec**（5 个 `vi.mock` + 4 个 import）；`ui-domain-contract.ts` 的增强目标路径要一起改；
+- 删 `legacy/ui-window.ts` + `legacy/register.ts` ⇒ `legacy-ui-lines` / `legacy-ui-refs` / `ui-domain-singleton-imports` 三条轴归零；
+- `ui-slots.mjs` 的 `uiWindowRel()` 已按**内容**定位（`export const UI … = {`），搬迁后自动跟上；
+  但 `uiDirRe()`（家族目录判据）会从 `engine/ui/legacy/` 变成 `engine/ui/` ——
+  实测该目录下的域模块**本来就是家族成员**（`domainModuleRels()` 已覆盖）⇒ `assigned` 不变，**但仍要在那一轮复量**；
+- 最后：**真机走查**（画布渲染 / 平移缩放 / 点选 / 打开保存撤销 / 预制体）—— 这一类缺陷只有真机能看见。
+
+**登记一个架构决定（下一段开工前必须知道）**：5 个域模块体内还有 **~70 处 `UI.<x>`**（ui-list 46 ·
+ui-events 12 · ui-pointer 7 · ui-transform 4 · ui-file 1）。它们的**一部分不可能**改成 `this.x` ——
+第 173/184 轮已定：这些函数有**双接收者**（`this` 是元素、`UI` 才是单例，例如经 `on(list, 'keydown', …)`
+注册的处理器）。⇒ 保留一个「UI 形状的 facade」并让域模块引用它是**路线 A**（本仓推荐、也是本轮的形态）；
+真要把这些依赖也去掉，等于**路线 B**（成员全部改成显式接收 state 参数），那是独立且更大的改动。
+
+### 七、教训
+
+1. **删之前先删"仪器对被删对象的依赖"**：这一轮有**两处**（`declaredSlots()` 的锚、
+   生成器的 `nullPlaceholders`）。前者会**抛错**（第 186 轮加的守卫，好），后者会**静默变严**（坏）——
+   同一个"对象要退役"的事件，在两台仪器上表现为两种失败，**只有都查一遍才会发现第二种**。
+2. **新口径要有"真实仓库此刻等于 X"的断言**：它是唯一能让**定义本身出错**现形的用例
+   （第三节那个错误定义就是被它抓住的）。
+3. **「改口径」必须先证明「不改变终态读数」**：本轮生成器那处改动的证据是
+   「契约文件与 HEAD 逐字节相同」—— 比"看起来没变"硬得多。
+4. **同一个概念只留一处实现**：`assignedSlots` / `providedSlots` / `singletonPlaceholders` 现在共用
+   同一套装配/引擎解析（这台仪器在写法变化上已经瞎过五次）。
+## 第 213 轮（2026-09-25）：④-4 第二段 —— 单例搬出 `legacy/`，**三条轴同时归零**
+
+### 一、搬迁
+
+`git mv legacy/ui-window.ts → engine/ui/ui-singleton.ts`（保留 git 历史）、
+`legacy/register.ts` 删除（它的「域模块加载顺序」并进 `uiWindowReady` 的 `loadUiDomains()`）、
+**`legacy/` 目录整个消失**。**29 个文件**重接路径（含 5 个 spec 的 `vi.mock`）。
+搬迁后 `uiWindowRel()` 靠**内容**定位（`export const UI … = {`）自动跟上 —— 那条"防搬运"的
+设计（第 96 轮）这次真的兑现了：**没有一处需要改它**。
+
+顺带一处**语义收紧**（写进注释）：原来的 `register.ts` 是**静态** import，被 `uiWindowReady`
+并行引入 ⇒ 它其实与 `ui-members.ts` 那条分支**在竞争**（后者静态 import 全部域模块）。
+改成顺序 `await` 之后，「先 `ui-initialize` 后其余」这条约定**第一次真的被强制**了。
+行为等价（域模块只做赋值），但"约定"与"事实"从此一致。
+
+### 二、⚠️ 本轮真正的难点：**仪器三处换锚**（"归零"必须能被独立重算解释）
+
+删掉一个有仪器盯着的对象，最大的风险不是代码，而是**仪器跟着一起瞎**。三处判据的失效方式各不相同：
+
+| 判据 | 失效方式 | 处置 |
+| --- | --- | --- |
+| `uiDirRe()`（家族/遗留目录） | **暴涨**：它原来是 `dirname(uiWindowRel())`，搬迁后会指向**整个 `engine/ui/`** ⇒ `legacy-ui-lines` 从 210 涨成全目录行数、`legacyOnlyStoreSlots()` 把每个域模块当成遗留层（`1c-store-slot-gaps` 假回归） | 改成**常量** `LEGACY_UI_DIR`：「这层遗留还在不在」问的就是遗留层自己的名字 |
+| `legacy-ui-lines` 轴 | 同上（它用 `dirname(uiWindowRel())`） | 改用同一个常量；两次历史坑（写死 `src/ui` → 事后改用 dirname 推导）都写进注释 |
+| `self-test.mjs` 的「假绿三连」守卫 | **守卫前提失效**：它写的是「**遗留层还在** ⟹ 轴读数非 0」 | **换锚不删**（第三次换锚，每次在案）：前提翻成「**遗留层已删**」，改问四件事 —— ① 目录真没了（`existsSync` **直接问文件系统**，而不是 `collectFiles` 的返回值：后者对"不存在"与"空目录"给同一个答案，正是这条轴历史上被骗过的地方）；② 单例**没丢**（内容定位仍找得到、已不在遗留目录下、本体指纹 —— 桥安装 + 嵌套挂载 —— 仍在）；③ 三条轴读 0 且**按前缀独立重算**；④ 判据仍按遗留目录判（域模块不算遗留） |
+
+### 三、派生清单也红了 —— 而那正是它设计的目的
+
+`bridge-integrity.spec.ts` 的「待审根目录清单」里 `'engine/ui/legacy'` 已不存在 ⇒ 它**按自己的规矩抛错**：
+
+> `bridge-integrity: 待审根目录不存在 → src/engine/ui/legacy`（目录被搬走了就必须更新这份清单，
+> 否则本审计的覆盖会静默变小）——「**宁可红在清单过期，也不要绿在覆盖变小**」
+
+处置：把该项换成 `'engine/ui'` ⇒ **覆盖面变大**（域模块也进了审计面，实测无新增缺口）。
+⇒ 一条好断言的价值就在这里：**它把一次静默的覆盖缩小变成了一次必须处理的红灯。**
+
+### 四、账
+
+**三条轴同时归零**：`legacy-ui-lines` **210 → 0**（files 2 → 0）· `legacy-ui-refs` **1 → 0**
+（total/runtime/files）· `ui-domain-singleton-imports` **5 → 0**。
+其余轴持平（`declared=12` / `placeholders=0` / `assigned=132` / `storeRefs=49` / `engineBacked=7` 未变）
+· `selftest` 67/67 · `tsc` 0 · `typecheck:vue` 0 新错 · `lint` 0/0 · `format:check` · `text:check` ·
+`docs:check` · editor **256 文件 2079/2079** · ui-kit **115 文件 811/811** ·
+**`build:vite` 通过** · 基线已 `--update-baseline`（6 项下降）。
+
+⚠️ **动态 import 的路径只有构建看得见**：`stores/ui.ts` / `file/file-system-core.ts` /
+`LayoutPanel.vue` 三处都是 `import('@app/engine/ui/…ui-singleton.ts')` —— 对 `tsc` 而言它永远是
+一个 string，写错只在构建或运行时炸。⇒ 本轮把 `build:vite` 拉进了门禁链。
+
+### 五、还剩什么
+
+**只剩真机走查**（画布渲染 / 平移缩放 / 点选 / 打开保存撤销 / 预制体）—— 附录四/六/七/八/九
+记的五次事故全是这一类，只有真机能发现。判据口径（第 110/111 轮）：**接线正确性**已由静态检查
+与全套验收，**真实渲染**仍只有真机能看。
+
+#### 真机走查已跑（本轮）：接线证实可用，像素项留给人工
+
+**两个环境坑先记下来**（都会让人以为"app 起不来"）：
+
+1. `pnpm exec electron …` 在本机把 `dist-electron/main.js` 当 **Node 脚本**跑
+   （`ipcMain` undefined ⇒ `Cannot read properties of undefined (reading 'handle')`）；
+2. `electron --remote-debugging-port=9223 <app>`（参数在前）被 electron 43 判成 `bad option`。
+
+可用写法：**直接调二进制 + 参数在后** ——
+`node_modules/electron/dist/electron.exe <packages/editor> --remote-debugging-port=9223`。
+
+| 检查（`scripts/smoke-layout.mjs`，CDP 9223） | 结果 |
+| --- | --- |
+| `debug` | ✅ 启动不崩：标题 / `#app` / `#workspace-page-manager` / 首页文本齐全，`readyState=complete` |
+| `open-project` | ✅ 项目打开（`workspace=directory`，groups 3 / groupManagers 2） |
+| UI 页打开（`Window.open('ui')` + 页内探针） | ✅ 外壳与全部登记元素到位（`#ui` / `#ui-head` / `#ui-body` / `#ui-screen` / `#ui-marquee` / `#ui-list`），无异常 |
+| 结构对照 | ✅ UI 页与**场景页**结构一致（`div#X` + `div#X-screen`，子节点都无 `canvas`）⇒「UI 页没 canvas」不是回归 |
+| 未覆盖 | ⚠️ 像素级渲染 / 平移缩放 / 点选 / 打开保存撤销 / 预制体 —— 本次未打开 UI 文档，无内容可画 |
+
+⇒ **接线**（动态 import 路径、装配时机、元素登记）真机证实可用；**"画得对不对"仍属人工项**。
+这也是第 110/111 轮那条口径的第二次兑现：**别拿静态绿灯代替"画出来了"**。
+## 第 214 轮（2026-09-25）：转 `any-hatches` —— `SetStringOperand` 由 `Record<string, any>` **枚举**成 29 个具名字段
+
+### 一、为什么挑它：计划早就点名，而且它**自包含**
+
+第 89 轮工作单的 B 组里，`composables/commands/useSetStringCommandSchema.ts:15` 被标为
+「**9 个用法全在本文件内**，是『枚举真成员』的好候选」。（该行现在写"9 个用法"是过时读数：
+`operand.<key>` 实际读写点远多于此，但**用法面确实只在本文件**。）
+
+动手前实测（本轮）：
+
+| 检查 | 结果 |
+| --- | --- |
+| `operand.<key>` 用到的键 | **29 个**（`type` `value` `variable` `method` `index` `begin` `end` `length` `pad` `pattern` `replacement` `attributeId` `stringId` `property` `actor` `skill` `trigger` `state` `equipment` `item` `fileId` `element` `key` `script` `data` `choiceIndex` `format` `width` `height`） |
+| 动态键访问 | `operand[…]` / `...operand` / `Object.keys(operand)` 命中 **0** ⇒ 枚举可行 |
+| 消费方形状 | `Command.parseXxx` 全是 `CommandMethod = (...args: any[]) => any` ⇒ **它们自己判形状** |
+
+### 二、做法与判据
+
+- 29 个键全部写成**具名可选字段**（除判别键 `type`），并删掉那行 `// oxlint-disable-next-line no-explicit-any`；
+- **值的类型写 `unknown`**：下游 `CommandMethod` 本来就收 `any`，这里写具体类型等于**凭空承诺**
+  一件实现没承诺的事（第 124 轮「这个断言在替谁干活」的判据）。写 `unknown` 是如实 ——
+  它同时**不产生新的 `any` 足迹**（本轴的正则只看 `[k: string]: any` / `Record<string, any>`）；
+- ⚠️ **只有 4 个必须是 `string`**：`data`（`operand.data.slice(-1)`）、`property` / `method`
+  （参与 `t(…)` 拼接与 `.replace`）、`script`（`case 'script': return operand.script;` —— 原样当返回值）
+  —— `unknown` 进模板字面量/字符串运算会当场报错。
+
+**首次 `tsc` 就是 0 错**，这本身就是"枚举完整"的证据：漏一个键（或写错可空性）会立刻点名。
+
+### 三、账
+
+`any-hatches` **29 → 28**（files **18 → 17**）· 其余轴持平 · `selftest` 67/67 · `tsc` 0 ·
+`typecheck:vue` 0 新错 · `lint` 0/0（**没有产生陈旧豁免** —— 那行 `oxlint-disable` 与它豁免的
+`any` 同时消失）· `format:check` · editor 全套绿 · 基线已 `--update-baseline`。
+
+### 四、教训
+
+1. **"可选 + `unknown`"是索引签名的诚实替身**：索引签名给的是"任何键都能编过"，
+   而枚举给的是"这些键可以、别的不行"；值类型那一层**不该**顺手收紧 —— 那会变成新的谎。
+2. **删签名时必须连着删豁免注释**（第 38 轮立过的规矩）：否则 `stale-exemptions` 会多一处。
+   本轮 `lint` 0/0 就是这条的验收。
+3. **第一次跑 `tsc` 就 0 错，是"量清了"的强信号**：反过来，改造后报一堆错也不一定是坏事 ——
+   那说明**真形状与假形状的差**被暴露了（第 188 轮 `UIShape` 退役时是 370 错）。
+
+### 五、`any-hatches` 剩下的（供下一轮选点）
+
+A 组（引擎命名空间对象，`export const Xxx: Record<string, any> = {}`）：
+`animation-window-engine` **29** 成员 · `palette/auto-tile` **47** · `ui-engine` **25**（④ 已收口，
+它头顶那行豁免注释要连签名一起删）· `scene-camera-engine` **8**（❌ 已试过并回退：spec 是"具体部分 mock"）·
+`particle-engine` **3**（❌ 已回退：成员引用文件下方的 class —— **类型可以前向引用、class 不可以**）·
+`palette/tile-frame-index` **13** · `palette/palette` **0**（组装式单例，成员挂在别的文件里）。
+B 组：`particle-window.ts` ×2 · `scene-window.ts:1365`（动态取键）· `YMParameterPane.vue` ×2（`.vue` 只能靠 `typecheck:vue` 量）。
+C 组：4 处已注明「承重，别顺手删」，**动之前先读该处注释**。
+
+⚠️ 第 133/134 轮的判据仍然有效：**先看 `this: typeof Y` 里的 `Y` 是不是"调用点/测试手里本来就有的那个对象"**，
+再看成员个数 —— `scene-marquee-engine`（`this` 是测试直接传的对象）便宜、
+`scene-camera-engine`（`this` 是 `Scene`，测试给的是**部分 mock**）贵。**成员数一律按唯一名字去重**。
+## 第 215 轮（2026-09-25）：量 `ui-engine` 的 `Record<string, any>` —— **代价是 93 条同码错，但装上成员表会露出"两个 `UIShape`"**
+
+### 一、量代价（用仓库自带的尺子）
+
+```
+node scripts/oneoff/measure-any-hatch-site.mjs packages/editor/src/engine/ui/ui-engine.ts 22
+```
+
+结果：**93 条报错，错误码只有一种（TS2339「属性不存在」）**，且**非 TS2339 的条目 = 0**。
+分布：`ui-engine` 35 · `ui-events` 16 · `ui-transform` 13 · `ui-pointer` 12 · `ui-initialize` 9 ·
+`ui-list` 3 · `ui-file` 2 · `ui-state.spec` 2 · `ui-rendering-receiver.spec` 1。
+
+⇒ **单一错码 = "容器没有形状"**，不是"形状不对" ⇒ 按第 131/134 轮的手法（本地成员表 + `{} as`）可做。
+（对照：`tile-frame-index` 摘注解后错码混杂 `2339/2322/2769/2721/2345/2531/2349` ⇒ 那是设计活。）
+
+### 二、签名不是手抄的：新仪器按 **AST 取右侧表达式**
+
+21 个成员的签名用类型检查器打印 —— 但**不能读属性**：
+
+> `export const UIEngine: Record<string, any> = {}` ⇒ `checker.getTypeOfSymbolAtLocation(UIEngine.x)`
+> 返回 **`any`**（容器就是 `any` 的字典）。**有类型的是每个赋值右侧那个函数表达式。**
+
+新增 `scripts/oneoff/gen-engine-members.mjs`（**只读**）：遍历 AST，对每个
+`UIEngine.<name> = <expr>` 取 `checker.getTypeAtLocation(<expr>)`。实测产出 **21 条完整签名 /
+11 种类型**，含 `this` 与返回类型（例：`getPointerCoords: (this: UIShape, event: PointerEvent) => {x: number; y: number}`、
+`selectControlPoint: (this: UIShape, x: number, y: number) => ControlPoint | null`）。
+
+⚠️ 其中 `renderingFunction: () => void` **没有 `this`**，是刻意的（被 `Timer` 裸调用；
+里面 7 个 draw 必须走 `UI.drawXxx()` 才能绑到单例）⇒ 表里**不能**给它 `this: UIShape`
+—— 那等于宣称一个运行期不存在的接收者（2026-09-18 那次"黑屏且不报错"的成因）。
+
+### 三、⚠️ 装上成员表之后，报错**一条都不在 ui-engine 里**
+
+把表接到 `UIEngine` 上，`tsc` 报的全是同一个形状、而且落在**别的文件**：
+
+```
+Argument of type 'UIShape' is not assignable to parameter of type 'UIFacadeShape'.
+  Type 'UIShape' is missing the following properties from type 'UIFacadeShape':
+    marquee, requestRendering, updateControlPoints, renderingFunction, and 2 more.
+  src/engine/ui/ui-transform.ts(240,35) … ×5 · src/stores/__tests__/ui-state.spec.ts(66,26) … ×2
+```
+
+⇒ **全仓有两个同名的 `UIShape`**：`ui-singleton.ts` 的单例接口（35 个字段 + `[k: string]: any`）
+与 `ui-facade.ts` 的 `UIFacadeShape`（**引擎读的契约**）。第 32 行那句 `type UIShape = UIFacadeShape`
+是"引擎**内部**的 `this`"，而域模块手里的 `this: UIShape` 是**单例接口**。
+成员表一给 `this` 加上类型，"域模块的 `this` 传给引擎成员"这一步就**第一次被检查**了
+—— 而这正是这张表该发现的东西：**索引签名替它挡了几十轮**。
+
+⚠️ 而且这次**索引签名补不上**：`[k: string]: any` 只提供"任意键可读"，
+**不满足目标类型里具名的必需属性**（第 211 轮 `createPrefab` 的同一条，这里第二次现形）。
+
+### 四、为什么本轮回退（不硬塞）
+
+收口这 6 个成员至少有 3 条路，每条都要动**启动早期**的接线：
+
+1. 让单例接口 `extends UIFacadeShape`；
+2. 给这 6 个成员在单例接口里补显式声明；
+3. 把引擎成员的接收者类型换掉。
+
+而第 1/2 条会立刻撞上**单例字面量的 `satisfies Partial<UIShape>`**：`hover` 一收紧成
+`HoverNode | null`，字面量里的 `null as UINodeShape | null` 就不再满足（`UINodeShape` → `HoverNode`
+不可赋值，同第三节那条）⇒ 当场报错，并可能连锁到 `ui-transform` 的写入点。
+⇒ 这是**类型设计决定 + 真机回归**（附录四/六/七记的全是这类），按第 194 轮的规矩**独立一轮**。
+
+本轮**产品代码零改动**（`ui-engine.ts` 已 `git checkout` 还原），只留下一件**只读仪器**与这份结论。
+
+### 五、账
+
+`tsc` 0 · `typecheck:vue` 0 新错 · `lint` 0/0 · **17 轴持平**（`any-hatches` 仍 **28** ——
+**没有靠"换个写法"白拿**）· `selftest` 67/67。
+
+### 六、教训
+
+1. **"摘注解试跑"是选点的正确第一步，而它的读数要按"错码种类"读**：单一错码 ⇒ 容器没形状（可机械补）；
+   错码混杂 ⇒ 形状不对（设计活）。
+2. **"值有类型"与"属性有类型"是两件事**：容器是 `Record<string, any>` 时，属性读出来只有 `any`；
+   类型在 AST 右侧的函数表达式上。**仪器必须按 AST 取**（正则与 `getTypeOfSymbolAtLocation` 都会给你 `any`）。
+3. **索引签名不满足具名必需属性** —— 这是同一条的第二次现形（第 211 轮 `createPrefab`）。
+   **每次要把一个值交给"声明了具名必填字段"的目标类型时，先想这条。**
+4. **"报错落在哪个文件"是判断"机械活 / 设计活"的判据**：落在被改的文件里 = 抄写活；
+   落在**别人**身上 = 接线/契约问题（本轮 0 条落在 `ui-engine.ts`）。
+5. **回退也是产出**：这一轮把"能不能机械拿下"这个问题**答死了**（能生成签名，但装上就会暴露接线），
+   下一轮不必重走 —— 而"没白拿"由台账证明（`any-hatches` 没动）。
+
+### 六、教训
+
+1. **删一个有仪器盯着的对象 = 要给每一条盯它的判据换锚**，而它们的失效方式**各不相同**：
+   有的抛错（好，第 186 轮的守卫）、有的**暴涨**（假回归，最难发现 —— 因为它看起来像"变差了"而不是"瞎了"）、
+   有的**前提失效**（红，好）。⇒ **"归零"那一刻，先把每条相关判据的失效方式列一遍。**
+2. **守卫的前提失效是"目标达成"的信号，不是删掉它的理由**：换锚、把换锚的原因写在案
+   （本仓已是第三次：第 97 轮、第 114 轮、本轮）。
+3. **派生清单必须跟着目录结构走**，而且要让它**在清单过期时抛错**（否则覆盖会静默变小）。
+4. **动态 import 路径必须过构建**：`tsc` 对字符串类型不闻不问。
+5. **约定与事实不一致时，把约定变成事实**（`loadUiDomains()` 的顺序 await）——
+   同一个文件里"注释说顺序有意义"和"实现其实在竞争"并存了几十轮。
+
+

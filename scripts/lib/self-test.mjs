@@ -12,7 +12,8 @@
 //   2. 白名单必须真的是从 .oxlintrc.json 读出来的（单一真源），且每条都有设计理由。
 //   3. 监听器扫描必须区分「匿名/具名」与「once/非 once」。
 
-import { join, dirname } from 'node:path';
+import { join } from 'node:path';
+import { existsSync } from 'node:fs';
 import {
 	codeOnly,
 	countCodeMatches,
@@ -32,12 +33,13 @@ import {
 import { readDomWhitelist, loadDomWhitelist, WHITELIST_RATIONALE } from './dom-whitelist.mjs';
 import {
 	uiWindowRel,
+	LEGACY_UI_DIR,
 	declaredSlots,
 	declaredSlotsFrom,
+	placeholdersAmong,
+	singletonPlaceholders,
 	providedSlots,
 	declaredWithoutProvider,
-	legacyOnlyStoreSlots,
-	storeReferencedSlots,
 	uiDirRe,
 	uiFacadeGaps,
 	uiSlotCoverage,
@@ -349,6 +351,44 @@ test('providedSlots()：134 个声明槽位必须**全部**另有提供者（缺
 		declaredWithoutProvider(),
 		[],
 		'这些槽位一旦删掉字面量就失去唯一的家 ⇒ ④-4 必须先给它们安排住处'
+	);
+});
+
+// ④-4 那一段的验收线（2026-09-25 第 212 轮）：要退役的是**占位表** —— 也就是
+// 「出现在单例字面量里、而实现由别处（装配 / 引擎）提供」的那些键。它们正是历史上那 123 行
+// `initialize: null` / `open: null` …（域模块先声明、后填充；④-3 之后改由 `uiWindowReady` 装配）。
+process.stdout.write('\n④-4 验收线 —— 占位表退役（placeholders）\n');
+test('placeholdersAmong：判据是「实现由别处提供」，不是「值是不是 null」', () => {
+	// 纯函数自证（合成样本，不动真实仓库）
+	eq(
+		placeholdersAmong(
+			'export const UI = {\n\tinitialize: null,\n\topen: null,\n\ttranslationKey: 0b0000\n};\n',
+			new Set(['initialize', 'open'])
+		),
+		['initialize', 'open'],
+		'装配会提供 initialize/open ⇒ 它们是占位；translationKey 有真值 ⇒ 不是'
+	);
+	eq(
+		placeholdersAmong(
+			// 第一版口径（值 == null）会在这里数出 4 条 —— 那 4 条是单例**自己真持有**的状态字段
+			'export const UI = {\n\tdragging: null as T | null,\n\thover: null as U | null\n};\n',
+			new Set(['initialize', 'open'])
+		),
+		[],
+		'`dragging`/`hover` 的初值 null 有语义（`UI.dragging === null` 是判断），不算占位'
+	);
+	let missingThrew = false;
+	try {
+		placeholdersAmong('// 没有字面量\n', new Set(['a']));
+	} catch {
+		missingThrew = true;
+	}
+	ok(missingThrew, '缺字面量时 `declaredSlotsFrom()` 抛错 ⇒ 本判据不会静默返回空数组');
+	// 真实仓库 + **非空自证**：两个提供者来源都必须看得见东西，否则 0 是"仪器瞎了"而不是"做到了"
+	eq(singletonPlaceholders(), [], '真实仓库的占位表此刻必须已退役（placeholders = 0）');
+	ok(
+		declaredSlots().length > 0,
+		'字面量此时仍在（还有单例真持有的字段）—— 它不是"已归零"，别把两者读混'
 	);
 });
 
@@ -693,8 +733,8 @@ test('UIEngine 桥：镜像若还在就必须指到真实成员；退役后 stor
 	);
 });
 
-test('遗留层还在 ⟹ 与目录无关的挂载点轴非 0；且 1c-store-slot-gaps 的 0 必须被独立重算解释', () => {
-	// 这一条守的是 2026-09-21 实测到的**假绿三连**：
+test('④-4 收口 ⟹ 与目录无关的轴读 0，且「0」必须能被独立重算解释（目录真删了、单例没丢）', () => {
+	// 这一条守的是 2026-09-21 实测到的**假绿三连**（历史见 `xr.md` 与 git）：
 	//
 	//   - `legacy-ui-lines` 写死 `packages/editor/src/ui`，而目录已被搬到 `engine/ui/legacy/`
 	//     ⇒ `collectFiles` 对不存在的目录返回 `[]` ⇒ 读到 **0**，报表写「✓ 已完成」；
@@ -703,104 +743,80 @@ test('遗留层还在 ⟹ 与目录无关的挂载点轴非 0；且 1c-store-slo
 	//   - 与此同时 `ui-singleton-members` 报 **103 处挂载**。**两条轴自相矛盾时先怀疑仪器。**
 	//
 	// `collectFiles` 永不报错、`importRefs` 永不报错 —— 仪器瞎了不会有任何信号，
-	// 所以必须有一条用例把「主体还在」与「读数非 0」绑在一起。
+	// 所以必须有一条用例把「主体还在/已搬走」与「读数」绑在一起。
 	//
-	// ⚠️ **2026-09-21 第 97 轮改过**：`1c-store-slot-gaps` 现在**合法地为 0** ——
-	// 阶段 1c ③ 已把 7 个域模块全部搬出 `legacy/`，那里只剩 `ui-window.ts` 的对象字面量
-	// 与接线文件。所以原先那条「遗留层还在 ⟹ 槽位轴非 0」的前提**不再成立**，
-	// 但它要守的东西还在。新判据把它拆成两半，**比原来更强**：
-	//   ① 「主体还在」由**与目录无关**的 `ui-singleton-members` 口径守（数 `UI.x =` 处数）；
-	//   ② 「轴为 0」必须能被**独立重算**解释 —— 直接翻遗留目录，若其中仍有属于 store 引用、
-	//      且不是 `UIEngine.x = …` 镜像的 `UI.<slot> =`，那实现就仍在遗留层，轴不该是 0。
+	// ⚠️ **本用例换过三次锚，每次都写在案；换锚 ≠ 删判据**（规律见 `xr.md` 第 183 轮）：
+	//   · 2026-09-21 第 97 轮：`1c-store-slot-gaps` 合法为 0（7 个域模块已搬出 `legacy/`）；
+	//   · 2026-09-22 第 114 轮：「主体还在」的正向信号从「还有 `UI.x =` 挂载」换成
+	//     「桥安装 + 嵌套挂载仍在」（那 21 行镜像退役后前者合法归零）；
+	//   · **2026-09-25 第 212 轮（本轮）：前提从「遗留层**还在**」翻成「遗留层**已删**」**
+	//     —— ④-4 把单例搬出 `legacy/`、删掉整个目录。
+	// 要守的东西一字未变：**「轴读 0」必须能被独立重算解释**，不能是"仪器找不到了"。
+	// 新判据拆成四半：
+	//   ① **目录真没了**（用 `existsSync` 直接问文件系统，而不是 `collectFiles` 的返回值 —— 后者
+	//      对"不存在"与"空目录"给同一个答案，正是这条轴历史上被骗过的地方）；
+	//   ② **单例没丢**：内容定位仍找得到它、已不在遗留目录下、且本体的两处指纹还在（搬走 ≠ 掏空）；
+	//   ③ 三条相关轴读 0，且**按前缀独立重算**一遍；
+	//   ④ 判据本身仍按「遗留目录」判（域模块不会被算成遗留层，否则搬运白做、轴假 0）。
+	ok(
+		!existsSync(join(ROOT, LEGACY_UI_DIR)),
+		`${LEGACY_UI_DIR} 应当已被 ④-4 删除（它还在 ⇒ 收口结论不成立）`
+	);
+
+	// ② 单例没丢
 	const winRel = uiWindowRel();
 	ok(winRel !== null, '找不到 UI 窗口文件；本用例的前提变了，请复核而不是删掉它');
-	const legacyDir = dirname(winRel);
-	const legacyFiles = collectFiles({ dirs: [legacyDir], includeTests: true });
 	ok(
-		legacyFiles.length > 0,
-		`${legacyDir} 下应有文件（把目录写死会让这里静默返回空 → 行数轴假 0）`
+		!winRel.replace(/\\/g, '/').startsWith(`${LEGACY_UI_DIR}/`),
+		`单例应当已搬出遗留层，实际仍在 ${winRel}`
 	);
-	const refs = importRefs(collectFiles({ dirs: SCAN_DIRS }), /^@app\/engine\/ui\/legacy\//);
+	const singletonSrc = codeOnly(readSource(join(ROOT, winRel)));
 	ok(
-		refs.total > 0,
-		'遗留 UI 单例应当仍被静态引用（若为 0：要么真删干净了，要么仪器漏了 `export … from`）'
-	);
-	// ① 「主体还在」：**判据在 2026-09-22 第 114 轮换过一次，必须记下来。**
-	//    原判据是「遗留目录里仍有 `UI.<name> =` 挂载（用与目录无关的 ui-singleton-members 口径证）」。
-	//    阶段 1c 第 ④-2c 步退役了那 21 行 `UI.x = UIEngine.x` 镜像之后，实测遗留目录里
-	//    **一条直接挂载都不剩了**（它们是最后一批）⇒ 原判据前提消失，会一直红。
-	//    要守的东西没变：**不能因为仪器瞎了而把「已搬完」读成 0**。新的正向信号取「单例本体仍在这里」：
-	//      · 域槽位的**嵌套**挂载（`UI.list.copy = null` 这类，不属本轴口径，但证明对象字面量还在）；
-	//      · store 桥的安装（`Object.defineProperty(UI, key, …)`，见本文件另一条用例的口径说明）。
-	//    这两者可都在 ui-window.ts 里被搬走/掏空时立刻变红。
-	const legacySrc = codeOnly(legacyFiles.map(({ full }) => readSource(full)).join('\n'));
-	const hasSingletonBody =
-		/Object\.defineProperty\(\s*UI\s*,/.test(legacySrc) &&
-		/\bUI\.[A-Za-z_$][\w$]*\.[A-Za-z_$][\w$]*\s*=/.test(legacySrc);
-	ok(
-		hasSingletonBody,
-		'遗留目录里应仍是 UI 单例本体所在处（桥安装 + 嵌套挂载）；两者都读不到 ⇒ 扫描面瞎了，或本体已被搬走'
-	);
-	// ③ 「主体还在」的**第二路读数**：与目录无关，且必须是**另一个仪器**。
-	//
-	//    ⚠️ **判据在 2026-09-22 第 183 轮换过一次，必须记下来。**
-	//    原判据是「全仓仍应有 `UI.<name> =` 挂载点（当时 82 处，都在 `engine/ui/` 的域模块里）」。
-	//    第 ④-3 步把最后两个域（`ui-events` 21 处 / `ui-pointer` 8 处）的声明也搬进了成员对象
-	//    ⇒ 全仓 `UI.x =` 挂载点**合法地归零**（轴读数 29 → 0，`declared` 仍 134），原判据前提消失、会一直红。
-	//    要守的东西没变：**不能因为仪器瞎了而把「搬完了」读成 0**。两条替代读数：
-	//      · 正则本身没瞎 —— 由本文件开头 `UI_SINGLETON_RE` 的合成样本自证（第 263 行起）承担；
-	//      · 「134 个槽位仍被提供」—— 由**另一条轴**的词法读数承担：`assignedSlots()`（`ui-slot-coverage`
-	//        报 132，含域模块成员对象经 `resolveMemberKeys` 展开的键）。它若一起归零，才是真的瞎了。
-	const assignable = assignedSlots(collectFiles({ dirs: SCAN_DIRS }));
-	ok(
-		assignable.size > 0,
-		'`UI.x` 挂载点合法归零后，「槽位仍被提供」只能由独立仪器 assignedSlots() 证；它也读到 0 ⇒ 扫描面瞎了'
+		/Object\.defineProperty\(\s*UI\s*,/.test(singletonSrc) &&
+			/\bUI\.[A-Za-z_$][\w$]*\.[A-Za-z_$][\w$]*\s*=/.test(singletonSrc),
+		'新家里应仍是 UI 单例本体（桥安装 + 嵌套挂载）；两者都读不到 ⇒ 要么被掏空，要么扫描面瞎了'
 	);
 
-	// ② 「轴为 0」必须能被独立重算解释（在遗留目录里直接翻 `UI.<slot> =`）。
-	// 注意这不是复述轴的实现：轴是从「遗留目录**之外**有没有赋值」反推的，
-	// 这里是从「遗留目录**之内**还有没有实现」正推的 —— 两条路必须给出同一个答案。
-	const engineSrc = readSource(
-		join(ROOT, 'packages', 'editor', 'src', 'engine', 'ui', 'ui-engine.ts')
-	);
-	const storeRefs = storeReferencedSlots();
-	const stillLegacy = new Set();
-	for (const { full } of legacyFiles) {
-		const src = codeOnly(readSource(full));
-		for (const m of src.matchAll(/\bUI\.([A-Za-z_$][\w$]*)\s*=/g)) {
-			const slot = m[1];
-			if (!storeRefs.has(slot)) continue;
-			// `UI.x = UIEngine.x` 是**镜像**，实现在 ui-engine.ts，不算「实现只在遗留层」。
-			if (new RegExp(`^UIEngine\\.${slot}\\s*=`, 'm').test(engineSrc)) continue;
-			stillLegacy.add(slot);
-		}
-	}
+	// ③ 轴读 0 的独立重算（不复述轴的实现，直接按前缀数）
 	eq(
-		[...stillLegacy].sort((a, b) => a.localeCompare(b)),
-		[],
-		'遗留目录里仍有「实现只在遗留层」的 store 槽位 —— 此时 1c-store-slot-gaps 不该是 0'
+		collectFiles({ dirs: [LEGACY_UI_DIR], includeTests: true }).length,
+		0,
+		'遗留目录下的文件数必须为 0（目录已删；非 0 ⇒ 有人把遗留层加回来了）'
 	);
 	eq(
-		legacyOnlyStoreSlots().length,
-		stillLegacy.size,
-		'正推（翻遗留目录）与反推（轴的排除口径）不一致 ⇒ 先怀疑仪器，别信任何一边'
+		importRefs(collectFiles({ dirs: SCAN_DIRS }), /^@app\/engine\/ui\/legacy\//).total,
+		0,
+		'遗留层引用面必须为 0（按前缀独立数；非 0 ⇒ 仪器漏了 `export … from` 或 `import()`）'
 	);
 
-	// ③ 上面那条交叉校验在「两边都是 0」时是**平凡成立**的 —— 所以再加一条能当场咬人的：
-	// 排出判据本身必须仍按**目录**判（遗留目录内的算「没搬出去」，已搬到 `engine/ui/` 的模块算「搬了」）。
-	// 这条与轴的读数无关，因此不会被「反正都是 0」掩盖。
+	// ④ 判据本身仍按「遗留目录」判：域模块不能被算成遗留层
 	const dirRe = uiDirRe();
-	ok(dirRe.test(winRel), '「遗留目录」判据必须匹配 UI 窗口自己所在的那个文件');
+	ok(
+		!dirRe.test(winRel),
+		'单例已搬出 ⇒ 不该再匹配「遗留目录」判据（否则 legacyOnlyStoreSlots 会全算成遗留）'
+	);
 	const movedModule = join('packages', 'editor', 'src', 'engine', 'ui', 'ui-file.ts');
 	ok(
 		!dirRe.test(movedModule),
-		`已搬到 ${movedModule} 的域模块不该仍被算成「在遗留目录里」（否则搬运白做、轴假 0）`
+		`已搬到 ${movedModule} 的域模块不该被算成「在遗留目录里」（否则搬运白做、轴假 0）`
 	);
+
+	// ⑤ 「槽位仍被提供」由**另一个仪器**独立证：`assignedSlots()`（`ui-slot-coverage` 报 132）。
+	//    它若与上面几条一起归零，才是真的瞎了（而不是"搬完了"）。
+	ok(
+		assignedSlots(collectFiles({ dirs: SCAN_DIRS })).size > 0,
+		'`UI.x` 挂载点合法归零后，「槽位仍被提供」只能由独立仪器 assignedSlots() 证；它也读到 0 ⇒ 扫描面瞎了'
+	);
+
 	// 最后一道：台账源码不得回退到那两个已证伪的硬编码口径（回退即静默假 0）
 	const ledgerSrc = readSource(join(ROOT, 'scripts', 'migration-ledger.mjs'));
 	ok(
 		!ledgerSrc.includes("'src', 'ui'"),
 		'legacy-ui-lines 又写死了 packages/editor/src/ui —— P5-B 搬运后它恒为 0'
+	);
+	ok(
+		ledgerSrc.includes('LEGACY_UI_DIR'),
+		'legacy-ui-lines 必须继续按**遗留层目录常量**判（第 212 轮换锚：不再由「单例在哪」推导）'
 	);
 	ok(
 		!ledgerSrc.includes('^@app\\/ui\\/'),

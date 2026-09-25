@@ -5,7 +5,7 @@
  *
  * 每个域（`ui-slots` / `ui-initialize` / `ui-transform` / …）都只**提供**一个成员对象
  * （`uiSlotsMembers` / `uiInitializeMembers` / …），不再自己 `UI.x = …` 地改单例。
- * 装配由 `legacy/ui-window.ts` 在 **UI 诞生处**触发（那里必须**动态** import —— 见该文件
+ * 装配由 `ui-singleton.ts` 在 **UI 诞生处**触发（那里必须**动态** import —— 见该文件
  * `uiWindowReady` 上那段注释：静态引入本模块会连带 `Data`/`Editor` 先于 `UI` 求值、踩 TDZ）。
  *
  * ## 为什么要有这个中间模块（而不是在遗留文件里逐个域写一行）
@@ -29,7 +29,7 @@ import { uiTransformMembers } from './ui-transform.ts';
 import { uiFileMembers } from './ui-file.ts';
 import { uiEventsMembers } from './ui-events.ts';
 import { uiPointerMembers } from './ui-pointer.ts';
-import type { UIShape } from './legacy/ui-window.ts';
+import type { UIShape } from './ui-singleton.ts';
 
 /**
  * 全部域提供的 UI 单例成员。新增一个域时**只在这里加一条 spread**，其余地方不动。

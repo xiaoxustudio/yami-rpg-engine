@@ -74,7 +74,7 @@ vi.mock('@app/animation/animation-window', () => ({
 	}
 }));
 
-vi.mock('@app/engine/ui/legacy/ui-window', () => {
+vi.mock('@app/engine/ui/ui-singleton', () => {
 	const Matrix = {
 		set: vi.fn().mockReturnThis(),
 		multiply: vi.fn().mockReturnThis(),

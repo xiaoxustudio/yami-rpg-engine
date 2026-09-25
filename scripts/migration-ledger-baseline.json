@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-25T06:48:19.188Z",
+	"generatedAt": "2026-09-25T15:21:05.078Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -27,8 +27,8 @@
 			"label": "泛型逃生口 [k|key: string]: any / Record<string, any>",
 			"target": "zero",
 			"value": {
-				"total": 29,
-				"files": 18
+				"total": 28,
+				"files": 17
 			}
 		},
 		"dom-on-exempted": {
@@ -75,17 +75,17 @@
 			"label": "遗留层 UI 单例目录行数（engine/ui/legacy/*）",
 			"target": "zero",
 			"value": {
-				"total": 300,
-				"files": 2
+				"total": 0,
+				"files": 0
 			}
 		},
 		"legacy-ui-refs": {
 			"label": "引用遗留 UI 单例（@app/engine/ui/legacy/*）",
 			"target": "zero",
 			"value": {
-				"total": 1,
-				"runtime": 1,
-				"files": 1
+				"total": 0,
+				"runtime": 0,
+				"files": 0
 			}
 		},
 		"null-casts": {
@@ -107,7 +107,7 @@
 			"label": "域模块仍静态 import 遗留单例（④-3 的伴随判据）",
 			"target": "zero",
 			"value": {
-				"total": 5
+				"total": 0
 			}
 		},
 		"ui-facade-gaps": {
@@ -123,7 +123,8 @@
 			"value": {
 				"total": 0,
 				"files": 0,
-				"declared": 134
+				"declared": 12,
+				"placeholders": 0
 			}
 		},
 		"ui-slot-coverage": {
@@ -131,7 +132,7 @@
 			"target": "zero",
 			"value": {
 				"total": 0,
-				"declared": 134,
+				"declared": 12,
 				"assigned": 132,
 				"storeRefs": 49,
 				"engineBacked": 7

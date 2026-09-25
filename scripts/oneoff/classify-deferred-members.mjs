@@ -13,11 +13,10 @@ const CONTRACT = 'packages/editor/src/engine/ui/ui-domain-contract.ts';
 const cfg = ts.readConfigFile(join(ROOT, 'packages/editor/tsconfig.strict.json'), ts.sys.readFile);
 const parsed = ts.parseJsonConfigFileContent(cfg.config, ts.sys, join(ROOT, 'packages/editor'));
 const src = readFileSync(CONTRACT, 'utf8');
-const types = new Map(
-	[...src.matchAll(/^\t([A-Za-z_$][\w$]*): (.+);$/gm)].map((m) => [m[1], m[2]])
-);
+const types = memberTypes(src);
 // 临时把「全接线」写进内存版增强：用 ts.createSourceFile 覆盖？—— 改用编译前先写文件再还原
 import { writeFileSync } from 'node:fs';
+import { memberTypes } from './contract-parse.mjs';
 const backup = src;
 writeFileSync(
 	CONTRACT,

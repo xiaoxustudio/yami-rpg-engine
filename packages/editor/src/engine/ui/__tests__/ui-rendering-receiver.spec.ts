@@ -45,7 +45,7 @@ const mockGL = vi.hoisted(() => ({ width: 800, height: 600 }));
 vi.mock('@app/engine/webgl/webgl-init.ts', () => ({ GL: mockGL }));
 
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
-import { UI } from '@app/engine/ui/legacy/ui-window.ts';
+import { UI } from '@app/engine/ui/ui-singleton.ts';
 import { loadWindow } from '@app/tools/window-registry.ts';
 import { loadUI } from '@app/stores/ui.ts';
 

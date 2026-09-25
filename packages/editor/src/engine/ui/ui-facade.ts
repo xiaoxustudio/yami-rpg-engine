@@ -3,7 +3,7 @@
  *
  * ## 为什么要有这个文件
  *
- * `ui-engine.ts` 以 `this` 为接收者读一批 UI 成员（这正是 `legacy/ui-window.ts` 里
+ * `ui-engine.ts` 以 `this` 为接收者读一批 UI 成员（这正是 `ui-singleton.ts` 里
  * `UI.x = UIEngine.x` 那 21 行镜像的用途：**把 UI 侧状态喂给引擎**）。今天这些读点能编译，
  * 不是因为有契约，而是因为对象字面量末尾写着
  * `} satisfies Partial<UIShape> as Partial<UIShape> as UIShape;` 且 `UIShape` 带

@@ -25,7 +25,7 @@
 //   migration-ledger.mjs  **跨轴总账 + 棘轮**；消费上面三者的口径，不替代它们的明细
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join } from 'node:path';
 import {
 	ROOT,
 	SCAN_DIRS,
@@ -45,7 +45,8 @@ import { loadDomWhitelist, readDomWhitelist } from './lib/dom-whitelist.mjs';
 import {
 	uiSlotCoverage,
 	declaredSlots,
-	uiWindowRel,
+	singletonPlaceholders,
+	LEGACY_UI_DIR,
 	legacyOnlyStoreSlots,
 	uiFacadeGaps,
 	domainSingletonImporters
@@ -206,15 +207,18 @@ function buildAxes() {
 			label: '遗留层 UI 单例目录行数（engine/ui/legacy/*）',
 			target: 'zero',
 			measure() {
-				// ⚠️ 目录必须**动态取**（`uiWindowRel()` 的 dirname），不能写死 `src/ui`。
+				// ⚠️ 第 212 轮起目录用**常量** `LEGACY_UI_DIR`，不再由 `dirname(uiWindowRel())` 推导。
 				//
-				// 这条轴曾经写死 `packages/editor/src/ui`，而 P5-B 的纯搬运把 8 个域模块搬到了
-				// `src/engine/ui/legacy/`。`collectFiles` 对**不存在的目录返回 `[]`（不抛错）**，
-				// 于是它读到 0 并报「✓ 已完成」——而遗留代码一行都没少。
-				// 这是本仓第 N 次「挪了目录、仪器跟着瞎」，教训写在 `ui-slots.mjs` 头部。
-				const winRel = uiWindowRel();
-				const dir = winRel === null ? null : dirname(winRel);
-				const files = dir === null ? [] : collectFiles({ dirs: [dir], includeTests: true });
+				// 这条轴历史上踩过两次同类坑，两次都是「挪了目录、仪器跟着瞎」：
+				// ① 它曾经写死 `packages/editor/src/ui`，而 P5-B 的纯搬运把 8 个域模块搬到了
+				//    `src/engine/ui/legacy/`；`collectFiles` 对**不存在的目录返回 `[]`（不抛错）**，
+				//    于是它读到 0 并报「✓ 已完成」——而遗留代码一行都没少。
+				// ② 改用 `dirname(uiWindowRel())` 之后，坑换了个方向：④-4 把单例搬出 `legacy/`，
+				//    那个 dirname 会变成 `engine/ui/` ⇒ 本轴从 210 行**暴涨**成全目录行数（假回归），
+				//    同时 `legacyOnlyStoreSlots()` 会把每个域模块都当成遗留层。
+				// ⇒ 本轴问的是「**那层遗留还在不在**」，所以目录就是遗留层自己的名字（常量）。
+				//    目录被删掉之后它自然读到 0 —— 那才是真归零。
+				const files = collectFiles({ dirs: [LEGACY_UI_DIR], includeTests: true });
 				const rows = files.map(({ full, rel }) => ({
 					rel,
 					lines: readSource(full).split('\n').length
@@ -252,16 +256,29 @@ function buildAxes() {
 				// `UI.dragging === null` 数成赋值（+1）。正则与理由见 `scan.mjs`。
 				const r = countCodeByFile(src, UI_SINGLETON_RE);
 				return {
-					// `declared` = 对象字面量**自身**的槽位数（现 134）。为什么并进这条轴：
+					// `declared` = 对象字面量**自身**的槽位数（起始 134）。
+					// `placeholders` = 其中**值为 `null` 的占位数**（起始 123）—— 第 212 轮新增。
 					//
-					// 1c 的第 ④ 步才是「对象字面量退役」，而守它的 `legacy-ui-lines` 是**目录**
+					// 1c 的第 ④ 步是「对象字面量退役」，而守它的 `legacy-ui-lines` 是**目录**
 					// 口径 —— 第 ② 步搬完就 0。若本轴只数挂载点，「删掉 21 行镜像、留下字面量」
 					// 就能让它归零，1c 会在**字面量还在**的情况下被判收口。
-					// 两个数字（挂载点 103 / 字面量槽位 134）**同时**为 0，才是真的删干净了。
 					//
-					// `declaredSlots()` 已改为按内容定位 UI 窗口文件（原先是写死路径），
-					// 否则第 ② 步的纯搬运会让它静默返回空数组 —— 那同样是「仪器瞎了」。
-					value: { total: r.total, files: r.fileCount, declared: declaredSlots().length },
+					// ⚠️ **2026-09-25 第 212 轮改口径**：原先只报 `declared`，而 ④-4 真正要退役的是
+					// **占位表**（`initialize: null` / `open: null` … 那 123 行「先声明、后填充」的骨架）。
+					// 单例**自己真的持有**的字段（7 个 DOM 引用 + `dragging`/`hover` + 两个定时器 +
+					// `translationKey`）必须有初值，不能跟着一起删 —— 所以 `declared` 永远到不了 0，
+					// 而「占位表退役」这件事在旧读数里**看不出来**。
+					// ⇒ `placeholders == 0` 是 ④-4 那一段的验收线；`declared` 继续回答"字面量还剩几条"。
+					// 口径定义与依据见 `scripts/lib/ui-slots.mjs` 的 `placeholderSlotsFrom()`。
+					//
+					// `declaredSlots()` / `placeholderSlots()` 都按内容定位 UI 窗口文件（原先是写死路径），
+					// 否则第 ② 步的纯搬运会让它们静默返回空数组 —— 那同样是「仪器瞎了」。
+					value: {
+						total: r.total,
+						files: r.fileCount,
+						declared: declaredSlots().length,
+						placeholders: singletonPlaceholders().length
+					},
 					detail: r.perFile
 				};
 			}
