@@ -47,7 +47,8 @@ import {
 	declaredSlots,
 	uiWindowRel,
 	legacyOnlyStoreSlots,
-	uiFacadeGaps
+	uiFacadeGaps,
+	domainSingletonImporters
 } from './lib/ui-slots.mjs';
 
 const BASELINE_FILE = join(ROOT, 'scripts', 'migration-ledger-baseline.json');
@@ -263,6 +264,19 @@ function buildAxes() {
 					value: { total: r.total, files: r.fileCount, declared: declaredSlots().length },
 					detail: r.perFile
 				};
+			}
+		},
+		{
+			id: 'ui-domain-singleton-imports',
+			label: '域模块仍静态 import 遗留单例（④-3 的伴随判据）',
+			target: 'zero',
+			measure() {
+				// 与 `ui-singleton-members` **同生共死**：那条轴数「挂载文本」（可被改写法白拿），
+				// 这条数「域模块是否还依赖单例本身」（改写法拿不到）。两条同时归零才算 ④-3 收口。
+				// 设计依据与实测（三种改写法命中都是 0）见本文件 `domainSingletonImporters()` 的注释，
+				// 以及 PHASE-1C 附录十三「结论四」。
+				const r = domainSingletonImporters();
+				return { value: { total: r.total }, detail: r.perFile };
 			}
 		},
 		{

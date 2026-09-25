@@ -2068,8 +2068,7 @@ head?: { view: { write(index: number): void } } | null;
     - **`this` 声明要贴事实**：`rasterizeScrollPosition` 只读 6 个字段，就声明这 6 个
       （`Pick<typeof Scene, …>`）—— 既不苛求测试夹具补 22 个无关字段，也不放松检查。
       ⚠️ **`this` 参数的检查是逆变的**：声明与实现两边必须一致，否则报 TS2322
-      ⇒ **把 `this` 形状抽成类型别名**，两边共享（别内联在声明里）。
-    - 「删掉注解」的读数（本轮 20）是**入口代价**：正确改法是把成员**声明出来**，一次全消。
+      ⇒ **把 `this` 形状抽成类型别名**，两边共享（别内联在声明里）。    - 「删掉注解」的读数（本轮 20）是**入口代价**：正确改法是把成员**声明出来**，一次全消。
     - **收 `any` 会打开 `lint` 的新视野**：成员原来是 `any` ⇒ 类型敏感的
       `typescript(unbound-method)` 对它们**是瞎的**；一收成具名形状，8 个镜像点
       （`Scene.x = SceneCameraEngine.x;`）立刻报警。**处置沿用同形写法**（搜规则名即可找到）：
@@ -2186,6 +2185,109 @@ head?: { view: { write(index: number): void } } | null;
       `(Inspector as Record<string, any>)[key]` → `Inspector[key as keyof typeof Inspector]`。
       **`Record<string, any>` 的问题不是「它也是断言」，而是它连断言都不给** ——
       断言之后还有类型（`editor.create()` 从此受检查），`any` 之后什么都没有（手法库第 139 条）。
+
+40. **「决策题」先分成「偏好题」与「工程量题」；后者不需要拍板**（第 166 轮，17 条轴 / selftest 61）：
+    - 场景：附录十三把 ④-3 的轴口径写成待决策的 (a)「只认轴」/ (b)「轴 + 伴随判据（建议）」。
+      我此前若干轮把它当作「需要用户拍板」的事反复上报 —— **那个框法是错的**：
+      (a) 与台账自己的立身规矩「**度量只应对真实状态敏感，不该对写法敏感**」**冲突**，
+      而支持这个判断的证据是**实测的**（`Object.assign` / 下标 / `defineProperty` 三种写法
+      在 `ui-singleton-members` 上命中都是 0）；(b) 是附录**自己的建议**，唯一缺口是
+      「伴随判据**尚未实现**」⇒ 那是**工程量**，不是决策。
+    - **做法**：把缺口补上 —— 新轴 `ui-domain-singleton-imports`（`domainSingletonImporters()`，
+      计「还有几个域模块静态 `import { UI }`」），起点 **8** / 终态 **0**，与 `ui-singleton-members`
+      **同生共死**；并把洞**永久钉进 `migration:selftest`**（58 → 61 通过），
+      自证形如「同一份样本：旧轴读 0、伴随判据命中 1」。
+    - **判据（写给后面每一轮）**：遇到「待决策」先问一句 —— **这是偏好题，还是「某个仪器/判据还没写」？**
+      后者的正确动作是**去写**（本轮就是这样解开了 ④ 步骤的开工前提），
+      而不是把它挂在「等用户」上；本仓已有 ④ / ⑤ / ⑥ 三条同类先例（都是「靠证据判定」关掉的）。
+    - **附带更正**：我此前把 ④-3/④-4 说成「必须真机才能验收」也是**过期口径** ——
+      第 110 轮已把「需要真机」从**唯一有效验收**降为**推荐**（`primeWindows` 盲区在第 ① 步消除，
+      jsdom 与真机同走 `loadUI`）。**待决策清单会过期，动手前读最新那条⚠️。**
+
+41. **④-3 的第一域（`ui-slots`）：装配点不搬家 + 「仪器连瞎三次」**（第 167 轮，82 → 76 / 伴随判据 8 → 7）：
+    - **能不能改**：先查调用点 —— 这 6 个槽位**全部**以 `UI.x(…)` 调用（stores 6 转发 · ui-pointer 3 ·
+      ui-list 5 · ui-events 1 · LayoutPanel 1 · spec 6）⇒ `this === UI` 恒成立 ⇒ 体内 `UI.x` → `this.x`
+      **逐字等价**（`registerPreset` 的箭头递归辅助函数没有 `this`，改成显式传接收者）。
+    - **装配点在哪**：计划书要求「与 UI 诞生同位置」，而 `ui-window.ts` 的 `uiWindowReady` **本来就有**
+      一条动态 import ⇒ 最小形态 = 域模块只**导出成员对象**，由那条已有 import `.then(Object.assign)` 挂上。
+      **不新增静态 import 边**（`ui-slots` 连带 `Data`/`Editor` 静态引入会踩 TDZ —— 文件头自己的约束）。
+    - ⚠️ **装配写法一变，三条仪器同时瞎，而瞎的表现是「指标变差」**（本轮实测）：
+      · `legacy-ui-lines` **数目录里的所有行（含注释）** ⇒ 我在遗留文件里加的 7 行注释就是「上升」
+        （压回净 0 才过）⇒ **知识写进 `xr.md`/PHASE，不写进遗留文件**；
+      · `ui-slot-coverage.assigned` 132 → 127、`1c-store-slot-gaps` 0 → 5：两者都只认**文本赋值**
+        （`UI.x =` 四种），不认 `Object.assign(UI, 成员对象)`。
+      **修法（一次补进 `lib/ui-slots.mjs`，后 7 个域共用）**：新增纯函数 `keysOfObjectAt` /
+      `objectLiteralKeys`（取对象顶层键，含 IIFE 成员，内部先 `codeOnly`）；`assignedSlots()` 认
+      `Object.assign(UI, X)`（X 是标识符 ⇒ **跨文件**解析 `const X: T = {…}` 的键）；`legacyOnlyStoreSlots()`
+      把「成员对象声明在目录外」也算「有新家」。
+      **自证**：进 `migration:selftest`（61 → 62），并且它**当场抓到该函数自己的一处缺陷**
+      （假设调用方已去注释）⇒ 改成函数内部 `codeOnly`。
+    - **判据**：**「指标变差」先怀疑仪器** —— 代码语义没变、变的是写法时，读数不该动。
+
+42. **工作单：④-3 的第 2…8 个域需要一个「通用的装配入口」**（第 168 轮，**未落地**，但前提已核实）：
+    - **第 2 个域（`ui-initialize`，1 处挂载）已核实可改**（"先查调用点"这一步的结论）：
+      · 它的唯一挂载是 `UI.initialize`，调用路径只有 `getUIStore().initialize()` → store 转发
+        `UI?.initialize?.()`（**接收者就是 UI** ✓，与 `LayoutPanel.vue` 的 `onMounted`+`nextTick` 那条注释一致）；
+      · 函数体内所有嵌套回调**都是箭头函数**（`History.processors[...] = (…) => {}` · `File.get!().then(…)` ·
+        `new Timer({ update: (…) => {} })` · `list.bind(() => …)`）⇒ 箭头捕获外层 `this`，
+        所以体内 ~15 处 `UI.x` → `this.x`、`UIEngine.x.call(UI)` → `.call(this)` **逐字等价**。
+    - ⛔ **但第 2 个域卡在一个「行预算」约束上**（本轮实测，需要先解决）：
+      `legacy-ui-lines` 是**零目标**轴，而每接一个域就要在 `legacy/ui-window.ts` 里**多一行**装配
+      （`import('…/ui-XXX.ts').then((m) => Object.assign(UI, m.xxxMembers))`）。实测：多一行就报
+      「✗ 上升」。⇒ **8 个域 = +8 行**，这条轴不允许。
+    - **两条出路（下一轮先定，别急着搬第二个域）**：
+      (a) **通用装配入口**：把装配收成一行（`import('…/ui-members.ts').then((m) => Object.assign(UI, m.uiMembers))`），
+          由目录外的 `ui-members.ts` 汇总各域成员对象。⚠️ **但这样仪器会第 5 次失明** ——
+          `assignedSlots()` / `legacyOnlyStoreSlots()` 只认 `Object.assign(UI, <名字>)` 的**单个**源，
+          汇总对象又是 `{ ...a, ...b }` 形式（spread）⇒ 需要把口径扩成**多源 + 传递解析 spread**
+          （第 167 轮那次「点号路径」失明已经证明：判据不能认写法）。
+      (b) **用字面量占位符腾出预算**：字面量里那 6 个已被 facade 接管的占位（`registerPreset` / `unregisterPreset` /
+          `hasPrefab` / `setAsPrefab` / `unsetAsPrefab` / `clearInvalidPrefabs`）可以退役，让 `declared`
+          **134 → 128**、`legacy-ui-lines` **300 → 294**（**两条都是下降**，且正是 ④-4「退役字面量」的方向）。
+          ⚠️ **动之前必须先证明**：store 的桥（`ui-window.ts:256` 那批 `Object.defineProperty`）与 `loadUI`
+          **不会在装配之前**枚举 `Object.keys(UI)` —— 否则那 6 个槽位会出现「装配前不存在」的窗口。
+          （装配在 `uiWindowReady` 里、`loadUI` 早于它 await ⇒ 看上去安全，但**必须实测**，不能靠看上去。）
+    - **判据（写给每一轮）**：**「能不能改」查完之后，还要查「改完占不占轴」** ——
+      第 167 轮的教训（注释也占 `legacy-ui-lines`）在这里升级成：**装配入口本身占不占**。
+    > ✅ **出路 (a) 已落地（第 169 轮，未降账但把后 7 个域变成机械活）**：
+    > 新增 `engine/ui/ui-members.ts`（**目录外**）汇总各域成员对象 `{ ...uiSlotsMembers }`，
+    > 遗留文件里永远只有一行：`import('…/ui-members.ts').then((m) => Object.assign(UI, m.uiMembers))`
+    > ⇒ **净 0 行**（`legacy-ui-lines` 300 持平），新增域只改 `ui-members.ts`。
+    > 代价是仪器口径**第 5 次扩容**（提前做）：`facadeAssemblySites()` 支持**多源**、
+    > 新增 `objectPartsAt()`（具名键 + `...spread`）与 `resolveMemberKeys()`（**传递**解析、跨文件、
+    > worklist 到收敛）；`assignedSlots()` / `legacyOnlyStoreSlots()` 都改走它。
+    > 自证进 `selftest`（62 → **63**）：多源 + 内联字面量 + **`uiMembers` 经 spread 展开出那 6 个槽位名**。
+    > ⇒ **第 2…8 个域现在只是同一个动作**：域模块导出成员对象 → 在 `ui-members.ts` 加一条 spread。
+
+43. **「只许一行」这类约束不写在需求里，只写在读数里**（第 169 轮，未降账）：
+    - 现象：④-3 最自然的写法是「每个域在 UI 诞生处加一行装配」，而 `legacy-ui-lines`（**零目标**轴）
+      实测**多一行就报「✗ 上升」** ⇒ 8 个域 = +8 行，不可接受。
+    - 处置：把**汇总外移到目录外**（`ui-members.ts`），遗留文件里保持一行 ⇒ 净 0 行。
+      代价是仪器口径要能解析新形态（**多源 + `{ ...spread }` 传递展开**），
+      而这一族失明已经发生 **5 次**（正则字面量 · 模板字面量 · 点号路径 · 注释里的键 · spread）。
+    - **顺序**：**先扩口径、再换形态**。反过来就会先看到「指标假报回归」，再回头查仪器。
+    - **判据**：零目标轴上的任何**结构性**变化（新增一行 / 一个新入口 / 一次汇总）都要先算**占不占轴**；
+      这类约束不会写在需求里，只会出现在 `migration:check` 的「✗ 上升」里。
+
+44. **④-3 第二个域 `ui-initialize`：第 6、7 类失明 —— 判据的锚点被目标本身推翻**（第 170 轮，76 → 75 / 伴随判据 7 → 6）：
+    - 动作（第 168 轮已核实可行）：`UI.initialize = function (this: UIShape) {…}` → `const initialize = …`
+      + 导出 `uiInitializeMembers`；体内 16 处 `UI.` → `this.`、4 处 `.call(UI)` → `.call(this)`；
+      `ui-members.ts` 加一条 `...uiInitializeMembers`。两条轴正常下降（**76 → 75** / **7 → 6**）。
+    - ⚠️ **第 6 类失明（写法）**：成员对象写成**简写** `{ initialize }` 时 `objectPartsAt` 不认
+      （旧正则要求 `key:` / `key(` / `key=`）。而 `{ initialize: initialize }` 正是最自然的写法，
+      还可能被 formatter 压成简写 ⇒ `flush()` 增加「整个 chunk 就是一个标识符」这一支。
+    - ⚠️ **第 7 类失明（锚点）**：`ui-slot-coverage.assigned` **132 → 119**。根因不是漏正则，而是
+      **家族判据以「文件里出现过 `UI.x =`」为锚**，而 ④-3 的域模块**正是为了不写 `UI.x =` 才改的**
+      ⇒ 它体内的 13 处 `this.x =` 不再算槽位赋值。修法：新增 `domainModuleRels()` ——
+      **装配入口 `ui-members.ts` import 进来的模块**就是域模块。
+      ⇒ **判据：当一次重构的目标就是「不再出现某种写法」时，任何以那种写法为锚的判据都会在这一步失明**
+      （动手前先列出「哪些判据以它为锚」）。
+    - 实现细节附记：`domainModuleRels()` 第一版用 `codeOnly()` ⇒ **它连字符串字面量一起吃**，
+      而模块路径正是字符串 ⇒ 一条 import 都匹配不到（`assigned` 仍 119）。改用 `stripComments()`
+      ⇒ **「去注释」与「去字符串」是两个口径，别顺手用错。**
+    - 自证进 `selftest`（63 → **64**）：断言 `assignedSlots()` 含 `translationTimer` / `zoomTimer` /
+      `inspectorTypeMap` / `controlPoints`（这四个**只**在 `ui-initialize.ts` 里以 `this.x =` 赋值，
+      正是第 7 类失明的探针）。
 
 ### 4. 剩下的活（按性价比排序）
 
@@ -2395,6 +2497,12 @@ head?: { view: { write(index: number): void } } | null;
 
 **仍待决策的 1 项**：⑦ P5-C/D 开工（前提是实机回归全过）。
 （⑤ 已于第 105 轮关闭，④ 已于第 104 轮关闭 —— 见下。）
+
+> ✅ **⑧「④-3 的轴口径 (a) / (b)」已关闭（2026-09-22 第 166 轮，靠证据判定 + 落地实现，选了 (b)）**：
+> 见附录十三「结论四」处的 ✅ 段。要点：**(a) 与台账「度量不该对写法敏感」的立身规矩冲突**，
+> 而那条白拿路径是**实测**出来的（三种等价写法命中都是 0）；(b) 是附录自己的建议，缺口只是
+> 「伴随判据尚未实现」。本轮实现新轴 `ui-domain-singleton-imports`（起点 8 / 终态 0，17 条轴），
+> 并把那个洞**永久钉进 `migration:selftest`**（58 → 61）。⇒ **④-3 可以开工了。**
 
 > ✅ **⑤ 已关闭（2026-09-21 第 105 轮，靠证据判定，不需要用户拍板）**：
 > `ParamHistory` vs `IEditableHistory` 的「矛盾」**不是 `ParamHistory` 缺字段，而是接口对这批消费方偏宽**。
@@ -5931,6 +6039,30 @@ store 桥装配；这也解释了台账为什么坚持 `declared`(134) 与挂载
   `import { UI } from './legacy/ui-window.ts'` ⇒ 起点 8、终态 0，且**改写法拿不到它**。
 
 ⇒ **④-3 开工前请先定 (a) 还是 (b)**（并顺带定下那 9 项实机回归清单要不要先跑一遍建立基线）。
+
+> ✅ **已定 (b)（2026-09-22 第 166 轮，靠证据判定，不需要用户拍板）—— 并且伴随判据已落地实现。**
+>
+> **为什么不需要拍板**：这不是偏好题。**(a) 与台账自己的立身规矩冲突** —— 本仓反复记的
+> 「**度量只应对真实状态敏感，不该对写法敏感**」，而 (a) 会把那条**已实测**的白拿路径敞着
+> （三种等价写法命中都是 0）。**(b) 是本节自己的建议**，唯一缺口是「伴随判据尚未实现」——
+> 那是个**工程量**问题，不是决策问题。⇒ 本轮把缺口补上，决策随之关闭。
+>
+> **实现**：新轴 `ui-domain-singleton-imports`（`scripts/migration-ledger.mjs`，口径函数在
+> `scripts/lib/ui-slots.mjs` 的 `domainSingletonImporters()`），数「还有几个**域模块**在静态
+> `import { UI }` 去改遗留单例」。计**文件数**：起点 **8**（实测 8/8 个域模块都还 import）、
+> 终态 **0**；与 `ui-singleton-members` **同生共死**，两条同时归零才算 ④-3 收口。
+>
+> **自证两处**（可复跑）：
+> 1. **永久进 `migration:selftest`**（58 → **61 通过**）：用「`Object.assign(UI, …)` 写法」的样本
+>    同时断言「旧轴读 0」与「伴随判据命中 1」—— 把那个洞**钉在门禁里**；另两条断言限定它只认
+>    「运行时 + 具名 `UI` + 遗留窗口」三条同时成立，并用**独立文本重算**复核轴报的每个文件。
+> 2. **端到端实测**（临时文件，已删）：白拿写法的探针文件 ⇒ `ui-singleton-members` **82 不动**
+>    （瞎），`ui-domain-singleton-imports` **8 → 9**；经典 `UI.x =` 写法的探针 ⇒ 两条**同时** +1。
+>
+> ⇒ **④-3 的开工前提已满足**（那 9 项实机回归清单仍按第 110 轮的口径是「**推荐**」而非硬门槛：
+> `primeWindows` 盲区已在第 ① 步消除，jsdom 走的就是 `loadUI` 那条路）。
+> 建议次序仍按本节「有信号 → 无信号」：`ui-slots`(6) → `ui-initialize`(1) → `ui-list`(10) → …，
+> 且**前两域共 7 处套件可兜底**，从第 3 域起每域做完**应**做真机走查。
 
 #### ✅ 文本门禁补上 `mojibake` 规则（2026-09-22 第 125 轮）
 

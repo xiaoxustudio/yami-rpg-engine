@@ -271,11 +271,11 @@ for (const key of uiBridgeKeys) {
 export const uiWindowReady = Promise.all([
 	import('@app/engine/ui/element-register.ts'),
 	import('./register.ts'),
-	// 阶段 1c 第 ③ 步：目录外的槽位绑定模块。**必须动态 import** ——
-	// 它要读已经建好的 `UI`（静态 import 会先于本模块体求值，踩 TDZ）；
-	// 挂在 `uiWindowReady` 上是在 `UI` 建好之后求值，且不赌调用方是哪一条路
-	// （⚠️ 第 110 轮更正：原文写「覆盖 loadUI 与 primeWindows 两条路径」，该短路已在第 ① 步断掉）。
-	import('@app/engine/ui/ui-slots.ts')
+	// 阶段 1c 第 ③/④-3 步：槽位模块。**必须动态 import**（静态会先于本模块体求值、踩 TDZ）。
+	// ④-3（第 167 轮）起改成 **facade 装配**：域模块只**提供**成员对象，由这里把它挂上去。
+	// 装配时机与「在域模块里自我绑定」等价 —— 两者都在 `uiWindowReady` 上、都在 `UI` 建好之后
+	// （⚠️ 第 110 轮更正：primeWindows 那条短路已在第 ① 步断掉，真机与 vitest 同走 loadUI）。
+	import('@app/engine/ui/ui-members.ts').then((m) => Object.assign(UI, m.uiMembers))
 ])
 	.then(() => undefined)
 	.catch(() => undefined);

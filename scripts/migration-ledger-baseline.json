@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-24T16:45:50.717Z",
+	"generatedAt": "2026-09-25T04:55:40.497Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -103,6 +103,13 @@
 				"total": 0
 			}
 		},
+		"ui-domain-singleton-imports": {
+			"label": "域模块仍静态 import 遗留单例（④-3 的伴随判据）",
+			"target": "zero",
+			"value": {
+				"total": 6
+			}
+		},
 		"ui-facade-gaps": {
 			"label": "引擎读的 UI 成员尚无显式归属（1c 第 ④ 步工作单）",
 			"target": "zero",
@@ -114,8 +121,8 @@
 			"label": "遗留 UI 单例成员挂载（UI.<name> = 处数，不受目录影响）",
 			"target": "zero",
 			"value": {
-				"total": 82,
-				"files": 8,
+				"total": 75,
+				"files": 6,
 				"declared": 134
 			}
 		},

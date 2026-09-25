@@ -28,7 +28,15 @@
  */
 import { join, dirname } from 'node:path';
 import { existsSync } from 'node:fs';
-import { ROOT, SCAN_DIRS, collectFiles, readSource, codeOnly } from './scan.mjs';
+import {
+	ROOT,
+	SCAN_DIRS,
+	collectFiles,
+	readSource,
+	codeOnly,
+	stripComments,
+	collectImports
+} from './scan.mjs';
 
 /** 阶段 1c 之前的路径；优先用它（快且稳），找不到再动态搜索 */
 const LEGACY_WINDOW_REL = 'packages/editor/src/ui/ui-window.ts';
@@ -149,6 +157,218 @@ const SLOT_ASSIGN_RES = [
  */
 const UI_DIRECT_SLOT_RE = /\bUI\.[A-Za-z_$][\w$]*\s*=/;
 
+/**
+ * 从一个 `{`（下标 `open`）取出**顶层键**：`{ a: 1, b() {}, c: (function(){…})(), }` → `['a','b','c']`。
+ *
+ * 为什么需要它（2026-09-22 第 167 轮，④-3 的第一个域暴露的**仪器盲区**）：
+ * `assignedSlots()` 原来只认四种**文本赋值**（`UI.x =` / `uiElClasses.x =` / `UI.x.y =` /
+ * `(UI.x).y =`）。而 ④-3 的 facade 装配写成 `Object.assign(UI, uiSlotsMembers)` ——
+ * 一种都不匹配 ⇒ `ui-slot-coverage.assigned` 会**假降**（实测 132 → 127），
+ * `1c-store-slot-gaps` 会**假升**（0 → 5），也就是「仪器瞎了，却表现为回归」。
+ * 这正是本仓反复记的那类失败，所以在这里把口径补上。
+ *
+ * 用 `codeOnly()` 先吃掉注释与字符串，避免把注释里的 `a: 1` 数成键。
+ * 顶层判据用**括号配对**：IIFE 成员（`c: (function(){…})()`）内部的逗号不算分隔。
+ */
+export function keysOfObjectAt(code, open) {
+	const parts = objectPartsAt(code, open);
+	return parts.keys;
+}
+
+/**
+ * 一个 `{`（下标 `open`）处的**顶层内容**：具名键 + `...spread` 引用的名字。
+ *
+ * 第 168 轮加 spread 这一支：④-3 的通用装配入口是「目录外的 `ui-members.ts` 把各域成员对象
+ * 汇总成一个对象」，写法必然是 `{ ...uiSlotsMembers, ...uiInitializeMembers }`。
+ * 只数具名键的话，汇总对象会解析成**空**⇒ 仪器第 5 次失明（前四次：正则字面量、模板字面量、
+ * 点号路径、注释里的键）。判据要认**名字的来路**，spread 也是一种来路。
+ */
+export function objectPartsAt(code, open) {
+	// 自己先吃一遍 `codeOnly`（长度保持不变 ⇒ 下标仍然有效）：调用方传原文或已处理过的都行。
+	code = codeOnly(code);
+	let depth = 0;
+	let end = -1;
+	for (let i = open; i < code.length; i++) {
+		const ch = code[i];
+		if (ch === '{') depth++;
+		else if (ch === '}') {
+			depth--;
+			if (depth === 0) {
+				end = i;
+				break;
+			}
+		}
+	}
+	if (end === -1) return { keys: [], spreads: [] };
+	const body = code.slice(open + 1, end);
+
+	const keys = [];
+	const spreads = [];
+	let d = 0;
+	let chunkStart = 0;
+	const flush = (chunk) => {
+		const text = chunk.trim();
+		const spread = /^\.\.\.\s*(?:[A-Za-z_$][\w$]*\s*\.\s*)*([A-Za-z_$][\w$]*)/.exec(text);
+		if (spread) {
+			spreads.push(spread[1]);
+			return;
+		}
+		// 简写 `{ initialize }`：同样是合法写法（`{ initialize: initialize }` 可能被压成它），
+		// 漏掉就是**第 6 类失明** —— 判据要认名字，不能认它写成哪种形态。
+		if (/^[A-Za-z_$][\w$]*$/.test(text)) {
+			keys.push(text);
+			return;
+		}
+		const m = /^(?:'([^']+)'|"([^"]+)"|([A-Za-z_$][\w$]*))\s*[:(=]/.exec(text);
+		if (m) keys.push(m[1] ?? m[2] ?? m[3]);
+	};
+	for (let i = 0; i < body.length; i++) {
+		const ch = body[i];
+		if (ch === '{' || ch === '(' || ch === '[') d++;
+		else if (ch === '}' || ch === ')' || ch === ']') d--;
+		else if (ch === ',' && d === 0) {
+			flush(body.slice(chunkStart, i));
+			chunkStart = i + 1;
+		}
+	}
+	flush(body.slice(chunkStart));
+	return { keys, spreads };
+}
+
+/**
+ * 把「成员对象名」解析成它们**提供的槽位键** —— 含 `{ ...other }` 的**传递展开**。
+ *
+ * 传递是必需的：④-3 的汇总入口会写 `{ ...uiSlotsMembers, ...uiInitializeMembers }`，
+ * 而各域成员对象又各自声明在别的文件里（跨文件解析）。用 worklist 迭代到收敛，
+ * 并用 `seen` 防止自引用/环。
+ */
+export function resolveMemberKeys(files, names) {
+	const keys = new Set();
+	let frontier = [...names];
+	const seen = new Set();
+	while (frontier.length > 0) {
+		const batch = frontier.filter((n) => !seen.has(n));
+		if (batch.length === 0) break;
+		for (const n of batch) seen.add(n);
+		frontier = [];
+		for (const { full } of files) {
+			const src = readSource(full);
+			for (const name of batch) {
+				const m = new RegExp(`(?:export\\s+)?const\\s+${name}\\b[^=]*=\\s*\\{`).exec(
+					codeOnly(src)
+				);
+				if (!m) continue;
+				const parts = objectPartsAt(src, m.index + m[0].length - 1);
+				for (const k of parts.keys) keys.add(k);
+				frontier.push(...parts.spreads);
+			}
+		}
+	}
+	return keys;
+}
+
+/**
+ * 具名成员对象的顶层键：把 `(?:export )?const NAME … = { … }` 声明找出来再取键。
+ * 供「`Object.assign(UI, NAME)` 的 NAME 到底提供了哪些槽位」使用（跨文件解析，见 `assignedSlots`）。
+ */
+export function objectLiteralKeys(src, name) {
+	const code = codeOnly(src);
+	const m = new RegExp(`(?:export\\s+)?const\\s+${name}\\b[^=]*=\\s*\\{`).exec(code);
+	return m ? keysOfObjectAt(code, m.index + m[0].length - 1) : [];
+}
+
+/**
+ * `Object.assign(UI, X)` 的站点。`X` 可以是
+ *   - 裸标识符 `uiSlotsMembers`
+ *   - **点号路径** `m.uiSlotsMembers`（动态 import 后最自然的写法）
+ *   - 内联字面量 `{ … }`（返回 `open`，由调用方取键）
+ *
+ * ⚠️ 点号路径这一段是**实测补的**（第 167 轮收尾）：装配行从
+ * `.then(({ uiSlotsMembers }) => Object.assign(UI, uiSlotsMembers))` 改成
+ * `.then((m) => Object.assign(UI, m.uiSlotsMembers))`（为了不撑破 format 的 printWidth、
+ * 以免给 `legacy-ui-lines` 多算行）之后，原来的「只认裸标识符」当场失明 —— 三条轴又假报回归。
+ * ⇒ 判据要认**名字的来路**，不能认它写成了几种形式里的哪一种。
+ */
+export function facadeAssemblySites(src) {
+	const code = codeOnly(src);
+	const out = [];
+	for (const m of code.matchAll(/\bObject\.assign\(\s*UI\s*,/g)) {
+		// `Object.assign(` 的配对 `)` 之内就是实参表；按**顶层逗号**切成一个个源。
+		const openParen = code.lastIndexOf('(', m.index + m[0].length - 1);
+		let depth = 0;
+		let end = -1;
+		for (let i = openParen; i < code.length; i++) {
+			if (code[i] === '(') depth++;
+			else if (code[i] === ')') {
+				depth--;
+				if (depth === 0) {
+					end = i;
+					break;
+				}
+			}
+		}
+		if (end === -1) continue;
+		const argsStart = m.index + m[0].length;
+		const argText = code.slice(argsStart, end);
+		let d = 0;
+		let start = 0;
+		const pieces = [];
+		for (let i = 0; i < argText.length; i++) {
+			const ch = argText[i];
+			if (ch === '{' || ch === '(' || ch === '[') d++;
+			else if (ch === '}' || ch === ')' || ch === ']') d--;
+			else if (ch === ',' && d === 0) {
+				pieces.push([start, i]);
+				start = i + 1;
+			}
+		}
+		pieces.push([start, argText.length]);
+		for (const [a, b] of pieces) {
+			const text = argText.slice(a, b);
+			const at = argsStart + a;
+			if (/^\s*\{/.test(text)) out.push({ open: at + text.indexOf('{') });
+			else {
+				const id = /^\s*(?:[A-Za-z_$][\w$]*\s*\.\s*)*([A-Za-z_$][\w$]*)/.exec(text);
+				if (id) out.push({ name: id[1] });
+			}
+		}
+	}
+	return out;
+}
+
+/** 装配入口所在文件（相对 ROOT）—— ④-3 的域模块清单由它 import 进来 */
+const UI_MEMBERS_REL = 'packages/editor/src/engine/ui/ui-members.ts';
+
+/**
+ * ④-3 的**域模块清单**：装配入口 `ui-members.ts` 静态 import 进来的那些模块。
+ *
+ * 它们就是「只提供成员对象」的域模块 —— 改法之后不再写 `UI.x =`，所以必须**换一条判据**
+ * 才能把它们认成家族成员（否则它们体内的 `this.x =` 会被漏算，见 `inFamily` 处的实测说明）。
+ * @returns {Set<string>} 相对 ROOT、`/` 分隔的路径
+ */
+function domainModuleRels() {
+	const out = new Set();
+	const abs = join(ROOT, UI_MEMBERS_REL);
+	if (!existsSync(abs)) return out;
+	// ⚠️ 这里**不能**用 `codeOnly`：它连字符串字面量一起吃掉，而模块路径正是字符串
+	// ⇒ 一条都匹配不到（本轮实测：错用之后 `assigned` 仍是 119）。只去注释，保留字符串。
+	for (const m of stripComments(readSource(abs)).matchAll(/from\s+'(\.[^']+)'/g)) {
+		out.add(join(dirname(UI_MEMBERS_REL), m[1]).replace(/\\/g, '/'));
+	}
+	return out;
+}
+
+/** facade 装配引用的**具名成员对象**（全仓 `Object.assign(UI, NAME)` 里的 NAME） */
+function facadeMemberNames(files) {
+	const names = new Set();
+	for (const { full } of files) {
+		for (const site of facadeAssemblySites(readSource(full))) {
+			if (site.name) names.add(site.name);
+		}
+	}
+	return names;
+}
+
 /** 赋值：全仓库对 UI 单例槽位的写入 */
 export function assignedSlots(files) {
 	const all = files ?? collectFiles({ dirs: SCAN_DIRS });
@@ -158,8 +378,30 @@ export function assignedSlots(files) {
 	// 家族判据 = 单例所在目录 ∪（`engine/ui/` 下、且**自己直接挂槽位**的域模块）。
 	// 见 `UI_DOMAIN_MODULE_RE` / `UI_DIRECT_SLOT_RE` 的说明：不能用纯目录判据（域模块会被
 	// 1c ③ 逐个搬出去，一搬就少算 `this.x =`），也不能只看「文件里出现过 `UI.…=`」。
+	//
+	// ⚠️ **④-3 起还要认「装配入口 import 进来的模块」**（2026-09-22 第 170 轮实测）：
+	// 域模块改法后**不再写 `UI.x =`**（改为导出成员对象、由 `ui-members.ts` 汇总装配），
+	// 于是「文件里出现过 `UI.x =`」这条判据当场把它们踢出家族 ⇒ `ui-initialize.ts` 里
+	// 13 处 `this.x =` 不再被算成槽位赋值（`assigned` 132 → 119）。**第 7 类失明。**
+	// ⇒ 判据补上「装配入口的 import 清单」：那些模块就是域模块，它们的 `this.x =` 依旧算。
+	const domainRels = domainModuleRels();
 	const inFamily = (rel, src) =>
-		dirRe.test(rel) || (inEngineUiRe.test(rel) && UI_DIRECT_SLOT_RE.test(src));
+		dirRe.test(rel) ||
+		(inEngineUiRe.test(rel) && (UI_DIRECT_SLOT_RE.test(src) || domainRels.has(rel)));
+
+	// 第一遍：facade 装配点（`Object.assign(UI, …)`，**可多源**）。源既可能是具名成员对象
+	// （跨文件、且可能再 `{ ...other }` 汇总 ⇒ 用 `resolveMemberKeys` 传递解析），
+	// 也可能是内联字面量（直接取键）。
+	const facadeIds = new Set();
+	const facadeInlineKeys = [];
+	for (const { full } of all) {
+		for (const site of facadeAssemblySites(readSource(full))) {
+			if (site.name) facadeIds.add(site.name);
+			else facadeInlineKeys.push(...keysOfObjectAt(readSource(full), site.open));
+		}
+	}
+	const facadeKeys = resolveMemberKeys(all, facadeIds);
+
 	for (const { full, rel } of all) {
 		const src = readSource(full);
 		for (const re of SLOT_ASSIGN_RES) {
@@ -169,6 +411,8 @@ export function assignedSlots(files) {
 			for (const m of src.matchAll(/\bthis\.([A-Za-z_$][\w$]*)\s*=/g)) assigned.add(m[1]);
 		}
 	}
+	for (const k of facadeKeys) assigned.add(k);
+	for (const k of facadeInlineKeys) assigned.add(k);
 	return assigned;
 }
 
@@ -318,6 +562,14 @@ export function legacyOnlyStoreSlots() {
 	const uiDir = uiDirRe();
 	const refs = storeReferencedSlots();
 	const engineSrc = readSource(join(ROOT, 'packages/editor/src/engine/ui/ui-engine.ts'));
+	const facadeNames = facadeMemberNames(files);
+	// ④-3：**实现在域模块里**（目录外），装配点在遗留层。只从「目录外」的文件解析成员对象 ⇒
+	// 这些槽位和 `UI.x = …` 一样算「有新家」，否则本轴会把「实现已搬走、只是装配点还在原处」
+	// 误报成 ③ 没做完（第 167 轮实测 0 → 5）。跨文件 + 传递展开见 `resolveMemberKeys`。
+	const facadeKeys = resolveMemberKeys(
+		files.filter(({ rel }) => !uiDir.test(rel)),
+		facadeNames
+	);
 
 	/** 遗留目录**之外**的赋值点 —— 每个槽位只要出现在这里，就说明它有「新家」。 */
 	const outsideLegacy = new Set();
@@ -328,6 +580,7 @@ export function legacyOnlyStoreSlots() {
 			for (const m of src.matchAll(re)) outsideLegacy.add(m[1]);
 		}
 	}
+	for (const k of facadeKeys) outsideLegacy.add(k);
 
 	const legacyOnly = [];
 	for (const slot of refs) {
@@ -389,4 +642,66 @@ export function uiFacadeGaps() {
 		engineReads: reads.size,
 		missing: [...reads].filter((name) => !hasHome(name)).sort((a, b) => a.localeCompare(b))
 	};
+}
+
+// ---------------------------------------------------------------------------
+// ④-3 的伴随判据：域模块是否还**依赖**遗留单例本身
+// ---------------------------------------------------------------------------
+
+/** 具名 import 子句里的名字（`{ UI }` / `{ type T, UI }` → `['T','UI']`） */
+export function importedNames(text) {
+	const m = text.match(/\{([\s\S]*?)\}/);
+	if (!m) return [];
+	return m[1]
+		.split(',')
+		.map((s) => s.trim().replace(/^type\s+/, ''))
+		.filter((s) => s !== '');
+}
+
+/**
+ * 一条 import 是否就是「域模块静态 `import { UI }` 去改单例」的那条。
+ *
+ * **纯函数**（只吃 `collectImports()` 的输出），所以自证不需要碰仓库 —— 见 `self-test.mjs`：
+ * 那里用「`Object.assign(UI, …)` 写法」的样本同时断言本判据命中、而 `ui-singleton-members` 读 0。
+ */
+export function isLegacySingletonUiImport(imp) {
+	return (
+		!imp.typeOnly &&
+		/legacy\/ui-window(?:\.ts)?$/.test(imp.specifier) &&
+		importedNames(imp.text).includes('UI')
+	);
+}
+
+/**
+ * 还有哪些**域模块**在静态 `import { UI }` 去改遗留单例（④-3 的伴随判据，2026-09-22 第 166 轮加）。
+ *
+ * ## 为什么必须有它
+ *
+ * `ui-singleton-members` 数的是 `UI.<name> =` **文本**。实测三种等价写法
+ * —— `Object.assign(UI, { x() {} })` · `for (…) UI[k] = v` · `Object.defineProperty(UI, 'x', …)`
+ * —— 在那条轴上**命中都是 0**。于是把 82 行挂载改写成「成员对象 + 一次 `Object.assign`」，
+ * 那条轴就归零，而**所有权一点没变**（还是同一个遗留对象在装配、域模块还是 import 单例去改它）。
+ * 这正好违反台账自己那条规矩：「**度量只应对真实状态敏感，不该对写法敏感**」。
+ *
+ * ## 它数什么
+ *
+ * 只看「域模块是否还**依赖单例本身**」：真正的 facade 装配里，域模块只**提供**成员对象，
+ * 不该 `import { UI }`。所以起点 **8**（实测 8/8 个域模块都还 import）、终态 **0**，
+ * 且**改写法拿不到它** —— 与 `ui-singleton-members` **同生共死**，两条同时归零才算 ④-3 收口。
+ *
+ * 计的是**文件数**（一个域模块算一处）：域模块整齐地只剩 1 条 import。
+ * `legacy/` 目录本身不算「域模块」（那是单例本体的家）。
+ *
+ * @returns {{ total: number, perFile: { rel: string, count: number }[] }}
+ */
+export function domainSingletonImporters() {
+	const dir = join('packages', 'editor', 'src', 'engine', 'ui');
+	const hits = [];
+	for (const { full, rel } of collectFiles({ dirs: [dir] })) {
+		if (rel.includes('/legacy/')) continue;
+		const n = collectImports(readSource(full)).filter(isLegacySingletonUiImport).length;
+		if (n > 0) hits.push({ rel, count: n });
+	}
+	hits.sort((a, b) => a.rel.localeCompare(b.rel));
+	return { total: hits.length, perFile: hits };
 }

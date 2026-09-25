@@ -1,7 +1,6 @@
 import { elementDataOf } from '@ui-kit';
 import { getListConfig } from '@ui-kit';
 import { uiEls } from '@app/engine/ui/element-registry';
-import { UI } from './legacy/ui-window.ts';
 import type { UIShape, UINodeShape, UIControlPoints } from './legacy/ui-window.ts';
 // ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';
@@ -18,7 +17,17 @@ import { getUIStore } from '@app/stores/ui';
 import type { YamiElement } from '@app/types/element-api';
 import { roundTo } from '@app/utils/math';
 
-UI.initialize = function (this: UIShape) {
+/**
+ * 本域的挂载实现：`this.initialize` —— 第 ④-3 步起改由**成员对象**提供
+ * （域模块不再 `this.x = …` 自我绑定，装配见 `ui-members.ts`）。
+ *
+ * 体内 ~16 处 `this.x` 已改成 `this.x`、`UIEngine.x.call(this)` 改成 `.call(this)`：实测它**唯一**
+ * 的调用路径是 `LayoutPanel.vue` 的 `onMounted` → `nextTick(() => getUIStore().initialize())`
+ * → store 转发 `UI?.initialize?.()` ⇒ 接收者恒为 UI；而体内所有嵌套回调（`History.processors[…]` ×9 ·
+ * `File.get!().then` · `Timer.update` ×2 · `list.bind`）**都是箭头函数** ⇒ 捕获外层 `this`，
+ * 语义与原写法逐字等价（第 168 轮核实）。
+ */
+const initialize = function (this: UIShape) {
 	this.page = uiEls.get('ui') as YamiElement;
 	this.head = uiEls.get('ui-head') as YamiElement;
 	this.body = hide(uiEls.get('ui-body') as YamiElement);
@@ -203,7 +212,7 @@ UI.initialize = function (this: UIShape) {
 		const { response } = data;
 		const { item } = response;
 		list.restore(operation, response);
-		UI.updateElement!(item);
+		this.updateElement!(item);
 	};
 	History.processors['ui-object-toggle'] = (
 		operation: string,
@@ -216,7 +225,7 @@ UI.initialize = function (this: UIShape) {
 			item.enabled = newValue;
 		}
 		list.update();
-		UI.planToSave!();
+		this.planToSave!();
 	};
 	History.processors['ui-object-hidden'] = (
 		operation: string,
@@ -237,8 +246,8 @@ UI.initialize = function (this: UIShape) {
 			list.setRecursiveStates(instance, 'visible', !newValue);
 		}
 		list.update();
-		UIEngine.requestRendering!.call(UI);
-		UI.planToSave!();
+		UIEngine.requestRendering!.call(this);
+		this.planToSave!();
 	};
 	History.processors['ui-object-locked'] = (
 		operation: string,
@@ -251,7 +260,7 @@ UI.initialize = function (this: UIShape) {
 			list.setRecursiveStates(item, 'locked', newValue);
 		}
 		list.update();
-		UI.planToSave!();
+		this.planToSave!();
 	};
 	History.processors['ui-target-anchor'] = (
 		_operation: string,
@@ -268,9 +277,9 @@ UI.initialize = function (this: UIShape) {
 			write(editor, { anchorX, anchorY });
 		}
 		instances.resize();
-		UI.setTarget!(target);
-		UIEngine.requestRendering!.call(UI);
-		UI.planToSave!();
+		this.setTarget!(target);
+		UIEngine.requestRendering!.call(this);
+		this.planToSave!();
 	};
 	History.processors['ui-target-shift'] = (
 		_operation: string,
@@ -287,9 +296,9 @@ UI.initialize = function (this: UIShape) {
 			write(editor, { x, y });
 		}
 		instances.resize();
-		UI.setTarget!(target);
-		UIEngine.requestRendering!.call(UI);
-		UI.planToSave!();
+		this.setTarget!(target);
+		UIEngine.requestRendering!.call(this);
+		this.planToSave!();
 	};
 	History.processors['ui-target-resize'] = (
 		_operation: string,
@@ -306,9 +315,9 @@ UI.initialize = function (this: UIShape) {
 			write(editor, { width, height });
 		}
 		instances.resize();
-		UI.setTarget!(target);
-		UIEngine.requestRendering!.call(UI);
-		UI.planToSave!();
+		this.setTarget!(target);
+		UIEngine.requestRendering!.call(this);
+		this.planToSave!();
 	};
 	History.processors['ui-target-rotate'] = (
 		_operation: string,
@@ -323,9 +332,9 @@ UI.initialize = function (this: UIShape) {
 			write(editor, { rotation });
 		}
 		instances.resize();
-		UI.setTarget!(target);
-		UIEngine.requestRendering!.call(UI);
-		UI.planToSave!();
+		this.setTarget!(target);
+		UIEngine.requestRendering!.call(this);
+		this.planToSave!();
 	};
 
 	window.addEventListener('themechange', this.themechange);
@@ -350,3 +359,8 @@ UI.initialize = function (this: UIShape) {
 	// list change 经 Vue 模板转发（LayoutPanel @change → UI.listChange）
 	on(elementDataOf<{ page?: HTMLElement | null }>(list).page, 'resize', this.listPageResize);
 };
+
+/** 本域提供的成员表（④-3：域模块只**提供**成员对象；装配由 `ui-members.ts` 汇总、`ui-window.ts` 挂上） */
+export type UIInitializeMembers = { initialize: (this: UIShape) => void };
+
+export const uiInitializeMembers: UIInitializeMembers = { initialize };

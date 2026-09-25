@@ -37,7 +37,15 @@ import {
 	uiDirRe,
 	uiFacadeGaps,
 	uiSlotCoverage,
-	unassignedStoreSlots
+	unassignedStoreSlots,
+	domainSingletonImporters,
+	isLegacySingletonUiImport,
+	objectLiteralKeys,
+	keysOfObjectAt,
+	facadeAssemblySites,
+	objectPartsAt,
+	resolveMemberKeys,
+	assignedSlots
 } from './ui-slots.mjs';
 import { checkTextIntegrity, scanTextIntegrity } from './text-integrity.mjs';
 import { detectMojibake } from './gbk-mojibake.mjs';
@@ -281,6 +289,113 @@ test('成员的成员不算单例挂载', () => {
 // 那是**状态同步**，不是成员挂载，故有意不计入本轴。
 test('Object.defineProperty(UI, key, …) 不计入本轴', () => {
 	eq(countCodeMatches('Object.defineProperty(UI, key, { get, set });', UI_SINGLETON_RE), 0);
+});
+
+// ⚠️ 上面那条测试记的是**本轴的盲区**（不是「这样写没问题」）：三种等价写法都读 0，
+// 于是「把 82 行挂载改成成员对象 + 一次 Object.assign」就能让本轴归零而所有权没变。
+// 补它的就是 ④-3 的伴随判据：改写法拿不到它。下面这条自证把那个洞**永久钉住**。
+process.stdout.write('\n④-3 伴随判据 —— 改写法白拿的洞\n');
+test('改写法让 ui-singleton-members 读 0，但伴随判据仍命中', () => {
+	const src = [
+		"import { UI } from './legacy/ui-window.ts';",
+		'Object.assign(UI, { x() {} });',
+		"for (const k of ['y']) UI[k] = () => {};",
+		"Object.defineProperty(UI, 'z', { value: 1 });"
+	].join('\n');
+	eq(countCodeMatches(src, UI_SINGLETON_RE), 0, '同样的写法下旧轴读 0 —— 这正是要补的洞');
+	eq(
+		collectImports(src).filter(isLegacySingletonUiImport).length,
+		1,
+		'伴随判据必须认出那条运行时 import（否则洞还开着）'
+	);
+});
+
+test('伴随判据只认「运行时 + 具名 UI + 遗留窗口」三条同时成立', () => {
+	const hit = (s) => collectImports(s).filter(isLegacySingletonUiImport).length;
+	eq(hit("import { UI } from './legacy/ui-window.ts';"), 1);
+	// 仅类型导入不算「依赖单例去改它」
+	eq(hit("import type { UI } from './legacy/ui-window.ts';"), 0);
+	// 别的名字不算（域模块 import 形状/元素类是正常的，且不该降这条轴）
+	eq(hit("import { UIShape } from './legacy/ui-window.ts';"), 0);
+	// 别的来源不算
+	eq(hit("import { UI } from '@app/stores/ui';"), 0);
+	// 混合子句里带 UI 仍算
+	eq(hit("import { type UIShape, UI } from './legacy/ui-window.ts';"), 1);
+});
+
+test('伴随判据的读数与「独立文本重算」一致（轴为 0 时必须能被解释）', () => {
+	const { perFile } = domainSingletonImporters();
+	for (const { rel } of perFile) {
+		const src = readSource(join(ROOT, rel));
+		ok(
+			/import\s*\{[^}]*\bUI\b[^}]*\}\s*from\s*['"][^'"]*legacy\/ui-window/.test(src),
+			`轴报的 ${rel} 必须真的有一条 import { UI } from legacy/ui-window（独立重算不一致 ⇒ 先怀疑仪器）`
+		);
+	}
+});
+
+process.stdout.write('\n④-3 facade 装配 —— 槽位实现搬出遗留层后的口径\n');
+test('facade 装配的成员对象要算成「槽位被赋值」（否则仪器瞎、表现为回归）', () => {
+	// 成员对象（含 IIFE 成员）的顶层键 —— 跨文件解析靠它
+	const src = [
+		'export const m: T = {',
+		'  a() {},',
+		'  b: (function IIFE() { const inner = { x: 1 }; return function () { return inner; }; })(),',
+		'  c: 1,',
+		'};'
+	].join('\n');
+	eq(objectLiteralKeys(src, 'm'), ['a', 'b', 'c'], '必须取到顶层键，且不被 IIFE 内部的逗号带偏');
+	// 内联字面量同样要认（`Object.assign(UI, { … })`）
+	eq(keysOfObjectAt('{ hasPrefab() {}, setAsPrefab: 1 }', 0), ['hasPrefab', 'setAsPrefab']);
+	// 注释里的键不算
+	eq(keysOfObjectAt('{ /* a: 1 */ b: 2 }', 0), ['b']);
+	// 装配实参的三种写法都要认出名字 —— 尤其**点号路径**（`.then((m) => Object.assign(UI, m.x))`），
+	// 漏了它仪器会当场失明（第 167 轮实测：三条轴假报回归）
+	eq(facadeAssemblySites('Object.assign(UI, uiSlotsMembers)'), [{ name: 'uiSlotsMembers' }]);
+	eq(facadeAssemblySites('Object.assign(UI, m.uiSlotsMembers)'), [{ name: 'uiSlotsMembers' }]);
+	const inline = facadeAssemblySites('Object.assign(UI, { a() {} })')[0];
+	ok(typeof inline?.open === 'number', '内联字面量要给出 `{` 的下标');
+	eq('Object.assign(UI, { a() {} })'[inline.open], '{', '那个下标必须正好指向 `{`');
+});
+
+test('通用装配入口：多源 + `{ ...spread }` 都要解析（否则仪器第 5 次失明）', () => {
+	// spread 那一支：汇总对象 `{ ...a, ...b, c: 1 }`
+	eq(objectPartsAt('{ ...a, ...b, c: 1 }', 0).spreads, ['a', 'b']);
+	eq(objectPartsAt('{ ...a, ...b, c: 1 }', 0).keys, ['c']);
+	// **简写**也是合法写法（`{ initialize: initialize }` 可能被压成 `{ initialize }`）
+	// —— 漏掉就是第 6 类失明
+	eq(objectPartsAt('{ a, b: 1, c() {} }', 0).keys, ['a', 'b', 'c']);
+	// 多源装配：三个源（含内联字面量）都要认出来
+	eq(
+		facadeAssemblySites('Object.assign(UI, m.uiMembers, m.other, { x() {} })').map(
+			(s) => s.name ?? 'inline'
+		),
+		['uiMembers', 'other', 'inline']
+	);
+	// **传递**解析：`uiMembers` 是 `{ ...uiSlotsMembers }`，要展开到各域真正的槽位名
+	const keys = resolveMemberKeys(collectFiles({ dirs: SCAN_DIRS }), ['uiMembers']);
+	for (const k of [
+		'hasPrefab',
+		'clearInvalidPrefabs',
+		'registerPreset',
+		'unregisterPreset',
+		'setAsPrefab',
+		'unsetAsPrefab'
+	]) {
+		ok(keys.has(k), `uiMembers 应经 spread 传递展开出 ${k}（否则那些槽位会被误判成没实现）`);
+	}
+});
+
+test('④-3 后家族判据仍要认域模块（它们不再写 `UI.x =`，但 `this.x =` 依旧算槽位）', () => {
+	// 第 7 类失明：域模块改法后「文件里出现过 UI.x =」不再成立 ⇒ 它体内的 this.x = 被漏算
+	// （实测 ui-initialize 的 13 处：assigned 132 → 119）。这些名字只在那个文件里以 this.x = 赋值。
+	const assigned = assignedSlots();
+	for (const k of ['translationTimer', 'zoomTimer', 'inspectorTypeMap', 'controlPoints']) {
+		ok(
+			assigned.has(k),
+			`${k} 只在 ui-initialize.ts 里以 this.x = 赋值 ⇒ 家族判据必须认得「装配入口 import 的域模块」`
+		);
+	}
 });
 
 // 裸 `\s*=` 会把比较误判成赋值：实测 ui-events.ts:80 就栽在这里（104 vs 103）
