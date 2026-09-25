@@ -680,16 +680,20 @@ test('遗留层还在 ⟹ 与目录无关的挂载点轴非 0；且 1c-store-slo
 		hasSingletonBody,
 		'遗留目录里应仍是 UI 单例本体所在处（桥安装 + 嵌套挂载）；两者都读不到 ⇒ 扫描面瞎了，或本体已被搬走'
 	);
-	// 另留一条**与目录无关**的读数：全局挂载点轴仍非 0（全体 82 处都在 engine/ui/ 的域模块里）。
-	const singletonMembers = countCodeMatches(
-		collectFiles({ dirs: SCAN_DIRS })
-			.map(({ full }) => readSource(full))
-			.join('\n'),
-		UI_SINGLETON_RE
-	);
+	// ③ 「主体还在」的**第二路读数**：与目录无关，且必须是**另一个仪器**。
+	//
+	//    ⚠️ **判据在 2026-09-22 第 183 轮换过一次，必须记下来。**
+	//    原判据是「全仓仍应有 `UI.<name> =` 挂载点（当时 82 处，都在 `engine/ui/` 的域模块里）」。
+	//    第 ④-3 步把最后两个域（`ui-events` 21 处 / `ui-pointer` 8 处）的声明也搬进了成员对象
+	//    ⇒ 全仓 `UI.x =` 挂载点**合法地归零**（轴读数 29 → 0，`declared` 仍 134），原判据前提消失、会一直红。
+	//    要守的东西没变：**不能因为仪器瞎了而把「搬完了」读成 0**。两条替代读数：
+	//      · 正则本身没瞎 —— 由本文件开头 `UI_SINGLETON_RE` 的合成样本自证（第 263 行起）承担；
+	//      · 「134 个槽位仍被提供」—— 由**另一条轴**的词法读数承担：`assignedSlots()`（`ui-slot-coverage`
+	//        报 132，含域模块成员对象经 `resolveMemberKeys` 展开的键）。它若一起归零，才是真的瞎了。
+	const assignable = assignedSlots(collectFiles({ dirs: SCAN_DIRS }));
 	ok(
-		singletonMembers > 0,
-		'全仓仍应有 UI 槽位挂载（1c ①–③ 的产物在 engine/ui/ 各域模块里）；读到 0 ⇒ ui-singleton-members 瞎了'
+		assignable.size > 0,
+		'`UI.x` 挂载点合法归零后，「槽位仍被提供」只能由独立仪器 assignedSlots() 证；它也读到 0 ⇒ 扫描面瞎了'
 	);
 
 	// ② 「轴为 0」必须能被独立重算解释（在遗留目录里直接翻 `UI.<slot> =`）。

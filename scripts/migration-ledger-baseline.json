@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-25T05:18:48.906Z",
+	"generatedAt": "2026-09-25T06:48:19.188Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -107,7 +107,7 @@
 			"label": "域模块仍静态 import 遗留单例（④-3 的伴随判据）",
 			"target": "zero",
 			"value": {
-				"total": 6
+				"total": 5
 			}
 		},
 		"ui-facade-gaps": {
@@ -121,8 +121,8 @@
 			"label": "遗留 UI 单例成员挂载（UI.<name> = 处数，不受目录影响）",
 			"target": "zero",
 			"value": {
-				"total": 65,
-				"files": 5,
+				"total": 0,
+				"files": 0,
 				"declared": 134
 			}
 		},

@@ -14,7 +14,7 @@ import { UndoManager } from '@app/tools/undo-manager.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { TreeList } from '@app/components/tree-list.ts';
 
-UI.open = function (this: UIShape, context: UIContextShape) {
+const open = function (this: UIShape, context: UIContextShape) {
 	if (this.context === context) {
 		return;
 	}
@@ -54,7 +54,7 @@ UI.open = function (this: UIShape, context: UIContextShape) {
 	}
 };
 
-UI.load = function (this: UIShape, context: UIContextShape) {
+const load = function (this: UIShape, context: UIContextShape) {
 	const firstLoad = !context.editor;
 	if (firstLoad) {
 		context.editor = {
@@ -115,7 +115,7 @@ UI.load = function (this: UIShape, context: UIContextShape) {
 	UndoManager.setActive!(UI);
 };
 
-UI.save = function (this: UIShape) {
+const save = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
 		const { ui, editor } = this.context;
 
@@ -132,7 +132,7 @@ UI.save = function (this: UIShape) {
 	}
 };
 
-UI.close = function (this: UIShape) {
+const close = function (this: UIShape) {
 	if (getUIStore().state !== 'closed') {
 		this.screen.blur();
 		if (Inspector.type === 'fileUI') {
@@ -156,7 +156,7 @@ UI.close = function (this: UIShape) {
 	}
 };
 
-UI.destroy = function (this: UIShape, context: UIContextShape) {
+const destroy = function (this: UIShape, context: UIContextShape) {
 	if (!context.editor) return;
 	if (this.context === context) {
 		this.save!();
@@ -167,13 +167,13 @@ UI.destroy = function (this: UIShape, context: UIContextShape) {
 	TreeList.deleteCaches!(context.ui!.nodes as Parameters<typeof TreeList.deleteCaches>[0]);
 };
 
-UI.copy = function (this: UIShape) {
+const copy = function (this: UIShape) {
 	if (getUIStore().state === 'open' && getUIStore().target !== null) {
 		this.list.copy(getUIStore().target);
 	}
 };
 
-UI.paste = function (this: UIShape, x?: number, y?: number) {
+const paste = function (this: UIShape, x?: number, y?: number) {
 	if (getUIStore().state === 'open' && this.dragging === null) {
 		if (x === undefined) {
 			x = this.centerX;
@@ -189,13 +189,13 @@ UI.paste = function (this: UIShape, x?: number, y?: number) {
 	}
 };
 
-UI.duplicate = function (this: UIShape) {
+const duplicate = function (this: UIShape) {
 	if (getUIStore().target) {
 		this.list.duplicate(getUIStore().target);
 	}
 };
 
-UI.create = function (this: UIShape, kind: string, x: number, y: number) {
+const create = function (this: UIShape, kind: string, x: number, y: number) {
 	const map = this.inspectorTypeMap;
 	const key = map[kind];
 	const editor = Inspector[key];
@@ -205,7 +205,7 @@ UI.create = function (this: UIShape, kind: string, x: number, y: number) {
 	this.list.addNodeTo(node);
 };
 
-UI.createPrefab = function (
+const createPrefab = function (
 	this: UIShape,
 	prefab: {
 		name: string;
@@ -233,7 +233,7 @@ UI.createPrefab = function (
 	this.list.addNodeTo(reference, parent);
 };
 
-UI.createShortcut = function (this: UIShape, item: UINodeShape) {
+const createShortcut = function (this: UIShape, item: UINodeShape) {
 	const reference = Inspector.uiReference.create!();
 	reference.name = this.list.generateUniqueName(item);
 	reference.prefabId = item.presetId;
@@ -248,26 +248,52 @@ UI.createShortcut = function (this: UIShape, item: UINodeShape) {
 	}
 };
 
-UI.delete = function (this: UIShape) {
+const deleteSlot = function (this: UIShape) {
 	if (getUIStore().state === 'open' && getUIStore().target !== null && this.dragging === null) {
 		this.list.delete(getUIStore().target);
 	}
 };
 
-UI.toggle = function (this: UIShape) {
+const toggle = function (this: UIShape) {
 	this.list.toggle(getUIStore().target);
 };
 
-UI.undo = function (this: UIShape) {
+const undo = function (this: UIShape) {
 	if (getUIStore().state === 'open' && !this.dragging && this.history?.canUndo()) {
 		this.history.restore('undo');
 		this.marquee.resize();
 	}
 };
 
-UI.redo = function (this: UIShape) {
+const redo = function (this: UIShape) {
 	if (getUIStore().state === 'open' && !this.dragging && this.history?.canRedo()) {
 		this.history.restore('redo');
 		this.marquee.resize();
 	}
+};
+
+/**
+ * 本域提供的 15 个成员（第 ④-3 步：域模块只**提供**成员对象，装配见 `ui-members.ts`）。
+ *
+ * 本轮**只搬声明、不动函数体**（同第 173/179 轮）：体内 `UI.x` 原地保留 ⇒ 行为逐字不变、零风险；
+ * `import { UI }` 暂时保留（伴随判据如实不降）。
+ *
+ * ⚠️ 槽位名 `delete` 是**保留字**，局部变量只能叫别的（`deleteSlot`），成员对象的**键**保持 `delete` ✓。
+ */
+export const uiFileMembers = {
+	open: open,
+	load: load,
+	save: save,
+	close: close,
+	destroy: destroy,
+	copy: copy,
+	paste: paste,
+	duplicate: duplicate,
+	create: create,
+	createPrefab: createPrefab,
+	createShortcut: createShortcut,
+	delete: deleteSlot,
+	toggle: toggle,
+	undo: undo,
+	redo: redo
 };

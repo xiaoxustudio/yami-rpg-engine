@@ -11,7 +11,7 @@ import { StageColor } from '@app/utils/stage-color';
 import { getUIStore } from '@app/stores/ui';
 import { roundTo } from '@app/utils/math';
 
-UI.switchSettings = function (this: UIShape) {
+const switchSettings = function (this: UIShape) {
 	if (!hasClass(Inspector.fileUI.button, 'selected')) {
 		Inspector.open!('fileUI', UI);
 	} else {
@@ -19,16 +19,16 @@ UI.switchSettings = function (this: UIShape) {
 	}
 };
 
-UI.planToSave = function (this: UIShape) {
+const planToSave = function (this: UIShape) {
 	File.planToSave!(this.meta);
 };
 
-UI.saveToConfig = function (this: UIShape, config: { colors: Record<string, string> }) {
+const saveToConfig = function (this: UIShape, config: { colors: Record<string, string> }) {
 	config.colors.uiBackground = this.background.hex;
 	config.colors.uiForeground = this.foreground.hex;
 };
 
-UI.loadFromConfig = function (this: UIShape, config: { colors: Record<string, string> }) {
+const loadFromConfig = function (this: UIShape, config: { colors: Record<string, string> }) {
 	// `background` / `foreground` 的真源是 store 的 `loadFromConfig`（见 `stores/ui.ts`），
 	// 这里只维护遗留单例上的那一份，给仍读 `this.background` 的路径（如 `saveToConfig`）用。
 	this.background = new StageColor(config.colors.uiBackground, () =>
@@ -43,7 +43,7 @@ UI.loadFromConfig = function (this: UIShape, config: { colors: Record<string, st
 	});
 };
 
-UI.saveToProject = function (
+const saveToProject = function (
 	this: UIShape,
 	project: { ui: { zoom?: number } & Record<string, unknown>; uiPrefabs?: string[] }
 ) {
@@ -52,18 +52,18 @@ UI.saveToProject = function (
 	UI.clearInvalidPrefabs!(uiPrefabs ?? []);
 };
 
-UI.loadFromProject = function (this: UIShape, project: { ui: { zoom: number } }) {
+const loadFromProject = function (this: UIShape, project: { ui: { zoom: number } }) {
 	const { ui } = project;
 	UIEngine.setZoom!.call(this, ui.zoom);
 };
 
-UI.webglRestored = function (this: UIShape, _event: Event) {
+const webglRestored = function (this: UIShape, _event: Event) {
 	if (getUIStore().state === 'open') {
 		UIEngine.requestRendering!.call(UI);
 	}
 };
 
-UI.windowResize = function (this: UIShape, _event: Event) {
+const windowResize = function (this: UIShape, _event: Event) {
 	this.updateHead!();
 	if (getUIStore().state === 'open') {
 		this.resize!();
@@ -72,15 +72,15 @@ UI.windowResize = function (this: UIShape, _event: Event) {
 	}
 }.bind(UI);
 
-UI.themechange = function (this: UIShape, _event: Event) {
+const themechange = function (this: UIShape, _event: Event) {
 	UIEngine.requestRendering!.call(this);
 }.bind(UI);
 
-UI.localizationchange = function (this: UIShape, _event: Event) {
+const localizationchange = function (this: UIShape, _event: Event) {
 	this.updateAllTexts!();
 }.bind(UI);
 
-UI.keydown = function (this: UIShape, event: KeyboardEvent) {
+const keydown = function (this: UIShape, event: KeyboardEvent) {
 	if (getUIStore().state === 'open' && UI.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			return;
@@ -98,7 +98,7 @@ UI.keydown = function (this: UIShape, event: KeyboardEvent) {
 
 registerWindowKeydown('ui', UI.keydown);
 
-UI.headPointerdown = function (this: UIShape, event: PointerEvent) {
+const headPointerdown = function (this: UIShape, event: PointerEvent) {
 	if (!(event.target instanceof HTMLInputElement)) {
 		event.preventDefault();
 		if (document.activeElement !== UI.screen) {
@@ -107,7 +107,7 @@ UI.headPointerdown = function (this: UIShape, event: PointerEvent) {
 	}
 };
 
-UI.switchPointerdown = function (this: UIShape, event: PointerEvent) {
+const switchPointerdown = function (this: UIShape, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target as HTMLElement;
@@ -122,7 +122,7 @@ UI.switchPointerdown = function (this: UIShape, event: PointerEvent) {
 	}
 };
 
-UI.shortcutPointerdown = function (this: UIShape, event: PointerEvent) {
+const shortcutPointerdown = function (this: UIShape, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target as HTMLElement;
@@ -134,15 +134,15 @@ UI.shortcutPointerdown = function (this: UIShape, event: PointerEvent) {
 	}
 };
 
-UI.zoomFocus = function (this: UIShape, _event: Event) {
+const zoomFocus = function (this: UIShape, _event: Event) {
 	UI.screen.focus();
 };
 
-UI.zoomInput = function (this: UIShape, _event: Event & { value?: number }) {
+const zoomInput = function (this: UIShape, _event: Event & { value?: number }) {
 	UIEngine.setZoom!.call(UI, read(this));
 };
 
-UI.screenKeydown = function (this: UIShape, event: KeyboardEvent) {
+const screenKeydown = function (this: UIShape, event: KeyboardEvent) {
 	if (getUIStore().state === 'open' && this.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
@@ -270,7 +270,7 @@ UI.screenKeydown = function (this: UIShape, event: KeyboardEvent) {
 	}
 }.bind(UI);
 
-UI.translationKeyup = function (this: UIShape, event?: KeyboardEvent) {
+const translationKeyup = function (this: UIShape, event?: KeyboardEvent) {
 	if (this.translationKey === 0b0000) {
 		return;
 	}
@@ -299,7 +299,7 @@ UI.translationKeyup = function (this: UIShape, event?: KeyboardEvent) {
 	}
 }.bind(UI);
 
-UI.screenWheel = function (this: UIShape, event: WheelEvent) {
+const screenWheel = function (this: UIShape, event: WheelEvent) {
 	if (getUIStore().state === 'open' && this.dragging === null) {
 		event.preventDefault();
 		if (event.deltaY !== 0) {
@@ -309,7 +309,7 @@ UI.screenWheel = function (this: UIShape, event: WheelEvent) {
 	}
 }.bind(UI);
 
-UI.screenUserscroll = function (this: UIShape, _event: Event) {
+const screenUserscroll = function (this: UIShape, _event: Event) {
 	if (getUIStore().state === 'open') {
 		screenScrollData(this.screen).rawScrollLeft = this.screen.scrollLeft;
 		screenScrollData(this.screen).rawScrollTop = this.screen.scrollTop;
@@ -320,8 +320,39 @@ UI.screenUserscroll = function (this: UIShape, _event: Event) {
 	}
 }.bind(UI);
 
-UI.screenBlur = function (this: UIShape, _event: FocusEvent) {
+const screenBlur = function (this: UIShape, _event: FocusEvent) {
 	this.translationKeyup!();
 	this.pointerup!();
 	// this.marqueePointerleave!()
 }.bind(UI);
+
+/**
+ * 本域提供的 21 个成员（第 ④-3 步：域模块只**提供**成员对象，装配见 `ui-members.ts`）。
+ *
+ * 本轮**只搬声明、不动函数体**（同第 173/179/182 轮）：体内 `UI.x` 原地保留 ⇒ 行为逐字不变、
+ * 零风险（本域的挂载经 `on()` 注册 ⇒ 运行期 `this` 是**元素**，见 PHASE 手法库 #45，
+ * 所以这一步**更不能**顺手把体内 `UI.` 改成 `this.`）。
+ */
+export const uiEventsMembers = {
+	switchSettings: switchSettings,
+	planToSave: planToSave,
+	saveToConfig: saveToConfig,
+	loadFromConfig: loadFromConfig,
+	saveToProject: saveToProject,
+	loadFromProject: loadFromProject,
+	webglRestored: webglRestored,
+	windowResize: windowResize,
+	themechange: themechange,
+	localizationchange: localizationchange,
+	keydown: keydown,
+	headPointerdown: headPointerdown,
+	switchPointerdown: switchPointerdown,
+	shortcutPointerdown: shortcutPointerdown,
+	zoomFocus: zoomFocus,
+	zoomInput: zoomInput,
+	screenKeydown: screenKeydown,
+	translationKeyup: translationKeyup,
+	screenWheel: screenWheel,
+	screenUserscroll: screenUserscroll,
+	screenBlur: screenBlur
+};

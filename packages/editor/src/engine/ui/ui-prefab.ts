@@ -1,4 +1,3 @@
-import { UI } from './legacy/ui-window.ts';
 import { uiElClasses } from '@app/engine/ui/element-classes.ts';
 import type { UIShape, UINodeShape } from './legacy/ui-window.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -12,9 +11,15 @@ import { UIInstanceList } from '@app/engine/ui/element-instance-list.ts';
 // 阶段 1c 第 ③ 步（2026-09-21 第 96 轮）：`registerPreset` / `unregisterPreset` / `setAsPrefab` /
 // `unsetAsPrefab`（以及此前的 `hasPrefab` / `clearInvalidPrefabs`）的**实现**都已搬到目录外的
 // `@app/engine/ui/ui-slots.ts`，由 `uiWindowReady` 动态 import 后绑定回单例。
-// 本文件只剩 `createPrefabItem` / `createElement` / `loadElement` 三个**尚未搬走**的槽位。
+//
+// 阶段 1c 第 ④-3 步（2026-09-22 第 177 轮）：最后三个槽位也改成**成员对象** `uiPrefabMembers`，
+// 装配由 `ui-members.ts` 汇总、`ui-window.ts` 在 UI 诞生处挂上 ⇒ 本文件**不再 `import { UI }`**
+// —— 这是 ④-3 里第一个走完全程的域（`ui-domain-singleton-imports` 因此 6 → 5）。
+//
+// 接收者口径（第 175/176 轮核实）：编辑器侧调用点全是 `UI.x(…)` 形式 ⇒ 体内可以用 `this.`；
+// 唯一例外是下面那个**非箭头**的 `click`（它的 `this` 是菜单项）⇒ 单例必须在入口捕获。
 
-UI.createPrefabItem = function (
+const createPrefabItem = function (
 	this: UIShape,
 	parent?: UINodeShape | null,
 	x?: number,
@@ -23,9 +28,13 @@ UI.createPrefabItem = function (
 	const uiPrefabs = Editor.project!.uiPrefabs!;
 	const items: Array<{ label: string; data: UINodeShape; click: () => void }> = [];
 	if (uiPrefabs.length !== 0) {
-		const click = function (this: { data: UINodeShape }) {
-			UI.createPrefab!(this.data, parent, x, y);
-		};
+		// `click` 必须是**非箭头**函数（运行时 `this` = 菜单项），而它又要用单例 ⇒
+		// 把接收者当**实参**交给一个 IIFE（不写成 `const ui = this` 别名 —— 那会被
+		// `typescript(no-this-alias)` 拦下；传参形态既满足规则，也仍让闭包拿到单例）。
+		const click = ((self: UIShape) =>
+			function (this: { data: UINodeShape }) {
+				self.createPrefab!(this.data, parent, x, y);
+			})(this);
 		const map = Data.uiPresets;
 		for (const guid of uiPrefabs) {
 			const preset = map[guid];
@@ -45,11 +54,7 @@ UI.createPrefabItem = function (
 	};
 };
 
-uiElClasses.createElement = UI.createElement = function (
-	this: UIShape,
-	node: UINodeShape,
-	main?: boolean
-) {
+const createElement = function (this: UIShape, node: UINodeShape, main?: boolean) {
 	let instance;
 	switch (node.class) {
 		case 'image':
@@ -102,13 +107,19 @@ uiElClasses.createElement = UI.createElement = function (
 	node.instances.push(instance);
 	return instance;
 };
+// 原先是**链式赋值** `uiElClasses.createElement = UI.createElement = function …`：
+// `uiElClasses` 是元素类注册表、与 UI 单例是**两个不同的目标** ⇒ 拆成两处（一行只对一个目标）。
+uiElClasses.createElement = createElement;
 
-UI.loadElement = function (this: UIShape, node: UINodeShape, parent?: UINodeShape) {
+const loadElement = function (this: UIShape, node: UINodeShape, parent?: UINodeShape) {
 	const instance = this.createElement!(node, true);
 	if (parent !== undefined) {
 		parent.appendChild(instance);
 	}
 	for (const child of node.children) {
-		UI.loadElement!(child, instance);
+		this.loadElement!(child, instance);
 	}
 };
+
+/** 本域提供的 3 个槽位（第 ④-3 步：域模块只**提供**成员对象，装配见 `ui-members.ts`） */
+export const uiPrefabMembers = { createPrefabItem, createElement, loadElement };

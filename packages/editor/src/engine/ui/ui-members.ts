@@ -24,6 +24,11 @@
 import { uiSlotsMembers } from './ui-slots.ts';
 import { uiInitializeMembers } from './ui-initialize.ts';
 import { uiListMembers } from './ui-list.ts';
+import { uiPrefabMembers } from './ui-prefab.ts';
+import { uiTransformMembers } from './ui-transform.ts';
+import { uiFileMembers } from './ui-file.ts';
+import { uiEventsMembers } from './ui-events.ts';
+import { uiPointerMembers } from './ui-pointer.ts';
 import type { UIShape } from './legacy/ui-window.ts';
 
 /**
@@ -38,7 +43,17 @@ export const uiMembers = {
 	// DOM 引用与定时器初始化域（第 170 轮）
 	...uiInitializeMembers,
 	// 列表交互域（第 173 轮：只搬了 10 处顶层声明，函数体内的 `UI.` 原地保留）
-	...uiListMembers
+	...uiListMembers,
+	// 预制体域剩余 3 处（第 177 轮：**走完全程**的第一个域 —— 该文件已不再 import UI）
+	...uiPrefabMembers,
+	// 元素变换 / 属性同步域（第 179 轮：只搬了 18 处声明，函数体内的 `UI.` 原地保留）
+	...uiTransformMembers,
+	// 文档生命周期域（第 182 轮：只搬了 15 处声明，函数体内的 `UI.` 原地保留）
+	...uiFileMembers,
+	// 事件面域（第 183 轮：只搬声明）
+	...uiEventsMembers,
+	// 画布指针交互域（第 183 轮：只搬声明）
+	...uiPointerMembers
 };
 
 /** 装配入口：`ui-window.ts` 在 UI 诞生处调用它（动态 import 之后）。 */

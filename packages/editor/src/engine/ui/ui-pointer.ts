@@ -18,7 +18,7 @@ import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { getUIStore } from '@app/stores/ui';
 import { radians, degrees, modRadians } from '@app/utils/math';
 
-UI.selectObject = (function IIFE() {
+const selectObject = (function IIFE() {
 	const find = (elements: UINodeShape[], x: number, y: number): UINodeShape | null => {
 		const length = elements.length;
 		for (let i = length - 1; i >= 0; i--) {
@@ -48,7 +48,7 @@ UI.selectObject = (function IIFE() {
 	};
 })();
 
-UI.marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
+const marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 	if (this.dragging) {
 		return;
 	}
@@ -146,7 +146,7 @@ UI.marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 	}
 }.bind(UI);
 
-UI.marqueePointermove = function (this: UIShape, event: UIPointerEvent) {
+const marqueePointermove = function (this: UIShape, event: UIPointerEvent) {
 	if (!this.dragging) {
 		this.marquee.pointerevent = event;
 		const { x, y } = UIEngine.getPointerCoords!.call(this, event);
@@ -166,21 +166,21 @@ UI.marqueePointermove = function (this: UIShape, event: UIPointerEvent) {
 	}
 }.bind(UI);
 
-UI.marqueePointerleave = function (this: UIShape, _event: UIPointerEvent) {
+const marqueePointerleave = function (this: UIShape, _event: UIPointerEvent) {
 	if (this.marquee.pointerevent) {
 		this.marquee.pointerevent = null;
 		this.setHover!(null);
 	}
 }.bind(UI);
 
-UI.marqueeDoubleclick = function (this: UIShape, _event: UIPointerEvent) {
+const marqueeDoubleclick = function (this: UIShape, _event: UIPointerEvent) {
 	if (getUIStore().target) {
 		this.screenBlur!();
 		this.revealTarget!();
 	}
 }.bind(UI);
 
-UI.pointerup = function (this: UIShape, event?: UIPointerEvent) {
+const pointerup = function (this: UIShape, event?: UIPointerEvent) {
 	const { dragging } = this;
 	if (dragging === null) {
 		return;
@@ -215,7 +215,7 @@ UI.pointerup = function (this: UIShape, event?: UIPointerEvent) {
 	}
 }.bind(UI);
 
-UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
+const pointermove = function (this: UIShape, event: UIPointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		const dpr = window.devicePixelRatio;
@@ -409,7 +409,7 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 	}
 }.bind(UI);
 
-UI.menuPopup = function (this: UIShape, event: UIPointerEvent) {
+const menuPopup = function (this: UIShape, event: UIPointerEvent) {
 	this.translationKeyup!();
 	const { x, y } = UIEngine.getPointerCoords!.call(this, event);
 	const target = getUIStore().target;
@@ -589,4 +589,22 @@ UI.menuPopup = function (this: UIShape, event: UIPointerEvent) {
 		},
 		items
 	);
+};
+
+/**
+ * 本域提供的 8 个成员（第 ④-3 步：域模块只**提供**成员对象，装配见 `ui-members.ts`）。
+ *
+ * 本轮**只搬声明、不动函数体**（同第 173/179/182 轮）：体内 `UI.x` 原地保留 ⇒ 行为逐字不变、
+ * 零风险（本域的挂载经 `on()` 注册 ⇒ 运行期 `this` 是**元素**，见 PHASE 手法库 #45，
+ * 所以这一步**更不能**顺手把体内 `UI.` 改成 `this.`）。
+ */
+export const uiPointerMembers = {
+	selectObject: selectObject,
+	marqueePointerdown: marqueePointerdown,
+	marqueePointermove: marqueePointermove,
+	marqueePointerleave: marqueePointerleave,
+	marqueeDoubleclick: marqueeDoubleclick,
+	pointerup: pointerup,
+	pointermove: pointermove,
+	menuPopup: menuPopup
 };

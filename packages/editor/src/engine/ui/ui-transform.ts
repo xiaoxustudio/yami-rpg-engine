@@ -34,7 +34,7 @@ interface UIRootApi extends UINodeShape {
 	resize(): void;
 }
 
-UI.setSize = function (this: UIShape, width: number, height: number) {
+const setSize = function (this: UIShape, width: number, height: number) {
 	const currentWidth = getUIStore().width;
 	if (currentWidth !== width) {
 		this.centerX = (this.centerX * width) / currentWidth!;
@@ -49,14 +49,14 @@ UI.setSize = function (this: UIShape, width: number, height: number) {
 	UIEngine.requestRendering!.call(this);
 };
 
-UI.setHover = function (this: UIShape, hover: UINodeShape | null) {
+const setHover = function (this: UIShape, hover: UINodeShape | null) {
 	if (this.hover !== hover) {
 		this.hover = hover;
 		UIEngine.requestRendering!.call(this);
 	}
 };
 
-UI.setTarget = function (this: UIShape, target: UINodeShape | null) {
+const setTarget = function (this: UIShape, target: UINodeShape | null) {
 	if (getUIStore().target !== target) {
 		getUIStore().target = target;
 		this.updateTargetItem!();
@@ -71,7 +71,7 @@ UI.setTarget = function (this: UIShape, target: UINodeShape | null) {
 	}
 };
 
-UI.revealTarget = (function IIFE() {
+const revealTarget = (function IIFE() {
 	const timer = new Timer({
 		duration: 200,
 		update: (timer: Timer) => {
@@ -142,13 +142,13 @@ UI.revealTarget = (function IIFE() {
 	};
 })();
 
-UI.updateHover = function (this: UIShape) {
+const updateHover = function (this: UIShape) {
 	if (this.hover && !this.hover.instance) {
 		this.setHover!(null);
 	}
 };
 
-UI.updateTarget = function (this: UIShape) {
+const updateTarget = function (this: UIShape) {
 	// 同 `updateTargetItem`：`this.list` 已迁到元素注册表，注册表未登记时是 `{}` 兜底，
 	// 而 `read({})` 会抛 `Invalid value used as weak map key`。
 	const item = read(getUIStore().elements.list) ?? null;
@@ -157,7 +157,7 @@ UI.updateTarget = function (this: UIShape) {
 	}
 };
 
-UI.updateTargetItem = function (this: UIShape) {
+const updateTargetItem = function (this: UIShape) {
 	// ⚠️ `target` 已迁到 store、`list` 已迁到元素注册表，**不能**再读 `this.target` /
 	// `this.list`：前者是 `undefined`，后者在注册表未登记时是 `{}` 兜底，而 `read({})`
 	// 会抛 `Invalid value used as weak map key` —— 每次点选都在这里抛异常，
@@ -173,7 +173,7 @@ UI.updateTargetItem = function (this: UIShape) {
 	}
 };
 
-UI.updateElementFont = function (this: UIShape) {
+const updateElementFont = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
 		if (this.context.fontChanged) {
 			delete this.context.fontChanged;
@@ -209,7 +209,7 @@ UI.updateElementFont = function (this: UIShape) {
 	}
 };
 
-UI.updateElementLanguage = function (this: UIShape) {
+const updateElementLanguage = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
 		if (this.context.languageChanged) {
 			delete this.context.languageChanged;
@@ -225,7 +225,7 @@ UI.updateElementLanguage = function (this: UIShape) {
 	}
 };
 
-UI.updateElementTextScaling = function (this: UIShape) {
+const updateElementTextScaling = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
 		if (this.context.scalingChanged) {
 			delete this.context.scalingChanged;
@@ -241,7 +241,7 @@ UI.updateElementTextScaling = function (this: UIShape) {
 	}
 };
 
-UI.updateIndexedColor = function (this: UIShape, index: number) {
+const updateIndexedColor = function (this: UIShape, index: number) {
 	if (getUIStore().state === 'open') {
 		const TextElement = uiElClasses.Text!;
 		const regexp = new RegExp(`<color:${index}>`, 'i');
@@ -261,7 +261,7 @@ UI.updateIndexedColor = function (this: UIShape, index: number) {
 	}
 };
 
-UI.updateAllTexts = function (this: UIShape) {
+const updateAllTexts = function (this: UIShape) {
 	if (!Title.tabBar?.data) return;
 	for (const context of Title.tabBar.data) {
 		if (context.type === 'ui') {
@@ -271,7 +271,7 @@ UI.updateAllTexts = function (this: UIShape) {
 	this.updateElementLanguage!();
 };
 
-UI.updateAllPrinters = function (this: UIShape) {
+const updateAllPrinters = function (this: UIShape) {
 	if (!Title.tabBar?.data) return;
 	for (const context of Title.tabBar.data) {
 		if (context.type === 'ui') {
@@ -281,7 +281,7 @@ UI.updateAllPrinters = function (this: UIShape) {
 	this.updateElementTextScaling!();
 };
 
-UI.updateAllReferences = function (this: UIShape) {
+const updateAllReferences = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
 		const update = (elements: UINodeShape[]): void => {
 			for (const element of elements) {
@@ -296,7 +296,7 @@ UI.updateAllReferences = function (this: UIShape) {
 	}
 };
 
-UI.updateElement = function (this: UIShape, target: UINodeShape) {
+const updateElement = function (this: UIShape, target: UINodeShape) {
 	// `nodes` / `root` 都已迁到 store（`ui-file.ts` 里写入），`this.nodes` 是 `undefined`
 	// —— `.includes` 会直接抛（2026-09-18）。
 	let nodes: UINodeShape[] = [];
@@ -342,12 +342,12 @@ UI.updateElement = function (this: UIShape, target: UINodeShape) {
 	UIEngine.requestRendering!.call(this);
 };
 
-UI.deleteElement = function (this: UIShape, target: UINodeShape) {
+const deleteElement = function (this: UIShape, target: UINodeShape) {
 	target.instance.remove();
 	target.instance.destroy();
 };
 
-UI.updateHead = function (this: UIShape) {
+const updateHead = function (this: UIShape) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
 		const nav = headNavOf(head);
@@ -361,7 +361,7 @@ UI.updateHead = function (this: UIShape) {
 	}
 };
 
-UI.resize = function (this: UIShape) {
+const resize = function (this: UIShape) {
 	if (getUIStore().state === 'open' && this.screen.clientWidth !== 0) {
 		const scale = this.scale;
 		const width = getUIStore().width!;
@@ -400,4 +400,32 @@ UI.resize = function (this: UIShape) {
 		this.marquee.resize();
 		this.screen.updateScrollbars();
 	}
+};
+
+/**
+ * 本域提供的 18 个成员（第 ④-3 步：域模块只**提供**成员对象，装配见 `ui-members.ts`）。
+ *
+ * 本轮**只搬声明、不动函数体**（与第 173 轮 `ui-list` 同一策略）：体内 `UI.x` 原地保留 ⇒
+ * 行为逐字不变、零风险；`import { UI }` 暂时保留（伴随判据因此仍记 5，如实）。
+ * 走完全程（体内改 `this.` / 入口传参 + 删 import）见 PHASE 手法库 #47。
+ */
+export const uiTransformMembers = {
+	setSize,
+	setHover,
+	setTarget,
+	revealTarget,
+	updateHover,
+	updateTarget,
+	updateTargetItem,
+	updateElementFont,
+	updateElementLanguage,
+	updateElementTextScaling,
+	updateIndexedColor,
+	updateAllTexts,
+	updateAllPrinters,
+	updateAllReferences,
+	updateElement,
+	deleteElement,
+	updateHead,
+	resize
 };
