@@ -60,8 +60,8 @@ const marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 				event.scrollLeft = this.screen.scrollLeft;
 				event.scrollTop = this.screen.scrollTop;
 				Cursor.open!('cursor-grab');
-				window.addEventListener('pointerup', this.pointerup);
-				window.addEventListener('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup!);
+				window.addEventListener('pointermove', this.pointermove!);
 				return;
 			}
 			const target = getUIStore().target;
@@ -109,8 +109,8 @@ const marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 						event.startHeight = transform.height;
 						break;
 				}
-				window.addEventListener('pointerup', this.pointerup);
-				window.addEventListener('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup!);
+				window.addEventListener('pointermove', this.pointermove!);
 				return;
 			}
 			const { x, y } = UIEngine.getPointerCoords!.call(this, event);
@@ -128,8 +128,8 @@ const marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 				event.enabled = false;
 				event.startX = object.transform.x;
 				event.startY = object.transform.y;
-				window.addEventListener('pointerup', this.pointerup);
-				window.addEventListener('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup!);
+				window.addEventListener('pointermove', this.pointermove!);
 				UIEngine.requestRendering!.call(this);
 			}
 			this.setTarget!(object);
@@ -140,8 +140,8 @@ const marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 			event.mode = 'ready-to-scroll';
 			event.scrollLeft = this.screen.scrollLeft;
 			event.scrollTop = this.screen.scrollTop;
-			window.addEventListener('pointerup', this.pointerup);
-			window.addEventListener('pointermove', this.pointermove);
+			window.addEventListener('pointerup', this.pointerup!);
+			window.addEventListener('pointermove', this.pointermove!);
 			break;
 	}
 }.bind(UI);
@@ -210,8 +210,8 @@ const pointerup = function (this: UIShape, event?: UIPointerEvent) {
 				break;
 		}
 		this.dragging = null;
-		window.removeEventListener('pointerup', this.pointerup);
-		window.removeEventListener('pointermove', this.pointermove);
+		window.removeEventListener('pointerup', this.pointerup!);
+		window.removeEventListener('pointermove', this.pointermove!);
 	}
 }.bind(UI);
 
@@ -490,7 +490,7 @@ const menuPopup = function (this: UIShape, event: UIPointerEvent) {
 					label: get('create.shortcut'),
 					enabled: selected && target.class !== 'reference',
 					click: () => {
-						this.createShortcut!(target);
+						this.createShortcut!(target!);
 					}
 				},
 				UI.createPrefabItem!(null, x, y)

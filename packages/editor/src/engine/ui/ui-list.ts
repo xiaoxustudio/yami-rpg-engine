@@ -1,6 +1,7 @@
 import { getListConfig, elementDataOf } from '@ui-kit';
 import { UI } from './legacy/ui-window.ts';
 import type { UIShape, UINodeShape, UIPointerEvent } from './legacy/ui-window.ts';
+import type { YamiElement } from '@app/types/element-api';
 // ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';
 import type { MenuItem } from '@ui-kit';
@@ -25,7 +26,7 @@ const searcherInput = function (this: UIShape, event: InputEvent) {
 	}
 };
 
-const listKeydown = function (this: UIShape, event: KeyboardEvent) {
+const listKeydown = function (this: YamiElement, event: KeyboardEvent) {
 	if (!this.data) {
 		return;
 	}
@@ -200,7 +201,7 @@ const listPopup = function (this: UIShape, event: YamiMouseEvent) {
 				label: get('reveal'),
 				accelerator: 'Enter',
 				click: () => {
-					UI.revealTarget!(item);
+					UI.revealTarget!();
 				}
 			},
 			{
@@ -311,8 +312,8 @@ const listPopup = function (this: UIShape, event: YamiMouseEvent) {
 	);
 };
 
-const listOpen = function (this: UIShape, event: YamiMouseEvent) {
-	UI.revealTarget!(event.value);
+const listOpen = function (this: UIShape, _event: YamiMouseEvent) {
+	UI.revealTarget!();
 };
 
 const listRename = function (

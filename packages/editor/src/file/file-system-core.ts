@@ -203,7 +203,7 @@ File.saveFile = function (meta) {
 			Scene.save!();
 			break;
 		case UI.meta:
-			UI.save();
+			UI.save!();
 			break;
 		case Animation.meta:
 			Animation.save();

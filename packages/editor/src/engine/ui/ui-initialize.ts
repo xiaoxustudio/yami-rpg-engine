@@ -337,27 +337,27 @@ const initialize = function (this: UIShape) {
 		this.planToSave!();
 	};
 
-	window.addEventListener('themechange', this.themechange);
-	window.addEventListener('localizationchange', this.localizationchange);
-	window.addEventListener('keydown', this.keydown);
+	window.addEventListener('themechange', this.themechange!);
+	window.addEventListener('localizationchange', this.localizationchange!);
+	window.addEventListener('keydown', this.keydown!);
 	window.addEventListener('keydown', Reference.getKeydownListener!(list));
-	on(this.page, 'resize', this.windowResize);
-	on(GL.canvas, 'webglcontextrestored', this.webglRestored);
+	on(this.page, 'resize', this.windowResize!);
+	on(GL.canvas, 'webglcontextrestored', this.webglRestored!);
 	// head/toolbar/zoom/screen(keydown/wheel)/marquee(pointerdown/doubleclick) 经 Vue 模板转发（LayoutPanel @pointerdown/@input/@focus/@keydown/@wheel）
-	on(this.screen, 'userscroll', this.screenUserscroll);
-	on(this.screen, 'blur', this.screenBlur);
-	on(this.marquee, 'pointermove', this.marqueePointermove);
-	on(this.marquee, 'pointerleave', this.marqueePointerleave);
-	on(this.searcher, 'input', this.searcherInput);
-	on(this.searcher, 'compositionend', this.searcherInput);
-	on(list, 'keydown', this.listKeydown);
-	on(list, 'pointerdown', this.listPointerdown);
+	on(this.screen, 'userscroll', this.screenUserscroll!);
+	on(this.screen, 'blur', this.screenBlur!);
+	on(this.marquee, 'pointermove', this.marqueePointermove!);
+	on(this.marquee, 'pointerleave', this.marqueePointerleave!);
+	on(this.searcher, 'input', this.searcherInput!);
+	on(this.searcher, 'compositionend', this.searcherInput!);
+	on(list, 'keydown', this.listKeydown!);
+	on(list, 'pointerdown', this.listPointerdown!);
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {
 		capture: true
 	});
 	// list select/record/popup/open 经 Vue 模板转发（LayoutPanel @select/@record/@popup/@open → UI.list*）
 	// list change 经 Vue 模板转发（LayoutPanel @change → UI.listChange）
-	on(elementDataOf<{ page?: HTMLElement | null }>(list).page, 'resize', this.listPageResize);
+	on(elementDataOf<{ page?: HTMLElement | null }>(list).page, 'resize', this.listPageResize!);
 };
 
 /** 本域提供的成员表（④-3：域模块只**提供**成员对象；装配由 `ui-members.ts` 汇总、`ui-window.ts` 挂上） */

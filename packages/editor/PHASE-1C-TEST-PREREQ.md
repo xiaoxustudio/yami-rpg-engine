@@ -6541,3 +6541,392 @@ ui-members.ts(40,14): error TS7022: 'uiMembers' implicitly has type 'any' …
 
 **下一步（已可执行）**：先修第 1 类（纯契约可空性），它是「字面量能否满足契约」的前提；
 再做第 3 类（补元素类型声明）；第 2 类需要先定「引擎侧最小形状 vs 代码侧完整形状」哪边为准。
+
+#### ✅ 第 1 类（契约可空性）第一处已落地：`renderingFunction`（2026-09-22 第 191 轮）
+
+按第 190 轮的分类，先修第 1 类。**第一处落地**：
+
+```diff
+- renderingFunction: () => void;
++ renderingFunction: (() => void) | null;
+```
+
+**为什么这一处是「对的」而不是「猜的」**：它的**紧邻上一行**就是同类成员的既有写法
+`updateControlPoints: (() => void) | null;` ⇒ **契约自己的惯例就是判据**。
+
+**双向验证**：只改 facade（索引签名仍在）⇒ `tsc` **0 错**；启实验（`extends` + 删索引签名）
+⇒ **341 → 339**（消掉 2 个 —— 同一个成员在 2 个错误点各出现一次）。
+
+⚠️ **过程中踩到两个坑，都记下来**：
+
+1. **按名字批量改契约文件是危险的。** 我用「名字 = `resize`」的正则一次改了两处，命中的却是
+   `UIControlPoints.resize`（`Record<'T' | 'L' | 'R' | 'B' | …, ControlPoint>`）
+   —— **契约文件里有同名成员分处不同位置**。当场 `tsc` 24 错 ⇒ 回退。
+   真正要改的是 `marquee.resize`，而它是**嵌套在 `YamiElement` 上**的，不是独立声明。
+   ⇒ **改契约要用结构定位（哪个接口、哪一层），不能用名字定位。**
+2. **箭头类型的可空性必须加括号**：`() => void | null` 解析为 `() => (void | null)`
+   （函数**返回**可为 null），而**不是**「函数本身可为 null」。要写 `(() => void) | null`。
+   编译器不会报错 —— 这是纯类型世界里少见的一种**静默**。
+
+**剩余 9 处**：第 1 类还剩 `marquee.resize`（要动 `YamiElement` 的 `resize`，牵涉共享类型 ⇒ 单独评估）；
+第 2 类 2 处（`HoverNode` vs `UINodeShape`，需先定哪边为准）；第 3 类 3 处（`pointerevent` 不在
+`YamiElement` 上）；另 +1 TS2430、+1 `ui-initialize.ts:99`。
+
+#### ✅ 规模化路径已探明：100 个待声明成员里 **75 个可机械提取**（2026-09-22 第 192 轮实测）
+
+第 191 轮落地了 1 处（实验读数 341 → 339），但那个粒度**不可能走完 339**。本轮改问一个更根本的问题：
+**这 100 个声明能不能批量生成？** 逐个在 `engine/ui/*.ts`（非遗留目录）里找**定义形态**：
+
+| 形态 | 数 | 能否机械提取 |
+| --- | ---: | --- |
+| `const X = function (this: UIShape, …)` | **55** | **能** —— 丢掉 `this` 参数即可直接抬签名（参数与返回类型都现成） |
+| `const X = (…) => …` | 2 | 能（返回类型需按推断补） |
+| 对象内成员（`\tX:` / `\tX(`） | 18 | 多半能，但**必须按结构定位**（见第 191 轮的坑） |
+| 找不到 | **25** | **不能，需手写** |
+
+那 25 个：`addNodeTo cancelSearch context createPrefabItem data deleteNode dragging
+expandToSelection input listRename meta mode nodes resizeTarget revealTarget root rotateTarget
+scrollToSelection searcher setControlPoint setZoom shiftAnchor shiftTarget target zoom`
+—— 正是 **store 状态 / 元素 API / 引擎 API** 三类，与第 186 轮（20 个 only-assigned）、
+第 188 轮（16 个字面量外的待声明成员）指向同一批成员。**三次独立测量，同一个答案。**
+
+⇒ **下一步工作单**（`scripts/oneoff/gen-contract-members.mjs`）：
+
+1. 从 55 个 `this: UIShape` 函数**抬签名**（丢 `this`、保留参数与返回类型）→ 生成 55 行声明；
+2. 18 个对象内成员**按结构定位**补；
+3. 25 个手写（store / 元素 API / 引擎 API）。
+
+**验收标准不变**：实验读数（当前 **339**）必须逐批下降，且 `tsc` 始终 0 错。
+⚠️ 第 191 轮的两个坑在此同样适用：**结构定位而非名字定位**；**箭头类型的可空性要加括号**。
+
+#### ✅ ④-4 契约生成器落地：76 条成员声明（2026-09-22 第 193 轮）
+
+用 **TS 类型检查器**（不是正则）把 `uiMembers` 的成员类型打印出来，生成
+`engine/ui/ui-domain-contract.ts` 的 `UIDomainMembers`。**新文件不在 `legacy/` ⇒ 不涨任何轴。**
+
+**为什么放弃「文本抬签名」**：69 个成员都写作 `const X = function (this: UIShape, …) { … }` ——
+**返回类型是推断的**，源码里没有可抬的注解（实测：正则生成 **0** 条）。类型检查器知道，正则不知道。
+
+**四道工序**（都固化在 `scripts/oneoff/gen-contract-members.mjs`）：
+
+1. `checker.typeToString` 取每个成员的真实类型，并**丢掉 `this: UIShape` 参数**
+   （第 189 轮成环的根源；实测 76 条都带它，不丢就一条都过不了）；
+2. **可空性规则**（第 190/191 轮）：字面量里以 `null` 起始的成员，类型一律并上 `| null`
+   （函数类型必须加括号：`((e: X) => void) | null`）；
+3. 类型含 `UIShape`/`UIContextShape`（3 条：`open` `load` `destroy`）或含 `any`（3 条）的**跳过**，
+   留给手写清单（`any` 不进契约是因为本仓 `any-hatches` 是棘轮轴）；
+4. 收尾清理：可选参数里的冗余 `| undefined` 清掉（lint 会拦）。
+
+**账**：生成 **76 条**；`tsc` **0 错** · `lint` **0/0** · `format:check` · 17 轴持平
+（`legacy-ui-lines` 仍 300）· `selftest` 66/66 · `text`/`docs` 通过。
+
+**下一步（已量过）**：接线（`UIShape extends UIDomainMembers`）后仍有 **~47 个消费侧错误**
+（例如 `ui-events.ts:99` 把可空成员当非空用：`registerWindowKeydown('ui', UI.keydown)`）。
+那是「契约的可空性」传导到消费侧的真实工作量 —— 也正是第 190 轮那条设计规则的**下游账单**。
+
+#### ⚠️ 接线的账单：**49 个消费侧错误**（2026-09-22 第 194 轮实测）
+
+把生成的 `UIDomainMembers` 接进 `UIShape` 的**正确做法**（本轮实测）：
+
+> **用模块增强，从非遗留文件并入** —— 不要在 `ui-window.ts` 里写 `extends`（要加 2 行，
+> 而 `legacy-ui-lines` 是硬棘轮 300，加行即回归）。在 `ui-domain-contract.ts` 里：
+> ```ts
+> declare module './legacy/ui-window.ts' {
+> 	interface UIShape extends UIDomainMembers {}
+> }
+> ```
+> （`import('../ui-domain-contract.ts').UIDomainMembers` 那种内联写法**不行**：TS2499
+> 「interface 只能 extends 标识符/限定名」。）
+
+接线后 `tsc` 报 **49 错**，全部同一族 —— **把「可能是 null」的成员当非空用**：
+
+| 错误码 | 数 | 含义 |
+| --- | ---: | --- |
+| TS2345 | 19 | 实参可能是 null |
+| TS2769 | 18 | 没有匹配的重载（多为 `registerWindowKeydown('ui', UI.keydown)` 这类**传可能为 null 的处理器**） |
+| TS2554 | 9 | 实参个数/可选性不匹配 |
+| TS2352 / TS2721 / TS2322 | 1 / 1 / 1 | 零头 |
+
+**这是第 190 轮那条设计规则的下游账单**：允许 `null` 让字面量满足了契约，
+但把「可能是 null」如实传给了每一个消费者。**规则不是免费的，它只是把成本挪到了正确的位置**
+（从「静默 undefined 运行期崩」挪到「编译期 49 处显式确认」）。
+
+⇒ 下一步就是在这 49 处按本仓既有惯例做**非空断言**（`UI.keydown!` —— 仓内 `UI.setTarget!`
+这类写法本来就通行）。量已量出，改动是机械的，但**必须一次做完 49 处才算闭环** ⇒ 留给下一轮起步时执行。
+
+#### ⚠️ 批量插 `!` 的第一版**不可靠**（2026-09-22 第 195 轮实测，已回退）
+
+思路：用 TS API 取每条诊断的 `start/length`，在**跨度末尾**插 `!`，迭代到不动点。实测**不收敛且写坏文件**：
+
+- 第 1 轮插 40 处（40 → 24），第 2 轮插 23 处，**之后每轮都在原地打转**（24 个错误反复出现）；
+- 根因：**诊断的跨度不只在表达式上** —— 字面量里 `X: null` 对上契约类型的 `TS2322`，
+  跨度落在**类型注解**上，脚本就在类型尾部插了 `!`，产生
+  `error TS17019: '!' at the end of a type is not valid TypeScript syntax`（同一条报 7 次），
+  以及 `TS1255: A definite assignment assertion '!' is not permitted in this context`。
+- ⇒ **在类型位置插 `!` 会让错误"变形"而不是消失**，于是不收敛。
+
+**下一版必须带 AST 判据**：插之前先确认该跨度对应的是 **表达式节点**（`ts.isExpression(node)`），
+且对 `TS2769`（无匹配重载）要**下钻到出问题的那个实参节点**，而不是整个调用。
+判据：**收敛**（错误数单调下降直到 0）——不收敛就回退，不硬凑。
+
+（已回退：`tsc` 0 错、工作树干净。第一版脚本未保留 —— 它会写坏文件，留着是隐患。）
+
+#### ⚠️ 批量插 `!` 的第二版：**判据是对的，但只能吃掉一部分**（2026-09-22 第 196 轮实测，已回退）
+
+第二版换成**「包含 + 可空性」判据**（不再依赖跨度精确相等）：
+
+- 在诊断位置上取**最深的、类型可空的表达式节点**（`ts.isExpression` + 检查类型含 `null`/`undefined`）；
+- `TS2769`（无匹配重载）另外下钻到**出问题的那个实参**；
+- **不收敛就退出**（退出码 2，交外部回退）—— 第 195 轮那条判据生效了。
+
+实测（每次迭代重新建 program）：
+
+| 轮 | 目标错误 | 插入 |
+| --- | ---: | ---: |
+| 1 | 40 | 9 |
+| 2 | 38 | 3 |
+| 3 | 36 | **0 ⇒ 停** |
+
+⇒ **判据是对的**（40 → 36，12 处落地；`TS2554` 那 9 个按设计不在这一族），
+**但它在 36 处停住了** —— 脚本判定「无可插入处」，说明**剩下的不是「在可空表达式后面加 `!`」能解决的**：
+它们需要**判断哪一边是对的**（调用侧签名 vs 契约签名），那是设计决定，不是断言。
+
+**结论（对下一轮有用）**：这 49 处**不是同一种活**，至少分成两族：
+
+1. **纯可空性族**（≈12 处）：`!` 可以解决 —— 第二版脚本已经能自动做完；
+2. **签名分歧族**（≈36 处，含 9 个 `TS2554`）：要先定「契约该不该改」或「调用该不该改」，
+   机械断言只会把错误变形（第 195 轮已经吃过一次）。
+
+已回退（`tsc` 0 错、工作树干净）；两版脚本都**未保留**（第一版会写坏文件；第二版虽正确但会把
+「该判断的」当「该断言的」处理）。
+
+**下一轮的正确起点**：先把第 2 族**按错误形状分类登记**（每条：位置 + 期望类型 + 实参类型 +
+涉及哪个成员），再决定哪一族用断言、哪一族改契约 —— **不要在没分类之前动手**。
+
+#### 🧭 机械路径到此为止：**12 处可修，其余 36 处不是断言能解决的**（2026-09-22 第 197 轮）
+
+第四版加了「沿链下钻」精化（诊断位置常落在**属性名**上，真正可空的是它的子表达式：
+`UI.screen.focus()` 的可空部分是 `UI.screen`）。实测**读数与第三版完全一致**：
+
+| 轮 | 目标错误 | 插入 | 跳过 |
+| --- | ---: | ---: | ---: |
+| 1 | 40 | 9 | 0 |
+| 2 | 38 | 3 | 0 |
+| 3 | 36 | **0** | **0** |
+
+**第 3 轮的「插入 0 且跳过 0」是关键信号**：脚本在 36 处都**找到了目标表达式**，但那些位置
+**已经有 `!` 了**（`text[end] === '!'`）⇒ **这些错误与"该处可空性"无关**。
+
+⇒ 结论（比上一轮精确）：**36 处不是「漏了断言」，而是「断言了也没用」** —— 它们是契约签名与
+调用点之间的**类型分歧**（含 9 个 `TS2554`：实参个数/可选性）。**机械路径在此终结于 12 处。**
+
+##### 下一轮的安全落地方案（不需要一次性解决 36 处）
+
+不要在「全接线」和「不接线」之间二选一 —— 改成**贪心接线**：
+
+1. 把 `UIDomainMembers` 按成员**拆成可增量的声明**；
+2. 逐批接进 `declare module` 的增强里，**每批跑一次 `tsc`**；
+3. **只保留让全仓保持 0 错的那些成员**，会把消费者打红的成员**留在契约文件里但不接**，
+   并在文件里注明「待定：需先定契约改还是调用改」；
+4. 验收：`tsc` 0 + 17 轴持平 + 全套 2075 用例。
+
+⇒ 这样能**立刻落地一个绿色的增量**（预计 60+ / 76 条成员），并把真正需要判断的名单精确地剩下
+（≈16 条成员 + 9 个调用点）。**把"能不能自动化"变成"分批落地 + 明确待定清单"。**
+
+#### ✅ ④-4 **贪心接线**落地：32 条已接 / 40 条待定（2026-09-22 第 198 轮）
+
+「全接线」会打出 48 处错误、「不接线」则毫无进展 ⇒ 改走**可增量的中间态**：
+
+1. 把契约成员接进 `declare module` 增强时用 **`Pick<UIDomainMembers, …>`**：
+
+   ```ts
+   declare module './legacy/ui-window.ts' {
+   	interface UIShape extends Pick<UIDomainMembers, 'a' | 'b' | …> {}
+   }
+   ```
+
+   ⇒ **未接的成员仍留在契约文件里**（不是删掉），待定名单写在增强块上方的注释里，
+   下一个人一眼能看到「欠了什么」。
+2. 循环：逐批接入 → 跑诊断 → 把**打红全仓的成员挪进待定** → 直到 0 错（`scripts/oneoff/wire-contract-members.mjs`）。
+
+**结果**：`tsc` **0 错** · `typecheck:vue` **0 新错** · `lint` **0/0** · `format:check` · 17 轴持平 ·
+`selftest` 66/66。**接线 32 条 / 待定 40 条。**
+
+##### ⚠️ 贪心循环的第一次「绿」是假的：它的视野比门禁窄
+
+循环的 oracle 是 **TS API + `tsconfig.strict.json`**（只有 `.ts`），而门禁里还有 **`vue-tsc`（含 `.vue`）**
+⇒ 循环报「收敛 0 错」，`vue-tsc` 却报出 **4 处**新错（`LayoutPanel.vue:2092/2095/2098/2101`：
+`UI?.listSelect?.(event)` 这类把 `Event` 传给契约里要求特定事件类型的成员）。
+
+修法：把那 4 个成员（`listSelect` `listRecord` `listPopup` `listOpen`）**并入待定**。
+
+⇒ **教训：判据的视野必须与门禁的视野一致** —— 「0 错」的真实含义是
+「0 错**在我的视野里**」。**一个比门禁窄的 oracle，只会稳定地产出假绿。**
+
+**待定 40 条的下一步**：按第 197 轮的分类逐个定「契约改还是调用改」——
+多数是**调用侧传的事件类型比契约要求的更宽**（`Event` vs 具体事件类），属"哪边为准"的设计决定。
+
+#### ✅ ④-4 接线推进到 **57 / 77**（2026-09-22 第 200 轮）：定向断言 + 一个尾逗号 bug
+
+第 198 轮只接了 32 条。本轮用**归因表**（`classify-deferred-members.mjs`：把「全接线」的错误逐条
+归到成员上）看清了待定的成因，然后分两步收掉：
+
+**第一步：定向补 `!`（知道成员名，所以插入点是明确的）**
+
+归因表显示最大的一族是「可空处理器被当非空用」（`on(this.page, 'resize', this.windowResize)` 这类）。
+与第 195–197 轮的**通用**脚本不同，这次**每条错误都知道属于哪个成员** ⇒ 可以直接在
+`this.<name>` / `UI.<name>` 之后插 `!`。实测 **30 处**，目标错误 **37 → 7**。
+
+**第二步：`createShortcut` 的尾逗号 —— 生成器的正则盲点**
+
+字面量的最后一个条目 `createShortcut: null` **没有尾逗号**，而生成器认「null 占位」的正则要求
+`:\s*null\s*,` ⇒ 它**没被算成占位** ⇒ 契约里生成的是非空类型 ⇒ 整个字面量的
+`as UIShape` 转换报 `TS2352`。
+把正则放宽成 `,\s*?`（可选尾逗号）后：契约 **76 → 77** 条，接线 **32 → 63** 条。
+⇒ **一个字符的正则盲点，挡住了 31 个成员。**
+
+**第三步：把第 198 轮的教训写进仪器（`.vue` 视野）**
+
+新脚本 `defer-vue-breaking-members.mjs`：先跑 `typecheck:vue`，再按 `.vue` 的错误把相关成员
+**也挪进待定**。实测挪走 6 条（`listChange` `zoomFocus` `listSelect` `listRecord` `listPopup` `listOpen`）
+⇒ **接线 57 / 待定 20**。
+
+**账**：`tsc` **0 错** · `typecheck:vue` **0 新错** · `lint` **0/0** · `format:check` · 17 轴持平 ·
+`selftest` 66/66。**待定 20 条**：`copy create createPrefab createShortcut delete duplicate hasPrefab
+listChange listOpen listPopup listRecord listSelect loadFromConfig paste revealTarget save saveToConfig
+screenBlur toggle zoomFocus` —— 主要是两族：**`TS2554`（调用侧多传了实参）**与**事件类型比契约更宽**。
+
+#### ✅ 接线 57 → 62：**契约要描述「调用方怎么调它」**（2026-09-22 第 201 轮）
+
+待定 20 条里有一族是 `.vue` 侧的调用方式与契约不符。以 5 个成员为例：`.vue` 里写的是
+`UI?.listSelect?.(event)`，而 `event: Event`（原生事件）；契约里却是具体事件类（`UIPointerEvent` 等）
+——**契约的形参比调用方窄**。
+
+**做法**：给生成器加一张**显式覆盖表**（只放开**形参**类型，不动实现）：
+
+```js
+const EVENT_WIDE = new Set(['listChange', 'listOpen', 'listPopup', 'listRecord', 'listSelect']);
+if (EVENT_WIDE.has(prop.name)) s = s.replace(/(\([^)]*?): [A-Za-z_$][\w$]*/, '$1: Event');
+```
+
+**为什么这是诚实的**：这些调用点**今天就在传 `Event`**（过去靠索引签名蒙过去）。契约写 `Event`
+不是放松要求，而是**把已经发生的事写下来**；实现的形参类型不受契约影响（仍由成员对象自己决定）。
+⇒ **契约描述的是"调用方怎么调它"，不是"实现最精确能收什么"。**
+
+**效果**：`.ts` 侧收敛到 **63 接 / 14 待定**；`.vue` 第二阶段自动再挪 1 条（`zoomFocus`，
+`UI?.zoomFocus?.()` 参数个数不符）⇒ **接线 62 / 待定 15**。
+
+⇒ 第 200 轮那个仪器（`defer-vue-breaking-members.mjs`）**本轮自己生效了一次**：
+我没手工找 `.vue` 的问题，是它按错误归因把 `zoomFocus` 挪走的。**教训写进脚本之后，它开始替人干活。**
+
+**账**：`tsc` **0 错** · `typecheck:vue` **0 新错** · `lint` **0/0** · `format:check` · 17 轴持平 ·
+`selftest` 66/66。**待定 15 条**：`copy create createPrefab createShortcut delete duplicate hasPrefab
+loadFromConfig paste revealTarget save saveToConfig screenBlur toggle zoomFocus`。
+
+#### ✅ 接线 62 → 64：`TS2554` 不是参数问题，是**接收者**问题（2026-09-22 第 202 轮）
+
+待定里 `copy delete duplicate toggle paste` 一族报的是 `TS2554: Expected 0 arguments, but got 1`
+（`this.copy!(item)`）。看起来是"调用侧多传了实参"，但**那是症状**：
+
+`ui-list.ts:28` 写的是 `const listKeydown = function (this: UIShape, …)`，而它的注册点是
+**`on(list, 'keydown', this.listKeydown)`** ⇒ 运行期 `this` 是**元素**（手法库第 45 条：`on` 委托
+`el.addEventListener`）⇒ 体内 `this.copy/this.delete/this.data` 全是**元素自己的 API**，
+`item` 本来就该传。
+
+⇒ **正确的修法是改接收者注解**（第 173 轮已经记过这条诊断）：
+
+```diff
+- const listKeydown = function (this: UIShape, event: KeyboardEvent) {
++ const listKeydown = function (this: YamiElement, event: KeyboardEvent) {
+```
+
+（`YamiElement` 从 `@app/types/element-api` 取，它由 `@ui-kit` 导出。）
+
+**改动一行注解之后**：`tsc` 0 错，且 `copy delete duplicate toggle paste` 一族**当场可接线**
+⇒ `.ts` 侧收敛到 **65 接 / 8 待定**，`.vue` 第二阶段再挪 1 条（`zoomFocus`）
+⇒ **接线 64 / 待定 9**。
+
+⇒ **教训：错误码描述的是"症状发生在哪"，不是"病在哪"。** `TS2554` 说的是"实参个数不对"，
+而真正的病是"接收者是谁" —— **修症状（删实参）会把元素 API 的调用改坏。**
+
+（第 173 轮只是把这条诊断**记下来**；本轮它变成了**修复**。记下来的东西会在几十轮后回来兑现。）
+
+#### ✅ 接线 64 → 70：最后 9 条按**错误形状**分流（2026-09-22 第 203 轮）
+
+归因表把最后 9 条（8 个成员）的形状摊开，**每条的形状决定它的修法** —— 不需要"逐个想"：
+
+| 形状 | 成员 | 修法 |
+| --- | --- | --- |
+| 可空值交给非空形参 | `create`（`getAttribute()` 返回 `string \| null`）、`createShortcut`（`target: UINodeShape \| null`）、`save`（`UI.save()` 可能为 null） | 在**调用侧**补 `!`（3 处） |
+| 实现里的形参**未被使用**，调用侧零参调用 | `screenBlur`（`(_event: FocusEvent)`，实现根本不读它） | 生成器加 `OPTIONAL_FIRST`，把它放开为**可选** |
+| 真·形状分歧 | `revealTarget` `hasPrefab` `saveToConfig` `loadFromConfig` | **留待定**（需判"契约改还是调用改"） |
+
+⇒ `.ts` 侧收敛到 **71 接 / 5 待定**，`.vue` 阶段再挪 1 条（`zoomFocus`）⇒ **接线 70 / 待定 6**。
+
+**关于 `screenBlur` 那条**：实现写的是 `_event`（按约定"有意不用"），契约却把它当**必填** ——
+**契约比现实更严**。⇒ 一条规则：**实现不用的形参，不该在契约里是必填的**。
+
+⇒ **待定 6 条**：`createPrefab hasPrefab loadFromConfig revealTarget saveToConfig zoomFocus`。
+这 6 条每一处都是**真·形状分歧**（调用方传的类型与契约要求的是两个不同形状），
+必须人来判断"哪边为准"—— 而这正是 ④-4 剩下**唯一**需要判断的部分。
+
+#### ✅ 接线 70 → 72：又收两条，并修掉仪器的一次**误归因**（2026-09-22 第 204 轮）
+
+**收掉的两条**：
+
+| 成员 | 依据 | 修法 |
+| --- | --- | --- |
+| `zoomFocus` | 实现写的是 `_event`（**有意不用**） | 与 `screenBlur` 同族 ⇒ 生成器 `OPTIONAL_FIRST` 再收一个 |
+| `createPrefab` | —— | 随上面两处一起变绿，自动接线 |
+
+**踩到一个陷阱（`revealTarget`）**：它的实现确实收 0 个参数（`TS2554` 就是这么说的），
+`ui-list.ts` 两处调用却传了会被忽略的实参。我按"去掉多余实参"改掉之后 ——
+**`event` 在 `listOpen` 里变成未使用参数（`TS6133`）**，因为那处 `event.value` 是该函数里
+`event` 的**唯一用途**。⇒ **已还原**，`revealTarget` 继续留在待定。
+**教训：删掉一个"多余"的实参前，先确认它没有顺带承担别的作用（这里是"用掉一个参数"）。**
+
+⚠️ **仪器的一次误归因（本轮最值得记的）**：还原后，`.vue` 阶段把 **`ui-list.ts` 的 `TS6133`**
+归到了成员 `listOpen` 上并把它挪进待定 —— 因为 **`vue-tsc` 的输出里也包含 `.ts` 的错误**，
+而那个脚本只按"文件里出现的成员名"归因。修法：**defer 脚本只处理 `.vue` 的命中**。
+
+⇒ 这是第 198/200 轮那条「视野」教训的**再深一层**：
+第 198 轮是「oracle 比门禁窄」，本轮是「**门禁的输出比该阶段负责的范围宽**」——
+**两个方向都会让脚本去做它不该做的事。**
+
+**账**：`tsc` **0 错** · `typecheck:vue` **0 新错** · 17 轴持平。**接线 72 / 待定 4**
+（`hasPrefab loadFromConfig revealTarget saveToConfig`）。
+
+#### ✅ 接线 72 → 73：`revealTarget` 也收了 —— **实现的签名就是权威**（2026-09-22 第 205 轮）
+
+`revealTarget` 的实现写的是 `(this: UIShape)`——**它自己声明收 0 个参数**。于是两处调用传的实参
+（`UI.revealTarget!(item)`）**本来就是惰性的**（运行期被忽略）。上一轮我删掉第 2 处的实参后
+`event` 变成了未使用参数（`TS6133`）——**本轮把两件事一起做完**：
+
+```diff
+- const listOpen = function (this: UIShape, event: YamiMouseEvent) {
++ const listOpen = function (this: UIShape, _event: YamiMouseEvent) {
+…
+- 	UI.revealTarget!(event.value);
++ 	UI.revealTarget!();
+```
+
+⇒ 惰性实参去掉、参数按本仓惯例写成 `_event`（有意不用），`tsc` 0 且 `revealTarget` 接线成功。
+
+**这一族的通用判据（本仓第 4 条"接收者/签名"类教训）**：
+**实现的签名是权威** —— 调用侧多传的实参是死代码，去掉它**不改行为**；
+但去掉之前要确认它没有顺带承担别的作用（第 204 轮 `event.value` 那次）。
+
+**账**：`tsc` **0 错** · `typecheck:vue` **0 新错** · `lint` **0/0** · 17 轴持平 · selftest 66/66。
+**接线 73 / 待定 3**：`hasPrefab loadFromConfig saveToConfig`。
+
+##### 最后 3 条的实测线索（下一轮直接用）
+
+- **`hasPrefab`**：实现是 `ui-slots.ts:64` 的
+  `hasPrefab(this: UIShape, node: UINodeShape) { return Editor.project!.uiPrefabs!.includes(node.presetId); }`
+  —— **它真正需要的是 `node.presetId`**。调用侧：`LayoutPanel.vue:1725 if (UI.hasPrefab?.(node))`
+  与 `PresetElement.vue:90 if (getUIStore().hasPrefab(node))`（后者走 store 转发）。
+  ⇒ 要判的是：`node` 那边给的是不是**另一种形状**（`PrefabRefShape`），以及它到底有没有 `presetId`。
+- **`saveToConfig` / `loadFromConfig`**：契约写的是 `(config: { colors: Record<string, string> }) => void`，
+  而报错说调用侧传的 config 里 `colors` 是 `Record<string, unknown>` ⇒ **两侧对颜色的值类型不一致**。
+  ⚠️ 目前抓到的 `saveToConfig!` / `loadFromConfig!` 调用点**属于别的单例**（`Animation` / `Layout`），
+  UI 侧的调用点还需定位 —— **不要把别的单例的同名方法当成证据**。

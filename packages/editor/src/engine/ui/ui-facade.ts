@@ -143,7 +143,7 @@ export interface UIFacadeShape {
 	// 但引擎要用 `this.x` 读它们，就仍然必须在类型上显式在案。
 	requestRendering: (() => void) | null;
 	updateControlPoints: (() => void) | null;
-	renderingFunction: () => void;
+	renderingFunction: (() => void) | null;
 	hover: HoverNode | null;
 	controlPointTexture: ImageTexture | null;
 }

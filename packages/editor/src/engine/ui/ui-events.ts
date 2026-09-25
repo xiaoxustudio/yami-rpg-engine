@@ -96,7 +96,7 @@ const keydown = function (this: UIShape, event: KeyboardEvent) {
 	}
 };
 
-registerWindowKeydown('ui', UI.keydown);
+registerWindowKeydown('ui', UI.keydown!);
 
 const headPointerdown = function (this: UIShape, event: PointerEvent) {
 	if (!(event.target instanceof HTMLInputElement)) {
@@ -127,7 +127,7 @@ const shortcutPointerdown = function (this: UIShape, event: PointerEvent) {
 		case 0: {
 			const element = event.target as HTMLElement;
 			if (hasClass(element, 'item')) {
-				UI.create!(element.getAttribute('value'), 0, 0);
+				UI.create!(element.getAttribute('value')!, 0, 0);
 			}
 			break;
 		}
@@ -190,7 +190,7 @@ const screenKeydown = function (this: UIShape, event: KeyboardEvent) {
 					this.translationKey |= 0b0001;
 					this.translationTimer!.add();
 					this.screen.beginScrolling();
-					window.addEventListener('keyup', this.translationKeyup);
+					window.addEventListener('keyup', this.translationKeyup!);
 				}
 				break;
 			case 'KeyW':
@@ -198,7 +198,7 @@ const screenKeydown = function (this: UIShape, event: KeyboardEvent) {
 					this.translationKey |= 0b0010;
 					this.translationTimer!.add();
 					this.screen.beginScrolling();
-					window.addEventListener('keyup', this.translationKeyup);
+					window.addEventListener('keyup', this.translationKeyup!);
 				}
 				break;
 			case 'KeyD':
@@ -206,7 +206,7 @@ const screenKeydown = function (this: UIShape, event: KeyboardEvent) {
 					this.translationKey |= 0b0100;
 					this.translationTimer!.add();
 					this.screen.beginScrolling();
-					window.addEventListener('keyup', this.translationKeyup);
+					window.addEventListener('keyup', this.translationKeyup!);
 				}
 				break;
 			case 'KeyS':
@@ -214,7 +214,7 @@ const screenKeydown = function (this: UIShape, event: KeyboardEvent) {
 					this.translationKey |= 0b1000;
 					this.translationTimer!.add();
 					this.screen.beginScrolling();
-					window.addEventListener('keyup', this.translationKeyup);
+					window.addEventListener('keyup', this.translationKeyup!);
 				}
 				break;
 			case 'ArrowLeft':
@@ -295,7 +295,7 @@ const translationKeyup = function (this: UIShape, event?: KeyboardEvent) {
 	if (this.translationKey === 0b0000) {
 		this.translationTimer!.remove();
 		this.screen.endScrolling();
-		window.removeEventListener('keyup', this.translationKeyup);
+		window.removeEventListener('keyup', this.translationKeyup!);
 	}
 }.bind(UI);
 
