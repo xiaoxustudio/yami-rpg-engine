@@ -21,7 +21,7 @@ describe('Palette selection 元素 Vue 渲染（拖拽选区覆盖层）', () =>
 		const el = document.createElement('div');
 		el.id = id;
 		document.body.appendChild(el);
-		// P5b 批次 4：模块改从注册表取元素（不再查 DOM），测试需按新契约登记
+		// 模块改从注册表取元素（不再查 DOM），测试需按新契约登记
 		registerElement(paletteEls, id, el);
 	};
 

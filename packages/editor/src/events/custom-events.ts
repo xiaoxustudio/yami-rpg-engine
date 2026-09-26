@@ -1,5 +1,5 @@
 /**
- * E1：应用级自定义事件的**类型化通道**。
+ * 应用级自定义事件的**类型化通道**。
  *
  * 现状（`pnpm events:surface`）：`window` 上有 15 个自定义事件，载荷靠"往 `Event` 上挂字段"传递，
  * 派发/监听两侧各自写 `as Event & { … }`（全仓曾 70+ 处，已收口成 `createPayloadEvent`/`readPayload`）。

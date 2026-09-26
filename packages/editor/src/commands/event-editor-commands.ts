@@ -158,7 +158,7 @@ EventEditor.resizeGutter = function (this: EventEditorShape) {
 		if (i !== length) {
 			if (i < length) {
 				while (i < length) {
-					// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + addClass）
+					// 离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + addClass）
 					const node = renderDetached(
 						h('div', { class: 'box event-commands-line-number' })
 					);

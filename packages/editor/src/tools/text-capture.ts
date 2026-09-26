@@ -20,8 +20,8 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { Variable } from '@app/variable/variable.ts';
 import type { YamiElement, YamiElementApi } from '@app/types/element-api';
 
-/** P5b 批次 3：元素注册表——由 Font/TextPosition/TextEffect/InsertImage/LocalVariable 五个 SFC 共同登记。
- *  P1b 第 4 刀：同时镜像进 `composableEls`——`useTextCaptureWindow` 的焦点目标 id 是运行时传入的
+/** 元素注册表——由 Font/TextPosition/TextEffect/InsertImage/LocalVariable 五个 SFC 共同登记。
+ *  同时镜像进 `composableEls`——`useTextCaptureWindow` 的焦点目标 id 是运行时传入的
  *  （`focusId`），模块侧只能按 id 从共享注册表取元素。 */
 export const textCaptureEls = createElementRegistry(composableEls);
 
@@ -154,7 +154,7 @@ Selection.initialize = function (this: SelectionShape) {
 	}
 
 	for (const textbox of $('text-area-var')) {
-		// P4b：strBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+		// strBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 		this.addEventListeners!(elementDataOf<{ strBox?: HTMLElement }>(textbox).strBox!);
 	}
 

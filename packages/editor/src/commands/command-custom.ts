@@ -74,7 +74,7 @@ interface ParameterPane extends YamiElement {
 	scriptChange: (event: Event) => void;
 }
 
-/** P5b 批次 2：脚本命令窗口的元素注册表——由 `ScriptCommand.vue` 在模板里登记 */
+/** 脚本命令窗口的元素注册表——由 `ScriptCommand.vue` 在模板里登记 */
 export const scriptCommandEls = createElementRegistry();
 
 Command.custom = {
@@ -84,7 +84,7 @@ Command.custom = {
 	windowY: null as number | null,
 	parsingScript: { id: '', parameters: null } as ScriptObject,
 	loadedScript: { id: '', parameters: null } as ScriptObject,
-	// P5b 批次 2：这些元素由 ScriptCommand.vue 在模板里登记，initialize() 时从注册表取
+	// 这些元素由 ScriptCommand.vue 在模板里登记，initialize() 时从注册表取
 
 	initialize: function (): void {
 		window.addEventListener('localize', this.windowLocalize);

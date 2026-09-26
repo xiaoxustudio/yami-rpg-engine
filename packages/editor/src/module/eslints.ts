@@ -42,7 +42,7 @@ export function updateCommandElement(
 		e.remove();
 	});
 
-	// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+	// 离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
 	const pre = renderDetached(h('span', { class: 'command-mark-major' }));
 	element.insertBefore(pre, element.firstElementChild);
 	element.pre = pre;
@@ -161,7 +161,7 @@ function applyLineClasses(list: CommandListShape): void {
 }
 
 /**
- * M3-5b′（命令列表换源）：行元素已由模板渲染，而 api 侧的 `elements` 是**离屏元素**
+ * 行元素已由模板渲染，而 api 侧的 `elements` 是**离屏元素**
  * （跨行判定如 `buffer[buffer.length-1] == e` 仍以 `elements` 为准，语义不变）。
  * 因此折叠线相关处理分两步：**照旧在 `elements` 上计算**，再把结果**同步到渲染出来的行**上。
  * 取不到渲染行时返回 `null`（未换源用法不受影响）。
@@ -193,7 +193,7 @@ function resize(this: { elements: CommandListShape } & HTMLElement, ...args: unk
 }
 
 /**
- * M3-5b′：模板挂完一批行后由组件调用的钩子（见 ui-kit 的 `updateLineClasses`）。
+ * 模板挂完一批行后由组件调用的钩子（见 ui-kit 的 `updateLineClasses`）。
  * 在这里做"渲染出来后才能做"的跨行处理：把 `elements` 上算好的 `mark` 同步到渲染行，
  * 再对渲染行跑折叠线分类（line-start/line-end）。
  */
@@ -328,7 +328,7 @@ export function applyCommandListInstanceOverride(
 			e.classList.add(e.mark!);
 		}
 		applyLineClasses(list);
-		// M3-5b′：把同一套结果同步到**渲染出来的行**（模板行才是用户看到的那些）
+		// 把同一套结果同步到**渲染出来的行**（模板行才是用户看到的那些）
 		const rendered = renderedRowsOf(this);
 		if (rendered) {
 			for (let i = 0; i < rendered.count; i++) {

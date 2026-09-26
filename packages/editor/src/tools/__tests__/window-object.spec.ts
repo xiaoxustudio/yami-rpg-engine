@@ -56,7 +56,7 @@ function makeFrame(id: string, closeResult = true): TestFrame {
 	frame.closeEventEnabled = true;
 	frame.enableAmbient = false;
 	document.body.appendChild(el);
-	// P1b：`Window.open(id)` 现在从 windowShellEls 取帧（原先 document.getElementById）
+	// `Window.open(id)` 现在从 windowShellEls 取帧（原先 document.getElementById）
 	registerElement(windowShellEls, id, frame);
 	createdFrames.push(frame);
 	return frame;
@@ -76,7 +76,7 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 			title.id = 'title';
 			document.body.appendChild(title);
 		}
-		// P5b 批次 3：外壳元素 #title 由 AppShell.vue 登记进 windowShellEls（Window.open 不再查 DOM）
+		// 外壳元素 #title 由 AppShell.vue 登记进 windowShellEls（Window.open 不再查 DOM）
 		titleMock.target = null;
 		registerElement(windowShellEls, 'title', document.getElementById('title'));
 	});

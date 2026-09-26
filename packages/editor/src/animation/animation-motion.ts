@@ -41,7 +41,7 @@ import { computeIndexDigits } from '@app/utils/number';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 /**
- * P4b：方向列表（`animation-dirList`）的元素数据视图。
+ * 方向列表（`animation-dirList`）的元素数据视图。
  * `mode` 是列表当前呈现的动作模式（`1-dir` / `4-dir` / `none` …），随动作模式变化而更新。
  */
 interface AnimationDirListElementData {
@@ -52,7 +52,7 @@ const dirListData = (el: unknown): AnimationDirListElementData =>
 	elementDataOf<AnimationDirListElementData>(el);
 
 /**
- * P4b：时间轴内层刻度尺（`animation-timeline-ruler-inner`）的元素数据视图。
+ * 时间轴内层刻度尺（`animation-timeline-ruler-inner`）的元素数据视图。
  * `start` 是刻度尺当前起始刻度号，首次滚动前为空（`Animation.outerTimelineListScroll` 写入）。
  */
 interface AnimationRulerElementData {
@@ -1081,7 +1081,7 @@ Animation.updateRuler = function (this: typeof Animation) {
 				const start = innerRulerData(innerRuler).start ?? 0;
 				let number = (start + i) * 5;
 				while (i < length) {
-					// P1b：离屏节点统一走 utils/dom 的唯一创建缝隙
+					// 离屏节点统一走 utils/dom 的唯一创建缝隙
 					const node = createDetachedElement();
 					addClass(node, 'box');
 					addClass(node, 'timeline-number');

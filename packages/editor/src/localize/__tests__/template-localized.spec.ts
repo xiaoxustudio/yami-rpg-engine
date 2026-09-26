@@ -5,7 +5,7 @@ import { localizeDomComponents } from '../dom-localizer.ts';
 import { templateLocalizedKeys } from '../template-localized.ts';
 
 /**
- * R2b：`template-localized.ts` 是**生成物**，本 spec 从源码反推同一集合与之比对（防漂移）；
+ * `template-localized.ts` 是**生成物**，本 spec 从源码反推同一集合与之比对（防漂移）；
  * 并验证本地化器对这些键**真的跳过 DOM 查询**。
  */
 const ROOT = join(__dirname, '../../..'); // packages/editor
@@ -50,7 +50,7 @@ const deriveKeys = (): string[] => {
 	const components = JSON.parse(
 		readFileSync(join(ROOT, 'Project/Locales/en-US.English.json'), 'utf8')
 	).components as Record<string, Record<string, unknown>>;
-	// R2b 迁移⑮：editor 的 SelectBox 包装器自己按 `components.<id>.options` 生成选项名；
+	// editor 的 SelectBox 包装器自己按 `components.<id>.options` 生成选项名；
 	// 该通用逻辑存在时，`<SelectBox id="<键>">` 的 options 由宿主组件承担（与生成器同源）。
 	const selectBoxSrc = readFileSync(join(SRC, 'components/common/SelectBox.vue'), 'utf8');
 	const selectBoxGeneric = selectBoxSrc.includes('components.${id}.options');
@@ -58,7 +58,7 @@ const deriveKeys = (): string[] => {
 	for (const [key, item] of Object.entries(components)) {
 		if (key === '[comment]' || key[0] === '[') continue;
 		const carriers = vues.filter((v) => v.src.includes(`id="${key}"`));
-		// R2b 迁移⑩：元素由 ui-kit 组件内部持有 id 的键（`<YMRename>` 之类）没有 `id="<键>"`
+		// 元素由 ui-kit 组件内部持有 id 的键（`<YMRename>` 之类）没有 `id="<键>"`
 		// 承载者；判据放宽为「唯一引用该键消息的 SFC」，多文件引用时仍要求含 id（与生成器同源）。
 		const byMessage = vues.filter((v) => v.src.includes(`components.${key}.`));
 		const effective = carriers.length > 0 ? carriers : byMessage.length === 1 ? byMessage : [];
@@ -86,13 +86,13 @@ const deriveKeys = (): string[] => {
 								? new RegExp(`t\\(['"]components\\.${esc(key)}\\.options\\.`).test(
 										v.src
 									) ||
-									// R2b 迁移⑦：选项名走 useLocalizedOptions('<键>', …)（响应式 t()）
+									// 选项名走 useLocalizedOptions('<键>', …)（响应式 t()）
 									v.src.includes(`useLocalizedOptions('${key}'`) ||
-									// R2b 迁移⑭：模块侧走 applyLocalizedItems('<键>', …)（订阅语言切换事件重挂）
+									// 模块侧走 applyLocalizedItems('<键>', …)（订阅语言切换事件重挂）
 									modules.some((m) =>
 										m.src.includes(`applyLocalizedItems('${key}'`)
 									) ||
-									// R2b 迁移⑮：宿主组件按约定承担
+									// 宿主组件按约定承担
 									(selectBoxGeneric &&
 										new RegExp(`<SelectBox[^>]*\\bid="${esc(key)}"`).test(
 											v.src
@@ -107,7 +107,7 @@ const deriveKeys = (): string[] => {
 	return out.sort();
 };
 
-describe('R2b 模板已承担键集合（template-localized.ts）', () => {
+describe('模板已承担键集合（template-localized.ts）', () => {
 	// 这条会**遍历整个 editor 源码树**（2000+ 文件）反推键集合，单跑已约 6s，
 	// 全量并发下会超过 vitest 默认 5s 超时而变成偶发红 ⇒ 显式放宽超时。
 	it('与源码反推的集合一致（防漂移：改动模板请重新生成本文件）', { timeout: 60_000 }, () => {
@@ -122,7 +122,7 @@ describe('R2b 模板已承担键集合（template-localized.ts）', () => {
 	});
 });
 
-describe('R2b 本地化器跳过模板已承担的键', () => {
+describe('本地化器跳过模板已承担的键', () => {
 	it('对跳过集合里的键不做 getElementById', () => {
 		const spy = vi.spyOn(document, 'getElementById');
 		const sample = [...templateLocalizedKeys].slice(0, 5);

@@ -12,7 +12,7 @@ import { GameLocal } from '@app/local/local-object.ts';
 import { IListInterface } from '@app/types/list-interface.ts';
 import { IUndoRedoHistory } from '@app/types/history.ts';
 
-/** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
+/** 元素注册表——由对应窗口 SFC 在模板里登记 */
 export const objectAttributeEls = createElementRegistry();
 
 interface AttributeItemShape {

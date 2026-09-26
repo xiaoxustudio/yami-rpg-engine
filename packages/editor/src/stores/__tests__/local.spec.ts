@@ -9,7 +9,7 @@ describe('useLocalStore（Local 状态反转：store 为源）', () => {
 		expect(store.languages).toEqual([]);
 		expect(store.properties).toEqual({});
 		expect(store.components).toEqual({});
-		// ready：语言资源就绪标志（主菜单可见性由它驱动，B1/R2a 起）
+		// ready：语言资源就绪标志（主菜单可见性由它驱动）
 		expect(store.ready).toBe(false);
 	});
 

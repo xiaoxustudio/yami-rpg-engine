@@ -31,7 +31,7 @@ import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 
-// P5b 批次 4：edit-data-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+// edit-data-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	EditDataInstance?.save?.();
 };
@@ -42,7 +42,7 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #edit-data {
 	width: 720px;
 	height: calc(238px * 1.5);

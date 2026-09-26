@@ -85,7 +85,7 @@ const writeFormValue = (form: Record<string, unknown>, key: string, value: unkno
 };
 
 /**
- * P4b：inspector 页管理器元素上的元素数据（`focusing` 原先靠原型访问器透明落到 WeakMap）。
+ * inspector 页管理器元素上的元素数据（`focusing` 原先靠原型访问器透明落到 WeakMap）。
  * 注意 manager 上的 `active` **不走元素数据**：Vue 版 YMPageManager 在元素上
  * `Object.defineProperty(el, 'active', …)` 自建访问器（遮蔽原型），故保持原样。
  */
@@ -94,7 +94,7 @@ interface InspectorManagerData {
 }
 const managerData = (el: unknown): InspectorManagerData => elementDataOf<InspectorManagerData>(el);
 
-/** P4b：滚动拖拽状态（`dragging`）走显式元素数据 */
+/** 滚动拖拽状态（`dragging`）走显式元素数据 */
 interface InspectorScrollData {
 	dragging: PointerEvent | null;
 }
@@ -363,7 +363,7 @@ Inspector.getKey = function (
 	this: typeof Inspector,
 	element: { key?: string; id: string }
 ): string {
-	// P4b：`key` 是元素数据（原先靠原型访问器透明落到 WeakMap，本函数的 element 实参都是控件元素）
+	// `key` 是元素数据（原先靠原型访问器透明落到 WeakMap，本函数的 element 实参都是控件元素）
 	const data = elementDataOf<{ key?: string }>(element);
 	let key = data.key;
 	if (key === undefined) {
@@ -522,7 +522,7 @@ Inspector.inputBlur = function (
 Inspector.sliderFocus = (function IIFE() {
 	const focus = new FocusEvent('focus');
 	return function (this: HTMLElement & { synchronizer: HTMLElement }, _event: Event) {
-		// P4b：`synchronizer` 走显式元素数据（原先靠原型访问器透明落到 WeakMap）
+		// `synchronizer` 走显式元素数据（原先靠原型访问器透明落到 WeakMap）
 		elementDataOf<{ synchronizer: HTMLElement }>(this).synchronizer.dispatchEvent(focus);
 	};
 })();

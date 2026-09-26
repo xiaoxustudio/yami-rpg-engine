@@ -16,7 +16,7 @@ import { Rename } from '@app/composables/useRenameWindow';
 import type { YamiElement } from '@app/types/element-api';
 import { clamp } from '@app/utils/math';
 
-/** P5b 批次 3：元素注册表——由 Color.vue 在模板里登记 */
+/** 元素注册表——由 Color.vue 在模板里登记 */
 export const colorEls = createElementRegistry();
 
 type ColorTarget = {
@@ -72,7 +72,7 @@ Color.initialize = function (this: typeof Color) {
 	if (!colorEls.get('color-hex')) return;
 	colorEls.get('color-hex')?.setMaxLength?.(8);
 
-	// P5b 批次 3：radio 组用 ui-kit 的 radioProxyMap（RadioProxyElement 类型化接口），不再查 DOM
+	// radio 组用 ui-kit 的 radioProxyMap（RadioProxyElement 类型化接口），不再查 DOM
 	const colorIndex = radioProxyMap['color-index'] as RadioProxyElement | undefined;
 	if (colorIndex) colorIndex.cancelable = true;
 
@@ -113,7 +113,7 @@ Color.open = function (this: typeof Color, ...args: unknown[]) {
 
 Color.drawPalette = function (this: typeof Color) {
 	const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-palette-canvas')!;
-	// P4b: initialized now lives in element data (field removed from DATA_FIELDS)
+	// initialized now lives in element data (field removed from DATA_FIELDS)
 	if (!elementDataOf<{ initialized?: boolean }>(canvas).initialized) {
 		elementDataOf<{ initialized?: boolean }>(canvas).initialized = true;
 
@@ -252,7 +252,7 @@ Color.readRGBAFromInputs = function (this: typeof Color) {
 };
 
 Color.loadIndexedColors = function (this: typeof Color) {
-	// P1b：组内成员改读 proxy.group（原先 document.getElementsByName('color-index')）
+	// 组内成员改读 proxy.group（原先 document.getElementsByName('color-index')）
 	const radios = (radioProxyMap['color-index'] as RadioProxyElement | undefined)?.group ?? [];
 	const colors = Data.config.indexedColors;
 	const length = colors.length;

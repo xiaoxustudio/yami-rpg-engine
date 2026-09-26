@@ -345,7 +345,7 @@ AutoTile.createNodeItems = function (this: typeof AutoTile, id = getAutoTileStor
 	const digits = computeIndexDigits(length);
 	for (let i = 0; i < length; i++) {
 		const index = i.toString().padStart(digits, '0');
-		// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		// 离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
 		const element = renderDetached(
 			h(
 				'div',
@@ -430,7 +430,7 @@ AutoTile.createFrameItems = function (this: typeof AutoTile, id = getAutoTileSto
 		const x = frame & 0xff;
 		const y = frame >> 8;
 		const index = i.toString().padStart(digits, '0');
-		// P1b：同上
+		// 同上
 		const element = renderDetached(
 			h('div', { class: 'common-item', '.dataValue': i }, `#${index}: ${x},${y}`)
 		);
@@ -448,7 +448,7 @@ AutoTile.updateFrameItem = function (this: typeof AutoTile) {
 	const prefix = padZero(index, length);
 	const x = frame & 0xff;
 	const y = frame >> 8;
-	// P4b：`selection`（列表选中行元素）走显式元素数据。注：YMCommonList（Vue）把选中行存在组件闭包里、
+	// `selection`（列表选中行元素）走显式元素数据。注：YMCommonList（Vue）把选中行存在组件闭包里、
 	// 不再往元素数据上写 ⇒ 这里读到的是 `undefined`（迁移前同样如此），属既有行为，本次不改动。
 	elementDataOf<{ selection: HTMLElement }>(this.frameList).selection.textContent =
 		`#${prefix}: ${x},${y}`;

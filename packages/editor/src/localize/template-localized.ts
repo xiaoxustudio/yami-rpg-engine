@@ -1,5 +1,5 @@
 /**
- * 模板已承担的本地化键（R2b 迁移②③，**本文件由 scripts/i18n-skip-list.mjs 生成，勿手改**）。
+ * 模板已承担的本地化键（**本文件由 scripts/i18n-skip-list.mjs 生成，勿手改**）。
  *
  * 这些键的**全部字段**都已由模板承担（`t('components.<键>.<字段>')` 或 `v-tip="t('…tip')"`），
  * 因此 `localizeDomComponents` 对它们**跳过 DOM 查询**——扫描面从 2112 键降到

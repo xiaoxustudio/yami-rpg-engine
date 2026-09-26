@@ -79,7 +79,7 @@ interface VariableModule {
 	list_onResume: (item: unknown) => void;
 	_listMethodsLoaded: boolean;
 	/**
-	 * P2b-2：以下三个成员**不是模块自己的字段，而是桥接到 `stores/variable`**——本文件末尾按
+	 * 以下三个成员**不是模块自己的字段，而是桥接到 `stores/variable`**——本文件末尾按
 	 * `variableStateKeys`（`target`/`data`/`idMap`/`history`/`changed`/`selected`）用
 	 * `Object.defineProperty` 装 get/set。原先它们被类型上的 `[k: string]: any` 兜着，所以"这里有座桥"
 	 * 在类型里完全看不见；收掉逃生口后由 `tsc` 当场报出（`variable/data.ts` 1 处、
@@ -92,7 +92,7 @@ interface VariableModule {
 }
 
 /**
- * P2b-2：桥键（`target`/`idMap`/`history`）由本文件末尾的 `Object.defineProperty` 安装，
+ * 桥键（`target`/`idMap`/`history`）由本文件末尾的 `Object.defineProperty` 安装，
  * 字面量给不出它们 ⇒ 字面量按 `Omit<VariableModule, 'target' | 'idMap' | 'history'>` 校验，
  * **其余成员的拼写仍逐项受检**，导出时再断言成完整形状（与 `AudioManager`/`Log` 同一手法）。
  *

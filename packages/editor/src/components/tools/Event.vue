@@ -104,7 +104,7 @@ const onApply = () => {
 	EventEditor?.apply?.();
 };
 
-// P5b 批次 2：`event-confirm` 按钮由 WindowFrame 生成，改由 @confirm 事件驱动
+// `event-confirm` 按钮由 WindowFrame 生成，改由 @confirm 事件驱动
 const onConfirm = () => {
 	EventEditor?.confirm?.(new Event('click'));
 };
@@ -113,7 +113,7 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #event {
 	width: 1280px;
 	height: 700px;

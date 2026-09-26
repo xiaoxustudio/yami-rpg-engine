@@ -6,7 +6,7 @@ import ImageClipWindow from '@app/components/tools/ImageClip.vue';
 import { ImageClip, imageClipEls } from '../image-crop-window.ts';
 
 /**
- * P5b 批次 3 回归：裁剪窗口不再用 `按 id` 查 DOM——控件由 `ImageClip.vue` 登记进
+ * 裁剪窗口不再用 `按 id` 查 DOM——控件由 `ImageClip.vue` 登记进
  * `imageClipEls`；窗口自身因 `:ref` 槽位被 `ref="frame"` 占用，改在 onMounted 里
  * 用 `registerElement()` 命令式登记（否则 `ensureDomBound()` 会早退，整套绑定静默失效）。
  */
@@ -14,7 +14,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
-describe('裁剪窗口注册表（P5b 批次 3）', () => {
+describe('裁剪窗口注册表', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		imageClipEls.clear();

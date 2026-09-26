@@ -35,7 +35,7 @@ import { empty as fnEmpty } from '@app/utils/function';
 const Clipboard = GlobalClipboard;
 
 /**
- * P4b：时间轴外框列表（`outerTimelineList`）的元素数据（`dragging` 原先靠原型访问器透明落到 WeakMap）。
+ * 时间轴外框列表（`outerTimelineList`）的元素数据（`dragging` 原先靠原型访问器透明落到 WeakMap）。
  * 拖拽记录按分支写入、也只在该分支内读：`select`/`shift` 写 `pointerdownX`/`pointerdownY`/`layer`，
  * `scroll`/`ready-to-scroll` 写 `scrollLeft`/`scrollTop`。
  */
@@ -56,14 +56,14 @@ interface TimelineListElementData {
 const timelineListData = (el: unknown): TimelineListElementData =>
 	elementDataOf<TimelineListElementData>(el);
 
-/** P4b：时间轴选框（`timelineMarquee`）的元素数据（`origin` 是多选/框选的锚点帧号） */
+/** 时间轴选框（`timelineMarquee`）的元素数据（`origin` 是多选/框选的锚点帧号） */
 interface TimelineMarqueeElementData {
 	origin: number;
 }
 const timelineMarqueeData = (el: unknown): TimelineMarqueeElementData =>
 	elementDataOf<TimelineMarqueeElementData>(el);
 
-/** P4b：时间轴内层刻度尺（`innerRuler`）的元素数据（`start` 是当前起始刻度号，首次滚动前为空） */
+/** 时间轴内层刻度尺（`innerRuler`）的元素数据（`start` 是当前起始刻度号，首次滚动前为空） */
 interface TimelineRulerElementData {
 	start?: number;
 }
@@ -288,7 +288,7 @@ Animation.timelineToolbarPointerdown = function (this: typeof Animation, event: 
 Animation.layerListScroll = function (this: typeof Animation & HTMLElement, _event: Event) {
 	const { outerTimelineList } = Animation;
 	const { scrollTop } = this;
-	// P4b：改用显式元素数据（原先写的是原型访问器 `lastScrollTop`）
+	// 改用显式元素数据（原先写的是原型访问器 `lastScrollTop`）
 	getElementData(this).lastScrollTop = scrollTop;
 	if (getElementData(outerTimelineList as HTMLElement).lastScrollTop !== scrollTop) {
 		outerTimelineList.scrollTop = scrollTop;
@@ -599,7 +599,7 @@ Animation.outerTimelineListScroll = function (this: typeof Animation & HTMLEleme
 		outerRuler.scrollLeft = (scrollLeft + tolerance) % 80;
 		outerPointerArea.scrollLeft = scrollLeft;
 	}
-	// P4b：改用显式元素数据（原先读写原型访问器 `lastScrollTop`）
+	// 改用显式元素数据（原先读写原型访问器 `lastScrollTop`）
 	const selfData = getElementData(this);
 	if (selfData.lastScrollTop !== scrollTop) {
 		selfData.lastScrollTop = scrollTop;
@@ -977,7 +977,7 @@ Animation.list.cancelSearch = function (this: typeof Animation) {
 
 // 列表 - 更新头部位置
 Animation.list.updateHead = function (this: typeof Animation) {
-	// P4b：`page` / `head` 已不在 DATA_FIELDS 内（原型访问器退役），而 `this` 是列表**元素**——
+	// `page` / `head` 已不在 DATA_FIELDS 内（原型访问器退役），而 `this` 是列表**元素**——
 	// 直接解构会拿到 undefined（下一行 `page.clientWidth` 当场抛错）。改读同一份元素数据。
 	const { page, head } = elementDataOf<{ page: HTMLElement; head: HTMLElement }>(this);
 	if (page.clientWidth !== 0) {
@@ -1083,7 +1083,7 @@ getListConfig(Animation.layerList).onDelete = function (
 
 // 时间轴 - 更新头部位置
 Animation.timeline.updateHead = function (this: typeof Animation) {
-	// P4b：同 `Animation.list.updateHead`——`head` 在元素数据里，不再走原型访问器。
+	// 同 `Animation.list.updateHead`——`head` 在元素数据里，不再走原型访问器。
 	// `padding` 不属元素数据（是 head 元素上的普通 expando），故在形状里一并声明。
 	const { head } = elementDataOf<{ head: HTMLElement & { padding?: number } }>(this);
 	if (this.clientWidth !== 0) {

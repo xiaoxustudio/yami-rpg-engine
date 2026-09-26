@@ -147,7 +147,7 @@ Menubar.initialize = function (this: typeof Menubar) {
 	// 侦听事件
 	window.addEventListener('keydown', this.keydown!);
 	// #menu pointerdown/pointerup/pointerover 经 Vue 模板转发（AppShell @pointerdown/@pointerup/@pointerover → Menubar.*）
-	// P1b：`.href` 链接的点击改由拥有它们的组件转发（About.vue / ExportApk.vue 的 @click → Menubar.hrefClick）——
+	// `.href` 链接的点击改由拥有它们的组件转发（About.vue / ExportApk.vue 的 @click → Menubar.hrefClick）——
 	// 原先这里的 `document.querySelectorAll('.href')` 在启动时执行，而这些链接在懒加载窗口里，本来就绑不上。
 };
 
@@ -970,7 +970,7 @@ Menubar.createColorIcon = function (this: typeof Menubar, color: string) {
 	const g = parseInt(color.slice(2, 4), 16);
 	const b = parseInt(color.slice(4, 6), 16);
 	const a = parseInt(color.slice(6, 8), 16) / 255;
-	// P1b：离屏节点统一走 utils/dom 的 renderDetached
+	// 离屏节点统一走 utils/dom 的 renderDetached
 	const holder = createDetachedElement();
 	render(
 		h('menu-icon', {

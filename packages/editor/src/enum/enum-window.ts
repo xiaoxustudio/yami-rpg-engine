@@ -27,7 +27,7 @@ import type { YamiElement } from '@app/types/element-api';
 import type { YamiEvent } from '@app/types/editor-event';
 import { clone as deepClone } from '@app/utils/object';
 
-/** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
+/** 元素注册表——由对应窗口 SFC 在模板里登记 */
 export const enumEls = createElementRegistry();
 
 interface EnumItem {
@@ -132,7 +132,7 @@ function ensureDomBound() {
 	if (Enum.list) return;
 	const list = enumEls.get('enum-list');
 	if (!list) return;
-	// P2b-1：`enumEls` 给的是 `HTMLElement`，而它上面的元素 API 由 `attachTreeListApi` 装配
+	// `enumEls` 给的是 `HTMLElement`，而它上面的元素 API 由 `attachTreeListApi` 装配
 	Enum.list = list as TreeListElement;
 	Enum.panel = enumEls.get('enum-properties-flex') as YamiElement;
 	hide(Enum.panel!);

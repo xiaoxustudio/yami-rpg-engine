@@ -1,5 +1,5 @@
 /**
- * P4d：本文件过去用 `Object.assign(CSS, { … })` 给**宿主对象** `CSS` 打补丁
+ * 本文件过去用 `Object.assign(CSS, { … })` 给**宿主对象** `CSS` 打补丁
  * （`global.d.ts` 里还有 `declare namespace CSS` 配套声明）。
  * 现在改为普通命名导出——调用点显式 import，不再污染 `window.CSS`。
  *

@@ -10,7 +10,7 @@ import { CommandSuggestion } from '@app/commands/command-tip';
  * VM1121:3 [Uncaught Error] TypeError: Cannot read properties of undefined (reading 'class')
  *     at CommandSuggestion.listPointerdown (command-tip.ts:418:53)
  * ```
- * 原因：P4b 把行 item 搬进**元素数据**后，`event.target.item` 这个 expando 一律是 `undefined`。
+ * 原因：把行 item 搬进**元素数据**后，`event.target.item` 这个 expando 一律是 `undefined`。
  * `listPointerdown` 必须走 `treeItemOf` / `treeRowElement`（行 API 的正反向入口）——本用例钉住这条链路。
  */
 interface SuggestionRow {
@@ -50,7 +50,7 @@ afterEach(() => {
 	CommandSuggestion.select = null;
 });
 
-describe('CommandSuggestion.listPointerdown（P4b：行 → item 经行 API，不读 expando）', () => {
+describe('CommandSuggestion.listPointerdown（行 → item 经行 API，不读 expando）', () => {
 	it('点行内标签文字：不抛错，pointerup 时选中该行', async () => {
 		const data: SuggestionRow[] = [
 			{ id: 'a', name: 'Show text', class: 'message', value: 'showText' }

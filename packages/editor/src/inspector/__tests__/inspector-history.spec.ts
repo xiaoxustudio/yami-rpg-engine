@@ -57,7 +57,7 @@ const createMount = (id: string, form?: unknown): HTMLElement => {
 		(mount as unknown as { form: unknown }).form = form;
 	}
 	document.body.appendChild(mount);
-	// P1b：页面模块改从 inspectorEls 取 `<page>-vue-mount`（不再按 id 直查）→ 用例自建的宿主也要登记
+	// 页面模块改从 inspectorEls 取 `<page>-vue-mount`（不再按 id 直查）→ 用例自建的宿主也要登记
 	registerElement(inspectorEls, id, mount);
 	return mount;
 };
@@ -79,7 +79,7 @@ describe('inspector-change History 处理器（form 桥优先 + write/dispatch �
 		const inspector = document.createElement('div');
 		inspector.id = 'inspector';
 		document.body.appendChild(inspector);
-		// P5b 批次 3：Inspector.initialize 改从 inspectorEls 取 manager（不再查 DOM），故测试需登记
+		// Inspector.initialize 改从 inspectorEls 取 manager（不再查 DOM），故测试需登记
 		registerElement(inspectorEls, 'inspector-page-manager', manager);
 		registerElement(inspectorEls, 'inspector', inspector);
 		Inspector.initialize();

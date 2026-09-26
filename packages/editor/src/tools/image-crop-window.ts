@@ -14,7 +14,7 @@ import { Path } from '@app/utils/config';
 import type { YamiElement } from '@app/types/element-api';
 import { clamp } from '@app/utils/math';
 
-/** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
+/** 元素注册表——由对应窗口 SFC 在模板里登记 */
 export const imageClipEls = createElementRegistry();
 
 type CropTarget = {
@@ -110,7 +110,7 @@ ImageClip.loadImage = function (this: typeof ImageClip) {
 	this.window.setTitle('');
 
 	const id = this.target?.getAttribute?.('image');
-	// P5b 白名单：动态 id（取值来自 target 的 image 属性），不是静态控件查找，故保留 $()
+	// 动态 id（取值来自 target 的 image 属性），不是静态控件查找，故保留 $()
 	const guid = read($('#' + id));
 	const path = File.getPath!(guid);
 	if (path) {

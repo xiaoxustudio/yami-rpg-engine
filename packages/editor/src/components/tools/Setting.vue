@@ -130,7 +130,7 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-// P5b 批次 4：setting-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+// setting-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	Window.close?.('setting');
 };
@@ -141,7 +141,7 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #setting {
 	width: 520px;
 	height: 700px;

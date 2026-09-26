@@ -33,7 +33,7 @@ describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
 		expect(items[0].textContent).toBe('#0');
 		expect(items[1].textContent).toBe('#1 !');
 		expect(items[2].textContent).toBe('#2');
-		// P4b 收口：行元素上的 `.dataValue` 由 Vue 的 `patchDOMProp` 写成**元素自己的属性**
+		// 行元素上的 `.dataValue` 由 Vue 的 `patchDOMProp` 写成**元素自己的属性**
 		// （消费方 `common-list-core` 经 `elementDataValueOf` 读取，own 优先、否则元素数据）。
 		// 断言一律走同一个门，而不是假定它具体存在哪一侧存储。
 		expect(elementDataValueOf(items[1])).toBe(1);

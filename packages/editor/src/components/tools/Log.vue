@@ -20,7 +20,7 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/log.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：选择器需命中子组件内部生成的元素 */
 #log-message {
 	display: none;
 	position: absolute;

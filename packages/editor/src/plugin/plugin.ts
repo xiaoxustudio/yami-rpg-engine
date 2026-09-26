@@ -122,7 +122,7 @@ export interface PluginManagerShape {
 	list_updateTextNode: ((item: PluginItemShape) => void) | null;
 	reload: (() => void) | null;
 	/**
-	 * P2b-2：**桥接到 `stores/plugin`**（本文件末尾用 `Object.defineProperty` 按
+	 * **桥接到 `stores/plugin`**（本文件末尾用 `Object.defineProperty` 按
 	 * `pluginBridgeKeys` 安装 get/set），不是独立字段。
 	 * 原先靠类型上的 `[k: string]: any` 兜着，所以"这里有座桥"在类型里看不见——
 	 * 去掉逃生口后由 `tsc` 当场报出（`stores/__tests__/plugin.spec.ts` 3 处）。

@@ -29,7 +29,7 @@
 import { ExportLanguage } from '@app/local/export-language-window.ts';
 import { composableEls } from '@app/composables/element-registry';
 
-// P5b 批次 4：exportLanguage-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+// exportLanguage-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	ExportLanguage?.confirm?.(new Event('click'));
 };
@@ -89,7 +89,7 @@ onMounted(() => {
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #exportLanguage {
 	width: 324px;
 	height: 122px;

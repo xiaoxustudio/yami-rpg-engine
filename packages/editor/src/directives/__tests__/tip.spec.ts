@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import { vTip } from '../tip.ts';
 
 /**
- * R2b 回归：`v-tip` 指令把 i18n 文案挂到元素 tooltip 上（替代本地化器的逐键 DOM 扫描）。
+ * 回归：`v-tip` 指令把 i18n 文案挂到元素 tooltip 上（替代本地化器的逐键 DOM 扫描）。
  * 断言三点：① 挂载后调用 setTooltip 且文案含 label 与 tip；② 空串不挂；
  * ③ 绑定值变化时（语言切换）重新挂载。
  */
@@ -24,7 +24,7 @@ const Host = defineComponent({
 	}
 });
 
-describe('v-tip 指令（R2b）', () => {
+describe('v-tip 指令', () => {
 	beforeEach(() => {
 		setTooltipMock.mockClear();
 	});

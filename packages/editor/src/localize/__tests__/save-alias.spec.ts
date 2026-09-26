@@ -3,17 +3,14 @@ import { localizeDomComponents, parseLocalTip } from '../dom-localizer';
 import { templateLocalizedKeys } from '../template-localized';
 
 /**
- * `#<save 别名>` 的解析链路（R2b 收口期发现的静默回归）。
+ * `#<save 别名>` 的解析链路（静默回归）。
  *
  * 背景：语言表里 19 条 tip 写的是 `"#deviation"`——它不是文案，而是指向
  * **另一个条目的 `save` 别名**（唯一持有者是 `particleLayer-anchor-x-1`，
  * `save: "deviation"`）。解析由 `parseLocalTip` 经模块级 `saveItems` 完成。
  *
- * 旧实现里 tip 由 `localizeDomComponents` **在扫描循环内**写入，所以
- * `saveItems` 在循环中途就被填好，解析天然成立。
- *
- * R2b 把 tip 改成模板 `v-tip="t('…tip')"` 后，`parseLocalTip` 的调用点
- * **移到了扫描循环之外**（指令 `mounted` / `updated`）。而 `saveItems` 过去
+ * tip 的承载者是模板 `v-tip="t('…tip')"`，`parseLocalTip` 的调用点因此
+ * **位于扫描循环之外**（指令 `mounted` / `updated`）。若 `saveItems` 仍
  * 在循环末尾被清空 ⇒ 这 19 条 tooltip **静默丢掉正文**，只剩一行加粗标题。
  * 测试套件全绿，界面却坏了。
  *

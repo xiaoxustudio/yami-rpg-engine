@@ -65,7 +65,7 @@ interface TitleTargetShape extends HTMLElement {
 	active?: boolean;
 }
 
-/** P4b：title 元素上的元素数据（`active` 原先靠原型访问器透明落到 WeakMap） */
+/** title 元素上的元素数据（`active` 原先靠原型访问器透明落到 WeakMap） */
 interface TitleTargetData {
 	active: boolean;
 }

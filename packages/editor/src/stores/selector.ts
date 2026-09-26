@@ -98,7 +98,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		target.value = Selector?.target ?? null;
 	}
 
-	// P5b 批次 4：confirm 按钮由 WindowFrame 生成 → 改由 Selector.vue 的 @confirm 调 store.confirm
+	// confirm 按钮由 WindowFrame 生成 → 由 Selector.vue 的 @confirm 调 store.confirm
 	let initRetryCount = 0;
 
 	function initialize() {
@@ -122,8 +122,8 @@ export const useSelectorStore = defineStore('selector', () => {
 		(storesEls.get('selector') as YamiElement)?.on?.('closed', windowClosed);
 		(storesEls.get('selector') as YamiElement)?.on?.('resize', windowResize);
 		EventBus.once('editor_loaded', () => {
-			// R2b 收口：`selector-search` 的 tip 过去靠"运行期赋 id + 本地化器按 id 反查"，
-			// 所以它一直留在本地化器的扫描面里。改成直接把文案挂到搜索框上（语言切换自动重挂），
+			// `selector-search` 的 tip **不能**靠"运行期赋 id + 本地化器按 id 反查"，
+			// 那样它会一直留在本地化器的扫描面里。直接把文案挂到搜索框上（语言切换自动重挂），
 			// 该键随之退出扫描面。
 			applyLocalizedTip(Selector.head?.searcher, 'selector-search');
 		});

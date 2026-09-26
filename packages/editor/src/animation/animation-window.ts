@@ -443,7 +443,7 @@ export const Animation: AnimationShape = {
 	Player: null
 };
 
-// P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+// `page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 elementDataOf<{ page?: HTMLElement | null }>(Animation.list).page = animationEls.get(
 	'animation-motion'
 ) as YamiElement;
@@ -456,7 +456,7 @@ elementDataOf<{ head: HTMLElement }>(Animation.timeline).head = animationEls.get
 ) as YamiElement;
 
 // outerTimelineList properties
-// P4b：`dragging` 是 outerTimelineList 元素上的元素数据（原先靠原型访问器透明落到 WeakMap）
+// `dragging` 是 outerTimelineList 元素上的元素数据（原先靠原型访问器透明落到 WeakMap）
 elementDataOf<{ dragging: PointerEvent | null }>(Animation.outerTimelineList).dragging = null;
 // outerTimelineList methods
 Animation.outerTimelineList.restoreMotionAndLayer = null;
@@ -472,7 +472,7 @@ Animation.timelineMarquee.layer = null;
 Animation.timelineMarquee.x = -1;
 Animation.timelineMarquee.y = -1;
 Animation.timelineMarquee.length = -1;
-// P4b：`origin` 是 timelineMarquee 元素上的元素数据（原先靠原型访问器透明落到 WeakMap）
+// `origin` 是 timelineMarquee 元素上的元素数据（原先靠原型访问器透明落到 WeakMap）
 elementDataOf<{ origin: number }>(Animation.timelineMarquee).origin = -1;
 // timelineMarquee methods
 Animation.timelineMarquee.isPointIn = null;

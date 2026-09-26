@@ -7,7 +7,7 @@ import {
 } from '@app/utils/element-registry';
 
 /**
- * P1b：`createElementRegistry(mirror)` 的镜像语义——**写入时**同步（含卸载时的 `null`），
+ * `createElementRegistry(mirror)` 的镜像语义——**写入时**同步（含卸载时的 `null`），
  * 而不是在 SFC 的 `onMounted` 里循环拷贝（子组件 onMounted 早于父组件，会慢一拍）。
  */
 describe('元素注册表（element-registry）', () => {

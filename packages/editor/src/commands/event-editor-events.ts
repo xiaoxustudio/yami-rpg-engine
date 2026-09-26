@@ -163,7 +163,7 @@ EventEditor.windowPointermove = function (this: EventEditorShape, event: Pointer
 
 EventEditor.listPointerdown = function (this: EventEditorShape, event: PointerEvent) {
 	if (event.altKey && event.button === 0) {
-		// P4b：行 → item 经行 API 取（`element.item` expando 已退役）；标签文字上的点击同样归一成行
+		// 行 → item 经行 API 取（`element.item` expando 已退役）；标签文字上的点击同样归一成行
 		const item = treeItemOf<EventListItem>(event.target);
 		if (item !== undefined && item.id) {
 			// 阻止focus后快捷键不被禁用的情况

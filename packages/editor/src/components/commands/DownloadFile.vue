@@ -82,7 +82,7 @@
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
-// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+// 本组件的控件元素注册表（替代按 id 查 DOM）
 const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -137,7 +137,7 @@ onMounted(() => {
 </script>
 
 <style>
-/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #downloadFile {
 	width: 324px;
 	height: 430px;

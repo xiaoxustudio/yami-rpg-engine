@@ -8,7 +8,7 @@ import type { InspectorChange } from '@app/inspector/inspector.ts';
 import type { YamiElement } from '@app/types/element-api';
 import { Scene } from '@app/scene/scene-window.ts';
 
-/** P4b：inspector 页管理器元素上的元素数据（`focusing` 原先靠原型访问器透明落到 WeakMap） */
+/** inspector 页管理器元素上的元素数据（`focusing` 原先靠原型访问器透明落到 WeakMap） */
 interface InspectorManagerData {
 	focusing: HTMLElement | null;
 }
@@ -49,7 +49,7 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 			| null;
 		[k: string]: unknown;
 	};
-	/** P4b：light 选择框元素上的元素数据（`dataItems` 原先靠原型访问器透明落到 WeakMap） */
+	/** light 选择框元素上的元素数据（`dataItems` 原先靠原型访问器透明落到 WeakMap） */
 	interface SceneTilemapLightData {
 		dataItems: SceneTilemapLightItem[] | null;
 	}

@@ -1,5 +1,5 @@
 /**
- * 事件访问器（P4d）：**不再**往 `Event.prototype` 上装访问器。
+ * 事件访问器：**不再**往 `Event.prototype` 上装访问器。
  *
  * 原先这里有 `Object.defineProperties(Event.prototype, { dragKey: … })`，配合
  * `utils/keyboard.ts` 的 `Event.prototype.spaceKey` 让**任何**事件都"看起来"带这两个键——

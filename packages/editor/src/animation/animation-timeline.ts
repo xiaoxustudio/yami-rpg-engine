@@ -21,7 +21,7 @@ import { empty as fnEmpty } from '@app/utils/function';
 const Clipboard = GlobalClipboard;
 
 /**
- * P4b：时间轴选框（`Animation.timelineMarquee`）的元素数据视图。
+ * 时间轴选框（`Animation.timelineMarquee`）的元素数据视图。
  * `origin` 是本次多选/框选的锚点帧号（`selectMarquee` 写入，扩展选择时用来判断方向）。
  */
 interface TimelineMarqueeElementData {
@@ -429,7 +429,7 @@ Animation.createTimelines = (function IIFE() {
 		for (const layer of layers) {
 			let { timeline } = layer;
 			if (timeline === undefined) {
-				// P1b：离屏节点统一走 utils/dom 的唯一创建缝隙
+				// 离屏节点统一走 utils/dom 的唯一创建缝隙
 				timeline = createDetachedElement();
 				addClass(timeline, 'box');
 				addClass(timeline, 'timeline-frames');
@@ -450,7 +450,7 @@ Animation.createTimelines = (function IIFE() {
 				const easing = !!frame.easingId;
 				let { key } = frame;
 				if (key === undefined) {
-					// P1b：同上
+					// 同上
 					key = createDetachedElement();
 					addClass(key, 'box');
 					addClass(key, 'timeline-key');

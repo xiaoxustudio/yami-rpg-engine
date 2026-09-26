@@ -27,7 +27,7 @@ import type { YamiElement } from '@app/types/element-api';
 import type { YamiEvent } from '@app/types/editor-event';
 import { clone as deepClone } from '@app/utils/object';
 
-/** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
+/** 元素注册表——由对应窗口 SFC 在模板里登记 */
 export const attributeEls = createElementRegistry();
 
 interface AttributeItem {
@@ -96,7 +96,7 @@ interface AttributeWindowShape {
 	packAttribute: (this: typeof Attribute) => void;
 	saveHistory: (this: typeof Attribute, item: AttributeItem, key: string, value?: string) => void;
 	/**
-	 * P2b-2：**桥接到 `stores/attribute`**——本文件末尾按 `attributeStateKeys` 用
+	 * **桥接到 `stores/attribute`**——本文件末尾按 `attributeStateKeys` 用
 	 * `Object.defineProperty` 把 `idMap` 等状态装到 `Attribute` 上，不是模块自己的字段。
 	 * 原先被类型上的 `[k: string]: any` 兜住，收掉逃生口后由 `tsc` 当场报出
 	 * （`module/monkey-patches.ts` 1 处）。
@@ -138,7 +138,7 @@ interface AttributeWindowShape {
 }
 
 /**
- * P2b-2：`idMap` 是**桥键**（本文件末尾按 `attributeStateKeys` 用 `Object.defineProperty` 装 get/set），
+ * `idMap` 是**桥键**（本文件末尾按 `attributeStateKeys` 用 `Object.defineProperty` 装 get/set），
  * 字面量给不出它 ⇒ 字面量按 `Omit<AttributeWindowShape, 'idMap'>` 校验（其余成员仍逐项受检），
  * 导出时再断言成完整形状（与 `AudioManager`/`Log`/`Variable` 同一手法）。
  */
@@ -159,7 +159,7 @@ function ensureDomBound() {
 	if (Attribute.list) return;
 	const list = attributeEls.get('attribute-list');
 	if (!list) return;
-	// P2b-1：`attributeEls` 给的是 `HTMLElement`，而它上面的元素 API 由 `attachTreeListApi` 装配
+	// `attributeEls` 给的是 `HTMLElement`，而它上面的元素 API 由 `attachTreeListApi` 装配
 	Attribute.list = list as TreeListElement;
 	Attribute.panel = attributeEls.get('attribute-properties-flex') as YamiElement;
 	hide(Attribute.panel);

@@ -57,7 +57,7 @@
 import { useI18n } from 'vue-i18n';
 import { ObjectFolder } from '@app/scene/default-object-folder.ts';
 
-// P5b 批次 4：object-folder-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+// object-folder-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	ObjectFolder?.confirm?.(new Event('click'));
 };
@@ -69,7 +69,7 @@ const { t } = useI18n();
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #object-folder {
 	width: 324px;
 	height: 242px;

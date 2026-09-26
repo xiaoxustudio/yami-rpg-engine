@@ -22,7 +22,7 @@ import ParamList from '@app/components/common/ParamList.vue';
 
 const arrayWindow = useArrayWindow();
 
-// P5b 批次 4：arrayList-confirm 由 WindowFrame 生成 → 改由 @confirm 调 composable 的 confirm
+// arrayList-confirm 由 WindowFrame 生成 → 改由 @confirm 调 composable 的 confirm
 const onConfirm = () => {
 	arrayWindow.confirm?.();
 };
@@ -57,7 +57,7 @@ onMounted(() => {
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/data.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #arrayList {
 	width: 340px;
 	height: 480px;

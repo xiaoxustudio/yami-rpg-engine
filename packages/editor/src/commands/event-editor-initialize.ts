@@ -20,13 +20,13 @@ import { Data } from '@app/data/data-object.ts';
 import { getEventEditorStore } from '@app/stores/event-editor';
 import type { YamiElement } from '@app/types/element-api';
 
-/** P5b 批次 2：事件编辑器窗口的元素注册表——由 `Event.vue` 在模板里登记 */
+/** 事件编辑器窗口的元素注册表——由 `Event.vue` 在模板里登记 */
 export const eventEditorEls = createElementRegistry();
 
 function ensureDomBound() {
 	if (EventEditor.list) return;
 	// 注册表在挂载后才填充，未挂载时为 null ⇒ 仍需判空。
-	// 收窄走 `registryElement`（P4 的既有手法：把「按 id 收窄」集中到一处），
+	// 收窄走 `registryElement`（把「按 id 收窄」集中到一处），
 	// 于是下面两处不再各写一遍 `as unknown as`。
 	const list = registryElement<HTMLElement & EventEditorList>(eventEditorEls, 'event-open-list');
 	if (!list) return;
@@ -38,7 +38,7 @@ function ensureDomBound() {
 	// 注册表在挂载后才填充，未挂载时为 undefined；沿用原先 `$()` 的非空断言语义
 	EventEditor.outerGutter = eventEditorEls.get('event-commands-gutter-outer') as YamiElement;
 	EventEditor.innerGutter = eventEditorEls.get('event-commands-gutter-inner') as YamiElement;
-	// P4b：滚动位置改用显式元素数据（原先写的是原型访问器 `lastScrollTop`）
+	// 滚动位置改用显式元素数据（原先写的是原型访问器 `lastScrollTop`）
 	getElementData(list).lastScrollTop = 0;
 	EventEditor.list.close = null;
 	EventEditor.list.closeMultiple = null;
@@ -150,7 +150,7 @@ function bindListMethods() {
 	};
 
 	list.saveScroll = function (this: HTMLElement & EventEditorList) {
-		// P4b：改用显式元素数据（原先读写原型访问器 `lastScrollTop`）
+		// 改用显式元素数据（原先读写原型访问器 `lastScrollTop`）
 		getElementData(this).lastScrollTop = this.scrollTop;
 	};
 

@@ -592,13 +592,12 @@ const onConfirm = () => {
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：选择器需命中子组件内部生成的元素 */
 #project-settings {
 	width: 480px;
 	height: 700px;
 }
 
-/* 样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #project-page {
 	position: absolute;
 	top: 0;

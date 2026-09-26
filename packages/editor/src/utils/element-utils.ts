@@ -11,7 +11,7 @@ import { Fragment, h, render, type VNode } from 'vue';
 import type { EditorEvent, YamiMouseEvent, YamiEvent } from '@app/types/editor-event';
 
 /**
- * P4c：`element-utils.ts` 装配 / 消费的**滚动宿主**契约。
+ * `element-utils.ts` 装配 / 消费的**滚动宿主**契约。
  *
  * 这些成员过去声明在全局 `HTMLElement` 上——于是"没装滚动条的普通 `div`"也看起来有
  * `setScroll()`（拼错方法名同样不报错）。现在只有**显式声明为滚动宿主**的元素才具备，
@@ -174,7 +174,7 @@ export function clear(el: Node | null | undefined): HTMLElement | null | undefin
 	// 摘掉，Vue 的节点表随即失真 —— 之后任何一次 patch 都会以 null 容器 insert，
 	// 真机表现为 `Cannot read properties of null (reading 'insertBefore')`（已在命令列表上复现：
 	// wipe 之后下一次更新必崩，栈与真机一致）。
-	// 树列表自 P4b 起就有这条特判，这里推广到全部自带 clear 的列表/面板
+	// 树列表本就有这条特判，这里推广到全部自带 clear 的列表/面板
 	// （命令行、通用列表、参数面板、选择框、日志/队伍列表……它们的 clear 都是"清空自身内容"语义）。
 	if (typeof element.clear === 'function') {
 		element.clear();
@@ -192,7 +192,7 @@ export function read(el: unknown): any {
 	if (typeof (el as { read: () => unknown }).read === 'function') {
 		return (el as { read: () => unknown }).read();
 	}
-	// P4b：`dataValue` 有两种承载者（组件 own 访问器 / 元素数据），统一走 elementDataValueOf。
+	// `dataValue` 有两种承载者（组件 own 访问器 / 元素数据），统一走 elementDataValueOf。
 	return elementDataValueOf(el);
 }
 
@@ -454,7 +454,7 @@ export function isInContent(el: unknown, event: MouseEvent): boolean {
 	return x >= 0 && x < target.clientWidth && y >= 0 && y < target.clientHeight;
 }
 
-// P1b：离屏节点统一走 utils/dom 的唯一创建缝隙（原先这里自带一份 createElement + render）
+// 离屏节点统一走 utils/dom 的唯一创建缝隙（原先这里自带一份 createElement + render）
 function renderElement(vnode: VNode): HTMLElement {
 	return renderDetached(vnode);
 }
@@ -559,13 +559,13 @@ export function addSetScrollMethod(el: HTMLElement): void {
 }
 
 /**
- * P4b：默认滚动拖拽记录（`dragging`）走**显式元素数据**——与 `Inspector.scrollPointerdown` 里的
+ * 默认滚动拖拽记录（`dragging`）走**显式元素数据**——与 `Inspector.scrollPointerdown` 里的
  * `scrollData(this)` 是同一份存储。
  *
  * **为什么两边必须一致**：inspector 传的是自己的 `scrollPointerdown`（写元素数据），而 pointerup /
  * pointermove 用的是本文件的默认实现。若这里继续写普通 expando，写入与读取就落在**两个地方**——
  * `dragging` 永远清不掉（光标卡在 grab、后续 alt+拖拽被函数开头的早退挡掉）。访问器时代两者同走
- * WeakMap，所以这个分叉只在 P4b 收口（删除原型访问器）之后才显现。
+ * WeakMap，所以这个分叉只在删除原型访问器之后才显现。
  */
 type ScrollDragEvent = PointerEvent & {
 	mode?: string;

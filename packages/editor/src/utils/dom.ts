@@ -4,13 +4,13 @@ import type { YamiElement } from '@app/types/element-api';
 import { append, remove } from '@app/utils/array';
 
 /**
- * P1b：**唯一的「离屏节点」创建缝隙**。
+ * **唯一的「离屏节点」创建缝隙**。
  *
  * 模块在没有模板宿主的地方需要一次性节点时（列表行里的文本片段、命令行的行号方块……），
  * 统一走这里，避免 `document.createElement` + `render()` 的样板散落各处。
  *
  * 注意：**有模板宿主时仍应优先用模板节点 `cloneNode`**——不要把 Vue 管理的 DOM 当容器
- * 渲染外来 vnode（见 remaining-work 的替换配方第 ③ 条）。
+ * 渲染外来 vnode。
  */
 export function renderDetached(vnode: VNode): HTMLElement {
 	const host = createDetachedElement();
@@ -22,7 +22,7 @@ export function renderDetached(vnode: VNode): HTMLElement {
 	return el;
 }
 
-/** P1b：创建一个**不在文档里**的 `div`（与 `renderDetached` 同属唯一创建缝隙）。 */
+/** 创建一个**不在文档里**的 `div`（与 `renderDetached` 同属唯一创建缝隙）。 */
 export function createDetachedElement(): HTMLDivElement {
 	return document.createElement('div');
 }
@@ -222,9 +222,9 @@ export const getElementWriter = function (prefix: string, bindingObject?: Record
 };
 
 /**
- * M4 步骤 2：按 DOM 目标反查**文件行元素**。
+ * 按 DOM 目标反查**文件行元素**。
  *
- * 换源后行元素由模板渲染、`file` 由回写桥挂上行（见 `YMFileBodyPane.bindRowElement`），
+ * 行元素由模板渲染、`file` 由回写桥挂上行（见 `YMFileBodyPane.bindRowElement`），
  * 因此这里沿祖先找"**带 `file` 数据**的节点"，而不再依赖 `.file-body-item` 这个类名结构——
  * 类名是渲染细节，`file` 才是数据契约。
  */

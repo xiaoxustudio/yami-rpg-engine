@@ -5,7 +5,7 @@ import { pinia } from './pinia';
 export type ResourcePhase = 'idle' | 'downloading' | 'decompressing';
 
 /**
- * 资源包行数据（R1 数据化）：原来是 module/resource.ts 的 `temp()` 里用 DOMParser 解析
+ * 资源包行数据：原先在 module/resource.ts 的 `temp()` 里用 DOMParser 解析
  * 一段 HTML 模板字符串、再逐个按 id 取子节点并挂事件，现在改成这份模型 +
  * `ResourceList.vue` 的 v-for 渲染。
  */

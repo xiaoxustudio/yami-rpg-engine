@@ -23,7 +23,7 @@ interface AudioManagerShape {
 	stopMusic: (() => void) | null;
 	playSound: ((name: string) => void) | null;
 	/**
-	 * P2b-2：**桥接到 `stores/audio`**（本文件末尾用 `Object.defineProperty` 按
+	 * **桥接到 `stores/audio`**（本文件末尾用 `Object.defineProperty` 按
 	 * `audioBridgeKeys` 安装 get/set），不是独立字段——原先被 `[k: string]: any` 兜住，
 	 * 去掉逃生口后由 `tsc` 当场报出（`stores/__tests__/audio-state.spec.ts` 4 处）。
 	 */

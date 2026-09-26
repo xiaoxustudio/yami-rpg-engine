@@ -18,8 +18,8 @@ const titleTagExp = /\$([\S ]+)(?=\n|$)/g;
 /**
  * `save 别名 → 条目` 索引。tip 里写作 `"#deviation"` 时，正文取自这里。
  *
- * 🔴 它**不能**只在扫描循环中途存在：R2b 把 tip 的承载者换成模板 `v-tip` 之后，
- * `parseLocalTip` 的调用点位于扫描循环**之外**（指令 `mounted` / `updated`），
+ * 🔴 它**不能**只在扫描循环中途存在：tip 的承载者是模板 `v-tip`，
+ * `parseLocalTip` 的调用点因此位于扫描循环**之外**（指令 `mounted` / `updated`），
  * 而别名持有者（`particleLayer-anchor-x-1`，`save: "deviation"`）可能已被
  * 模板承担而**不在扫描面内**。若索引只在循环里累积、循环末尾清空，
  * 语言表里 19 条 `"#deviation"` tooltip 会静默丢掉正文，只剩一行加粗标题。
@@ -30,7 +30,7 @@ const titleTagExp = /\$([\S ]+)(?=\n|$)/g;
 let saveItems: Record<string, LocalComponentItem> = {};
 
 export function setLocalElement(element: HTMLElement, item: LocalComponentItem): void {
-	// P4c：外壳元素（window-frame / text-box / select-box）带本仓库装配的元素 API
+	// 外壳元素（window-frame / text-box / select-box）带本仓库装配的元素 API
 	const target = element as YamiElement;
 	if (item.save !== undefined) {
 		saveItems[item.save] = item;
@@ -76,7 +76,7 @@ export function parseLocalTip(tip: string, title: string): string {
 }
 
 export function localizeDomComponents(components: Record<string, LocalComponentItem>): void {
-	// R2b 迁移②：模板已承担的键（t()/v-tip）跳过 DOM 查询，扫描面 2130 → ~200
+	// 模板已承担的键（t()/v-tip）跳过 DOM 查询，扫描面 2130 → ~200
 	const entries = Object.entries(components ?? {});
 
 	// `#别名` 索引按**全表**建立——包括下面会被跳过的键。

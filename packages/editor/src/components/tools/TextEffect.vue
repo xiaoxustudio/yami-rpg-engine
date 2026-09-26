@@ -77,7 +77,7 @@ const onConfirm = () => {
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #textEffect {
 	width: 324px;
 	height: 170px;

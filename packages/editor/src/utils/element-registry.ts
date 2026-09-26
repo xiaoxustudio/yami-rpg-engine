@@ -1,5 +1,5 @@
 /**
- * 元素注册表（P5b 批次 2/4）：SFC 用 `:ref="registryRef(reg, id)"` 把**元素**登记进模块导出的
+ * 元素注册表：SFC 用 `:ref="registryRef(reg, id)"` 把**元素**登记进模块导出的
  * Map，模块侧据此取用——替代 `按 id` 的 DOM 查找。
  *
  * 与 `createAccessorFields()`（控件实例注册表）的区别：这里登记的是元素本身
@@ -9,7 +9,7 @@
 import type { YamiElement } from '@app/types/element-api';
 
 /**
- * 元素句柄类型（P4c）：注册表里的元素**明确来自本仓库**（SFC 的模板 ref），因此带 `YamiElementApi`
+ * 元素句柄类型：注册表里的元素**明确来自本仓库**（SFC 的模板 ref），因此带 `YamiElementApi`
  * 契约。过去这一步靠 `global.d.ts` 的全局 `interface HTMLElement` 兜底——那会让**所有** `HTMLElement`
  * 都"看起来"有这些方法，普通 DOM 元素也失去了拼写检查。现在只有显式来源才具备。
  */
@@ -17,7 +17,7 @@ export type ElementRegistry = Map<string, YamiElement | null>;
 
 /**
  * 建一个注册表。可选 `mirror`：本注册表的每次写入（含卸载时的 `null`）同时镜像一份过去——
- * 用于「SFC 局部注册表 + 跨模块共享注册表」并存的情形（P1b：命令表单 SFC 的控件挂在局部
+ * 用于「SFC 局部注册表 + 跨模块共享注册表」并存的情形（命令表单 SFC 的控件挂在局部
  * `fieldEls`，而 composable 侧要读共享的 `composableEls`）。
  *
  * 为什么在**写入时**镜像、而不是在 SFC 的 `onMounted` 里循环拷贝：子组件的 `onMounted`
@@ -61,7 +61,7 @@ export const registerElement = (registry: ElementRegistry, id: string, el: unkno
 };
 
 /**
- * 按 id 列表取注册表里的元素（P1b：替代「一次批量取多个控件」的
+ * 按 id 列表取注册表里的元素（替代「一次批量取多个控件」的
  * `document.querySelectorAll('#a, #b, …')`——返回顺序与传入 ids 一致，未登记的项跳过）。
  */
 export const registryElements = (registry: ElementRegistry, ids: string[]): YamiElement[] =>
@@ -70,7 +70,7 @@ export const registryElements = (registry: ElementRegistry, ids: string[]): Yami
 /**
  * 按 id 取一个**具体类型**的句柄 —— 把「收窄」集中在这一处。
  *
- * ## 为什么需要它（P4 / `unknown-casts` 收口，2026-09-20）
+ * ## 为什么需要它（`unknown-casts` 收口，2026-09-20）
  *
  * 注册表的元素类型是**故意宽的** `YamiElement | null`：登记时（`registryRef`）只知道
  * 「这是一个来自本仓模板 ref 的元素」，静态上无法表达「这个 id 是 canvas、那个 id 是 marquee」

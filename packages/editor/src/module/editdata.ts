@@ -231,7 +231,7 @@ export const EditDataInstance = new (class {
 	}
 	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
-		// P1b：离屏文本节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		// 离屏文本节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
 		const text = renderDetached(h('div', { class: 'text' }, code));
 		const options = this.colorOptions;
 		options.theme = Title.theme;

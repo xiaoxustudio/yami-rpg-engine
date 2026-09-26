@@ -12,7 +12,7 @@ import { registryElement } from '@app/utils/element-registry';
 	}
 	/**
 	 * `uiTextBox-number` 登记的是 `YMNumberBox` 的根元素：`decimals` 由该 SFC 自己
-	 * `defineProperty(el, 'decimals', …)` 定义（组件内部状态），**不是** P4b 的元素数据
+	 * `defineProperty(el, 'decimals', …)` 定义（组件内部状态），**不是** 元素数据
 	 * ——所以这里给局部形状，而不是继续靠 `global.d.ts` 的 `interface HTMLElement` 兜底。
 	 */
 	interface NumberBoxHostElement extends HTMLElement {

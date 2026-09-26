@@ -25,7 +25,7 @@ describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 		const vBar = parent.querySelector('.scroll-bar.vertical');
 		expect(hBar).toBeTruthy();
 		expect(vBar).toBeTruthy();
-		// P4b：滚动条的宿主（`target`）是**元素数据**（`scroll-bar-api.ts` 的 `data.target`），
+		// 滚动条的宿主（`target`）是**元素数据**（`scroll-bar-api.ts` 的 `data.target`），
 		// 元素上不再有同名隐式属性——这里读元素数据（原先读 `hBar.target` 恒为 undefined）
 		expect(elementDataOf<{ target?: HTMLElement | null }>(hBar).target).toBe(target);
 		expect(elementDataOf<{ target?: HTMLElement | null }>(vBar).target).toBe(target);

@@ -175,7 +175,7 @@ export const CustomCommand = {
 	close: null as ((id?: string) => void) | null
 } satisfies Partial<CustomCommandShape> as CustomCommandShape;
 
-/** P5b 批次 2：控件元素注册表——由 `Command.vue` 在模板里登记 */
+/** 控件元素注册表——由 `Command.vue` 在模板里登记 */
 export const customCommandEls = createElementRegistry();
 
 function ensureDomBound() {
@@ -223,7 +223,7 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	// `type CustomCommandMethod = ((...args: any[]) => any) | null`（`updateTextNode` 的类型），
 	// 它既带 `any` 又可空。适配器写法会撞上「输出 void vs any」与「可空」两件事，
 	// 而按「不改行为」的原则又不能给它加空值判断（原来是**把可能为 null 的值登记进去**，
-	// 调用点才抛）。⇒ 归到 P3 的 `any` 别名批次去处理，不在 P4 里硬做。
+	// 调用点才抛）。⇒ 别名上的 `any` 需要另行整体收窄，不在这里硬做。
 	getListConfig(list).updaters.push(list.updateTextNode as unknown as (item: unknown) => void);
 
 	const frame = customCommandEls.get('command');

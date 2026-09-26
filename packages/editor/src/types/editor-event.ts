@@ -4,7 +4,7 @@
 // 说明：`Event.prototype` 在 `utils/event-accessors.ts` 已扩展 `dragKey`/`cmdOrCtrlKey`/
 // `macRedoKey`，此处通过 interface 声明合并补全访问器，避免在各调用方重复 `as any` 断言。
 //
-// P4c（2026-09-17）：本模块同时接管**事件载荷契约**——过去 `Project/global.d.ts` 用
+// 本模块同时接管**事件载荷契约**——过去 `Project/global.d.ts` 用
 // `interface Event { value: any; mode: any; … }` 给**全局**每个事件都加上了本仓库的载荷字段
 // （连原生 `resize` 事件也"看起来"带 `value`），拼错的字段名同样能通过编译。现在只有显式
 // 标注为 `EditorEvent` / `YamiEvent` 的处理器才具备这些字段——它们全部由本仓库派发

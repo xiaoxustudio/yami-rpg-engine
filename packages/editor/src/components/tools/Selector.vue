@@ -28,7 +28,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import FileBrowser from '../file-browser/FileBrowser.vue';
 
-// P5b 批次 4：selector-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+// selector-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	useSelectorStore().confirm?.();
 };
@@ -39,7 +39,7 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #selector {
 	width: 1200px;
 	height: 700px;

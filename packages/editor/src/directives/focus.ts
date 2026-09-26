@@ -17,7 +17,7 @@ export function requestFocus(id: string, mode?: string): void {
 }
 
 const applyFocus = (el: HTMLElement, mode?: string): void => {
-	// P4c：焦点目标可能是本仓库装配过 `getFocus` / `select` 的控件元素
+	// 焦点目标可能是本仓库装配过 `getFocus` / `select` 的控件元素
 	const target = el as YamiElement;
 	setTimeout(() => {
 		if (typeof target.getFocus === 'function') {

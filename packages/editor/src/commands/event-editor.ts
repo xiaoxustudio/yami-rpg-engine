@@ -114,7 +114,7 @@ export interface EventEditorList {
 }
 
 /**
- * P2b-1：命令列表的形状现在**派生自 ui-kit 的元素 API 契约**（`CommandListElementApi`），
+ * 命令列表的形状现在**派生自 ui-kit 的元素 API 契约**（`CommandListElementApi`），
  * 只额外补上 editor 侧才关心的字段（如 `elements.count` 这种渲染簿记）。
  * 这样"元素上有哪些方法"只有一份定义，拼写错误会在编译期暴露。
  */
@@ -237,7 +237,7 @@ export const EventEditor = {
 
 const eventEditorBridgeKeys = ['closing'] as const;
 import { getEventEditorStore } from '@app/stores/event-editor';
-// P2b-1：类型化元素 API 契约（与文件末尾的 import 同批，避免循环依赖）
+// 类型化元素 API 契约（与文件末尾的 import 同批，避免循环依赖）
 import type { CommandListElementApi } from '@ui-kit';
 
 for (const key of eventEditorBridgeKeys) {

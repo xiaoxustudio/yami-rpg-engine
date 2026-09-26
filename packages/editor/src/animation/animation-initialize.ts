@@ -48,7 +48,7 @@ Animation.initialize = function (this: typeof Animation) {
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	// P4b：`page`（列表所属的页面元素）走显式元素数据（字段已从 DATA_FIELDS 摘除）
+	// `page`（列表所属的页面元素）走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = animationEls.get(
 		'animation-motion'
 	) as YamiElement;

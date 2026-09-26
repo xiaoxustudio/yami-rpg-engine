@@ -33,7 +33,7 @@ export interface NewProjectForm {
 
 const form = reactive<NewProjectForm>({ template: '', folder: '', location: '' });
 
-// P5b 尾项：确认按钮的启用态。原先由 `check()` 对 `#newProject-confirm` 调 disable/enable，
+// 确认按钮的启用态。原先由 `check()` 对 `#newProject-confirm` 调 disable/enable，
 // 而该按钮由 WindowFrame → YMFormButtons 生成（不在元素注册表里）⇒ 属性化后经
 // `WindowFrame` 的 `confirm-disabled` 透传到 `button[name="confirm"]` 的 `:disabled`。
 export const newProjectConfirmDisabled = ref(false);

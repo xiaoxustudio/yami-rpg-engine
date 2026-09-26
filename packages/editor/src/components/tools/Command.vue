@@ -161,7 +161,7 @@ const onApply = () => {
 	(CustomCommand?.apply as ((event?: Event) => void) | null)?.();
 };
 
-// P5b 批次 2：`command-confirm` 按钮由 WindowFrame 生成，改由 @confirm 事件驱动
+// `command-confirm` 按钮由 WindowFrame 生成，改由 @confirm 事件驱动
 const onConfirm = () => {
 	CustomCommand?.confirm?.(new Event('click'));
 };
@@ -170,7 +170,7 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #command-suggestions {
 	display: block;
 	position: fixed;
@@ -182,7 +182,7 @@ onMounted(() => {});
 	pointer-events: visible;
 }
 
-/* 窗口样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #command-searcher {
 	position: absolute;
 	top: 0;
@@ -203,7 +203,7 @@ onMounted(() => {});
 	padding-left: 12px;
 }
 
-/* 窗口样式迁移：由 Project/css/data.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #command {
 	width: 700px;
 	height: 700px;

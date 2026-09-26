@@ -8,7 +8,7 @@ import { Attribute, attributeEls } from '../attribute-window.ts';
 import { Enum, enumEls } from '@app/enum/enum-window.ts';
 
 /**
- * P5b 批次 3 回归：属性/枚举窗口不再用 `按 id` 查 DOM，而由对应 SFC 在模板里通过
+ * 属性/枚举窗口不再用 `按 id` 查 DOM，而由对应 SFC 在模板里通过
  * `registryRef(reg, id)` 登记元素、模块的 `ensureDomBound()` 从注册表取。
  * 锁住「登记 → 绑定 panel/searcher/inputs/list」这条链路（此前无覆盖）。
  */
@@ -16,7 +16,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
-describe('属性/枚举窗口元素注册表（P5b 批次 3）', () => {
+describe('属性/枚举窗口元素注册表', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		attributeEls.clear();

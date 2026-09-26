@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getResourceStore, resourceStateKeys, type ResourceRow } from '@app/stores/resource';
 
-/** R1（资源列表数据化）：store 的状态与行补丁语义 */
+/** 资源列表数据化：store 的状态与行补丁语义 */
 const makeRow = (key: string): ResourceRow => ({
 	key,
 	value: key.replace(/[.]/g, '_'),
@@ -14,7 +14,7 @@ const makeRow = (key: string): ResourceRow => ({
 	phase: 'idle'
 });
 
-describe('useResourceStore（R1 资源列表数据化）', () => {
+describe('useResourceStore（资源列表数据化）', () => {
 	it('初始状态默认值', () => {
 		const store = getResourceStore();
 		store.reset();

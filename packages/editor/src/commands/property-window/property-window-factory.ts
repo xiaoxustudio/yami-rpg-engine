@@ -39,7 +39,7 @@ interface PropertyWindowConfig {
 interface PropertyWindow {
 	target: (Record<string, unknown> & { save?: (() => unknown) | null }) | null;
 	form: Record<string, unknown>;
-	/** 控件注册表，由对应 SFC 在 setup 期登记（P5b 批次 2） */
+	/** 控件注册表，由对应 SFC 在 setup 期登记 */
 	fields?: AccessorFields | null;
 	initialize: (() => void) | null;
 	// 幂等初始化：属性窗口为懒挂载，ParamList.bind 时的 initialize 可能因元素未挂载而早退，
@@ -69,7 +69,7 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 	};
 
 	let setupDone = false;
-	// 控件注册表由对应 SFC 在 setup 期登记（P5b 批次 2）；动态 id 仍按 prefix 约定拼接，但取值不再查 DOM
+	// 控件注册表由对应 SFC 在 setup 期登记；动态 id 仍按 prefix 约定拼接，但取值不再查 DOM
 	const fieldOf = (id: string): AccessorFieldControl | undefined =>
 		PropertyWindow.fields?.get(`${prefix}-property-${id}`) ?? undefined;
 	// 注册结果两种形态：控件是组件实例（元素在 .root），普通 div 直接就是元素本身

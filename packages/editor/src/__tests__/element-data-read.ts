@@ -1,5 +1,5 @@
 /**
- * P4b 收口后的**测试侧**元素数据读取助手。
+ *
  *
  * 背景：`DATA_FIELDS` 与 `defineDataAccessors()` 退役后，`HTMLElement.prototype` 上不再有访问器，
  * 于是套件里 `el.dataItems` 这类隐式读法会**静默**拿到 `undefined`（不报错，只是断言全空）。

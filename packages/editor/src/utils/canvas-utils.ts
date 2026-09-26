@@ -1,7 +1,7 @@
 /**
- * 画布辅助函数（P4d 补遗）。
+ * 画布辅助函数。
  *
- * 原先这里是 `CanvasRenderingContext2D.prototype.resize` 这个内建补丁，P4d 按「零调用方」
+ * 原先这里是 `CanvasRenderingContext2D.prototype.resize` 这个内建补丁，按「零调用方」
  * 删除——但它的两个调用方（`GL.context2d.resize(...)`、`Printer.context.resize(...)`）
  * 挂在**宽松类型**的接收者上（`GL` 是 `any`、printer 的上下文带索引签名），
  * 静态检索看不见，于是运行时才炸 `this.context.resize is not a function`。

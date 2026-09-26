@@ -7,7 +7,7 @@ import { SceneAnimateEngine } from '@app/engine/scene/scene-animate-engine.ts';
 import type { YamiElement } from '@app/types/element-api';
 
 /**
- * P4b：marquee 元素上的元素数据（`key`/`visible` 原先靠原型访问器透明落到 WeakMap）。
+ * marquee 元素上的元素数据（`key`/`visible` 原先靠原型访问器透明落到 WeakMap）。
  * `key` 是选框当前工具（`tile`/`object`/`terrain`…，初始化写入、`switch` 时切换），`visible` 是选框可见态。
  */
 interface SceneMarqueeData {

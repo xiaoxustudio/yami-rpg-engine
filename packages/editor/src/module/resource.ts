@@ -23,7 +23,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 
 /**
- * 资源包管理模块（R1 数据化后不再直接操作 DOM）：
+ * 资源包管理模块（不直接操作 DOM）：
  * 列表数据在 `stores/resource.ts`，视图是 `components/tools/resource/ResourceList.vue` +
  * `components/tools/Resource.vue`；本模块只负责取数、下载/解压/删除与节点信息。
  */
@@ -87,7 +87,7 @@ export const Resources = new (class {
 	}
 
 	async initialize() {
-		// R1：不再在这里查 DOM / 注册按钮点击（视图组件自己 @click 调 checkVersion/openDir），
+		// 不再在这里查 DOM / 注册按钮点击（视图组件自己 @click 调 checkVersion/openDir），
 		// 只保留「刷新节点信息」这一件事；状态写进 store，窗口未打开时也不会有副作用。
 		void this.updateNodeInfo();
 	}

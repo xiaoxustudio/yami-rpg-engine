@@ -61,7 +61,7 @@ onMounted(() => {
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：选择器需命中子组件内部生成的元素 */
 #qr-code {
 	width: 320px;
 	height: 400px;
@@ -74,7 +74,6 @@ onMounted(() => {
 	height: 200px;
 }
 
-/* 样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #qr-img-container {
 	width: 100%;
 	height: 220px;

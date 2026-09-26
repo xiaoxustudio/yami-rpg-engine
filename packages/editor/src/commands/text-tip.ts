@@ -110,7 +110,7 @@ function createEmptyList(): TextSuggestionList {
 		selectDefaultCommand: null,
 		updateNodeElement: null,
 		pressing: null,
-		// P1b：空列表的样式宿主走 utils/dom 的唯一创建缝隙（原先 document.createElement('div').style）
+		// 空列表的样式宿主走 utils/dom 的唯一创建缝隙（原先 document.createElement('div').style）
 		style: createDetachedElement().style,
 		bind: noop,
 		addEventListener: noop,
@@ -133,7 +133,7 @@ function createEmptyList(): TextSuggestionList {
 	};
 }
 
-/** P5b 批次 2：控件元素注册表——由 `TextSuggestions.vue` 在模板里登记 */
+/** 控件元素注册表——由 `TextSuggestions.vue` 在模板里登记 */
 export const textSuggestionEls = createElementRegistry();
 
 export const TextSuggestion: TextSuggestionShape = {
@@ -162,7 +162,7 @@ TextSuggestion.list.updateNodeElement = null;
 TextSuggestion.list.selectDefaultCommand = null;
 
 TextSuggestion.initialize = function (this: TextSuggestionShape): void {
-	// 收窄走 `registryElement`（P4 的既有手法：把「按 id 收窄」集中在一处）。
+	// 收窄走 `registryElement`（把「按 id 收窄」集中在一处）。
 	// 于是：① 与 `this.list` 的比较是两个同类型；② 下面两处成员赋值不必再写断言；
 	// ③ `this.list = element` 也不再需要 `as unknown as`。
 	const element = registryElement<TextSuggestionList>(textSuggestionEls, 'text-suggestions');
@@ -212,7 +212,7 @@ TextSuggestion.select = function (this: TextSuggestionShape, item: TextSuggestio
 	this.inserting = true;
 	let target: TextSuggestionTarget | { input: { select(): void }; insert(name: string): void } =
 		this.target!;
-	// P4b：strBox 现在是元素数据（字段已从 DATA_FIELDS 摘除）
+	// strBox 现在是元素数据（字段已从 DATA_FIELDS 摘除）
 	const strBox = elementDataOf<{ strBox?: TextSuggestionTarget }>(target).strBox;
 	if (strBox) {
 		target = strBox;
@@ -285,7 +285,7 @@ TextSuggestion.textBoxInput = function (this: TextSuggestionTarget, event: Input
 } as TextBoxMethod;
 
 TextSuggestion.listPointerdown = function (this: TextSuggestionList, event: Event): void {
-	// P4b：行 → item 经行 API 取（`element.item` expando 已退役）；标签文字上的点击同样归一成行
+	// 行 → item 经行 API 取（`element.item` expando 已退役）；标签文字上的点击同样归一成行
 	const item = treeItemOf<TextSuggestionItem>(event.target);
 	if (item === undefined) return;
 	const element = treeRowElement(item);
@@ -350,7 +350,7 @@ TextSuggestion.list.updateNodeElement = function (
 	element: HTMLElement
 ): void {
 	if (elementDataOf<{ initialized?: boolean }>(element).initialized) return;
-	// P4b：item 存元素数据（`element.item` 已退役）——取不到就不算渲染过，下一拍再试
+	// item 存元素数据（`element.item` 已退役）——取不到就不算渲染过，下一拍再试
 	const item = treeItemOf<TextSuggestionItem>(element);
 	if (item === undefined) return;
 	elementDataOf<{ initialized?: boolean }>(element).initialized = true;
@@ -369,7 +369,7 @@ TextSuggestion.list.updateNodeElement = function (
 };
 
 TextSuggestion.list.selectDefaultCommand = function (this: TextSuggestionList): void {
-	// P4b：当前项经 `read()` 取——`list.selection` 是已退役的旧属性（无人写入，恒为 null）
+	// 当前项经 `read()` 取——`list.selection` 是已退役的旧属性（无人写入，恒为 null）
 	const selection = this.read();
 	// 步骤 4：行号/行项经渲染模式无关的行 API 取得（窗口外行无 element）
 	const count = treeRowCount(this);

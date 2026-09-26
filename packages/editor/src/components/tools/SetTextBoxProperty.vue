@@ -93,7 +93,7 @@ const onConfirm = () => {
 	TextBoxProperty.confirm?.(new Event('click'));
 };
 
-// P5b 批次 2：把控件实例登记给属性窗口工厂（替代按 id 查 DOM）
+// 把控件实例登记给属性窗口工厂（替代按 id 查 DOM）
 const { fields, fieldRef } = createAccessorFields();
 TextBoxProperty.fields = fields;
 
@@ -117,7 +117,7 @@ onMounted(() => {
 </script>
 
 <style>
-/* 窗口尺寸样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #setTextBox-property {
 	width: 324px;
 	height: 122px;

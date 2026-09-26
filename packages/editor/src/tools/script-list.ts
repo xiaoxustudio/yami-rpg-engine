@@ -99,7 +99,7 @@ export class ScriptListInterface implements IScriptListInterface {
 		Command.invalid = false;
 		const scriptName = Command.parseFileName(script.id);
 		const scriptClass = Command.invalid ? 'invalid' : script.enabled ? '' : 'weak';
-		// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		// 离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
 		const box = renderDetached(h('div', { class: 'box script-edit-button' }, '\uf044'));
 		return [{ content: Command.removeTextTags(scriptName), class: scriptClass }, box];
 	}
@@ -156,8 +156,8 @@ export class ScriptListInterface implements IScriptListInterface {
 				const el = element.parentNode as HTMLElement | null;
 				if (el !== null) {
 					// 兼容两种列表（legacy 注释："临时兼容ParamList和TreeList"）：
-					// ParamList 行把 `dataItem` 作为 own 属性挂在元素上；TreeList 行的 `item` 在 P4b
-					// 之后走**元素数据**（元素属性 `item` 已退役）——按属性读会拿到 undefined，
+					// ParamList 行把 `dataItem` 作为 own 属性挂在元素上；TreeList 行的 `item` 走
+					// **元素数据**（元素属性 `item` 已退役）——按属性读会拿到 undefined，
 					// 随后 `item.id` 直接抛错（点脚本行的编辑按钮时爆）。
 					const item =
 						(el as { dataItem?: ScriptListItem }).dataItem ??

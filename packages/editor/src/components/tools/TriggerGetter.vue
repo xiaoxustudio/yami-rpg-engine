@@ -47,7 +47,7 @@ const { t } = useI18n();
 const triggerGetter = useTriggerGetterWindow();
 const form = triggerGetter.form;
 
-// P5b 批次 2：把控件实例登记给访问器模块的 initialize()（替代按 id 查 DOM）
+// 把控件实例登记给访问器模块的 initialize()（替代按 id 查 DOM）
 const { fields, fieldRef } = createAccessorFields();
 TriggerGetter.fields = fields;
 
@@ -66,7 +66,7 @@ onMounted(() => {
 </script>
 
 <style>
-/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #triggerGetter {
 	width: 324px;
 	height: 122px;

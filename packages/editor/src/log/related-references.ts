@@ -72,7 +72,7 @@ type TreeItemShape = {
 	contents?: unknown;
 };
 
-/** P4b：树行元素上的元素数据（`item` 原先靠原型访问器透明落到 WeakMap） */
+/** 树行元素上的元素数据（`item` 原先靠原型访问器透明落到 WeakMap） */
 interface ReferenceRowData {
 	item?: { id?: string; presetId?: string };
 }

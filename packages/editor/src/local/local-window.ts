@@ -52,7 +52,7 @@ interface LocalizationTarget {
 	input?: (id: string) => void;
 }
 
-/** P4b：内容面板元素上的元素数据（`item` 原先靠原型访问器透明落到 WeakMap） */
+/** 内容面板元素上的元素数据（`item` 原先靠原型访问器透明落到 WeakMap） */
 interface LocalizationPanelData {
 	item: LocalizationItem | null;
 }

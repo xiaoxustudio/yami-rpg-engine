@@ -9,7 +9,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 import { clamp } from '@app/utils/math';
 
 /**
- * P4b：选框区域元素上的 `selection`（覆盖层）走显式元素数据。
+ * 选框区域元素上的 `selection`（覆盖层）走显式元素数据。
  * 同一元素上的 `visible` / `x` / `y` / `scaleX`… 不是元素数据——它们由 `YMMarqueeArea.vue`
  * 用 `Object.defineProperty(el, …)` 定义成**组件自己的实例属性**（实例属性优先于原型访问器），
  * 换成元素数据会读到 `undefined`。

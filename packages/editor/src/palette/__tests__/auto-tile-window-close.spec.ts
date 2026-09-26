@@ -81,7 +81,7 @@ describe('AutoTile 窗口关闭链（用户反馈：关闭后锁死 / ESC 复现
 		title.id = 'title';
 		document.body.appendChild(title);
 		vi.stubGlobal('scrollTo', vi.fn());
-		// P4d：`getDevicePixelContentBoxSize` 已是 `@app/utils/css` 的命名导出（模块 mock 见文件顶部）
+		// `getDevicePixelContentBoxSize` 已是 `@app/utils/css` 的命名导出（模块 mock 见文件顶部）
 		Data.autotiles = templates;
 		Data.createGUIDMap = vi.fn();
 		Data.manifest = { project: { autotiles: 'auto.json' } };

@@ -304,7 +304,7 @@ import RadioBox from '@app/components/common/RadioBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
-// P5b 批次 4：easing-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+// easing-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	Easing?.confirm?.(new Event('click'));
 };
@@ -353,7 +353,7 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #easing {
 	width: 800px;
 	height: 604px;

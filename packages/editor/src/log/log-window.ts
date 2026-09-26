@@ -26,7 +26,7 @@ interface LogShape {
 	parseCommunityReleases: ((...args: unknown[]) => void) | null;
 	openVSCode: ((file: string, line: number, column: number) => void) | null;
 	/**
-	 * P2b-2：**桥接到 `stores/log` 的 `logs`**（本文件末尾用 `Object.defineProperty` 安装 get/set），
+	 * **桥接到 `stores/log` 的 `logs`**（本文件末尾用 `Object.defineProperty` 安装 get/set），
 	 * 不是独立字段。**这一条在去掉逃生口前就已经有生产读取方**——`components/tools/LogMessage.vue`
 	 * 的 `Log.list.slice()` 一直是靠 `[k: string]: any` 通过的（那正是"假绿"）。
 	 */

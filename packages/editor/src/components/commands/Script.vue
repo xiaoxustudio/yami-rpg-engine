@@ -26,7 +26,7 @@
 			id="script-script"
 			:ref="registryRef(composableEls, 'script-script')"
 		></div>
-		<!-- P1b：代码着色用的「文本模板节点」（原先是 document.createElement('div') + render()）→ 模板提供、模块 cloneNode -->
+		<!-- 代码着色用的「文本模板节点」（不再用 document.createElement('div') + render()）→ 模板提供、模块 cloneNode -->
 		<div class="hidden">
 			<div
 				class="text"
@@ -59,7 +59,7 @@ onMounted(() => {
 </script>
 
 <style>
-/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #script {
 	width: 720px;
 	height: calc(238px * 1.5);

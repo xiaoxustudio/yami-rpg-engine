@@ -6,9 +6,9 @@ import { setTooltip } from '@app/utils/element-utils';
 /**
  * `v-tip="t('components.<键>.tip')"` —— 把 i18n 文案挂到元素的 tooltip 上。
  *
- * 存在意义（R2b）：过去 tooltip 由 `localizeDomComponents` 在启动时**逐键查 DOM** 后
- * `setTooltip(element, parseLocalTip(item.tip, item.label))` 写入；改为指令后，
- * 文案随模板 `t()` 一起声明，语言切换时 `updated` 会自动重挂（不再需要全表扫描）。
+ * 存在意义：tooltip 若交给 `localizeDomComponents` 在启动时**逐键查 DOM** 后
+ * `setTooltip(element, parseLocalTip(item.tip, item.label))` 写入，语言切换就得重扫全表；
+ * 交给指令则文案随模板 `t()` 一起声明，语言切换时 `updated` 会自动重挂。
  *
  * 与本地化器的行为对齐：title（用于 `$` 前缀的 save 标签展开）取**前一个兄弟元素**的文本，
  * 即各表单里 `<div class="text">{{ t('…label') }}</div>` 那一格。

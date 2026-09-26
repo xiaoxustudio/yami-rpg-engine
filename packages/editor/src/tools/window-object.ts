@@ -53,7 +53,7 @@ interface WindowShape extends DynamicShape {
 
 export const Window: WindowShape = {
 	get ambient() {
-		// P5b 白名单：#window-ambient 是 index.html 里的静态外壳元素（非组件控件），故保留 $()
+		// #window-ambient 是 index.html 里的静态外壳元素（非组件控件），故保留 $()
 		return $('#window-ambient');
 	},
 	// 第 148 轮：原先 `[] as unknown as HTMLElement[] & {…}` 一步跨过去。改成**两级单次 `as`**：
@@ -79,7 +79,7 @@ export const Window: WindowShape = {
 	cancel: null
 };
 
-// P1b：取消按钮的 click 绑定已下沉到 `WindowFrame.vue`（它只在自己子树里找 `[name="cancel"]`，
+// 取消按钮的 click 绑定已下沉到 `WindowFrame.vue`（它只在自己子树里找 `[name="cancel"]`，
 // 点击时关掉本帧）。这里保留空实现仅为兼容既有调用点。
 Window.initialize = function (this: typeof Window) {
 	void this;
@@ -88,7 +88,7 @@ Window.initialize = function (this: typeof Window) {
 Window.open = function (this: typeof Window, id: string) {
 	const frames = this.frames;
 	purgeStaleFrames();
-	// P1b：窗口壳元素由 `WindowFrame.vue` 挂载时登记到 windowShellEls（原先 document.getElementById）
+	// 窗口壳元素由 `WindowFrame.vue` 挂载时登记到 windowShellEls（原先 document.getElementById）
 	const element = windowShellEls.get(id) as WindowFrame | undefined;
 	if (!element) {
 		console.warn('[window] open: element not found:', id);
@@ -296,7 +296,7 @@ Window.keydown = function (this: typeof Window, event: KeyboardEvent) {
 				}
 				const frames = Window.frames;
 				const frame = frames[frames.length - 1];
-				// P1b：改为在**帧元素内**查找（原先 `document.querySelector('#id > …')` 全文档查）
+				// 改为在**帧元素内**查找（原先 `document.querySelector('#id > …')` 全文档查）
 				const button = frame?.querySelector('content-frame > button[name=confirm]');
 				if (button instanceof HTMLButtonElement) {
 					event.preventDefault();
@@ -311,7 +311,7 @@ Window.keydown = function (this: typeof Window, event: KeyboardEvent) {
 				if (!(event.ctrlKey || event.metaKey)) return;
 				const frames = Window.frames;
 				const frame = frames[frames.length - 1];
-				// P1b：同上，改为帧内查找
+				// 同上，改为帧内查找
 				const button = frame?.querySelector('content-frame > button[name=apply]');
 				if (button instanceof HTMLButtonElement) {
 					const active = document.activeElement;
@@ -362,7 +362,7 @@ const windowBridgeKeys = ['positionMode', 'absolutePos', 'overlapRoot', 'activeE
 import { getWindowStore } from '@app/stores/window';
 import type { YamiElement } from '@app/types/element-api';
 
-/** P5b 批次 3：应用外壳元素注册表——由 AppShell.vue 登记（如 `title`） */
+/** 应用外壳元素注册表——由 AppShell.vue 登记（如 `title`） */
 export const windowShellEls = createElementRegistry();
 
 for (const key of windowBridgeKeys) {

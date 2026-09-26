@@ -16,7 +16,7 @@ import { getYamiI18n } from '@app/i18n';
 import { applyLocalizedItems } from '@app/utils/localized-items';
 import type { YamiElement } from '@app/types/element-api';
 
-/** P5b 批次 3：元素注册表——由对应窗口 SFC 在模板里登记 */
+/** 元素注册表——由对应窗口 SFC 在模板里登记 */
 export const conditionEls = createElementRegistry();
 
 const t = (key: string, named?: Record<string, unknown>) =>
@@ -228,7 +228,7 @@ export class ConditionListInterface implements IListInterface {
 			case 'global-boolean':
 			case 'global-number':
 			case 'global-string':
-				// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
+				// `filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
 				registryElement<CustomBoxApi>(conditionEls, 'condition-key')!.filter =
 					type.slice(7);
 				break;

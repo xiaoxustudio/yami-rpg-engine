@@ -141,7 +141,7 @@ export const CommandSuggestion = {
 	listOpen: null
 } satisfies Partial<CommandSuggestionShape> as CommandSuggestionShape;
 
-/** P5b 批次 2：控件元素注册表——由 `CommandWidget.vue` / `CommandSuggestions.vue` 在模板里登记 */
+/** 控件元素注册表——由 `CommandWidget.vue` / `CommandSuggestions.vue` 在模板里登记 */
 export const commandSuggestionEls = createElementRegistry();
 
 function ensureDomBound() {
@@ -248,7 +248,7 @@ function bindListMethods() {
 	})();
 
 	list.selectDefaultCommand = function (this: CommandSuggestionList): void {
-		// P4b：当前项经 `read()` 取——`list.selection` 是已退役的旧属性（无人写入，恒为 null）
+		// 当前项经 `read()` 取——`list.selection` 是已退役的旧属性（无人写入，恒为 null）
 		const selection = this.read();
 		if (selection && selection.class !== 'folder') {
 			// 步骤 4：按行号判断选中项是否在列表内（渲染模式无关）
@@ -413,7 +413,7 @@ CommandSuggestion.listKeydown = function (event: KeyboardEvent): void {
 };
 
 CommandSuggestion.listPointerdown = function (event: PointerEvent): void {
-	// P4b：行 → item 经行 API 取（`element.item` expando 已退役，直接读会抛
+	// 行 → item 经行 API 取（`element.item` expando 已退役，直接读会抛
 	// `Cannot read properties of undefined (reading 'class')`）；顺带把标签文字
 	// （`.node-text`）上的点击归一成行，点名字也能选中。
 	const item = treeItemOf<CommandSuggestionItem>(event.target);

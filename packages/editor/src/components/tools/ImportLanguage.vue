@@ -28,7 +28,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-// P5b 批次 4：importLanguage-confirm 由 WindowFrame 生成，改由 @confirm 驱动
+// importLanguage-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	ImportLanguage?.confirm?.(new Event('click'));
 };
@@ -39,7 +39,7 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #importLanguage {
 	width: 324px;
 	height: 98px;

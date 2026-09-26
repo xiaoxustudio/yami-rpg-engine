@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 /**
- * R2b 模块侧选项名：`localizedItems` / `applyLocalizedItems`。
+ * 模块侧选项名：`localizedItems` / `applyLocalizedItems`。
  * 关键行为——**语言切换（`localizationchange` 事件）时要重新应用**，否则名字会停在旧语言。
  */
 const t = vi.fn((key: string) => `T:${key}`);
@@ -22,7 +22,7 @@ vi.mock('@app/i18n', () => ({
 
 const { applyLocalizedItems, localizedItems } = await import('../localized-items');
 
-describe('localized-items（R2b 模块侧选项名）', () => {
+describe('localized-items（模块侧选项名）', () => {
 	beforeEach(() => {
 		t.mockClear();
 		t.mockImplementation((key: string) => `T:${key}`);
