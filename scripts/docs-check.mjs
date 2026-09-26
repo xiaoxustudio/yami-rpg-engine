@@ -8,8 +8,8 @@
 //
 // ## 为什么这个脚本在 2026-09-21 被重写
 //
-// 它原来的扫描面是 `docs/*.md`，检查项是为那 7 份计划文档量身写的（`vue3-migration-plan.md`、
-// `remaining-work.md` 的「计划条目对照」表、`docs/dom-migration-tracker.md` 的三口径核对…）。
+// 它原来的扫描面是 `docs/*.md`，检查项是为那 7 份计划文档量身写的（计划条目对照表、
+// 三口径核对表…）。
 // `docs/` 已在 Phase 15 **按收尾流程有意删除**，于是这个 769 行的门禁退化成
 // 「目录不存在 → 打印一行 → `exit 0`」——`package.json` 里却一直挂着 `docs:check`，
 // **一条永远绿的门禁**。这是最坏的一种红/绿：它让人以为文档有人管。
@@ -101,7 +101,8 @@ const checked = { scripts: 0, links: 0, nodeScripts: 0 };
 /**
  * 一行是否在**记录历史**而不是在**给指令**。
  *
- * 本仓的计划文档（`xr.md` / `PHASE-1C-*.md`）会成段写「哪个命令曾经不存在、后来怎么修的」，
+ * 本仓的计划文档（`xr.md` 这类；也包括按收尾流程删除过的 `docs/*.md` 与前身清单）会成段写
+ * 「哪个命令曾经不存在、后来怎么修的」，
  * 那些写法必然长得像可执行命令。判据沿用旧脚本里的 `REMOVED_RE` 思路（收紧到单行）。
  * 没有这个豁免，门禁会被历史记录逼红，然后所有人学会忽略它 —— 那比没有门禁更糟。
  */
@@ -144,7 +145,7 @@ function discoverDocs() {
 	return out.sort((a, b) => a.localeCompare(b));
 }
 
-/** 找文档所在目录最近的 package.json（`packages/editor/PHASE-1C-*.md` → `packages/editor/package.json`）。 */
+/** 找文档所在目录最近的 package.json（`packages/editor/README.md` → `packages/editor/package.json`）。 */
 function contextPackage(docRel) {
 	let dir = dirname(join(ROOT, docRel));
 	for (;;) {
@@ -212,7 +213,7 @@ function codeSpans(line, inFence) {
 function checkScripts(docRel, lines, scripts, byName) {
 	const ctx = contextPackage(docRel);
 	// 没有 `-F` 时接受「文档所在包」与「仓库根」两种上下文：
-	// `packages/editor/PHASE-1C-*.md` 里的 `pnpm lint` / `pnpm migration:check` 是**根**脚本，
+	// `xr.md`（根目录）里的 `pnpm lint` / `pnpm migration:check` 是**根**脚本，
 	// 而 `packages/editor/README.md` 里的 `npm test` 是**该包**脚本 —— 两者都合法。
 	const defaultTargets = [...new Set(['package.json', ctx])];
 	let inFence = false;

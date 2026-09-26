@@ -687,7 +687,7 @@ test('UIEngine 桥：镜像若还在就必须指到真实成员；退役后 stor
 	// 这行会把 UI 槽位置成 undefined —— 而 UIShape 的 `[k: string]: any` 不会报错。
 	//
 	// ⚠️ 路径必须走 `uiWindowRel()`，**不要写死** `packages/editor/src/ui/ui-window.ts`。
-	// 2026-09-20 的 P5-B 纯移动把整个 `src/ui/` 搬到 `src/engine/ui/legacy/` 之后，
+	// 2026-09-20 的一次纯目录搬运把整个 `src/ui/` 搬到 `src/engine/ui/legacy/` 之后，
 	// 写死路径的版本读不到任何赋值，本用例当场红 —— 而且这条门禁当时**没被复跑**
 	// （`migration:check` 是绿的，红的只有 `migration:selftest`），
 	// 正是「挪了目录，仪器跟着瞎」的又一次实例。仪器只维护一份。

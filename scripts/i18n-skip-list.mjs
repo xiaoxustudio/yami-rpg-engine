@@ -1,5 +1,5 @@
 /**
- * 生成 `packages/editor/src/localize/template-localized.ts`（R2b 迁移②③的产物）。
+ * 生成 `packages/editor/src/localize/template-localized.ts`。
  *
  * 集合语义：「全部字段都已由模板承担」的本地化键——
  *   - `tip` 字段：承载 SFC 里有 `v-tip="t('components.<键>.tip')"`（或直接的 `t(…tip)`）
@@ -8,7 +8,7 @@
  *
  * 键**不从语言文件删除**：`components` 同时是 vue-i18n 的消息树（`t('components.…')` 引用它），
  * 删键会让模板解析失败 —— `components` 既是本地化器的键表，也是 vue-i18n 的消息树，
- * 两者共用同一份数据（R2b 迁移②确立的关键约束）。
+ * 两者共用同一份数据——所以只能「跳过查询」、不能「删键」。
  *
  * 用法：node scripts/i18n-skip-list.mjs [--check]
  *   --check：只比对，不写入（供 CI/人工核对；等价于 spec 里的防漂移断言）
@@ -44,7 +44,7 @@ const components = JSON.parse(
 ).components;
 
 /**
- * R2b 迁移⑮：editor 的 `common/SelectBox.vue` 现在**自己**按 `components.<id>.options` 生成选项名
+ * editor 的 `common/SelectBox.vue` 现在**自己**按 `components.<id>.options` 生成选项名
  * （响应式 `t()`），因此凡是 `<SelectBox id="<键>">` 的控件，其 options 已由宿主组件承担。
  * 这里要求包装器里确实存在那段通用逻辑（避免判据比实现跑得快）。
  */
@@ -56,7 +56,7 @@ const covered = [];
 for (const [key, item] of Object.entries(components)) {
 	if (key === '[comment]' || key[0] === '[') continue;
 	const carriers = vues.filter((v) => v.src.includes(`id="${key}"`));
-	// R2b 迁移⑩：有些键的元素由 ui-kit 组件内部持有 id（`<YMRename>` 之类），承载 SFC 里
+	// 有些键的元素由 ui-kit 组件内部持有 id（`<YMRename>` 之类），承载 SFC 里
 	// 根本没有 `id="<键>"`；这些键的字段仍在模板里用 `t('components.<键>.<字段>')` 承担。
 	// 判据放宽为：**唯一**引用该键消息的 SFC 也算承载者（多文件引用时仍要求含 id，避免误判）。
 	const byMessage = vues.filter((v) => v.src.includes(`components.${key}.`));
@@ -114,7 +114,7 @@ covered.sort();
  */
 const total = Object.keys(components).filter((k) => k !== '[comment]' && k[0] !== '[').length;
 const content = `/**
- * 模板已承担的本地化键（R2b 迁移②③，**本文件由 scripts/i18n-skip-list.mjs 生成，勿手改**）。
+ * 模板已承担的本地化键（**本文件由 scripts/i18n-skip-list.mjs 生成，勿手改**）。
  *
  * 这些键的**全部字段**都已由模板承担（\`t('components.<键>.<字段>')\` 或 \`v-tip="t('…tip')"\`），
  * 因此 \`localizeDomComponents\` 对它们**跳过 DOM 查询**——扫描面从 ${total} 键降到

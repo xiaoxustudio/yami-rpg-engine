@@ -49,7 +49,7 @@ const LEGACY_WINDOW_REL = 'packages/editor/src/ui/ui-window.ts';
  * **整个 `engine/ui/`** —— `legacy-ui-lines` 会从 210 行暴涨到全目录的行数（假回归），
  * 而 `legacyOnlyStoreSlots()` 会把每个域模块都当成"遗留层"（`1c-store-slot-gaps` 假回归）。
  * ⇒ 这条轴问的是「**那层遗留还在不在**」，所以目录必须写死成遗留层自己的名字。
- * 历史沿革：P5-B 把 `src/ui/` 挪到 `src/engine/ui/legacy/`（第 66 轮），④-4 把这个目录整个删掉。
+ * 历史沿革：一次纯目录搬运把 `src/ui/` 挪到 `src/engine/ui/legacy/`（第 66 轮），④-4 把这个目录整个删掉。
  */
 export const LEGACY_UI_DIR = 'packages/editor/src/engine/ui/legacy';
 
@@ -105,7 +105,7 @@ export function declaredSlots() {
 	if (rel === null) {
 		// ⚠️ **不能返回 `[]`**（2026-09-22 第 186 轮）：那会让 `declared` 从 134 掉到 0、报表写
 		// 「✓ 已完成」—— 而**这恰恰是 ④-4 删掉字面量那一轮必然发生的事**。
-		// 「真的删干净了」与「仪器瞎了」必须可区分 ⇒ 缺锚就炸，逼出换锚（见 PHASE-1C 第 185 轮）。
+		// 「真的删干净了」与「仪器瞎了」必须可区分 ⇒ 缺锚就炸，逼出换锚（换锚的经过见第 186 轮）。
 		throw new Error(
 			'declaredSlots()：全仓找不到 `export const UI … = {` 字面量。' +
 				'这不是「已归零」，而是**仪器失锚**：字面量若已被 ④-4 删除，' +
@@ -689,7 +689,7 @@ export function uiSlotCoverage() {
  * `uiSlotCoverage().storeRefsUnassigned` 恒为 0 —— 因为 `assignedSlots()` 把**遗留目录里**的
  * `UI.x = …` / `this.x = …` 也算成「已赋值」。于是「删掉遗留层会让多少动作静默失效」这件事
  * 在台账上**完全不可见**：`ui-singleton-members` 只说「还有 103 处挂载」，
- * 而 PHASE-1C 附录三手工数出来的是「store 尚缺 ~41 个槽位」——那个数字没有任何轴守着。
+ * 而当年**手工数**出来的是「store 尚缺 ~41 个槽位」——那个数字在变成轴之前没有任何东西守着。
  *
  * 本函数把它变成可测量的：对每个 store 引用的槽位，只要满足下面**全部**条件就计入
  *   - 它的赋值不在 `ui-engine.ts` 里（不是 `engineBacked`——那批只需换接线，零新逻辑）；

@@ -1,4 +1,4 @@
-// 一次性实验：P4（`as unknown as` 双重断言）里哪些**已经是多余的**。
+// 一次性实验：`as unknown as` 双重断言里哪些**已经是多余的**。
 // 只读（默认）或改写（--apply，配合 git checkout 还原）。用法：
 //   node scripts/oneoff/probe-p4-dead-casts.mjs          # 只报告分布
 //   node scripts/oneoff/probe-p4-dead-casts.mjs --apply  # 批量把 `as unknown as` 降成单次 `as`
@@ -61,7 +61,7 @@ for (const [rel, n] of [...byFile].sort((a, b) => b[1] - a[1] || a[0].localeComp
 	console.log(`  ${String(n).padStart(2)}  ${rel}`);
 }
 
-// 逐处清单：P4 剩下的都是「`unknown` 跳板承重」的（降级实验早就做过），
+// 逐处清单：剩下的都是「`unknown` 跳板承重」的（降级实验早就做过），
 // 所以下一步不是删断言，而是**改类型** —— 需要看整行才能判断哪一侧该动。
 console.log('\n=== 逐处清单（含整行）===');
 for (const s of [...sites].sort((a, b) => a.rel.localeCompare(b.rel) || a.line - b.line)) {

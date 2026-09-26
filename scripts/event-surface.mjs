@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 窗口事件面报表（E1 的度量来源）：把 `window.addEventListener / dispatchEvent` 的使用面
+// 窗口事件面报表：把 `window.addEventListener / dispatchEvent` 的使用面
 // 汇总成可复现的数字——事件名清单、add/remove 计数、自定义事件、死事件、内联匿名监听。
 //
 // 用法：node scripts/event-surface.mjs
@@ -44,11 +44,11 @@ function collectFiles() {
 /**
  * 逐条取出 `window.addEventListener(...)` 的整段调用文本（按括号配对），
  * 判断该监听是否是**内联匿名**、以及是否带 `{ once: true }`（浏览器会在首次触发后自动摘除，
- * 因此不算"没有 remove"的生命周期风险——E1 早期度量把它们误记为风险点）。
+ * 因此不算"没有 remove"的生命周期风险——不区分就会把它们误记成风险点）。
  */
 function scanAddListenerCalls(rawSrc) {
 	// 先去掉注释：注释与字符串里也会出现 `window.addEventListener(`，按原文扫描会把整段
-	// 无关代码当成一次调用（E1 早期版本就因此把"内联匿名监听"数高估了）。
+	// 无关代码当成一次调用（曾因此把"内联匿名监听"数高估了）。
 	const src = rawSrc.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/[^\n]*/g, ' ');
 	const calls = [];
 	const marker = 'window.addEventListener(';
@@ -120,7 +120,7 @@ function main() {
 			const name = constructed.get(m[1]);
 			if (name !== undefined) add(dispatchers, name, rel);
 		}
-		// P4b/E1：自定义事件在 2026-09-12 之后走**类型化通道** `emitCustom` / `onCustom`
+		// 自定义事件在 2026-09-12 之后走**类型化通道** `emitCustom` / `onCustom`
 		// （`events/custom-events.ts`：名册 + 载荷形状集中成一张表，内部仍是 window 事件）。
 		// 这两行只是让本报表认得它们——否则整批已迁移的事件会被误判成"派发无监听 / 监听无派发"。
 		for (const m of src.matchAll(/\bemitCustom\(\s*['"]([\w:-]+)['"]/g))

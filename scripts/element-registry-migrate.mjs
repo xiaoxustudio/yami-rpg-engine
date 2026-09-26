@@ -1,8 +1,7 @@
 /**
- * 元素注册表分组迁移工具（P5b 批次 4 用；也可复用于后续同类迁移）。
+ * 元素注册表分组迁移工具（可反复用于同类迁移）。
  *
- * 背景：P5b 批次把 `$('#id')` 逐组改造成「按组元素注册表 + 渲染方登记」。
- * （迁移规划文档在 `docs/vue3-migration-plan.md` / `docs/remaining-work.md`；若已按收尾流程移除该目录，历史见 git。）
+ * 背景：把 `$('#id')` 逐组改造成「按组元素注册表 + 渲染方登记」。
  * 本工具做三件事（幂等，可重复跑）：
  *   ① 生成分组注册表模块（若不存在）：`export const <registry> = createElementRegistry();`
  *   ② 模块侧：`$('#id')` → `<registry>.get('id')`（覆盖存在性门 / 赋值 / 句柄 / 方法调用 / 实参；
@@ -39,7 +38,9 @@ const strip = (s) =>
 		.replace(/\/(?:\\.|\[[^\]]*\]|[^/\n\\])+\/[gimsuy]*/g, '');
 
 const hasImport = (src, symbol, mod) =>
-	new RegExp(`import \\{[^}]*\\b${symbol}\\b[^}]*\\} from '${mod.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}';`).test(src);
+	new RegExp(
+		`import \\{[^}]*\\b${symbol}\\b[^}]*\\} from '${mod.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}';`
+	).test(src);
 
 const allVues = [];
 const walkVue = (p) => {
@@ -48,7 +49,8 @@ const walkVue = (p) => {
 		const st = statSync(full);
 		if (st.isDirectory()) {
 			if (e !== 'node_modules' && e !== '__tests__') walkVue(full);
-		} else if (e.endsWith('.vue')) allVues.push({ path: full, src: readFileSync(full, 'utf8') });
+		} else if (e.endsWith('.vue'))
+			allVues.push({ path: full, src: readFileSync(full, 'utf8') });
 	}
 };
 walkVue(join(ROOT, 'packages/editor/src'));
@@ -59,7 +61,12 @@ const walkTs = (p, out) => {
 		const st = statSync(full);
 		if (st.isDirectory()) {
 			if (e !== '__tests__' && e !== 'node_modules') walkTs(full, out);
-		} else if (e.endsWith('.ts') && !e.endsWith('.spec.ts') && !e.endsWith('element-registry.ts')) out.push(full);
+		} else if (
+			e.endsWith('.ts') &&
+			!e.endsWith('.spec.ts') &&
+			!e.endsWith('element-registry.ts')
+		)
+			out.push(full);
 	}
 };
 
@@ -74,7 +81,9 @@ if (mode === 'audit') {
 			const src = readFileSync(f, 'utf8');
 			const ids = [...new Set([...src.matchAll(RE)].map((m) => m[1]))];
 			if (ids.length === 0) continue;
-			console.log(`  ${relative(base, f)}  (${(src.match(RE) ?? []).length} 处 / ${ids.length} id)`);
+			console.log(
+				`  ${relative(base, f)}  (${(src.match(RE) ?? []).length} 处 / ${ids.length} id)`
+			);
 			for (const id of ids) {
 				const owners = allVues
 					.filter((v) => v.src.includes(`id="${id}"`))
@@ -119,25 +128,52 @@ for (const p of modulePaths) {
 	total += (src.match(RE) ?? []).length;
 	for (const m of src.matchAll(RE)) idsUsed.add(m[1]);
 
-	src = src.replace(/if\s*\(\s*!\$\(\s*'#([\w-]+)'\s*\)\s*\)/g, (_m, id) => `if (!${registry}.get('${id}'))`);
-	src = src.replace(/\(\s*\$\('#([\w-]+)'\)\s+as\s+([^;]+?)\)/g, (_m, id, t) => `(${registry}.get('${id}') as ${t.trim()})`);
-	src = src.replace(/(=\s*)\$\('#([\w-]+)'\);/g, (_m, eq, id) => `${eq}${registry}.get('${id}') as HTMLElement;`);
-	src = src.replace(/([:,]\s*)\$\('#([\w-]+)'\)/g, (_m, sep, id) => `${sep}${registry}.get('${id}') as HTMLElement`);
-	src = src.replace(/\$\('#([\w-]+)'\)\s*\?\.\s*([\w$]+)\s*\?*\(/g, (_m, id, m2) => `(${registry}.get('${id}') as HTMLElement)?.${m2}?.(`);
-	src = src.replace(/\$\('#([\w-]+)'\)\s*\.\s*([\w$]+)\s*\(/g, (_m, id, m2) => `(${registry}.get('${id}') as HTMLElement)?.${m2}?.(`);
-	src = src.replace(/\$\('#([\w-]+)'\)/g, (_m, id) => `(${registry}.get('${id}') as HTMLElement)`);
+	src = src.replace(
+		/if\s*\(\s*!\$\(\s*'#([\w-]+)'\s*\)\s*\)/g,
+		(_m, id) => `if (!${registry}.get('${id}'))`
+	);
+	src = src.replace(
+		/\(\s*\$\('#([\w-]+)'\)\s+as\s+([^;]+?)\)/g,
+		(_m, id, t) => `(${registry}.get('${id}') as ${t.trim()})`
+	);
+	src = src.replace(
+		/(=\s*)\$\('#([\w-]+)'\);/g,
+		(_m, eq, id) => `${eq}${registry}.get('${id}') as HTMLElement;`
+	);
+	src = src.replace(
+		/([:,]\s*)\$\('#([\w-]+)'\)/g,
+		(_m, sep, id) => `${sep}${registry}.get('${id}') as HTMLElement`
+	);
+	src = src.replace(
+		/\$\('#([\w-]+)'\)\s*\?\.\s*([\w$]+)\s*\?*\(/g,
+		(_m, id, m2) => `(${registry}.get('${id}') as HTMLElement)?.${m2}?.(`
+	);
+	src = src.replace(
+		/\$\('#([\w-]+)'\)\s*\.\s*([\w$]+)\s*\(/g,
+		(_m, id, m2) => `(${registry}.get('${id}') as HTMLElement)?.${m2}?.(`
+	);
+	src = src.replace(
+		/\$\('#([\w-]+)'\)/g,
+		(_m, id) => `(${registry}.get('${id}') as HTMLElement)`
+	);
 
 	if (!hasImport(src, registry, regImport)) {
-		src = src.replace(/^(import [^\n]*\r?\n)/m, `$1import { ${registry} } from '${regImport}';${eol}`);
+		src = src.replace(
+			/^(import [^\n]*\r?\n)/m,
+			`$1import { ${registry} } from '${regImport}';${eol}`
+		);
 	}
 	if (!/\$\(/.test(strip(src))) {
 		if (/^import \{ \$ \} from '@app\/utils\/dom';\r?\n/m.test(src)) {
 			src = src.replace(/^import \{ \$ \} from '@app\/utils\/dom';\r?\n/m, '');
 		} else if (/^import \{ \$([^}]*)\} from '@app\/utils\/dom';\r?\n/m.test(src)) {
-			src = src.replace(/^import \{ \$([^}]*)\} from '@app\/utils\/dom';\r?\n/m, (_m, rest) => {
-				const kept = rest.replace(/^\s*,\s*/, '').trim();
-				return kept ? `import { ${kept} } from '@app/utils/dom';${eol}` : '';
-			});
+			src = src.replace(
+				/^import \{ \$([^}]*)\} from '@app\/utils\/dom';\r?\n/m,
+				(_m, rest) => {
+					const kept = rest.replace(/^\s*,\s*/, '').trim();
+					return kept ? `import { ${kept} } from '@app/utils/dom';${eol}` : '';
+				}
+			);
 		}
 	}
 	if (APPLY && src !== before) writeFileSync(p, (hasBom ? '\uFEFF' : '') + src);
@@ -155,7 +191,11 @@ for (const sfcPath of sfcPaths) {
 	for (const id of idsUsed) {
 		const tag = new RegExp(`<[^>]*\\sid="${id}"[^>]*>`, 's').exec(sfc)?.[0];
 		if (!tag) continue;
-		if (tag.includes(`registryRef(${registry}, '${id}')`) || tag.includes(`registerElement(${registry}, '${id}'`)) continue;
+		if (
+			tag.includes(`registryRef(${registry}, '${id}')`) ||
+			tag.includes(`registerElement(${registry}, '${id}'`)
+		)
+			continue;
 		const refName = /\sref="([\w$]+)"/.exec(tag)?.[1];
 		if (refName) {
 			namedHere.push({ id, refName });
@@ -165,31 +205,60 @@ for (const sfcPath of sfcPaths) {
 			unresolved.push(`${id} @ ${sfcPath.split('/').pop()}`);
 			continue;
 		}
-		sfc = sfc.replace(new RegExp(`(\\sid="${id}")`), `$1\n\t\t\t\t:ref="registryRef(${registry}, '${id}')"`);
+		sfc = sfc.replace(
+			new RegExp(`(\\sid="${id}")`),
+			`$1\n\t\t\t\t:ref="registryRef(${registry}, '${id}')"`
+		);
 		freshHere++;
 		fresh++;
 	}
 	if (namedHere.length > 0) {
-		const lines = namedHere.map(({ id, refName }) => `\tregisterElement(${registry}, '${id}', ${refName}.value);`).join(eol);
-		if (/onMounted\(\(\) => \{\r?\n/.test(sfc)) sfc = sfc.replace(/onMounted\(\(\) => \{\r?\n/, (m) => `${m}${lines}${eol}`);
+		const lines = namedHere
+			.map(({ id, refName }) => `\tregisterElement(${registry}, '${id}', ${refName}.value);`)
+			.join(eol);
+		if (/onMounted\(\(\) => \{\r?\n/.test(sfc))
+			sfc = sfc.replace(/onMounted\(\(\) => \{\r?\n/, (m) => `${m}${lines}${eol}`);
 		else console.error(`  !! ${sfcPath} 无 onMounted，具名 ref 需人工`);
 		namedCount += namedHere.length;
 	}
 	const helpers = [];
-	if (new RegExp(`registryRef\\(${registry}`).test(sfc) && !/import \{[^}]*\bregistryRef\b[^}]*\} from '@app\/utils\/element-registry'/.test(sfc)) helpers.push('registryRef');
-	if (new RegExp(`registerElement\\(${registry}`).test(sfc) && !/import \{[^}]*\bregisterElement\b[^}]*\} from '@app\/utils\/element-registry'/.test(sfc)) helpers.push('registerElement');
+	if (
+		new RegExp(`registryRef\\(${registry}`).test(sfc) &&
+		!/import \{[^}]*\bregistryRef\b[^}]*\} from '@app\/utils\/element-registry'/.test(sfc)
+	)
+		helpers.push('registryRef');
+	if (
+		new RegExp(`registerElement\\(${registry}`).test(sfc) &&
+		!/import \{[^}]*\bregisterElement\b[^}]*\} from '@app\/utils\/element-registry'/.test(sfc)
+	)
+		helpers.push('registerElement');
 	if (helpers.length > 0) {
 		if (/import \{[^}]*\} from '@app\/utils\/element-registry';/.test(sfc)) {
-			sfc = sfc.replace(/import \{([^}]*)\} from '@app\/utils\/element-registry';/, (_m, inner) => {
-				const set = new Set(inner.split(',').map((s) => s.trim()).filter(Boolean).concat(helpers));
-				return `import { ${[...set].join(', ')} } from '@app/utils/element-registry';`;
-			});
+			sfc = sfc.replace(
+				/import \{([^}]*)\} from '@app\/utils\/element-registry';/,
+				(_m, inner) => {
+					const set = new Set(
+						inner
+							.split(',')
+							.map((s) => s.trim())
+							.filter(Boolean)
+							.concat(helpers)
+					);
+					return `import { ${[...set].join(', ')} } from '@app/utils/element-registry';`;
+				}
+			);
 		} else {
-			sfc = sfc.replace(/^(import [^\n]*\r?\n)/m, `$1import { ${helpers.join(', ')} } from '@app/utils/element-registry';${eol}`);
+			sfc = sfc.replace(
+				/^(import [^\n]*\r?\n)/m,
+				`$1import { ${helpers.join(', ')} } from '@app/utils/element-registry';${eol}`
+			);
 		}
 	}
 	if (!hasImport(sfc, registry, regImport)) {
-		sfc = sfc.replace(/^(import [^\n]*\r?\n)/m, `$1import { ${registry} } from '${regImport}';${eol}`);
+		sfc = sfc.replace(
+			/^(import [^\n]*\r?\n)/m,
+			`$1import { ${registry} } from '${regImport}';${eol}`
+		);
 	}
 	if (APPLY) writeFileSync(sfcPath, sfc);
 	console.log(`  ${sfcPath.split('/').pop()}: +${freshHere} :ref, ${namedHere.length} 具名`);

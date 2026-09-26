@@ -33,7 +33,7 @@ import { createStartPositionTexture, drawStartPosition } from './draw-start-posi
  * 这里改成对象字面量：27 个成员的类型**全部由 `./draw-*.ts` 的导出推断**，零手写签名。
  * 位置不动（24 行处），因为这 27 个函数全部是**上方 import 进来的**，不存在「先建空对象、
  * 等下面声明完再挂」的时序依赖 —— 与 `ParticleEngine` 那种「引用文件下方的 class」
- * 的情形不同（那一处已试过并回退，见 PHASE-1C 第 63 轮）。
+ * 的情形不同（那一处已试过并回退：类型可以前向引用，class 不可以）。
  */
 export const SceneDrawEngine = {
 	drawScene,

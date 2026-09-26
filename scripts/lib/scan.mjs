@@ -316,7 +316,7 @@ export const NATIVE_EVENTS = new Set([
  * 判断该监听是否**内联匿名**、以及是否带 `{ once: true }`。
  *
  * `{ once: true }` 的监听由浏览器在首次触发后自动摘除，因此不算「没有 remove」的生命周期风险
- * ——E1 早期度量把它们误记为风险点，这里保留该区分。
+ * ——不区分就会把它们误记为风险点，这里保留该区分。
  *
  * @param {string} rawSrc 文件原文
  * @param {string} [target] 调用前缀，默认 `window`（函数内部拼成 `${target}.addEventListener(`）
@@ -324,7 +324,7 @@ export const NATIVE_EVENTS = new Set([
  */
 export function scanAddListenerCalls(rawSrc, target = 'window') {
 	// 先去注释：注释与字符串里也会出现 `window.addEventListener(`，按原文扫描会把整段无关代码
-	// 当成一次调用（E1 早期版本就因此把「内联匿名监听」数高估了）。
+	// 当成一次调用（曾因此把「内联匿名监听」数高估了）。
 	const src = stripComments(rawSrc);
 	const marker = `${target}.addEventListener(`;
 	const calls = [];

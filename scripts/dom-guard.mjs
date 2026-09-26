@@ -256,12 +256,11 @@ function detectStaleExemptions(rows) {
 }
 
 /**
- * 落盘目标：`scripts/dom-migration-tracker.md`（**不是** `docs/`）。
+ * 落盘目标：**本目录（`scripts/`）下那份 tracker Markdown**（**不是** `docs/`）。
  *
- * 历史：本文件过去写 `docs/dom-migration-tracker.md`。`docs/` 已在 Phase 15 按收尾流程
- * **有意删除**，源码里当时还专门加了一段「目录不存在就跳过写入、不要 mkdirSync」的注释，
- * 以免随手跑一次 tracker 又把 `docs/` 变回承重结构。代价是：矩阵每次跑完就丢了，
- * 而它本来是那份「可复现的迁移矩阵」的唯一载体。
+ * 为什么强调「不是 `docs/`」：那个目录已按收尾流程**有意删除**，而随手一次 mkdir 就能
+ * 让它变回承重结构 —— 所以写盘一律落在 `scripts/`。代价是：矩阵不能再躺在文档目录里
+ * 当那份「可复现的迁移矩阵」，只能靠下面两条口径补上：**数字**有真源、**明细**可复算。
  *
  * 现在的口径：
  *   - `scripts/migration-ledger-baseline.json` 是**数字**的真源（棘轮门禁靠它）；

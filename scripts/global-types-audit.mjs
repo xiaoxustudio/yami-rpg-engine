@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * global.d.ts 审计器（P4c / P4d 的度量来源）
+ * global.d.ts 审计器
  *
  * 用途：把 `packages/editor/Project/global.d.ts` 里每一条"全局类型增强声明"
  * 与"运行期实现"、"全仓引用"对账，输出四分类：
@@ -10,7 +10,7 @@
  *   - dead      —— 接收者感知的引用为 0 ⇒ 死声明，可直接删
  *   - dup       —— 同一接口同一成员在本文件里声明了两次（纯重复）
  *
- * 为什么要有脚本：P4c 首刀曾记下"还剩 26 条同名声明"，复核发现实际是 16 条
+ * 为什么要有脚本：曾记下"还剩 26 条同名声明"，复核发现实际是 16 条
  * （文档数字漂移）。判据必须能一键复算，而不是靠人记。
  *
  * 用法：
@@ -49,16 +49,31 @@ const opt = (name) => {
 
 /** 构造器/命名空间：按 `Host.member` 计数 */
 const CONSTRUCTOR_IFACES = new Set([
-	'Math', 'JSON', 'Reflect', 'CSS',
-	'ArrayConstructor', 'ObjectConstructor', 'StringConstructor', 'NumberConstructor',
-	'RegExpConstructor', 'FunctionConstructor', 'BooleanConstructor', 'SymbolConstructor',
-	'Object', 'String', 'Number', 'RegExp', 'Function', 'TimerStatic', 'Window',
+	'Math',
+	'JSON',
+	'Reflect',
+	'CSS',
+	'ArrayConstructor',
+	'ObjectConstructor',
+	'StringConstructor',
+	'NumberConstructor',
+	'RegExpConstructor',
+	'FunctionConstructor',
+	'BooleanConstructor',
+	'SymbolConstructor',
+	'Object',
+	'String',
+	'Number',
+	'RegExp',
+	'Function',
+	'TimerStatic',
+	'Window'
 ]);
 
 /** 接口名 → 运行时全局对象名（不一致时在此登记） */
 const HOST_ALIAS = {
 	TimerStatic: 'Timer',
-	PlatformPath: 'Path',
+	PlatformPath: 'Path'
 };
 
 /** 需要同时匹配大小写两种写法的宿主（`window.x` 与 `Window.x` 都是同一个对象） */
@@ -79,7 +94,8 @@ function collectFiles() {
 			if (SKIP_SEGMENTS.has(e.name)) continue;
 			const full = path.join(dir, e.name);
 			if (e.isDirectory()) walk(full);
-			else if (SCAN_EXT.has(path.extname(e.name)) && !e.name.endsWith('.d.ts')) out.push(full);
+			else if (SCAN_EXT.has(path.extname(e.name)) && !e.name.endsWith('.d.ts'))
+				out.push(full);
 		}
 	};
 	for (const d of SCAN_DIRS) walk(path.join(ROOT, d));
@@ -94,7 +110,10 @@ function parseDecl(fileText) {
 	let i = 0;
 	while (i < lines.length) {
 		// 允许泛型形参：`interface Array<T> {`
-		const m = /^(?:declare\s+)?(?:interface|namespace)\s+([A-Za-z_$][\w$]*)(?:<[^>]*>)?\s*\{/.exec(lines[i]);
+		const m =
+			/^(?:declare\s+)?(?:interface|namespace)\s+([A-Za-z_$][\w$]*)(?:<[^>]*>)?\s*\{/.exec(
+				lines[i]
+			);
 		if (!m) {
 			i++;
 			continue;
@@ -114,7 +133,7 @@ function parseDecl(fileText) {
 			name: m[1],
 			startLine: i + 1,
 			endLine: j + 1,
-			members: extractMembers(body.slice(1, -1), i + 2),
+			members: extractMembers(body.slice(1, -1), i + 2)
 		});
 		i = j + 1;
 	}
@@ -192,7 +211,11 @@ function buildImplIndex(files) {
 			// Object.defineProperty(X, 'name', …) / Object.defineProperties(X.prototype, { name: … })
 			m = /Object\.definePropert(?:y|ies)\(\s*([^,]+),\s*['"]([A-Za-z_$][\w$]*)['"]/g;
 			while ((r = m.exec(l))) {
-				const host = r[1].replace(/\.prototype$/, '').split('.').pop().trim();
+				const host = r[1]
+					.replace(/\.prototype$/, '')
+					.split('.')
+					.pop()
+					.trim();
 				add(host, r[2], file, n + 1, 'defineProperty');
 			}
 		}
@@ -234,7 +257,7 @@ function main() {
 				hits.push({
 					file: path.relative(ROOT, file).replace(/\\/g, '/'),
 					line,
-					text: (text.split(/\r?\n/)[line - 1] ?? '').trim().slice(0, 140),
+					text: (text.split(/\r?\n/)[line - 1] ?? '').trim().slice(0, 140)
 				});
 			}
 		}
@@ -259,7 +282,8 @@ function main() {
 			let kind;
 			if (dup) kind = 'dup';
 			else if (prodImpl.length > 0) kind = 'real';
-			else if (impl.length > 0) kind = 'testonly'; // 只在测试里被装过 ⇒ 类型残留
+			else if (impl.length > 0)
+				kind = 'testonly'; // 只在测试里被装过 ⇒ 类型残留
 			else if (hits.length === 0) kind = 'dead';
 			else kind = 'residual';
 			rows.push({
@@ -270,7 +294,7 @@ function main() {
 				refs: hits.length,
 				hits: hits.slice(0, 8),
 				impl,
-				kind,
+				kind
 			});
 		}
 	}
@@ -281,10 +305,15 @@ function main() {
 	}
 
 	const onlyKind = opt('kind');
-	const order = {dup:0,testonly:1,dead:2,residual:3,real:4};
-	const shown = rows.filter((r) => (flag('dead') ? r.kind === 'dead' : onlyKind ? r.kind === onlyKind : true));
+	const order = { dup: 0, testonly: 1, dead: 2, residual: 3, real: 4 };
+	const shown = rows.filter((r) =>
+		flag('dead') ? r.kind === 'dead' : onlyKind ? r.kind === onlyKind : true
+	);
 	shown.sort(
-		(a, b) => ({dup:0,testonly:1,dead:2,residual:3,real:4})[a.kind] - order[b.kind] || a.iface.localeCompare(b.iface) || a.member.localeCompare(b.member)
+		(a, b) =>
+			({ dup: 0, testonly: 1, dead: 2, residual: 3, real: 4 })[a.kind] - order[b.kind] ||
+			a.iface.localeCompare(b.iface) ||
+			a.member.localeCompare(b.member)
 	);
 
 	const byKind = {};

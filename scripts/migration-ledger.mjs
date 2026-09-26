@@ -184,7 +184,7 @@ function buildAxes() {
 				//
 				// ⚠️ 2026-09-21 修过一次「仪器瞎了」，两个原因叠加，读数假 0：
 				//
-				//  1. **路径过时**：正则还写着 `^@app/ui/…`，而 P5-B 纯搬运已把 `src/ui/` 搬到
+				//  1. **路径过时**：正则还写着 `^@app/ui/…`，而一次纯搬运已把 `src/ui/` 搬到
 				//     `src/engine/ui/legacy/` ⇒ 一条都不匹配。（同轮把 `ui-slots.mjs` /
 				//     `self-test.mjs` 都改成了动态定位，**只有这里漏了**。这条轴的标签一直写着
 				//     「0 files=0」，读起来就像「遗留层已经没人引用了」——而 `ui-singleton-members`
@@ -210,7 +210,7 @@ function buildAxes() {
 				// ⚠️ 第 212 轮起目录用**常量** `LEGACY_UI_DIR`，不再由 `dirname(uiWindowRel())` 推导。
 				//
 				// 这条轴历史上踩过两次同类坑，两次都是「挪了目录、仪器跟着瞎」：
-				// ① 它曾经写死 `packages/editor/src/ui`，而 P5-B 的纯搬运把 8 个域模块搬到了
+				// ① 它曾经写死 `packages/editor/src/ui`，而一次纯搬运把 8 个域模块搬到了
 				//    `src/engine/ui/legacy/`；`collectFiles` 对**不存在的目录返回 `[]`（不抛错）**，
 				//    于是它读到 0 并报「✓ 已完成」——而遗留代码一行都没少。
 				// ② 改用 `dirname(uiWindowRel())` 之后，坑换了个方向：④-4 把单例搬出 `legacy/`，
@@ -290,8 +290,7 @@ function buildAxes() {
 			measure() {
 				// 与 `ui-singleton-members` **同生共死**：那条轴数「挂载文本」（可被改写法白拿），
 				// 这条数「域模块是否还依赖单例本身」（改写法拿不到）。两条同时归零才算 ④-3 收口。
-				// 设计依据与实测（三种改写法命中都是 0）见本文件 `domainSingletonImporters()` 的注释，
-				// 以及 PHASE-1C 附录十三「结论四」。
+				// 设计依据与实测（三种改写法命中都是 0）见本文件 `domainSingletonImporters()` 的注释。
 				const r = domainSingletonImporters();
 				return { value: { total: r.total }, detail: r.perFile };
 			}
@@ -305,14 +304,14 @@ function buildAxes() {
 				//
 				// `ui-slot-coverage.total`（= storeRefsUnassigned）**恒为 0** —— `assignedSlots()`
 				// 把遗留目录里的 `UI.x = …` 也算成「已赋值」。于是「删掉遗留层会让哪些动作静默
-				// 失效」在台账上完全不可见，只有 PHASE-1C 附录三里**手工数**的「store 尚缺 41 个
+				// 失效」在台账上完全不可见，只有**手工数**出来的「store 尚缺 41 个
 				// 槽位」记着这件事，而那个数字没有任何轴守着（文档会过时，轴不会）。
 				//
 				// 本轴数的是「实现只在遗留目录里」的 store 引用槽位：搬走一个降 1。
 				// 与 `ui-singleton-members` **同生共死** —— 两条轴同时归零才算 1c 收口，
 				// 这条自证写在 `self-test.mjs` 里。
 				//
-				// 交叉验证：首轮实测 **41**，与 PHASE-1C 附录三手工数出的 41 一致 —— 口径正确。
+				// 交叉验证：首轮实测 **41**，与当年手工数出的 41 一致 —— 口径正确。
 				const slots = legacyOnlyStoreSlots();
 				return {
 					value: { total: slots.length, storeRefs: uiSlotCoverage().storeRefs },

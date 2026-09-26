@@ -37,6 +37,12 @@ export const TEXT_SCAN_DIRS = [
 	join('packages', 'editor', 'src'),
 	join('packages', 'ui-kit', 'src'),
 	join('packages', 'editor', 'main'),
+	// 编辑器外壳同样是**手写源码**：`Project/css/*.css`（组件样式迁入前的老家）与
+	// `Project/index.css`、`Project/global.d.ts` 都在这里。曾经正因为不在扫描面内，
+	// `ui.css` 里一处 U+FFFD（写通道吃掉「口」+换行）躲过了全部门禁 —— 见 commit 历史。
+	// 资源目录（Images/Fonts/Locales/Apk）只含 png/woff2/jar… ，扩展名过滤天然挡掉；
+	// 唯一会被扫到的 `Locales/*.json` 是语言表数据，扫它没有副作用。
+	join('packages', 'editor', 'Project'),
 	'scripts'
 ];
 
@@ -48,7 +54,8 @@ export const TEXT_SCAN_EXTENSIONS = new Set([
 	'.js',
 	'.json',
 	'.md',
-	'.html'
+	'.html',
+	'.css'
 ]);
 
 /** 与台账同一套排除口径：测试文件**也扫**（测试里的注释同样会被写坏）。 */

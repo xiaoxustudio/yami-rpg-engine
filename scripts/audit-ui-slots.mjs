@@ -30,7 +30,7 @@ const files = collectFiles({ dirs: SCAN_DIRS });
 // 与 `'\n};'`，技法 5 改写声明形态后它会**静默读到 0 个槽位**，于是后面的
 // 「三态核对」全表变成空表 —— 一个看起来「干净」的假结论。仪器只维护一份。
 //
-// ⚠️ 同一个教训 2026-09-20 又应验一次（P5-B 纯移动把 `src/ui/` 搬到 `src/engine/ui/legacy/`）：
+// ⚠️ 同一个教训 2026-09-20 又应验一次（一次纯目录搬运把 `src/ui/` 搬到 `src/engine/ui/legacy/`）：
 // 这里原本还留着一行写死的 `const windowRel = 'packages/editor/src/ui/ui-window.ts'`，
 // 搬完之后那个文件不存在了 —— 而它**根本没被用到**（下面只用 `declaredSlots()`），
 // 于是纯粹变成一句 `readFileSync` 的 ENOENT 地雷。写死路径的副本一律删掉，改用

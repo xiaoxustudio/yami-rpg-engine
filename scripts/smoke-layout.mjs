@@ -1,19 +1,19 @@
-// F.5 / E.3 / M4 / L1 / S1 真机冒烟驱动（CDP over WebSocket，Node >=22 全局 WebSocket）。
+// 真机冒烟驱动（CDP over WebSocket，Node >=22 全局 WebSocket）。
 // 前提：editor 已构建（pnpm -F @yami/editor build:all）并以如下方式启动：
 //   electron --remote-debugging-port=9223 <packages/editor>（home 需有最近项目 game.yamirpg 可打开）
 // 用法: node scripts/smoke-layout.mjs <phase> [port] [args…]
 // phase: debug | open-project | mode2-directory | roundtrip-scene | mode0-control
 //        | drag-mode0 | drag-mode2 | drag-here | drag-scene | drag-region
-//        | drag-region-edge <left|right|top|bottom> [pick=a|b]      ← L1：region 四方向
+//        | drag-region-edge <left|right|top|bottom> [pick=a|b]      ← region 四方向
 //        | drag-region-all [<方向>] [pick=…]                        （drag-region-edge 的别名）
-//        | tree-windows keys=F3,F6,… | ids=<窗口 id,…> [interact=1]  ← S1：数据绑定型窗口
-//        | menu-windows index=5,6                                    ← S1：走「窗口」菜单的条目
+//        | tree-windows keys=F3,F6,… | ids=<窗口 id,…> [interact=1]  ← 数据绑定型窗口
+//        | menu-windows index=5,6                                    ← 走「窗口」菜单的条目
 //        | file-body | command-list                                  ← 两个巨石的换源后冒烟
 //        | eval-file file=<js>                                       （探索用：跑一段页内表达式）
-// L1 的稳妥做法：**每个方向重启一次 app**（layout 是会话态），顺序为
+// region 四方向的稳妥做法：**每个方向重启一次 app**（layout 是会话态），顺序为
 //   open-project → drag-region-edge <方向> pick=a → drag-region-edge <方向> pick=b
 // （pick=a：源取最后一个叶子、目标取第一个；pick=b 反之——两个都跑，才能区分"设计内的相邻 no-op"
-//   与"方向没实现"。S1 的 `interact=1` 会在核对行数后追加交互链路：选中 → 折叠 → 展开 → F2。）
+//   与"方向没实现"。数据绑定窗口的 `interact=1` 会在核对行数后追加交互链路：选中 → 折叠 → 展开 → F2。）
 //
 // ⚠️ 本文件在 `.oxlintrc.json` 里**关掉了 `eslint/no-await-in-loop`**（理由必须写在这里，因为 JSON
 //    配置不接受注释）。该规则的目的是抓「本可并行却被误写成串行」；而本文件是**真机 UI 自动化驱动**：
@@ -34,7 +34,7 @@ const edgeArg = String(
 const pickArg = String(process.argv.slice(3).find((a) => /^pick=[ab]$/i.test(a)) ?? 'pick=a')
 	.split('=')[1]
 	.toLowerCase();
-// S1 的 `interact=1`：核对行数后再跑一遍交互链路（选中 → 折叠 → 展开 → F2）
+// 数据绑定窗口的 `interact=1`：核对行数后再跑一遍交互链路（选中 → 折叠 → 展开 → F2）
 const interact = process.argv.slice(3).includes('interact=1');
 if (!phase) {
 	console.error('usage: node scripts/smoke-layout.mjs <phase> [port] [edge]');
@@ -419,7 +419,7 @@ async function mode0Control() {
 	ws.close();
 }
 
-// 真机拖拽探针（M4）：
+// 真机拖拽探针：
 // - dragend 统一派发到「存活 nav 集合」（结构折叠后原 item 可能已脱离可冒泡容器，见 2026-09-09 记录）
 // - 场景自适应：优先同组重排；若活动工作区无多页签叶子，先跨组合并再造多页签叶，再同组重排
 async function dragReorderPhase() {
@@ -588,8 +588,8 @@ async function dragScene() {
 	await dragReorderPhase();
 }
 
-// region 边缘拖拽（M4 几何用例）：把叶子 A 的唯一页签拖到叶子 B 的 region 左缘，
-// 期望产生左/右分割（结构性变更）并由 M4-2 rebuild 收敛。
+// region 边缘拖拽（几何用例）：把叶子 A 的唯一页签拖到叶子 B 的 region 左缘，
+// 期望产生左/右分割（结构性变更）并由 rebuild 收敛。
 async function dragRegionPhase() {
 	const { ws, send } = await connect();
 	await send('Runtime.enable');
@@ -702,7 +702,7 @@ const LAYOUT_TREE = `(() => {
 	};
 })()`;
 
-// L1：region 四方向真机走查（left/right/top/bottom）。每个方向跑之前由外部脚本把 layout 还原，
+// region 四方向真机走查（left/right/top/bottom）。每个方向跑之前由外部脚本把 layout 还原，
 // 因此本 phase 只做「一次拖拽 + 前后快照」——不做回滚，相邻方向的 no-op 判定也照实记录。
 async function dragRegionEdge() {
 	const edge = edgeArg;
@@ -778,7 +778,7 @@ async function dragRegionAll() {
 	await dragRegionEdge();
 }
 
-// S1：数据绑定型窗口逐窗冒烟。两条真实入口都支持：
+// 数据绑定型窗口逐窗冒烟。两条真实入口都支持：
 //   ① `keys=F3,F6,…`：派发真实加速键（`registerWindowKeydown('menubar')` → 模块的 `open()`，
 //      数据由模块自己加载——这是"有效数据"的唯一来源）
 //   ② `ids=variable,enum,…`：调窗口管理器 `Window.open(id)`（只开窗、不加载数据，用于可达性核对）
@@ -803,7 +803,7 @@ const PROBE_TREE = (idExpr) => `(() => {
 	};
 })()`;
 
-// S1 的交互链路：选中 → 折叠 → 展开 → F2 重命名（重命名框 = `.node-list-text-box-input`）。
+// 数据绑定窗口的交互链路：选中 → 折叠 → 展开 → F2 重命名（重命名框 = `.node-list-text-box-input`）。
 // **每一步都是独立的一次 evaluate，等待放在 Node 侧**——页内 `await sleep()` 会被 Chromium
 // 对隐藏窗口的定时器节流拖死（实测：`menu-windows interact=1` 因此卡到超时）。
 const treeExpr = (idExpr, body) => `(() => {
@@ -934,7 +934,7 @@ async function treeWindows() {
 	ws.close();
 }
 
-// S1 续：没有加速键的数据绑定窗口（过渡 / 队伍…）走**真实菜单路径**——点「窗口」菜单 →
+// 数据绑定窗口（续）：没有加速键的那些（过渡 / 队伍…）走**真实菜单路径**——点「窗口」菜单 →
 // 点弹层里的对应条目（按 0 基下标定位，跑完打印弹层标签供人工核对）。
 async function menuWindows() {
 	const idxArg = process.argv.slice(3).find((a) => a.startsWith('index=')) ?? '';
@@ -1018,11 +1018,11 @@ async function evalFile() {
 	ws.close();
 }
 
-// ── 巨石换源后的真机冒烟（M3 的清单）─────────────────────────────────────────
+// ── 巨石换源后的真机冒烟 ────────────────────────────────────────────────
 // 文件 body：切视图（Ctrl+Wheel 改 slider）、右键菜单、双击打开；
 // 命令列表：行渲染 + 缩进线扩展点（`.command-line`/`.command-mark-major`）、选区复制粘贴、
 // 空白行点击插入。**只做"能自动断言的部分"**：`:hover` 这类纯浏览器状态与拖拽排序的
-// 视觉结果仍需人工看一眼（见文档的真机清单）。
+// 视觉结果仍需人工看一眼。
 const clickNavFolder = (label) => `(() => {
 	const nav = [...document.querySelectorAll('.file-nav-item')].find((i) => (i.textContent || '').includes(${JSON.stringify(label)}));
 	if (!nav) return 'no-nav';
