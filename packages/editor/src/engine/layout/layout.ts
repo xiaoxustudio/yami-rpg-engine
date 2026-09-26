@@ -17,16 +17,18 @@ import {
 } from '@app/utils/element-utils.ts';
 import {
 	createDragAndDropHintElement as createDragAndDropHint,
-	createNavBarElement as createNavBar,
-	createPageManagerElement as createPageManager,
 	type PageManagerApi
 } from '@ui-kit';
 import {
 	toLayoutScheme,
 	moveTabWithin,
+	moveLayoutTab,
+	leavesOf,
+	splitGroupWithTab,
 	parseLayoutScheme,
 	collapseRedundantSplits,
-	type LayoutSchemeData
+	type LayoutSchemeData,
+	type LayoutTreeNode
 } from './layout-scheme';
 import { deserializeGroupElement } from './layout-deserialize';
 import { collectPageTargets } from './layout-page-targets';
@@ -45,7 +47,6 @@ import { getUIStore } from '@app/stores/ui';
 import { DynamicShape } from '@app/types/shapes.ts';
 import { h, nextTick, type VNode } from 'vue';
 
-// M5-b（layout 迁移规划 M5）：双路开关与命令式装载路径已退场——
 // 组树一律由 LayoutTreeView(.vue) 渲染并水合，页/页签一律经整壳 Teleport 落位。
 // 每个宿主 page 上挂载中的 Vue 组树（再次首载/切布局时先收回页签再 unmount）
 const vueTreeHandles = new WeakMap<HTMLElement, VueGroupTreeHandle>();
@@ -79,10 +80,10 @@ type LayoutGroupElement = HTMLElement & {
 	border?: HTMLElement;
 };
 
-// P4b：`end`（组的分数结束位置）是元素数据——原型访问器即将退役，这里给出显式视图
-// （写法同 ui-kit 的 tree-api.ts）。manager 上的 `active` **不走元素数据**：Vue 版
-// YMPageManager 在元素上 `Object.defineProperty(el, 'active', …)` 自建访问器（遮蔽原型），
-// 命令式 createPageManagerElement 走原型访问器——两种实现并存，故 `manager.active` 保持原样。
+// `end`（组的分数结束位置）是元素数据——原型访问器已退役，这里给出显式视图
+// （写法同 ui-kit 的 tree-api.ts）。manager 上的 `active` **不走元素数据**：`YMPageManager.vue`
+// 在元素上 `Object.defineProperty(el, 'active', …)` 自建访问器（遮蔽原型），而元素 API 工厂
+// `createPageManagerElement` 拿的是原型访问器——两种来源并存，故 `manager.active` 保持原样。
 interface LayoutGroupData {
 	end: number;
 }
@@ -112,15 +113,15 @@ type LayoutResizeEvent = {
 	infos?: HTMLElement[];
 };
 
-// P1b：这条「离屏创建」此前在本仓有**三份**实现（utils/dom 的 renderDetached、element-utils 的 renderElement、
+// 这条「离屏创建」此前在本仓有**三份**实现（utils/dom 的 renderDetached、element-utils 的 renderElement、
 // 这里）——统一委托给 utils/dom 的唯一缝隙（它的语义正是"返回已脱离宿主的节点"）。
 function renderElement(vnode: VNode): HTMLElement {
 	return renderDetached(vnode);
 }
 
-// M4-2：组根发现。宿主页内可能残留 palette 空壳（#layout-content 盒子，teleport 模式下
+// 组根发现。宿主页内可能残留 palette 空壳（#layout-content 盒子，整壳 Teleport 下
 // LayoutPaletteHost 只搬 NavBar/PageManager）等非组元素，按 class 找组根才是稳定的；
-// 命令式模式（首元素即组根）下行为不变，找不到组时回退首个元素保持旧语义。
+// 手工搭建、没有 `group` 元素的 DOM（单测 fixture）回退首个元素。
 const layoutRootOf = (page: Element | null | undefined): HTMLElement | null => {
 	if (!page) return null;
 	const element = page as Element & { childNodes?: ArrayLike<ChildNode> };
@@ -135,7 +136,7 @@ const layoutRootOf = (page: Element | null | undefined): HTMLElement | null => {
 	return (list[0] as HTMLElement | undefined) ?? null;
 };
 
-// M4-2：退化 scheme 判定（无任何页签）。挂载失败/半挂载时会序列化出空树，
+// 退化 scheme 判定（无任何页签）。挂载失败/半挂载时会序列化出空树，
 // 若用它覆盖 config.layout 会丢用户布局，故 saveToConfig 只接受含页签的 scheme。
 const hasAnyTabs = (node: LayoutScheme | null | undefined): boolean => {
 	if (!node) return false;
@@ -145,7 +146,7 @@ const hasAnyTabs = (node: LayoutScheme | null | undefined): boolean => {
 
 // 组容器的兄弟遍历必须是「组元素」序列：Vue 组树会在容器内留注释/文本锚点，
 // 按 childNodes/previousSibling 取会拿到锚点（end 为 undefined → 比例算成 NaN →
-// 序列化兜底成 1 → 兄弟重叠、边界线不可拖拽缩放）。见 layout 迁移规划 修复记录。
+// 序列化兜底成 1 → 兄弟重叠、边界线不可拖拽缩放）。
 const groupChildrenOf = (parent: Element): LayoutGroupElement[] =>
 	Array.from(parent.children).filter((child) => hasClass(child, 'group')) as LayoutGroupElement[];
 
@@ -161,10 +162,9 @@ const nextGroupOf = (group: Element): LayoutGroupElement | null => {
 	return node as LayoutGroupElement | null;
 };
 
-// M5-a（layout 迁移规划 M5）：以引擎内部状态取代 DOM expando 读法。
-// page.scheme → pageSchemes（幂等判据）、nav.lastValue → navLastValues（会话恢复）、
-// item.page → itemPages（页签↔页配对）；pageTrees 为运行时布局镜像（收敛点刷新），
-// saveToConfig 由「每次读 DOM」改为读镜像。
+// 引擎内部状态：pageSchemes 存幂等判据、navLastValues 存会话恢复值、
+// itemPages 存页签↔页配对；pageTrees 为运行时布局镜像（收敛点刷新），
+// saveToConfig 读镜像而不是每次读 DOM。
 const pageSchemes = new WeakMap<HTMLElement, LayoutScheme>();
 const pageTrees = new WeakMap<HTMLElement, LayoutScheme>();
 const navLastValues = new WeakMap<HTMLElement, string | null>();
@@ -199,8 +199,8 @@ export const refreshLayoutTargets = (): void => {
 	syncPageTargets(Layout.manager);
 };
 
-// M5-c：palette 显式登记（LayoutPanel 拥有 palette 节点，装载前一次性登记，
-// 取代「按 DOM 形态猜测 palette 位置」的双形态发现；DOM 发现降级为缺失项兜底）。
+// palette 显式登记（LayoutPanel 拥有 palette 节点，装载前一次性登记，
+// 不按 DOM 形态猜测 palette 位置；DOM 发现只作缺失项兜底）。
 export interface RegisteredLayoutItem {
 	value: string;
 	nav?: HTMLElement;
@@ -245,7 +245,7 @@ const syncPageTargets = (
 	getLayoutStore().setPageTargets(collectPageTargets(root));
 };
 
-// ---- M3b-2b Teleport 模式辅助（layout 迁移规划 附录 F）----
+// ---- 整壳 Teleport 落位辅助 ----
 // 水合后叶子 group 带 tabs/nav/manager/border expando；按 DOM 收集某组树内全部叶子宿主。
 
 const collectLeafHosts = (root: Element | null): LayoutGroupElement[] => {
@@ -275,7 +275,7 @@ const hostedValues = (root: Element | null): string[] => {
 };
 
 // Teleport 落位后按 group.tabs 顺序收敛每个叶子 nav/manager 的子节点序
-// （Teleport 到达序 = palette 声明序，可能与 tabs 序不同，见附录 F.2）。
+// （Teleport 到达序 = palette 声明序，可能与 tabs 序不同）。
 const orderLeafHostChildren = (leaf: LayoutGroupElement): void => {
 	const { nav, manager, tabs } = leaf;
 	if (nav === undefined || manager === undefined || tabs === undefined) return;
@@ -301,9 +301,9 @@ const orderLeafHostChildren = (leaf: LayoutGroupElement): void => {
 	}
 };
 
-// M4（layout 迁移规划 M4）：同组 drop（inside）生效动作数据化。
+// 同组 drop（inside）生效动作数据化。
 // 由 group.tabs 数据 + moveTabWithin 直接推导目标顺序，再按 tabs 序收敛 nav/manager
-// 子节点序（复用附录 F.2 的「排序 pass」语义），取代命令式 insertBefore/appendChild 差量；
+// 子节点序（「排序 pass」语义），取代命令式 insertBefore/appendChild 差量；
 // 对 Vue/Teleport 管理的子节点也安全（pass 只做容器内稳定追加，探针 B 已证）。
 const navTabsOf = (nav: HTMLElement | undefined): string[] => {
 	if (!nav) return [];
@@ -346,6 +346,126 @@ const applyTabDropWithin = (
 		(page as HTMLElement & { width: unknown; height: unknown }).width = null;
 		(page as HTMLElement & { width: unknown; height: unknown }).height = null;
 	}
+};
+
+/* ---------------- 结构性 drop（跨组搬入 / region 边缘）：数据先行 ---------------- */
+
+type StructuralDropInput = {
+	sGroup: LayoutGroupElement;
+	target: LayoutGroupElement;
+	direction: string;
+	tab: string | undefined;
+	trigger: HTMLElement;
+	hint: { width: number; height: number };
+};
+
+/** 页签落到目标叶子里的插入下标：trigger 是 nav-item 就插到它前面，否则追加（与命令式版同语义） */
+const dropInsertIndex = (
+	targetLeaf: LayoutGroupElement,
+	trigger: HTMLElement,
+	tab: string
+): number => {
+	const tabs = (targetLeaf.tabs ?? []).filter((value) => value !== tab);
+	if (!hasClass(trigger, 'nav-item')) return tabs.length;
+	const value = trigger.getAttribute('value');
+	const index = value === null ? -1 : tabs.indexOf(value);
+	return index === -1 ? tabs.length : index;
+};
+
+/**
+ * 结构性 drop 的**数据路径**入口。
+ *
+ * 做法：从当前 DOM 反读一次（`saveLayoutScheme`，位置顺序与 `collectLeafHosts` 一致）拿到「当前树」，
+ * 在**数据**上算出下一棵树（`moveLayoutTab` / `splitGroupWithTab`），写回 `layout[key]` 后整树重挂载。
+ * 挂载完成后只剩**像素口径的尺寸收敛**（`mergeGroups` + `setGroupSize`）—— 那两步仍按原实现调用，
+ * 因为它们的入参是真实像素（`clientWidth/clientLeft` + 拖拽 hint），jsdom 里 `space === 0` 走不到公式。
+ *
+ * 返回重挂载的 Promise；无 Vue 组树（手工搭建 DOM 的测试环境）或找不到落点时返回 `null`。
+ */
+const applyStructuralDrop = (input: StructuralDropInput): Promise<void> | null => {
+	const tab = input.tab;
+	const page = Layout.manager?.active as HTMLElement | null | undefined;
+	const root = layoutRootOf(page);
+	if (tab === undefined || !page || root === null || !hasClass(root, 'group')) return null;
+	if (vueTreeHandles.get(page) === undefined) return null;
+
+	const leaves = collectLeafHosts(root);
+	const sourceIndex = leaves.findIndex((leaf) => leaf === input.sGroup);
+	const targetIndex = leaves.findIndex((leaf) => leaf === input.target);
+	if (sourceIndex === -1 || targetIndex === -1) return null;
+
+	const key = page.getAttribute('value') ?? Layout.manager?.index ?? '';
+	const current = parseLayoutScheme(Layout.saveLayoutScheme!(root) as LayoutSchemeData);
+	// scheme 的叶子 id 是**先序**分配的，与 collectLeafHosts 的顺序一一对应
+	const ids = leavesOf(current).map((leaf) => leaf.id);
+	const direction = input.direction;
+	let next: LayoutTreeNode | null;
+	if (direction === 'inside') {
+		next = moveLayoutTab(
+			current,
+			ids[sourceIndex],
+			ids[targetIndex],
+			tab,
+			dropInsertIndex(input.target, input.trigger, tab)
+		);
+	} else if (
+		direction === 'left' ||
+		direction === 'right' ||
+		direction === 'top' ||
+		direction === 'bottom'
+	) {
+		next = splitGroupWithTab(current, ids[targetIndex], ids[sourceIndex], tab, direction);
+	} else {
+		return null;
+	}
+	if (next === null) return null;
+
+	const scheme = toLayoutScheme(next);
+	const layout = (Layout.layout ??= {} as Record<string, LayoutScheme>);
+	layout[key] = scheme;
+	pageSchemes.set(page, scheme);
+
+	return (async () => {
+		const previous = lastVueSchemeLoad;
+		if (previous !== null) await previous.catch(() => {});
+		await mountSchemeIntoPage(page, scheme, tab);
+
+		const mounted = layoutRootOf(page) as LayoutGroupElement | null;
+		if (mounted === null) return;
+		if (input.direction !== 'inside') {
+			Layout.mergeGroups!();
+			const newLeaf = collectLeafHosts(mounted).find((leaf) =>
+				(leaf.tabs ?? []).includes(tab)
+			);
+			if (newLeaf !== undefined) {
+				// 搬过来的页：擦掉宽高属性再让 updateGroups 触发一次恢复（与命令式版同步）
+				const movedPage = Array.from(newLeaf.manager.children).find(
+					(child) => child.getAttribute('value') === tab
+				) as (HTMLElement & { width: unknown; height: unknown }) | undefined;
+				if (movedPage !== undefined) {
+					movedPage.width = null;
+					movedPage.height = null;
+				}
+				Layout.setGroupSize!(
+					newLeaf,
+					input.hint,
+					input.direction === 'left' || input.direction === 'top' ? 'forward' : 'backward'
+				);
+			}
+		}
+		Layout.updateGroups!(true);
+		// 尺寸收敛只改元素上的 end ⇒ 从 DOM 反读一次，把最终比例写回 layout 与运行时镜像。
+		// ⚠️ `layout[key]` 与「宿主 page 的 scheme」必须是**同一个对象**：`getPageScheme` 按同一性判等。
+		const finalScheme = toLayoutScheme(
+			collapseRedundantSplits(
+				parseLayoutScheme(Layout.saveLayoutScheme!(mounted) as LayoutSchemeData)
+			)
+		);
+		layout[key] = finalScheme;
+		pageSchemes.set(page, finalScheme);
+		syncLayoutMirror(page);
+		syncPageTargets(Layout.manager);
+	})();
 };
 
 // 把当前宿主 page 内挂载的 Vue 组树叶子归属发布到 store（页 → manager、页签 → nav）。
@@ -392,8 +512,6 @@ export const Layout: DynamicShape = {
 	getGroupOfElement: null as ((element: HTMLElement) => LayoutGroupElement | null) | null,
 	readyToFocus: null as ((element: HTMLElement) => void) | null,
 	activateLayoutPage: null as ((page: HTMLElement | null | undefined) => boolean) | null,
-	createGroupContent: null as ((group: LayoutGroupElement) => void) | null,
-	createGroupBorder: null as ((group: LayoutGroupElement) => void) | null,
 	enableFocusableElements: null as (() => void) | null,
 	disableFocusableElements: null as (() => void) | null,
 	saveNavStates: null as (() => void) | null,
@@ -436,8 +554,8 @@ Layout.initialize = function () {
 	const nav = engineEls.get('layout-nav') as YamiElement;
 	const manager = engineEls.get('layout-page-manager') as YamiElement;
 	const items = (this.items = {} as LayoutItems);
-	// M5-c：palette 显式登记优先（LayoutPanel 拥有 palette 节点，装载前全量登记）。
-	// P1b：登记缺失时的兜底改为**在 palette 容器子树内**查找——原先用
+	// palette 显式登记优先（LayoutPanel 拥有 palette 节点，装载前全量登记）。
+	// 登记缺失时的兜底改为**在 palette 容器子树内**查找——原先用
 	// `document.querySelectorAll('.nav-item[value]')` / `('.page-frame[value]')` 全文档扫，
 	// 而条目本来就在这两个容器里；子树查询保留了「不因登记不完整而丢项」的韧性
 	// （用例 `layout-item-registry.spec.ts` 的「兜底合并」守着它），又不越出组件自身范围。
@@ -481,7 +599,7 @@ Layout.initialize = function () {
 		const key = page.getAttribute('value');
 		const item = key ? items[key] : undefined;
 		if (key && item) {
-			// M5-a：页签↔页配对存引擎内部（原为 items[key].page expando）
+			// 页签↔页配对存引擎内部
 			itemPages.set(item, page as HTMLElement);
 		}
 	}
@@ -493,7 +611,7 @@ Layout.initialize = function () {
 	this.heads = [
 		Scene.head,
 		elementDataOf<{ head: HTMLElement }>(Scene.list).head,
-		// ⚠️ 这里**不能**用 `getUIStore().head` / `.list`（2026-09-18 实测崩溃点）。
+		// ⚠️ 这里**不能**用 `getUIStore().head` / `.list`（实测崩溃点）。
 		//
 		// `Layout.initialize` 由 `initCore` 调用，而 `initCore` 在 `Editor.initialize` 里跑得
 		// **早于** `UI.initialize()`——后者唯一的调用方是 `LayoutPanel.vue` 的 `onMounted`
@@ -515,7 +633,7 @@ Layout.initialize = function () {
 		// ⚠️ 注册表在**没有挂载 Vue** 的环境里取不到元素（单测就是这种环境），
 		// 而 `elementDataOf(undefined)` 会抛 `Invalid value used as weak map key`
 		// —— 直接对 `uiEls.get(...)` 的结果调用它，会让
-		// `layout-item-registry.spec.ts` 的 3 条用例全炸（2026-09-18 实测）。
+		// `layout-item-registry.spec.ts` 的 3 条用例全炸（实测）。
 		// `?? {}` 与遗留层 `ui-window.ts` 的 `list: (…) || {}` 是同一个手法：
 		// 兜一个**真对象**进去，`.head` 读出来是 `undefined`，由消费侧
 		// （`for (const head of Layout.heads ?? [])`）跳过。
@@ -552,7 +670,7 @@ Layout.switchLayout = function (layout: Record<string, LayoutScheme>) {
 	this.layout = layout;
 	const { manager } = this;
 	for (const page of manager.childNodes) {
-		// M5-a：失效整本字典时清掉引擎内部页状态（原为 delete page.scheme）
+		// 失效整本字典时清掉引擎内部页状态
 		resetPageLayoutState(page as HTMLElement);
 	}
 	const key = manager.index;
@@ -563,7 +681,7 @@ Layout.switchLayout = function (layout: Record<string, LayoutScheme>) {
 
 Layout.updateGroups = (function IIFE() {
 	const update = (group: LayoutGroupElement, split: string, start: number) => {
-		// M4-2：结构变更窗口内可能传入已脱离文档的组，直接跳过而不是抛错中断
+		// 结构变更窗口内可能传入已脱离文档的组，直接跳过而不是抛错中断
 		if (!group) return start;
 		const end = groupData(group).end;
 		const style = group.style;
@@ -606,7 +724,7 @@ Layout.updateGroups = (function IIFE() {
 				}
 			}
 		} else {
-			// M4-2：结构变更中途可能出现过缺 manager 的组（Teleport 归属重算窗口），不因此中断
+			// 结构变更中途可能出现过缺 manager 的组（Teleport 归属重算窗口），不因此中断
 			const active = (group.manager?.active ?? null) as
 				| (HTMLElement & {
 						dpr: number;
@@ -660,12 +778,12 @@ Layout.updateGroups = (function IIFE() {
 Layout.updateGroupTabs = function (group: LayoutGroupElement) {
 	const tabs: string[] = [];
 	for (const item of group.nav.childNodes) {
-		// M4-2：Teleport 会在 nav 内留下锚点/文本等非元素节点，读取子序时跳过
+		// Teleport 会在 nav 内留下锚点/文本等非元素节点，读取子序时跳过
 		if (item.nodeType !== 1) continue;
 		tabs.push((item as HTMLElement).getAttribute('value')!);
 	}
 	group.tabs = tabs;
-	// M5-a：tabs 是运行时镜像的一部分，写入即刷新
+	// tabs 是运行时镜像的一部分，写入即刷新
 	syncLayoutMirror(this.manager?.active as HTMLElement | null | undefined);
 };
 
@@ -755,7 +873,7 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 			walk(root, 0);
 		}
 	}
-	// P1b：布局诊断里改读注册表（原先 document.getElementById）
+	// 布局诊断里改读注册表（原先 document.getElementById）
 	const browser = storesEls.get('project-browser') as HTMLElement | null;
 	if (browser !== null) {
 		const br = browser.getBoundingClientRect();
@@ -801,7 +919,7 @@ Layout.mergeGroups = (function IIFE() {
 		while (--i >= 0) {
 			const inner = nodes[i];
 			if (inner.split === outer.split) {
-				// M5-b：Vue 会在容器内留锚点/文本节点，前一个兄弟须按元素回溯到「组」
+				// Vue 会在容器内留锚点/文本节点，前一个兄弟须按元素回溯到「组」
 				let prev = inner.previousElementSibling as LayoutGroupElement | null;
 				while (prev !== null && !hasClass(prev, 'group')) {
 					prev = prev.previousElementSibling as LayoutGroupElement | null;
@@ -1067,30 +1185,6 @@ Layout.readyToFocus = function (element: HTMLElement) {
 	}
 };
 
-Layout.createGroupContent = function (group: LayoutGroupElement) {
-	const nav = createNavBar();
-	on(nav, 'write', this.navWrite!);
-	on(nav, 'pointerdown', this.navPointerdown!);
-	on(nav, 'dragstart', this.navDragstart!);
-	on(nav, 'dragend', this.navDragend!);
-	group.appendChild(nav);
-
-	const manager = createPageManager();
-	addClass(manager, 'group-manager');
-	group.appendChild(manager);
-
-	group.nav = nav;
-	group.manager = manager;
-};
-
-Layout.createGroupBorder = function (group: LayoutGroupElement) {
-	const border = renderElement(h('group-border', { class: 'group-border' }));
-	on(border, 'pointerdown', this.borderPointerdown!);
-	group.appendChild(border);
-
-	group.border = border;
-};
-
 Layout.enableFocusableElements = function () {
 	const store = getLayoutStore();
 	const elements = store.focusableElements;
@@ -1126,7 +1220,7 @@ Layout.saveNavStates = function () {
 	for (const item of this.items!.list) {
 		if (hasClass(item, 'selected')) {
 			const nav = item.parentNode as HTMLElement;
-			// M5-a：会话恢复值存引擎内部（原为 nav.lastValue expando）
+			// 会话恢复值存引擎内部
 			navLastValues.set(nav, item.getAttribute('value'));
 			write(nav, null);
 		}
@@ -1147,11 +1241,11 @@ Layout.loadLayoutScheme = function (key?: string) {
 	if (scheme === undefined || page === null) {
 		return;
 	}
-	// M5-b：唯一装载路径 —— 组树由 LayoutTreeView(.vue) 渲染并水合，
+	// 唯一装载路径 —— 组树由 LayoutTreeView(.vue) 渲染并水合，
 	// 页/页签经整壳 Teleport 落位；首载/二次进入由组树是否存在决定。
 	const isFirst = pageSchemes.get(page) !== scheme;
 	if (isFirst) {
-		// M5-a：幂等判据存引擎内部（原为 page.scheme expando）
+		// 幂等判据存引擎内部
 		pageSchemes.set(page, scheme);
 	}
 	const pending = this.loadLayoutSchemeVueTeleport!(key ?? '', scheme, page, isFirst);
@@ -1201,7 +1295,7 @@ Layout.loadLayoutSchemeVueTeleport = async function (
 		});
 		vueTreeHandles.set(page, handle);
 	} else if (vueTreeHandles.get(page) === undefined && layoutRootOf(page) === null) {
-		// 无既有组树（例如运行期才切到 teleport 模式）：按首载处理
+		// 组树句柄与 DOM 组根都不在（宿主页被重建过）：按首载处理
 		return this.loadLayoutSchemeVueTeleport!(_key, scheme, page, true);
 	}
 
@@ -1213,7 +1307,7 @@ Layout.loadLayoutSchemeVueTeleport = async function (
 		if (isFirst) {
 			write(leaf.nav!, leaf.tabs?.[0]);
 		} else {
-			// M5-a：二次进入的会话恢复值读引擎内部（原为 nav.lastValue expando）
+			// 二次进入的会话恢复值读引擎内部
 			write(leaf.nav!, navLastValues.get(leaf.nav!) ?? leaf.tabs?.[0]);
 		}
 	}
@@ -1222,10 +1316,73 @@ Layout.loadLayoutSchemeVueTeleport = async function (
 	syncPageTargets(this.manager);
 };
 
-// M4-2（layout 迁移规划 M4）：Teleport 模式下结构性 drop（跨组搬入/region 分割）
+// 结构性 drop（跨组搬入/region 分割）
 // 的命令式 DOM 变更后，Vue 组树的认知已与 DOM 失配（后续拖拽/补丁会在失配树上失效，
-// 2026-09-09 真机探针）。这里把「当前 DOM → scheme」写回 layout 并整树重挂载，
-// 使 Vue 树重新成为 DOM 的忠实渲染；命令式效果本身保持不变（保留到 M5）。
+// 真机探针）。这里把「当前 DOM → scheme」写回 layout 并整树重挂载，
+// 使 Vue 树重新成为 DOM 的忠实渲染；命令式效果本身保持不变。
+/**
+ * 用**给定的** scheme 重挂载整棵 Vue 组树（`rebuildVueLayoutFromDom` 与 region drop 共用）。
+ *
+ * ⚠️ 调用方已经把 scheme 写进 `layout[key]`；本函数只管「收回旧归属 → 卸载 → 清组 DOM → 挂新树 →
+ * 发布归属 → 排序/写首签 → 激活」这一串，**不再从 DOM 反读**。串行化用 `lastVueSchemeLoad`，
+ * 因此调用方必须自己 `await`/登记（`rebuildVueLayoutFromDom` 就是被登记的那个）。
+ */
+async function mountSchemeIntoPage(
+	page: HTMLElement,
+	scheme: LayoutScheme,
+	activateTab: string | undefined
+): Promise<void> {
+	const prior = vueTreeHandles.get(page);
+	if (prior !== undefined) {
+		// 收回归属：「当前 DOM 叶子」与「旧树叶子 expando」的并集都要收回，
+		// 否则失效映射会把 Teleport 内容搬进即将卸载的旧宿主（内容丢失）。
+		const values = new Set<string>();
+		for (const value of hostedValues(layoutRootOf(page))) values.add(value);
+		for (const value of hostedValues(prior.root)) values.add(value);
+		if (values.size !== 0) {
+			const list = Array.from(values);
+			getLayoutStore().removePageTargets(list);
+			getLayoutStore().removeTabTargets(list);
+			// 陈旧（已脱离文档）归属一并清掉：否则 Teleport 会向死容器搬运
+			getLayoutStore().pruneDetachedTargets?.();
+			await nextTick();
+		}
+		prior.unmount();
+		vueTreeHandles.delete(page);
+	}
+	for (const child of Array.from(page.children)) {
+		if (hasClass(child, 'group')) child.remove();
+	}
+
+	const handle = await mountVueGroupTree(page, scheme as LayoutSchemeData, {
+		navWrite: Layout.navWrite!,
+		navPointerdown: Layout.navPointerdown!,
+		navDragstart: Layout.navDragstart!,
+		navDragend: Layout.navDragend!,
+		borderPointerdown: Layout.borderPointerdown!
+	});
+	vueTreeHandles.set(page, handle);
+
+	const leaves = publishLeafTargets(handle.root);
+	await nextTick();
+	for (const leaf of leaves) {
+		orderLeafHostChildren(leaf);
+		write(leaf.nav!, leaf.tabs?.[0]);
+	}
+	Layout.updateGroups!();
+	syncLayoutMirror(page);
+	syncPageTargets(Layout.manager);
+
+	if (activateTab !== undefined) {
+		for (const leaf of leaves) {
+			if ((leaf.tabs ?? []).includes(activateTab)) {
+				write(leaf.nav!, activateTab);
+				break;
+			}
+		}
+	}
+}
+
 Layout.rebuildVueLayoutFromDom = async function (
 	key?: string,
 	activateTab?: string
@@ -1251,7 +1408,7 @@ Layout.rebuildVueLayoutFromDom = async function (
 	if (!root || !hasClass(root, 'group')) return;
 
 	const layoutKey = key ?? page.getAttribute('value') ?? this.manager?.index ?? '';
-	// 规整冗余容器：Teleport 组树无容器 border，命令式折叠后可能残留单子组容器
+	// 规整冗余容器：Teleport 组树无容器 border，源组被搬空折叠后可能残留单子组容器
 	const scheme = toLayoutScheme(
 		collapseRedundantSplits(parseLayoutScheme(this.saveLayoutScheme!(root) as LayoutSchemeData))
 	);
@@ -1259,55 +1416,7 @@ Layout.rebuildVueLayoutFromDom = async function (
 	layout[layoutKey] = scheme;
 	pageSchemes.set(page, scheme);
 
-	const prior = vueTreeHandles.get(page);
-	if (prior !== undefined) {
-		// 收回归属：「当前 DOM 叶子」与「旧树叶子 expando」的并集都要收回，
-		// 否则失效映射会把 Teleport 内容搬进即将卸载的旧宿主（内容丢失）。
-		const values = new Set<string>();
-		for (const value of hostedValues(root)) values.add(value);
-		for (const value of hostedValues(prior.root)) values.add(value);
-		if (values.size !== 0) {
-			const list = Array.from(values);
-			getLayoutStore().removePageTargets(list);
-			getLayoutStore().removeTabTargets(list);
-			// 陈旧（已脱离文档）归属一并清掉：否则 Teleport 会向死容器搬运
-			getLayoutStore().pruneDetachedTargets?.();
-			await nextTick();
-		}
-		prior.unmount();
-		vueTreeHandles.delete(page);
-	}
-	for (const child of Array.from(page.children)) {
-		if (hasClass(child, 'group')) child.remove();
-	}
-
-	const handle = await mountVueGroupTree(page, scheme as LayoutSchemeData, {
-		navWrite: this.navWrite!,
-		navPointerdown: this.navPointerdown!,
-		navDragstart: this.navDragstart!,
-		navDragend: this.navDragend!,
-		borderPointerdown: this.borderPointerdown!
-	});
-	vueTreeHandles.set(page, handle);
-
-	const leaves = publishLeafTargets(handle.root);
-	await nextTick();
-	for (const leaf of leaves) {
-		orderLeafHostChildren(leaf);
-		write(leaf.nav!, leaf.tabs?.[0]);
-	}
-	this.updateGroups!();
-	syncLayoutMirror(page);
-	syncPageTargets(this.manager);
-
-	if (activateTab !== undefined) {
-		for (const leaf of leaves) {
-			if ((leaf.tabs ?? []).includes(activateTab)) {
-				write(leaf.nav!, activateTab);
-				break;
-			}
-		}
-	}
+	await mountSchemeIntoPage(page, scheme, activateTab);
 };
 
 Layout.saveToConfig = function (config: { layout?: Record<string, LayoutScheme> | null }) {
@@ -1315,12 +1424,12 @@ Layout.saveToConfig = function (config: { layout?: Record<string, LayoutScheme> 
 	for (const page of this.manager.childNodes) {
 		const key = page.getAttribute('value');
 		if (pageSchemes.get(page as HTMLElement) === layout![key]) {
-			// M5-a：优先读运行时镜像（收敛点刷新），无镜像时再按 DOM 兜底快照
+			// 优先读运行时镜像（收敛点刷新），无镜像时再按 DOM 兜底快照
 			const mirrored = pageTrees.get(page as HTMLElement);
 			const scheme =
 				mirrored ??
 				(layoutRootOf(page) !== null ? this.saveLayoutScheme!(layoutRootOf(page)!) : null);
-			// M4-2：半挂载/空树不覆盖既有布局（否则一次失败挂载会写坏 config.layout）
+			// 半挂载/空树不覆盖既有布局（否则一次失败挂载会写坏 config.layout）
 			if (scheme !== null && hasAnyTabs(scheme)) layout![key] = scheme;
 		}
 	}
@@ -1514,7 +1623,7 @@ Layout.navPointerdown = function (event: { button: number; target: LayoutItemEle
 						Layout.readyToFocus!(Inspector.manager);
 						break;
 					default: {
-						// M5-a：页签↔页配对读引擎内部（原为 element.page expando）
+						// 页签↔页配对读引擎内部
 						const page = itemPages.get(element);
 						if (!page) break;
 						const nodes = page.querySelectorAll(
@@ -1653,7 +1762,7 @@ Layout.navDrop = function (event: EditorEvent) {
 		const { target } = location;
 		const { direction } = location;
 
-		// M4：同组 drop（inside）走数据路径 —— 行为与命令式等价（layout-nav-drop.spec.ts 金标准钉死），
+		// 同组 drop（inside）走数据路径 —— 行为与命令式等价（layout-nav-drop.spec.ts 金标准钉死），
 		// 生效动作 = 更新 tabs 数据 + 排序 pass，避免对 Vue/Teleport 管理的子节点直接 insertBefore。
 		if (direction === 'inside' && target === sGroup) {
 			applyTabDropWithin(sGroup, item, trigger);
@@ -1662,157 +1771,22 @@ Layout.navDrop = function (event: EditorEvent) {
 			return;
 		}
 
-		let parent = target.parentNode;
-		let dGroup: LayoutGroupElement = target as LayoutGroupElement;
-		let split;
-		switch (direction) {
-			case 'left':
-			case 'right':
-				split = 'horizontal';
-				break;
-			case 'top':
-			case 'bottom':
-				split = 'vertical';
-				break;
-		}
-
-		if (split !== undefined && parent.split !== split) {
-			parent.replaceChild((parent = renderElement(h('group', { class: 'group' }))), target);
-			groupData(parent).end = groupData(target).end;
-			parent.split = split;
-			addClass(parent, split);
-			parent.style.left = target.style.left;
-			parent.style.top = target.style.top;
-			parent.style.width = target.style.width;
-			parent.style.height = target.style.height;
-			parent.appendChild(target);
-			groupData(target).end = 1;
-			Layout.createGroupBorder!(parent);
-		}
-
-		// 落位分割点：hint 语义为「目标盒子的一半」（见 updateHint），
-		// 因此新叶子与目标叶子在目标跨度中点处对分；此前 left/top 分支未设 end、
-		// right/bottom 分支未收缩目标 end，导致两叶 end 都为 1（重叠 → 边界线不可拖拽缩放）。
-		let prev = target.previousElementSibling as LayoutGroupElement | null;
-		while (prev !== null && !hasClass(prev, 'group')) {
-			prev = prev.previousElementSibling as LayoutGroupElement | null;
-		}
-		const spanStart = prev === null ? 0 : (groupData(prev).end ?? 0);
-		const spanEnd = groupData(target).end ?? 1;
-		const spanMid = (spanStart + spanEnd) / 2;
-
-		switch (direction) {
-			case 'inside':
-				dGroup = target;
-				break;
-			case 'left':
-			case 'top':
-				dGroup = renderElement(h('group', { class: 'group' })) as LayoutGroupElement;
-				groupData(dGroup).end = spanMid;
-				parent.insertBefore(dGroup, target);
-				Layout.createGroupContent!(dGroup);
-				Layout.createGroupBorder!(dGroup);
-				break;
-			case 'right':
-			case 'bottom':
-				dGroup = renderElement(h('group', { class: 'group' })) as LayoutGroupElement;
-				groupData(dGroup).end = spanEnd;
-				groupData(target).end = spanMid;
-				parent.insertBefore(dGroup, target.nextSibling);
-				Layout.createGroupContent!(dGroup);
-				Layout.createGroupBorder!(dGroup);
-				break;
-		}
-
-		const sNav = sGroup.nav;
-		const dNav = dGroup.nav;
-		const sManager = sGroup.manager;
-		const dManager = dGroup.manager;
-		if (sNav !== dNav) {
-			write(dNav, null);
-			dManager.index = sManager.index;
-			dManager.active = sManager.active;
-			sManager.index = null;
-			sManager.active = null;
-		}
-
-		// M5-a：页签↔页配对读引擎内部（原为 item.page / trigger.page expando）
-		const page = itemPages.get(item as HTMLElement);
-		const triggerPage = itemPages.get(trigger);
-		if (hasClass(trigger, 'nav-item') && page && triggerPage) {
-			dNav.insertBefore(item, trigger);
-			dManager.insertBefore(page, triggerPage);
-		} else if (page) {
-			dNav.appendChild(item);
-			dManager.appendChild(page);
-		} else {
-			dNav.appendChild(item);
-		}
-
-		Layout.updateGroupTabs!(sGroup);
-		Layout.updateGroupTabs!(dGroup);
-
-		// 擦除页面的宽高属性 调整节点树后滚动条会重置 需要触发调整事件来恢复
-		if (page) {
-			const sized = page as HTMLElement & { width: unknown; height: unknown };
-			sized.width = null;
-			sized.height = null;
-		}
-
-		if (sNav !== dNav) {
-			// M4-2：以元素子节点判定源组是否还有页签（Teleport 锚点不算）
-			const remaining = Array.from(sNav.children).find((child) =>
-				hasClass(child, 'nav-item')
-			) as HTMLElement | undefined;
-			if (remaining !== undefined) {
-				write(sNav, remaining.getAttribute('value'));
-			} else {
-				const pGroup = sGroup.parentNode as LayoutGroupElement;
-				// 按组元素判定（锚点会让 childNodes/previousSibling 判定失真）
-				const siblings = groupChildrenOf(pGroup);
-				const prev = prevGroupOf(sGroup);
-				if (prev !== null && nextGroupOf(sGroup) === null) {
-					groupData(prev).end = 1;
-				}
-				sGroup.remove();
-
-				if (siblings.length === 2) {
-					const survivor = siblings.find((group) => group !== sGroup);
-					if (survivor !== undefined) {
-						groupData(survivor).end = groupData(pGroup).end;
-						pGroup.parentNode!.replaceChild(survivor, pGroup);
-					}
-				}
-			}
-
-			switch (direction) {
-				case 'left':
-				case 'top':
-					Layout.mergeGroups!();
-					Layout.setGroupSize!(dGroup, hint, 'forward');
-					break;
-				case 'right':
-				case 'bottom':
-					Layout.mergeGroups!();
-					Layout.setGroupSize!(dGroup, hint, 'backward');
-					break;
-			}
-
-			Layout.updateGroups!(true);
-			Layout.navPointerdown!({
-				button: 0,
-				target: item
+		// 跨组搬入 / region 边缘：**先在数据上算出新树**再整树重挂载
+		// （`moveLayoutTab` / `splitGroupWithTab`），不再对 Vue/Teleport 管的节点做命令式构造。
+		const pending = applyStructuralDrop({
+			sGroup,
+			target: target as LayoutGroupElement,
+			direction,
+			tab: draggedValue,
+			trigger,
+			hint
+		});
+		if (pending !== null) {
+			lastVueSchemeLoad = pending;
+			pending.catch((error: unknown) => {
+				console.warn('[navDrop(structural)] failed:', error);
 			});
 		}
-	}
-	// M4-2：跨组/分割 drop 的命令式变更会与 Vue 组树失配，回写 scheme 并重挂载组树
-	// （同组重排走上方数据路径，不受影响；无 Vue 树时 rebuild 内部直接返回）。
-	{
-		const pending = Layout.rebuildVueLayoutFromDom!(undefined, draggedValue);
-		lastVueSchemeLoad = pending;
-		pending.catch((error: unknown) => {
-			console.warn('[rebuildVueLayoutFromDom] failed:', error);
-		});
 	}
 	syncLayoutMirror(Layout.manager?.active);
 	syncPageTargets(Layout.manager);
@@ -2076,7 +2050,7 @@ Layout.pointerup = function (event?: EditorEvent) {
 			info.remove();
 		}
 		getLayoutStore().resizing = null;
-		// M5-a：缩放结束刷新布局镜像（end 比例是镜像的一部分）
+		// 缩放结束刷新布局镜像（end 比例是镜像的一部分）
 		syncLayoutMirror(this.manager?.active as HTMLElement | null | undefined);
 		window.removeEventListener('pointerup', Layout.pointerup!);
 		window.removeEventListener('pointermove', Layout.pointermove!);

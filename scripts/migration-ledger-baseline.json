@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-25T15:21:05.078Z",
+	"generatedAt": "2026-09-25T17:28:39.023Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -27,8 +27,8 @@
 			"label": "泛型逃生口 [k|key: string]: any / Record<string, any>",
 			"target": "zero",
 			"value": {
-				"total": 28,
-				"files": 17
+				"total": 27,
+				"files": 16
 			}
 		},
 		"dom-on-exempted": {

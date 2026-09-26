@@ -91,7 +91,16 @@ export interface UIFacadeShape {
 	marquee: YamiElement;
 
 	// —— 文档 / 历史 ——
-	history: History;
+	/**
+	 * 当前文档的历史栈。
+	 *
+	 * ⚠️ **第 216 轮改**：这里原先是**非空**的 `History`，而单例那一侧是 `History | null`
+	 * （`ui-file.ts:147` 关闭文档时**真的会写 `null`**）⇒ 两个类型对不上，且**单例那一侧才是如实的**。
+	 * 引擎有 4 处以 `this.history` 读它（`shiftTarget` / `shiftAnchor` / `resizeTarget` / `rotateTarget`），
+	 * 这些函数只在「文档已打开」之后才跑到 ⇒ 那条不变式现在写在**一处**（`historyOf()` 里的 `!`），
+	 * 不再要求调用方宣称一个运行期不成立的非空类型。
+	 */
+	history: History | null;
 	/** 计划保存（实现在 `ui-events.ts`）；四处 `this.planToSave!()` 调用它。 */
 	planToSave: (() => void) | null;
 
@@ -133,17 +142,18 @@ export interface UIFacadeShape {
 	// —— 检查器 ——
 	inspectorTypeMap: Record<string, string>;
 
-	// —— ④-1b 由 `tsc` 点名后补上的 5 个成员 ——
+	// —— ④-1b 由 `tsc` 点名后补上的成员 ——
 	//
-	// 这 5 个原先被索引签名兜着。它们分两类，都**必须**在契约里：
-	//   ① 引擎自有、但经 `this` 调用（那 21 行镜像的来源）：
-	//      `requestRendering` / `updateControlPoints` / `renderingFunction`；
-	//   ② store 已持有、引擎也要读：`hover`（哪个节点被悬停）/ `controlPointTexture`（控制点贴图）。
-	// 注意「有家」与「在契约里」是两件事：台账轴 `ui-facade-gaps` 把 ① ② 都算作「有家」，
-	// 但引擎要用 `this.x` 读它们，就仍然必须在类型上显式在案。
-	requestRendering: (() => void) | null;
-	updateControlPoints: (() => void) | null;
-	renderingFunction: (() => void) | null;
+	// ⚠️ **第 216 轮更正**：原先这里还有 3 个「引擎自有、但经 `this` 调用」的成员
+	// （`requestRendering` / `updateControlPoints` / `renderingFunction`）—— 它们**已删除**：
+	// 第 112 轮（④-2b）把那 70 处调用点改成了 `UIEngine.<x>!.call(this, …)`，实测
+	// `ui-engine.ts` 里 `this.requestRendering` / `this.updateControlPoints` /
+	// `this.renderingFunction` 的读取**一处都不剩** ⇒ 它们成了**没有依据的契约条目**。
+	//
+	// 留着它们的代价是实的：引擎成员表一旦给 `this` 加上本契约（`any-hatches` 那一轮），
+	// 单例接口就必须声明这 3 个**运行期并不存在**的成员（`UI.requestRendering` 在 ④-2c
+	// 退役 21 行镜像之后就没有了）—— 那是让类型替运行期说谎。⇒ 本契约只写
+	// 「引擎**真的**以 `this` 读的成员」。
 	hover: HoverNode | null;
 	controlPointTexture: ImageTexture | null;
 }

@@ -18,9 +18,9 @@ import {
 import { mountVueGroupTree, type VueLeafHost } from '../layout-vue-tree';
 import type { LayoutSchemeData } from '../layout-scheme';
 
-// M3b-1 金标准（layout 迁移规划 C.5#1）：叶子宿主 Vue 化后命令式兼容零改动。
-// 双路对照：命令式 loadLayoutScheme 产出的 group DOM ↔ LayoutTreeView(.vue 叶子宿主)
-// + mountVueGroupTree 水合后的 DOM——结构、expando、页签激活与点击切换必须等价。
+// 金标准：叶子宿主 Vue 化后，引擎侧的元素 API 与 expando 零改动。
+// 两条入口对照：`Layout.loadLayoutScheme` 装载出的 group DOM ↔ 直接
+// `mountVueGroupTree` 水合出的 DOM——结构、expando、页签激活与点击切换必须等价。
 
 const SCHEMES: { name: string; scheme: LayoutSchemeData }[] = [
 	{ name: 'directory', scheme: DIRECTORY_SCHEME as LayoutSchemeData },
@@ -59,10 +59,10 @@ const countLeaves = (root: Element): number =>
 		)
 	).length;
 
-/** P4b：组的 `end` 是元素数据（原型访问器即将退役），规格改走显式视图 */
+/** 组的 `end` 是元素数据（原型访问器已退役），规格改走显式视图 */
 const groupEndOf = (el: unknown): number => elementDataOf<{ end: number }>(el).end;
 
-/** 命令式基线：进入 directory 工作区并加载 scheme（palette 被清、页/页签搬进 group）。 */
+/** 基线：进入 directory 工作区并加载 scheme（palette 被清、页/页签搬进 group）。 */
 const commandState = async (scheme: LayoutSchemeData): Promise<LayoutFixture> => {
 	const fixture = buildLayoutFixture();
 	registerLayout(fixture);
@@ -98,7 +98,7 @@ async function vueState(
 	return { fixture, host, leaves: handle.leaves };
 }
 
-describe('M3b-1 双路等价：Vue 叶子宿主 vs 命令式 group', () => {
+describe('两条入口等价：Vue 叶子宿主 vs Layout.loadLayoutScheme 装载', () => {
 	for (const { name, scheme } of SCHEMES) {
 		it(`${name}：组树结构/叶子宿主类/叶子数一致`, async () => {
 			const cmd = await commandState(scheme);
@@ -164,8 +164,8 @@ describe('M3b-1 双路等价：Vue 叶子宿主 vs 命令式 group', () => {
 		}
 	});
 
-	it('双路行为等价：首载激活与页签点击切换（目录 scheme）', async () => {
-		// 命令式 oracle
+	it('两条入口行为等价：首载激活与页签点击切换（目录 scheme）', async () => {
+		// 基线（引擎装载路径）
 		const cmd = await commandState(DIRECTORY_SCHEME as LayoutSchemeData);
 		const cmdRoot = cmd.directory.firstElementChild as HTMLElement;
 		const cmdLeaves = [] as { nav: HTMLElement; manager: PageManagerApi }[];
@@ -203,7 +203,7 @@ describe('M3b-1 双路等价：Vue 叶子宿主 vs 命令式 group', () => {
 			expect(vueLeaves[0].manager.active).toBe(vueFixture.items.inspector.page);
 			expect(vueLeaves[0].manager.index).toBe('inspector');
 
-			// 命令式同点击对照
+			// 基线路径同点击对照
 			clickNavItem(cmdLeaves[0].nav, 'inspector');
 			expect(selectedOf(cmdLeaves[0].nav)).toBe('inspector');
 			expect(visibleOf(cmdLeaves[0].manager)).toEqual(['inspector']);

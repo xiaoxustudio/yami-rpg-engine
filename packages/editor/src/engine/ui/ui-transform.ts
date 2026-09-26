@@ -1,6 +1,7 @@
 import { UI } from './ui-singleton.ts';
 import { uiElClasses } from '@app/engine/ui/element-classes.ts';
 import type { UIShape, UINodeShape } from './ui-singleton.ts';
+import type { HoverNode } from './ui-facade.ts';
 // ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';
 import { Easing } from '@app/data/transition-window.ts';
@@ -51,7 +52,12 @@ const setSize = function (this: UIShape, width: number, height: number) {
 
 const setHover = function (this: UIShape, hover: UINodeShape | null) {
 	if (this.hover !== hover) {
-		this.hover = hover;
+		// ⚠️ 第 217 轮：这里是**单次 `as`**（不是 `unknown` 跳板），依据是**引擎的读法** ——
+		// `drawHoverWireframe` 不判空就解引用 `hover.instance.visible`（`UIFacadeShape` 把
+		// `instance` 声明为**必填**），所以"被 hover 的节点必是已建实例的主节点"是一条
+		// **既有不变式**：违反它会在每帧抛错，而不是静默失效。这里只是把这条前提写进类型。
+		// 运行期一行未改（`setHover` 的形参口径也没动 ⇒ `ui-pointer` 的调用点不受影响）。
+		this.hover = hover as HoverNode | null;
 		UIEngine.requestRendering!.call(this);
 	}
 };

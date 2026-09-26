@@ -13,7 +13,7 @@ import { getLayoutStore } from '@app/stores/layout';
 import LayoutPalettePage from '../../../components/layout/LayoutPalettePage.vue';
 import type { LayoutSchemeData } from '../layout-scheme';
 
-// M3b-2b Teleport 模式端到端（layout 迁移规划 附录 F，默认关）：
+// Teleport 装载端到端：
 // 引擎只渲染/挂载 Vue 组树并按叶子发布归属（页→manager、页签→nav），
 // palette 的整壳 .page-frame / nav-item 经 LayoutPalettePage 落位——无命令式搬移。
 
@@ -164,7 +164,7 @@ afterEach(async () => {
 	await nextTick();
 });
 
-describe('Teleport 装载端到端（M5-b：唯一装载路径）', () => {
+describe('Teleport 装载端到端（唯一装载路径）', () => {
 	it('首载：整壳页/页签经归属发布落位到叶子，激活首 tab；palette 壳节点不被命令式搬移', async () => {
 		const paletteHost = document.createElement('div');
 		document.body.append(paletteHost);
@@ -230,7 +230,7 @@ describe('Teleport 装载端到端（M5-b：唯一装载路径）', () => {
 		const sceneTab = tabOf('scene');
 		clickTab(directoryLeaves[0].nav, 'inspector');
 		expect(visibleOf(directoryLeaves[0].manager)).toEqual(['inspector']);
-		// 模拟 saveNavStates 记录的会话恢复值（M5-a：引擎内部状态）
+		// 模拟 saveNavStates 记录的会话恢复值（引擎内部状态）
 		setNavLastValue(directoryLeaves[0].nav, 'inspector');
 
 		// 进入 scene 工作区：帧/页签搬进 B 的组
@@ -298,7 +298,7 @@ describe('Teleport 装载端到端（M5-b：唯一装载路径）', () => {
 		expect(mounts.value).toBe(VALUES.length);
 	});
 
-	it('M4-2：跨组搬空 drop 后按 DOM 回写 scheme 并重挂载组树（命令式变更与 Vue 树重新一致）', async () => {
+	it('跨组搬空 drop 后按 DOM 回写 scheme 并重挂载组树（drop 的 DOM 变更与 Vue 树重新一致）', async () => {
 		const paletteHost = document.createElement('div');
 		document.body.append(paletteHost);
 		paletteWrapper = mount(Palette, { props: { values: VALUES }, attachTo: paletteHost });
@@ -353,7 +353,7 @@ describe('Teleport 装载端到端（M5-b：唯一装载路径）', () => {
 		expect(frameOf('scene').parentNode).toBe(nextLeaves[0].manager);
 		expect(tabOf('scene').parentNode).toBe(nextLeaves[0].nav);
 
-		// scheme 回写：折叠为单叶（end=1）且与宿主 page 绑定（M5-a：引擎内部状态）
+		// scheme 回写：折叠为单叶（end=1）且与宿主 page 绑定（引擎内部状态）
 		expect(Layout.layout!.directory).toEqual({
 			end: 1,
 			tabs: ['project', 'inspector', 'scene']
@@ -368,7 +368,7 @@ describe('Teleport 装载端到端（M5-b：唯一装载路径）', () => {
 		expect(mounts.value).toBe(VALUES.length);
 	});
 
-	it('M4-2：宿主页残留 palette 空壳（#layout-content）时组根发现与拖拽注册仍可用', async () => {
+	it('宿主页残留 palette 空壳（#layout-content）时组根发现与拖拽注册仍可用', async () => {
 		const paletteHost = document.createElement('div');
 		document.body.append(paletteHost);
 		paletteWrapper = mount(Palette, { props: { values: VALUES }, attachTo: paletteHost });

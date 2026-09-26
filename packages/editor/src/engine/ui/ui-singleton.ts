@@ -12,6 +12,8 @@ import '@app/engine/ui/ui-engine.ts';
 import { getUIStore } from '@app/stores/ui';
 
 import type { UINodeShape } from '@app/engine/ui/element-classes.ts';
+import type { HoverNode } from './ui-facade.ts';
+import type { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import type { Timer } from '@app/utils/timer';
 import type { History } from '@app/tools/history.ts';
 import type { StageColor } from '@app/utils/stage-color';
@@ -63,6 +65,41 @@ export interface UIShape {
 	paddingLeft: number;
 	paddingTop: number;
 	inspectorTypeMap: Record<string, string>;
+
+	// —— 引擎契约（`ui-facade.ts` 的 `UIFacadeShape`）要求、而上面那 35 条没有的 3 个（第 217 轮补） ——
+	//
+	// ⚠️ 为什么要补：`ui-engine.ts` 的成员表给 `this` 加了类型之后，「域模块的 `this`（单例）交给
+	// 引擎成员（要 `UIFacadeShape`）」这一步**第一次被检查**。原因是实打实的：
+	// `[k: string]: any` 只提供「**任意键可读**」，**不满足目标类型里具名的必填字段**
+	// —— 与第 211 轮 `createPrefab` 是同一条（索引签名在这里第二次不够用）。
+	//
+	// 三个都**在单例上真实存在、都有写入方**（不是为了"让它编过"才补的谎）。
+	/**
+	 * 框选元素（`ui-initialize.ts:39` 登记；`ui-pointer` 在它上面挂拖拽状态）。
+	 *
+	 * 两个扩展字段按**兄弟引擎的既有约定**处理（`scene-window.ts:88` 那段注释：marquee 运行时挂载
+	 * 大量扩展、"避免穷举"）—— 但这里**两处都刻意不抄**：既不抄它的 `[k: string]: any`
+	 * （会让 `any-hatches` 上升），也**不加索引签名**：UI 侧的扩展只有下面这两个、是可枚举的，
+	 * 而带索引签名的目标类型会让字面量那处 `satisfies Partial<UIShape>` **不可比**
+	 * （"neither type sufficiently overlaps"，第 216 轮同一条教训的第三次现形）。
+	 */
+	marquee: YamiElement & {
+		/**
+		 * 框选元素的「重算」钩子（引擎与域共 14 处调用）。
+		 *
+		 * 声明为**非空**：它由 `ui-list.ts` 在模块加载期装上（`UI.marquee.resize = function …`），
+		 * 而所有调用点都在那之后（用户交互路径）⇒ 与 `this.planToSave!()` 同类，是**既有不变式**。
+		 * ⚠️ 也正因为它是"真声明"，下面字面量里那句 `UI.marquee.resize = null` 的占位已冗余、随本轮删除。
+		 */
+		resize: () => void;
+		/** `ui-pointer.ts` 拖拽期间挂的原始指针事件（读方只问"当前是否在拖"）。 */
+		pointerevent?: UIPointerEvent | null;
+	};
+	/** 被 hover 的节点（`ui-transform.ts` 的 `setHover` 写）。类型见 `UIFacadeShape.hover` 的说明。 */
+	hover: HoverNode | null;
+	/** 控制点贴图（`ui-initialize.ts:97` 载图后写）。 */
+	controlPointTexture: ImageTexture | null;
+
 	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
@@ -144,17 +181,29 @@ export const UI = {
 	head: uiEls.get('ui-head') as YamiElement,
 	body: hide(uiEls.get('ui-body') as YamiElement),
 	screen: uiEls.get('ui-screen') as YamiElement,
-	marquee: (uiEls.get('ui-marquee') as YamiElement) || {},
+	// `|| ({} as YamiElement)`：兜底对象**不是**元素，但它承重 —— 元素尚未登记时也要能加载，
+	// 而下面的挂载（`elementDataOf(UI.list).…`）需要它非空。
+	// 末尾那处断言是**单次** `as`（目标类型 = 源类型 & 两个扩展 ⇒ 向下断言，合法）：
+	// `YamiElement` 本身不含 `resize`/`pointerevent`，第 217 轮起 `UIShape.marquee` 声明了它们。
+	marquee: ((uiEls.get('ui-marquee') as YamiElement) ||
+		({} as YamiElement)) as UIShape['marquee'],
 	searcher: uiEls.get('ui-searcher') as YamiElement,
 	list: (uiEls.get('ui-list') as YamiElement) || {},
 	dragging: null as UIPointerEvent | null,
-	hover: null as UINodeShape | null,
+	// 类型取 `HoverNode`（含**必填**的 `instance`）而不是 `UINodeShape`：引擎的 `drawHoverWireframe`
+	// **不判空就解引用** `hover.instance.visible`（缺 instance 会每帧抛）⇒「被 hover 的节点必有实例」
+	// 是既有不变式，写在类型里；写入方 `ui-transform.ts` 的 `setHover` 有对应说明与单次断言。
+	hover: null as HoverNode | null,
 	translationKey: 0b0000,
 	translationTimer: null as Timer | null,
 	zoomTimer: null as Timer | null
 } satisfies Partial<UIShape> as Partial<UIShape> as UIShape;
 
-UI.marquee.resize = null;
+// ⚠️ 第 217 轮删除：原先这里是 `UI.marquee.resize = null;`（占位）。
+// 现在 `UIShape.marquee` **真的声明了** `resize: () => void`（见接口里那段），
+// 于是这行占位既编不过、也不再需要 —— 它是"用占位代替声明"那个年代的遗留写法。
+// 行为不变：真正的赋值点在 `ui-list.ts` 的 `UI.marquee.resize = function …`，
+// 而所有调用点都在其之后（用户交互路径），与 `this.planToSave!()` 是同一类既有不变式。
 
 // P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 elementDataOf<{ page?: HTMLElement | null }>(UI.list).page = uiEls.get('ui-element') as YamiElement;

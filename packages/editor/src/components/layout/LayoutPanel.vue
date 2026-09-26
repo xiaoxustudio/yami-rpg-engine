@@ -1361,7 +1361,7 @@ import { getAnimationStore } from '@app/stores/animation';
 import { getSceneStore } from '@app/stores/scene';
 import { getParticleStore } from '@app/stores/particle';
 import { getUIStore } from '@app/stores/ui';
-// ④-2b（第 112 轮）：`UI.requestRendering?.()` 改为直连引擎。原 `?.` 守的是「UI 窗口还没加载」，
+// `UI.requestRendering?.()` 改为直连引擎。原 `?.` 守的是「UI 窗口还没加载」，
 // 而 `requestRendering` 内部第一行就是 `getUIStore().state === 'open'`，该状态只在 UI 窗口的
 // 方法体里（`ui-file.ts:29`）被置为 open ⇒ 窗口没加载时 state 必不为 open，内部同样直接返回。
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
@@ -1421,7 +1421,7 @@ interface LayerExtrasNode {
 }
 
 /**
- * P2b-2：`.tree-list` 元素上由**场景列表**装的扩展方法（出处 `scene/scene-list.ts` 的
+ * `.tree-list` 元素上由**场景列表**装的扩展方法（出处 `scene/scene-list.ts` 的
  * `Scene.list.canSwitchState` / `setRecursiveStates` / `updateFolderState` / `update`）。
  *
  * 原先这里是 `HTMLElement & { [k: string]: any }`——拼错的成员名、用错的签名都能通过编译；
@@ -1868,7 +1868,7 @@ const particleNodeIcon = (item: unknown, container: HTMLElement): VNode[] => {
 const dirs = ref<string[]>([]);
 const direction = ref(-1);
 const dirListEl = ref<HTMLElement | null>(null);
-// M5-c：palette 容器 ref（显式登记 items 用）
+// palette 容器 ref（显式登记 items 用）
 const paletteNavEl = ref<HTMLElement | null>(null);
 const paletteManagerEl = ref<HTMLElement | null>(null);
 
@@ -1917,7 +1917,7 @@ onMounted(() => {
 		getParticleStore().initialize();
 		getSceneStore().initialize();
 		getAnimationStore().initialize();
-		// M5-c：palette 显式登记（此时 palette 节点仍在 palette 宿主内，
+		// palette 显式登记（此时 palette 节点仍在 palette 宿主内，
 		// 引擎装载前即可拿到权威 items 列表，无需按 DOM 形态猜测）。
 		// 容器 ref 指向组件（NavBar/PageManager）→ 经 $el 取根元素后遍历子节点。
 		registerLayoutItems(collectPaletteItems(paletteNavEl.value, paletteManagerEl.value));
@@ -2101,7 +2101,7 @@ const onUiListOpen = (event: Event) => {
 </script>
 
 <style>
-/* 样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #project-browser {
 	width: 100%;
 	height: 100%;
@@ -2288,7 +2288,7 @@ const onUiListOpen = (event: Event) => {
 	bottom: 10px;
 }
 
-/* 样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：选择器需命中子组件内部生成的元素 */
 #fileImage {
 	display: flex;
 	flex-direction: column;
@@ -2310,7 +2310,6 @@ const onUiListOpen = (event: Event) => {
 	height: 100%;
 }
 
-/* 样式迁移：由 Project/css/layout.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #layout-content {
 	display: none;
 }
@@ -2371,5 +2370,36 @@ const onUiListOpen = (event: Event) => {
 	height: 422px;
 	row-gap: 10px;
 	/* background-color: red; */
+}
+
+#animation-easing {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+#animation-easing-head {
+	display: flex;
+	position: absolute;
+	justify-content: space-between;
+	top: -25px;
+	right: 0;
+	height: 24px;
+	overflow: hidden;
+	background-color: var(--group-head-background);
+}
+
+#animation-easing-id {
+	margin: 2px;
+	flex: 1 1 auto;
+	/* background: blue; */
+}
+
+#animation-easing-canvas {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
 }
 </style>

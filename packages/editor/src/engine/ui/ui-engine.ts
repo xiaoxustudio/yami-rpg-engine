@@ -9,6 +9,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import type { YamiElement } from '@app/types/element-api';
 import type { ControlPoint, UIFacadeShape } from './ui-facade.ts';
+import type { UIPointerEvent } from './ui-singleton.ts';
 import { clamp, roundTo, dist, modDegrees } from '@app/utils/math';
 
 /**
@@ -17,9 +18,6 @@ import { clamp, roundTo, dist, modDegrees } from '@app/utils/math';
  * 不能 `import { UI } from '@app/engine/ui/ui-singleton.ts'`：那是静态循环导入；这个代理只在运行时解析。
  */
 const UI = getLazyWindow('ui', loadUI);
-
-// oxlint-disable-next-line no-explicit-any
-export const UIEngine: Record<string, any> = {};
 
 /**
  * 引擎读 UI 成员的契约在 `ui-facade.ts`（**单一真源**，由台账轴 `ui-facade-gaps` 守着）。
@@ -30,6 +28,86 @@ export const UIEngine: Record<string, any> = {};
  * `tsc` 会逐个点名；缺的是**补进契约**，不是把 `any` 加回来。
  */
 type UIShape = UIFacadeShape;
+
+/**
+ * 取当前文档的历史栈 —— **一处**写出「文档已打开」这条既有不变式（第 216 轮）。
+ *
+ * `history` 在契约与单例上都是**可空**的（`ui-file.ts:147` 关闭文档时真的会写 `null`，
+ * `ui-file.ts:82` 打开时赋值），而引擎这 4 个读点（`shiftTarget` / `shiftAnchor` /
+ * `resizeTarget` / `rotateTarget`）都只在文档打开后才会被调到。
+ * ⇒ 与 `this.planToSave!()` 同一手法：用 `!` 把前提写在**一处**，而不是在 4 个点各写一遍，
+ * 也不是让契约宣称一个运行期不成立的形状。
+ *
+ * 第 216 轮之前 `UIFacadeShape.history` 写的是**非空**的 `History` —— 那与单例的
+ * `History | null` 对不上，是「两个 `UIShape`」差异里的**最后一条**（另外几条见 `ui-facade.ts`）。
+ */
+const historyOf = (ui: UIShape) => ui.history!;
+
+/**
+ * 引擎成员表（第 217 轮）—— 取代原先的 `UIEngine: Record<string, any>` + 一行 `no-explicit-any` 豁免。
+ *
+ * ## 为什么需要它
+ *
+ * `Record<string, any>` 让**任何**成员名、**任何**调用形状都通过编译：拼错的名字、
+ * 传错个数的实参、`this` 绑到谁，`tsc` 全都看不见（只在运行期变成 `undefined is not a function`）。
+ * 实测把那张注解摘掉之后是 **93 条报错、错误码只有一种（TS2339「属性不存在」）**、
+ * 非 TS2339 **0 条** ⇒ 缺的正是一张成员表（"容器没有形状"，不是"形状不对"）。
+ *
+ * ## 签名怎么来的：**不是手抄**
+ *
+ * 用类型检查器按 AST 取每个 `UIEngine.<name> = <函数表达式>` **右侧表达式的类型**
+ * （`scripts/oneoff/gen-engine-members.mjs`，只读）。**不能读属性**：容器本身是
+ * `Record<string, any>`，`UIEngine.x` 读出来永远是 `any` —— 有类型的是右侧那个函数表达式。
+ *
+ * ## 两处**不是**机械抄写的地方
+ *
+ * 1. `renderingFunction: () => void` —— **它没有 `this`**，且这是刻意的：它被 `Timer` **裸调用**
+ *    （`stageRendering(deltaTime)`），`this` 恒为 `undefined`；里面那 7 个 draw 必须走
+ *    `UI.drawXxx()`（方法调用）才能把接收者绑到单例上。给它在表里写 `this: UIShape`
+ *    等于宣称一个**运行期不存在的接收者** —— 2026-09-18 那次「黑屏且不报错」就是这么来的
+ *    （本文件里那段"连错三次"的注释与 `__tests__/ui-rendering-receiver.spec.ts` 守着它）。
+ * 2. **`getPointerCoords` 的形参写 `UIPointerEvent`（不是实现里的 `PointerEvent`）** ——
+ *    与第 201/210 轮同一条：**契约描述调用方怎么调它**。调用方（`ui-pointer.ts` 的 4 处）
+ *    手里是 `UIPointerEvent`（`YamiMouseEvent & {…}`），而实现只用到 `clientX/clientY`
+ *    （经 `getRelativeCoords`）⇒ 把实现那一侧的形参一起改成 `UIPointerEvent` 即可，
+ *    **不新增任何断言**。
+ * 3. 其余成员都写成**函数属性**（`(this: UIShape, …) => R`）而不是方法简写 —— 与第 131/134 轮
+ *    同一条：方法简写会让 `typescript(unbound-method)` 在搬运点报出来，而函数属性如实表达
+ *    "这是一个独立函数，`this` 由调用方给"。
+ *
+ * ## 装表之后暴露的两件事（第 216/217 轮实测）
+ *
+ * 1. `this` 一有类型，「域模块的 `this: UIShape`（单例）交给引擎成员（要 `UIFacadeShape`）」
+ *    这一步就**第一次被检查** ⇒ 暴露出两个类型之间的成员差（第 216 轮已清理：删 3 条无依据的
+ *    契约条目、把 `history` 改成如实的可空、并把不变式收进 `historyOf()`）。
+ * 2. 调用侧开始被检查 ⇒ 上面第 2 条那个形参分歧显形。
+ */
+type UIEngineShape = {
+	setZoom: (this: UIShape, zoom: number) => void;
+	shiftAnchor: (this: UIShape, anchorX: number, anchorY: number) => void;
+	shiftTarget: (this: UIShape, x: number, y: number) => void;
+	resizeTarget: (this: UIShape, width?: number, height?: number) => void;
+	rotateTarget: (this: UIShape, rotation: number) => void;
+	setControlPoint: (this: UIShape, point: ControlPoint | null) => void;
+	updateControlPoints: (this: UIShape) => void;
+	getPointerCoords: (this: UIShape, event: UIPointerEvent) => { x: number; y: number };
+	updateCamera: (this: UIShape, x?: number, y?: number) => void;
+	updateTransform: (this: UIShape) => void;
+	drawBackground: (this: UIShape) => void;
+	drawElements: (this: UIShape) => void;
+	drawCoordinateAxes: (this: UIShape) => void;
+	drawHoverWireframe: (this: UIShape) => void;
+	drawTargetWireframe: (this: UIShape) => void;
+	drawTargetAnchor: (this: UIShape) => void;
+	drawControlPoints: (this: UIShape) => void;
+	selectControlPoint: (this: UIShape, x: number, y: number) => ControlPoint | null;
+	requestRendering: (this: UIShape) => void;
+	/** ⚠️ **无 `this`**（被 `Timer` 裸调用）——理由见本类型上方的第 1 条。 */
+	renderingFunction: () => void;
+	stopRendering: (this: UIShape) => void;
+};
+
+export const UIEngine = {} as UIEngineShape;
 
 UIEngine.setZoom = (function IIFE() {
 	return function (this: UIShape, zoom: number) {
@@ -77,7 +155,7 @@ UIEngine.shiftAnchor = function (this: UIShape, anchorX: number, anchorY: number
 		const instances = target.instances;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
-		const history = this.history;
+		const history = historyOf(this);
 		const index = history.index;
 		const length = history.length;
 		const record = history[index];
@@ -115,7 +193,7 @@ UIEngine.shiftTarget = function (this: UIShape, x: number, y: number) {
 		const instances = target.instances;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
-		const history = this.history;
+		const history = historyOf(this);
 		const index = history.index;
 		const length = history.length;
 		const record = history[index];
@@ -179,7 +257,7 @@ UIEngine.resizeTarget = function (this: UIShape, width?: number, height?: number
 		const instances = target.instances;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
-		const history = this.history;
+		const history = historyOf(this);
 		const index = history.index;
 		const length = history.length;
 		const record = history[index];
@@ -225,7 +303,7 @@ UIEngine.rotateTarget = function (this: UIShape, rotation: number) {
 		const instances = target.instances;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
-		const history = this.history;
+		const history = historyOf(this);
 		const index = history.index;
 		const length = history.length;
 		const record = history[index];
@@ -369,7 +447,7 @@ UIEngine.updateControlPoints = function (this: UIShape) {
 
 UIEngine.getPointerCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (this: UIShape, event: PointerEvent) {
+	return function (this: UIShape, event: UIPointerEvent) {
 		const coords = getRelativeCoords(event, this.marquee);
 		const dpr = window.devicePixelRatio;
 		point.x = (coords.x * dpr - this.paddingLeft) / this.scaleX;

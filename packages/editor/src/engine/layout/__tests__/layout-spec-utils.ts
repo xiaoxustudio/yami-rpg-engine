@@ -9,9 +9,9 @@ import {
 } from '@app/engine/layout/layout.ts';
 import * as elementUtils from '@app/utils/element-utils';
 
-// layout 行为金标准共享 fixture（layout 迁移规划 M1）
-// 所有用例在 jsdom 中重建「palette + 宿主页 + items」，再驱动 Layout 命令式构建，
-// 断言最终 DOM 形态（现状语义），供后续 Vue 化重写对照。
+// layout 行为金标准共享 fixture
+// 所有用例在 jsdom 中重建「palette + 宿主页 + items」，再走真实的 Layout 装载路径，
+// 断言最终 DOM 形态（现状语义）。
 
 export type SchemeNode = {
 	end: number;
@@ -107,14 +107,14 @@ export function buildLayoutFixture(values: readonly string[] = [...TAB_VALUES]):
 		const page = createPageFrame(value);
 		paletteManager.append(page);
 		navItem.page = page;
-		// M5-a：同时登记到引擎内部配对（生产路径由 Layout.initialize 登记）
+		// 同时登记到引擎内部配对（生产路径由 Layout.initialize 登记）
 		setItemPage(navItem, page);
 		items[value] = navItem;
 		list.push(navItem);
 	}
 	items.list = list;
-	// P1b：fixture 改走生产路径的 **palette 显式登记**（`registerLayoutItems`）——
-	// 这样 layout.ts 里那条「全文档 `.nav-item[value]`/`.page-frame[value]` 兜底」才能删除。
+	// fixture 走生产路径的 **palette 显式登记**（`registerLayoutItems`）：
+	// 登记项优先，缺项才由**容器子树内**的 DOM 发现兜底。
 	registerLayoutItems(
 		list.map((navItem) => ({
 			value: navItem.getAttribute('value') ?? '',
@@ -195,7 +195,7 @@ export function movePaletteToHolder(fixture: LayoutFixture | null = currentFixtu
 }
 
 /**
- * M5-b：装载路径唯一（Vue 组树 + 整壳 Teleport）。fixture 环境没有 Vue palette 包装，
+ * 装载路径唯一（Vue 组树 + 整壳 Teleport）。fixture 环境没有 Vue palette 包装，
  * 因此装载前模拟 LayoutPaletteHost（palette 支架移出宿主页到 body 隐藏容器），
  * 装载后由 placePaletteIntoLeaves 模拟整壳落位，语义与真机一致。
  */

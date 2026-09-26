@@ -22,3 +22,15 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 
 onMounted(() => {});
 </script>
+
+<style>
+#text-suggestions {
+	display: block;
+	position: fixed;
+	margin-left: var(--1dpx);
+	/* box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.5); */
+	background-color: var(--suggestion-widget-background);
+	outline: var(--window-outline);
+	pointer-events: visible;
+}
+</style>

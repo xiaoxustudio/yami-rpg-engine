@@ -95,8 +95,14 @@ const initialize = function (this: UIShape) {
 	}).then((image: { guid?: string; [k: string]: unknown }) => {
 		if (!image) return;
 		image.guid = 'ui:control-point';
-		this.controlPointTexture = new ImageTexture(image);
-		this.controlPointTexture.base.protected = true;
+		// 第 217 轮：`controlPointTexture` 现在如实声明为 `ImageTexture | null`（引擎契约要求），
+		// 「先写字段再解引用」不再能靠 `any` 蒙过去 —— 用局部变量表达"刚建好的这个"。
+		// **顺序与原实现逐字一致**（先赋值、再设 protected），不加断言、不改行为。
+		const texture = new ImageTexture(image);
+		this.controlPointTexture = texture;
+		// `base` 在类型上可空（`ImageTexture` 的声明如此），而这里刚构造完、一定有 ——
+		// 与第 101 轮 `ui-engine.ts` 那处 `texture.base.glTexture` 同一处理：用 `!` 写出既有不变式。
+		texture.base!.protected = true;
 	});
 
 	this.translationTimer = new Timer({

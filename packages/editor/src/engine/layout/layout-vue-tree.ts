@@ -1,8 +1,8 @@
-// Vue group 树挂载/水合层（layout 迁移规划 M3b-1，C.5#1）
-// 供双路开关的 Vue 分支使用：把数据树经 LayoutTreeView 渲染进宿主 page，
-// 再把命令式布局引擎所需的 expando（end/split/tabs/nav/manager/border）与事件接线
+// Vue group 树挂载/水合层
+// 把数据树经 LayoutTreeView 渲染进宿主 page，
+// 再把布局引擎所需的 expando（end/split/tabs/nav/manager/border）与事件接线
 // 绑到 Vue 渲染出的 DOM 上——叶子 nav/manager 由 YMNavBar/YMPageManager .vue 在
-// onMounted 时把命令式 API 挂到 root 元素，因此引擎侧可零改动继续命令式驱动。
+// onMounted 时把元素 API 挂到 root 元素，因此引擎侧可零改动继续按元素 API 驱动。
 
 import { h, nextTick, render, type VNode } from 'vue';
 import { elementDataOf, type PageManagerApi } from '@ui-kit';
@@ -25,7 +25,7 @@ type LayoutGroupHost = HTMLElement & {
 	border?: HTMLElement;
 };
 
-// P4b：`end` 是元素数据（原型访问器即将退役），不再是元素自身属性
+// `end` 是元素数据（原型访问器已退役），不再是元素自身属性
 interface LayoutGroupData {
 	end: number;
 }
@@ -98,7 +98,7 @@ export async function mountVueGroupTree(
 	render(vnode, host);
 	await nextTick();
 
-	// M4-2：宿主页可能残留 palette 空壳（#layout-content 盒子等，teleport 模式下
+	// 宿主页可能残留 palette 空壳（#layout-content 盒子等，整壳 Teleport 下
 	// LayoutPaletteHost 只搬 NavBar/PageManager），因此以本次渲染产物 vnode.el 为根，
 	// 而不是假定 host.firstElementChild 就是组根。
 	const rendered = (vnode.el as HTMLElement | null) ?? null;
@@ -153,8 +153,7 @@ export async function mountVueGroupTree(
 		el.manager = manager;
 		el.border = border;
 
-		// 与命令式 createGroupContent/createGroupBorder 相同的事件接线
-		// （引擎 on() 会走 nav 元素自带的 .on 路由，从而启用 YMNavBar 的 write 派发）。
+		// 叶子宿主的事件接线（引擎 `on()` 会走 nav 元素自带的 `.on` 路由，从而启用 YMNavBar 的 write 派发）
 		if (handlers.navWrite !== undefined) on(nav, 'write', handlers.navWrite);
 		if (handlers.navPointerdown !== undefined) on(nav, 'pointerdown', handlers.navPointerdown);
 		if (handlers.navDragstart !== undefined) on(nav, 'dragstart', handlers.navDragstart);

@@ -115,7 +115,7 @@ main/main.ts (Electron 主进程)
 | 全局原型扩展   | `global.d.ts` augment 大量方法                                                              | 400+ 行声明      |
 | 模块加载       | dev 下 `head.html` 列出 480+ `<script defer>`；build 靠 `module-init.ts` 全量 import        | 480+ 文件        |
 
-> 上表为 **迁移前（Phase 0）快照**，用于说明重构起点。这些结构在 Phase 4（CE 内化）、Phase 7（CE 清零 + 事件原生化）、Phase 10（DOM Vue 化 + 全局挂载移除）、Phase 14（legacy 移除）中已全部拆除：`customElements.define` = 0、`window.on/off` 可迁移项清零、`src/legacy/**` 删除。当前反模式存量与迁移进度见 `docs/`。
+> 上表为 **迁移前（Phase 0）快照**，用于说明重构起点。这些结构在 Phase 4（CE 内化）、Phase 7（CE 清零 + 事件原生化）、Phase 10（DOM Vue 化 + 全局挂载移除）、Phase 14（legacy 移除）中已全部拆除：`customElements.define` = 0、`window.on/off` 可迁移项清零、`src/legacy/**` 删除。当前反模式存量与迁移进度以**台账脚本本身**为准（`pnpm migration:ledger`）——`docs/` 已按收尾流程删除（见本文开头的说明），不要再把读者指向那里。
 
 ### 1.4 关键文件定位
 
@@ -8286,6 +8286,117 @@ Argument of type 'UIShape' is not assignable to parameter of type 'UIFacadeShape
    落在**别人**身上 = 接线/契约问题（本轮 0 条落在 `ui-engine.ts`）。
 5. **回退也是产出**：这一轮把"能不能机械拿下"这个问题**答死了**（能生成签名，但装上就会暴露接线），
    下一轮不必重走 —— 而"没白拿"由台账证明（`any-hatches` 没动）。
+## 第 216 轮（2026-09-25）：「两个 `UIShape`」第 1 步 —— 契约的**3 处清理** + `history` 如实化
+
+### 一、先把那 6 个成员逐个判「谁是对的」（不一律补声明）
+
+第 215 轮量出：引擎成员表一给 `this` 加类型，就会撞上单例接口与 `UIFacadeShape` 之间的
+**6 个成员差**。本轮逐个判完，结论**三类**：
+
+| 成员 | 判定 | 依据 |
+| --- | --- | --- |
+| `requestRendering` / `updateControlPoints` / `renderingFunction` | **契约条目已无依据 ⇒ 删除** | 第 112 轮（④-2b）把那 70 处调用点改成 `UIEngine.<x>!.call(this, …)` 之后，引擎里 `this.requestRendering` / `this.updateControlPoints` / `this.renderingFunction` 的读取**一处都不剩**（grep = 0） |
+| `history` | **单例那一侧才是如实的 ⇒ 改契约** | 契约写**非空** `History`，而单例是 `History | null`：`grep 'history = '` 找到 `ui-file.ts:147` **关闭文档时真的写 `null`**（`:82` 打开时赋值）。引擎 4 处以 `this.history` 读它（`shiftTarget`/`shiftAnchor`/`resizeTarget`/`rotateTarget`），这些只在文档打开后跑到 |
+| `marquee` / `hover` / `controlPointTexture` | **真缺的声明**（但下游有账单，见第三节） | 三者都在单例上真实存在、都有写入方：`ui-initialize.ts:39`（marquee）/ `:98`（controlPointTexture）、`ui-transform.ts` 的 `setHover`（hover） |
+
+- **删掉那 3 条**不是"少写几行"：留着它们，下一轮给 `this` 加上契约时，**单例就必须声明 3 个运行期并不存在的成员**
+  （`UI.requestRendering` 在 ④-2c 退役 21 行镜像之后就没有了）——**契约会逼人说谎**。
+  ⇒ 新口径写进 `ui-facade.ts`：**本契约只写「引擎真的以 `this` 读的成员」**。
+- **`history` 的方向不是猜的**：可空性冲突的答案永远在**写入方**那里 —— `grep 'history = '` 一条就定了。
+  修法把不变式收成**一处**：`historyOf(ui) = ui.history!`（4 个读点全部改走它），
+  与 `this.planToSave!()` 同一手法 —— 而不是在 4 个点各写一遍 `!`。
+
+### 二、本轮落地的那一半（能自洽的部分）
+
+`ui-facade.ts`（删 3 条 + `history: History | null` + 就地更正说明）与 `ui-engine.ts`
+（`historyOf()` + 4 个读点）。**产品运行期一行未改**：diff 里只有类型、`!` 与一个返回值恒等的取用函数
+（`!` 编译后消失）⇒ 按第 101 轮的先例，纯类型改动**不需要真机回归**。
+
+账：`tsc` 0 · `typecheck:vue` 0 新错 · `lint` 0/0 · **17 轴持平**（`any-hatches` 仍 28 —— **没有白拿**）·
+`selftest` 67/67 · `engine/ui` **4 文件 12 例** + 全套绿。
+
+### 三、⚠️ 剩下 3 个成员的**下游账单**（实测，留给下一轮直接开工）
+
+把 `marquee` / `hover` / `controlPointTexture` 真的写进单例接口之后，`tsc` 报的是**消费侧**的 8 处：
+
+| 处数 | 报错 | 性质（要判的"哪边为准"） |
+| ---: | --- | --- |
+| 1 | `ui-singleton.ts:181` `Type 'null' is not assignable to '(...args: unknown[]) => any'` | `UI.marquee.resize = null` —— `YamiElement.resize` 是**方法**，而这里当**可空占位**用 |
+| 3 | `ui-pointer.ts` `Property 'pointerevent' does not exist on type 'YamiElement'` | 元素上的**动态字段**（`this.marquee.pointerevent`）—— 按 P4b 的既成手法该走 `elementDataOf`，还是给它声明扩展字段？ |
+| 3 | `Argument of type 'UIPointerEvent' is not assignable to parameter of type 'PointerEvent'` | 引擎的 `getPointerCoords(event: PointerEvent)` 与**调用方实际传的** `UIPointerEvent` —— 与第 201/210 轮 `EVENT_WIDE`/并集同族（"契约写调用方怎么调它"） |
+| 1 | `ui-initialize.ts:99` `Object is possibly 'null'` | `controlPointTexture` 的解引用点 |
+
+⇒ 这与 ④-4 当年那 49 处**同类**：不是"补断言"能糊过去的，每条都要判"哪边为准"，
+而且其中"元素 expando"那条要选一条**写法**（`elementDataOf` vs 声明扩展字段）——**独立一轮**。
+
+### 四、教训
+
+1. **"6 个成员差"不是 6 件事**：3 个是**过时的契约条目**（删掉就是修正）、1 个**结论相反**（该改的是契约）、
+   3 个才是真缺的声明 —— 而它们背后还有 8 处消费侧账单。⇒ **逐个判"谁是对的"，不要一律补声明。**
+2. **契约的每一条都该有"当下的依据"**：那 3 条是某轮 `tsc` 点名留下的，**被后续轮次改接线之后依据消失**，
+   但条目还在 —— 它平时无害，只会在"下一轮给它加类型"时变成**逼人说谎的压力**。
+   ⇒ 与第 113 轮「改接线时要问一句：哪条轴的判据建立在旧接线上」**同族**：改接线时也要复核**契约条目**。
+3. **可空性冲突的方向在写入方**：`history` 的答案不是读代码猜出来的，是 `grep 'history = '` 一条定的。
+4. **一个前提只写一处**（`historyOf()`），别在 4 个读点各写一遍 —— 与"一处能力一处实现"同族。
+## 第 217 轮（2026-09-25）：`any-hatches` 28 → 27 —— 引擎成员表**装上**，并清掉它的 8 处下游账单
+
+### 一、安装前的最后一处口径判定：`getPointerCoords` 的形参
+
+第 215 轮生成的 21 条签名里，`getPointerCoords: (this: UIShape, event: PointerEvent) => {x, y}` 是
+**从实现抄来的**；而调用方（`ui-pointer.ts`）手里是 **`UIPointerEvent`**（`YamiMouseEvent & {…}`）。
+按本仓那条主线（第 201/210 轮）：**契约描述调用方怎么调它** ⇒ 表里写 `UIPointerEvent`，
+并把**实现那一侧的形参也改成 `UIPointerEvent`**（实现只用 `clientX/clientY`，经 `getRelativeCoords`）
+—— **不新增任何断言**。⇒ 3 处 TS2345 当场消失。
+
+### 二、剩下 3 个成员的下游账单，逐条判（第 216 轮记的 8 处）
+
+| 处数 | 现象 | 处置（判"哪边为准"） |
+| ---: | --- | --- |
+| 1 | `UI.marquee.resize = null`（字面量占位） | **删掉**：`UIShape.marquee` 现在**真的声明**了 `resize: () => void`，占位既编不过也不再需要。等价性有据：真正的赋值点在 `ui-list.ts` 的**模块顶层**（加载期装上），而所有调用点都在其之后；且 `null` 与 `undefined` 在被提前调用时**同样抛错**（占位从来没保护过什么） |
+| 3 | `this.marquee.pointerevent` 不存在于 `YamiElement` | 按**兄弟引擎的既有约定**（`scene-window.ts:88`："marquee 运行时挂载大量扩展，避免穷举"）—— 但**两处刻意不抄**：既不抄 `[k: string]: any`（会让本轴上升），**也不加索引签名** |
+| 1 | `marquee` 字面量值不可比（`satisfies` 失败） | 上面"不加索引签名"就是这个原因：带索引签名的目标类型会让字面量那处 `satisfies Partial<UIShape>` 报 **"neither type sufficiently overlaps"**（第 216 轮同一条教训的**第三次**现形）。改成显式两个扩展字段 + 值侧**单次** `as UIShape['marquee']`（目标 = 源 & 扩展 ⇒ 合法向下断言） |
+| 1 | `controlPointTexture` 解引用 | `ui-initialize.ts`：用局部变量表达"刚建好的这个"（`const texture = …; this.controlPointTexture = texture; texture.base!.protected = true`）—— **顺序与原实现逐字一致**。`base` 的 `!` 与第 101 轮 `ui-engine.ts` 那处同一处理 |
+| 1 | `hover` 写入 | `ui-transform.ts` 的 `setHover` 用**单次 `as HoverNode \| null`**：引擎 `drawHoverWireframe` 不判空就解引用 `hover.instance.visible` ⇒「被 hover 的节点必有实例」是既有不变式，只是写进类型 |
+
+### 三、结果：表装上了，两条正确性由 tsc 接手
+
+- `ui-engine.ts` 的 `Record<string, any>` + 那行 `no-explicit-any` 豁免**同时删除**；
+  21 条成员进表 ⇒ 从此**拼错的成员名、传错个数的实参、`this` 绑到谁**都编不过
+  （第 215 轮实测：删掉注解会报 93 条，全是 TS2339）。
+- ⚠️ `renderingFunction` 在表里**故意不给 `this`**（被 `Timer` 裸调用）——这是那张表唯一"不能机械抄"的地方。
+
+### 四、账
+
+`any-hatches` **28 → 27**（files **17 → 16**）· 其余 16 轴持平 · `selftest` 67/67 · `tsc` 0 ·
+`typecheck:vue` 0 新错 · `lint` 0/0（**无陈旧豁免**：签名与豁免注释同时消失）· `format:check` ·
+`engine/ui` 4 文件 12 例 · `ui-state` 16 例 · 全套绿 · 基线已 `--update-baseline`。
+
+### 五、教训
+
+1. **"两个类型对不上"的第 3 条出路是"换掉目标类型的形状"**：`marquee` 这一处，抄兄弟的
+   `[k: string]: any` 会让**本轴上升**、加 `[k: string]: unknown` 会让**字面量断言不可比** ⇒
+   正确答案是"**只声明真正被用的两个扩展字段**"（可枚举时就不该上索引签名）。
+   ⇒ **索引签名是"我不想知道有哪些键"的写法，可枚举时用它就是偷懒。**
+2. **同一族教训的第三次现形值得记数**：带索引签名/具名必填字段的目标类型，会让
+   `satisfies`/单次断言从"能过"变成"不可比"（第 211 轮 `createPrefab`、第 216 轮两类型差、
+   本轮字面量）。**每次要把值交给这种目标类型，先想这条。**
+3. **占位删掉前先证明它没保护过什么**：`UI.marquee.resize = null` 看起来像"防 undefined"，
+   但 `null()` 与 `undefined()` 抛的是同一个错 ⇒ 它从来不是保护，只是"用占位代替声明"年代的遗留。
+4. **删签名与删豁免注释必须同轮**（第 38 轮立的规矩，本轮第二次兑现）。
+
+### 六、真机复验（本轮，因为含一处运行期改动）
+
+本轮不是纯类型改动：**删掉**了字面量里那句 `UI.marquee.resize = null` 占位。按仓规起真机
+（CDP 9223，`electron.exe <packages/editor> --remote-debugging-port=9223`）：
+
+| 检查 | 结果 |
+| --- | --- |
+| `open-project` | ✅ 项目打开（`workspace=directory`，groups 3 / groupManagers 2） |
+| UI 窗口 | ✅ 外壳与 7 个登记元素全部到位，无异常抛出 |
+| **`marquee.resize`** | ✅ **加载后 `typeof marquee.resize === 'function'`** —— 删占位**没有影响钩子安装**（真赋值点在 `ui-list.ts` 模块顶层） |
+| `marquee.pointerevent` | ✅ `undefined`（无拖拽，符合预期） |
+
+⇒ 「占位删掉是等价的」这条判断**由真机证实**，不是只靠推理。
 
 ### 六、教训
 

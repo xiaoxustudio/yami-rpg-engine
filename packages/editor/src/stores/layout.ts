@@ -43,7 +43,7 @@ export const useLayoutStore = defineStore('layout', () => {
 	const focusableElements = shallowRef<HTMLElement[] | null>(null);
 
 	// 运行时页面/页签归属：value → 当前承载该页面的 group-manager / leaf nav 元素
-	// （M3b 整壳 Teleport :to 输入，layout 迁移规划 附录 F.1）。
+	// （整壳 Teleport :to 输入）。
 	const pageTargets = shallowReactive<Record<string, HTMLElement | null>>({});
 	const tabTargets = shallowReactive<Record<string, HTMLElement | null>>({});
 
@@ -170,14 +170,6 @@ export const useLayoutStore = defineStore('layout', () => {
 		Layout?.readyToFocus?.(element);
 	}
 
-	function createGroupContent(group: LayoutGroupShape) {
-		Layout?.createGroupContent?.(group);
-	}
-
-	function createGroupBorder(group: LayoutGroupShape) {
-		Layout?.createGroupBorder?.(group);
-	}
-
 	function enableFocusableElements() {
 		Layout?.enableFocusableElements?.();
 	}
@@ -290,8 +282,6 @@ export const useLayoutStore = defineStore('layout', () => {
 		getKeyGroups,
 		getGroupOfElement,
 		readyToFocus,
-		createGroupContent,
-		createGroupBorder,
 		enableFocusableElements,
 		disableFocusableElements,
 		saveNavStates,

@@ -7280,3 +7280,69 @@ marquee, requestRendering, updateControlPoints, renderingFunction, and 2 more`�
 **账**：`tsc` 0 · 17 轴持平（`any-hatches` **仍 28** —— 没有靠改写法白拿）· `selftest` 67/67。
 **判据（下一轮回用）**：**"报错落在哪个文件"决定它是抄写活还是设计活** ——
 落在被改文件里 = 抄写活；落在**别人**身上 = 接线/契约问题。
+
+#### ✅ 「两个 `UIShape`」第 1 步：契约 3 处清理 + `history` 如实化（2026-09-25 第 216 轮）
+
+那 6 个成员逐个判完，结论**三类**：
+
+| 成员 | 判定 | 依据 |
+| --- | --- | --- |
+| `requestRendering` / `updateControlPoints` / `renderingFunction` | **契约条目已无依据 ⇒ 删除** | 第 112 轮（④-2b）改接线之后，引擎里 `this.<这 3 个>` 的读取**一处都不剩**（grep = 0）；留着它们，下一轮给 `this` 加契约时会**逼单例声明运行期不存在的成员** |
+| `history` | **单例那一侧如实 ⇒ 改契约** | 契约写非空 `History`，单例是 `History \| null`，而 `ui-file.ts:147` **关闭文档时真的写 `null`**；引擎 4 处以 `this.history` 读（只在文档打开后跑到）⇒ 不变式收成**一处** `historyOf(ui) = ui.history!` |
+| `marquee` / `hover` / `controlPointTexture` | 真缺的声明，但**下游有 8 处账单**（见下） | 三者都在单例上真实存在且都有写入方（`ui-initialize.ts:39`/`:98`、`ui-transform` 的 `setHover`） |
+
+**本轮落地**：`ui-facade.ts`（删那 3 条 + `history: History | null` + 就地更正）+ `ui-engine.ts`
+（`historyOf()` + 4 个读点改走它）。**产品运行期一行未改**（diff 只有类型、`!` 与一个返回值恒等的取用函数）
+⇒ 按第 101 轮先例，纯类型改动不需要真机回归。
+**账**：`tsc` 0 · `typecheck:vue` 0 新错 · `lint` 0/0 · **17 轴持平**（没有白拿）· `selftest` 67/67 ·
+`engine/ui` 4 文件 12 例 + 全套绿。
+
+**⚠️ 剩下 3 个成员的下游账单（实测，下一轮直接用）**：真把它们写进单例接口后，`tsc` 报的**全是消费侧**：
+
+| 处数 | 报错 | 要判的"哪边为准" |
+| ---: | --- | --- |
+| 1 | `ui-singleton.ts:181` `null` 不可赋给 `(...args) => any` | `UI.marquee.resize = null`：`YamiElement.resize` 是**方法**，这里当**可空占位**用 |
+| 3 | `ui-pointer.ts` `'pointerevent' does not exist on 'YamiElement'` | 元素上的**动态字段** ⇒ 走 P4b 的 `elementDataOf` 手法，还是声明扩展字段？ |
+| 3 | `UIPointerEvent` 不可赋给 `getPointerCoords(event: PointerEvent)` | 与第 201/210 轮 `EVENT_WIDE`/并集同族（"契约写调用方怎么调它"） |
+| 1 | `ui-initialize.ts:99` `Object is possibly 'null'` | `controlPointTexture` 的解引用点 |
+
+⇒ 与 ④-4 那 49 处**同类**，逐条判、且"元素 expando"要先选一条写法 —— **独立一轮**。
+
+#### ✅ `any-hatches` 28 → 27：`UIEngine` 成员表**装上**（2026-09-25 第 217 轮）
+
+**表**：21 条成员（签名由 `scripts/oneoff/gen-engine-members.mjs` 按 AST 自动产出，不是手抄），
+容器从 `Record<string, any>` 改成 `{} as UIEngineShape`，**那行 `no-explicit-any` 豁免同时删除**。
+⚠️ 唯一不能机械抄的地方：`renderingFunction: () => void` —— **故意不给它 `this`**（被 `Timer` 裸调用；
+给了就等于宣称一个运行期不存在的接收者，正是 2026-09-18 那次"黑屏且不报错"的成因）。
+
+**8 处下游账单逐条判完（第 216 轮记的）**：
+
+| 处数 | 处置 |
+| ---: | --- |
+| `getPointerCoords(event: PointerEvent)` vs 调用方的 `UIPointerEvent` ×3 | **契约写调用方实际传的**（第 201/210 轮主线）：表里写 `UIPointerEvent`，**实现那一侧的形参也一起改**（只用 `clientX/clientY`），**零断言** |
+| `UI.marquee.resize = null` 占位 ×1 | **删掉**：`UIShape.marquee` 现在真的声明了 `resize: () => void`。等价性有据：真赋值点在 `ui-list.ts` 的**模块顶层**（加载期就装上），且 `null` 与 `undefined` 被提前调用时**同样抛错** |
+| `this.marquee.pointerevent` ×3 | 按兄弟约定（`scene-window.ts:88`）**但不抄它的 `[k: string]: any`**（会让本轴上升）；也**不加索引签名** —— 只显式声明真正被用的两个扩展字段（`resize` / `pointerevent`） |
+| 字面量 `satisfies Partial<UIShape>` 不可比 ×1 | 就是"不加索引签名"的原因：带索引签名的目标类型会让断言报 `neither type sufficiently overlaps`（**第 216 轮同一条的第三次现形**）⇒ 值侧用**单次** `as UIShape['marquee']` |
+| `controlPointTexture` 解引用 ×1 | `ui-initialize.ts` 改用具名局部变量（**顺序与原实现逐字一致**），`base` 处用 `!`（与第 101 轮同处理） |
+| `hover` 写入 ×1 | `setHover` 单次 `as HoverNode \| null`：引擎不判空就解引用 `hover.instance.visible` ⇒ 既有不变式写进类型 |
+
+**账**：`any-hatches` **28 → 27**（files **17 → 16**）· 其余 16 轴持平 · `tsc` 0 ·
+`typecheck:vue` 0 新错 · `lint` 0/0（无陈旧豁免）· `format:check` · `selftest` 67/67 ·
+`engine/ui` 4 文件 12 例 · `ui-state` 16 例 · 全套绿 · 基线已 `--update-baseline`。
+
+**下一轮选点**：`palette/auto-tile`（52 个成员，但 `this: typeof AutoTile` **等于 `any`** ⇒ 属
+"逐成员枚举"档，不是一轮的活）· `animation-window-engine` 29（spec 是具体对象字面量 mock，预计同
+`scene-camera-engine` 贵）· `palette/tile-frame-index` 13（摘注解后错码混杂 ⇒ 设计活）·
+B 组 `particle-window.ts` ×2 / `scene-window.ts:1365`（动态取键）/ `YMParameterPane.vue` ×2。
+
+##### 真机复验（本轮，2026-09-25）
+
+本轮动到了 UI 引擎区（含**一处运行期改动**：删掉字面量里那句 `UI.marquee.resize = null` 占位），
+按仓规起了真机（CDP 9223）：
+
+| 检查 | 结果 |
+| --- | --- |
+| `open-project` | ✅ 项目打开（`workspace=directory`，groups 3 / groupManagers 2） |
+| UI 窗口探针 | ✅ 外壳与全部登记元素到位（`#ui` / `#ui-head` / `#ui-body` / `#ui-screen` / `#ui-marquee` / `#ui-list`），无异常 |
+| **`marquee.resize` 钩子** | ✅ 加载后 `typeof marquee.resize === 'function'` —— 证明删掉那句占位**没有影响钩子的安装**（真赋值点在 `ui-list.ts` 模块顶层） |
+| `marquee.pointerevent` | ✅ `undefined`（当前没有拖拽，符合预期） |

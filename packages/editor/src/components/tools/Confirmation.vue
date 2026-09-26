@@ -20,7 +20,7 @@ const store = useConfirmationStore();
 
 const ym = ref<{ focusFirstButton(): void; $el?: HTMLElement } | null>(null);
 
-// P1b：本窗口直接用 ui-kit 的 YMWindowFrame（id="confirmation"），不经过 WindowFrame.vue，
+// 本窗口直接用 ui-kit 的 YMWindowFrame（id="confirmation"），不经过 WindowFrame.vue，
 // 因此要自己登记——`Window.open('confirmation')` 现在从 windowShellEls 取帧。
 onMounted(() => {
 	const root = ym.value?.$el;
@@ -49,3 +49,32 @@ watch(
 	}
 );
 </script>
+
+<style>
+/* 不能用 scoped：选择器需命中子组件内部生成的元素 */
+#confirmation {
+	width: 304px;
+	height: 98px;
+}
+
+#confirmation-message {
+	display: block;
+	margin: 10px;
+	line-height: 20px;
+	white-space: pre;
+}
+
+#confirmation-button-frame {
+	display: flex;
+	column-gap: 10px;
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+}
+
+#confirmation-button-0,
+#confirmation-button-1,
+#confirmation-button-2 {
+	position: static;
+}
+</style>

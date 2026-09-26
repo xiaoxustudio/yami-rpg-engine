@@ -8,6 +8,7 @@ import {
 	moveLayoutTab,
 	moveTabWithin,
 	parseLayoutScheme,
+	splitGroupWithTab,
 	toLayoutScheme,
 	type LayoutGroupNode,
 	type LayoutSchemeData,
@@ -250,7 +251,7 @@ describe('moveLayoutTab 跨组', () => {
 	});
 });
 
-describe('moveTabWithin 同组顺序（M4 navDrop 数据层）', () => {
+describe('moveTabWithin 同组顺序（navDrop 数据层）', () => {
 	const tabs = ['project', 'inspector', 'scene'];
 
 	it('insert-before：拖末位页签到首页签前', () => {
@@ -283,7 +284,7 @@ describe('moveTabWithin 同组顺序（M4 navDrop 数据层）', () => {
 	});
 });
 
-describe('collapseRedundantSplits 冗余容器规整（M4-2 Teleport 折叠）', () => {
+describe('collapseRedundantSplits 冗余容器规整（Teleport 折叠）', () => {
 	it('单子组 split 递归提升并继承父 end', () => {
 		const root = parseLayoutScheme({
 			end: 1,
@@ -328,5 +329,107 @@ describe('collapseRedundantSplits 冗余容器规整（M4-2 Teleport 折叠）',
 		});
 		const leaf = parseLayoutScheme({ end: 1, tabs: ['only'] });
 		expect(collapseRedundantSplits(leaf)).toBe(leaf);
+	});
+});
+
+describe('splitGroupWithTab region 边缘 drop（navDrop 数据层）', () => {
+	// 目标 = 第一个叶子 [project, inspector]（end 0.5），后面还有 [scene]（end 1）
+	const directory = (): LayoutTreeNode => parseLayoutScheme(directoryScheme);
+	const ids = (root: LayoutTreeNode): string[] => leavesOf(root).map((leaf) => leaf.id);
+
+	it('右缘：新叶子接在目标之后，目标收缩到跨度中点', () => {
+		const root = directory();
+		// 与金标准同一形态：往**自己所在组**的右缘丢（源 = 目标 = 第一个叶子）
+		const target = ids(root)[0];
+		const out = splitGroupWithTab(root, target, target, 'inspector', 'right');
+		expect(toLayoutScheme(out!)).toEqual({
+			end: 1,
+			split: 'horizontal',
+			children: [
+				{ end: 0.25, tabs: ['project'] },
+				{ end: 0.5, tabs: ['inspector'] },
+				{ end: 1, tabs: ['scene'] }
+			]
+		});
+	});
+
+	it('左缘：新叶子插在目标之前并取中点，目标 end 不变', () => {
+		const root = directory();
+		const target = ids(root)[0];
+		const out = splitGroupWithTab(root, target, target, 'inspector', 'left');
+		expect(toLayoutScheme(out!)).toEqual({
+			end: 1,
+			split: 'horizontal',
+			children: [
+				{ end: 0.25, tabs: ['inspector'] },
+				{ end: 0.5, tabs: ['project'] },
+				{ end: 1, tabs: ['scene'] }
+			]
+		});
+	});
+
+	it('轴不同：先把目标包进同轴容器（容器继承目标 end、目标 end 置 1），新叶子放进容器', () => {
+		const root = directory();
+		const target = ids(root)[0];
+		const out = splitGroupWithTab(root, target, target, 'inspector', 'top');
+		expect(toLayoutScheme(out!)).toEqual({
+			end: 1,
+			split: 'horizontal',
+			children: [
+				{
+					end: 0.5,
+					split: 'vertical',
+					children: [
+						{ end: 0.5, tabs: ['inspector'] },
+						{ end: 1, tabs: ['project'] }
+					]
+				},
+				{ end: 1, tabs: ['scene'] }
+			]
+		});
+	});
+
+	it('目标是根叶子：同样先包一层同轴容器', () => {
+		const root = parseLayoutScheme(singleLeafScheme);
+		const source = leavesOf(root)[0].id;
+		const out = splitGroupWithTab(root, source, source, 'scene', 'right');
+		expect(toLayoutScheme(out!)).toEqual({
+			end: 1,
+			split: 'horizontal',
+			children: [
+				{ end: 0.5, tabs: ['project', 'inspector'] },
+				{ end: 1, tabs: ['scene'] }
+			]
+		});
+	});
+
+	it('源组被搬空且它是最后一个子组：前一个兄弟的 end 补到 1（不留尾部缺口）', () => {
+		const root = parseLayoutScheme({
+			end: 1,
+			split: 'horizontal',
+			children: [
+				{ end: 0.3, tabs: ['a'] },
+				{ end: 0.6, tabs: ['b'] },
+				{ end: 1, tabs: ['c'] }
+			]
+		});
+		const [first, , last] = ids(root);
+		const out = splitGroupWithTab(root, first, last, 'c', 'right');
+		expect(toLayoutScheme(out!)).toEqual({
+			end: 1,
+			split: 'horizontal',
+			children: [
+				{ end: 0.15, tabs: ['a'] },
+				{ end: 0.3, tabs: ['c'] },
+				{ end: 1, tabs: ['b'] }
+			]
+		});
+	});
+
+	it('找不到目标叶子时原样返回；源页签不存在时也不改结构', () => {
+		const root = directory();
+		const [source, target] = ids(root);
+		expect(splitGroupWithTab(root, 'missing', source, 'inspector', 'right')).toBe(root);
+		expect(splitGroupWithTab(root, target, source, 'missing', 'right')).toBe(root);
 	});
 });

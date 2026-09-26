@@ -1,4 +1,4 @@
-// 布局树数据模型与不可变变换（layout 迁移规划 M2 数据层）
+// 布局树数据模型与不可变变换
 // 纯数据、无 DOM：把 docking scheme 解析为带稳定 id 的树；激活/移动页签走不可变更新，
 // 源组清空时按现状 DOM 折叠语义（空 split 删除、单子组提升并继承父 end）收敛结构。
 
@@ -206,9 +206,9 @@ export function moveLayoutTab(
 	}));
 }
 
-// M4-2（layout 迁移规划 M4）：规整冗余容器。
-// Teleport 组树不渲染容器 border，命令式「源组搬空折叠」后容器可能只剩单个子组
-// （命令式模式的 flatten 依赖 border 子节点计数），此处按同一收敛语义提升单子组并继承父 end。
+// 规整冗余容器。
+// Teleport 组树不渲染容器 border，源组被搬空折叠后容器可能只剩单个子组
+// （按 border 子节点计数推导的那套在这里不适用），此处按收敛语义提升单子组并继承父 end。
 export function collapseRedundantSplits(root: LayoutTreeNode): LayoutTreeNode {
 	const walk = (node: LayoutTreeNode): LayoutTreeNode => {
 		if (node.kind === 'group') return node;
@@ -219,7 +219,7 @@ export function collapseRedundantSplits(root: LayoutTreeNode): LayoutTreeNode {
 	return walk(root);
 }
 
-// M4（layout 迁移规划 M4）：同组内页签顺序移动（数据先行）。
+// 同组内页签顺序移动（数据先行）。
 // 与现状 navDrop 的 DOM 语义等价：先移除该页签，anchor=null 视为 append 到末尾，
 // 否则插到 anchor 页签（移除后）所在位置之前；anchor 不存在时回退 append。
 // 纯函数、无 DOM，供引擎层以 tabs 数据驱动 DOM 收敛（取代命令式 insertBefore 差量）。
@@ -237,3 +237,215 @@ export function moveTabWithin(
 	out.splice(index, 0, tab);
 	return out;
 }
+
+/* ------------------------------ 结构性 drop（region 边缘） ------------------------------ */
+
+export type LayoutDropDirection = 'left' | 'right' | 'top' | 'bottom';
+
+const dropBefore = (direction: LayoutDropDirection): boolean =>
+	direction === 'left' || direction === 'top';
+
+const dropAxis = (direction: LayoutDropDirection): LayoutSplitDirection =>
+	direction === 'left' || direction === 'right' ? 'horizontal' : 'vertical';
+
+/** 新节点的 id 只在本函数内用于「找自己刚插入的那个叶子」，不落到 scheme 数据里 */
+let dropSeq = 0;
+
+/** 往 `children` 里替换/插入，返回新数组（不可变） */
+const withChild = (
+	children: readonly LayoutTreeNode[],
+	index: number,
+	node: LayoutTreeNode
+): LayoutTreeNode[] => {
+	const out = [...children];
+	out[index] = node;
+	return out;
+};
+
+/**
+ * 在目标叶子旁开一个新叶子（region 边缘 drop）。
+ *
+ * 与「命令式版」逐条对应：
+ * - 目标父容器的轴与本次方向一致 ⇒ 直接插到目标前/后（左/上取目标跨度中点、右/下让目标收缩到中点）；
+ * - 轴不同（或目标本身就是根叶子）⇒ 先把目标包进一层**同轴**容器：容器继承目标的 end、目标 end 置 1，
+ *   新叶子再按方向放进容器（此时跨度是 [0,1]，中点 0.5）。
+ */
+const insertLeafBeside = (
+	node: LayoutTreeNode,
+	targetGroupId: string,
+	direction: LayoutDropDirection
+): { node: LayoutTreeNode; leaf: LayoutGroupNode } | null => {
+	const axis = dropAxis(direction);
+	const before = dropBefore(direction);
+	const leafId = `drop-leaf-${(dropSeq += 1)}`;
+	const leaf = (end: number): LayoutGroupNode => ({
+		kind: 'group',
+		id: leafId,
+		end,
+		tabs: [],
+		active: null
+	});
+
+	// 目标叶子本身就是当前节点（= 它的父不是 split，例如它就是根）：包一层同轴容器
+	if (node.kind === 'group') {
+		if (node.id !== targetGroupId) return null;
+		const wrapped: LayoutSplitNode = {
+			kind: 'split',
+			id: `drop-wrap-${dropSeq}`,
+			split: axis,
+			end: node.end,
+			children: before ? [leaf(0.5), { ...node, end: 1 }] : [{ ...node, end: 0.5 }, leaf(1)]
+		};
+		return { node: wrapped, leaf: leaf(0.5) };
+	}
+
+	const index = node.children.findIndex(
+		(child) => child.kind === 'group' && child.id === targetGroupId
+	);
+	if (index >= 0) {
+		const target = node.children[index] as LayoutGroupNode;
+		if (node.split === axis) {
+			const prev = index > 0 ? node.children[index - 1] : null;
+			const spanStart = prev === null ? 0 : prev.end;
+			const spanEnd = target.end;
+			const spanMid = (spanStart + spanEnd) / 2;
+			if (before) {
+				return {
+					node: {
+						...node,
+						children: [
+							...node.children.slice(0, index),
+							leaf(spanMid),
+							...node.children.slice(index)
+						]
+					},
+					leaf: leaf(spanMid)
+				};
+			}
+			const children = withChild(node.children, index, { ...target, end: spanMid });
+			children.splice(index + 1, 0, leaf(spanEnd));
+			return { node: { ...node, children }, leaf: leaf(spanEnd) };
+		}
+		// 轴不同：把目标包进同轴容器（容器顶替目标的位置），新叶子放进容器
+		const wrapped: LayoutSplitNode = {
+			kind: 'split',
+			id: `drop-wrap-${dropSeq}`,
+			split: axis,
+			end: target.end,
+			children: before
+				? [leaf(0.5), { ...target, end: 1 }]
+				: [{ ...target, end: 0.5 }, leaf(1)]
+		};
+		return {
+			node: { ...node, children: withChild(node.children, index, wrapped) },
+			leaf: leaf(0.5)
+		};
+	}
+
+	for (let i = 0; i < node.children.length; i++) {
+		const child = node.children[i];
+		if (child.kind !== 'split') continue;
+		const stepped = insertLeafBeside(child, targetGroupId, direction);
+		if (stepped !== null) {
+			return {
+				node: { ...node, children: withChild(node.children, i, stepped.node) },
+				leaf: stepped.leaf
+			};
+		}
+	}
+	return null;
+};
+
+/**
+ * 移除一个叶子，收敛语义与 drop 的现状实现**逐条对应**：
+ * 1. 它是父容器的最后一个孩子 ⇒ 前一个兄弟的 end 补到 1（命令式版就是这么填这个缺口的）；
+ * 2. 移除后父容器只剩一个孩子 ⇒ 提升它顶替父容器并继承父容器的 end。
+ */
+const removeLeafForDrop = (root: LayoutTreeNode, leafId: string): LayoutTreeNode | null => {
+	const walk = (node: LayoutTreeNode): { node: LayoutTreeNode | null; removed: boolean } => {
+		if (node.kind === 'group') {
+			return node.id === leafId ? { node: null, removed: true } : { node, removed: false };
+		}
+		const index = node.children.findIndex(
+			(child) => child.kind === 'group' && child.id === leafId
+		);
+		if (index >= 0) {
+			const kept = node.children.filter((_, i) => i !== index);
+			if (index === node.children.length - 1 && kept.length !== 0) {
+				kept[kept.length - 1] = { ...kept[kept.length - 1], end: 1 };
+			}
+			if (kept.length === 1) return { node: { ...kept[0], end: node.end }, removed: true };
+			if (kept.length === 0) return { node: null, removed: true };
+			return { node: { ...node, children: kept }, removed: true };
+		}
+		for (let i = 0; i < node.children.length; i++) {
+			const child = node.children[i];
+			if (child.kind !== 'split') continue;
+			const result = walk(child);
+			if (!result.removed) continue;
+			if (result.node === null) {
+				const kept = node.children.filter((_, k) => k !== i);
+				if (kept.length === 0) return { node: null, removed: true };
+				if (kept.length === 1)
+					return { node: { ...kept[0], end: node.end }, removed: true };
+				return { node: { ...node, children: kept }, removed: true };
+			}
+			return {
+				node: { ...node, children: withChild(node.children, i, result.node) },
+				removed: true
+			};
+		}
+		return { node, removed: false };
+	};
+	return walk(root).node;
+};
+
+/**
+ * region 边缘 drop 的**纯数据变换**：把 `tab` 从 `fromGroupId` 搬到「贴着 `targetGroupId` 新开的叶子」。
+ * 找不到目标叶子时返回 `root`（调用方按 no-op 处理）；源叶子被搬空会导致整棵树消失时返回 `null`。
+ */
+export function splitGroupWithTab(
+	root: LayoutTreeNode,
+	targetGroupId: string,
+	fromGroupId: string,
+	tab: string,
+	direction: LayoutDropDirection
+): LayoutTreeNode | null {
+	// 先校验落点：源叶子必须真的有这个页签（否则原样返回，绝不留下一片空叶子）
+	const source = findGroup(root, fromGroupId);
+	if (source === null || source.tabs.indexOf(tab) === -1) return root;
+	const stepped = insertLeafBeside(root, targetGroupId, direction);
+	if (stepped === null) return root;
+	const leafId = stepped.leaf.id;
+	const withTab = moveTabToLeaf(stepped.node, fromGroupId, leafId, tab);
+	if (withTab === null) return null;
+	return collapseRedundantSplits(withTab);
+}
+
+/** 把页签从源叶子搬进目标叶子（源叶子被搬空则按 `removeLeafForDrop` 移除）；树被清空时返回 null */
+const moveTabToLeaf = (
+	root: LayoutTreeNode,
+	fromGroupId: string,
+	toGroupId: string,
+	tab: string
+): LayoutTreeNode | null => {
+	const source = findGroup(root, fromGroupId);
+	if (source === null || source.tabs.indexOf(tab) === -1) return root;
+	const remaining = source.tabs.filter((value) => value !== tab);
+	let next: LayoutTreeNode | null;
+	if (remaining.length !== 0) {
+		next = cloneAncestors(root, fromGroupId, () => ({
+			...source,
+			tabs: remaining,
+			active: source.active === tab ? null : source.active
+		}));
+	} else {
+		next = removeLeafForDrop(root, fromGroupId);
+	}
+	if (next === null) return null;
+	return cloneAncestors(next, toGroupId, (target) => ({
+		...target,
+		tabs: [...target.tabs, tab],
+		active: tab
+	}));
+};
