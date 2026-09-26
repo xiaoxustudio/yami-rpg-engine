@@ -25,7 +25,7 @@ export interface CommonListLike {
 	};
 }
 
-/** P4b: row element versionId now lives in element data (field removed from DATA_FIELDS) */
+/** row element versionId now lives in element data (field removed from DATA_FIELDS) */
 const versionOf = (el: unknown): { versionId?: number } =>
 	elementDataOf<{ versionId?: number }>(el);
 
@@ -57,7 +57,7 @@ export const commonListUpdateHeadAndFoot = (list: HeadAndFootListLike): void => 
 	}
 	const { count, start, end } = list.elements;
 	if (count !== 0) {
-		// P4b：`padded` 不再是元素上的 expando，统一从列表配置读
+		// `padded` 不再是元素上的 expando，统一从列表配置读
 		const pad = getListConfig(list).padded ? 1 : 0;
 		const mt = start * 20;
 		const mb = (count - end + pad) * 20;

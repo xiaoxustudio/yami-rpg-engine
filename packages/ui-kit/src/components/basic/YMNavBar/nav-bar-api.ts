@@ -14,7 +14,7 @@ export interface NavBarApi extends HTMLElement {
 
 const numberRegex = /^-?\d+(?:\.\d+)?$/;
 
-// P4b：nav-item 的 `dataValue`（按 `value` 属性解析出的选中值）走显式元素数据
+// nav-item 的 `dataValue`（按 `value` 属性解析出的选中值）走显式元素数据
 interface NavItemData {
 	dataValue?: unknown;
 }
@@ -119,7 +119,7 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 		}
 	};
 
-	// P2b-3：显式箭头包装——`nav.pointerdown` 是方法引用，直接当监听器传会丢 `this`
+	// 显式箭头包装——`nav.pointerdown` 是方法引用，直接当监听器传会丢 `this`
 	// （unbound-method 的成因）。这里把接收者写死成 `nav`，与派发时 `this === nav` 等价。
 	el.addEventListener('pointerdown', (event) => nav.pointerdown(event as PointerEvent));
 

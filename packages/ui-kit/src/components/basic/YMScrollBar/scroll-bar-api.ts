@@ -49,17 +49,17 @@ export interface ScrollBarApi extends HTMLElement {
 }
 
 /**
- * P4b：滚动条自身的可变状态走**显式元素数据**（`thumb` / `timer` 已从 DATA_FIELDS 摘除）。
+ * 滚动条自身的可变状态走**显式元素数据**（`thumb` / `timer` 已从 DATA_FIELDS 摘除）。
  * `timer` 是"按键连续滚动"的帧循环句柄，绑定在元素上以便同一条滚动条复用。
  */
 interface ScrollBarData {
 	thumb: ScrollThumb | null;
 	timer: ScrollTimer | null;
-	/** P4b：宿主元素（被滚动的内容元素） */
+	/** 宿主元素（被滚动的内容元素） */
 	target: HTMLElement | null;
-	/** P4b：拖拽中的 pointerdown 事件；`dragging.target` 是事件目标（thumb），不是元素数据 */
+	/** 拖拽中的 pointerdown 事件；`dragging.target` 是事件目标（thumb），不是元素数据 */
 	dragging: ScrollDragging | null;
-	/** P4b：显示状态（对应 `visible` class） */
+	/** 显示状态（对应 `visible` class） */
 	visible: boolean;
 }
 
@@ -76,7 +76,7 @@ export function attachScrollBarApi(
 ): ScrollBarApi {
 	const bar = el as ScrollBarApi;
 	if (isApiAttached(bar)) return bar;
-	// P4b：`thumb` / `timer` / `target` / `dragging` / `visible` 走显式元素数据
+	// `thumb` / `timer` / `target` / `dragging` / `visible` 走显式元素数据
 	// （`thumb`/`timer` 已从 DATA_FIELDS 摘除）
 	const data = elementDataOf<ScrollBarData>(bar);
 

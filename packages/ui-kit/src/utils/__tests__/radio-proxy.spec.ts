@@ -82,7 +82,7 @@ describe('radio-proxy', () => {
 		a.remove();
 	});
 
-	// P1b：编辑器侧原先各自 `document.getElementsByName('组名')` 反查组内成员，
+	// 编辑器侧原先各自 `document.getElementsByName('组名')` 反查组内成员，
 	// 现在统一读 `proxy.group`——这里锁住它的顺序与内容。
 	it('group 返回同 name 的组内成员（按文档顺序）', () => {
 		const proxy = makeProxy('group5', null);

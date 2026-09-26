@@ -40,7 +40,7 @@ interface TreeListElement extends HTMLElement {
 	root: TreeData | null;
 }
 
-/** P4b：`dragging` 不再是元素上的隐式属性，走显式元素数据 */
+/** `dragging` 不再是元素上的隐式属性，走显式元素数据 */
 interface TreeListElementData {
 	dragging:
 		| null
@@ -48,7 +48,7 @@ interface TreeListElementData {
 }
 const listData = (el: unknown): TreeListElementData => elementDataOf<TreeListElementData>(el);
 
-/** P4b：拖拽指示器元素数据里的 `target`（当前命中的行元素） */
+/** 拖拽指示器元素数据里的 `target`（当前命中的行元素） */
 const hintTarget = (el: unknown): HTMLElement | null =>
 	elementDataOf<{ target: HTMLElement | null }>(el).target;
 

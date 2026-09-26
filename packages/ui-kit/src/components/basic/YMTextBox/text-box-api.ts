@@ -38,7 +38,7 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 	box.appendChild(input);
 	box.input = input;
 
-	// P4b：这两个字段走显式元素数据（已从 DATA_FIELDS 摘除）
+	// 这两个字段走显式元素数据（已从 DATA_FIELDS 摘除）
 	const data = elementDataOf<TextBoxApi>(box);
 	data.lastText = '';
 	data.hiddenNodes = [];

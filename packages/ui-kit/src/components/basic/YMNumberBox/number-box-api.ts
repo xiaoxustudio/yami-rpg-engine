@@ -29,7 +29,7 @@ export interface NumberBoxApi extends HTMLElement {
 }
 
 /**
- * P4b：数字框工厂的"小数位"走**显式元素数据**（`decimals` 已从 DATA_FIELDS 摘除）。
+ * 数字框工厂的"小数位"走**显式元素数据**（`decimals` 已从 DATA_FIELDS 摘除）。
  * 注意 SFC（`YMNumberBox.vue`）自己 `defineProperty(el, 'decimals', …)` 定义了一个同名实例属性，
  * 那是组件内部状态、与本字段无关——两者不会互相遮蔽（实例属性优先于原型访问器）。
  */
@@ -53,7 +53,7 @@ export function attachNumberBoxApi(
 ): NumberBoxApi {
 	const box = el as NumberBoxApi;
 	if (isApiAttached(box)) return box;
-	// P4b：`decimals` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+	// `decimals` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	const data = elementDataOf<NumberBoxData>(box);
 
 	const input = document.createElement('input');
@@ -95,7 +95,7 @@ export function attachNumberBoxApi(
 
 	box.input = input;
 	data.decimals = decimals;
-	// P4b：`box._unit = unit` 已删除——该字段只写不读（等价死状态），随 DATA_FIELDS 一并退役
+	// `box._unit = unit` 已删除——该字段只写不读（等价死状态），随 DATA_FIELDS 一并退役
 
 	el.appendChild(input);
 

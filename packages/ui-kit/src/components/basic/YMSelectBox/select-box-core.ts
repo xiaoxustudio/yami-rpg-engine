@@ -166,7 +166,7 @@ export function createSelectBoxCore(
 			if (infoEl) infoEl.textContent = String(value);
 		}
 		const root = getRoot();
-		// P4b：`invalid` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+		// `invalid` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 		if (root) elementDataOf<{ invalid?: boolean }>(root).invalid = state.invalid;
 	};
 

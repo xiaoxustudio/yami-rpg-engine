@@ -5,7 +5,7 @@ interface Props {
 	cancelLabel?: string;
 	applyLabel?: string;
 	showApply?: boolean;
-	/** 表单无效时禁用确认按钮（P5b 尾项：原先是窗口模块对 `#<id>-confirm` 调 disable/enable） */
+	/** 表单无效时禁用确认按钮（原先是窗口模块对 `#<id>-confirm` 调 disable/enable） */
 	confirmDisabled?: boolean;
 }
 

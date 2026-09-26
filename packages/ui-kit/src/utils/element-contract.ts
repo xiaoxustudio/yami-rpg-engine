@@ -1,13 +1,13 @@
 /**
- * 元素 API 契约（P4c）：把过去挂在**全局** `HTMLElement` 上的成员面，搬成一份**显式命名类型**。
+ * 元素 API 契约：把过去挂在**全局** `HTMLElement` 上的成员面，搬成一份**显式命名类型**。
  *
  * ## 为什么必须搬
  *
  * `Project/global.d.ts` 用 `interface HTMLElement { … }` 给**全局**的每个元素都加上了本仓库
  * 运行时装配的方法面。这带来两个真实危害：
  *
- * 1. **掩盖"字段已退役"**：P4b 把元素数据访问器摘掉之后，正是这层声明让 `el.<已退役字段>`
- *    依旧编译通过、运行期静默 `undefined`（R-12）。
+ * 1. **掩盖"字段已退役"**：元素数据访问器摘掉之后，正是这层声明让 `el.<已退役字段>`
+ *    依旧编译通过、运行期静默 `undefined`。
  * 2. **对第三方元素也说谎**：`document.querySelector('div')` 拿到的普通 `HTMLElement` 也被
  *    宣称有 `write()` / `loadItems()`——拼错的方法名、根本不存在的成员都能通过编译。
  *
@@ -19,7 +19,7 @@
  *
  * - 新增成员前先确认**确有运行期实现**（`scripts/global-types-audit.mjs` 会报 `dead`/`dup`）。
  * - 成员签名尽量精确；确实无法精确的（历史遗留的元素工厂方法）保留 `unknown[]` 宽松签名，
- *   并注明出处文件，方便后续按组件收窄（P2b-2/P2b-3）。
+ *   并注明出处文件，方便后续按组件收窄。
  * - **已退役的元素数据字段不得回来**（`lastText` / `hiddenNodes` / `strBox` / `creators` /
  *   `initialized` … 一律走 `elementDataOf()` / `getListConfig()` 显式读写）。
  */
@@ -33,7 +33,7 @@ type Loose = any;
 export interface YamiElementApi {
 	// ——————————————————————————————————————————————————————————————
 	// 列表族（tree / command / param / file body / file nav / select list / common list / menu）
-	// 精确签名见各组件自己的 `XxxApi`（P2b 契约化）；这里保留既有调用点的宽松签名。
+	// 精确签名见各组件自己的 `XxxApi`；这里保留既有调用点的宽松签名。
 	// ——————————————————————————————————————————————————————————————
 	/** 行元素上挂的业务数据（树/列表行反查） */
 	item?: Loose;

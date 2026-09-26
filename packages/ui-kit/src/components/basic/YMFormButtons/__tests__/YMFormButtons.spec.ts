@@ -22,7 +22,7 @@ describe('YMFormButtons', () => {
 		wrapper.unmount();
 	});
 
-	it('confirmDisabled 时确认按钮被禁用且点击不派发 confirm（P5b 尾项）', async () => {
+	it('confirmDisabled 时确认按钮被禁用且点击不派发 confirm', async () => {
 		const events: string[] = [];
 		const parent = document.createElement('div');
 		parent.addEventListener('confirm', () => events.push('confirm'));

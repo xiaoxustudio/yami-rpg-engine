@@ -27,7 +27,7 @@ export type RadioProxyElement = HTMLElement & {
 	toggleRelatedElements(): void;
 	on(...args: unknown[]): void;
 	/**
-	 * P1b：组内成员（按 `name` 查询）。原先调用方各自 `document.getElementsByName('组名')`
+	 * 组内成员（按 `name` 查询）。原先调用方各自 `document.getElementsByName('组名')`
 	 * 反查 DOM，现在把这条查询收进 proxy 自身，编辑器侧改读 `proxy.group`。
 	 */
 	readonly group: RadioProxyElement[];
@@ -45,7 +45,7 @@ const disable = (el: HTMLElement): void => {
 };
 
 /**
- * P4b：组内成员（`document.getElementsByName`）可能是两种宿主——
+ * 组内成员（`document.getElementsByName`）可能是两种宿主——
  * ① radio-box 元素：`YMRadioBox`/`RadioBox.vue` 在元素上自建 own `dataValue` 访问器（组件自持状态，遮蔽原型）；
  * ② radio-proxy 自身：`dataValue` 是元素数据。
  * 原来的 `element.dataValue` 属性读正好覆盖两者，访问器退役后必须显式二选一——统一走
@@ -66,7 +66,7 @@ const subtract = <T>(a: T[], b: T[]): T[] => {
 
 export function attachRadioProxyApi(el: HTMLElement): void {
 	const proxy = el as RadioProxyElement;
-	// P4b: relations now lives in element data (field removed from DATA_FIELDS)
+	// relations now lives in element data (field removed from DATA_FIELDS)
 	const data = elementDataOf<RadioProxyElement>(proxy);
 	data.dataValue = null;
 	data.relations = [];
@@ -78,7 +78,7 @@ export function attachRadioProxyApi(el: HTMLElement): void {
 		return data.dataValue;
 	};
 
-	// P1b：组内成员访问器——组名即 proxy.id（`write` 原本就是这么查的），
+	// 组内成员访问器——组名即 proxy.id（`write` 原本就是这么查的），
 	// 把 `document.getElementsByName` 这条查询收敛到 ui-kit 一处。
 	Object.defineProperty(proxy, 'group', {
 		configurable: true,

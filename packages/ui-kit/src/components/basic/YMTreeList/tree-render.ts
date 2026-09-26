@@ -1,6 +1,6 @@
-// YMTreeList 行渲染数据层（tree 迁移规划 步骤 2，方案 B）
-// 目标：把「命令式 createNodeElement/appendChild 差量」换成「数据派生 + v-for」，
-// 同时保持对外契约（update/select/read/drop/... 与 item.element 缓存）零改动。
+// YMTreeList 行渲染数据层
+// 行由数据派生 + v-for 渲染（不再是命令式 createNodeElement/appendChild 差量），
+// 对外契约（update/select/read/drop/... 与 item.element 缓存）保持不变。
 //
 // 关键设计：
 // - renderVersion 版本号驱动：所有结构变更最终汇聚到 update()，bump 即触发重算；
@@ -227,7 +227,7 @@ export const bindRowElement = (state: TreeRenderState, item: TreeItem, el: unkno
 	const key = rowKeyOf(item);
 	if (el instanceof HTMLElement) {
 		const element = el as NodeElement;
-		// P4b：行元素上的这几个字段改成显式元素数据（`folderMark`/`markVisible` 已从 DATA_FIELDS 摘除）
+		// 行元素上的这几个字段改成显式元素数据（`folderMark`/`markVisible` 已从 DATA_FIELDS 摘除）
 		const data = elementDataOf<NodeElement>(element);
 		data.item = item;
 		data.changed = false;

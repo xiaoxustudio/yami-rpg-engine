@@ -235,7 +235,7 @@ function initializeApi(): void {
 	const el = root.value;
 	const input = inputEl.value;
 	if (!el || !input || isApiAttached(el)) return;
-	// P4b：走显式元素数据
+	// 走显式元素数据
 	elementDataOf<TextBoxApi>(el).lastText = '';
 	elementDataOf<TextBoxApi>(el).hiddenNodes = [];
 	(el as TextBoxApi).input = input;
@@ -257,7 +257,7 @@ function initializeApi(): void {
 	});
 	write(props.modelValue);
 	if (props.disabled) disable();
-	// P4b：与 `*-api.ts` 工厂同一套守卫（第十六刀只改了工厂，三个 SFC 仍留着私有 expando）
+	// 与 `*-api.ts` 工厂同一套守卫（第十六刀只改了工厂，三个 SFC 仍留着私有 expando）
 	markApiAttached(el);
 }
 

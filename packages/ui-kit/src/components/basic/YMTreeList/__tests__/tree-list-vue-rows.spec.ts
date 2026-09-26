@@ -11,7 +11,7 @@ import {
 } from '../tree-api';
 import { elementDataOf } from '../../../../utils/element-data';
 
-// 数据派生行渲染（tree 迁移规划 步骤 2；步骤 5 后为唯一渲染路径）：
+// 数据派生行渲染（虚拟滚动的唯一渲染路径）：
 // 派生行/虚拟窗口/元素回写桥/受控 class/折叠与搜索。
 
 interface TreeData {
@@ -218,7 +218,7 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 
 	/**
 	 * 回归（实机：`Cannot read properties of undefined (reading 'class')` at command-tip listPointerdown）：
-	 * P4b 把行 item 搬进**元素数据**后，`event.target.item` 这个 expando 一律是 `undefined`，
+	 * 把行 item 搬进**元素数据**后，`event.target.item` 这个 expando 一律是 `undefined`，
 	 * 消费方必须走 `treeItemOf`。它同时承担"事件目标 → 行"的归一（标签文字在 `.node-text` 里）。
 	 */
 	it('treeItemOf：行元素与行内后代都归一到 item；行外节点返回 undefined', async () => {

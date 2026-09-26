@@ -60,7 +60,7 @@ type MenuItemElement = HTMLElement & {
 	accelerator?: HTMLElement;
 };
 
-// P4b：menu-item 上挂的 `MenuItem` 走显式元素数据（`label`/`accelerator` 是普通 own 属性，保持原样）
+// menu-item 上挂的 `MenuItem` 走显式元素数据（`label`/`accelerator` 是普通 own 属性，保持原样）
 interface MenuItemData {
 	dataValue?: MenuItem;
 }
@@ -100,7 +100,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 	};
 
 	/**
-	 * P2b-3：`pointerenter` 是本地函数（`attachApi` 挂在 `menu` 上的就是它本身）。
+	 * `pointerenter` 是本地函数（`attachApi` 挂在 `menu` 上的就是它本身）。
 	 * 以前 add/remove 两处都写成 `menu.pointerenter`——方法引用丢 `this`，正是 unbound-method 的成因；
 	 * 这里显式包一层并复用同一个引用（removeEventListener 要求同一函数对象）。
 	 */

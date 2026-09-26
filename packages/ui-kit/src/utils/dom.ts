@@ -69,7 +69,7 @@ export const css = (el: Element): CSSStyleDeclaration => getComputedStyle(el);
 export const rect = (el: Node | null): DOMRect => (el as Element).getBoundingClientRect();
 
 /**
- * P4b：`read` / `write` 过去用 `'dataValue' in el` 判断"这个元素是否携带值"——那个判断成立的前提，
+ * `read` / `write` 过去用 `'dataValue' in el` 判断"这个元素是否携带值"——那个判断成立的前提，
  * 正是 `HTMLElement.prototype` 上有 `dataValue` 访问器。访问器退役后它对**元素**恒为 false
  * （元素数据在 WeakMap 里，`in` 看不见），于是 `read` 会静默返回 undefined、`write` 会静默什么都不做。
  *

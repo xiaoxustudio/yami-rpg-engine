@@ -10,7 +10,7 @@ export type TreeItem = {
 };
 
 /**
- * 树形参数的**最小结构契约**（P2b-4，2026-09-20）。
+ * 树形参数的**最小结构契约**。
  *
  * `TreeItem` 带 `[key: string]: unknown` 索引签名 —— 它在 `cloneNode`（`node[key]`）与
  * `findItemByProperties`（`item[key]`）里是**承重的**，删不掉。但**接口没有隐式索引签名**，

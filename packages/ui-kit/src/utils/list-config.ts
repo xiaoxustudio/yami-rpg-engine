@@ -36,25 +36,20 @@ const readList = <T>(data: Record<string, unknown>, key: string): T[] => {
 };
 
 /**
- * 列表配置注册表。**配置的存储从"元素上的访问器属性"搬到了元素数据（WeakMap）**——
- * 这是 P4b 的逐组件迁移之一：这些字段过去靠 `HTMLElement.prototype` 的全局访问器
- * （`defineDataAccessors()`）落到 WeakMap，现在直接读写 `getElementData(el)`，于是
+ * 列表配置注册表。**配置存在元素数据（WeakMap）里，不是元素上的访问器属性。**
  * `creators`/`updaters`/`removable`/`renamable`/`togglable`/`foldable`/`onCreate`/`onDelete`/
- * `onRemove`/`onResume` 这 10 个名字可以从 `DATA_FIELDS` 里摘掉（`lockDirectory`/
- * `multipleSelect`/`padded` 本来就不在 `DATA_FIELDS` 里，只是元素上的普通 expando，一并收进
- * WeakMap——`common-list.ts` 里对 `el.padded` 的直接读取已改为走本函数）。
+ * `onRemove`/`onResume`/`lockDirectory`/`multipleSelect`/`padded` 都只能经本函数读写
+ * （`common-list.ts` 里对 `el.padded` 的直接读取已改为走本函数）。
  *
- * 调用方一律走 `getListConfig(list).<字段>`（全仓已确认没有对元素本身的直接读写），
- * 因此这次改动的调用面为零。
+ * 调用方一律走 `getListConfig(list).<字段>`（全仓没有对元素本身的直接读写）。
  */
 export function getListConfig(el: object): ListConfig {
 	const existing = configMap.get(el);
 	if (existing) return existing;
 	const data = getElementData(el as HTMLElement);
 	const config: ListConfig = {
-		// creators/updaters 也走访问器（原先它们读的是"构造时抓一次"的数组引用，
-		// 于是 `list.creators = listConfig.creators = []` 这种重置必须两边都写；
-		// 改成访问器后单点写 data 即可，pusher 仍然 push 进同一个数组）
+		// creators/updaters 用 getter/setter：重置时单点写 data 即可
+		// （不必像"构造时抓一次数组引用"那样两边都写，pusher 仍然 push 进同一个数组）
 		get creators() {
 			return readList<(item: unknown) => void>(data, 'creators');
 		},

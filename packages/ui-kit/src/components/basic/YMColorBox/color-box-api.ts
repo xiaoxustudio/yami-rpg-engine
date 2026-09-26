@@ -135,7 +135,7 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 
 	attachApi<ColorBoxApi>(box, { read, write, input, enable, disable, on, keydown, mouseclick });
 
-	// P2b-3：两个监听器都直接引用本文件的局部实现（`attachApi` 挂到 `box` 上的就是它们），
+	// 两个监听器都直接引用本文件的局部实现（`attachApi` 挂到 `box` 上的就是它们），
 	// 不必再取 `box.keydown` / `box.mouseclick` 方法引用（那会丢 `this`，也正是禁用注释的成因）。
 	box.addEventListener('keydown', keydown as EventListener);
 	box.addEventListener('click', mouseclick);

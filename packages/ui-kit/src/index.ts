@@ -204,7 +204,7 @@ export {
 export { WordList, type WordListShape } from './composables/useWordList';
 
 export { HistoryTimer, NumberHistory, TextHistory, CommandHistory } from './utils/history';
-// P4b：元素数据的存储层（WeakMap + 原型访问器）放在 ui-kit，editor 侧同路径再导出
+// 元素数据的存储层（WeakMap + 原型访问器）放在 ui-kit，editor 侧同路径再导出
 export {
 	elementDataOf,
 	elementDataValueOf,
@@ -226,7 +226,7 @@ export {
 } from './utils/tree-data-context';
 export { createScrollListener, type ScrollListenerApi } from './utils/scroll-listener';
 export { attachApi } from './utils/attach-api';
-// P4c：元素 API 契约——把过去挂在**全局** `HTMLElement` 上的成员面改成显式命名类型
+// 元素 API 契约——把过去挂在**全局** `HTMLElement` 上的成员面改成显式命名类型
 export type { YamiElement, YamiElementApi, YamiListElement } from './utils/element-contract';
 export { getListConfig, type ListConfig } from './utils/list-config';
 export {
@@ -261,5 +261,5 @@ export { default as YMArrayListNumber } from './components/business/YMArrayListN
 export { default as YMArrayListString } from './components/business/YMArrayListString/YMArrayListString.vue';
 export { default as YMRequestKeyValue } from './components/business/YMRequestKeyValue/YMRequestKeyValue.vue';
 
-// P4d：`CSS.rasterize` 的等价实现（原先由 editor 的 `utils/css.ts` 挂在宿主 `CSS` 上）
+// `CSS.rasterize` 的等价实现（原先由 editor 的 `utils/css.ts` 挂在宿主 `CSS` 上）
 export { rasterize } from './utils/dom';

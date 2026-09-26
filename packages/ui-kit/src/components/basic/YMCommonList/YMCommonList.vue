@@ -36,7 +36,7 @@ type ListItem = HTMLElement & {
 	versionId?: number;
 };
 
-// P4b：common-item 元素上的 `dataValue`（该项承载的值）走显式元素数据
+// common-item 元素上的 `dataValue`（该项承载的值）走显式元素数据
 interface ListItemData {
 	dataValue?: unknown;
 }

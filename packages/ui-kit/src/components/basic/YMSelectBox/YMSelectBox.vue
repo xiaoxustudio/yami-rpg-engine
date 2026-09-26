@@ -94,7 +94,7 @@ const enableHiddenMode = (): HTMLElement => {
 
 const relate = (entries: unknown): void => {
 	core.relate(entries);
-	// P4b：原先这里把 entries 镜像到元素上（`(el as SelectBoxHost).relations = …`），
+	// 原先这里把 entries 镜像到元素上（`(el as SelectBoxHost).relations = …`），
 	// 但全仓无人读取元素上的 relations——真正的状态在 core 的 `state` 里，已删。
 	if (state.dataValue !== undefined) {
 		toggleRelatedElements();
@@ -206,7 +206,7 @@ function initializeApi(): void {
 	const infoEl = info.value;
 	if (!el || !infoEl || isApiAttached(el)) return;
 	el.tabIndex = 0;
-	// P4b：info 不再镜像到元素（字段已从 DATA_FIELDS 摘除）——core 经 getInfo
+	// info 不再镜像到元素（字段已从 DATA_FIELDS 摘除）——core 经 getInfo
 	// 读模板 ref（info.value），全仓无人读元素侧的 info。
 	elementDataOf<SelectBoxHost>(el).dataItems = state.dataItems;
 	Object.defineProperty(el, 'dataValue', {
@@ -216,10 +216,10 @@ function initializeApi(): void {
 			state.dataValue = value;
 		}
 	});
-	// P4b：`invalid` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+	// `invalid` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<{ invalid?: boolean }>(el).invalid = state.invalid;
 	(el as SelectBoxHost).hideUnrelated = state.hideUnrelated;
-	// P4b：原先这里还有 `(el as SelectBoxHost).savedValue = state.savedValue` 的镜像——
+	// 原先这里还有 `(el as SelectBoxHost).savedValue = state.savedValue` 的镜像——
 	// 全仓检索确认**无人读取元素上的 savedValue**（真正的状态在 core 的 `state` 里），已删。
 	attachApi(el, {
 		read,
@@ -252,7 +252,7 @@ function initializeApi(): void {
 	el.addEventListener('change', () => emit('change', read()));
 	if (props.modelValue !== null) write(props.modelValue);
 	if (props.disabled) disable();
-	// P4b：与 `*-api.ts` 工厂同一套守卫（第十六刀只改了工厂，三个 SFC 仍留着私有 expando）
+	// 与 `*-api.ts` 工厂同一套守卫（第十六刀只改了工厂，三个 SFC 仍留着私有 expando）
 	markApiAttached(el);
 }
 

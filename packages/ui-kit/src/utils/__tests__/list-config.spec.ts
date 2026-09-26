@@ -2,9 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { getListConfig } from '../list-config';
 
 /**
- * P4b：配置的存储从"元素上的访问器属性"搬到了元素数据（WeakMap）。
- * 因此本用例的契约也跟着变——**两个方向都必须经过 `getListConfig`**，
- * 元素本身不再留下任何 expando（这正是这次迁移的目的）。
+ * 契约：配置存在元素数据（WeakMap）里，**两个方向都必须经过 `getListConfig`**，
+ * 元素本身不留下任何 expando。
  */
 describe('getListConfig 注册表', () => {
 	it('首次调用创建配置并共享 creators 数组', () => {
@@ -33,7 +32,7 @@ describe('getListConfig 注册表', () => {
 		expect(getListConfig(el).renamable).toBeUndefined();
 	});
 
-	it('不再往元素上写 expando（P4b 的目标）', () => {
+	it('不再往元素上写 expando', () => {
 		const el = document.createElement('div');
 		const config = getListConfig(el);
 		config.removable = true;

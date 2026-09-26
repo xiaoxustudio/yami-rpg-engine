@@ -51,7 +51,7 @@ export function attachNumberVarApi(
 	varBox.filter = 'number';
 
 	elementDataOf<NumberVarApi>(box).mode = currentMode;
-	// P4b: numBox now lives in element data (field removed from DATA_FIELDS)
+	// numBox now lives in element data (field removed from DATA_FIELDS)
 	elementDataOf<NumberVarApi>(box).numBox = numBox;
 	elementDataOf<NumberVarApi>(box).varBox = varBox;
 
@@ -196,7 +196,7 @@ export function attachNumberVarApi(
 	});
 
 	markApiAttached(box);
-	// P2b-3：直接引用本文件的局部实现（与 `attachApi` 挂到元素上的是同一个引用），
+	// 直接引用本文件的局部实现（与 `attachApi` 挂到元素上的是同一个引用），
 	// 不再取 `box.keydown` 这个方法引用——"方法引用丢 this" 正是 unbound-method 的成因。
 	box.addEventListener('keydown', keydown as EventListener);
 	box.addEventListener('pointerdown', pointerdown as EventListener);

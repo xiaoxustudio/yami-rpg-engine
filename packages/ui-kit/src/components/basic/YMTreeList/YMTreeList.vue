@@ -21,7 +21,7 @@ interface Props {
 }
 
 /**
- * P2b-2：原先这里是 `interface TreeListRootElement extends HTMLElement { … [k: string]: any }`——
+ * 原先这里是 `interface TreeListRootElement extends HTMLElement { … [k: string]: any }`——
  * 一个"任何成员都能过"的逃生口。收掉后直接复用 `tree-api.ts` 的宿主契约 `TreeListHost`
  * （成员拼错、签名用错都会被 vue-tsc 当场报出），列元素上的方法只此一处定义。
  */

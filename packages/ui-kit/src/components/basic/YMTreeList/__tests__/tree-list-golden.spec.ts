@@ -7,9 +7,8 @@ import { elementDataOf } from '../../../../utils/element-data';
 import { getListConfig } from '../../../../utils/list-config';
 
 /**
- * tree 迁移规划 步骤 1 的金标准测试补充（2026-09-09）。
- * 全部用例在「当前命令式渲染实现」上录制，只断言对外行为/数据/DOM 语义，
- * 供将来 v-for 化（步骤 2+）双路径共用；改动实现时不得改动断言语义。
+ * 金标准测试：只断言对外行为/数据/DOM 语义，不绑定渲染实现路径；
+ * 改动实现时不得改动断言语义。
  */
 
 const mockHeight = (el: HTMLElement): void => {
@@ -56,7 +55,7 @@ interface TreeListElement extends HTMLElement {
 	};
 }
 
-/** P4b：`dragging` 不再是元素上的隐式属性，走显式元素数据 */
+/** `dragging` 不再是元素上的隐式属性，走显式元素数据 */
 interface TreeListElementData {
 	dragging:
 		| null

@@ -43,26 +43,26 @@ import {
 const treeCore = createTreeCore();
 
 /**
- * P4b：树列表自身的可变状态（`keyword` 等）从"元素上的原型访问器"改成**显式元素数据**。
+ * 树列表自身的可变状态（`keyword` 等）从"元素上的原型访问器"改成**显式元素数据**。
  * 这里给一个类型化视图，避免 `getElementData(el).x` 的 `unknown` 参与运算
- * （P4b 第五刀试过在 `command-api` 直接换写法的负结果：访问器天生无类型，
+ * （在 `command-api` 直接换写法的负结果：访问器天生无类型，
  * 一旦换成 `unknown` 就要处处收窄；**按字段给出准确类型**才是可做的那条路）。
  */
 interface TreeListElementData {
 	keyword: RegExp | null;
-	/** P4b：重命名用的计时器（`timer` 已从 DATA_FIELDS 摘除） */
+	/** 重命名用的计时器（`timer` 已从 DATA_FIELDS 摘除） */
 	timer: Timer;
-	/** P4b：拖拽中的 dragstart 事件；`dragging.target` 是事件目标（行元素），不是元素数据 */
+	/** 拖拽中的 dragstart 事件；`dragging.target` 是事件目标（行元素），不是元素数据 */
 	dragging: TreeListDragEvent | null;
-	/** P4b：当前选中项（列表元素自身的元素数据） */
+	/** 当前选中项（列表元素自身的元素数据） */
 	selections: TreeItem[];
 }
 const treeData = (el: unknown): TreeListElementData => elementDataOf<TreeListElementData>(el);
 
-/** 行元素（`NodeElement`）上的字段同样走元素数据（P4b：`nodeIcon`/`textNode` 已从 DATA_FIELDS 摘除） */
+/** 行元素（`NodeElement`）上的字段同样走元素数据（`nodeIcon`/`textNode` 已从 DATA_FIELDS 摘除） */
 const rowData = (el: unknown): NodeElement => elementDataOf<NodeElement>(el);
 
-/** P4b：`?.` 兼容视图——null/undefined 时返回 undefined（`elementDataOf` 遇到 null 会抛 WeakMap key 错） */
+/** `?.` 兼容视图——null/undefined 时返回 undefined（`elementDataOf` 遇到 null 会抛 WeakMap key 错） */
 const rowDataOrUndefined = (el: unknown): NodeElement | undefined =>
 	el == null ? undefined : rowData(el);
 
@@ -133,7 +133,7 @@ export const treeRowElement = (item: unknown): HTMLElement | undefined =>
 /**
  * 消费方 API（步骤 5b）：把**事件目标或行内任意后代节点**归一成它所属行的 item。
  *
- * 它是 `treeRowElement` 的**反向**入口，取代旧的 `element.item` 反向桥：P4b 起 item 只存在
+ * 它是 `treeRowElement` 的**反向**入口，取代旧的 `element.item` 反向桥：item 只存在
  * 元素数据里（`tree-render.bindRowElement` 写的 `data.item`），DOM 元素上不再挂 expando，
  * 因此 `event.target.item` 一律是 `undefined`（实机表现为 `Cannot read properties of undefined
  * (reading 'class')`）。顺带把 `event.target` 归一成行——行文本在 `.node-text` 里，
@@ -287,7 +287,7 @@ const createTextBox = (): TextBox => {
 	});
 
 	textBox.addEventListener('blur', function (this: TextBox) {
-		// P2b-3：这里 `this` 是重命名文本框本身，父节点是当前行元素、再上一级是列表元素
+		// 这里 `this` 是重命名文本框本身，父节点是当前行元素、再上一级是列表元素
 		// （结构由 `rename()` 保证：文本框会被挂到行元素下）。类型上按这条链显式写出来。
 		const element = this.parentNode as HTMLElement;
 		const list = element.parentNode as TreeListHost;
@@ -329,7 +329,7 @@ const createTextBox = (): TextBox => {
 let textBoxInstance: TextBox | null = null;
 
 export const treeListStatics = {
-	// ⚠️ 这两个 API 的形参用 `object[]` 而不是 `TreeItem[]`，理由必须记清楚（P2b-4，2026-09-20）：
+	// ⚠️ 这两个 API 的形参用 `object[]` 而不是 `TreeItem[]`，理由必须记清楚：
 	//
 	// 树的 `children` / `parent` 是**运行时挂上去的**（见 `createParents` 的
 	// `Object.defineProperty`）。于是调用方的类型声明里**普遍没有**这两个字段：
@@ -372,7 +372,7 @@ export interface TreeListApiOptions {
 }
 
 /**
- * tree 列表元素的**元素 API 契约**（P2b-1）。
+ * tree 列表元素的**元素 API 契约**。
  *
  * 与命令列表的 `CommandListElementApi` 同一套约定：**消费方实际使用的方法写精确签名**，其余用
  * `[k: string]: unknown` 兜底（"其余内部/较少使用的方法保留松散签名，保证既有调用点不因类型化而报错"）。
@@ -416,7 +416,7 @@ type TreeListDragEvent = DragEvent & {
 };
 
 /**
- * P2b-3：树列表元素的**宿主契约**——`treeListPrototype` 的方法与装配代码里 `this` 的真实成员面。
+ * 树列表元素的**宿主契约**——`treeListPrototype` 的方法与装配代码里 `this` 的真实成员面。
  *
  * 这些方法过去一律写 `this: any`，于是每条都要配一句 `oxlint-disable-next-line no-explicit-any`
  * （本文件原有 48 处禁用，其中 40 余处正是这么来的）。把成员逐个写出来后：成员拼错、签名用错都会
@@ -718,7 +718,7 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 				return;
 			}
 
-			// P2b-3：把原先靠 `this: any` 兜住的两个局部变量显式类型化（`dList` 可能为 null）
+			// 把原先靠 `this: any` 兜住的两个局部变量显式类型化（`dList` 可能为 null）
 			let dList: TreeItem[] | null | undefined;
 			let dIndex = 0;
 
@@ -1282,7 +1282,7 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 		},
 
 		cancelRenaming: function (this: TreeListHost): void {
-			// P4b：`timer` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+			// `timer` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 			const timer = treeData(this).timer;
 			if (timer.target) {
 				timer.target = null;
@@ -1518,7 +1518,7 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 				addClass(event.hint, 'for-list');
 				this.parentNode!.insertBefore(hide(event.hint), this);
 				addClass(this, 'dragging');
-				// P2b-3：拖拽期间的临时监听器取自 `dragListeners`（`dragend` 要按**同一函数引用**拆掉，
+				// 拖拽期间的临时监听器取自 `dragListeners`（`dragend` 要按**同一函数引用**拆掉，
 				// 所以不能在两处各写一个箭头），这里不再直接传 `this.dragenter` 这类方法引用。
 				const listeners = this.dragListeners;
 				this.addEventListener('dragenter', listeners.dragenter);
@@ -1720,7 +1720,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		Reflect.set(list, name, Reflect.get(treeListPrototype, name));
 	}
 
-	// P4b: the attach guard now lives in element data (helper in element-data.ts)
+	// the attach guard now lives in element data (helper in element-data.ts)
 	elementDataOf<{ _initialized?: boolean }>(list)._initialized = false;
 	list.display = 'normal';
 	treeData(list).keyword = null;
@@ -1731,7 +1731,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.syncRenderRows = function (this: TreeListHost, overrideRows?: unknown): void {
 		const state = renderStateOf(this) as TreeRenderState;
 		this.initialize();
-		// P4b：`selections` / `dragging` 走显式元素数据；`?.` 链一律保留（hint/target 可能为空）
+		// `selections` / `dragging` 走显式元素数据；`?.` 链一律保留（hint/target 可能为空）
 		const listOwnerData = treeData(this);
 		const draggingHint = listOwnerData.dragging?.hint;
 		const hintItem =
@@ -1809,7 +1809,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		if (state === undefined) return;
 		const updaters = getListConfig(this).updaters as ((item: TreeItem) => void)[];
 		for (const el of state.rowElements.values()) {
-			// P4b：行元素的 item / nodeIcon 走显式元素数据
+			// 行元素的 item / nodeIcon 走显式元素数据
 			const elData = rowData(el);
 			const item = elData.item;
 			if (item === undefined) continue;
@@ -1861,7 +1861,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	});
 	treeData(list).selections = [];
 	treeData(list).dragging = null;
-	// P4b：列表配置不再是元素上的属性，统一经 getListConfig 落到元素数据（WeakMap）
+	// 列表配置不再是元素上的属性，统一经 getListConfig 落到元素数据（WeakMap）
 	listConfig.padded = el.hasAttribute('padded');
 	listConfig.removable = false;
 	listConfig.renamable = false;
@@ -1876,7 +1876,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.updateEventEnabled = false;
 	list.tabIndex = 0;
 
-	// P2b-3：拖拽临时监听器一次生成（箭头包装把接收者写死为本元素），
+	// 拖拽临时监听器一次生成（箭头包装把接收者写死为本元素），
 	// 这样 `dragstart` 装、`dragend` 拆拿到的必然是同一个函数对象。
 	list.dragListeners = {
 		dragenter: (event) => list.dragenter(event),
