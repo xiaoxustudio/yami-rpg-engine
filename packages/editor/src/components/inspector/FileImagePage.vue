@@ -54,7 +54,7 @@ onMounted(() => {
 		fileImage.image = elImage.value;
 	}
 
-	// P1b：具名 ref 占用了 `:ref` 槽位 → 命令式登记（模块侧读注册表取图元素）
+	// 具名 ref 占用了 `:ref` 槽位 → 命令式登记（模块侧读注册表取图元素）
 	registerElement(inspectorEls, 'fileImage-image', elImage.value);
 
 	const el = inspectorEls.get('fileImage');
@@ -67,7 +67,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #fileImage-image-detail {
 	flex-grow: 1;
 }

@@ -12,7 +12,7 @@ interface Props {
 	value: string;
 	/**
 	 * 归属表来源：'page'（默认，页归属 store.pageTargets：value → group-manager）
-	 * 或 'tab'（页签归属 store.tabTargets：value → leaf nav）。见 layout 迁移规划 附录 F.1。
+	 * 或 'tab'（页签归属 store.tabTargets：value → leaf nav）。
 	 */
 	source?: 'page' | 'tab';
 }
@@ -21,8 +21,8 @@ const props = withDefaults(defineProps<Props>(), { source: 'page' });
 
 const store = getLayoutStore();
 
-// M5 收尾：Teleport 目标恒为「稳定元素」——归属存在时是叶子宿主，否则回落本组件所在容器
-// （原地渲染）。此前用 `:to="target ?? 'body'"` + `:disabled` 切换，在「清空归属」的 patch 里
+// Teleport 目标恒为「稳定元素」——归属存在时是叶子宿主，否则回落本组件所在容器
+// （原地渲染）。不能用 `:to="target ?? 'body'"` + `:disabled` 切换：在「清空归属」的 patch 里
 // Vue moveTeleport 会以 null 容器搬运（真机 `insertBefore of null`，见 layout.ts 重建步骤）。
 const instance = getCurrentInstance();
 const localContainer = shallowRef<HTMLElement | null>(null);

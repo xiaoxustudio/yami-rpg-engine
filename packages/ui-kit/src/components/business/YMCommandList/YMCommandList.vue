@@ -30,7 +30,7 @@ const props = withDefaults(defineProps<Props>(), {
 const root = ref<HTMLElement | null>(null);
 
 /**
- * M3-5b′（命令列表换源）：模板渲染可见行。
+ * 模板渲染可见行。
  * 行来源是 **api 自己的行模型**（`getRowModel`）——不是派生层：`parse` 的 `break`/`script`/`children`
  * 会决定实际行集合，只有 api 知道（见 `YMCommandList.derive-boundary.spec.ts`）。
  */
@@ -102,7 +102,7 @@ onBeforeUnmount(() => {
 
 <template>
 	<div ref="root" class="command-list" :id="props.id">
-		<!-- M3-5b′：可见行由模板渲染；`:key` 用行模型的稳定 key，行内内容仍由 api 的
+		<!-- 可见行由模板渲染；`:key` 用行模型的稳定 key，行内内容仍由 api 的
 		     `updateCommandElement`（经 `:ref` 回写桥）生成 ⇒ 编辑器侧 eslints 的缩进线与标记照旧 -->
 		<div
 			v-for="row in rows"

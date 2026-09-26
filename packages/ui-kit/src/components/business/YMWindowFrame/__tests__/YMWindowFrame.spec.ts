@@ -113,7 +113,7 @@ describe('YMWindowFrame', () => {
 		expect(wrapper.element.querySelectorAll('button').length).toBe(0);
 	});
 
-	it('passes confirmDisabled through to button[name=confirm]（P5b 尾项）', async () => {
+	it('passes confirmDisabled through to button[name=confirm]', async () => {
 		const wrapper = mount(YMWindowFrame, {
 			props: { id: 'w' }
 		});

@@ -20,7 +20,7 @@ import {
 import { composableEls } from '@app/composables/element-registry';
 import { logEls } from '@app/log/element-registry';
 
-// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+// 本组件的控件元素注册表（替代按 id 查 DOM）
 const fieldEls = createElementRegistry(composableEls);
 import { h, onMounted, type VNode } from 'vue';
 import { renderDetached } from '@app/utils/dom';
@@ -44,7 +44,7 @@ const updateItems = (items: ReferenceItem[]): void => {
 		if ('count' in item && item.count !== undefined && item.count > 1) {
 			nodes.push(h('div', { class: 'reference-count text' }, String(item.count)));
 		}
-		// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		// 离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
 		const element = renderDetached(
 			h(
 				'div',
@@ -68,7 +68,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #reference {
 	width: 800px;
 	height: 600px;

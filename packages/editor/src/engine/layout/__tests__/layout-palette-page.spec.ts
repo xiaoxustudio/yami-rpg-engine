@@ -11,7 +11,7 @@ import {
 	switchWorkspace
 } from './layout-spec-utils';
 
-// LayoutPalettePage（M3b 接线首件）：页面内容经 Teleport 挂到 store.pageTargets[value]。
+// LayoutPalettePage：页面内容经 Teleport 挂到 store.pageTargets[value]。
 // 覆盖：无归属 disabled 留在宿主 → 归属更新搬进 group-manager → 换归属搬家不重建 → 清归属回宿主。
 
 const createManager = (name: string): HTMLElement => {

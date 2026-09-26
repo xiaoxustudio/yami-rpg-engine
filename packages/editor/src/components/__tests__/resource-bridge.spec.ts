@@ -5,7 +5,7 @@ import { getResourceStore, type ResourceRow } from '@app/stores/resource';
 import { initYamiI18n } from '@app/i18n';
 
 /**
- * R1（资源列表数据化）后的契约：
+ * 资源列表数据化后的契约：
  * - 行由 `stores/resource.ts` 驱动、`resource/ResourceList.vue` v-for 渲染（不再有 update 桥接）；
  * - 行内交互以事件上抛到 `Resources.download/pause/remove`；
  * - 按钮文案来自 i18n（不再是模块上的 checkVersionText/openDirText 字段）。

@@ -7,7 +7,7 @@ export interface TypeRegistryDataSource {
 	getStringItems(filter: string, flag: boolean): unknown[];
 }
 
-/** P4b：`numBox` 现在是元素数据（WeakMap），消费者只能拿到形状——这里把它提成具名类型 */
+/** `numBox` 现在是元素数据（WeakMap），消费者只能拿到形状——这里把它提成具名类型 */
 interface ParamNumBox {
 	input: { min: string; max: string };
 	setPlaceholder(placeholder: string): void;
@@ -101,7 +101,7 @@ export function createTypeRegistry(dataSource: TypeRegistryDataSource): TypeRegi
 			const wrap = pane.createNumberBox();
 			wrap.input.input.min = param.min!.toString();
 			wrap.input.input.max = param.max!.toString();
-			// P4b：`decimals` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+			// `decimals` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 			elementDataOf<{ decimals?: number }>(wrap.input).decimals = param.decimals;
 			if (param.placeholder) {
 				wrap.input.setPlaceholder(param.placeholder);
@@ -114,13 +114,13 @@ export function createTypeRegistry(dataSource: TypeRegistryDataSource): TypeRegi
 		component: 'number-var',
 		create(pane: Pane, param: Param) {
 			const wrap = pane.createNumberVar();
-			// P4b：numBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+			// numBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 			const numBox = elementDataOf<{ numBox: ParamNumBox }>(wrap.input).numBox;
 			numBox.input.min = param.min!.toString();
 			numBox.input.max = param.max!.toString();
-			// P4b：`decimals` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+			// `decimals` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 			elementDataOf<{ decimals?: number }>(numBox).decimals = param.decimals;
-			// P4b: varBox now lives in element data (field removed from DATA_FIELDS)
+			// varBox now lives in element data (field removed from DATA_FIELDS)
 			elementDataOf<{ varBox: { isPluginInput?: boolean } }>(
 				wrap.input
 			).varBox.isPluginInput = true;

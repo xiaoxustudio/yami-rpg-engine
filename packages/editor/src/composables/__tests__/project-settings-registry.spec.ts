@@ -10,7 +10,7 @@ import { focusTarget } from '@app/directives/focus';
 import { Data } from '@app/data/data-object.ts';
 
 /**
- * 窗口注册表回归（P5b 后续批次：`document.getElementById('config-*')` → `composableEls`）。
+ * 窗口注册表回归（`document.getElementById('config-*')` → `composableEls`）。
  *
  * 覆盖三条链路：① 渲染方登记（注册键 ↔ 元素 id）；② 模块侧读注册表（`initialize()` 的
  * `loadItems` / `relate` 目标确实是注册表里的控件，不是静默 no-op）；③ `*-confirm` 按钮改由
@@ -116,7 +116,7 @@ const makeConfig = () => ({
 	deadzone: 0
 });
 
-describe('项目设置窗口注册表（P5b 后续批次）', () => {
+describe('项目设置窗口注册表', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		document.body.innerHTML = '';

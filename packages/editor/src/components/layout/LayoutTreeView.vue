@@ -4,7 +4,7 @@
 			<LayoutTreeView v-for="child in node.children" :key="child.id" :node="child" />
 		</template>
 		<template v-else>
-			<!-- C.5#1（M3b-1）：叶子宿主改由 YMNavBar/YMPageManager .vue 渲染。
+			<!-- 叶子宿主由 YMNavBar/YMPageManager .vue 渲染。
 				onMounted 后组件把 read/write/on/switch/index/active 等命令式 API 直接挂到
 				root 元素（nav-bar / page-manager.group-manager），布局引擎可零改动继续命令式驱动 -->
 			<YMNavBar />

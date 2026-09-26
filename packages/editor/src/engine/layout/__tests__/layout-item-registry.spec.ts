@@ -9,8 +9,8 @@ import { engineEls } from '@app/engine/element-registry';
 import { registerElement } from '@app/utils/element-registry';
 import { registerLayout } from './layout-spec-utils';
 
-// M5-c：palette 显式登记（LayoutPanel 拥有 palette 节点）后，
-// 引擎装载不再依赖「palette 容器子节点 / 全文档扫描」的形态猜测：
+// palette 显式登记（LayoutPanel 拥有 palette 节点）后，
+// 引擎装载不依赖「palette 容器子节点 / 全文档扫描」的形态猜测：
 // 登记项优先，DOM 发现仅补登记缺失项。
 
 const DIRECTORY = {
@@ -41,7 +41,7 @@ const makeFixture = () => {
 	paletteManager.id = 'layout-page-manager';
 	paletteManager.className = 'page-manager';
 	directory.append(paletteNav, paletteManager);
-	// P1b：palette 容器按生产路径登记（LayoutPanel 就是这么做的）——「登记缺失项」的兜底
+	// palette 容器按生产路径登记（LayoutPanel 就是这么做的）——「登记缺失项」的兜底
 	// 现在只在**容器子树内**查找，故容器本身必须在注册表里。
 	registerElement(engineEls, 'layout-nav', paletteNav);
 	registerElement(engineEls, 'layout-page-manager', paletteManager);
@@ -71,7 +71,7 @@ afterEach(() => {
 	document.body.innerHTML = '';
 });
 
-describe('palette 显式登记（M5-c）', () => {
+describe('palette 显式登记', () => {
 	it('登记优先：palette 容器被搬空后装载仍解析出全部 items', () => {
 		const fixture = makeFixture();
 		// 模拟整壳 Teleport：palette 容器内节点全部搬走（真机形态）

@@ -105,7 +105,7 @@ onMounted(() => {
 	element.resize = resize;
 	element.clear = clear;
 	element.select = select;
-	// P4b：`selection` 走元素数据（WeakMap）；下面循环里的 `visible` 等仍是组件自己的实例属性
+	// `selection` 走元素数据（WeakMap）；下面循环里的 `visible` 等仍是组件自己的实例属性
 	elementDataOf<{ selection: HTMLElement | null }>(element).selection = selection.value;
 	for (const key of [
 		'x',

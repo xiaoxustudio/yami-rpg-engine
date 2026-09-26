@@ -270,7 +270,6 @@ const inspectorPages = Object.entries(inspectorModules).map(([path, loader]) => 
 </script>
 
 <style>
-/* 样式迁移：由 Project/css/layout.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #title {
 	display: flex;
 	position: absolute;

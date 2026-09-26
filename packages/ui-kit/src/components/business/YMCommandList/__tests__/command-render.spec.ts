@@ -18,8 +18,8 @@ import {
 } from '../command-render';
 
 /**
- * P6/M2 派生层用例：只验证「命令树 → 可见行」的纯数据推导。
- * 这些断言是 M3 把渲染换成 `v-for` 时的对照物（渲染怎么变都行，派生结果不许变）。
+ * 只验证「命令树 → 可见行」的纯数据推导。
+ * 这些断言是 `v-for` 渲染的对照物（渲染怎么变都行，派生结果不许变）。
  */
 const command = (id: string, extra: Partial<CommandRenderCommand> = {}): CommandRenderCommand => ({
 	id,
@@ -29,12 +29,12 @@ const command = (id: string, extra: Partial<CommandRenderCommand> = {}): Command
 });
 
 /**
- * M3 起派生结果**包含每个列表末尾的空白行**（api 的 `createItems` 一直如此），
+ * 派生结果**包含每个列表末尾的空白行**（api 的 `createItems` 一直如此），
  * 因此"命令序列"类断言统一先过滤掉空白行；空白行本身单独有用例。
  */
 const commandsOf = (rows: ReturnType<typeof deriveCommandRows>) => rows.filter((row) => !row.blank);
 
-describe('command-render（M2 派生层：可见行推导）', () => {
+describe('command-render（派生层：可见行推导）', () => {
 	it('扁平列表：按顺序出全部行，indent 全 0', () => {
 		const list = [command('a'), command('b'), command('c')];
 		const rows = commandsOf(deriveCommandRows(list));
@@ -151,10 +151,10 @@ describe('command-render（M2 派生层：可见行推导）', () => {
 });
 
 /**
- * M2 切片 2：翻页数学从 `pageUp`/`pageDown` 抽出来的纯函数。
+ * 翻页数学从 `pageUp`/`pageDown` 抽出来的纯函数。
  * 这几条是**逐字对照原实现**写的（原实现散在 api 里，`content-api.ts` 改调这些函数后行为不许变）。
  */
-describe('command-render（M2 切片 2：翻页数学）', () => {
+describe('command-render（翻页数学）', () => {
 	const context = (over: Partial<Parameters<typeof computePageUpScrollTop>[0]> = {}) => ({
 		scrollTop: 0,
 		viewportHeight: 400,
@@ -203,8 +203,8 @@ describe('command-render（M2 切片 2：翻页数学）', () => {
 	});
 });
 
-/** M2 切片 3：`scrollToSelection` / `scrollToRow` 的定位数学 */
-describe('command-render（M2 切片 3：定位数学）', () => {
+/** `scrollToSelection` / `scrollToRow` 的定位数学 */
+describe('command-render（定位数学）', () => {
 	const selectionContext = (
 		over: Partial<ScrollToSelectionContext> = {}
 	): ScrollToSelectionContext => ({

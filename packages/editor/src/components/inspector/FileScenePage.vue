@@ -227,7 +227,7 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
-	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	// 以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
 	registerElement(inspectorEls, 'fileScene-ambient-red', elAmbientRed.value);
 	registerElement(inspectorEls, 'fileScene-ambient-green', elAmbientGreen.value);
 	registerElement(inspectorEls, 'fileScene-ambient-blue', elAmbientBlue.value);
@@ -282,7 +282,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #fileScene-ambient-red-slider,
 #fileScene-ambient-green-slider,
 #fileScene-ambient-blue-slider,

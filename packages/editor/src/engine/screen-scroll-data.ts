@@ -1,7 +1,7 @@
 import { elementDataOf } from '@ui-kit';
 
 /**
- * P4b：画布 `screen` 元素上的滚动缓存。
+ * 画布 `screen` 元素上的滚动缓存。
  *
  * 这几个引擎（scene / ui / animation / particle / sprite / palette）都在自己的
  * `screen` 元素上缓存"未乘 dpr 的原始滚动位置"，用于把鼠标坐标换算回画布坐标。

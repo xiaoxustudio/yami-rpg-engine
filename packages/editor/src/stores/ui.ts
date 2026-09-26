@@ -561,8 +561,8 @@ export const useUIStore = defineStore('ui', () => {
 	 * 逐个手写包装既啰嗦又容易抄错参数——所以这里用**同一个转发机制**批量生成：
 	 * 调用时读目标对象上的成员（而不是捕获一次引用），因此「模块稍后才赋值」这件事天然成立。
 	 *
-	 * 这也是**未迁移调用方零改动**的前提：调用方写 `getUIStore().listChange(e)`，
-	 * 语义与原来的 `UI.listChange(e)` 完全一致（含 `this` 绑定、含不存在时静默跳过）。
+	 * 调用方写 `getUIStore().listChange(e)`，语义与 `UI.listChange(e)` 完全一致
+	 * （含 `this` 绑定、含不存在时静默跳过）。
 	 *
 	 * @param resolve 每次调用时求值，返回**真正的接收者对象**（延迟求值是这个机制的关键）
 	 *

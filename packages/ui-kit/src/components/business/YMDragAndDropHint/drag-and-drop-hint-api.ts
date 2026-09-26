@@ -21,7 +21,7 @@ export interface DragAndDropHintApi extends HTMLElement {
 	set(coords: DragAndDropHintCoords): void;
 }
 
-/** P4b：`target` 住在元素数据里（WeakMap），不再是元素上的隐式属性 */
+/** `target` 住在元素数据里（WeakMap），不再是元素上的隐式属性 */
 const hintData = (el: unknown): { target: HTMLElement | null } =>
 	elementDataOf<{ target: HTMLElement | null }>(el);
 

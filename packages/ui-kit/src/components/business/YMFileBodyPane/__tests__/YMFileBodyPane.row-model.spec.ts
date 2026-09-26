@@ -5,10 +5,9 @@ import YMFileBodyPane from '../YMFileBodyPane.vue';
 import { deriveFileRows } from '../file-body-render';
 
 /**
- * P6/M3 切片 3：**可见行数据模型**与"命令式渲染出的 DOM"必须等价。
+ * **可见行数据模型**与渲染出的 DOM 必须等价。
  *
- * 为什么这条用例是换源（`v-for`）的前提：M3 要把行的产生从 `createFileElement` 搬到模板，
- * 搬之前必须先证明"派生层算出来的行序列"与"现在真正渲染出来的行序列"**逐项一致**
+ * 行由模板按本模型产生，因此必须证明"派生层算出来的行序列"与"真正渲染出来的行序列"**逐项一致**
  * （顺序、key、窗口边界）。不一致就先修模型，而不是先动渲染。
  */
 class FileItem {
@@ -122,7 +121,7 @@ const domRowKeys = (el: BodyElement): (string | undefined)[] =>
 		(row) => row.rowKey
 	);
 
-describe('YMFileBodyPane（M3 切片 3：可见行模型 ↔ DOM 等价）', () => {
+describe('YMFileBodyPane（可见行模型 ↔ DOM 等价）', () => {
 	it('模型里的 key 序列与 DOM 中行元素顺序逐项一致', async () => {
 		const { el } = mountBody();
 		await renderItems(el, items(5));
@@ -171,10 +170,10 @@ describe('YMFileBodyPane（M3 切片 3：可见行模型 ↔ DOM 等价）', () 
 });
 
 /**
- * M3 切片 5 前置：模板渲染一行需要的**全部数据**必须与命令式渲染结果一致
+ * 模板渲染一行需要的**全部数据**必须与命令式渲染结果一致
  * （名称、文件夹标记、选中态、定位样式）——换源时模板只吃这份数据，不再读 DOM。
  */
-describe('YMFileBodyPane（M3 切片 5 前置：行描述 ↔ DOM 双写一致）', () => {
+describe('YMFileBodyPane（行描述 ↔ DOM 双写一致）', () => {
 	it('行描述与 DOM 逐项一致：名称、文件夹标记、定位样式', async () => {
 		const { el } = mountBody();
 		await renderItems(el, [new FileItem('/a/ev', 'ev'), new FolderItem('/a/sub', 'sub')]);

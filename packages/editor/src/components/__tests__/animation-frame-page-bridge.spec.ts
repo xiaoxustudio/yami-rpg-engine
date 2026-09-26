@@ -59,7 +59,7 @@ vi.mock('@app/stores/local', () => ({
 
 type SyncEl = HTMLElement & { sync?: () => void };
 
-describe('animation-frame 页（inspector sync 响应式桥接——P3 迁移回归保护）', () => {
+describe('animation-frame 页（inspector sync 响应式桥接回归保护）', () => {
 	beforeEach(() => {
 		document.body.innerHTML = '';
 		animJointFrame.target = null;
@@ -74,7 +74,7 @@ describe('animation-frame 页（inspector sync 响应式桥接——P3 迁移回
 		const host = document.createElement('div');
 		host.id = mountId;
 		document.body.appendChild(host);
-		// P1b：页面 SFC 改从 inspectorEls 取宿主容器 → 用例自建的宿主也要登记
+		// 页面 SFC 改从 inspectorEls 取宿主容器 → 用例自建的宿主也要登记
 		registerElement(inspectorEls, host.id, host);
 		const wrapper = mount(component, {
 			attachTo: document.body

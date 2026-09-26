@@ -21,7 +21,7 @@ import {
 	type SchemeNode
 } from './layout-spec-utils';
 
-// M2b 收尾：布局字典（Layout.layout / Layout.default / config.layout）生命周期金标准。
+// 布局字典（Layout.layout / Layout.default / config.layout）生命周期金标准。
 // 覆盖 saveToConfig 回写、switchLayout 缓存失效重建、loadFromConfig 接管、default 兜底。
 
 type ConfigShape = { layout?: Record<string, SchemeNode> | null };
@@ -72,7 +72,7 @@ describe('saveToConfig 回写 DOM 变更', () => {
 		expect(Object.keys(config.layout ?? {})).toEqual(['directory']);
 	});
 
-	it('M4-2/M5-a：退化（无页签）树不覆盖既有 layout —— 镜像缺失时不写坏 config', async () => {
+	it('退化（无页签）树不覆盖既有 layout —— 镜像缺失时不写坏 config', async () => {
 		const fixture = buildLayoutFixture();
 		registerLayout(fixture);
 		switchWorkspace(fixture, 'directory');
@@ -85,7 +85,7 @@ describe('saveToConfig 回写 DOM 变更', () => {
 		empty.className = 'group';
 		host.append(empty);
 
-		// M5-a：镜像仍在 → saveToConfig 读镜像，不受退化 DOM 影响
+		// 镜像仍在 → saveToConfig 读镜像，不受退化 DOM 影响
 		const config: ConfigShape = {};
 		Layout.saveToConfig!(config);
 		expect(config.layout?.directory).toEqual(DIRECTORY_SCHEME);

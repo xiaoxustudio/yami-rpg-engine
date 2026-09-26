@@ -33,7 +33,7 @@ interface Props {
 	showApply?: boolean;
 	buttonsIdPrefix?: string;
 	noButtons?: boolean;
-	/** 表单无效时禁用确认按钮（P5b 尾项：取代原先对 `#<id>-confirm` 的 disable/enable） */
+	/** 表单无效时禁用确认按钮（取代原先对 `#<id>-confirm` 的 disable/enable） */
 	confirmDisabled?: boolean;
 }
 
@@ -139,7 +139,7 @@ onMounted(() => {
 			(emit as (evt: 'confirm' | 'apply' | 'cancel') => void)(type)
 		);
 	}
-	// P1b：窗口壳元素登记进 windowShellEls（`Window.open(id)` 据此取帧，原先 document.getElementById）。
+	// 窗口壳元素登记进 windowShellEls（`Window.open(id)` 据此取帧，原先 document.getElementById）。
 	// 取消按钮的接线也从模块的 `document.getElementsByName('cancel')` 下沉到这里——只查自己的子树。
 	if (el.id !== '') registerElement(windowShellEls, el.id, el);
 	for (const button of el.querySelectorAll<HTMLElement>('[name="cancel"]')) {

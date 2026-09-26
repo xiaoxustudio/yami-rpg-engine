@@ -130,7 +130,7 @@ const AddressPart = defineComponent({
 			};
 			if (!element) return;
 			element.file = props.node.file;
-			// P4b：`folders`/`target` 走显式元素数据（`folders` 已从 DATA_FIELDS 摘除）。
+			// `folders`/`target` 走显式元素数据（`folders` 已从 DATA_FIELDS 摘除）。
 			// ⚠️ 教训：这两个字段的**读取点是解构**（`const { folders, target } = element`），
 			// 按 `.folders` 检索会漏掉它们——第一次删字段时就是这么踩空的（file-head-pane 的用例当场转红）。
 			const data = elementDataOf<{ folders?: FileItem[]; target?: FileItem }>(element);
@@ -246,7 +246,7 @@ function addressPointerdown(event: PointerEvent) {
 									break;
 								case 'FILE-HEAD-ADDRESS-ARROW': {
 									const MAX_MENU_ITEMS = 32;
-									// P4b：与写入点同源——都读显式元素数据
+									// 与写入点同源——都读显式元素数据
 									const addressData = elementDataOf<{
 										folders?: FileItem[];
 										target?: FileItem;
@@ -359,7 +359,7 @@ onMounted(() => {
 			viewRoot.input = viewInputEl;
 			viewInputEl.max = '4';
 		}
-		// P4b：原先这里写 `viewRoot.activeWheel = true`（元素数据），但 YMSliderBox 只读
+		// 原先这里写 `viewRoot.activeWheel = true`（元素数据），但 YMSliderBox 只读
 		// `props.activeWheel`——**没有任何读取方**，属死写入，已删（字段也从 DATA_FIELDS 摘除）。
 		viewRoot.addEventListener('focus', viewFocus);
 		viewRoot.addEventListener('input', viewInput);

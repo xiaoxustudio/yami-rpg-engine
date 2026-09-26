@@ -1,6 +1,6 @@
 <template>
 	<div class="file-body-pane" ref="el" :data-v-ref="''">
-		<!-- M3 切片 5b：行元素改由模板渲染——`:key`/`:style`/`:class` 全部吃"行描述"数据，
+		<!-- 行元素由模板渲染——`:key`/`:style`/`:class` 全部吃"行描述"数据，
 		     api 只负责算可见窗口，并把模板建出的元素经 `bindRowElement` 登记回 `elements[]` -->
 		<div class="file-body-content" ref="contentEl" tabindex="0" :data-v-ref="''">
 			<div
@@ -11,7 +11,7 @@
 				:class="{ 'file-item': !row.isFolder, selected: row.selected }"
 				:style="row.style"
 			>
-				<!-- M5：文件名由模板渲染（Vue 负责改名后的更新）；图标仍由 api 建（画布/图片类不可替代） -->
+				<!-- 文件名由模板渲染（Vue 负责改名后的更新）；图标仍由 api 建（画布/图片类不可替代） -->
 				<span class="file-body-name">{{ row.name }}</span>
 			</div>
 		</div>
@@ -53,7 +53,7 @@ import {
 
 const core = createFileBodyCore();
 
-// B1 收口：离屏建元素统一走 ui-kit 的 detached 接缝（本文件不再直接调用受限的 document.*）
+// 离屏建元素统一走 ui-kit 的 detached 接缝（本文件不直接调用受限的 document.*）
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => renderDetached(vnode);
 
 interface FileBodyContext {
@@ -141,7 +141,7 @@ type FileBodyIconApi = HTMLElement & {
 };
 
 interface FileBodyItemApi extends HTMLElement {
-	/** M3 切片 1：派生层给的稳定行 key（M3 换 `v-for` 后直接当 `:key`） */
+	/** 派生层给的稳定行 key（模板直接当 `:key`） */
 	rowKey?: string;
 	file: FileBodyFile;
 	context?: FileBodyContext;
@@ -204,10 +204,10 @@ type FileBodyPaneApi = HTMLElement & {
 	) => void;
 };
 
-/** P4b：内容元素上的元素数据（`count` 仍在 DATA_FIELDS 内） */
+/** 内容元素上的元素数据（`count` 仍在 DATA_FIELDS 内） */
 const contentData = (el: unknown): { count?: number } => elementDataOf<{ count?: number }>(el);
 
-/** P4b：行元素上的元素数据（`changed` 仍在 DATA_FIELDS 内） */
+/** 行元素上的元素数据（`changed` 仍在 DATA_FIELDS 内） */
 const rowData = (el: unknown): { changed?: boolean } => elementDataOf<{ changed?: boolean }>(el);
 
 interface Props {
@@ -410,7 +410,7 @@ let elements: (FileBodyItemApi | undefined)[] & {
 };
 let activeFile: FileBodyFile | null = null;
 /**
- * M3 切片 5a（api 数据化）：扁平化后的**文件数据**（排序后，与 `elements` 同序）。
+ * 扁平化后的**文件数据**（排序后，与 `elements` 同序）。
  * 选区/导航/默认选中一律读它——窗口外的行在 `elements[]` 里是空槽，读元素会让这些方法
  * 只对"当前渲染出的一段"生效；数据层没有这个问题，也正好是后续模板换源的前提。
  */
@@ -519,7 +519,7 @@ function updateFiles(): void {
 	resize();
 }
 
-/** M3 切片 5 前置：单个可见行的**模板所需数据**（与 DOM 双写，便于逐项核对） */
+/** 单个可见行的**模板所需数据**（与 DOM 双写，便于逐项核对） */
 export interface FileBodyRowDescriptor {
 	key: string;
 	/** 全局行下标（在全部行中的位置） */
@@ -533,7 +533,7 @@ export interface FileBodyRowDescriptor {
 	style: { left: string; top: string };
 }
 
-/** M3 切片 3：可见行的**数据模型**（供 `v-for` 换源前的等价性验证与后续模板化使用） */
+/** 可见行的**数据模型**（供 `v-for` 换源前的等价性验证与后续模板化使用） */
 export interface FileBodyRowModel {
 	/** 可见窗口起点（含） */
 	start: number;
@@ -545,7 +545,7 @@ export interface FileBodyRowModel {
 	viewMode: string;
 	/** 可见行的稳定 key，顺序与 DOM 中的行一致 */
 	keys: string[];
-	/** M3 切片 5 前置：模板渲染一行所需的全部数据（与 DOM 双写） */
+	/** 模板渲染一行所需的全部数据（与 DOM 双写） */
 	rows: FileBodyRowDescriptor[];
 }
 
@@ -558,11 +558,11 @@ const rowModel = shallowRef<FileBodyRowModel>({
 	rows: []
 });
 
-/** M3 切片 5b：模板渲染的可见行（= 行描述，由 `resize()` 更新） */
+/** 模板渲染的可见行（= 行描述，由 `resize()` 更新） */
 const visibleRows = computed<FileBodyRowDescriptor[]>(() => rowModel.value.rows);
 
 /**
- * M3 切片 5b：`:ref` 回写桥。模板渲染出行元素后，把它登记进 api 的簿记
+ * `:ref` 回写桥。模板渲染出行元素后，把它登记进 api 的簿记
  * （`elements[]` 与 `file.context.element`），并沿用既有 `updateOnResize`
  * 生成图标、名称与拖拽属性——这三块的实现没有改动。
  */
@@ -588,9 +588,9 @@ function bindRowElement(
 }
 
 /**
- * M5：重建可见行描述（模板的渲染数据源）。
+ * 重建可见行描述（模板的渲染数据源）。
  * **每次 `resize()` 都调用**（不再只在窗口变化时）——文件名、选中态等数据可能已变，
- * 而改名如今走"模型 → 模板"，不再有 `updateFileElement` 直接写 DOM 的兜底。
+ * 而改名走"模型 → 模板"，没有 `updateFileElement` 直接写 DOM 的兜底。
  */
 function rebuildRowDescriptors(start: number, end: number, cpl: number): void {
 	const content = contentEl.value as FileBodyContentApi;
@@ -652,13 +652,13 @@ function resize(): void {
 		els.cpl = cpl;
 		updateContentOffset();
 	}
-	// M3 切片 5b：行描述**只从数据算**（不再从 DOM 反读）——模板照它渲染行，
-	// api 不再建/挂/摘元素（Vue 负责生命周期，元素经 `bindRowElement` 回写）。
-	// M5：**每次 resize 都重建**（不再只在窗口变化时），这样改名等数据变化能经模型反映到模板。
+	// 行描述**只从数据算**（不反读 DOM）——模板照它渲染行，
+	// api 不建/挂/摘元素（Vue 负责生命周期，元素经 `bindRowElement` 回写）。
+	// **每次 resize 都重建**（不再只在窗口变化时），这样改名等数据变化能经模型反映到模板。
 	rebuildRowDescriptors(start, end, cpl);
 }
 
-/** M3 切片 3：读取可见行模型（只读副本，避免调用方改到内部状态） */
+/** 读取可见行模型（只读副本，避免调用方改到内部状态） */
 function getRowModel(): FileBodyRowModel {
 	return {
 		...rowModel.value,
@@ -668,7 +668,7 @@ function getRowModel(): FileBodyRowModel {
 }
 
 /**
- * M3 切片 5 前置：只刷新行描述里的**选中态**（选中/取消选中不触发 `resize`，
+ * 只刷新行描述里的**选中态**（选中/取消选中不触发 `resize`，
  * 但模板换源后 `selected` 需要即时反映；只改这一个字段，避免整份模型重建）。
  */
 function refreshRowSelection(): void {
@@ -702,7 +702,7 @@ function computeGridProperties(): void {
 	contentData(content).count = -1;
 	elements.start = -1;
 	elements.end = -1;
-	// M2 切片 5：模式 → 度量 的映射改由派生层给（`list`/`small`/`medium`/`large`/`huge` 与原先同一张表；
+	// 模式 → 度量 的映射改由派生层给（`list`/`small`/`medium`/`large`/`huge` 与原先同一张表；
 	// 未知/未定的 viewMode 与原 `switch` 一样"什么都不设"）
 	if (!VIEW_MODE_BY_INDEX.includes(viewMode as FileBodyViewMode)) return;
 	applyGridMetrics(
@@ -795,7 +795,7 @@ function updateOnResize(element: FileBodyItemApi): void {
 }
 
 /**
- * M3 切片 5b：`createFlatItems` 只记录数据（排序后的文件列表 + 行数）；
+ * `createFlatItems` 只记录数据（排序后的文件列表 + 行数）；
  * 行元素由模板 `v-for` 渲染，经 `bindRowElement` 回写进 `elements[]`。
  */
 function createFlatItems(dir: FileBodyFile[]): void {
@@ -805,16 +805,16 @@ function createFlatItems(dir: FileBodyFile[]): void {
 }
 
 /**
- * M5（换源后清理）：`createFolderElement` / `createFileElement` 已随切片 5b 删除——
- * 行元素现在由模板渲染，登记工作由 `bindRowElement` 承担（做的是同一件事：
- * 挂 `file`/`context`/`rowKey` 并标记 `changed`），这两个函数因此成了死代码。
+ * `createFolderElement` / `createFileElement` 已删除：行元素由模板渲染，
+ * 登记工作由 `bindRowElement` 承担（做的是同一件事：
+ * 挂 `file`/`context`/`rowKey` 并标记 `changed`）。
  */
 
 function updateFolderElement(element: FileBodyItemApi): void {
 	if (!element.nameBox) {
-		// M5：名字同样由**模板**渲染（`{{ row.name }}`）⇒ 只能复用模板那一个，不能再 append
+		// 名字同样由**模板**渲染（`{{ row.name }}`）⇒ 只能复用模板那一个，不能再 append
 		// 第二个（否则一行里出现两个 `.file-body-name`，改名时还会 hide 错节点）；
-		// 图标插到名字**之前**，保持与命令式实现一致的"图标 + 名字"顺序。
+		// 图标插到名字**之前**，保持"图标 + 名字"的顺序。
 		const nameBox = element.querySelector('.file-body-name') as HTMLElement | null;
 		const fileIcon = renderElement(h('span', { class: ['file-body-icon', 'icon-folder'] }));
 		if (nameBox) {
@@ -836,7 +836,7 @@ function updateFolderElement(element: FileBodyItemApi): void {
 
 function updateFileElement(element: FileBodyItemApi): void {
 	const { file } = element;
-	// M5：名字那一段由**模板**渲染（`{{ row.name }}`）⇒ 这里只补图标，并把它插到名字之前；
+	// 名字那一段由**模板**渲染（`{{ row.name }}`）⇒ 这里只补图标，并把它插到名字之前；
 	// 名字本身不再由 api 写（改名走模型 → 模板重渲染）。
 	const nameBox =
 		element.nameBox ?? (element.querySelector('.file-body-name') as HTMLElement | null);
@@ -1067,7 +1067,7 @@ function select(...files: FileBodyFile[]): void {
 		const context = file.getContext(node);
 		if (context.element) addClass(context.element, 'selected');
 	}
-	// M3 切片 5 前置：选中态也要进入行描述（选中不触发 resize，模板换源后需要这里补一次）
+	// 选中态也要进入行描述（选中不触发 resize，模板换源后需要这里补一次）
 	refreshRowSelection();
 	if (selectEventEnabled) {
 		const select = new Event('select') as FileBodyEvent;
@@ -1077,7 +1077,7 @@ function select(...files: FileBodyFile[]): void {
 }
 
 /**
- * M3 切片 5a（api 数据化）：全选读**数据**（`flatFiles`）而不是元素槽位。
+ * 全选读**数据**（`flatFiles`）而不是元素槽位。
  * 顺带修掉一个潜在缺陷：原先按 `elements[i].file` 取，而窗口外的行槽位是 `undefined`，
  * 于是"全选"只会选到当前渲染出的那一段。
  */
@@ -1099,7 +1099,7 @@ function unselect(): void {
 			}
 		}
 		selections = [];
-		// M3 切片 5 前置：取消选中同样要回写行描述
+		// 取消选中同样要回写行描述
 		refreshRowSelection();
 		if (unselectEventEnabled) {
 			const unselect = new Event('unselect') as FileBodyEvent;
@@ -1110,7 +1110,7 @@ function unselect(): void {
 }
 
 function selectByPath(path: string): void {
-	// M3 切片 5a：按路径查找走数据层（窗口外的行同样能被选中）
+	// 按路径查找走数据层（窗口外的行同样能被选中）
 	for (const file of flatFiles) {
 		if (file.path === path) {
 			return select(file);
@@ -1120,14 +1120,14 @@ function selectByPath(path: string): void {
 }
 
 function selectDefault(): void {
-	// M3 切片 5a：默认选中第一行，同样取数据（`els[i]` 在窗口外是空槽）
+	// 默认选中第一行，同样取数据（`els[i]` 在窗口外是空槽）
 	if (flatFiles.length !== 0) {
 		select(flatFiles[0]);
 	}
 }
 
 function selectRelativeInGridMode(direction: 'prev' | 'next' | 'prev-line' | 'next-line'): void {
-	// M3 切片 5a：网格导航全部走数据层（下标即数据下标，不再依赖"元素是否已渲染"）
+	// 网格导航全部走数据层（下标即数据下标，不再依赖"元素是否已渲染"）
 	const count = flatFiles.length;
 	if (count > 0) {
 		let start = Infinity;
@@ -1533,7 +1533,7 @@ function clearElements(start: number): void {
 function clear(): HTMLElement {
 	const node = el.value as FileBodyPaneApi;
 	unselect();
-	// M3 切片 5b：**不再 `content.textContent = ''`**——行归模板（Vue）管，直接清空会把 Vue 的节点表打乱；
+	// **不再 `content.textContent = ''`**——行归模板（Vue）管，直接清空会把 Vue 的节点表打乱；
 	// 行数只经 `elements.count` / 行模型反映。
 	clearElements(0);
 	elements.count = 0;
@@ -2057,7 +2057,7 @@ onMounted(() => {
 		updateViewMode,
 		updateFiles,
 		resize,
-		// M3 切片 3：可见行模型（数据化渲染的前置）
+		// 可见行模型（数据化渲染的前置）
 		getRowModel,
 		computeGridProperties,
 		updateContentSize,

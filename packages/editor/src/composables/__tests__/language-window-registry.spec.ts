@@ -9,7 +9,7 @@ import { Window } from '@app/tools/window-object.ts';
 import { focusTarget } from '@app/directives/focus';
 
 /**
- * 语言窗口注册表回归（P5b 后续批次：`document.getElementById('language-*')` → `composableEls`）。
+ * 语言窗口注册表回归（`document.getElementById('language-*')` → `composableEls`）。
  *
  * 单文件单独跑的原因：`languages.initialize` 会被 `ParamList.bind()` **消费一次**后置空
  * （`object.initialize = () => {}`），因此"重复语言 → 聚焦"这条路径只有在未绑定过的模块实例上
@@ -73,7 +73,7 @@ vi.mock('@app/data/data-object.ts', () => ({
 
 const LANGUAGE_IDS = ['language-name', 'language-font', 'language-scale'];
 
-describe('语言窗口注册表（P5b 后续批次）', () => {
+describe('语言窗口注册表', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		document.body.innerHTML = '';

@@ -199,7 +199,7 @@ const matrixStub = {
 };
 
 vi.mock('@app/stores/ui', () => ({
-	// 阶段 1b 起：元素代码不再读 `UI.matrix` / `UI.foreground`，改读 store。
+	// 元素代码不读 `UI.matrix` / `UI.foreground`，读 store。
 	// 这里给出的都是元素构造/绘制路径会碰到的字段（matrix 供 GL.matrix.set，
 	// foreground 供 RootElement.draw 的 getINTRGBA）。
 	getUIStore: () => ({
@@ -298,7 +298,7 @@ import '@app/engine/ui/progress-bar-element.ts';
 import '@app/engine/ui/root-element.ts';
 import { UIInstanceList } from '@app/engine/ui/element-instance-list.ts';
 
-// 阶段 1b 起：元素类登记在 `uiElClasses`（由上面这些 `import './xxx-element.ts'` 在模块顶层填好），
+// 元素类登记在 `uiElClasses`（由上面这些 `import './xxx-element.ts'` 在模块顶层填好），
 // 而不再挂在被 mock 掉的 `UI` 单例上。所以这里读真实注册表，而不是读 mock 对象。
 import { uiElClasses } from '@app/engine/ui/element-classes.ts';
 

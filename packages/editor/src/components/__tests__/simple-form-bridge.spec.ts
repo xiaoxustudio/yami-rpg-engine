@@ -21,7 +21,7 @@ interface FormFrame extends HTMLElement {
 
 const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
 
-describe('低频工具窗口表单桥接（P3 表单读写型迁移回归保护）', () => {
+describe('低频工具窗口表单桥接（表单读写型回归保护）', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 	});

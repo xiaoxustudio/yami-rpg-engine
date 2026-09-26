@@ -6,7 +6,7 @@ import YMCommandList from '../YMCommandList.vue';
 import { elementDataOf } from '../../../../utils/element-data';
 
 /**
- * M3-5b′（为命令列表换源准备）：`attachRowData` 是**回写桥**在挂行时用的数据挂载入口。
+ * `attachRowData` 是**回写桥**在挂行时用的数据挂载入口。
  * 它必须与 `createCommandBuffer` 里那套闭包**语义一致**——本用例逐项核对：
  * 挂上去之后，元素上的 `dataItem`/`dataList`/`dataIndex`/`dataIndent`/`dataKey`/`dataParent`/`contents`
  * 与"api 自己建出来的行元素"读出来的一样。
@@ -57,7 +57,7 @@ interface RowElement extends HTMLElement {
 	dataIndent?: number;
 }
 
-describe('command-api（M3-5b′：attachRowData 与建行闭包语义一致）', () => {
+describe('command-api（attachRowData 与建行闭包语义一致）', () => {
 	const host = (): RowElement => document.createElement('div') as unknown as RowElement;
 
 	it('挂上之后：rowKey / dataKey / dataIndex / dataIndent / dataList 都能读回', () => {

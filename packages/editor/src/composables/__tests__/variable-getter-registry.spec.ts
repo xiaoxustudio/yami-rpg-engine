@@ -12,7 +12,7 @@ import { elementDataOf } from '@app/utils/element-data';
 import type { YamiElement } from '@app/types/element-api';
 
 /**
- * 窗口注册表回归（P5b 后续批次：`document.getElementById('variableGetter-*')` → `composableEls`）。
+ * 窗口注册表回归（`document.getElementById('variableGetter-*')` → `composableEls`）。
  *
  * `useVariableGetterWindow` 原先按 id 直接查 DOM（34 处），现在改读**渲染方登记的**分组注册表。
  * 这条链路一旦断（例如模板漏挂 `:ref="registryRef(composableEls, id)"`），模块侧会静默 no-op
@@ -54,7 +54,7 @@ const loadItemsOf = (id: string): ReturnType<typeof vi.fn> => {
 
 const makeTarget = (read?: () => unknown) => ({ dataValue: undefined, read, input: vi.fn() });
 
-describe('变量访问器窗口注册表（P5b 后续批次）', () => {
+describe('变量访问器窗口注册表', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		document.body.innerHTML = '';
@@ -158,7 +158,7 @@ describe('变量访问器窗口注册表（P5b 后续批次）', () => {
 		commandList.read = () => true;
 		commandList.varList = [globalEntry, namespaceEntry, otherEntry];
 		Object.assign(commandList, { elements: rows });
-		// P4b：选区活动行在元素数据里（元素属性 `active` 已退役）
+		// 选区活动行在元素数据里（元素属性 `active` 已退役）
 		elementDataOf<{ active?: number | null }>(commandList).active = 1;
 		EventEditor.commandList = commandList as never;
 

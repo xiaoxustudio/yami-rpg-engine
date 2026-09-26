@@ -9,7 +9,7 @@ import {
 	switchWorkspace
 } from './layout-spec-utils';
 
-// 运行时页面归属（M3b :to 输入）：loadLayoutScheme/navDrop 收敛点后 store.pageTargets
+// 运行时页面归属（:to 输入）：loadLayoutScheme/navDrop 收敛点后 store.pageTargets
 // 应精确反映「value → 归属 group-manager」，跨工作区切换整表刷新。
 
 describe('collectPageTargets 单元', () => {

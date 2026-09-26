@@ -3,10 +3,10 @@ import { createCommandListElement, type CommandListApiOptions } from '../command
 import { deriveCommandRows } from '../command-render';
 
 /**
- * M3 换源前的**边界实测**：派生层（`deriveCommandRows`）与 api 实际建出的行序列，
+ * 派生层（`deriveCommandRows`）与 api 实际建出的行序列，
  * 什么时候一致、什么时候必然不一致。
  *
- * 结论（本轮实测，已写入 monolith-render-plan）：
+ * 结论（实测）：
  * - **普通列表**（`parse` 只产出文本）两边**逐项一致**（含末尾空白行）；
  * - 一旦 `parse` 产出 `break` / `script` / `children`，**行集合由 `parse` 决定**——
  *   一条命令可以拆成多行、多行脚本各占一行、子列表只有在 `parse` 给出 `children` 时才展开，

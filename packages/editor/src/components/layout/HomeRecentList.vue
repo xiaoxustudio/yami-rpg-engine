@@ -36,7 +36,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Home, type HomeRecentCard } from '@app/title/home-page.ts';
 
-// R2b 迁移⑥：标签文案改由模板 t() 承担（原先靠本地化器写 textContent）
+// 标签文案由模板 t() 承担
 const { t } = useI18n();
 
 const cards = ref<HomeRecentCard[]>([]);
@@ -64,7 +64,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style>
-/* 样式迁移：由 Project/css/layout.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #home-recent-list {
 	display: flex;
 	position: absolute;

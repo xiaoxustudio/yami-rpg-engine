@@ -88,7 +88,7 @@ interface WebGLPrototypeBufferData {
 		const prototype = WebGLRenderingContext.prototype;
 		// 这个补丁把 `bufferData` 换成了**带 offset/length 的重载** —— 与标准签名不同，
 		// 而类型系统无法表达「同名方法换签名」（连单次 `as` 都会被 TS2352 挡住）。
-		// 按 P4 手法 5「写入走 `Reflect.set`」处理：函数自身已写明参数类型，存储这一步不需要断言，
+		// 按「写入走 `Reflect.set`」处理：函数自身已写明参数类型，存储这一步不需要断言，
 		// 也不必把 `WebGLRenderingContext.prototype` 谎报成另一个接口。
 		// `this: WebGLPrototypeBufferData` 让函数体里的 `this._bufferData` 仍受检。
 		// oxlint-disable-next-line unbound-method

@@ -10,7 +10,7 @@ import { EventEditor } from '@app/commands/event-editor.ts';
 import { Window } from '@app/tools/window-object.ts';
 
 /**
- * P1b 第 7 刀回归：CallEvent 的参数标签与返回值标签
+ * CallEvent 的参数标签与返回值标签
  * ① 过去是 `document.createElement('div')` + `render()` 造节点 → 现在 clone 模板节点
  *    （`callEvent-label-template`），文本用 textContent 写；
  * ② 显隐过去按类名 `document.querySelectorAll('.call-event-component')` 反查 → 现在直接从
@@ -53,7 +53,7 @@ const loadGlobalEvent = () => {
 	});
 };
 
-describe('CallEvent 参数标签与显隐（P1b 第 7 刀）', () => {
+describe('CallEvent 参数标签与显隐', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		document.body.innerHTML = '';

@@ -5,8 +5,8 @@ import YMFileBodyPane from '../YMFileBodyPane.vue';
 import { deriveFileRows } from '../file-body-render';
 
 /**
- * P6/M3 切片 1：渲染出的行必须带**派生层发的稳定行 key**（`element.rowKey`）。
- * 这一步是 `v-for` 换源的前置条件——M3 换模板时这些 key 直接当 `:key`。
+ * 渲染出的行必须带**派生层发的稳定行 key**（`element.rowKey`）。
+ * 这些 key 直接当模板的 `:key`（没有它们就只能用下标）。
  */
 class FileItem {
 	path: string;
@@ -96,7 +96,7 @@ const renderItems = async (el: BodyElement, list: unknown[]): Promise<void> => {
 const rows = (el: BodyElement): (HTMLElement & { rowKey?: string })[] =>
 	Array.from(el.querySelectorAll<HTMLElement>('.file-body-item'));
 
-describe('YMFileBodyPane（M3 切片 1：行 key 接线）', () => {
+describe('YMFileBodyPane（行 key 接线）', () => {
 	it('文件行与文件夹行都带上派生层发的 rowKey', async () => {
 		const { el } = mountBody();
 		const list = [new FileItem('/a/ev', 'ev'), new FolderItem('/a/sub', 'sub')];

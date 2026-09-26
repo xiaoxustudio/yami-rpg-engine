@@ -51,13 +51,13 @@ type FolderElement = HTMLElement & {
 	file: FileItem;
 	context: FileItemContext;
 	// ⚠️ 2026-09-22 第 121 轮：这里原来还有 `indent: number`（**必填**）——
-	// 它是 P4b「字段搬进元素数据（WeakMap）」之后**没跟着删掉的残留**：
+	// 它是「字段搬进元素数据（WeakMap）」之后**没跟着删掉的残留**：
 	// 全文件对 `indent` 的访问只有 `data.indent`（写于 `:297`、读于 `:345`），
 	// 元素上的 `el.indent` **从来没有被写过**。于是类型在说谎（说元素有 `indent: number`，
 	// 实际读出来是 `undefined`），而且它逼着 `createFolderElement` 只能
 	// `document.createElement('div') as unknown as FolderElement` —— 断言替这个谎言背书。
 	// 删掉它之后那处断言**整条消失**（见 `:285`）。`changed` / `expanded` 等可选字段同理住在
-	// 元素数据里，但它们**不必填**，不挡构造，本轮不动（留给 P4b 的收尾）。
+	// 元素数据里，但它们**不必填**，不挡构造，本轮不动。
 	changed?: boolean;
 	fileIcon?: HTMLElement;
 	folderMark?: HTMLElement;
@@ -67,12 +67,12 @@ type FolderElement = HTMLElement & {
 	expanded?: boolean;
 };
 
-/** P4b：这些字段走元素数据（WeakMap），不再是元素上的隐式属性 */
+/** 这些字段走元素数据（WeakMap），不再是元素上的隐式属性 */
 interface FolderElementData {
 	folderMark?: HTMLElement;
 	markVisible?: boolean;
 	textNode?: Text;
-	/** P4b：`expanded` / `changed` / `indent` 同样住在元素数据里（仍在 DATA_FIELDS 内） */
+	/** `expanded` / `changed` / `indent` 同样住在元素数据里（仍在 DATA_FIELDS 内） */
 	expanded?: boolean;
 	changed?: boolean;
 	indent: number;
@@ -309,7 +309,7 @@ function createFolderElement(file: FileItem, indent: number): FolderElement {
 
 function updateFolderElement(element: FolderElement): void {
 	const { file, context } = element;
-	// P4b：`folderMark`/`markVisible` 不再是元素上的隐式属性，改成显式元素数据
+	// `folderMark`/`markVisible` 不再是元素上的隐式属性，改成显式元素数据
 	const data = elementDataOf<FolderElementData>(element);
 	if (!data.textNode) {
 		const folderMark = renderElement(h('span', { class: 'folder-mark' }));

@@ -3,7 +3,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 import { elementDataOf } from '@ui-kit';
 
 /**
- * P4b：选框元素上的 `key`（当前选框状态名：tile / terrain / object…）走显式元素数据。
+ * 选框元素上的 `key`（当前选框状态名：tile / terrain / object…）走显式元素数据。
  * 同一元素上的 `visible` / `x` / `y` 等不是元素数据——它们由 `YMMarqueeArea.vue` 定义成
  * **组件自己的实例属性**（实例属性优先于原型访问器）。
  */

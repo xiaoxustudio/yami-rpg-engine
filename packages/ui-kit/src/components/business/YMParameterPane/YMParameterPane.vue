@@ -99,7 +99,7 @@ type ParamInput = HTMLElement & {
 	numBox?: { input: HTMLElement & { value?: string } };
 };
 
-/** P4b：控件元素上的元素数据（`parameters` / `key` 仍在 DATA_FIELDS 内） */
+/** 控件元素上的元素数据（`parameters` / `key` 仍在 DATA_FIELDS 内） */
 interface ParamInputData {
 	parameters?: Record<string, unknown> | null;
 	key?: string | null;
@@ -505,7 +505,7 @@ const updateParamInput = (wrap: ParamWrap, value: unknown): void => {
 			if (read(wrap.input) !== value) {
 				write(wrap.input, value);
 			} else if (typeof value === 'number') {
-				// P4b：numBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+				// numBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 				elementDataOf<{ numBox?: { input: { value: string } } }>(
 					wrap.input
 				).numBox!.input.value = value.toString();

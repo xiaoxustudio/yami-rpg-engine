@@ -5,7 +5,7 @@ import { getLayoutStore } from '@app/stores/layout';
 import LayoutPaletteHost from '../../../components/layout/LayoutPaletteHost.vue';
 import PaletteNode from '../../../components/layout/PaletteNode.vue';
 
-// LayoutPanel 接线件护栏（M5-b：整壳 Teleport 为唯一形态）：
+// LayoutPanel 接线件护栏（整壳 Teleport 为唯一形态）：
 // - LayoutPaletteHost 把 palette 支架搬进 body 隐藏容器，宿主处留空（供引擎挂 Vue 组树）；
 // - PaletteNode 把单个整壳节点（.nav-item/.page-frame）交给 LayoutPalettePage 按归属搬家，
 //   归属未发布时留在 palette 宿主（Teleport disabled），空 value 恒透传。

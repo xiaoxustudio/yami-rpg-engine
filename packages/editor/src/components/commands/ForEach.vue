@@ -98,7 +98,7 @@ import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef, registerElement } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
-// P5b 批次 4：本组件的控件元素注册表（替代按 id 查 DOM）
+// 本组件的控件元素注册表
 const fieldEls = createElementRegistry(composableEls);
 
 // 模板里 WindowFrame 用 ref="frame"（已占用 :ref 槽位），故在 onMounted 里命令式登记
@@ -154,7 +154,7 @@ onMounted(() => {
 			'changed-touch': 'command.forEach.changed-touch'
 		}
 	);
-	// R2b：`enableHiddenMode`/`relate` 原先挂在 `loadItems` 的**调用链**上，拆成独立语句（语义不变）
+	// `enableHiddenMode`/`relate` 不挂在 `loadItems` 的**调用链**上（独立语句，语义不变）
 	fieldEls
 		.get('forEach-data')
 		?.enableHiddenMode?.()
@@ -194,7 +194,7 @@ onMounted(() => {
 </script>
 
 <style>
-/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #forEach {
 	width: 324px;
 	height: 146px;

@@ -138,7 +138,7 @@ onMounted(() => {
 		() => {
 			const cls = root.value?.className ?? '';
 			api.mode = cls.includes('variable') ? 'variable' : 'constant';
-			// P4b：strBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+			// strBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 			elementDataOf<{ strBox: HTMLElement | null }>(el).strBox =
 				(ym.value?.root?.querySelector('.text-box') as HTMLElement) ?? null;
 			elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(

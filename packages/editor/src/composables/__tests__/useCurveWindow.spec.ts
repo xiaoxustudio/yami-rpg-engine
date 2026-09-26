@@ -14,7 +14,7 @@ vi.mock('@app/utils/css', async (importOriginal) => ({
 	getDevicePixelContentBoxSize: () => ({ width: 100, height: 50 })
 }));
 
-/** P1b：`useCurveWindow` 改读 `animationEls`（原先按 id 直查）→ 用例自建的 DOM 需登记进注册表 */
+/** `useCurveWindow` 改读 `animationEls`（原先按 id 直查）→ 用例自建的 DOM 需登记进注册表 */
 const CURVE_IDS = [
 	'animation-easing',
 	'animation-easing-head',

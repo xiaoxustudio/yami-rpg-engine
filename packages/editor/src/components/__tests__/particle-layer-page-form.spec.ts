@@ -90,7 +90,7 @@ const mountPage = async () => {
 	const host = document.createElement('div');
 	host.id = 'particleLayer-vue-mount';
 	document.body.appendChild(host);
-	// P5b 批次 3：页面模块改从 inspectorEls 取 vue-mount（不再查 DOM），故测试需登记
+	// 页面模块改从 inspectorEls 取 vue-mount（不再查 DOM），故测试需登记
 	registerElement(inspectorEls, 'particleLayer-vue-mount', host);
 	const wrapper = mount(ParticleLayerPage, {
 		attachTo: document.body,

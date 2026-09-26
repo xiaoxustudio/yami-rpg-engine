@@ -671,7 +671,7 @@ const synchronize = (
 };
 
 onMounted(() => {
-	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	// 以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
 	registerElement(inspectorEls, 'uiButton-display', elDisplay.value);
 	registerElement(inspectorEls, 'uiButton-normalClip', elNormalClip.value);
 	registerElement(inspectorEls, 'uiButton-hoverClip', elHoverClip.value);

@@ -32,7 +32,7 @@ describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）'
 			this: typeof el,
 			options: Record<string, string | { name?: string; tip?: string }>
 		) {
-			// P4b：`dataItems` 是控件元素上的元素数据（原型访问器退役后 `this.dataItems` 会读到 undefined）。
+			// `dataItems` 是控件元素上的元素数据（原型访问器退役后 `this.dataItems` 会读到 undefined）。
 			const data = elementDataOf<{ dataItems?: unknown[] }>(this);
 			const backup = data.dataItems;
 			data.dataItems = this.lightItems.all;

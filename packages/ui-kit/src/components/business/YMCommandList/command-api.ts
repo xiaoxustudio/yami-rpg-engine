@@ -24,7 +24,7 @@ import { getListConfig } from '../../../utils/list-config';
 
 const commandCore = createCommandCore();
 
-// M3 切片 3：离屏建元素统一走 ui-kit 的 detached 接缝（本文件内不再直接建 DOM 节点）
+// 离屏建元素统一走 ui-kit 的 detached 接缝（本文件内不再直接建 DOM 节点）
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => renderDetached(vnode);
 
 const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
@@ -53,7 +53,7 @@ interface DataLookupAdapter {
 	attribute(id: string): { name: string } | null | undefined;
 	enumString(id: string): { name: string } | null | undefined;
 	gameLocalReplace(text: string): string;
-	// P2b-3：这三份"元信息表"由消费方（编辑器）提供，本文件只用其中很少的字段，
+	// 这三份"元信息表"由消费方（编辑器）提供，本文件只用其中很少的字段，
 	// 故按 `Record<string, unknown>` 声明，用到的地方在本地显式收窄（见 `checkVariables`）——
 	// 不再用 `Record<string, any>` 把整张表变成 `any`。
 	guidMap?: Record<string, unknown> | (() => Record<string, unknown>);
@@ -102,7 +102,7 @@ type CommandContent = {
 };
 
 type CommandItemElement = HTMLElement & {
-	/** M3 切片 1：派生层发的稳定行 key（M3 换 `v-for` 后直接当 `:key`） */
+	/** 派生层发的稳定行 key（模板 `v-for` 直接当 `:key`） */
 	rowKey?: string;
 	/** 行下标（`update()` 里统一写过；`rowOf()` 用它取行数据） */
 	dataValue?: number;
@@ -119,7 +119,7 @@ type CommandItemElement = HTMLElement & {
 	ellipsis?: HTMLElement | null;
 };
 
-/** M3-5b′：一行数据（换源后由回写桥在挂行时挂到元素上） */
+/** 一行数据（换源后由回写桥在挂行时挂到元素上） */
 export interface CommandRowAttachData {
 	rowKey: string;
 	command: CommandData | null;
@@ -133,7 +133,7 @@ export interface CommandRowAttachData {
 }
 
 /**
- * M3-5b′（换源用）：把一行数据按**与建行代码相同的方式**挂成元素上的闭包。
+ * 把一行数据按**与建行代码相同的方式**挂成元素上的闭包。
  *
  * 为什么单独有这个函数：换源后行元素由模板渲染，`createCommandBuffer` 里那套
  * `Object.defineProperty(element, 'dataItem', …)` 不会再跑，而行内渲染
@@ -306,11 +306,11 @@ export const commandListStatics = {
 };
 
 /**
- * P2b-1：命令列表的**元素 API 契约**。此前消费方只能拿 `HTMLElement` 再自己写 `as HTMLElement & { … }`
+ * 命令列表的**元素 API 契约**。此前消费方只能拿 `HTMLElement` 再自己写 `as HTMLElement & { … }`
  * （editor 侧就有一份 `EventCommandListShape`）；这里把「元素上有哪些方法」定成可 import 的类型。
  *
  * 说明：`commandListPrototype` 本体是 `Record<string, (this: CommandListHost, ...args) => unknown>`
- * （P2b-3 起不再用 `any` 描述形状），本接口是对**同一个对象**的静态描述——
+ * （不再用 `any` 描述形状），本接口是对**同一个对象**的静态描述——
  * 消费方用 `HTMLElement & CommandListElementApi` 即可获得补全与拼写检查。
  */
 export interface CommandListElementApi {
@@ -358,7 +358,7 @@ export interface CommandListElementApi {
 }
 
 /**
- * P2b-3：`elements` 的形状——行元素数组本体，另挂 `count/start/end` 窗口游标
+ * `elements` 的形状——行元素数组本体，另挂 `count/start/end` 窗口游标
  * （与 `createCommandListApi` 的装配一一对应；这些字段原先只能经 `any` 访问）。
  */
 interface CommandListElements extends Array<CommandItemElement> {
@@ -372,7 +372,7 @@ interface CommandListElements extends Array<CommandItemElement> {
 }
 
 /**
- * P2b-3：命令列表元素的**宿主契约**——`commandListPrototype` 各方法里 `this` 的真实成员面，
+ * 命令列表元素的**宿主契约**——`commandListPrototype` 各方法里 `this` 的真实成员面，
  * 外加装配代码（`createCommandListApi`）挂到元素上的字段。
  *
  * 这些方法过去一律把 `this` 声明成 `any`，于是每条都要配一句 `oxlint-disable-next-line no-explicit-any`
@@ -526,7 +526,7 @@ interface CommandListHost extends HTMLElement {
 	windowVariableChange: (event: Event) => void;
 }
 
-/** M3-5b′：选区变化后刷新行模型并通知模板（行元素归模板，`selected` 由模型驱动） */
+/** 选区变化后刷新行模型并通知模板（行元素归模板，`selected` 由模型驱动） */
 function refreshRowsAfterSelection(list: {
 	elements: { count: number } & Record<number, unknown>;
 	padded?: boolean;
@@ -537,12 +537,12 @@ function refreshRowsAfterSelection(list: {
 }
 
 /**
- * P6/M3（命令列表侧）：行的**数据模型**——与文件 body 的 `FileBodyRowModel` 同形，
- * 供换源前的等价性验证与后续模板化使用。
+ * 行的**数据模型**——与文件 body 的 `FileBodyRowModel` 同形，
+ * 供等价性验证与模板渲染使用。
  *
- * 说明：这里**从 `elements[]` 反读**（`key` 用切片 1 写进元素的 `rowKey`、缩进用 `dataIndent`、
+ * 说明：这里**从 `elements[]` 反读**（`key` 取元素上的 `rowKey`、缩进用 `dataIndent`、
  * 折叠/禁用/选中从类名与字段取），因此它不是"另一份真相"，而是"当前真相的快照"——
- * 用途是让换源前后**同一段行序列**逐项可比对（文件 body 的切片 4 就是这么做的）。
+ * 用途是让**同一段行序列**逐项可比对（文件 body 的 `FileBodyRowModel` 就是这么做的）。
  */
 export interface CommandRowDescriptor {
 	key: string;
@@ -576,7 +576,7 @@ export interface CommandRowModel {
 const commandRowModel: CommandRowModel = { start: 0, end: 0, keys: [], rows: [] };
 
 /**
- * P6/M3（数据化）：与 `elements[]` **同序同长**的行数据。
+ * 与 `elements[]` **同序同长**的行数据。
  *
  * 为什么要有它：命令列表的逻辑层（选区/折叠/导航/插入）目前通过**元素上的 getter** 读数据
  * （`element.dataItem`/`dataIndent`/`dataKey`/`dataList`/`dataParent`，全文件 50+ 处）。
@@ -699,7 +699,7 @@ function rebuildCommandRowModel(
 }
 
 /**
- * P4b：命令列表自身的可变状态（选区窗口、拖拽、焦点、插入态）从"元素上的原型访问器"改成**显式元素数据**。
+ * 命令列表自身的可变状态（选区窗口、拖拽、焦点、插入态）从"元素上的原型访问器"改成**显式元素数据**。
  *
  * 选区窗口的五个字段（`start`/`end`/`origin`/`active`/`anchor`）是**整组**写入的：`select()` 一次写全，
  * `clear()` 与 `reselectAfterFolding()` 一次清空 ⇒ `start !== null` 时 `end`/`origin`/`active` 必为数字
@@ -725,7 +725,7 @@ type CommandSelections = (CommandItemElement | undefined)[] & { count: number };
 
 const commandListData = (el: unknown): CommandListData => elementDataOf<CommandListData>(el);
 
-/** P4b：行元素上的 `dataValue`（= 行下标，`update()` 里统一写过）也走显式元素数据 */
+/** 行元素上的 `dataValue`（= 行下标，`update()` 里统一写过）也走显式元素数据 */
 const rowElementData = (el: unknown): { dataValue?: number; renderedSignature?: string } =>
 	elementDataOf<{ dataValue?: number; renderedSignature?: string }>(el);
 
@@ -774,7 +774,7 @@ const rowRenderSignatureOf = (
 /**
  * 原型对象本体：`this` 一律是 `CommandListHost`（见该接口）。
  *
- * P2b-3：这里的 `Record` 形状原为 `(...args: any[]) => any`（自带一句 `no-explicit-any` 豁免）。
+ * 这里的 `Record` 形状原为 `(...args: any[]) => any`（自带一句 `no-explicit-any` 豁免）。
  * 换成 `this: CommandListHost, ...args: never[], => unknown` 后**不再需要 `any`**：
  * 参数位是 `never`（对 `Record` 的属性签名而言，参数反向可比 ⇒ 任何实参签名都收得住），
  * 返回位是 `unknown`（任何返回值都收得住）——形状的宽松度不变，只是不再有 `any`。
@@ -791,10 +791,10 @@ export const commandListPrototype: Record<
 	write: function (this: CommandListHost, data: CommandData): void {
 		const options = this.__options;
 		this.data = data;
-		// M3-5b′：**不再 `this.textContent = ''`**——行元素归模板（Vue）管，api 清空会破坏 Vue 的节点表
+		// **不再 `this.textContent = ''`**——行元素归模板（Vue）管，api 清空会破坏 Vue 的节点表
 		this.update();
 		if (!data.history) {
-			// P2b-3：`commandHistory` 在对外契约里的构造签名是 `new (list: never)`（"收任何类"的占位，
+			// `commandHistory` 在对外契约里的构造签名是 `new (list: never)`（"收任何类"的占位，
 			// 于是无法直接 `new`）。这里只做一次显式转写——按运行期实情：它就是"拿命令列表元素去构造"。
 			const HistoryCtor = options.commandHistory as new (
 				list: CommandListHost
@@ -816,7 +816,7 @@ export const commandListPrototype: Record<
 		elements.start = -1;
 		elements.count = 0;
 
-		// P2b-3：`data` 的公开契约是 `CommandData`（`write`），运行期实为**命令行数组**（`createItems` 逐行遍历）；
+		// `data` 的公开契约是 `CommandData`（`write`），运行期实为**命令行数组**（`createItems` 逐行遍历）；
 		// 这两个按数组用的站点各自显式转写一次，行为不变（见 `CommandListHost.data` 的说明）。
 		this.createItems((this.data as (CommandData & CommandList) | null)!, 0);
 
@@ -825,15 +825,15 @@ export const commandListPrototype: Record<
 			rowElementData(elements[i]).dataValue = i;
 		}
 
-		// P2b-3：跨到助手契约的形状 —— 现在**连断言都不需要**：`CommonListHost` 补齐了
+		// 跨到助手契约的形状 —— 现在**连断言都不需要**：`CommonListHost` 补齐了
 		// `updateOnResize` 声明，`CommonListLike.textContent` 也改回 DOM 的 `string | null`。
 		commonListClearElements(this, elements.count);
 
-		// M3（命令列表）：重建行数据与行模型快照
+		// 重建行数据与行模型快照
 		rebuildCommandRowData(elements);
 		rebuildCommandRowModel(this, { padded: getListConfig(this).padded === true });
 
-		// M3-5b′：事件在**模型重建之后**派发（模板要读到最新模型）。
+		// 事件在**模型重建之后**派发（模板要读到最新模型）。
 		// 顺序很要紧：上层（editor 的 eslints）在 `update` 监听里计算 `mark`，
 		// 而它的 `resize` 覆写要靠这些 mark 做折线分类 ⇒ 必须 **先派发、后 resize**。
 		dispatchUpdateEvent(this);
@@ -841,7 +841,7 @@ export const commandListPrototype: Record<
 		this.resize();
 	},
 
-	/** M3：读取行模型（只读副本） */
+	/** 读取行模型（只读副本） */
 	getRowModel: function (): CommandRowModel {
 		const rows: CommandRowDescriptor[] = [];
 		for (const row of commandRowModel.rows) rows.push({ ...row });
@@ -854,7 +854,7 @@ export const commandListPrototype: Record<
 	},
 
 	/**
-	 * M3-5b′（换源）：模板挂出一行后的**回写桥**——把该行的数据挂到元素上（`attachRowData`）、
+	 * 模板挂出一行后的**回写桥**——把该行的数据挂到元素上（`attachRowData`）、
 	 * 补上 `fold` 把手，再交给既有的 `updateCommandElement` 生成行内内容。
 	 * 编辑器侧对 `updateCommandElement` 的覆写（`eslints` 的缩进线与标记）因此照旧生效。
 	 */
@@ -911,14 +911,14 @@ export const commandListPrototype: Record<
 	},
 
 	/**
-	 * M3-5b′：**扩展点**——模板挂完一批行之后调用，供上层（如 editor 的 eslints）对
+	 * **扩展点**——模板挂完一批行之后调用，供上层（如 editor 的 eslints）对
 	 * "渲染出来的行"做跨行处理（折叠线的 line-start/line-end 分类）。
 	 * 基础实现为空；editor 侧覆盖它（与 `updateCommandElement` 同一套手法）。
 	 */
 	updateLineClasses: function (): void {},
 
 	resize: function (this: CommandListHost, ..._args: unknown[]): void {
-		// M3-5b′（命令列表换源）：**不再调用 `commonListResize`**——它负责的"把行挂进根元素"
+		// **不再调用 `commonListResize`**——它负责的"把行挂进根元素"
 		// 现在归模板（`v-for`）。api 只算可见窗口并更新行模型；几何仍与原实现一致
 		// （行高 20、窗口起点 = floor(scrollTop/20)、窗口长度 = ceil(clientHeight/20)+1）。
 		const els = this.elements;
@@ -1035,7 +1035,7 @@ export const commandListPrototype: Record<
 			let color = '';
 			let mainColor = 'normal';
 			li = renderDetachedDiv('command-item') as CommandItemElement;
-			// M3 切片 1：行 key 由派生层发号（同一 command 跨多次渲染稳定 ⇒ M3 换 `v-for` 时可直接当 `:key`）
+			// 行 key 由派生层发号（同一 command 跨多次渲染稳定 ⇒ 模板 `v-for` 可直接当 `:key`）
 			li.rowKey = commandRender.rowKeyOf(command);
 			let liContents: CommandContent[] | null = [];
 			Object.defineProperty(li, 'contents', {
@@ -1145,7 +1145,7 @@ export const commandListPrototype: Record<
 						configurable: true,
 						get: () => indent
 					});
-					// M3 换源前置：**break 行也要稳定 key**（`parse` 用 `break` 把一条命令拆成多行）。
+					// **break 行也要稳定 key**（`parse` 用 `break` 把一条命令拆成多行）。
 					// 它和主行同属一条命令，故 key = "命令 key + 在本命令内的行序号"，跨多次 update 稳定。
 					li.rowKey = `${commandRender.rowKeyOf(command)}-b${buffer.length}`;
 					buffer.push(li);
@@ -1193,7 +1193,7 @@ export const commandListPrototype: Record<
 							configurable: true,
 							get: () => indent
 						});
-						// M3 换源前置：**子列表前的续行**也要稳定 key（它和主行同属一条命令）
+						// **子列表前的续行**也要稳定 key（它和主行同属一条命令）
 						li.rowKey = `${commandRender.rowKeyOf(command)}-c${buffer.length}`;
 						buffer.push(li);
 						continue;
@@ -1239,7 +1239,7 @@ export const commandListPrototype: Record<
 							configurable: true,
 							get: () => indent
 						});
-						// M3 换源前置：脚本占多行时的第 2..n 行同样要有稳定 key
+						// 脚本占多行时的第 2..n 行同样要有稳定 key
 						li.rowKey = `${commandRender.rowKeyOf(command)}-s${i}`;
 						buffer.push(li);
 						items[i] = li;
@@ -1370,7 +1370,7 @@ export const commandListPrototype: Record<
 					text.name = id;
 					addClass(text, varType + '-type');
 					addClass(text, 'command-text-identifier');
-					// P2b-3：改为箭头包装 + `.call` 显式绑定 `this` 到该文本元素——
+					// 改为箭头包装 + `.call` 显式绑定 `this` 到该文本元素——
 					// 之前是直接把方法引用挂上去（`this` 由 DOM 绑成元素本身），行为不变，
 					// 但不再需要 `unbound-method` 豁免，也不再需要那处 `(… ) => any` 断言。
 					text.onpointerenter = () => {
@@ -1465,7 +1465,7 @@ export const commandListPrototype: Record<
 		if (blank === undefined) {
 			blank = renderDetachedDiv('command-item') as CommandItemElement;
 
-			// M3 换源前置：空白行同样需要**稳定行 key**（`v-for` 的每一行都要 `:key`）。
+			// 空白行同样需要**稳定行 key**（`v-for` 的每一行都要 `:key`）。
 			// 派生规则与派生层**共用同一个函数**（`commandRender.blankRowKeyOf`），
 			// 这样"派生层算出的行"与"api 建出的行"key 必然一致（换源前后靠它逐项比对）。
 			// 第一参数是**列表本身**：一条命令可以有多个子列表（`if` 的每个分支一个），
@@ -1552,7 +1552,7 @@ export const commandListPrototype: Record<
 
 		this.reselect();
 
-		// M3-5b′：行元素归模板 ⇒ 选中态由**行模型的 `selected`** 驱动，
+		// 行元素归模板 ⇒ 选中态由**行模型的 `selected`** 驱动，
 		// 选区一变就要刷新模型并通知模板（等价于旧实现里给元素加 `selected` 类）。
 		refreshRowsAfterSelection(this);
 	},
@@ -1632,7 +1632,7 @@ export const commandListPrototype: Record<
 			anchor = listData.active;
 		}
 		if (anchor !== null) {
-			// M2 切片 2：翻页数学抽到 command-render.ts 的纯函数（行为与原先逐字一致）
+			// 翻页数学抽到 command-render.ts 的纯函数（行为与原先逐字一致）
 			const context = {
 				scrollTop: this.scrollTop,
 				viewportHeight: this.innerHeight,
@@ -1817,7 +1817,7 @@ export const commandListPrototype: Record<
 			listData.origin !== null &&
 			listData.active !== null
 		) {
-			// M2 切片 3：三个分支的夹取数学抽到 command-render.ts（行为与原先逐字一致）
+			// 三个分支的夹取数学抽到 command-render.ts（行为与原先逐字一致）
 			const range = this.getRangeByIndex(listData.active) as [number, number];
 			const scrollTop = commandRender.computeScrollToSelection(mode, {
 				scrollTop: this.scrollTop,
@@ -2297,7 +2297,7 @@ export const commandListPrototype: Record<
 	clear: function (this: CommandListHost): HTMLElement {
 		const listData = commandListData(this);
 		this.unselect();
-		// M3-5b′：同样不再清空 DOM 文本（行归模板管）；行数由 `elements.count` 归零后经模型反映
+		// 同样不再清空 DOM 文本（行归模板管）；行数由 `elements.count` 归零后经模型反映
 		this.data = null;
 		this.varList = null;
 		this.varMap = null;
@@ -2312,7 +2312,7 @@ export const commandListPrototype: Record<
 		this.elements.start = -1;
 		this.elements.end = -1;
 		this.updateHeadAndFoot();
-		// M3-5b′：行归模板渲染 ⇒ 清空后必须**重建行模型并通知模板**，
+		// 行归模板渲染 ⇒ 清空后必须**重建行模型并通知模板**，
 		// 否则书里归零了、屏幕上还是旧的那几行（探针实测：clear 后模型与 DOM 都仍是 6 行）。
 		rebuildCommandRowData(this.elements);
 		rebuildCommandRowModel(this, { padded: getListConfig(this).padded === true });
@@ -2535,7 +2535,7 @@ export const commandListPrototype: Record<
 			if (fileId === '') continue;
 			const guidMap =
 				typeof lookup?.guidMap === 'function' ? lookup.guidMap() : (lookup?.guidMap ?? {});
-			// P2b-3：`guidMap` 是 `Record<string, unknown>`（消费方自己那份元信息表），
+			// `guidMap` 是 `Record<string, unknown>`（消费方自己那份元信息表），
 			// 这里只读 `file.basename` ⇒ 在本站点显式收窄；断言的判据与原来 `any` 时一致（表由编辑器同源提供）。
 			const meta = guidMap[fileId] as { file: { basename: string } } | undefined;
 			if (meta) {
@@ -2608,7 +2608,7 @@ export const commandListPrototype: Record<
 			this.windowPointerup(listData.dragging);
 		}
 		if (listData.focusing) {
-			// P2b-3：从父节点起沿 `parentNode` 往上找 `window-frame`（原来是把 `this` 起个头再逐级上溯，
+			// 从父节点起沿 `parentNode` 往上找 `window-frame`（原来是把 `this` 起个头再逐级上溯，
 			// 于是要 `no-this-alias` 豁免）。改成从 `this.parentNode` 起步后语义逐步等价：
 			// 只会检查**父链**上的节点（与原来一样，不含 `this` 自身）、非元素节点跳过、
 			// 命中 `window-frame` 时 `blur` 直接 return / 否则 break。
@@ -2686,7 +2686,7 @@ export const commandListPrototype: Record<
 						);
 						const _subfind = this.findString(str, realNode, searchMode).map(
 							(v: FindResult): FindResult => ({
-								// P2b-3：原来是 `{ ...v, sub: element }`（`no-map-spread` 豁免）。
+								// 原来是 `{ ...v, sub: element }`（`no-map-spread` 豁免）。
 								// `FindResult` 恰好只有这三个字段，显式构造与原展开**逐键等价**
 								// （键序也一样：node/index/sub，`sub` 只是被覆盖）。
 								node: v.node,
@@ -2724,7 +2724,7 @@ export const commandListPrototype: Record<
 					if (searchMode.regex && str instanceof RegExp) {
 						if (str.test(node.textContent ?? ''))
 							findList.push({
-								// P2b-3：`element.children` 给的是 `Element`；命中的都是行内 `<span>`/`<div>`，
+								// `element.children` 给的是 `Element`；命中的都是行内 `<span>`/`<div>`，
 								// 运行期就是 HTML 元素——与下面 `node as HTMLElement` 同一处理。
 								node: node as HTMLElement,
 								index: i,
@@ -2747,7 +2747,7 @@ export const commandListPrototype: Record<
 		targetIndex: number,
 		position: string = 'center'
 	): void {
-		// M2 切片 3：下标夹取与居中/贴边数学抽到 command-render.ts（行为与原先逐字一致）
+		// 下标夹取与居中/贴边数学抽到 command-render.ts（行为与原先逐字一致）
 		this.scrollTop = commandRender.computeScrollToRowScrollTop(
 			targetIndex,
 			this.elements.count,
@@ -2913,7 +2913,7 @@ export const commandListPrototype: Record<
 				// 用它做 `floor(dy / itemHeight)` 会得到 Infinity，鼠标一动就选到列表末尾（"点一行选中多行"）。
 				let row: CommandItemElement | null = null;
 				let index = -1;
-				// P2b-3：`element` 是 `event.target` 的"行元素视图"、`this` 是列表根元素——同一个 DOM 的两副
+				// `element` 是 `event.target` 的"行元素视图"、`this` 是列表根元素——同一个 DOM 的两副
 				// 类型视图，TS 认为"无可比性"；这里按 `HTMLElement` 视图比较（引用相等，语义不变）。
 				if ((element as HTMLElement | null) === this) {
 					if (isInContent(element as HTMLElement, event)) {
@@ -3228,7 +3228,7 @@ export function createCommandListApi(
 	el: HTMLElement,
 	options: CommandListApiOptions = {}
 ): HTMLElement {
-	// P2b-3：装配期局部变量按**宿主契约**声明（原为 `HTMLElement & { [k: string]: any }`），
+	// 装配期局部变量按**宿主契约**声明（原为 `HTMLElement & { [k: string]: any }`），
 	// 下面每个字段赋值、每个事件处理器注册从此都受类型检查。
 	const list = el as CommandListHost;
 	const listData = commandListData(list);
@@ -3239,7 +3239,7 @@ export function createCommandListApi(
 	}
 	Object.setPrototypeOf(list, commandListPrototype);
 
-	// P4b: the attach guard now lives in element data (helper in element-data.ts)
+	// the attach guard now lives in element data (helper in element-data.ts)
 	elementDataOf<{ _initialized?: boolean }>(list)._initialized = false;
 	list._paddingTop = 0;
 	list.data = null;
@@ -3300,12 +3300,11 @@ export function createCommandListApi(
 }
 
 /**
- * 返回类型在 **M5 收尾**（2026-09-17）收紧为 `HTMLElement & CommandListElementApi`。
+ * 返回类型是 `HTMLElement & CommandListElementApi`。
  *
- * 此前刻意留成裸 `HTMLElement`，因为若干既有用例会把返回值断言成自己那份更丰富的本地形状
- * （`as HTMLElement & { … }`），精确返回类型会让那些断言变成"不可比"（TS2352）。
- * 现在连同用例一起改完：**"元素上有哪些方法"只有 `CommandListElementApi` 一份定义**，
- * 拼错方法名在编译期就会报错。需要额外形状的调用方请用 `as unknown as <形状>` 显式跨越。
+ * 刻意不留成裸 `HTMLElement`：**"元素上有哪些方法"只有 `CommandListElementApi` 一份定义**，
+ * 拼错方法名在编译期就会报错（裸 `HTMLElement` 会让用例里的 `as HTMLElement & { … }` 断言
+ * 变得"不可比"，TS2352）。需要额外形状的调用方请用 `as unknown as <形状>` 显式跨越。
  */
 export function createCommandListElement(
 	options: CommandListApiOptions = {}

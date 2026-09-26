@@ -220,7 +220,7 @@ const synchronize = (
 let datachangeHandler: EventListener | null = null;
 
 onMounted(() => {
-	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	// 以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
 	registerElement(inspectorEls, 'sceneActor-type', elType.value);
 	registerElement(inspectorEls, 'sceneActor-angle', elAngle.value);
 	registerElement(inspectorEls, 'sceneActor-scale', elScale.value);
@@ -259,7 +259,7 @@ onMounted(() => {
 	synchronize(elAngleSlider.value, elAngle.value);
 	synchronize(elScaleSlider.value, elScale.value);
 
-	// E1：存变量再 add/remove（原先只 add）
+	// 监听器存变量再 add/remove，保证卸载时能摘掉（只 add 就摘不掉）
 	datachangeHandler = editor.datachange as EventListener;
 	window.addEventListener('datachange', datachangeHandler);
 	const elements = registryElements(inspectorEls, [
@@ -292,7 +292,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style>
-/* 样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #sceneActor-angle-slider,
 #sceneActor-scale-slider {
 	flex: 2 1 auto;

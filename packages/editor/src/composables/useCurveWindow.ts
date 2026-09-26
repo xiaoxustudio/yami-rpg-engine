@@ -131,7 +131,7 @@ const initialize = (): void => {
 		if (name !== undefined) {
 			item.name = name;
 		}
-		// P4b：`dataValue` 的两种承载者（列表项的 own 访问器 / 元素数据）统一走 elementDataValueOf，
+		// `dataValue` 的两种承载者（列表项的 own 访问器 / 元素数据）统一走 elementDataValueOf，
 		// 访问器退役后这一读仍然成立。
 		if (elementDataValueOf(this) !== null) {
 			this.update?.();

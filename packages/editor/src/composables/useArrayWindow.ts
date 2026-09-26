@@ -193,7 +193,7 @@ const listInterface: ArrayListInterface = {
 	},
 	parse: function (value: unknown, data: unknown, index: number) {
 		const { filter } = targetState!;
-		// P1b：离屏节点统一走 utils/dom 的 renderDetached（原先各自 document.createElement + render）
+		// 离屏节点统一走 utils/dom 的 renderDetached（原先各自 document.createElement + render）
 		const indexText = renderDetached(
 			h(
 				'div',

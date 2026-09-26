@@ -12,7 +12,7 @@ interface SizedElement extends HTMLElement {
 	split?: string;
 }
 
-// P4b：`end` 是元素数据（原型访问器即将退役），规格改走显式视图
+// `end` 是元素数据（原型访问器已退役），规格改走显式视图
 interface SizedElementData {
 	end: number;
 }

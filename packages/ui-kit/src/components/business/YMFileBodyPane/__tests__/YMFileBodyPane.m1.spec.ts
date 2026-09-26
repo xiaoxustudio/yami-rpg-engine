@@ -4,8 +4,8 @@ import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane.vue';
 
 /**
- * P6/M1 行为金标准（文件 body 组）：锁住当前实现的**行渲染 / 选区 / 网格度量 / 内容尺寸**行为，
- * 供 M2–M5 重写期间对照——改造后只允许改断言方式，不允许改语义。
+ * 行为金标准（文件 body 组）：锁住**行渲染 / 选区 / 网格度量 / 内容尺寸**行为，
+ * 这些用例只允许改断言方式，不允许改语义。
  *
  * 编辑器形态 fixture 的五个要点（逐条踩出来的）：
  *   ①元素 API 挂在**面板元素**上（`attachApi(el.value, …)`），度量字段写在 `.file-body-content` 上；
@@ -128,7 +128,7 @@ const items = (n = 6) => Array.from({ length: n }, (_, i) => new FileItem(`/a/ev
 const rows = (el: BodyElement): HTMLElement[] =>
 	Array.from(el.querySelectorAll<HTMLElement>('.file-body-item'));
 
-describe('YMFileBodyPane（M1 行为金标准：行渲染/选区/度量/尺寸）', () => {
+describe('YMFileBodyPane（行为金标准：行渲染/选区/度量/尺寸）', () => {
 	it('列表视图：按文件建立可见行，文本含文件名', async () => {
 		const { el } = mountBody();
 		await renderItems(el, items(3), 0);
@@ -272,9 +272,9 @@ describe('YMFileBodyPane（M1 行为金标准：行渲染/选区/度量/尺寸�
 	});
 
 	/**
-	 * M5：文件名改由**模板**渲染（`{{ row.name }}`），因此改名必须经"模型 → 模板"反映出来。
-	 * 这条用例正是为此加的：改名后 `resize()` 会重建行描述（不再只在窗口变化时重建），
-	 * 名字随之更新——旧实现靠 `updateFileElement` 直接写 DOM，才不需要这一步。
+	 * 文件名由**模板**渲染（`{{ row.name }}`），因此改名必须经"模型 → 模板"反映出来。
+	 * 这条用例正是为此加的：改名后 `resize()` 会重建行描述，名字随之更新
+	 * （直接写 DOM 的实现才不需要这一步）。
 	 */
 	it('改名：改 basename 后 resize 会让模板显示新名字', async () => {
 		const { el } = mountBody();

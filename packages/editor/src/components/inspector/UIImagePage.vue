@@ -598,7 +598,7 @@ const synchronize = (
 };
 
 onMounted(() => {
-	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	// 以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
 	registerElement(inspectorEls, 'uiImage-display', elDisplay.value);
 	registerElement(inspectorEls, 'uiImage-flip', elFlip.value);
 	registerElement(inspectorEls, 'uiImage-blend', elBlend.value);
@@ -733,7 +733,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 样式迁移：由 Project/css/scene.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #uiImage-tint-0-slider,
 #uiImage-tint-1-slider,
 #uiImage-tint-2-slider,

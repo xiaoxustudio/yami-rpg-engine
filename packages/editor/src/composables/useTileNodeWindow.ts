@@ -12,10 +12,10 @@ import { clamp } from '@app/utils/math';
 import { registryElement } from '@app/utils/element-registry';
 
 /**
- * P4b：场景选框元素上的 `key`（`'tile' | 'terrain' | 'edit' | …` 的选区种类）是**元素数据**，
+ * 场景选框元素上的 `key`（`'tile' | 'terrain' | 'edit' | …` 的选区种类）是**元素数据**，
  * 由 `scene-marquee-engine.ts` / `palette-engine.ts` / `scene-window.ts` 写入。
  * 注意同元素的 `visible`/`x`/`y`/… 是 `YMMarqueeArea.vue` 自己安装的**实例访问器**（不是元素数据），
- * 两者不能混用（详见 迁移收尾清单 的 P4b 小节）。
+ * 两者不能混用。
  */
 const sceneMarqueeData = (el: unknown): { key?: string | null } =>
 	elementDataOf<{ key?: string | null }>(el);

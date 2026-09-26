@@ -63,7 +63,7 @@ onMounted(() => {
 	if (fileVideo) {
 		fileVideo.video = elVideo.value;
 	}
-	// E1：存变量再 add/remove（原先只 add）
+	// 监听器存变量再 add/remove，保证卸载时能摘掉（只 add 就摘不掉）
 	windowErrorHandler = windowError;
 	window.addEventListener('error', windowErrorHandler);
 	const el = inspectorEls.get('fileVideo');
@@ -78,7 +78,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style>
-/* 样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #fileVideo-video-detail {
 	flex-grow: 1;
 }

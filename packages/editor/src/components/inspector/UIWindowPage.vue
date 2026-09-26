@@ -150,7 +150,7 @@ const elPaddingX = ref<InstanceType<typeof NumberBox> | null>(null);
 const elPaddingY = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
-	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	// 以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
 	registerElement(inspectorEls, 'uiWindow-layout', elLayout.value);
 	registerElement(inspectorEls, 'uiWindow-scrollX', elScrollX.value);
 	registerElement(inspectorEls, 'uiWindow-scrollY', elScrollY.value);

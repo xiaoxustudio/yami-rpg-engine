@@ -3,7 +3,7 @@ import { mount, type VueWrapper } from '@vue/test-utils';
 import { parseLayoutScheme, type LayoutSchemeData } from '@app/engine/layout/layout-scheme';
 import LayoutTreeView from '../../../components/layout/LayoutTreeView.vue';
 
-// M5-b：组树渲染唯一路径是 LayoutTreeView(.vue)。本 spec 锁定其结构契约
+// 组树渲染唯一路径是 LayoutTreeView(.vue)。本 spec 锁定其结构契约
 // （叶子数、split 类、叶子宿主三件套），hydrate/装载语义见 layout-vue-teleport-load.spec。
 
 const SCHEMES: { name: string; scheme: LayoutSchemeData; leaves: number }[] = [

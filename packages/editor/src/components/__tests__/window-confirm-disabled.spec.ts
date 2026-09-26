@@ -17,11 +17,11 @@ import { vTip } from '@app/directives/tip';
 const mountOptions = { attachTo: document.body, global: { directives: { tip: vTip } } };
 
 /**
- * P5b 尾项：表单无效时确认按钮必须真的禁用。
+ * 表单无效时确认按钮必须真的禁用。
  *
- * 原先两个窗口模块对 `#newProject-confirm` / `#deployment-confirm` 调 `disable()/enable()`，
- * 而这两个按钮由 `WindowFrame → YMWindowFrame → YMFormButtons` 生成（不在元素注册表里），
- * P5b 迁移后那些调用恒为 no-op ⇒ 无效输入也能提交。现在走属性链：
+ * 这两个按钮由 `WindowFrame → YMWindowFrame → YMFormButtons` 生成（不在元素注册表里），
+ * 对 `#newProject-confirm` / `#deployment-confirm` 调 `disable()/enable()` 恒为 no-op
+ * ⇒ 无效输入也能提交。因此走属性链：
  * 模块的响应式标志 → `WindowFrame` 的 `confirm-disabled` → `button[name="confirm"]` 的 `:disabled`。
  */
 const confirmButton = (id: string): HTMLButtonElement => {
@@ -32,7 +32,7 @@ const confirmButton = (id: string): HTMLButtonElement => {
 
 const nonExistentFolder = (): string => `__dsh-missing-${Date.now()}-${Math.random()}`;
 
-describe('窗口确认按钮的禁用态（P5b 尾项）', () => {
+describe('窗口确认按钮的禁用态', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 	});

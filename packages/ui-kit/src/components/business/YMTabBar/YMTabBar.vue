@@ -69,7 +69,7 @@ interface Props {
 }
 
 /**
- * P4b：标签栏元素自身的元素数据。`dragging` 是拖拽/长按中的拖拽态对象——tab-bar 元素没有装 own
+ * 标签栏元素自身的元素数据。`dragging` 是拖拽/长按中的拖拽态对象——tab-bar 元素没有装 own
  * 访问器，所以它一直是原型访问器落进 WeakMap 的元素数据。
  */
 interface TabBarElementData {
@@ -77,13 +77,13 @@ interface TabBarElementData {
 }
 const tabBarData = (el: unknown): TabBarElementData => elementDataOf<TabBarElementData>(el);
 
-/** P4b：标签元素（`TabElement`）自身的元素数据——`item` 是这一行代表的标签数据 */
+/** 标签元素（`TabElement`）自身的元素数据——`item` 是这一行代表的标签数据 */
 interface TabElementData {
 	item: TabItem;
 }
 const tabData = (el: unknown): TabElementData => elementDataOf<TabElementData>(el);
 
-/** P4b：拖拽指示器（本身就是 HTMLElement）的元素数据——`target` 指向当前命中的标签元素 */
+/** 拖拽指示器（本身就是 HTMLElement）的元素数据——`target` 指向当前命中的标签元素 */
 const hintData = (el: unknown): { target: HTMLElement | null } =>
 	elementDataOf<{ target: HTMLElement | null }>(el);
 

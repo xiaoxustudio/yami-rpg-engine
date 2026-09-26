@@ -14,8 +14,8 @@ import {
 	switchWorkspace
 } from './layout-spec-utils';
 
-// DOM→数据树反序列化契约（layout 迁移规划 附录 D）
-// saveLayoutScheme 已改为 toLayoutScheme(deserializeGroupElement(root))，
+// DOM→数据树反序列化契约
+// saveLayoutScheme 走 toLayoutScheme(deserializeGroupElement(root))，
 // 本文件独立锁定反序列化字段契约与 active 跟踪。
 
 const loadDirectory = async (): Promise<ReturnType<typeof buildLayoutFixture>> => {

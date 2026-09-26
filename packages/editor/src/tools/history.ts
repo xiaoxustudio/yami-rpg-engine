@@ -79,5 +79,3 @@ export class History extends Array implements IArrayHistory {
 	// oxlint-disable-next-line no-explicit-any
 	static processors: Record<string, (operation: string, data: any) => void> = {};
 }
-
-// ESM 迁移兼容：恢复全局绑定（供尚未迁移的文件裸用）

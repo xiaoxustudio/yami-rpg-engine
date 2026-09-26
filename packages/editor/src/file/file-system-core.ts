@@ -238,8 +238,8 @@ File.planToSave = function (meta) {
 		// `changes` 是**普通数组**（`Manifest` 里 `changes: { value: [] }`），
 		// 没有 `append` / `remove` 方法 —— 写成 `changes.append(meta)` 会抛
 		// `TypeError: Data.manifest.changes.append is not a function`。
-		// 该形态全仓库几十处（`services/updater/*.ts` 全是 `append(changes, meta)`），
-		// 属迁移时把自由函数误改成方法调用的产物（2026-09-18 实测定位）。
+		// 该形态全仓库几十处（`services/updater/*.ts` 全是 `append(changes, meta)`）——
+		// 写成方法调用是这处最容易犯的错，故在此钉住。
 		return append(Data.manifest.changes, meta);
 	} else {
 		throw new Error('Invalid file meta');
@@ -358,5 +358,3 @@ File.route = function (relativePath) {
 	}
 	return route;
 };
-
-// ESM 迁移兼容：恢复全局绑定（供尚未迁移的文件裸用）

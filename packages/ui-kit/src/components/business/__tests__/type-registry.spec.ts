@@ -56,7 +56,7 @@ describe('type-registry', () => {
 		const wrap = registry.get('number').create(pane, { min: 1, max: 10, decimals: 2 });
 		expect(wrap.input.input.min).toBe('1');
 		expect(wrap.input.input.max).toBe('10');
-		// P4b：decimals 落在元素数据（WeakMap）里，不再是元素上的隐式属性
+		// decimals 落在元素数据（WeakMap）里，不再是元素上的隐式属性
 		expect(elementDataOf<{ decimals?: number }>(wrap.input).decimals).toBe(2);
 	});
 

@@ -8,7 +8,7 @@ import { composableEls } from '@app/composables/element-registry';
 import { Command } from '@app/commands/command-object.ts';
 
 /**
- * P1b 第 4 刀回归：通用 `useCommandSchema` 的 **write 循环**（`load()` 里按
+ * 通用 `useCommandSchema` 的 **write 循环**（`load()` 里按
  * `<name>-<field.domId ?? field.key>` 逐个 `write(...)`）过去直查 DOM，现在读 `composableEls`。
  * 这条链路要成立，命令表单 SFC 必须把**所有带 id 的控件**都登记进局部 `fieldEls` 并镜像到
  * `composableEls`——只登记用到的少数控件会让其余写入静默 no-op（SetVolume 的 volume/duration
@@ -40,7 +40,7 @@ const loopIds = (name: string): string[] => {
 	return schema.fields.map((field) => `${name}-${field.domId ?? field.key}`);
 };
 
-describe('命令表单 write 循环读注册表（P1b 第 4 刀）', () => {
+describe('命令表单 write 循环读注册表', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		document.body.innerHTML = '';

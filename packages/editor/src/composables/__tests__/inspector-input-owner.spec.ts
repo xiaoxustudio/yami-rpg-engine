@@ -4,17 +4,17 @@
  * 契约（`useInspectorInput.bindInput`）：
  *   `bindInput(elements, editor, owner, callback)`
  *   → `Inspector.inputBlur(editor, owner, callback)`
- *   → `inspector.ts:503` 执行 `owner.history!.save(data)`
+ *   → `inspector.ts` 的 `owner.history!.save(data)`
  *
  * 也就是：**第 2 参 = editor（要编辑的对象，需有 target）**，
  *        **第 3 参 = owner（历史所有者，需有 history）**。
  *
- * 缺陷背景（2026-09-17 修复）：
- *   迁移前 `inspector/element-page.ts:133` 的正确形态是
+ * 缺陷背景：
+ *   正确形态：
  *     `on(el, 'blur', Inspector.inputBlur!(this, UI))`   // (editor = 页面实例, owner = UI)
- *   10 个 UI 检查器页面重构进 `bindInput` 时把两者**转置**成
+ *   被**转置**成：
  *     `bindInput(elements, UI, <页面实例>)`              // editor 位放了 UI，owner 位放了页面实例
- *   于是 `owner.history` = `<页面实例>.history` = undefined，
+ *   则 `owner.history` = `<页面实例>.history` = undefined，
  *   blur 一旦落到保存分支就抛 TypeError。
  *
  * 为什么需要这个用例：两个形参都是结构类型，`as unknown as {...}` 能让编译器闭嘴

@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text" id="about-credits">{{ t('components.about-credits.content') }}</div>
-			<!-- P1b：超链接点击改由本组件转发（原先 Menubar.initialize 全文档查 `.href`） -->
+			<!-- 超链接点击由本组件转发（Menubar.initialize 不再全文档查 `.href`） -->
 			<div class="text" @click="onHrefClick">
 				<div class="text href">刀里个刀</div>
 				<br />
@@ -75,7 +75,7 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 
 const { t } = useI18n();
 
-// P1b：链接点击转交 Menubar（模块侧不再按类名全文档反查）
+// 链接点击转交 Menubar（模块侧不再按类名全文档反查）
 const onHrefClick = (event: MouseEvent): void => {
 	Menubar.hrefClick!(event);
 };
@@ -84,7 +84,6 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #about {
 	width: 280px;
 	height: 400px;

@@ -8,7 +8,7 @@ import { Editor } from '@app/services/project/editor.ts';
 import { composableEls } from '@app/composables/element-registry';
 
 /**
- * P1b 第 7 刀回归（单独成文件：Script 的模块级 `editor`/`bound` 状态跨用例保留，
+ * Script 的模块级 `editor`/`bound` 状态跨用例保留，
  * 只有在本文件的首个用例里 `createEditor` 才会真正执行一次）。
  *
  * 锁住两件事：
@@ -71,7 +71,7 @@ const target = {
 
 const flush = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
 
-describe('Script 语言切换按钮的接线（P1b 第 7 刀）', () => {
+describe('Script 语言切换按钮的接线', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		Window.open = vi.fn();

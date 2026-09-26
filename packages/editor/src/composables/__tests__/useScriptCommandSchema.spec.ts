@@ -180,7 +180,7 @@ describe('useScriptCommandSchema（script 命令 Monaco 编辑器 composable：i
 		wrapper.unmount();
 	});
 
-	it('P1b：窗口事件与 monaco 宿主都从注册表取（`script` / `script-script` 已登记）', async () => {
+	it('窗口事件与 monaco 宿主都从注册表取（`script` / `script-script` 已登记）', async () => {
 		const wrapper = mount(ScriptWindow, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 

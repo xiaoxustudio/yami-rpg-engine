@@ -492,7 +492,7 @@ UIEngine.updateTransform = function (this: UIShape) {
 };
 
 UIEngine.drawBackground = function (this: UIShape) {
-	// 取色改读 store（阶段 1b 起 store 就是这些字段的真源），不再依赖 `this.background`：
+	// 取色读 store（store 是这些字段的真源），不再依赖 `this.background`：
 	const background = getUIStore().background;
 	if (!background) return;
 	const gl = GL;

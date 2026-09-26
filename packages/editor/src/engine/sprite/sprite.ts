@@ -17,7 +17,7 @@ import { isDragKey } from '@app/utils/event-accessors';
 import { clamp, roundTo } from '@app/utils/math';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
-/** P4b：inspector 页管理器元素上的 `focusing`（当前聚焦的输入框元素）走显式元素数据 */
+/** inspector 页管理器元素上的 `focusing`（当前聚焦的输入框元素）走显式元素数据 */
 interface InspectorManagerData {
 	focusing: YamiElement | null;
 }

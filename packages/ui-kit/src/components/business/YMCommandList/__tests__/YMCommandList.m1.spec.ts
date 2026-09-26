@@ -6,8 +6,8 @@ import { elementDataOf } from '../../../../utils/element-data';
 import YMCommandList from '../YMCommandList.vue';
 
 /**
- * P6/M1 行为金标准（第二组）：在**现命令式实现**上锁住缩进/嵌套/选区/翻页/滚动等行为，
- * 供 M2–M5 重写期间对照——**改造后这些用例只允许改断言方式，不允许改语义**。
+ * 行为金标准（第二组）：锁住缩进/嵌套/选区/翻页/滚动等行为，
+ * **这些用例只允许改断言方式，不允许改语义**。
  * 刻意不 mount SFC：直接用 `createCommandListElement` 拿元素 API（与命令编辑器的真实用法一致）。
  */
 interface CommandListElement extends HTMLElement {
@@ -33,7 +33,7 @@ interface CommandListElement extends HTMLElement {
 }
 
 /**
- * P4b：命令列表自己的状态（选区窗口 / 聚焦）走**显式元素数据**——原实现读 `HTMLElement.prototype`
+ * 命令列表自己的状态（选区窗口 / 聚焦）走**显式元素数据**——原实现读 `HTMLElement.prototype`
  * 上的访问器；字段从 `DATA_FIELDS` 摘除后，`el.start` 这类读法会静默变成 `undefined`。
  */
 interface CommandListState {
@@ -137,7 +137,7 @@ const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandLis
 	return el;
 };
 
-describe('YMCommandList（M1 行为金标准 第二组：缩进/嵌套/选区/翻页/滚动）', () => {
+describe('YMCommandList（行为金标准 第二组：缩进/嵌套/选区/翻页/滚动）', () => {
 	it('computeTextIndent：中文按 em、英文按 ch（值精确锁定）', async () => {
 		expect((await makeList()).computeTextIndent(0)).toBe('0em');
 		expect((await makeList()).computeTextIndent(2)).toBe('4em');

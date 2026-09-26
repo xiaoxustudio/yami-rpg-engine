@@ -64,7 +64,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #fileFont-font-grid {
 	grid-gap: 20px;
 	grid-template-columns: 1fr;

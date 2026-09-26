@@ -429,9 +429,6 @@ const onParamInput = (value: unknown): void => {
 
 const tint = computed(() => form.tint as number[]);
 
-// R2b 迁移⑪：原先这里有个 `getOptions(id)`（直接读语言表取选项名），已改由
-// `useLocalizedOptions(...)` 在模板侧用响应式 t() 承担 → 该助手已删除。
-
 const { bindInput, bindSliders } = useInspectorInput();
 
 type SyncTarget = HTMLElement & {
@@ -455,11 +452,10 @@ const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
 const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
-// R2b 迁移⑦：三个下拉的选项名跟随语言。放在 setup 顶层即可——`useLocalizedOptions` 内部用
+// 三个下拉的选项名跟随语言。放在 setup 顶层即可——`useLocalizedOptions` 内部用
 // **全局 Composer** + `watchEffect`：既跟踪语言切换，也跟踪 `:ref` 挂载后 ref 的赋值（挂载完成时
-// effect 因读到新 ref 重跑，那时才真正 `loadItems`）。原先 layer 用行内 `t()` 一次性装载、light/blend
-// 放在 `refreshLocalizedItems` 里由 `localize` 事件回调再调一次——后者会在**事件回调**里调用本组合式
-// 函数，运行期抛 vue-i18n 的 `Must be called at the top of a setup function`（本轮报错的第一处来源）。
+// effect 因读到新 ref 重跑，那时才真正 `loadItems`）。在**事件回调**里调用本组合式函数，
+// 运行期会抛 vue-i18n 的 `Must be called at the top of a setup function`。
 useLocalizedOptions('sceneParallax-layer', ['background', 'foreground'], (items) =>
 	elLayer.value?.loadItems?.(items)
 );
@@ -471,7 +467,7 @@ useLocalizedOptions('sceneParallax-blend', ['normal', 'additive', 'subtract'], (
 );
 
 onMounted(() => {
-	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	// 以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
 	registerElement(inspectorEls, 'sceneParallax-layer', elLayer.value);
 	registerElement(inspectorEls, 'sceneParallax-light', elLight.value);
 	registerElement(inspectorEls, 'sceneParallax-blend', elBlend.value);
@@ -551,7 +547,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 样式迁移：由 Project/css/ui.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #sceneParallax-tint-0-slider,
 #sceneParallax-tint-1-slider,
 #sceneParallax-tint-2-slider,

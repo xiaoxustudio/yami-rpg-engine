@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { collectPaletteItems, elementOfRef } from '../layout/palette-items';
 
-// M5-c 回归：palette 容器 ref 打在组件（NavBar/PageManager）上时拿到的是组件实例，
+// 回归：palette 容器 ref 打在组件（NavBar/PageManager）上时拿到的是组件实例，
 // 其根元素在 $el —— 直接读实例的 children 会 `Array.from(undefined)` 抛
 // "undefined is not iterable"（真机上报的 LayoutPanel 错误）。
 
@@ -19,7 +19,7 @@ const makeRoot = (className: string, values: string[]): HTMLElement => {
 	return root;
 };
 
-describe('palette-items（M5-c 登记辅助）', () => {
+describe('palette-items（登记辅助）', () => {
 	it('元素 ref：按类名收集 nav-item / page-frame，过滤非目标类与空 value', () => {
 		const nav = makeRoot('nav-item', ['project', 'scene']);
 		const manager = makeRoot('page-frame', ['project', 'scene']);

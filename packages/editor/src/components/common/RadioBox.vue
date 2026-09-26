@@ -149,7 +149,7 @@ onMounted(() => {
 		isNewProxy = true;
 	}
 	state.proxy = proxy;
-	// P4b: proxy now lives in element data (field removed from DATA_FIELDS)
+	// proxy now lives in element data (field removed from DATA_FIELDS)
 	elementDataOf<{ proxy?: RadioProxyElement | null }>(el).proxy = proxy;
 	Object.defineProperty(el, 'dataValue', {
 		configurable: true,

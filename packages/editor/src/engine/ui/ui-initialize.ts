@@ -46,7 +46,7 @@ const initialize = function (this: UIShape) {
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	// P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+	// `page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = uiEls.get(
 		'ui-element'
 	) as YamiElement;

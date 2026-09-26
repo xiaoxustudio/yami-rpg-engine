@@ -7,7 +7,7 @@ import { elementDataOf } from '@ui-kit';
 import AnimSpriteLayerPage from '@app/components/inspector/AnimSpriteLayerPage.vue';
 
 /**
- * P2b/运行期回归（2026-09-17）：inspector 页面的下拉选项在**语言切换后要跟着变**，
+ * inspector 页面的下拉选项在**语言切换后要跟着变**，
  * 而且不能再用"监听 `localize` → 再调一次 `useLocalizedOptions`"那种写法——那会在事件回调里
  * 调用 `useI18n()`，运行期直接抛
  * `SyntaxError: Must be called at the top of a setup function`（本轮真机报错的来源）。
@@ -63,7 +63,7 @@ const itemsOf = (id: string): Array<{ name?: string }> => {
 	}>;
 };
 
-describe('inspector 页面下拉：选项名跟随语言（R2b 迁移⑦）', () => {
+describe('inspector 页面下拉：选项名跟随语言', () => {
 	beforeEach(() => {
 		document.body.innerHTML = '';
 	});

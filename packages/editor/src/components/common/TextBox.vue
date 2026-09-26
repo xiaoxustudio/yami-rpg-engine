@@ -43,7 +43,7 @@ interface Props {
 	id?: string;
 	modelValue?: string;
 	disabled?: boolean;
-	/** R2b：占位文案也可由模板 `t()` 承担（原先只有本地化器写 setPlaceholder） */
+	/** 占位文案也可由模板 `t()` 承担 */
 	placeholder?: string;
 }
 
@@ -110,7 +110,7 @@ const on = (
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
-// R2b：`placeholder` 属性随语言切换重挂（`t()` 响应式 ⇒ 切换语言后这里自动重跑）
+// `placeholder` 属性随语言切换重挂（`t()` 响应式 ⇒ 切换语言后这里自动重跑）
 watch(
 	() => props.placeholder,
 	(value) => {

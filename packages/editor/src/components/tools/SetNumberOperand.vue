@@ -404,7 +404,7 @@ const FIELD_BY_ID: Record<string, keyof NumberOperandForm> = {
 
 /**
  * 控件实例的最小接口（模板里用 `:ref="fieldRef(id)"` 登记）。
- * P5b 批次 1：不再按 id 查 DOM，改为从注册表取组件实例直调其 expose 方法；
+ * 不再按 id 查 DOM，改为从注册表取组件实例直调其 expose 方法；
  * `root` 供仍需元素的地方使用（如 relate 的 targets）。
  */
 interface FieldControl {
@@ -420,7 +420,7 @@ const fieldEls = new Map<string, FieldControl | null>();
 
 /**
  * 控件实例 → 元素：普通元素直接用；组件实例优先 `$el`（**ref 回调时即已就绪**），
- * 回退到批 1 约定的 `root`（部分组件要到挂载后才赋值）。
+ * 回退到约定的 `root`（部分组件要到挂载后才赋值）。
  */
 const elementOf = (control: FieldControl | null): HTMLElement | null => {
 	if (control == null) return null;
@@ -432,7 +432,7 @@ const elementOf = (control: FieldControl | null): HTMLElement | null => {
 const fieldRef = (id: string) => (el: unknown) => {
 	const control = el as FieldControl | null;
 	fieldEls.set(id, control);
-	// P1b：同时把控件元素镜像进 composableEls（模块侧改读注册表，不再按 id 查 DOM）。
+	// 同时把控件元素镜像进 composableEls（模块侧改读注册表，不再按 id 查 DOM）。
 	// 必须在 **ref 回调**里镜像而不是只靠 onMounted：子组件 onMounted 早于父组件，命令控件会在自己的
 	// onMounted 里 emit write/input 触发模块侧代码，那时注册表必须已经有值。
 	registerElement(composableEls, id, elementOf(control));
@@ -452,7 +452,7 @@ onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
 		attachElementApi(el, { setForm, getForm });
-		// P1b：窗口元素 `:ref` 槽位被具名 ref 占用 → 在这里命令式登记（模块侧读它取 setForm/getForm）
+		// 窗口元素 `:ref` 槽位被具名 ref 占用 → 在这里命令式登记（模块侧读它取 setForm/getForm）
 		registerElement(composableEls, 'setNumber-operand', el);
 	}
 
@@ -867,7 +867,7 @@ onMounted(() => {
 </script>
 
 <style>
-/* 窗口样式试点：由 Project/css/command.css 迁入组件（选择器为全局 id，不能用 scoped） */
+/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #setNumber-operand {
 	width: 324px;
 	height: 190px;

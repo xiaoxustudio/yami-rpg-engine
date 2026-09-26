@@ -551,7 +551,7 @@ vi.mock('@app/stores/local', () => ({
 					dataItems?: Array<{ value: string }>;
 					read(): unknown;
 				};
-				// P4b 第十九刀：`invalid` 改走元素数据（不再是原型访问器）→ 断言**可见状态**：
+				// `invalid` 改走元素数据（不再是原型访问器）→ 断言**可见状态**：
 				// 值为无效时 core 会给 `.select-box-text` 挂 `invalid` class 并写入原始文本
 				const typeInvalid = (): boolean | undefined =>
 					document

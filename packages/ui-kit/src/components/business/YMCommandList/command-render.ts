@@ -1,10 +1,10 @@
 /**
- * P6/M2 派生层（`YMCommandList`）：把「命令树 → 可见行」这一步抽成**纯数据**推导。
+ * 把「命令树 → 可见行」这一步抽成**纯数据**推导。
  *
- * 为什么要有它：现在这段逻辑长在 `command-api.ts` 的 `createCommandBuffer` / `createItems` /
+ * 为什么要有它：这段逻辑原先长在 `command-api.ts` 的 `createCommandBuffer` / `createItems` /
  * `computeStartAndEnd` 里，和**直接建 DOM 节点**、`li.contents`、`dataIndent` 存取器缠在一起，
- * 所以既没法单独验证，也没法换渲染方式。M2 只做**抽派生**（**不动渲染**）：调用方暂时仍是老实现，
- * M3 再把模板 `v-for` 接到这里的输出上。
+ * 所以既没法单独验证，也没法换渲染方式。抽成派生层之后，这里只产出**行数据**、不碰 DOM：
+ * 渲染怎么变，派生结果都不许变。
  *
  * 与 tree 改造对齐的三点（见 `YMTreeList/tree-render.ts`）：
  *   ①行 key 用 **WeakMap 发号**——不能直接用 `command.id`（脚本/事件列表允许重复 id），
@@ -39,7 +39,7 @@ export interface CommandRowDescriptor {
 	selected: boolean;
 	disabled: boolean;
 	hit: boolean;
-	/** M3 换源：是否为列表末尾的**空白行**（无命令、点击即在该层级插入） */
+	/** 是否为列表末尾的**空白行**（无命令、点击即在该层级插入） */
 	blank: boolean;
 }
 

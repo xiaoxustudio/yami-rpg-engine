@@ -199,13 +199,12 @@ export const UI = {
 	zoomTimer: null as Timer | null
 } satisfies Partial<UIShape> as Partial<UIShape> as UIShape;
 
-// ⚠️ 第 217 轮删除：原先这里是 `UI.marquee.resize = null;`（占位）。
-// 现在 `UIShape.marquee` **真的声明了** `resize: () => void`（见接口里那段），
-// 于是这行占位既编不过、也不再需要 —— 它是"用占位代替声明"那个年代的遗留写法。
+// ⚠️ 这里**不能**再放 `UI.marquee.resize = null;` 那样的占位：
+// `UIShape.marquee` 真的声明了 `resize: () => void`（见接口里那段），占位既编不过、也不再需要。
 // 行为不变：真正的赋值点在 `ui-list.ts` 的 `UI.marquee.resize = function …`，
 // 而所有调用点都在其之后（用户交互路径），与 `this.planToSave!()` 是同一类既有不变式。
 
-// P4b：`page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+// page 走显式元素数据（该字段不在 DATA_FIELDS 里）
 elementDataOf<{ page?: HTMLElement | null }>(UI.list).page = uiEls.get('ui-element') as YamiElement;
 elementDataOf<{ head: HTMLElement }>(UI.list).head = uiEls.get('ui-list-head') as YamiElement;
 UI.list.copy = null;

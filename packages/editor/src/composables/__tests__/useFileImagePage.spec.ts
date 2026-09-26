@@ -33,7 +33,7 @@ const Host = defineComponent({
 
 describe('useFileImagePage（fileImage inspector 页面 composable）', () => {
 	beforeAll(() => {
-		// P4d：`getDevicePixelContentBoxSize` 已是 `@app/utils/css` 的命名导出，改为 mock 模块
+		// `getDevicePixelContentBoxSize` 已是 `@app/utils/css` 的命名导出，改为 mock 模块
 	});
 
 	beforeEach(() => {
@@ -60,7 +60,7 @@ describe('useFileImagePage（fileImage inspector 页面 composable）', () => {
 		Object.defineProperty(image, 'naturalHeight', { value: height });
 		frame.appendChild(image);
 		document.body.appendChild(frame);
-		// P1b：composable 改从 inspectorEls 取图元素（原先按 id 直查）→ 用例自建的图元素也要登记
+		// composable 改从 inspectorEls 取图元素（原先按 id 直查）→ 用例自建的图元素也要登记
 		registerElement(inspectorEls, 'fileImage-image', image);
 		return { frame, image };
 	};

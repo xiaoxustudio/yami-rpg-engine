@@ -311,7 +311,7 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 	switch (event.button) {
 		case 0:
 			if (hasClass(event.target, 'team-icon')) {
-				// P4b：行 → item 经行 API 取（`element.item` expando 已退役）
+				// 行 → item 经行 API 取（`element.item` expando 已退役）
 				const team = teamOfTarget(event.target);
 				if (team === undefined) return;
 				return Color.open({

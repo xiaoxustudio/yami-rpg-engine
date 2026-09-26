@@ -6,8 +6,8 @@ import YMCommandList from '../YMCommandList.vue';
 import { rowKeyOf } from '../command-render';
 
 /**
- * P6/M3 切片 1：渲染出的行必须带**派生层发的稳定行 key**（`li.rowKey === rowKeyOf(command)`）。
- * 这一步是 `v-for` 换源的前置条件——M3 换模板时这些 key 直接当 `:key`，没有它们就只能用下标。
+ * 渲染出的行必须带**派生层发的稳定行 key**（`li.rowKey === rowKeyOf(command)`）。
+ * 模板 `v-for` 直接拿这些 key 当 `:key`——没有它们就只能用下标。
  */
 interface ListElement extends HTMLElement {
 	[k: string]: unknown;
@@ -66,7 +66,7 @@ const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandLis
 	return el;
 };
 
-describe('YMCommandList（M3 切片 1：行 key 接线）', () => {
+describe('YMCommandList（行 key 接线）', () => {
 	it('每行的 rowKey 等于派生层给该命令发的 key', async () => {
 		const el = await mountCommandList<ListElement>(makeOptions());
 		mockHeight(el);

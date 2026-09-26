@@ -150,7 +150,7 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter = 'object';
 			break;
 	}
-	// P4c：`filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
+	// `filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
 	registryElement<CustomBoxApi>(composableEls, 'setNumber-operand-common-variable')!.filter =
 		filter;
 };

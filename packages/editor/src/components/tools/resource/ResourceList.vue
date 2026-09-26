@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n';
 import type { ResourceRow } from '@app/stores/resource';
 
 /**
- * 资源包行列表（R1）：纯展示 + 事件上抛，状态全部来自 `stores/resource.ts`。
+ * 资源包行列表：纯展示 + 事件上抛，状态全部来自 `stores/resource.ts`。
  * 标记沿用原来的类名与内联样式（`.resource-item` 等由 Project/css/ui.css 提供），
  * DOM id 也保持一致，便于与旧结构对照排查。
  *

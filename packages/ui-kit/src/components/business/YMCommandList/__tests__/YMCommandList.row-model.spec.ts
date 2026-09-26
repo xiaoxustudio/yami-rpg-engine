@@ -10,7 +10,7 @@ import YMCommandList from '../YMCommandList.vue';
 import { rowKeyOf } from '../command-render';
 
 /**
- * P6/M3（命令列表）：**行模型 ↔ DOM 等价**。
+ * **行模型 ↔ DOM 等价**。
  *
  * 与文件 body 的 `row-model.spec.ts` 同形、同一个目的：换源（模板 `v-for`）之前，
  * 先证明"行序列"这件事有可对照的真值——顺序、key、缩进、折叠、选中态逐项一致。
@@ -138,7 +138,7 @@ const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandLis
 	return el;
 };
 
-describe('YMCommandList（M3：行模型 ↔ DOM 等价）', () => {
+describe('YMCommandList（行模型 ↔ DOM 等价）', () => {
 	it('模型 key 序列与 DOM 行元素顺序逐项一致（含空白行）', async () => {
 		const el = await makeList([makeCommand('a'), makeCommand('b'), makeCommand('c')]);
 		const model = el.getRowModel();

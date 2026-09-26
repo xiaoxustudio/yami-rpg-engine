@@ -24,7 +24,7 @@
 				<div class="text">应用版本号</div>
 				<TextBox id="export-apk-apkVersionCode" v-model="exportApkForm.apkVersionCode" />
 			</div>
-			<!-- P1b：超链接点击改由本组件转发（原先 Menubar.initialize 全文档查 `.href`） -->
+			<!-- 超链接点击由本组件转发（Menubar.initialize 不再全文档查 `.href`） -->
 			<div class="box" id="export-apk-PS" @click="onHrefClick">
 				<div class="text project-summary export-apk-major">PS（温馨提示）</div>
 				<div class="text export-apk-major">
@@ -76,7 +76,7 @@ import { exportApkForm, Menubar } from '@app/title/menu-bar';
 
 const items = ref<{ done: boolean; msg: string }[]>([]);
 
-// P1b：超链接点击转交 Menubar（模块侧不再按类名全文档反查 `.href`）
+// 超链接点击转交 Menubar（模块侧不再按类名全文档反查 `.href`）
 const onHrefClick = (event: MouseEvent): void => {
 	Menubar.hrefClick!(event);
 };
@@ -103,7 +103,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 窗口样式迁移：由 Project/css/dialogs.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #export-apk {
 	width: 480px;
 	height: 720px;

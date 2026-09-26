@@ -415,7 +415,7 @@ vi.mock('@app/stores/local', () => ({
 			// 修复前：下拉只靠窗口 'open' 事件加载选项，open 未触发时选项为空、无默认文本
 			expect(dataItemsOf(team)?.map((item) => item.value)).toEqual(['team0']);
 			expect(team.read()).toBe('team0');
-			// P4b 第十九刀：`invalid` 不再是元素上的原型访问器（改走元素数据），
+			// `invalid` 不再是元素上的原型访问器（改走元素数据），
 			// 这里改为断言**可见状态**——无效值会让文本节点挂上 `invalid` class（core 的 write 分支）
 			expect(text?.classList.contains('invalid')).toBe(false);
 			expect(text?.textContent).toBe('Team 0');

@@ -10,7 +10,7 @@ import type { Palette } from '@app/palette/palette.ts';
 import { elementDataOf } from '@ui-kit';
 import { clamp as mathClamp, roundTo } from '@app/utils/math';
 
-/** P4b：场景选框元素上的 `key`（当前选框状态名：tile / terrain / object / eraser…）走显式元素数据 */
+/** 场景选框元素上的 `key`（当前选框状态名：tile / terrain / object / eraser…）走显式元素数据 */
 interface SceneMarqueeData {
 	key: string | null;
 }

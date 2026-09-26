@@ -29,7 +29,7 @@ interface TabBarElement extends HTMLElement {
 	dirItem: unknown;
 }
 
-/** P4b：`dragging` 不再是元素上的隐式属性，走显式元素数据 */
+/** `dragging` 不再是元素上的隐式属性，走显式元素数据 */
 const listData = (el: unknown): { dragging: unknown } => elementDataOf<{ dragging: unknown }>(el);
 
 describe('YMTabBar', () => {

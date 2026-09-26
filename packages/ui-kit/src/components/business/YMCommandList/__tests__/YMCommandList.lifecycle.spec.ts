@@ -10,9 +10,8 @@ import { elementDataOf } from '../../../../utils/element-data';
 import YMCommandList from '../YMCommandList.vue';
 
 /**
- * P6/M1 补测（第五批）：**为命令列表的换源做前置加固**。
- * M3 换源会动"行元素归属"，因此先把"行的清空/缓存回收/选区重置"这些**跨行的可观察行为**钉住，
- * 换源后一旦行生命周期出错，用例会直接指出是哪一类。
+ * **钉住命令列表的行生命周期**：行元素由模板 `v-for` 产生，所以"行的清空/缓存回收/选区重置"
+ * 这些**跨行的可观察行为**一旦出错，用例会直接指出是哪一类。
  *
  * 断言的语义都按**实现**写（不是按直觉）：例如 `deleteCommandBuffers` 回收的是命令对象上的
  * **渲染缓冲**（`command.buffer`），而不是行元素本身。
@@ -47,7 +46,7 @@ const findBlankRowIndex = (el: FoldListElement): number => {
 };
 
 /**
- * P4b：命令列表自己的状态（选区窗口 / 聚焦）走**显式元素数据**——原实现读 `HTMLElement.prototype`
+ * 命令列表自己的状态（选区窗口 / 聚焦）走**显式元素数据**——原实现读 `HTMLElement.prototype`
  * 上的访问器；字段从 `DATA_FIELDS` 摘除后，`el.start` 这类读法会静默变成 `undefined`。
  */
 interface CommandListState {
@@ -127,7 +126,7 @@ const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandLis
 	return el;
 };
 
-describe('YMCommandList（M1 补测：行生命周期与选区重置——换源前置加固）', () => {
+describe('YMCommandList（行生命周期与选区重置）', () => {
 	it('clear：清空后行数归零、选区状态复位，且可重新写入', async () => {
 		const el = await makeList(items(5));
 		listState(el).focusing = true;

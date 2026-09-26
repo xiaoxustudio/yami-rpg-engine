@@ -53,7 +53,7 @@ export type CustomBoxApi = HTMLElement & {
 };
 
 /**
- * P2b-3：把 `unknown` 值转成显示文本。
+ * 把 `unknown` 值转成显示文本。
  *
  * 原先这里直接写 `String(value)` 并挂了两条 `oxlint-disable-next-line no-base-to-string`——
  * 那条规则指出的问题是真的（对象会落回 `[object Object]`）。这里把分流写明：`null`/`undefined`
@@ -104,7 +104,7 @@ export function attachCustomBoxApi(
 	const text = document.createElement('div');
 	text.className = 'custom-box-text text';
 	box.appendChild(text);
-	// P4b: info now lives in element data (field removed from DATA_FIELDS)
+	// info now lives in element data (field removed from DATA_FIELDS)
 	elementDataOf<{ info: HTMLElement }>(box).info = text;
 	box.tabIndex = 0;
 

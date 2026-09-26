@@ -17,7 +17,7 @@ import {
 	visibleOf
 } from './layout-spec-utils';
 
-// M1 补齐：会话恢复（saveNavStates/lastValue）、结构同步（updateGroupTabs）、
+// 会话恢复（saveNavStates/lastValue）、结构同步（updateGroupTabs）、
 // 折叠合并（mergeGroups）、拖拽生命周期（navDragstart/navDragend）。
 // 几何相关（clientWidth 恒 0）之外的 DOM 结构语义在此锁定。
 

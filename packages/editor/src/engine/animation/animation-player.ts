@@ -24,9 +24,8 @@ interface AnimationData {
 }
 
 const debouncedSceneRender = debounce(() => Scene.requestRendering!(), 60);
-// 迁出遗留层：`UI.requestRendering()` 是 `ui-window.ts` 上的方法，现在走 store。
-// store 的 action 内部就是 `UI?.requestRendering?.()`（带可选链，比直接调用更安全），
-// 且这里本来就在 debounce 回调里执行 ⇒ 不在模块加载期触发，无循环依赖风险。
+// `requestRendering` 经 store 的 action 走（内部是 `UI?.requestRendering?.()`，带可选链，
+// 比直接调用更安全），且这里本来就在 debounce 回调里执行 ⇒ 不在模块加载期触发，无循环依赖风险。
 const debouncedUiRender = debounce(() => getUIStore().requestRendering(), 60);
 
 export class AnimationPlayer {

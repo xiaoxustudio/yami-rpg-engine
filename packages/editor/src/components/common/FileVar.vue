@@ -160,7 +160,7 @@ onMounted(() => {
 	if (!el) return;
 	api.mode = el.classList.contains('variable') ? 'variable' : 'constant';
 	api.fileBox = getChildRoot(fileBoxRef.value);
-	// P4b: varBox now lives in element data (field removed from DATA_FIELDS)
+	// varBox now lives in element data (field removed from DATA_FIELDS)
 	elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(varBoxRef.value);
 	attachElementApi(el, api);
 	watch(

@@ -249,10 +249,9 @@ let links: any = {};
 /**
  * 当前项目的目录根（宿主写在浏览器元素上：`Browser.directory = [Directory.assets]`）。
  *
- * 迁移期这里是本模块的一个局部变量，但**没有任何赋值点**——于是 `close()` 里的清理分支永远
- * 进不去：关掉/切换项目时，上一个项目的文件行、文件夹行与地址栏都留在 DOM 里，打开新项目后
- * 与新内容叠在一起（"上一次的项目在背景"）。这里恢复成读元素属性，与 legacy 的 `this.directory`
- * 一致（legacy 里它同时是搜索基集：`Directory.searchFiles(filters, kw, this.directory, list)`）。
+ * 必须读元素属性，不能只用模块局部变量：局部变量没有任何赋值点，`close()` 里的清理分支就永远
+ * 进不去——关掉/切换项目时，上一个项目的文件行、文件夹行与地址栏都留在 DOM 里，打开新项目后
+ * 与新内容叠在一起（"上一次的项目在背景"）。与 legacy 的 `this.directory` 一致（legacy 里它同时是搜索基集：`Directory.searchFiles(filters, kw, this.directory, list)`）。
  */
 const directoryItems = (): unknown[] | null => {
 	const value = (el.value as FileBrowserApi | undefined)?.directory;
@@ -317,7 +316,7 @@ function restoreDisplay(): void {
 			searchResults = [];
 			syncDisplayState();
 			// legacy 的 `this.head.searcher.write('')`：搜索框里的关键字同样属于"上一个项目"的残留。
-			// （P2b 删掉的那句裸 `?.el?.querySelector?.('.file-head-searcher')` 正是它的残骸——
+			// （删掉的那句裸 `?.el?.querySelector?.('.file-head-searcher')` 正是它的残骸——
 			// 有调用无接收方，从未生效；现在走头部元素的搜索框 API，与 legacy 同一句 `write('')`。）
 			(
 				(headEl.value as { el?: FileHeadApi } | undefined)?.el?.searcher as

@@ -245,7 +245,7 @@ watch(
 function initializeApi(): void {
 	const el = root.value as (HTMLElement & { [k: string]: unknown }) | null;
 	const text = infoEl.value;
-	// P4b：守卫读侧必须是 `isApiAttached`（与下面 `markApiAttached` 同一存储）——
+	// 守卫读侧必须是 `isApiAttached`（与下面 `markApiAttached` 同一存储）——
 	// 第十六刀只改了写侧，而 `el._initialized` 已不再是访问器 ⇒ 读到的恒为 undefined、
 	// 守卫静默失效（当前唯一调用点是 onMounted，故套件没抓到；改成数据视图后恢复原意）
 	if (!el || !text || isApiAttached(el)) return;
@@ -260,7 +260,7 @@ function initializeApi(): void {
 		}
 	});
 
-	// P4b：_initialized 走元素数据（isApiAttached/markApiAttached，字段已从 DATA_FIELDS 摘除）；
+	// _initialized 走元素数据（isApiAttached/markApiAttached，字段已从 DATA_FIELDS 摘除）；
 	// info 不再镜像到元素——组件内部经局部变量 `info` 读写，全仓无人读元素侧的 info。
 	el.writeEventEnabled = false;
 	el.inputEventEnabled = false;

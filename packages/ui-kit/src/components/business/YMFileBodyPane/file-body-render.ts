@@ -1,11 +1,9 @@
 /**
- * P6/M2 派生层（`YMFileBodyPane`）：把「文件列表 + 视图模式 → 行数据与网格度量」抽成**纯数据**推导。
+ * 把「文件列表 + 视图模式 → 行数据与网格度量」抽成**纯数据**推导。
  *
- * 现状：度量数学**已经**在 `file-body-core.ts` 里（`computeListGridMetrics` / `computeTileGridMetrics` /
- * `computeVisibleRange` / `computeNavigationIndex`），但**视图模式 → 度量**的映射还长在 SFC 里
- * （`computeGridProperties` 的 `switch` + `updateViewMode` 的 `switch`），行数据（哪一行是文件/文件夹、
- * 行 key）也散在 `createFlatItems` / `createFileElement` 里。M2 只做**抽派生、不动渲染**：
- * 调用方暂时仍是老实现，M3 再把模板 `v-for` 接到这里的输出上。
+ * 现状：度量数学在 `file-body-core.ts` 里（`computeListGridMetrics` / `computeTileGridMetrics` /
+ * `computeVisibleRange` / `computeNavigationIndex`），本文件补的是**视图模式 → 度量**的映射
+ * 与行数据（哪一行是文件/文件夹、行 key）。派生与渲染解耦：渲染怎么变，这里的输出都不许变。
  *
  * 与 `command-render.ts` / tree `tree-render.ts` 对齐：行 key 用 **WeakMap 发号**
  * （文件路径可能重复出现，且同一对象跨多次派生必须拿到同一个 key ⇒ Vue 只移动/复用行）。

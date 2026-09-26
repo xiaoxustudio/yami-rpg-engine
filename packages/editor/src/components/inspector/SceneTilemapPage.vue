@@ -263,7 +263,7 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
-	// P1b：以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
+	// 以下控件的 :ref 槽位已被具名 ref 占用 → 命令式登记（页面内批量绑定焦点/滑杆用）
 	registerElement(inspectorEls, 'sceneTilemap-layer', elLayer.value);
 	registerElement(inspectorEls, 'sceneTilemap-light', elLight.value);
 	registerElement(inspectorEls, 'sceneTilemap-blend', elBlend.value);

@@ -12,7 +12,7 @@ import { EventEditor } from '@app/commands/event-editor.ts';
 import { Data } from '@app/data/data-object.ts';
 
 /**
- * P1b 命令表单批次回归：命令 schema composable 原先按 id 直接查 DOM（`document.getElementById('setShortcut-key')`），
+ * 命令 schema composable 原先按 id 直接查 DOM（`document.getElementById('setShortcut-key')`），
  * 现在读共享注册表 `composableEls`；渲染方命令 SFC 的局部 `fieldEls` 改成**创建时镜像**
  * （`createElementRegistry(composableEls)`）。
  *
@@ -33,7 +33,7 @@ const mountAndSettle = async (component: Parameters<typeof mount>[0]) => {
 	return wrapper;
 };
 
-describe('命令表单 composable 注册表（P1b）', () => {
+describe('命令表单 composable 注册表', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		document.body.innerHTML = '';

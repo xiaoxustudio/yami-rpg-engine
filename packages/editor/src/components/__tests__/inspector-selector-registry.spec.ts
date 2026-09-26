@@ -7,7 +7,7 @@ import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registryElements, registerElement } from '@app/utils/element-registry';
 
 /**
- * P1b 第 5 刀回归：inspector 页里「一次批量取多个控件再挂焦点/滑杆监听」的写法，过去是
+ * inspector 页里「一次批量取多个控件再挂焦点/滑杆监听」的写法，过去是
  * `document.querySelectorAll('#a, #b, …')`，现在读 `inspectorEls`（`registryElements`）。
  *
  * 这条链路要求页面把这些控件**全部登记**——少登记一个，`bindInput`/`bindSliders` 就静默少绑一个控件
@@ -42,7 +42,7 @@ const mountWithHost = async (
 	return wrapper;
 };
 
-describe('inspector 页批量取控件走注册表（P1b 第 5 刀）', () => {
+describe('inspector 页批量取控件走注册表', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		document.body.innerHTML = '';

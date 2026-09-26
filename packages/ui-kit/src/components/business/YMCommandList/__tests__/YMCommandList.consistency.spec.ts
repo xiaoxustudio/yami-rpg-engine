@@ -143,7 +143,7 @@ describe('YMCommandList（模型 ↔ DOM 一致性）', () => {
 			{ id: 'd', params: {}, commands: [] }
 		]);
 		await nextTick();
-		// P4b：`focusing` 是元素数据（原走 `HTMLElement.prototype` 上的访问器）
+		// `focusing` 是元素数据（原走 `HTMLElement.prototype` 上的访问器）
 		elementDataOf<{ focusing?: boolean }>(el).focusing = true;
 		expect(domKeys()).toEqual(nonEmpty(el.getRowModel().keys));
 

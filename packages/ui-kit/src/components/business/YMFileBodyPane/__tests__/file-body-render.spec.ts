@@ -10,8 +10,8 @@ import {
 } from '../file-body-render';
 
 /**
- * P6/M2 派生层用例（文件 body）：只验证「视图模式 → 度量」映射与「文件列表 → 行数据」的纯推导。
- * 这些断言是 M3 把渲染换成 `v-for` 时的对照物（渲染怎么变都行，派生结果不许变）。
+ * 只验证「视图模式 → 度量」映射与「文件列表 → 行数据」的纯推导。
+ * 渲染怎么变都行，派生结果不许变。
  */
 const core = createFileBodyCore();
 
@@ -26,7 +26,7 @@ class FolderItem {
 
 const file = (path: string) => ({ path, basename: path.split('/').pop() ?? path });
 
-describe('file-body-render（M2 派生层：视图模式与度量）', () => {
+describe('file-body-render（派生层：视图模式与度量）', () => {
 	it('viewModeOfIndex：0..4 依次映射为 list/small/medium/large/huge（越界夹取）', () => {
 		expect(VIEW_MODE_BY_INDEX).toEqual(['list', 'small', 'medium', 'large', 'huge']);
 		expect(viewModeOfIndex(0)).toBe('list');
@@ -66,7 +66,7 @@ describe('file-body-render（M2 派生层：视图模式与度量）', () => {
 	});
 });
 
-describe('file-body-render（M2 派生层：行数据）', () => {
+describe('file-body-render（派生层：行数据）', () => {
 	it('deriveFileRows：顺序与传入一致，字段取 basename/path', () => {
 		const rows = deriveFileRows([file('/a/one'), file('/a/two')]);
 		expect(rows.map((row) => row.name)).toEqual(['one', 'two']);

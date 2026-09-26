@@ -25,7 +25,7 @@ const getFrame = (id: string): FormFrame => document.getElementById(id) as unkno
 
 const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 
-describe('P3 低频窗口表单桥接（choice/regionGetter/exportLanguage 回归保护）', () => {
+describe('低频窗口表单桥接（choice/regionGetter/exportLanguage 回归保护）', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 	});

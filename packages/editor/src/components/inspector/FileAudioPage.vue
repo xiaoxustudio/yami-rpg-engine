@@ -173,7 +173,7 @@ onMounted(() => {
 			fileAudio.intensities.index = 0;
 		}
 
-		// E1：监听器存变量再 add/remove，保证卸载时能摘掉（原先只 add）
+		// 监听器存变量再 add/remove，保证卸载时能摘掉（只 add 就摘不掉）
 		const onThemeChange = fileAudio.themechange;
 		themechangeHandler = onThemeChange;
 		window.addEventListener('themechange', onThemeChange);
@@ -197,7 +197,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style>
-/* 样式迁移：由 Project/css/inspector.css 迁入组件（选择器为全局 id，不能用 scoped） */
 #fileAudio-volume,
 #fileAudio-pan,
 #fileAudio-dry,

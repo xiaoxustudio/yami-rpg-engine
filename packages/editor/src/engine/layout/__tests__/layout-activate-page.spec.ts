@@ -9,7 +9,7 @@ import {
 	switchWorkspace
 } from './layout-spec-utils';
 
-// 打开窗口时把其页面切到前台（M5 收尾）：同叶子若激活了其它页签，目标页是 display:none
+// 打开窗口时把其页面切到前台：同叶子若激活了其它页签，目标页是 display:none
 // → 画布/内容尺寸为 0（真机表现为场景预览空白 + WebGL 零尺寸帧缓冲刷屏）。
 
 const SCHEME = {

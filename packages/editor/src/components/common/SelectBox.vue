@@ -117,9 +117,9 @@ const restore = (): void => ym.value?.restore();
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
 /**
- * R2b 迁移⑮：选项名改由本组件按语言文件**自己生成**（`t()` 响应式），本地化器不必再为这些键查 DOM。
- * 与旧实现的等价性：过去读 `useLocalStore().components[id].options`（语言切换时重写一次），
- * 现在按同一份 `components.<id>.options` 消息树生成，并由 `watchEffect` 在语言切换时重挂。
+ * 选项名由本组件按语言文件**自己生成**（`t()` 响应式），本地化器不必再为这些键查 DOM。
+ * 与 `useLocalStore().components[id].options` 等价（那份只在语言切换时重写一次），
+ * 这里按同一份 `components.<id>.options` 消息树生成，并由 `watchEffect` 在语言切换时重挂。
  * 未收录 `components.<id>.options` 的控件保持原样（不写名字，交给调用方的 loadItems）。
  */
 const { t, te, tm } = useI18n();
@@ -262,7 +262,7 @@ watch(
 	(val) => (val ? disable() : enable())
 );
 
-// R2b 迁移⑮：语言切换时重挂选项名（`applyLocalizedOptions` 内部调 `t`，故本 effect 会随语言变化重跑）
+// 语言切换时重挂选项名（`applyLocalizedOptions` 内部调 `t`，故本 effect 会随语言变化重跑）
 watchEffect(() => {
 	applyLocalizedOptions();
 });

@@ -10,7 +10,7 @@ import ObjectGetter from '@app/components/tools/ObjectGetter.vue';
 import { composableEls } from '@app/composables/element-registry';
 
 /**
- * P1b 第 6 刀回归：5 个窗口 composable（Team / PresetElement / PresetObject / TileNode / PresetGetter 工厂）
+ * 5 个窗口 composable（Team / PresetElement / PresetObject / TileNode / PresetGetter 工厂）
  * 过去按 id 直查元素，现在读共享注册表 `composableEls`。
  *
  * 覆盖三类登记手法：窗口框架的 `:ref`（Team/Preset*）、具名 ref 的 `registerElement`（Getter 的 `frame`、
@@ -49,7 +49,7 @@ const expectRegistered = (ids: string[]) => {
 	}
 };
 
-describe('窗口 composable 读注册表（P1b 第 6 刀）', () => {
+describe('窗口 composable 读注册表', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		document.body.innerHTML = '';

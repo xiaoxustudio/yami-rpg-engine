@@ -30,7 +30,7 @@ vi.mock('@app/scene/scene-window.ts', () => ({
 }));
 
 /**
- * P4b：`Scene.marquee.key` 是**元素数据**（生产侧由 `scene-marquee-engine.ts` / `palette-engine.ts` /
+ * `Scene.marquee.key` 是**元素数据**（生产侧由 `scene-marquee-engine.ts` / `palette-engine.ts` /
  * `scene-window.ts` 写入场景选框元素），不再有原型访问器 ⇒ 夹具必须是**真元素**并显式写元素数据，
  * 否则 `sceneMarqueeData(...).key` 恒为 `undefined`，代码会走 `saveData.tile.tiles` 分支并抛错
  * （表现为 Enter/pointerup 后选区根本没写进 `tiles`）。

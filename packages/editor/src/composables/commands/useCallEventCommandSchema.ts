@@ -245,7 +245,7 @@ interface CallEventInputApi {
 	on?(type: string, listener: (event: Event) => void): void;
 }
 
-/** P4b：`numBox` / `strBox` 现在是元素数据（WeakMap），消费者经此形状读取 */
+/** `numBox` / `strBox` 现在是元素数据（WeakMap），消费者经此形状读取 */
 const numBoxOf = (el: unknown): { input?: { min?: string; max?: string; value?: string } } =>
 	elementDataOf<{
 		numBox: { input?: { min?: string; max?: string; value?: string } };
@@ -322,7 +322,7 @@ export function useCallEventCommandSchema() {
 	const createParameterElements = (parameter: CallEventArg): void => {
 		const { type, key, note } = parameter;
 		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
-		// P1b：标签节点由 CallEvent.vue 的模板节点 clone 而来（原先 document.createElement + render）
+		// 标签节点由 CallEvent.vue 的模板节点 clone 而来（原先 document.createElement + render）
 		const labelEl = (composableEls.get('callEvent-label-template') as YamiElement).cloneNode(
 			true
 		) as HTMLElement;
@@ -345,7 +345,7 @@ export function useCallEventCommandSchema() {
 				input = createNumberVar();
 				numBoxOf(input).input!.min = '-1000000000';
 				numBoxOf(input).input!.max = '1000000000';
-				// P4b：`decimals` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
+				// `decimals` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 				elementDataOf<{ decimals?: number }>(numBoxOf(input)).decimals = 10;
 				break;
 			case 'string':
@@ -525,7 +525,7 @@ export function useCallEventCommandSchema() {
 			elEventType.createTooltip();
 			write(elEventType, eventTypes[0].value);
 		}
-		// P1b：原先按类名 `document.querySelectorAll('.call-event-component')` 反查——这些元素
+		// 原先按类名 `document.querySelectorAll('.call-event-component')` 反查——这些元素
 		// 全部由本模块创建并登记在 `parameters` / `eventResult` 里，直接从数据面取即可
 		for (const element of [
 			...parameters.flatMap(({ label, input }) => [label, input]),
