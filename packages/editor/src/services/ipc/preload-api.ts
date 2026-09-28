@@ -28,7 +28,7 @@ export interface YamiInvokeApi {
 	toQrcode(url: string): Promise<string | undefined>;
 	getLocalIp(): Promise<string[]>;
 	toExcel(body: ToExcelBody): Promise<unknown>;
-	fromExcel(): Promise<unknown[]>;
+	fromExcel(): Promise<Array<import('@app/local/local-window.ts').LocalizationItem>>;
 	getDirPath(location: DirLocation): Promise<string | undefined>;
 	writeFile(filePath: string, text: string | Uint8Array, check?: boolean): Promise<unknown>;
 	waitWriteFile(): Promise<unknown>;

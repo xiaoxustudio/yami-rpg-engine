@@ -20,7 +20,7 @@ export const Meta = (function IIFE() {
 	const fileDescriptor: PropertyDescriptor = { writable: true, value: null };
 	const guidDescriptor = { writable: true, value: '' };
 	const codeDescriptor = { writable: true, value: '' };
-	const groupDescriptor = { value: null };
+	const groupDescriptor: PropertyDescriptor = { value: null };
 	const dataMapDescriptor = { value: null };
 	const descriptors = {
 		file: fileDescriptor,
@@ -62,11 +62,20 @@ export const Meta = (function IIFE() {
 		};
 		/**
 		 * 参数管理器（运行期由 `plugin-parse-meta.ts` 的 `Object.defineProperties` 挂上，
-		 * 值就是那里的 `OptionManager.sort()`）：ui-kit 的 `updateParamDisplay` 读 `states`。
+		 * 值就是那里的 `OptionManager.sort()`）：ui-kit 的 `updateParamDisplay` 读 `states`，
+		 * 编辑器侧重建设置参数时调 `update()`（见 `plugin-reconstruct.ts`）。
+		 * 形状与 `plugin.ts` 的 `PluginMetaShape.manager` 对齐（`OptionManager` 两处都提供）。
 		 */
-		declare manager: { states: Record<string, boolean> };
-		/** 概览信息（运行期写入；ui-kit 只读 `overview.deprecated`，见 `:353-356`） */
-		declare overview?: { deprecated?: string };
+		declare manager: {
+			states: Record<string, boolean>;
+			update: (parameters: Record<string, unknown>) => void;
+		};
+		/**
+		 * 概览信息（运行期写入）。ui-kit 只读 `overview.deprecated`（见 `:353-356`）；
+		 * 编辑器侧 `PluginOverview.vue` 还要从 `manifest.guidMap[*].overview.plugin` 取插件名 ⇒ 补 `plugin`。
+		 * `deprecated` 保持 `string`：必须与 ui-kit 的 `ManifestEntry.overview` 一致，否则跨包 prop 绑定报 TS2322。
+		 */
+		declare overview?: { plugin?: string; deprecated?: string };
 		// script 类型运行时由 Object.defineProperty 挂载（非枚举）
 		declare code: string;
 
@@ -128,13 +137,13 @@ export const Meta = (function IIFE() {
 			}
 			const { manifest } = Data;
 			manifest.changed = true;
-			manifest[key].push(this);
+			manifest.group(key).push(this);
 			manifest.metaList.push(this);
 			manifest.guidMap[guid] = this;
 			manifest.pathMap[path] = this;
 			fileDescriptor.value = file;
 			guidDescriptor.value = guid;
-			groupDescriptor.value = manifest[key];
+			groupDescriptor.value = manifest.group(key);
 			Object.defineProperties(this, descriptors);
 		}
 

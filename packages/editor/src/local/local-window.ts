@@ -38,7 +38,7 @@ import { type TreeListElement } from '@app/components/tree-list.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { GlobalClipboard } from '@app/utils/clipboard';
 
-interface LocalizationItem {
+export interface LocalizationItem {
 	id?: string;
 	name: string;
 	class?: string;

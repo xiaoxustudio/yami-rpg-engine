@@ -12,15 +12,18 @@ export class EnumerationContext extends TreeDataContext {
 		return this.itemMap[stringId];
 	}
 
-	getGroupString(groupKey: string, stringId: string): TreeDataItem | undefined {
+	getGroupString(groupKey: string | undefined, stringId: string): TreeDataItem | undefined {
+		if (groupKey === undefined) return undefined;
 		return this.groupMap[groupKey]?.itemMap[stringId];
 	}
 
-	getDefStringId(groupKey: string): string {
+	getDefStringId(groupKey: string | undefined): string {
+		if (groupKey === undefined) return '';
 		return this.groupMap[groupKey]?.itemList[0]?.id ?? '';
 	}
 
-	getStringItems(groupKey: string, allowNone: boolean = false): unknown[] {
+	getStringItems(groupKey: string | undefined, allowNone: boolean = false): unknown[] {
+		if (groupKey === undefined) return [];
 		let key = groupKey;
 		if (allowNone) {
 			key += '-allowNone';
@@ -57,11 +60,15 @@ export class EnumerationContext extends TreeDataContext {
 		}) as unknown[];
 	}
 
+	/**
+	 * 返回缓存项列表，与 `EnumModule.getMergedItems` 声明的 `Array<{ value: string }>` 同形。
+	 * `getCachedItems` 的形参与返回值都是 `unknown`，故在出口处断言一次（同 `getStringItems`）。
+	 */
 	getMergedItems(
 		headItems: unknown[] | null | undefined,
 		groupKey: string,
 		mergedKey: string = 'merged'
-	) {
+	): Array<{ value: string }> {
 		const headKey = (headItems ?? [])
 			.map((item) => (item as { value?: string })?.value ?? '')
 			.join(',');
@@ -89,6 +96,6 @@ export class EnumerationContext extends TreeDataContext {
 				}
 			}
 			return items;
-		});
+		}) as Array<{ value: string }>;
 	}
 }

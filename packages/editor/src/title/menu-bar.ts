@@ -97,7 +97,7 @@ interface MenubarShape {
 	state: string;
 }
 
-type RecentTabMeta = { guid?: string; path: string; [k: string]: unknown };
+type RecentTabMeta = { guid?: string; path: string };
 
 export interface ExportApkForm {
 	apkName: string;

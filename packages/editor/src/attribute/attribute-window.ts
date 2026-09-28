@@ -30,7 +30,7 @@ import { clone as deepClone } from '@app/utils/object';
 /** 元素注册表——由对应窗口 SFC 在模板里登记 */
 export const attributeEls = createElementRegistry();
 
-interface AttributeItem {
+export interface AttributeItem {
 	id: string;
 	class?: string;
 	key?: string;

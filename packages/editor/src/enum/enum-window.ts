@@ -30,7 +30,7 @@ import { clone as deepClone } from '@app/utils/object';
 /** 元素注册表——由对应窗口 SFC 在模板里登记 */
 export const enumEls = createElementRegistry();
 
-interface EnumItem {
+export interface EnumItem {
 	id: string;
 	class?: string;
 	name: string;
@@ -86,7 +86,7 @@ interface EnumModule {
 	) => unknown[];
 	getMergedItems: (
 		this: typeof Enum,
-		headItems: unknown,
+		headItems: unknown[],
 		groupKey: string,
 		mergedKey?: string
 	) => Array<{ value: string }>;
@@ -386,7 +386,7 @@ Enum.getStringItems = function (
 
 Enum.getMergedItems = function (
 	this: typeof Enum,
-	headItems: unknown,
+	headItems: unknown[],
 	groupKey: string,
 	mergedKey: string = 'merged'
 ) {

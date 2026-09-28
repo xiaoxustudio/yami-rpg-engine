@@ -40,6 +40,13 @@ export class Manifest {
 	declare changes: FileMeta[];
 	declare code: string;
 
+	/**
+	 * 按分组名取文件列表（分组名来自 FileItem.dataMapNames 与 metadata.ts 的 typeMapToGroupName）。
+	 */
+	group(groupKey: string): FileMeta[] {
+		return this[groupKey as keyof this] as FileMeta[];
+	}
+
 	constructor() {
 		Object.defineProperties(this, {
 			metaList: { value: [] },

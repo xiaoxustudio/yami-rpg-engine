@@ -1,15 +1,10 @@
 import { Data } from '@app/data/data-object.ts';
+import type { VariableNode as DataVariableNode } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Variable } from '@app/variable/variable.ts';
 import { clone as deepClone } from '@app/utils/object';
 
-interface VariableNode {
-	class: string;
-	name: string;
-	id?: string;
-	expanded?: boolean;
-	children?: VariableNode[];
-}
+type VariableNode = DataVariableNode;
 
 Variable.unpackVariables = (function IIFE() {
 	class ReferencedFolder {
@@ -54,6 +49,7 @@ Variable.unpackVariables = (function IIFE() {
 })();
 
 interface PackedVariableNode {
+	id?: string;
 	class: string;
 	name: string;
 	expanded?: boolean;

@@ -72,7 +72,7 @@ ImportLanguage.importLanguagePack = function (
 	const map = Data.localization.map;
 	for (const [id, text] of Object.entries(this.parseLanguagePack!(string))) {
 		const item = map[id];
-		if (item?.contents[language] !== undefined) {
+		if (item?.contents?.[language] !== undefined) {
 			item.contents[language] = text;
 		}
 	}

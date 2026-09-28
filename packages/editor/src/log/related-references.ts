@@ -62,10 +62,10 @@ type SearchNodeShape = {
 };
 type TreeItemShape = {
 	name: string;
-	class: string;
+	class?: string;
 	id?: string;
-	children: TreeItemShape[];
-	value?: string | number;
+	children?: TreeItemShape[];
+	value?: unknown;
 	note?: string | number;
 	key?: string | number;
 	enum?: string;
@@ -517,11 +517,11 @@ Reference.findAllGuids = function (targetGuid = '') {
 			for (const item of items) {
 				const path = `${dir}/${item.name}`;
 				if (item.class === 'folder') {
-					searchItems(item.children, path);
+					searchItems(item.children ?? [], path);
 					continue;
 				}
 				pushToOuterMap(path, item.id!);
-				const text = item.name + ',' + item.value + ',' + item.note;
+				const text = String(item.name) + ',' + String(item.value) + ',' + String(item.note);
 				let match;
 				while ((match = guidInText.exec(text))) {
 					pushToUsedMap(path, match[1]);
@@ -539,19 +539,19 @@ Reference.findAllGuids = function (targetGuid = '') {
 				const path = `${dir}/${item.name}`;
 				if (item.class === 'folder') {
 					pushToInnerMap(path, item.id!);
-					searchItems(item.children, path);
+					searchItems(item.children ?? [], path);
 					continue;
 				}
 				pushToOuterMap(path, item.id!);
 				pushToUsedMap2(path, 'enum', item.enum);
-				const text = item.name + ',' + item.key + ',' + item.note;
+				const text = String(item.name) + ',' + String(item.key) + ',' + String(item.note);
 				let match;
 				while ((match = guidInText.exec(text))) {
 					pushToUsedMap(path, match[1]);
 				}
 			}
 		};
-		searchItems(Data.attribute.keys, dir);
+		searchItems(Data.attribute.keys ?? [], dir);
 	};
 	const searchEnumerations = () => {
 		resetFileId();
@@ -562,18 +562,18 @@ Reference.findAllGuids = function (targetGuid = '') {
 				const path = `${dir}/${item.name}`;
 				if (item.class === 'folder') {
 					pushToInnerMap(path, item.id!);
-					searchItems(item.children, path);
+					searchItems(item.children ?? [], path);
 					continue;
 				}
 				pushToOuterMap(path, item.id!);
-				const text = item.name + ',' + item.value + ',' + item.note;
+				const text = String(item.name) + ',' + String(item.value) + ',' + String(item.note);
 				let match;
 				while ((match = guidInText.exec(text))) {
 					pushToUsedMap(path, match[1]);
 				}
 			}
 		};
-		searchItems(Data.enumeration.strings, dir);
+		searchItems(Data.enumeration.strings ?? [], dir);
 	};
 	const searchLocalization = () => {
 		resetFileId();
@@ -583,7 +583,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 			for (const item of items) {
 				const path = `${dir}/${item.name}`;
 				if (item.class === 'folder') {
-					searchItems(item.children, path);
+					searchItems(item.children ?? [], path);
 					continue;
 				}
 				pushToOuterMap(path, item.id!);

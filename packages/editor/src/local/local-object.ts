@@ -12,7 +12,7 @@ export const GameLocal: {
 	initialize: () => void;
 	setLanguage: (language: string) => Promise<void>;
 	getLanguage: () => string;
-	get: (id: string) => string;
+	get: (id: string) => string | undefined;
 	replace: (text: string) => string;
 	reloadLanguages: () => void;
 	datachange: (event: {
@@ -101,7 +101,7 @@ GameLocal.getLanguage = function () {
 
 GameLocal.get = function (id: string) {
 	const map = Data.localization.map;
-	return map[id]?.contents[this.active];
+	return map[id]?.contents?.[this.active];
 };
 
 GameLocal.replace = function (text: string) {
@@ -117,7 +117,6 @@ GameLocal.reloadLanguages = function () {
 		class?: string;
 		children?: LocalizationNode[];
 		contents?: Record<string, string>;
-		[k: string]: unknown;
 	}
 	const reload = (items: LocalizationNode[]) => {
 		for (const item of items) {

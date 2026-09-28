@@ -1,9 +1,12 @@
 import { File } from '@app/file/file-system-core.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { AttributeContext } from '@app/attribute/attribute-context.ts';
+import type { AttributeItem } from '@app/attribute/attribute-window.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
-import { Manifest } from './metadata-manifest.ts';
+import { Manifest, type FileMeta } from './metadata-manifest.ts';
 import { EnumerationContext } from '@app/enum/enum-context.ts';
+import type { EnumItem } from '@app/enum/enum-window.ts';
+import type { LocalizationItem } from '@app/local/local-window.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Log } from '@app/log/log-window.ts';
 import { Reference } from '@app/log/related-references.ts';
@@ -16,14 +19,16 @@ import { clone as deepClone } from '@app/utils/object';
 type DataEntry = { guid?: string; name?: string; [k: string]: unknown };
 
 type GUIDItem = { id: string };
-type VariableNode = {
-	id: string;
+export type VariableNode = {
+	id?: string;
+	class: string;
 	name: string;
 	value?: unknown;
 	note?: string;
+	expanded?: boolean;
 	children?: VariableNode[];
 };
-type LocalizationNode = { id: string; children?: LocalizationNode[] };
+type LocalizationNode = { id?: string; children?: LocalizationNode[] };
 type PresetNode = { class?: string; children: PresetNode[]; presetId: string };
 type ScriptFile = {
 	meta?: { guid: string; code?: string };
@@ -90,12 +95,36 @@ interface DataModule {
 	parseGUID: (meta: { path: string }) => string;
 	loadScript: (file: ScriptFile) => Promise<void>;
 	jsonReplacer: (key: string, value: unknown) => unknown;
+	// 装载后非空（正常状态）；`close()` 用 Reflect.set 清回 null，故字面量占位写 `null!`。
+	manifest: Manifest;
+	variables: VariableNode[] & { scrollTop?: number };
+	localization: {
+		list: LocalizationItem[];
+		map: Record<string, LocalizationItem>;
+		scrollTop: number;
+		[k: string]: unknown;
+	};
+	attribute: {
+		context: AttributeContext;
+		keys: AttributeItem[] | null;
+		settings: Record<string, string> | null;
+		scrollTop: number;
+		[k: string]: unknown;
+	};
+	enumeration: {
+		context: EnumerationContext;
+		keys: EnumItem[] | null;
+		strings: EnumItem[] | null;
+		settings: Record<string, string> | null;
+		scrollTop: number;
+		[k: string]: unknown;
+	};
 	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
 
 export const Data = {
-	manifest: null,
+	manifest: null!,
 	scenePresets: null,
 	uiPresets: null,
 	actors: null,
@@ -109,10 +138,10 @@ export const Data = {
 	easings: null,
 	teams: null,
 	autotiles: null,
-	variables: null,
-	attribute: null,
-	enumeration: null,
-	localization: null,
+	variables: null!,
+	attribute: null!,
+	enumeration: null!,
+	localization: null!,
 	plugins: null,
 	commands: null,
 	config: null,
@@ -186,7 +215,10 @@ Data.loadFile = function (this: typeof Data, filename: string) {
 			dataMap: this
 		};
 		this.manifest.project[filename] = meta;
-		this.manifest.guidMap[meta.guid] = meta;
+		// 这里写入的是「数据文件条目」（只有 guid/path/dataMap），比完整 `FileMeta` 少
+		// file/group/versionId 等运行期反引用字段。它只作为 `File.planToSave` / `File.saveFile`
+		// 的入参使用，不参与 guidMap 的元数据查询 ⇒ 在此如实断言一次。
+		this.manifest.guidMap[meta.guid] = meta as unknown as FileMeta;
 		return (this[filename] = data);
 	});
 };
@@ -221,30 +253,30 @@ Data.loadScene = function (this: typeof Data, guid: string) {
 };
 
 Data.close = function (this: typeof Data) {
-	this.manifest = null;
-	this.scenePresets = null;
-	this.uiPresets = null;
-	this.actors = null;
-	this.skills = null;
-	this.triggers = null;
-	this.items = null;
-	this.equipments = null;
-	this.states = null;
-	this.events = null;
-	this.scripts = null;
-	this.easings = null;
-	this.teams = null;
-	this.autotiles = null;
-	this.variables = null;
-	this.attribute = null;
-	this.plugins = null;
-	this.commands = null;
-	this.config = null;
-	this.scenes = null;
-	this.ui = null;
-	this.animations = null;
-	this.particles = null;
-	this.tilesets = null;
+	Reflect.set(this, 'manifest', null);
+	Reflect.set(this, 'scenePresets', null);
+	Reflect.set(this, 'uiPresets', null);
+	Reflect.set(this, 'actors', null);
+	Reflect.set(this, 'skills', null);
+	Reflect.set(this, 'triggers', null);
+	Reflect.set(this, 'items', null);
+	Reflect.set(this, 'equipments', null);
+	Reflect.set(this, 'states', null);
+	Reflect.set(this, 'events', null);
+	Reflect.set(this, 'scripts', null);
+	Reflect.set(this, 'easings', null);
+	Reflect.set(this, 'teams', null);
+	Reflect.set(this, 'autotiles', null);
+	Reflect.set(this, 'variables', null);
+	Reflect.set(this, 'attribute', null);
+	Reflect.set(this, 'plugins', null);
+	Reflect.set(this, 'commands', null);
+	Reflect.set(this, 'config', null);
+	Reflect.set(this, 'scenes', null);
+	Reflect.set(this, 'ui', null);
+	Reflect.set(this, 'animations', null);
+	Reflect.set(this, 'particles', null);
+	Reflect.set(this, 'tilesets', null);
 };
 
 Data.createEasingItems = function (this: typeof Data) {
@@ -307,7 +339,7 @@ Data.createDataMaps = function (this: typeof Data) {
 Data.createGUIDMap = function (this: typeof Data, list: Array<GUIDItem>) {
 	const map = {} as Record<string, GUIDItem>;
 	for (const item of list) {
-		map[item.id] = item;
+		map[item.id!] = item;
 	}
 	Object.defineProperty(list, 'map', {
 		configurable: true,
@@ -319,7 +351,7 @@ Data.createTeamMap = function (this: typeof Data) {
 	const map = {} as Record<string, GUIDItem>;
 	const teams = this.teams;
 	for (const item of teams.list) {
-		map[item.id] = item;
+		map[item.id!] = item;
 	}
 	Object.defineProperty(teams, 'map', {
 		configurable: true,
@@ -333,7 +365,7 @@ Data.createVariableMap = (function IIFE() {
 			if (item.children) {
 				set(item.children, map);
 			} else {
-				map[item.id] = item;
+				map[item.id!] = item;
 			}
 		}
 	};
@@ -368,7 +400,7 @@ Data.createLocalizationMap = function (this: typeof Data) {
 			if (item.children) {
 				set(item.children);
 			} else {
-				map[item.id] = item;
+				map[item.id!] = item;
 			}
 		}
 	};
@@ -459,7 +491,7 @@ Data.generateVariableEnumScript = function (this: typeof Data) {
 			if (regexp.test(name)) {
 				flags[name] = true;
 				validItems.push({
-					id: item.id,
+					id: item.id!,
 					name: name,
 					value: item.value,
 					note: item.note
