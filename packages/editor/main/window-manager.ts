@@ -3,6 +3,7 @@ import type { IpcMainEvent, IpcMainInvokeEvent, BrowserWindowExtension } from '.
 import { CHANNELS } from '../src/services/ipc/channels.ts';
 import * as apkProcessor from './apk.ts';
 import { setEditorWindow } from './window-registry.ts';
+import { isDebugMode } from './log.ts';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -161,7 +162,9 @@ export const createPlayerWindow = function (
 			sandbox: false,
 			preload: path.resolve(app.getAppPath(), 'dist-electron', 'preload.js'),
 			spellcheck: false,
-			additionalArguments: ['--debug-mode']
+			// 跟随编辑器的 debug 状态：游戏运行时（template-arpg/Script/util.ts）会把它
+			// 读成自己的 debug 开关，写死会让「从编辑器启动的游戏」永远处于 debug 模式
+			additionalArguments: isDebugMode() ? ['--debug-mode'] : []
 		}
 	}) as BrowserWindow & BrowserWindowExtension;
 	player.config = window;
