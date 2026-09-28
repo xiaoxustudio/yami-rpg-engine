@@ -128,5 +128,4 @@ const loadElement = function (this: UIShape, node: UINodeShape, parent?: UIEleme
 	}
 };
 
-/** 本域提供的 3 个槽位（第 ④-3 步：域模块只**提供**成员对象，装配见 `ui-members.ts`） */
 export const uiPrefabMembers = { createPrefabItem, createElement, loadElement };

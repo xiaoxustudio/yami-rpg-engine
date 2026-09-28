@@ -504,7 +504,6 @@ Title.loadFromProject = function (this: TitleShape, project: EditorProjectShape)
 	tabBar.update();
 
 	if (activeTab) {
-		// 步骤 5b：按行 API 遍历（不再读 DOM 子节点的 item expando）
 		const count = treeRowCount(tabBar);
 		for (let i = 0; i < count; i++) {
 			const context = treeRowItemAt<TitleTabItem>(tabBar, i);

@@ -1069,7 +1069,6 @@ Menubar.keydown = function (this: typeof Menubar, event: KeyboardEvent) {
 			case 'Digit7':
 			case 'Digit8':
 			case 'Digit9': {
-				// 步骤 5b：按行 API 取第 N 个页签（不再读 DOM 子节点的 item expando）
 				const count = treeRowCount(Title.tabBar);
 				const index = parseInt(event.code.slice(-1)) - 1;
 				if (index < count) {

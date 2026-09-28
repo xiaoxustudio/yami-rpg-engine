@@ -716,7 +716,6 @@ Enum.listPopup = function (event: YamiEvent & { clientX: number; clientY: number
 		});
 	}
 	if (selected && item.class === 'folder') {
-		// 步骤 5b：改为数据面读取（与 setFolderGroup 的 oldGroup 同式）——
 		// 旧写法 `item.element?.group` 恒为 undefined，导致菜单勾选从来不显示。
 		const group = folderGroupOf(getEnumStore().state.settings, item.id);
 		const submenu = [

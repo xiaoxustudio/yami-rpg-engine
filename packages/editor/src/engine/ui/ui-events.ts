@@ -36,7 +36,6 @@ const saveToConfig = function (this: UIShape, config: { colors: Record<string, u
 	// 菜单栏改色走的也是 `getUIStore().background`）。`this.background` 是遗留单例上的**影子副本**，
 	// 只在 `UI.loadFromConfig` 里建一次，所以它既可能**根本不存在**，也可能停在**开机时的旧值**：
 	//
-	// - 不存在：第 ① 步（提交 00729b15）删掉 `window-cluster.ts` 的 `export { UI }` 后，
 	//   `primeWindows` 不再预热 `'ui'` 槽位，`main/initialize.ts` 的 `loadConfig()` 执行时
 	//   `UI.loadFromConfig` 取到 undefined，`stores/ui.ts` 那句 `UI?.loadFromConfig?.(…)`
 	//   **不报错地什么也没做**（代理不为 null，`?.` 挡不住），于是这里读 `this.background.hex`
@@ -356,7 +355,6 @@ const screenBlur = function (this: UIShape, _event: FocusEvent) {
 }.bind(UI);
 
 /**
- * 本域提供的 21 个成员（第 ④-3 步：域模块只**提供**成员对象，装配见 `ui-members.ts`）。
  *
  * 本轮**只搬声明、不动函数体**（同第 173/179/182 轮）：体内 `UI.x` 原地保留 ⇒ 行为逐字不变、
  * 零风险（本域的挂载经 `on()` 注册 ⇒ 运行期 `this` 是**元素**，见 PHASE 手法库 #45，

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { folderGroupOf } from '@app/utils/folder-group';
 
-/** T5b 步骤 5b：属性/枚举「set-as」共用的数据面反查 */
 describe('folderGroupOf（分组反查）', () => {
 	it('命中的分组键被返回', () => {
 		const settings = { groupA: 'folder1', groupB: '', groupC: 'folder2' };

@@ -185,7 +185,6 @@ function searcherKeydown(event: KeyboardEvent): void {
 function searcherInput(event: { value?: string }): void {
 	const text = event.value ?? '';
 	list.searchNodes(text);
-	// 步骤 4：按行 API 遍历（渲染模式无关；窗口外行亦可取）
 	const count = treeRowCount(list);
 	for (let i = 0; i < count; i++) {
 		const item = treeRowItemAt<PresetObjectListItem>(list, i);

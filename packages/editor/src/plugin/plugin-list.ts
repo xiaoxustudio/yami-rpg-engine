@@ -242,7 +242,6 @@ PluginManager.list_restoreSelection = function (this: TreeListElement) {
 	this.scrollToSelection();
 };
 
-// 列表 - 更新文本节点（步骤 4：显示文本经派生层覆盖，不再直写 textNode）
 PluginManager.list_updateTextNode = function (this: TreeListElement, item: PluginItemShape) {
 	const text = Command.removeTextTags(Command.parseFileName(item.id));
 	setTreeItemText(item, text);

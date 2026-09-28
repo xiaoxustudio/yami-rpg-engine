@@ -5,7 +5,6 @@
  * `1c-store-slot-gaps` 的口径是「遗留目录**之外**出现 `UI.<slot> =` 文本」，所以实现必须搬出
  * `legacy/` —— 本文件存在的理由就是这个，它现在仍然成立。
  *
- * ## 第 ④-3 步改了什么：**域模块不再自己改单例，只提供成员对象**
  *
  * 此前本文件在模块顶层逐个 `UI.hasPrefab = …` 地**自我绑定**（这正是 `ui-singleton-members`
  * 数的 82 处之一，也是伴随判据 `ui-domain-singleton-imports` 要看的那条 `import { UI }`）。

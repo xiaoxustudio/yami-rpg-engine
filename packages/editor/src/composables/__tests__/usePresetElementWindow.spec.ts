@@ -38,7 +38,6 @@ type PresetElementListEl = HTMLElement & {
 	pageDown(select: boolean): void;
 	searchNodes(text: string): void;
 	elements: Array<{ item: { class: string } }> & { count: number };
-	// 步骤 4：行 API（rowCount/rowItemAt）为消费方契约
 	rowCount(): number;
 	rowItemAt(index: number): { class: string } | undefined;
 };
@@ -237,7 +236,6 @@ describe('usePresetElementWindow（UI 元素预设窗口 composable：列表构�
 		const list = getList();
 		const searchNodes = vi.spyOn(list, 'searchNodes').mockImplementation(() => undefined);
 		const select = vi.spyOn(list, 'select').mockImplementation(() => undefined);
-		// 步骤 4：行遍历走列表行 API（rowCount/rowItemAt），不再依赖 elements shim
 		vi.spyOn(list, 'rowCount').mockImplementation(() => 2);
 		vi.spyOn(list, 'rowItemAt').mockImplementation(
 			(i: number) => [{ class: 'folder' }, { class: 'text' }][i] as never

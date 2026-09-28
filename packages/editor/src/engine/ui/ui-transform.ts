@@ -431,7 +431,6 @@ const resize = function (this: UIShape) {
 };
 
 /**
- * 本域提供的 18 个成员（第 ④-3 步：域模块只**提供**成员对象，装配见 `ui-members.ts`）。
  *
  * 行为逐字不变、零风险；`import { UI }` 暂时保留（伴随判据因此仍记 5，如实）。
  * 走完全程（体内改 `this.` / 入口传参 + 删 import）见 PHASE 手法库 #47。

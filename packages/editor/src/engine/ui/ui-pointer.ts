@@ -613,7 +613,6 @@ const menuPopup = function (this: UIShape, event: UIPointerEvent) {
 };
 
 /**
- * 本域提供的 8 个成员（第 ④-3 步：域模块只**提供**成员对象，装配见 `ui-members.ts`）。
  *
  * 本轮**只搬声明、不动函数体**（同第 173/179/182 轮）：体内 `UI.x` 原地保留 ⇒ 行为逐字不变、
  * 零风险（本域的挂载经 `on()` 注册 ⇒ 运行期 `this` 是**元素**，见 PHASE 手法库 #45，

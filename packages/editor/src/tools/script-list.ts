@@ -120,7 +120,6 @@ export class ScriptListInterface implements IScriptListInterface {
 
 		const item = this.editor?.target;
 		if (item?.scripts === list.read()) {
-			// 步骤 4：按 item 反查所属列表（不再依赖 element.parentNode）
 			const owner = treeOwnerListOf(item) as { update?: () => void } | undefined;
 			owner?.update?.();
 		}

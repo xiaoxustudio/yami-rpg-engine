@@ -631,7 +631,6 @@ export const useUIStore = defineStore('ui', () => {
 	 * ——而那不是「间接层」，是 **`this` 绑定**（`UIEngine.requestRendering` 内部用
 	 * `this.renderingFunction`、`shiftAnchor` 内部用 `this.planToSave`）。
 	 *
-	 * 为什么现在就要把它们单列出来：阶段 1c 的第 ④ 步会让 `stores/ui.ts` 的 `UI` 不再是
 	 * 遗留单例（`ui-window.ts` 的对象字面量退役），到那时 `UI` 就不再被加载，
 	 * 这 7 个动作会**静默失效**（`UI?.x?.()` 返回 undefined）。
 	 * 让它们改为直连 `UIEngine`，就把这 7 个从「依赖遗留层」移出去了：
@@ -676,7 +675,6 @@ export const useUIStore = defineStore('ui', () => {
 		// 因此不会漂移；store 这份才是 `drawBackground` 的真源。
 		// `UI.loadFromConfig` 继续调用是为了兼容仍读 `UI.background` / `UI.foreground` 的遗留与插件路径。
 		//
-		// ⚠️ 这个转发**可能被静默跳过**：`'ui'` 槽位由 `loadUI` 异步填充（第 ① 步 00729b15 之后
 		// `window-cluster` 不再导出 `UI`，`primeWindows` 不再预热它），而 `main/initialize.ts` 的
 		// `loadConfig()` 早于它到位 —— 此刻 `getLazyWindow` 的 get trap 返回 undefined，
 		// `?.()` 什么也不做。**不要在别处依赖「这次转发一定执行过」**：

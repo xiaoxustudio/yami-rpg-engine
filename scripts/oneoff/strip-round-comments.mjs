@@ -16,7 +16,7 @@ import { join } from 'node:path';
 
 const WRITE = process.argv.includes('--write');
 const ROOT = 'packages/editor/src';
-const ROUND = /第\s*\d+\s*轮/;
+const ROUND = /第\s*\d+\s*轮|步骤\s*\d+|Step\s*\d+|第\s*[①-⑳]|阶段\s*[0-9a-z①-⑳]+/;
 const TODO = /未完成|待定|收口计划|待办|工作单|尚未|未落地|下一轮|待收口/;
 const LINE_COMMENT = /^\s*\/\//;
 const BLOCK_ONLY = /^\s*(\/\*\*?|\*|\*\/)/;

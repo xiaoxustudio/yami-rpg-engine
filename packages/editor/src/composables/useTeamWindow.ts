@@ -353,7 +353,6 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 
 function listSelect(_event: YamiEvent): void {
 	const listElement = list!;
-	// 步骤 5b：可见性由派生层判断（`item.element` / `element.changed` 均已退役）；
 	// `update()` 自己会重建行，不再需要逐行标 changed
 	if (listElement.data.some((team: TeamData) => isTreeItemRendered(team))) {
 		listElement.update();
@@ -545,7 +544,6 @@ function list_updateTextNode(this: TeamListElement, item: TeamData): void {
 	const length = items.length;
 	const digits = computeIndexDigits(length);
 	const sn = index.toString().padStart(digits, '0');
-	// 步骤 4：显示文本经派生层覆盖（不再直写 textNode；窗口外行亦生效）
 	setTreeItemText(item, `${sn}:${item.name}`);
 }
 

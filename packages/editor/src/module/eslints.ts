@@ -98,7 +98,6 @@ export function updateCommandElement(
 			);
 			for (let i = start; i <= end; i++) {
 				const element = list[i];
-				// 步骤 4：虚拟窗口外行未物化（elements[i] 为空），跳过
 				if (!element) continue;
 				if (indent === null) {
 					indent = element.dataIndent;
@@ -372,7 +371,6 @@ export function range(
 	end = clamp(end, 0, count - 1);
 	let indent = Infinity;
 	for (let i = start; i <= end; i++) {
-		// 步骤 4：窗口外行未物化，跳过（elements[i] 为空）
 		const element = elements[i];
 		if (!element) continue;
 		const { dataIndent } = element;

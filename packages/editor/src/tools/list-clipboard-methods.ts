@@ -78,7 +78,6 @@ export function bindListClipboardMethods(config: ListClipboardConfig) {
 					{
 						label: get!('yes'),
 						click: () => {
-							// 步骤 4：删除后按行号选中相邻项（渲染模式无关）
 							const index = treeRowIndexOf(this, item);
 							this.deleteNode?.(item);
 							closePanel();

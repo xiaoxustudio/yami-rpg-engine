@@ -19,7 +19,6 @@ import { Editor } from '@app/services/project/editor.ts';
  * ## 为什么盯 `uiWindowReady` 而不是 `loadUI`
  *
  * 原文此处写的是「真机上 UI 对象**不是**由 `loadUI` 到达的：`primeWindows` 直接塞缓存，
- * 第 ① 步（提交 `00729b15`）删掉了 `window-cluster.ts` 的 `export { UI }`，`primeWindows`
  * 遍历的是该模块的命名空间，没有 `UI` 就没有 `'ui'` 键，真机与 vitest 一样走 `loadUI`。
  * 该不变式由同目录的 `ui-window-arrival-path.spec.ts` 钉住（加回那行导出即变红）。
  *

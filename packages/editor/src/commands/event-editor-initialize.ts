@@ -54,7 +54,6 @@ function ensureDomBound() {
 function bindListMethods() {
 	const list = EventEditor.list!;
 	list.selectIndex = function (this: HTMLElement & EventEditorList, index: number) {
-		// 步骤 5b：行元素簿记（`elements` shim）已随模板渲染删除 ⇒ 按**行号**取 item
 		// （窗口外的行同样取得到，与旧实现"取不到就什么都不做"的边界一致）
 		const count = treeRowCount(this);
 		const last = count - 1;

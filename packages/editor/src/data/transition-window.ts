@@ -1364,7 +1364,6 @@ Easing.list_updateTextNode = function (this: YamiElement, item: EasingListItem) 
 	const length = items.length;
 	const digits = computeIndexDigits(length);
 	const sn = index.toString().padStart(digits, '0');
-	// 步骤 4：显示文本经派生层覆盖（不再直写 textNode；窗口外行亦生效）
 	setTreeItemText(item, `${sn}:${item.name}`);
 };
 

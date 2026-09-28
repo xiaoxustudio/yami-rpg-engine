@@ -22,7 +22,6 @@ import type { UIShape } from '@app/engine/ui/ui-singleton.ts';
  * `this.background` / `this.foreground` 是**遗留单例上的影子副本**，唯一的写入方是
  * `UI.loadFromConfig`（`ui-events.ts`）。可那条路现在**会被静默跳过**：
  *
- * - 第 ① 步（提交 `00729b15`）删掉了 `window-cluster.ts` 的 `export { UI }` ⇒ `primeWindows`
  *   再也不会预热 `'ui'` 槽位（见 `ui-window-arrival-path.spec.ts` 的不变式 B）；
  * - 于是 `main/initialize.ts` 的 `loadConfig()` 执行时 `'ui'` 槽位还是空的，
  *   `getLazyWindow` 的 get trap 返回 **undefined**，store 里那句

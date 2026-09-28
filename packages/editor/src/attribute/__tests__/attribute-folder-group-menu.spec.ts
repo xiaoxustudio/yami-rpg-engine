@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getAttributeStore } from '@app/stores/attribute';
 
 /**
- * T5b 步骤 5b 的**行为变更证据**（先写失败、后转绿）：
  *
  * 旧实现从行元素上读 `item.element?.group` 决定「set-as」子菜单的 checked —— 但全仓
  * **没有任何代码写行元素的 group 属性**（唯一的 `.group =` 赋值在

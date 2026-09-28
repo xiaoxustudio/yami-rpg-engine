@@ -339,7 +339,6 @@ TextSuggestion.listOpen = function (
 	event: Event & { value: TextSuggestionItem }
 ): void {
 	const item = event.value;
-	// 步骤 4：可见性改为「该行是否在窗口内物化」，不再读 element.parentNode
 	if (isTreeItemRendered(item)) {
 		TextSuggestion.select!(item);
 	}
@@ -371,7 +370,6 @@ TextSuggestion.list.updateNodeElement = function (
 TextSuggestion.list.selectDefaultCommand = function (this: TextSuggestionList): void {
 	// 当前项经 `read()` 取——`list.selection` 是已退役的旧属性（无人写入，恒为 null）
 	const selection = this.read();
-	// 步骤 4：行号/行项经渲染模式无关的行 API 取得（窗口外行无 element）
 	const count = treeRowCount(this);
 	if (selection && treeRowIndexOf(this, selection) !== -1) {
 		this.scrollToSelection('middle');

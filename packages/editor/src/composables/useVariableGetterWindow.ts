@@ -404,7 +404,6 @@ const createVarListGenerator = (filterObject: {
 		const parentMap = new Map();
 		const stack = [];
 		for (let i = 0; i < count; i++) {
-			// 步骤 4：窗口外行未物化（elements[i] 为空），跳过
 			const element = elements[i];
 			if (!element) continue;
 			if (element.dataKey === true && element.dataItem) {

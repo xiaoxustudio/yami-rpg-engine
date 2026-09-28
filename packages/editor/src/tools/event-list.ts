@@ -162,7 +162,6 @@ export class EventListInterface implements IListInterface {
 
 		const item = this.editor?.target as EventListTargetShape | undefined;
 		if (item?.events === list.read()) {
-			// 步骤 4：按 item 反查所属列表（不再依赖 element.parentNode）
 			const owner = treeOwnerListOf(item) as { update?: () => void } | undefined;
 			owner?.update?.();
 		}

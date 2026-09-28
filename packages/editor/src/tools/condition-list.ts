@@ -126,7 +126,6 @@ export class ConditionListInterface implements IListInterface {
 			element?: { parentNode?: Node };
 		};
 		if (item?.conditions === list.read()) {
-			// 步骤 4：按 item 反查所属列表（不再依赖 element.parentNode）
 			const owner = treeOwnerListOf(item as never) as { update?: () => void } | undefined;
 			owner?.update?.();
 		}

@@ -65,7 +65,6 @@ interface CommandSuggestionList extends TreeListRowApi<CommandSuggestionItem> {
 	hide(): HTMLElement | void;
 	show(): HTMLElement | void;
 	scrollToSelection(mode?: string): void;
-	/** 步骤 5b：重派生行（替代旧的「手清 DOM + deleteNodeElements」本地化刷新） */
 	syncRenderRows(): void;
 	searchNodes(text: string): void;
 	selectRelative(direction: string): void;
@@ -224,7 +223,6 @@ function bindListMethods() {
 	list.createCommandTip = (function IIFE() {
 		const separator = /\s*,\s*/;
 		return function (item: CommandSuggestionItem): void {
-			// 步骤 5b：行元素改由行 API 取（creator 在 bindRow 之后调用，正常必有元素）
 			const element = treeRowElement(item);
 			if (element === undefined) return;
 			// `Command.words` 的真实类型本来就带 `push`/`join` ⇒ 直接读，无需断言形状
@@ -240,7 +238,6 @@ function bindListMethods() {
 			}
 			const tip1 = item.class === 'folder' ? '' : `$${item.name}\n${item.desc ?? ''}\n`;
 			const tip2 = `$${t('command.keywords')}\n${words.join(', ')}`;
-			// 步骤 4：行 class 经派生层注册（跨重挂载保持）；tooltip 仍挂当前行元素
 			setTreeItemClass(item, 'command-suggestion-item', true);
 			setTooltip(element, parseLocalTip(tip1 + tip2, ''));
 		};
@@ -250,7 +247,6 @@ function bindListMethods() {
 		// 当前项经 `read()` 取——`list.selection` 是已退役的旧属性（无人写入，恒为 null）
 		const selection = this.read();
 		if (selection && selection.class !== 'folder') {
-			// 步骤 4：按行号判断选中项是否在列表内（渲染模式无关）
 			if (treeRowIndexOf(this, selection) !== -1) {
 				this.scrollToSelection('middle');
 			}
@@ -327,7 +323,6 @@ CommandSuggestion.select = function (item: CommandSuggestionItem): void {
 };
 
 CommandSuggestion.windowLocalize = function (_event: Event): void {
-	// 步骤 5b：行由 v-for 渲染，不能再手清 DOM（会炸掉 vnode）；改为重派生以刷新本地化文本
 	const { list } = CommandSuggestion;
 	if (elementDataOf<{ initialized?: boolean }>(list).initialized) {
 		elementDataOf<{ initialized?: boolean }>(list).initialized = false;
@@ -451,7 +446,6 @@ CommandSuggestion.listUpdate = function (_event: Event): void {
 
 CommandSuggestion.listOpen = function (event: Event & { value: CommandSuggestionItem }): void {
 	const item = event.value;
-	// 步骤 4：可见性改为「该行是否在窗口内物化」，不再读 element.parentNode
 	if (item.class !== 'folder' && isTreeItemRendered(item)) {
 		CommandSuggestion.select!(item);
 	}

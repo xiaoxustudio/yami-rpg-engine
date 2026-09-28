@@ -13,7 +13,6 @@ export function find_dItem(
 	const self = this as { selections?: SelectionItem[] };
 	const list = self.selections || [];
 	const cur = list[list.length - 1];
-	// 步骤 4：后继行经行 API 取得（渲染模式无关；命令式路径回退 elements/DOM）
 	const owner = cur === undefined ? undefined : treeOwnerListOf(cur);
 	const index = owner === undefined ? -1 : treeRowIndexOf(owner, cur);
 	const next = index === -1 ? undefined : treeRowItemAt<SelectionItem>(owner, index + 1);

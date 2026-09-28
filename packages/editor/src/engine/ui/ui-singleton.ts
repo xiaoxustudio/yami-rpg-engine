@@ -257,7 +257,6 @@ export type UIDragEvent = UIPointerEvent & {
  *
  * 此前这里跟着 134 个条目，其中 **123 个是 `initialize: null` / `open: null` / … 这类占位**
  * ——它们的用途是「给域模块先声明、后填充」（那时域模块逐个 `UI.x = …` **自我绑定**）。
- * 而第 ④-3 步（第 167–183 轮）之后，**全部 8 个域改为提供成员对象、由 `ui-members.ts` 汇总、
  * 在 `uiWindowReady` 里 `Object.assign(UI, …)` 装配** ⇒ 占位表**没有任何写入方需要用**，
  * 它剩下的作用只是「让 `UI.x` 在读到时是 `null` 而不是 `undefined`」＋「喂契约生成器」。
  *
@@ -374,7 +373,6 @@ const loadUiDomains = async () => {
 export const uiWindowReady = Promise.all([
 	import('@app/engine/ui/element-register.ts'),
 	loadUiDomains(),
-	// 阶段 1c 第 ③/④-3 步：槽位模块。**必须动态 import**（静态会先于本模块体求值、踩 TDZ）。
 	// 装配时机与「在域模块里自我绑定」等价 —— 两者都在 `uiWindowReady` 上、都在 `UI` 建好之后
 	import('@app/engine/ui/ui-members.ts').then((m) => Object.assign(UI, m.uiMembers))
 ])

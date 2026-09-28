@@ -44,7 +44,6 @@ export const Meta = (function IIFE() {
 		/**
 		 * 脚本参数定义（只有 `script` 类型会赋值，见构造函数）—— 原先声明成 `unknown[] | null`。
 		 *
-		 * 第 156 轮：收紧成 `ParamDef[] | null`（类型从 ui-kit 导入，与参数面板的契约同源）。
 		 * 起因是 ui-kit 的 `YMParameterPane` 会**直接读**清单条目的 `parameters`（`:349-350`），
 		 * 而 `unknown[]` 与它要的 `ParamDef[]` 不相容 ⇒ 跨包 prop 绑定报 TS2322。
 		 * 实测：编辑器侧对 `.parameters` 的读写点只有本文件的两处（声明 + `= []`）⇒ 级联为零。

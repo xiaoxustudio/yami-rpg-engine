@@ -18,7 +18,6 @@ import type { YamiElement } from '@app/types/element-api';
 import { roundTo } from '@app/utils/math';
 
 /**
- * 本域的挂载实现：`this.initialize` —— 第 ④-3 步起改由**成员对象**提供
  * （域模块不再 `this.x = …` 自我绑定，装配见 `ui-members.ts`）。
  *
  * 体内 ~16 处 `this.x` 已改成 `this.x`、`UIEngine.x.call(this)` 改成 `.call(this)`：实测它**唯一**

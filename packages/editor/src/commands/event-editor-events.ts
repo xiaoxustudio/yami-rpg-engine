@@ -177,7 +177,6 @@ EventEditor.listPointerdown = function (this: EventEditorShape, event: PointerEv
 EventEditor.listSelect = function (this: EventEditorShape, event: YamiMouseEvent) {
 	const item = event.value;
 	EventEditor.openCommandList!(item);
-	// 步骤 4：行 class 经派生层注册（窗口外行同样生效）
 	setTreeItemClass(item, 'related-event', false);
 };
 

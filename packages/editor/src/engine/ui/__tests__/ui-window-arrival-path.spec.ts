@@ -11,7 +11,6 @@ import { getLazyWindow, primeWindows } from '@app/tools/window-registry.ts';
  * `primeWindows(clusterRef)`，按小写键直接 `windows.set('ui', …)`，于是**绕过 `loadUI`**，
  * 而 vitest 走的正是 loader 路径 ⇒「套件会绿着骗你」。
  *
- * 这条理由在**第 ① 步（提交 00729b15）之后就不成立了**：那一步为了「让 UI 接线直连遗留窗口
  * 模块」，删掉了 `window-cluster.ts` 里的 `export { UI }`。`primeWindows` 遍历的是该模块的
  * **命名空间对象**，键集就是它的导出名 —— 没有 `UI` 就没有小写 `'ui'` 这个键，
  * 真机的 UI 槽位因此仍然由 `loadUI` 填充，与 vitest 同一条路。
