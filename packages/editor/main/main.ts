@@ -28,7 +28,32 @@ const VITE_DEV_URL = devServerUrl || 'http://localhost:5173';
 const useViteDev = !!devServerUrl;
 setDebugMode(debug);
 
-const extensionPath = path.join('./extension');
+// 扩展目录挂在 app 根（dirname）下，不能相对 cwd：打包后从任意目录启动时，
+// 相对路径会在启动目录里凭空建一个 extension/，并且一个扩展都读不到。
+const extensionPath = path.resolve(dirname, 'extension');
+
+/**
+ * 加载 extension/ 下的全部扩展。
+ *
+ * `loadExtension` 要的是**绝对路径**（原先传的是 `readdirSync` 出来的裸目录名），
+ * 而且失败必须留下痕迹——此前是空 catch，装错扩展没有任何反馈。
+ */
+async function loadExtensions(root: string): Promise<void> {
+	if (!fs.existsSync(root)) {
+		fs.mkdirSync(root, { recursive: true });
+		return;
+	}
+	for (const entry of fs.readdirSync(root)) {
+		const full = path.resolve(root, entry);
+		try {
+			// oxlint-disable-next-line no-await-in-loop
+			await session.defaultSession.loadExtension(full);
+		} catch (error) {
+			console.error(`[extension] 加载失败 ${entry}: ${(error as Error).message}`);
+		}
+	}
+}
+
 app.on('ready', () => {
 	// 拒绝一切权限请求（摄像头/麦克风/地理位置等）
 	session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => {
@@ -47,13 +72,8 @@ app.on('ready', () => {
 
 	createEditorMenu();
 	createEditorWindow(debug, dirname, useViteDev, VITE_DEV_URL);
-	const isExtension = fs.existsSync(extensionPath);
-	if (!isExtension) fs.mkdirSync(extensionPath);
-	const dirs = fs.readdirSync(extensionPath);
-	dirs.forEach(async (v) => {
-		try {
-			await session.defaultSession.loadExtension(v);
-		} catch {}
+	void loadExtensions(extensionPath).catch((error: unknown) => {
+		console.error(`[extension] 扫描扩展目录失败: ${(error as Error).message}`);
 	});
 });
 
