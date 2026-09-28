@@ -91,6 +91,7 @@
 				]
 			},
 			"dist-electron/**",
+			"!dist-electron/**/*.map",
 			"package.json"
 		],
 		"extraResources": [
