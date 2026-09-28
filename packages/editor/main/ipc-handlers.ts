@@ -9,6 +9,19 @@ import { startTSC, stopTSC, compileTscFile } from './services/tsc.ts';
 import { getWindowFromEvent, createPlayerWindow } from './window-manager.ts';
 import * as apkProcessor from './apk.ts';
 
+/**
+ * `on` 通道路径入参的统一体检：非空字符串、不含 NUL、且**归一化后是绝对路径**。
+ *
+ * 合法返回规范化后的绝对路径，不合法返回 `null` 由调用方静默忽略。
+ * 此前 `openPath` / `trashItem` 只查了非空与 NUL、没过 `isAbsolute`，
+ * 与 `writeFile` / `openVscode` / `showItemInFolder` 的口径不一致。
+ */
+function resolveIpcPath(value: unknown): string | null {
+	if (typeof value !== 'string' || value.length === 0 || value.includes('\0')) return null;
+	const normalized = path.normalize(value);
+	return path.isAbsolute(normalized) ? normalized : null;
+}
+
 const writeFile = async (filePath: string, text: string | Uint8Array, check?: boolean) => {
 	if (typeof filePath !== 'string' || filePath.length === 0 || filePath.includes('\0')) {
 		throw new Error('invalid file path');
@@ -157,31 +170,24 @@ ipcMain.on(CHANNELS.on.toggleFullScreen, (event) => {
 });
 
 ipcMain.on(CHANNELS.on.openPath, (_event, targetPath) => {
-	if (typeof targetPath !== 'string' || targetPath.length === 0 || targetPath.includes('\0')) {
-		return;
-	}
-	void shell.openPath(path.normalize(targetPath));
+	const safePath = resolveIpcPath(targetPath);
+	if (safePath === null) return;
+	void shell.openPath(safePath);
 });
 
 // 使用VSCode打开脚本
 ipcMain.on(CHANNELS.on.openVscode, (_event, scriptPath, line, column) => {
-	if (typeof scriptPath !== 'string' || scriptPath.length === 0 || scriptPath.includes('\0')) {
-		return;
-	}
-	const normalized = path.normalize(scriptPath);
-	if (!path.isAbsolute(normalized)) {
-		return;
-	}
+	const normalized = resolveIpcPath(scriptPath);
+	if (normalized === null) return;
 	// 剔除会污染 vscode:// URI 的片段/查询字符，防止协议参数注入
 	const url = `${normalized}:${Number(line) || 0}:${Number(column) || 0}`.replace(/[?#]/g, '');
 	void shell.openExternal(`vscode://file/${url}`);
 });
 
 ipcMain.on(CHANNELS.on.showItemInFolder, (_event, filePath) => {
-	if (typeof filePath !== 'string' || filePath.length === 0 || filePath.includes('\0')) {
-		return;
-	}
-	shell.showItemInFolder(path.normalize(filePath));
+	const safePath = resolveIpcPath(filePath);
+	if (safePath === null) return;
+	shell.showItemInFolder(safePath);
 });
 
 let currentprojectPath = '';
@@ -211,8 +217,16 @@ ipcMain.handle(CHANNELS.invoke.showSaveDialog, (event, options) => {
 	return dialog.showSaveDialog(window, options);
 });
 
+// 与 writeFile 同形：async 助手把校验失败变成 rejected promise，
+// 渲染进程侧 `await` 得到的是可捕获的错误而不是同步异常
+const trashItem = async (filePath: string) => {
+	const safePath = resolveIpcPath(filePath);
+	if (safePath === null) throw new Error('invalid file path');
+	return shell.trashItem(safePath);
+};
+
 ipcMain.handle(CHANNELS.invoke.trashItem, (_event, filePath) => {
-	return shell.trashItem(path.normalize(filePath));
+	return trashItem(filePath);
 });
 
 // 设置设备像素比率

@@ -113,6 +113,12 @@ const emitShowItemInFolder = (filePath: unknown): void =>
 		filePath
 	);
 
+const invokeTrashItem = (filePath: unknown): Promise<unknown> =>
+	(electronMocks.handlers[CHANNELS.invoke.trashItem] as (...args: unknown[]) => Promise<unknown>)(
+		{},
+		filePath
+	);
+
 describe('ipc-handlers 安全校验', () => {
 	let tmpDir: string;
 
@@ -235,6 +241,17 @@ describe('ipc-handlers 安全校验', () => {
 			expect(electronMocks.shell.openPath).not.toHaveBeenCalled();
 		});
 
+		// 回归：此前 openPath 只查了非空与 NUL，相对路径会被原样交给 shell.openPath
+		it('相对路径不调用 shell.openPath', () => {
+			emitOpenPath('relative/folder');
+			expect(electronMocks.shell.openPath).not.toHaveBeenCalled();
+		});
+
+		it('非字符串入参不调用 shell.openPath', () => {
+			emitOpenPath(undefined);
+			expect(electronMocks.shell.openPath).not.toHaveBeenCalled();
+		});
+
 		it('合法绝对路径调用 shell.openPath', () => {
 			const absPath = path.join(path.parse(process.cwd()).root, 'folder');
 			emitOpenPath(absPath);
@@ -253,12 +270,43 @@ describe('ipc-handlers 安全校验', () => {
 			expect(electronMocks.shell.showItemInFolder).not.toHaveBeenCalled();
 		});
 
+		it('相对路径不调用 shell.showItemInFolder', () => {
+			emitShowItemInFolder('relative/file.txt');
+			expect(electronMocks.shell.showItemInFolder).not.toHaveBeenCalled();
+		});
+
 		it('合法绝对路径调用 shell.showItemInFolder', () => {
 			const absPath = path.join(path.parse(process.cwd()).root, 'file.txt');
 			emitShowItemInFolder(absPath);
 			expect(electronMocks.shell.showItemInFolder).toHaveBeenCalledWith(
 				path.normalize(absPath)
 			);
+		});
+	});
+
+	// 回归：此前 trashItem 没有任何校验，path.normalize 后直接进 shell.trashItem
+	describe('trashItem handler', () => {
+		it('空路径被拒绝且不调用 shell.trashItem', async () => {
+			await expect(invokeTrashItem('')).rejects.toThrow('invalid file path');
+			expect(electronMocks.shell.trashItem).not.toHaveBeenCalled();
+		});
+
+		it('相对路径被拒绝且不调用 shell.trashItem', async () => {
+			await expect(invokeTrashItem('relative/file.txt')).rejects.toThrow('invalid file path');
+			expect(electronMocks.shell.trashItem).not.toHaveBeenCalled();
+		});
+
+		it('含 \\0 的路径被拒绝且不调用 shell.trashItem', async () => {
+			await expect(invokeTrashItem('C:\\test\0file.txt')).rejects.toThrow(
+				'invalid file path'
+			);
+			expect(electronMocks.shell.trashItem).not.toHaveBeenCalled();
+		});
+
+		it('合法绝对路径转发给 shell.trashItem', async () => {
+			const absPath = path.join(path.parse(process.cwd()).root, 'file.txt');
+			await invokeTrashItem(absPath);
+			expect(electronMocks.shell.trashItem).toHaveBeenCalledWith(path.normalize(absPath));
 		});
 	});
 });
