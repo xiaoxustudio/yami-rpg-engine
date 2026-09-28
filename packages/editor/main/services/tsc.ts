@@ -82,45 +82,102 @@ function stopTSC(callback?: () => void) {
 	}
 }
 
-export const compileTscFile = async (code: string) => {
-	let res, error;
-	try {
-		// 使用tsgo可执行文件编译，通过标准输入/输出处理代码
-		const tsgo = spawn(
-			getTsgoExePath(),
-			['--target', 'ES2022', '--module', 'ESNext', '--outFile', '-'],
-			{
-				stdio: ['pipe', 'pipe', 'pipe']
+export type CompileTscFileResult = { res?: string; error?: unknown };
+
+/**
+ * 原生 tsgo 分支：通过标准输入/输出把单段脚本编译成 ESNext 文本。
+ *
+ * 调用方必须先用 `getTsgoExePath()` 确认平台包存在——本函数不负责回退，
+ * 否则会把「编译失败（类型错误）」和「编译器缺失」两种结果混为一谈。
+ */
+function compileWithTsgo(code: string): Promise<CompileTscFileResult> {
+	const tsgo = spawn(
+		getTsgoExePath(),
+		['--target', 'ES2022', '--module', 'ESNext', '--outFile', '-'],
+		{
+			stdio: ['pipe', 'pipe', 'pipe']
+		}
+	);
+
+	let stdout = '';
+	let stderr = '';
+	tsgo.stdout?.on('data', (data: Buffer | string) => {
+		stdout += data.toString();
+	});
+	tsgo.stderr?.on('data', (data: Buffer | string) => {
+		stderr += data.toString();
+	});
+
+	tsgo.stdin?.write(code);
+	tsgo.stdin?.end();
+
+	return new Promise<CompileTscFileResult>((resolve) => {
+		tsgo.on('error', (error) => resolve({ error }));
+		tsgo.on('close', (exitCode) => {
+			if (exitCode !== 0) {
+				resolve({ error: new Error(stderr || 'Compilation failed') });
+			} else {
+				resolve({ res: stdout });
 			}
+		});
+	});
+}
+
+/**
+ * 进程内转译回退：不依赖平台二进制、不起子进程。
+ *
+ * 与 tsgo 分支的**刻意差异**：`transpileModule` 只做语法转译、不做类型检查，
+ * 因此类型错误不会在这里报出来。这是必要的取舍——`typescript@6.0.3` 并不声明
+ * `@typescript/typescript-<platform>-<arch>` 这个可选依赖（`typescript@7` 才声明），
+ * 所以只有 `startTSC` 单方面回退时，本函数会必抛「Executable not found」，
+ * 导致每次保存 TS 脚本都弹「编译错误」对话框。
+ */
+function transpileWithTypescriptApi(ts: typeof import('typescript'), code: string): string {
+	const output = ts.transpileModule(code, {
+		compilerOptions: {
+			target: ts.ScriptTarget.ES2022,
+			module: ts.ModuleKind.ESNext
+		},
+		reportDiagnostics: true
+	});
+
+	// `transpileModule` 默认对语法错误一声不吭，会把半成品当成功返回；
+	// 这里显式升级成 error，让调用方的「编译错误」分支照常生效。
+	const errors = (output.diagnostics ?? []).filter(
+		(diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error
+	);
+	if (errors.length !== 0) {
+		throw new Error(
+			ts.formatDiagnostics(errors, {
+				getCanonicalFileName: (fileName: string) => fileName,
+				getCurrentDirectory: () => '',
+				getNewLine: () => '\n'
+			})
 		);
-
-		let stdout = '',
-			stderr = '';
-		tsgo.stdout.on('data', (data) => {
-			stdout += data.toString();
-		});
-		tsgo.stderr.on('data', (data) => {
-			stderr += data.toString();
-		});
-
-		tsgo.stdin.write(code);
-		tsgo.stdin.end();
-
-		await new Promise((resolve, reject) => {
-			tsgo.on('close', (code) => {
-				if (code !== 0) {
-					error = new Error(stderr || 'Compilation failed');
-				} else {
-					res = stdout;
-				}
-				resolve(undefined);
-			});
-			tsgo.on('error', reject);
-		});
-	} catch (e) {
-		error = e;
 	}
-	return { res, error };
+
+	return output.outputText;
+}
+
+export const compileTscFile = async (code: string): Promise<CompileTscFileResult> => {
+	let tsgoExe: string | null = null;
+	try {
+		tsgoExe = getTsgoExePath();
+	} catch {
+		tsgoExe = null;
+	}
+
+	if (tsgoExe !== null) {
+		return compileWithTsgo(code);
+	}
+
+	try {
+		// external 化的动态 import：CJS 产物里落成 require，不会把编译器打进主进程包
+		const ts = await import('typescript');
+		return { res: transpileWithTypescriptApi(ts, code) };
+	} catch (error) {
+		return { error };
+	}
 };
 
 export { startTSC, stopTSC };

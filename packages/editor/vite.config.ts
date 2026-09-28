@@ -91,7 +91,10 @@ export default defineConfig({
 							'qrcode',
 							'exceljs',
 							'xml2js',
-							'sharp'
+							'sharp',
+							// tsc.ts 在运行期 require 它做进程内转译；必须 external，
+							// 否则会把 8MB+ 的编译器打进主进程包（运行期由 extraResources 提供）
+							'typescript'
 						]
 					}
 				}
