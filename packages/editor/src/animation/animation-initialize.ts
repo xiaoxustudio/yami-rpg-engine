@@ -32,19 +32,19 @@ import type { YamiElement } from '@app/types/element-api';
 import { roundTo } from '@app/utils/math';
 
 Animation.initialize = function (this: typeof Animation) {
-	this.page = animationEls.get('animation') as YamiElement;
-	this.head = animationEls.get('animation-head') as YamiElement;
-	this.screen = animationEls.get('animation-screen') as YamiElement;
+	this.page = animationEls.get('animation') as typeof this.page;
+	this.head = animationEls.get('animation-head') as typeof this.head;
+	this.screen = animationEls.get('animation-screen') as typeof this.screen;
 	const oldMarquee = this.marquee;
-	this.marquee = animationEls.get('animation-marquee') as YamiElement;
+	this.marquee = animationEls.get('animation-marquee') as typeof this.marquee;
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
 	this.body = animationEls.get('animation-body') as AnimationElement;
-	this.dirList = animationEls.get('animation-dirList') as YamiElement;
-	this.searcher = animationEls.get('animation-searcher') as YamiElement;
+	this.dirList = animationEls.get('animation-dirList') as typeof this.dirList;
+	this.searcher = animationEls.get('animation-searcher') as typeof this.searcher;
 	const oldList = this.list;
-	this.list = animationEls.get('animation-list') as YamiElement;
+	this.list = animationEls.get('animation-list') as typeof this.list;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
@@ -57,21 +57,23 @@ Animation.initialize = function (this: typeof Animation) {
 	) as YamiElement;
 	// 模块求值先于 Vue 挂载，$() 会拿到占位对象；重查询真实元素时回迁模块级挂载的属性/方法
 	const oldLayerList = this.layerList;
-	this.layerList = animationEls.get('animation-layer-list') as YamiElement;
+	this.layerList = animationEls.get('animation-layer-list') as typeof this.layerList;
 	if (oldLayerList && this.layerList && oldLayerList !== this.layerList) {
 		Object.assign(this.layerList, oldLayerList);
 	}
 	const oldTimeline = this.timeline;
-	this.timeline = animationEls.get('animation-timeline') as YamiElement;
+	this.timeline = animationEls.get('animation-timeline') as typeof this.timeline;
 	if (oldTimeline && this.timeline && oldTimeline !== this.timeline) {
 		Object.assign(this.timeline, oldTimeline);
 	}
 	elementDataOf<{ head: HTMLElement }>(this.timeline).head = animationEls.get(
 		'animation-timeline-head'
 	) as YamiElement;
-	this.toolbar = animationEls.get('animation-timeline-toolbar') as YamiElement;
+	this.toolbar = animationEls.get('animation-timeline-toolbar') as typeof this.toolbar;
 	const oldOuterTimelineList = this.outerTimelineList;
-	this.outerTimelineList = animationEls.get('animation-timeline-list-outer') as YamiElement;
+	this.outerTimelineList = animationEls.get(
+		'animation-timeline-list-outer'
+	) as typeof this.outerTimelineList;
 	if (
 		oldOuterTimelineList &&
 		this.outerTimelineList &&
@@ -80,7 +82,9 @@ Animation.initialize = function (this: typeof Animation) {
 		Object.assign(this.outerTimelineList, oldOuterTimelineList);
 	}
 	const oldInnerTimelineList = this.innerTimelineList;
-	this.innerTimelineList = animationEls.get('animation-timeline-list-inner') as YamiElement;
+	this.innerTimelineList = animationEls.get(
+		'animation-timeline-list-inner'
+	) as typeof this.innerTimelineList;
 	if (
 		oldInnerTimelineList &&
 		this.innerTimelineList &&
@@ -89,25 +93,31 @@ Animation.initialize = function (this: typeof Animation) {
 		Object.assign(this.innerTimelineList, oldInnerTimelineList);
 	}
 	const oldTimelineCursor = this.timelineCursor;
-	this.timelineCursor = animationEls.get('animation-timeline-cursor') as YamiElement;
+	this.timelineCursor = animationEls.get(
+		'animation-timeline-cursor'
+	) as typeof this.timelineCursor;
 	if (oldTimelineCursor && this.timelineCursor && oldTimelineCursor !== this.timelineCursor) {
 		Object.assign(this.timelineCursor, oldTimelineCursor);
 	}
 	const oldTimelineMarquee = this.timelineMarquee;
-	this.timelineMarquee = animationEls.get('animation-timeline-marquee') as YamiElement;
+	this.timelineMarquee = animationEls.get(
+		'animation-timeline-marquee'
+	) as typeof this.timelineMarquee;
 	if (oldTimelineMarquee && this.timelineMarquee && oldTimelineMarquee !== this.timelineMarquee) {
 		Object.assign(this.timelineMarquee, oldTimelineMarquee);
 	}
-	this.timelineMarqueeShift = animationEls.get('animation-timeline-marquee-shift') as YamiElement;
-	this.outerRuler = animationEls.get('animation-timeline-ruler-outer') as YamiElement;
-	this.innerRuler = animationEls.get('animation-timeline-ruler-inner') as YamiElement;
+	this.timelineMarqueeShift = animationEls.get(
+		'animation-timeline-marquee-shift'
+	) as typeof this.timelineMarqueeShift;
+	this.outerRuler = animationEls.get('animation-timeline-ruler-outer') as typeof this.outerRuler;
+	this.innerRuler = animationEls.get('animation-timeline-ruler-inner') as typeof this.innerRuler;
 	this.outerPointerArea = animationEls.get(
 		'animation-timeline-pointer-area-outer'
-	) as YamiElement;
+	) as typeof this.outerPointerArea;
 	this.innerPointerArea = animationEls.get(
 		'animation-timeline-pointer-area-inner'
-	) as YamiElement;
-	this.pointer = animationEls.get('animation-timeline-pointer') as YamiElement;
+	) as typeof this.innerPointerArea;
+	this.pointer = animationEls.get('animation-timeline-pointer') as typeof this.pointer;
 	if (this.screen) addSetScrollMethod(this.screen);
 	hide(this.body);
 	hide(this.timeline);
@@ -232,7 +242,7 @@ Animation.initialize = function (this: typeof Animation) {
 	};
 
 	this.searcher.addCloseButton();
-	this.searcher.addKeydownFilter();
+	this.searcher.addKeydownFilter?.();
 
 	const { list } = this;
 	getListConfig(list).removable = true;

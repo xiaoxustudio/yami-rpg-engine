@@ -10,15 +10,18 @@ function updateConfig(verNum: number) {
 		for (const key of Object.keys(sConfig)) {
 			if (key === 'font') {
 				dConfig.text = {
-					importedFonts: sConfig.font.imports,
-					fontFamily: sConfig.font.default,
+					// `font` 是 1.0.54 之前的旧字段（`GameConfigShape` 里声明为可选）：
+					// 这里正处在「它就是 font 那一轮」的分支里，缺失即旧配置损坏 —— `!` 保持原先的抛错语义
+					importedFonts: sConfig.font!.imports,
+					fontFamily: sConfig.font!.default,
 					wordWrap: 'break'
 				};
 			} else {
 				switch (key) {
 					case 'collision':
-						if (!sConfig[key].trigger) {
-							sConfig[key].trigger = {
+						// 键就是 'collision'，用具名字段与原动态写法 `sConfig[key]` 等价（同样在缺失时抛）
+						if (!sConfig.collision!.trigger) {
+							sConfig.collision!.trigger = {
 								collideWithActorShape: false
 							};
 						}
@@ -55,7 +58,7 @@ function updateConfig(verNum: number) {
 	}
 	if (verNum < Updater.getVersionNumber!('1.0.68')) {
 		const config = getDataStore().data.config!;
-		delete config.collision.actor.ignoreTeamMember;
+		delete config.collision!.actor!.ignoreTeamMember;
 		append(
 			getDataStore().data.manifest!.changes as unknown[],
 			getDataStore().data.manifest!.project.config
@@ -75,11 +78,15 @@ function updateConfig(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.115')) {
 		const config = getDataStore().data.config!;
 		delete config.text.wordWrap;
-		const { languages } = config.localization;
+		const { languages } = config.localization!;
 		for (let i = 0; i < languages.length; i++) {
-			if (typeof languages[i] === 'string') {
+			// 先取到局部量再判型：`typeof languages[i] === 'string'` 会把**下标表达式**
+			// 收窄成 `string`，赋值目标也跟着变窄 ⇒ 写入对象会报「不能把对象赋给 string」。
+			// 语义与原先逐字相同（字符串形态升级成 `LanguageSettingsShape`）。
+			const entry = languages[i];
+			if (typeof entry === 'string') {
 				languages[i] = {
-					name: languages[i],
+					name: entry,
 					font: '',
 					scale: 1
 				};

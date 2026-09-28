@@ -33,7 +33,7 @@ Palette.open = function (
 		getPaletteStore().state = 'loading';
 		this.meta = meta;
 		getPaletteStore().tileset = data;
-		this.loadImages();
+		void this.loadImages();
 		// 如果在编辑模式中打开普通图块组，则关闭编辑模式
 		if (getPaletteStore().mode === 'edit' && data.type === 'normal') {
 			this.switchEdit();

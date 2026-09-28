@@ -29,6 +29,7 @@
  *   - 想拿某个类，前提是它已被登记。**在函数体内取用是安全的**（那时全部模块早已求值完），
  *     这也是元素代码的既有形态（`instanceof` 判定、`create()` 工厂都在方法里）。
  */
+import type { UIInstanceList } from '@app/engine/ui/element-instance-list.ts';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 
 /**
@@ -45,6 +46,14 @@ import type { Matrix } from '@app/engine/webgl/matrix2.ts';
  * 以及 `addReference` / `tryUpdateReferenceElements`（**只有根元素有**：`root-element.ts:42` / `:59`）。
  * ⇒ 四个成员写出来、索引签名去掉（这一处在 `any-hatches` 口径里归零）；其它动态成员
  * （`image` / `text` / `color` …）不在本视图的读点里，故不必兜着。
+ *
+ * 本轮（`UINodeShape` 摘掉索引签名时）又补齐了引擎在实例上读到的另一半成员：
+ * `node` / `isPointIn` / `appendChild` / `appendChildTo` / `remove` / `destroy` / `drawWireframe` /
+ * `matrix`（原写成可空、与实现不符）/ `transform`，以及文本类元素的公共面
+ * （`font` / `_font` / `shadowText` / `printer` / `content` / `updateTextContent` / `updatePrinter`）。
+ * 前者是实例自己的行为（全部是 `element-base.ts` 的基类方法 ⇒ 非可选），
+ * 后者是**数据成员在实例上的镜像**（`ui-transform.ts` 在 `instanceof Text/TextBox/DialogBox/Button`
+ * 之后直接读写它们，故两份视图都要有）。
  */
 export interface UIElementInstance {
 	x: number;
@@ -52,7 +61,20 @@ export interface UIElementInstance {
 	width: number;
 	height: number;
 	opacity: number;
-	matrix: Matrix | null;
+	/**
+	 * 世界变换矩阵。**非空**：`element-base.ts:110` 构造时 `this.matrix = new Matrix()`，
+	 * 全仓再没有把它赋成 `null` 的地方（`calculatePosition` 只 `set()` 它）。
+	 * 原先这里写的是 `Matrix | null` —— 与 `element-base.ts:87` 的 `matrix: Matrix` 不符，
+	 * 于是 `ui-engine` / `ui-transform` / `ui-pointer` 的 13 处 `instance.matrix[0]`… 读点
+	 * 被误判为可空。本轮按实现收紧（**没有加任何 `!`**）。
+	 */
+	matrix: Matrix;
+	/**
+	 * 元素自己的变换数据（`element-base.ts:98` 的 `transform`）。
+	 * 引擎沿父链累加旋转（`ui-engine.ts` 的 `updateControlPoints`）时读它，
+	 * `ui-pointer.ts` 的缩放路径也要 `instance.transform.scaleX`。
+	 */
+	transform: UIElementTransform;
 	parent: UIElementInstance | null;
 	children: UIElementInstance[];
 	visible: boolean;
@@ -61,6 +83,29 @@ export interface UIElementInstance {
 	draw(): void;
 	resize(): void;
 	/**
+	 * 画选中/悬停虚线框（`element-base.ts:119`）。实参是**颜色数值**：
+	 * 实现把它写进 `colors[i]`（`gl.arrays[0].uint32` 视图）—— 那个 uint32 槽位就是它的口径。
+	 * ⚠️ `element-base.ts` 自己的声明写的是 `Array<number> | string`，比实现宽（写进 uint32 槽
+	 * 会得到 NaN）；两处调用点（`ui-engine.ts:585` / `:594`）传的都是 `0x…` 数值，本轮把
+	 * 实现侧的声明也一并改成 `number`。
+	 */
+	drawWireframe(color: number): void;
+	/** 从父元素的 `children` 里摘掉自己（`element-base.ts:287`，基类方法）。 */
+	remove(): void;
+	/** 挂子元素（`element-base.ts:250` 的基类方法；`ui-prefab.ts` 装配时调）。 */
+	appendChild(element: UIElementInstance | null): void;
+	/**
+	 * 按索引插入到自己名下（`element-base.ts:266` 的基类方法，`ui-transform.ts` 的移动节点用）。
+	 * 首参允许 `null`：实现第一句就是 `element instanceof uiElClasses.Element` 判定 ⇒
+	 * 传 `null` 与传 `undefined` 行为完全相同（都什么都不做）。
+	 */
+	appendChildTo(element: UIElementInstance | null, index: number): void;
+	/**
+	 * 命中判定（`element-base.ts:350`，基类方法）：`ui-pointer.ts` 的点选路径直接调。
+	 * 参数是**元素本地坐标**里的点（调用方已用 `getRelativeCoords` 换算）。
+	 */
+	isPointIn(x: number, y: number): boolean;
+	/**
 	 * 只有根元素有这两个方法（`root-element.ts:42 addReference` / `:59 tryUpdateReferenceElements`）；
 	 * `UIElementInstance` 是根与普通元素的**共同视图** ⇒ 声明为可选。
 	 * 参数类型写成 `unknown`：各个调用点传的是**各自的局部形状**（`PrefabElementShape` 在两个文件里
@@ -68,6 +113,25 @@ export interface UIElementInstance {
 	 */
 	addReference?(prefabElement: unknown): void;
 	tryUpdateReferenceElements?(element: unknown): void;
+	// —— 引擎在实例上读到的其余成员（本轮按 `UINodeShape` 摘掉索引签名后的读点清单补齐）——
+	/** 该实例对应的**节点数据**（`element-base.ts` 的 `declare node`） */
+	node?: UINodeShape | null;
+	/** 摧毁自身（`element-base.ts:241` 的基类方法；`ui-file.ts` 关窗时调 `root.destroy()`） */
+	destroy(): void;
+	/** 文本类元素的公共面：`ui-transform.ts` 在 `instanceof Text/TextBox/DialogBox/Button` 之后读它们 */
+	font?: string;
+	_font?: string;
+	shadowText?: UIElementInstance;
+	printer?: { reset(): void } | null;
+	content?: string;
+	updateTextContent?(): void;
+	updatePrinter?(): void;
+	/**
+	 * 引用元素的「重算引用内容」（`reference-element.ts:127`）。
+	 * **只有引用类元素有** ⇒ 可选；调用点（`ui-transform.ts` 的 `updateAllReferences`）
+	 * 前面刚做过 `instanceof uiElClasses.Reference` 判定，故那里用 `!`。
+	 */
+	update?(): void;
 }
 
 /**
@@ -148,12 +212,50 @@ export interface UIElementTransform {
  * 另有 `instance` 到底可不可空（`ui-engine.ts:363` 会把 `null` 赋给它）。
  * 那些是**行为问题**（要么证明不变式、要么加守卫），必须实机判定，
  * 不能靠补一批 `!` 蒙过去 —— 那正是本仓反复记的静默失效制造机。
+ *
+ * ## 第 232 轮：按上面的口径逐个判定后，索引签名**已退役**
+ *
+ * - **`matrix` 可空是不成立的**：`element-base.ts:110` 构造时就是 `new Matrix()`，
+ *   全仓没有第二处赋值 ⇒ 把 `UIElementInstance.matrix` 改成非空，13 处读点**不加任何 `!`** 即通过。
+ * - **`parent` 可空是成立的**（根元素/根节点就是 `null`），所以它保留可空，读侧在
+ *   「只可能在已装配的树上」的位置用 `!`（`ui-pointer.ts` 的缩放、`ui-file.ts` 的 `createShortcut`）。
+ * - **`instance` / `instances` 是装配期挂上的运行期成员**，数据里**没有**它们：
+ *   `ui-prefab.ts:96` / `:101` 用 `Object.defineProperty` 挂成**不可枚举**（否则会被序列化进 JSON），
+ *   且 `element-base.ts:245` 会 `delete node.instance` ⇒ 数据形状里必须是**可选**。
+ *   引擎在画布上读到的节点（当前目标 / 历史记录里的目标 / 树的兄弟列表）都是**已装配**的
+ *   —— 这条不变式在 `ui-facade.ts` 的 `HoverNode` 里已有先例（该处注释写着「能被 hover 的节点
+ *   必然是已建实例的主节点」）⇒ 那些读点用 `!` 表达同一条前提，运行期一行未改。
  */
 export type UINodeShape = {
 	class: string;
 	children: UINodeShape[];
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	/** 节点名（列表显示 / `generateUniqueName`） */
+	name: string;
+	/** 变换数据 —— 与 `stores/ui.ts` 的读点指向**同一个对象**（见 `UIElementTransform` 的说明） */
+	transform: UIElementTransform;
+	/** 预制体 guid（`generatePresetId` 写；`hasPrefab` / `ui-file.ts` 读） */
+	presetId: string;
+	/** 列表开关（`ui-list.ts` 的 toggle 直接翻转） */
+	enabled: boolean;
+	/** 父节点（根为 `null`）。`ui-file.ts` 的 `createShortcut` 直接解引用 ⇒ 那处带 `!` */
+	parent: UINodeShape | null;
+	/**
+	 * 当前**主**实例（`ui-prefab.ts:96` 用 `Object.defineProperty` 挂的不可枚举成员，
+	 * 只在该节点是 `createElement(node, main=true)` 时才有）。
+	 * 可选是如实的：`element-base.ts:245` 的 `delete node.instance` 就是在这个成员上操作的。
+	 * 引擎读点（`ui-engine.ts` 的控制点/坐标轴/虚线框、`ui-pointer.ts` 的旋转缩放、
+	 * `ui-transform.ts` 的删除）都只处理**已装配**的节点 ⇒ 那里用 `!`，见本文件顶部的判定记录。
+	 */
+	instance?: UIElementInstance;
+	/**
+	 * 该节点的全部实例（同一个预制体节点可以被实例化多次）。
+	 * 同样是 `ui-prefab.ts:104` 挂的不可枚举成员；`element-base.destroy` 从它里面摘掉自己。
+	 */
+	instances?: UIInstanceList;
+	/** 引用型元素的同步标记（`ui-engine.ts` 的 `selectControlPoint` 读） */
+	synchronous?: boolean;
+	/** 锁定标记（`ui-pointer.ts` 的命中判定读 `element.node.locked`） */
+	locked?: boolean;
 };
 
 /**
@@ -166,7 +268,7 @@ export type UINodeShape = {
  * 的索引签名一致：本轮不重做元素系统的类型。
  */
 // oxlint-disable-next-line no-explicit-any
-export type UIElementCtor = (new (data?: any) => any) & Record<string, any>;
+export type UIElementCtor = new (data?: any) => any;
 
 /**
  * 注册表本体。各元素文件在模块顶层登记：

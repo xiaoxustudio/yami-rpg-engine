@@ -116,7 +116,13 @@ uiElClasses.Element = class UIElement {
 		this.connected = false;
 	}
 
-	drawWireframe(color: Array<number> | string) {
+	/**
+	 * 画虚线框。`color` 是**颜色数值**：实现把它写进 `colors[i]`（`gl.arrays[0].uint32` 视图），
+	 * 那个 uint32 槽位就是它的口径。原先声明成 `Array<number> | string`，比实现宽
+	 * （写进 uint32 只会得到 NaN）；两处调用点（`ui-engine.ts` 的悬停/选中虚线框）传的都是
+	 * `0x…` 数值 ⇒ 第 232 轮按实现收紧（`UIElementInstance.drawWireframe` 同步为 `number`）。
+	 */
+	drawWireframe(color: number) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const colors = gl.arrays[0].uint32;

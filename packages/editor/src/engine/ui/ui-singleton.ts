@@ -1,6 +1,7 @@
 import { elementDataOf } from '@ui-kit';
 import { uiEls } from '@app/engine/ui/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
+import { registryElement } from '@app/utils/element-registry.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 // ④-2c（第 114 轮）后本文件不再**用** UIEngine（21 行镜像已退役），但这条**副作用 import 必须留着**：
@@ -11,7 +12,8 @@ import { Scene } from '@app/scene/scene-window.ts';
 import '@app/engine/ui/ui-engine.ts';
 import { getUIStore } from '@app/stores/ui';
 
-import type { UINodeShape } from '@app/engine/ui/element-classes.ts';
+import type { UIElementInstance, UINodeShape } from '@app/engine/ui/element-classes.ts';
+import type { TreeListElement } from '@app/components/tree-list.ts';
 import type { HoverNode } from './ui-facade.ts';
 import type { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import type { Timer } from '@app/utils/timer';
@@ -100,8 +102,85 @@ export interface UIShape {
 	/** 控制点贴图（`ui-initialize.ts:97` 载图后写）。 */
 	controlPointTexture: ImageTexture | null;
 
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
+	// —— 第 234 轮：索引签名退役时补上的「单例真的持有、但一直靠 `any` 兜着」的成员 ——
+	//
+	// 这 6 个都有明确的写入方（见 `UI` 字面量与 `ui-file.ts` 的赋值），此前只是**没写在类型里**：
+	// 读侧一律走索引签名拿到 `any`/`unknown`，于是「拼错成员名」与「成员不存在」都编译通过。
+	/**
+	 * 节点树列表元素（`uiEls.get('ui-list')`）。
+	 *
+	 * 类型取编辑器侧那份具名契约 `TreeListElement`（`components/tree-list.ts`）——
+	 * 它 = `HTMLElement & TreeListElementApi & { createString() }`，含 `data` / `display` /
+	 * `update()` / `deleteNode()` / `addNodeTo()` / `expandToSelection()` / `scrollToSelection()`…
+	 * ⚠️ 这里**不能**用 `YamiElement`：`ui-list.ts` 下面那 6 个挂在列表上的实现（`copy` / `paste` /
+	 * `delete` / `toggle` / `cancelSearch` / `updateHead`）读的是**列表元素**的 `this`
+	 * （`this.data` / `this.deleteNode!` / `this.display`…），而 `YamiElement` 上没有它们。
+	 */
+	list: UIListNodeShape;
+	/**
+	 * 搜索框元素（`uiEls.get('ui-searcher')`；`TextBox` 那一族）。
+	 *
+	 * 两处按读点补的具名成员：
+	 * - `addKeydownFilter?()`：`ui-initialize.ts:190` 调它。**全仓没有它的类型声明**（`ui-kit` 的
+	 *   元素契约里也没有），所以按 `scene-window.ts:44` / `stores/browser.ts:60` 的**既有写法**
+	 *   声明成可选、调用点配 `?.`（那两个文件对同一成员就是这么处理的）。
+	 * - `input`：内部 `<input>`（`components/common/TextBox.vue` 的 `input: HTMLInputElement`），
+	 *   `ui-list.ts` 的 `searcherInput` 读 `this.input!.value`。契约里那个 `input?: HTMLElement | …`
+	 *   太宽（`HTMLElement` 没有 `value`）⇒ 用 `Omit` 换掉再给具名类型。
+	 */
+	searcher: Omit<YamiElement, 'input'> & {
+		addKeydownFilter?(): void;
+		input?: HTMLInputElement | null;
+	};
+	/**
+	 * 拖拽中的指针事件（`ui-pointer.ts` 写；`ui-events.ts` 用 `=== null` 判"当前是否在拖"）。
+	 * 拖拽期间会在**同一个事件对象**上挂 `mode` / `scrollLeft` / `absoluteAnchorX`… —— 那正是
+	 * `UIPointerEvent` 的扩展字段（本文件已声明），这里按**写入之后**的口径收紧成 `UIDragEvent`。
+	 */
+	dragging: UIDragEvent | null;
+	/** 当前文档的节点数组（`ui-file.ts` 从 `context.ui.nodes` 取出；与列表 `bind` 的是**同一个数组实例**）。 */
+	nodes: UINodeShape[] | null;
+	/** 当前打开的文档上下文（`ui-file.ts` 写；`ui-file.ts:161` 用 `this.context === context` 判当前页）。 */
+	context: UIContextShape | null;
+	/**
+	 * 根元素**实例**（`ui-file.ts` 从 `context.editor.root` 取出后写）。
+	 * 与 `getUIStore().root` 是同一个对象；类型同样是实例视图。
+	 */
+	root: UIElementInstance | null;
+	/** 当前文档的 `meta`（`ui-file.ts:33` 写；`ui-events.ts` 的 `planToSave` 读）。 */
+	meta: { guid: string; path: string } | null;
+	/**
+	 * 打开一份 UI 文档（`ui-file.ts` 的实现；`open()` 的最后一步就是 `this.load!(context)`）。
+	 * 注意它**不在** `UIDomainMembers` 的生成清单里（生成器跳过的 7 条之一）。
+	 */
+	load: ((context: UIContextShape) => void) | null;
+	/** 打开（`ui-file.ts:17` 的实现，`stores/ui.ts` 的 `open()` 调它）。生成清单同样没有它。 */
+	open: ((context: UIContextShape) => void) | null;
+	/** 销毁（`ui-file.ts:159` 的实现；`stores/ui.ts` 的 `destroy()` 调它）。 */
+	destroy: ((context: UIContextShape) => void) | null;
+	/** 列表的 keydown 处理器（`ui-list.ts` 的 `listKeydown`；`ui-initialize.ts:365` 注册到列表上）。 */
+	listKeydown: ((event: KeyboardEvent) => void) | null;
+	/**
+	 * `ui-events.ts` 提供的两个槽位 —— `UIDomainMembers` 的生成清单里**漏了**它们
+	 * （生成器跳过的 7 条），但两侧都在用：`LayoutPanel.vue` 转发给它们，store 的
+	 * `uiForwardKeys` 也把这两个键列进去了。
+	 */
+	switchPointerdown: ((event: PointerEvent) => void) | null;
+	screenKeydown: ((event: KeyboardEvent) => void) | null;
+	/** 装配工厂：按节点 class 造元素实例（`ui-prefab.ts:115` 调 `this.createElement!(node, true)`）。 */
+	createElement: ((node: UINodeShape, main?: boolean) => UIElementInstance) | null;
+
+	// —— 桥接到 `stores/ui.ts` 的 6 个字段（本文件末尾的 `Object.defineProperty` 装 get/set）——
+	//
+	// 类型取 store 那一侧的口径（`uiStateKeys` 里的前 6 项，与 `auto-tile.ts` 的桥接字段同一写法）：
+	// `stores/__tests__/ui-state.spec.ts` 会直接对 `UI.state` / `UI.target` / `UI.zoom`… 赋值再读回，
+	// 那些写法此前靠索引签名成立。
+	state: string;
+	target: UINodeShape | null;
+	zoom: number | null;
+	width: number | null;
+	height: number | null;
+	mode: string | null;
 }
 
 export type { UINodeShape };
@@ -111,7 +190,12 @@ export interface UIContextShape {
 	ui?: { width: number; height: number; nodes: UINodeShape[] } & Record<string, unknown>;
 	editor?: {
 		target: UINodeShape | null;
-		root: UINodeShape | null;
+		/**
+		 * 根节点 —— 是**实例**，不是节点数据：`ui-file.ts:62` 建的就是
+		 * `new uiElClasses.Root!()`，而 `ui-file.ts:166` 对它调 `.destroy()`（实例方法，
+		 * 节点数据上没有）。原先这里写 `UINodeShape` 是靠索引签名成立的。
+		 */
+		root: UIElementInstance | null;
 		history: History;
 		centerX: number;
 		centerY: number;
@@ -134,6 +218,43 @@ export type UIPointerEvent = YamiMouseEvent & {
 	enabled?: boolean;
 	startX?: number;
 	startY?: number;
+};
+
+/**
+ * UI 窗口的**列表句柄**：`TreeListElement`（编辑器侧的树列表具名契约）+
+ * 本域真的会读、而那份契约里没写明的成员。
+ *
+ * 为什么要再包一层：`TreeListElementApi` 末尾带 `[k: string]: unknown`（消费方要的宽松兜底），
+ * 所以**未声明**的成员读出来是 `unknown` 而不是报错 —— 收成具名成员之后才会被检查。
+ * 与 `composables/useTeamWindow.ts` 的 `TeamListElement` 是同一手法（按读点补具名成员）。
+ */
+export type UIListNodeShape = TreeListElement & {
+	/** `ui-file.ts:242` 的 `createShortcut` 用它给引用节点起名（树列表自带的去重命名）。 */
+	generateUniqueName(item: UINodeShape): string;
+};
+
+/**
+ * 拖拽期间的 `UI.dragging` —— `ui-pointer.ts` 的四个 `marqueePointerdown` 分支在**同一个事件对象**上
+ * 逐个写入这些字段（`mode` / 起点坐标 / 滚动起点 / 起始旋转角…），随后的 `pointermove` / `pointerup`
+ * 一路读它们。与 `UIPointerEvent` 是同一批字段，区别只在于「**赋值之后**必然已写入」⇒ 这里收紧成必有，
+ * 让那 20 处 `dragging.startX` 之类的读点不必逐个写 `!`。
+ *
+ * 写入方在赋值语句之后才逐个赋字段，所以赋值处用一次单次 `as`（与 `ui-transform.ts` 的 `setHover`
+ * 同一手法：把「既有前提」写进类型，运行期一行未改）。
+ */
+export type UIDragEvent = UIPointerEvent & {
+	mode: string;
+	scrollLeft: number;
+	scrollTop: number;
+	absoluteAnchorX: number;
+	absoluteAnchorY: number;
+	lastAngle: number;
+	rotationRadians: number;
+	startRotation: number;
+	startWidth: number;
+	startHeight: number;
+	startX: number;
+	startY: number;
 };
 
 /**
@@ -187,9 +308,13 @@ export const UI = {
 	// `YamiElement` 本身不含 `resize`/`pointerevent`，第 217 轮起 `UIShape.marquee` 声明了它们。
 	marquee: ((uiEls.get('ui-marquee') as YamiElement) ||
 		({} as YamiElement)) as UIShape['marquee'],
-	searcher: uiEls.get('ui-searcher') as YamiElement,
-	list: (uiEls.get('ui-list') as YamiElement) || {},
-	dragging: null as UIPointerEvent | null,
+	searcher: registryElement<UIShape['searcher']>(uiEls, 'ui-searcher')!,
+	// 列表句柄走 `registryElement`（`utils/element-registry.ts` 的**单点收窄**）：它返回 `T | null`，
+	// 而 `UIShape.list` 是非空成员 ⇒ 这里补一处**可见**的 `!`（与 `color-picker-window.ts` 同一写法）。
+	// `?? ({} as TreeListElement)`：兜底对象**不是**元素，但它承重 —— 元素尚未登记时也要能加载，
+	// 而下面的挂载（`elementDataOf(UI.list).…`）需要它非空（与上面 `marquee` 的 `|| {}` 同一理由）。
+	list: registryElement<UIListNodeShape>(uiEls, 'ui-list') ?? ({} as UIListNodeShape),
+	dragging: null as UIDragEvent | null,
 	// 类型取 `HoverNode`（含**必填**的 `instance`）而不是 `UINodeShape`：引擎的 `drawHoverWireframe`
 	// **不判空就解引用** `hover.instance.visible`（缺 instance 会每帧抛）⇒「被 hover 的节点必有实例」
 	// 是既有不变式，写在类型里；写入方 `ui-transform.ts` 的 `setHover` 有对应说明与单次断言。
@@ -207,17 +332,22 @@ export const UI = {
 // page 走显式元素数据（该字段不在 DATA_FIELDS 里）
 elementDataOf<{ page?: HTMLElement | null }>(UI.list).page = uiEls.get('ui-element') as YamiElement;
 elementDataOf<{ head: HTMLElement }>(UI.list).head = uiEls.get('ui-list-head') as YamiElement;
-UI.list.copy = null;
-UI.list.paste = null;
-UI.list.delete = null;
-UI.list.toggle = null;
-UI.list.cancelSearch = null;
+// ⚠️ 第 234 轮：`UI.list.copy = null` / `paste` / `delete` / `toggle` / `cancelSearch` / `updateHead`
+// 这 6 行占位**已删除**。理由与上面 `UI.marquee.resize` 那处同一条：`TreeListElement` 契约里这些方法
+// 是**真声明**（非空），写 `null` 既编不过、也不再需要。
+// 行为同样不变：它们的真实实现就在 `ui-list.ts:359-414` 的**模块加载期**赋值（`loadUiDomains()` 里
+// `ui-singleton` 之后紧跟 `ui-list`），而唯一能调用它们的是用户交互 —— 都在那之后。
+// 顺带说明：删掉 `null` 之后，若 `ui-list` 因故没加载，留下的是**组件自带实现**而不是"调用 null 崩"。
 EventBus.once('editor_loaded', () => {
-	UI.list.restoreRecursiveStates = Scene.list.restoreRecursiveStates;
-	UI.list.setRecursiveStates = Scene.list.setRecursiveStates;
-	// Scene.list.* 真定义（scene-list.ts）在 editor_loaded 时才确定，提前赋值会固化拿 null
+	// 这两条从 `Scene.list` 抄过来的是**方法值**，而 `SceneShape.list` 上的声明是 `… | null`
+	// （`SceneListExtensions`），`UI.list`（`TreeListElement`）上则是非空方法。
+	// 赋值的时机正是 `editor_loaded` —— 该文件自己的注释就写着「`Scene.list.*` 真定义在
+	// `editor_loaded` 时才确定」⇒ 这一刻它们必然已就绪，单次 `as` 表达这条前提（运行期一行未改）。
+	UI.list.restoreRecursiveStates = Scene.list
+		.restoreRecursiveStates as UIShape['list']['restoreRecursiveStates'];
+	UI.list.setRecursiveStates = Scene.list
+		.setRecursiveStates as UIShape['list']['setRecursiveStates'];
 });
-UI.list.updateHead = null;
 
 const uiBridgeKeys = ['state', 'target', 'zoom', 'width', 'height', 'mode'] as const;
 

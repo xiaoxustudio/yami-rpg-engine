@@ -94,27 +94,27 @@ function createMockEmitterData(layers: any[] = []): any {
 
 describe('ParticleElement.getRandomParameter', () => {
 	it('deviation 为 0 时返回标准值', () => {
-		const result = ParticleEngine.Element.getRandomParameter([50, 0]);
+		const result = ParticleEngine.Element!.getRandomParameter([50, 0]);
 		expect(result).toBe(50);
 	});
 
 	it('返回值在 [standard - deviation, standard + deviation] 范围内', () => {
 		for (let i = 0; i < 20; i++) {
-			const result = ParticleEngine.Element.getRandomParameter([100, 50]);
+			const result = ParticleEngine.Element!.getRandomParameter([100, 50]);
 			expect(result).toBeGreaterThanOrEqual(50);
 			expect(result).toBeLessThanOrEqual(150);
 		}
 	});
 
 	it('标准值为 0 时返回 [-deviation, +deviation] 范围', () => {
-		const result = ParticleEngine.Element.getRandomParameter([0, 30]);
+		const result = ParticleEngine.Element!.getRandomParameter([0, 30]);
 		expect(Math.abs(result)).toBeLessThanOrEqual(30);
 	});
 });
 
 describe('ParticleEmitter.calculateOuterRect', () => {
 	it('空 layers 返回零尺寸矩形', () => {
-		const emitter = new ParticleEngine.Emitter(createMockEmitterData([]));
+		const emitter = new ParticleEngine.Emitter!(createMockEmitterData([]));
 		const rect = emitter.calculateOuterRect();
 		expect(rect.width).toBe(0);
 		expect(rect.height).toBe(0);
@@ -123,7 +123,7 @@ describe('ParticleEmitter.calculateOuterRect', () => {
 
 	it('point area 返回最小 32x32 扩展矩形', () => {
 		const layer = createMockLayerData({ area: { type: 'point', x: 10, y: 20 } });
-		const emitter = new ParticleEngine.Emitter(createMockEmitterData([layer]));
+		const emitter = new ParticleEngine.Emitter!(createMockEmitterData([layer]));
 		const rect = emitter.calculateOuterRect();
 		expect(rect.width).toBe(32);
 		expect(rect.height).toBe(32);
@@ -134,7 +134,7 @@ describe('ParticleEmitter.calculateOuterRect', () => {
 		const layer = createMockLayerData({
 			area: { type: 'rectangle', x: 50, y: 50, width: 100, height: 60 }
 		});
-		const emitter = new ParticleEngine.Emitter(createMockEmitterData([layer]));
+		const emitter = new ParticleEngine.Emitter!(createMockEmitterData([layer]));
 		const rect = emitter.calculateOuterRect();
 		expect(rect.left).toBe(0);
 		expect(rect.top).toBe(20);
@@ -147,7 +147,7 @@ describe('ParticleEmitter.calculateOuterRect', () => {
 		const layer = createMockLayerData({
 			area: { type: 'circle', x: 0, y: 0, radius: 50 }
 		});
-		const emitter = new ParticleEngine.Emitter(createMockEmitterData([layer]));
+		const emitter = new ParticleEngine.Emitter!(createMockEmitterData([layer]));
 		const rect = emitter.calculateOuterRect();
 		expect(rect.left).toBe(-50);
 		expect(rect.top).toBe(-50);
@@ -158,7 +158,7 @@ describe('ParticleEmitter.calculateOuterRect', () => {
 
 	it('edge area 不参与边界计算', () => {
 		const layer = createMockLayerData({ area: { type: 'edge' } });
-		const emitter = new ParticleEngine.Emitter(createMockEmitterData([layer]));
+		const emitter = new ParticleEngine.Emitter!(createMockEmitterData([layer]));
 		const rect = emitter.calculateOuterRect();
 		expect(rect.width).toBe(0);
 		expect(rect.height).toBe(0);
@@ -167,12 +167,12 @@ describe('ParticleEmitter.calculateOuterRect', () => {
 
 describe('ParticleEmitter.isEmpty / clear', () => {
 	it('新 emitter 为空', () => {
-		const emitter = new ParticleEngine.Emitter(createMockEmitterData([]));
+		const emitter = new ParticleEngine.Emitter!(createMockEmitterData([]));
 		expect(emitter.isEmpty()).toBe(true);
 	});
 
 	it('clear 后为空', () => {
-		const emitter = new ParticleEngine.Emitter(createMockEmitterData([]));
+		const emitter = new ParticleEngine.Emitter!(createMockEmitterData([]));
 		emitter.clear();
 		expect(emitter.isEmpty()).toBe(true);
 	});
@@ -180,7 +180,7 @@ describe('ParticleEmitter.isEmpty / clear', () => {
 
 describe('ParticleEmitter 构造函数', () => {
 	it('设置默认属性', () => {
-		const emitter = new ParticleEngine.Emitter(createMockEmitterData([]));
+		const emitter = new ParticleEngine.Emitter!(createMockEmitterData([]));
 		expect(emitter.visible).toBe(false);
 		expect(emitter.scale).toBe(1);
 		expect(emitter.speed).toBe(1);
@@ -191,13 +191,13 @@ describe('ParticleEmitter 构造函数', () => {
 
 	it('含有 edge area 时 alwaysEmit 为 true', () => {
 		const layer = createMockLayerData({ area: { type: 'edge' } });
-		const emitter = new ParticleEngine.Emitter(createMockEmitterData([layer]));
+		const emitter = new ParticleEngine.Emitter!(createMockEmitterData([layer]));
 		expect(emitter.alwaysEmit).toBe(true);
 	});
 
 	it('无 edge area 时 alwaysEmit 为 false', () => {
 		const layer = createMockLayerData({ area: { type: 'point', x: 0, y: 0 } });
-		const emitter = new ParticleEngine.Emitter(createMockEmitterData([layer]));
+		const emitter = new ParticleEngine.Emitter!(createMockEmitterData([layer]));
 		expect(emitter.alwaysEmit).toBe(false);
 	});
 });

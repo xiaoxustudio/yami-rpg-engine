@@ -5,7 +5,19 @@ import { Palette } from '@app/palette/palette.ts';
 // 改成本地 `SceneEditThis` 之后运行时依赖随之消失（`import type` 会被完全擦除）。
 import type { SceneShape } from '@app/scene/scene-window.ts';
 
-type TileBuffer = Uint32Array & { width: number; height: number; rowOffset: number };
+/**
+ * 图块缓冲（`Uint32Array` + 三个排版字段 + 一个**缓存槽**）。
+ *
+ * 第 236 轮**导出并补 `standard`**：`scene-window.ts` 的 `SceneMarqueeExtensions.tiles` 要按这个类型声明
+ * （`Scene.marquee.tiles = this.createTiles!(1, 1)`，而 `createTiles` 的实现就在这里）；
+ * `standard` 是自动图块展开后的副本（`scene-marquee-engine.ts:229` 写入、`:247` 读、`palette-engine.ts:728` 也写）。
+ */
+export type TileBuffer = Uint32Array & {
+	width: number;
+	height: number;
+	rowOffset: number;
+	standard?: TileBuffer;
+};
 type TerrainBuffer = Uint8Array & { width: number; height: number; rowOffset: number };
 
 /**

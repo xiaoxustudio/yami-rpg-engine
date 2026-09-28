@@ -25,6 +25,19 @@ import type { ParamDef } from './param-pane-core';
  */
 export interface ManifestEntry {
 	parameters: ParamDef[] | null;
-	langMap: { update(): { get(key: string | undefined): string } };
+	/**
+	 * 语言映射（运行期由元数据装载写入）。
+	 * `active` 是**当前激活语言**：`YMParameterPane.windowLocalize` 拿它和 `update().active` 比对
+	 * 来判断要不要重排（`get(key)` 则是取分组标题用的）。
+	 */
+	langMap: {
+		active: string;
+		update(): { active: string; get(key: string | undefined): string };
+	};
+	/**
+	 * 参数管理器（运行期由插件元数据解析器 `Object.defineProperties` 挂上，
+	 * 见 `editor/src/plugin/plugin-parse-meta.ts` 的 `manager.sort()`）：ui-kit 只读 `states`。
+	 */
+	manager: { states: Record<string, unknown> };
 	overview?: { deprecated?: string };
 }

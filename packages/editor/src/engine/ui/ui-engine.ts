@@ -152,7 +152,11 @@ UIEngine.shiftAnchor = function (this: UIShape, anchorX: number, anchorY: number
 	const target = getUIStore().target;
 	if (target !== null) {
 		this.planToSave!();
-		const instances = target.instances;
+		// `instance` / `instances` 是装配期用 `Object.defineProperty` 挂上的**不可枚举**运行期成员
+		// （不进 JSON ⇒ 数据形状里是可选，见 `element-classes.ts` 顶部那段判定记录）。
+		// `getUIStore().target` 一定是画布上**已装配**的节点 —— 本文件这几处 `!`
+		// 与 `ui-facade.ts` 的 `HoverNode.instance`（必填）说的是同一条不变式。
+		const instances = target.instances!;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
 		const history = historyOf(this);
@@ -190,7 +194,7 @@ UIEngine.shiftTarget = function (this: UIShape, x: number, y: number) {
 	const target = getUIStore().target;
 	if (target !== null) {
 		this.planToSave!();
-		const instances = target.instances;
+		const instances = target.instances!;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
 		const history = historyOf(this);
@@ -215,29 +219,13 @@ UIEngine.shiftTarget = function (this: UIShape, x: number, y: number) {
 		// transform.x = x transform.y = y
 		instances.setProperty('transform-x', x);
 		instances.setProperty('transform-y', y);
-		if (instances.length > 0 && typeof instances[0]?.resize !== 'function') {
-			console.error(
-				'[DEBUG-instances]',
-				JSON.stringify({
-					targetKeys: target ? Object.keys(target).slice(0, 25) : 'none',
-					targetClass: target?.class,
-					targetName: target?.name,
-					hasChildren: Array.isArray(target?.children),
-					transform: target?.transform ? 'yes' : 'no',
-					instanceCtor: target?.instance?.constructor?.name,
-					instancesCtor: instances?.constructor?.name,
-					instancesProto: Object.getPrototypeOf(instances)?.constructor?.name,
-					instancesContent: Array.isArray(instances)
-						? instances.map((e: unknown) => `${typeof e}:${String(e)}`)
-						: String(instances),
-					instancesSetType: typeof instances.set,
-					instancesSetName: instances.set?.name,
-					instancesIsMap: instances instanceof Map,
-					instancesIsArray: Array.isArray(instances),
-					instancesOwnKeys: Object.keys(instances)
-				})
-			);
-		}
+		// 这里原先有一块 `[DEBUG-instances]` 探针（`JSON.stringify` 打印 `instances instanceof Map`、
+		// `typeof instances.set`、`Object.keys(instances)`），只在 `instances[0].resize` 不是函数时输出。
+		// 第 232 轮删除：`instances` 的唯一创建点是 `ui-prefab.ts:104` 的 `new UIInstanceList()`
+		// （`Array` 子类，只有 `setProperty` / `resize` / `remove`），压进去的又都是元素实例
+		// （基类都有 `resize`）⇒ 那个分支与探针里的 `Map` / `.set` 判断永远不成立。
+		// 探针本身是「索引签名什么都能读」时代的产物：`instances.set` / `instances.name`
+		// 在具名类型下根本不存在。
 		instances.resize();
 		UIEngine.requestRendering!.call(this);
 
@@ -254,7 +242,7 @@ UIEngine.resizeTarget = function (this: UIShape, width?: number, height?: number
 	const target = getUIStore().target;
 	if (target !== null) {
 		this.planToSave!();
-		const instances = target.instances;
+		const instances = target.instances!;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
 		const history = historyOf(this);
@@ -300,7 +288,7 @@ UIEngine.rotateTarget = function (this: UIShape, rotation: number) {
 	const target = getUIStore().target;
 	if (target !== null) {
 		this.planToSave!();
-		const instances = target.instances;
+		const instances = target.instances!;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
 		const history = historyOf(this);
@@ -376,7 +364,7 @@ UIEngine.updateControlPoints = function (this: UIShape) {
 	const target = getUIStore().target;
 	if (target !== null) {
 		const POINT_RADIUS = 4 / this.scale;
-		const { instance } = target;
+		const instance = target.instance!;
 		const points = this.controlPoints!;
 		const matrix = instance.matrix;
 		const L = instance.x;
@@ -436,10 +424,13 @@ UIEngine.updateControlPoints = function (this: UIShape) {
 		resize.BL.y = y2 + oy2 - oy1;
 		resize.BR.x = x3 + ox3 - ox2;
 		resize.BR.y = y3 + oy3 - oy2;
-		let element = instance;
-		let rotation = element.transform.rotation;
-		while ((element = element.parent)?.transform) {
-			rotation += element.transform.rotation;
+		let rotation = instance.transform.rotation;
+		// 沿父链累加旋转。原写法 `while ((element = element.parent)?.transform)` ——
+		// `transform` 在具名类型下是**非可选**的（`element-base.ts:98` 每个元素实例都有），
+		// 所以那个 `?.transform` 真值判断只可能在「父元素为 `null`」时为假，语义与下面等价；
+		// 写成显式判空是为了让「父链到根为止」这条循环条件直接读得出来。
+		for (let parent = instance.parent; parent !== null; parent = parent.parent) {
+			rotation += parent.transform.rotation;
 		}
 		this.controlPointRotation = rotation;
 	}
@@ -508,7 +499,12 @@ UIEngine.drawElements = function (this: UIShape) {
 UIEngine.drawCoordinateAxes = function (this: UIShape) {
 	const target = getUIStore().target;
 	if (target !== null) {
-		const { parent } = target.instance;
+		// 坐标轴画的是**父元素**的框（`parent.matrix` / `parent.x`…）。`parent` 非空是不变式：
+		// 画布树里的节点都由 `ui-file.ts` 的 `loadElement` 递归挂到根实例之下
+		// （`element-base.appendChild` 会给每个元素设 `parent`），只有根实例自己没有父元素，
+		// 而根**不是**可选中的 `target`。原先这里靠 `target.instance` 与 `parent` 的索引签名
+		// 一路免检，本轮按这条前提写 `!`（破坏时当场抛错，与之前行为一致）。
+		const parent = target.instance!.parent!;
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const matrix = gl.matrix.set(getUIStore().matrix!).multiply(parent.matrix);
@@ -590,7 +586,7 @@ UIEngine.drawHoverWireframe = function (this: UIShape) {
 UIEngine.drawTargetWireframe = function (this: UIShape) {
 	const target = getUIStore().target;
 	if (target !== null) {
-		const { instance } = target;
+		const instance = target.instance!;
 		instance.drawWireframe(0xffc0ff00);
 	}
 };
@@ -598,7 +594,7 @@ UIEngine.drawTargetWireframe = function (this: UIShape) {
 UIEngine.drawTargetAnchor = function (this: UIShape) {
 	const target = getUIStore().target;
 	if (target !== null) {
-		const { instance } = target;
+		const instance = target.instance!;
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const matrix = gl.matrix.set(getUIStore().matrix!).multiply(instance.matrix);

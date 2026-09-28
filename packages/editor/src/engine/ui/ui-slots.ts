@@ -104,7 +104,9 @@ export const uiSlotsMembers: UISlotMembers = {
 				node.presetId = generatePresetId();
 			}
 			uiPresets[node.presetId] = {
-				uiId: self.meta.guid,
+				// `this.meta` 由 `ui-file.ts:33` 在打开文档时写；预制体注册只在不变量成立时被调
+				// （`registerPreset` 是列表/加载路径上的动作，那时文档已打开）⇒ `!`（同本域其余读点）。
+				uiId: self.meta!.guid,
 				data: node
 			};
 			for (const child of node.children) {

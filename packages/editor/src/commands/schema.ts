@@ -67,6 +67,19 @@ interface CommandSchemaConfig {
 	save?: () => unknown;
 	customSave?: () => unknown;
 	noWindow?: boolean;
+	/**
+	 * 每条指令自带的**自定义成员袋**（`parseOperation` / `parseOperand` / `parseCondition` /
+	 * `remapSelectorPatch` …），在各自模块里经 `this.<key>` 调用。
+	 *
+	 * ⚠️ 这里保留 `any` 是**实测过的取舍**（本轮把两侧索引签名都摘掉跑了一遍）：
+	 * 全仓 `new CommandSchema({...})` 有 150+ 处，每处都夹带自己的键；摘掉后当场 112 条错误，
+	 * 全在那些指令模块里。而且**收成「函数袋」也不行**：本接口同时声明了数据成员
+	 * （`name: string` / `fields: CommandField[]` / `noWindow: boolean` …），索引签名类型必须
+	 * 同时容得下它们与可调用的自定义成员 —— 两者不可兼得（`unknown` 不可调用，
+	 * 函数类型容不下 `string`）。要收口只能给 150 条指令各写一份扩展接口，
+	 * 那是独立的一件事，不是「补个类型名」。同类先例：`components/command-list.ts` 的
+	 * `CommandListStaticsType.prototype` 是**纯方法袋**，所以能写成 `Record<string, (...args) => …>`。
+	 */
 	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
@@ -84,6 +97,8 @@ export class CommandSchema {
 	customLoad;
 	customSave;
 	noWindow;
+	// 同上（`CommandSchemaConfig` 的索引签名）：构造器把配置里**全部键**逐个搬到实例上
+	// （本文件下方的 `this[key] = config[key]`），所以实例侧必须是同一个「自定义成员袋」。
 	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 

@@ -8,8 +8,18 @@ import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { randomBetween, radians } from '@app/utils/math';
 import { empty as fnEmpty } from '@app/utils/function';
 
-// oxlint-disable-next-line no-explicit-any
-export const ParticleEngine: Record<string, any> = {};
+/**
+ * 粒子引擎的**类注册表**：三个类在本文件末尾（各自的 class 声明之后）装配，
+ * 唯一消费方 `particle-initialize.ts` 在初始化期取用 —— 那时三者都已就位。
+ * 成员因此声明为**可选**（装配前确实缺席），读点用 `!` 把这个不变式写明。
+ */
+interface ParticleEngineShape {
+	Emitter?: typeof ParticleEmitter;
+	Layer?: typeof ParticleLayer;
+	Element?: typeof ParticleElement;
+}
+
+export const ParticleEngine: ParticleEngineShape = {};
 
 const debouncedStageRender = debounce(() => Scene.requestRendering!(), 60);
 
@@ -30,8 +40,35 @@ interface ParticleEmitterData {
  *
  * 字段类型取原 `ParticleElementLayerData` 的写法：随机参数字段是 `[standard, deviation]` 元组，
  * 纯值字段是 `number`。
+ *
+ * **导出**：窗口侧 `particle-window.ts` 的 `ParticleLayerDataShape` 现在直接引用它
+ * （此前那两份同名声明各自漂移 —— 合并之后由本文件一处定义）。
  */
-interface ParticleLayerData {
+/**
+ * 「当前舞台」（`ParticleElement.stage` / `Particle.Element.stage`）的面。
+ *
+ * 第 237 轮从类里的内联类型提出来并**导出**：窗口侧 `particle-window.ts` 的
+ * `ParticleComponentShape.Element.stage` 此前是 `Record<string, any>`（`any-hatches` 的一个站点），
+ * 现在两边引用同一个类型，写入点也就有了检查。
+ *
+ * ⚠️ 这里**不收 `requestRendering`**：`ParticleElement.stage` 的读点只有 `matrix` 与四处 `scroll*`
+ * （`particle-engine.ts:629/1225-1228/1271-1274`），全仓没有一处读 `stage.requestRendering`
+ * ⇒ 舞台面只描述**真正被读的面**（原先内联声明里那个 `requestRendering` 是多余的，
+ * 而它正是三个写入点里两个报「缺成员」的原因）。
+ */
+export interface ParticleStageShape {
+	matrix: Matrix;
+	scrollLeft: number;
+	scrollTop: number;
+	scrollRight: number;
+	scrollBottom: number;
+}
+
+export interface ParticleLayerData {
+	/** 图层名（`particle-motion.ts` 的信息栏、图层列表读） */
+	name?: string;
+	/** 隐藏标记（`particle-motion.ts` 的绘制循环 `if (layer.data.hidden) continue`） */
+	hidden?: boolean;
 	interval: number;
 	delay: number;
 	area: {
@@ -142,6 +179,13 @@ interface ParticleElementRef {
 	scaleFactor: number;
 	spriteX: number;
 	spriteY: number;
+	// 渲染读点（`animation-motion.ts` / `particle-motion.ts` 的 wireframe 绘制）——
+	// 此前只在窗口侧那份 `ParticleElementShape` 里写着，两份声明各自漂移；本轮合并到这一处。
+	x: number;
+	y: number;
+	anchorX: number;
+	anchorY: number;
+	rotationAngle: number;
 }
 
 interface ParticleEmitterShape {
@@ -155,7 +199,7 @@ interface ParticleEmitterShape {
 	matrix: Matrix | null;
 }
 
-interface ParticleLayerShape {
+export interface ParticleLayerShape {
 	emitter: ParticleEmitterShape;
 	data: ParticleLayerData;
 	texture: ImageTexture | null;
@@ -173,10 +217,17 @@ interface ParticleLayerShape {
 	/** 引擎装配时把 `ParticleEngine.*` 的实现挂到图层对象上（读点见 render/update 循环） */
 	emitParticles: (deltaTime: number) => void;
 	updateParticles: (deltaTime: number) => number;
-	draw: (opacity: number) => void;
+	/** `opacity` 可省：类的实现就是 `draw(opacity = 1)`（编辑器预览走 `layer.draw()`） */
+	draw: (opacity?: number) => void;
 	updateEasing: () => void;
 	clear: () => void;
 	destroy: () => void;
+	/** —— inspector 改参数后逐个调用（`particle-layer-page.ts`；实现都在 `ParticleLayer` 上）—— */
+	updateElementMethods: () => void;
+	updateCount: () => void;
+	loadTexture: () => void;
+	calculateElementSize: () => void;
+	resizeElementIndices: () => void;
 }
 
 interface ParticleEmitterRef {
@@ -219,6 +270,24 @@ class ParticleEmitter {
 	opacity: number;
 	matrix: Matrix | null;
 	layers: ParticleLayerShape[];
+
+	// —— 编辑器侧在这些实例上挂的运行期状态（`declare` 不产生运行期代码；装配点见各条注释）——
+	/** 包围盒快照：`scene-context.ts` 用 `calculateOuterRect()` 的结果写，`animation-motion.ts` 逐个回写 */
+	declare bounding: OuterRect;
+	declare hasArea: boolean;
+	declare outerLeft: number;
+	declare outerTop: number;
+	declare outerRight: number;
+	declare outerBottom: number;
+	declare outerWidth: number;
+	declare outerHeight: number;
+	/** 编辑器选中态（粒子列表 / 指针用它高亮当前发射器） */
+	declare active: boolean;
+	declare selected: boolean;
+	/** 元素清空后由调用方置位（`animation-player.ts`） */
+	declare disabled: boolean;
+	/** 来源图层（动画播放器装配时挂上；唯一读点 `emitter.layer.order`） */
+	declare layer: { order?: 'before' | 'after' };
 
 	constructor(data: ParticleEmitterData) {
 		let alwaysEmit = false;
@@ -303,7 +372,12 @@ class ParticleEmitter {
 		};
 	}
 
-	getLayer(layerData: ParticleLayerData): ParticleLayerShape | undefined {
+	/**
+	 * 按**数据对象同一性**取图层实例（`layer.data === layerData`）。
+	 * 因此入参写成 `object` 而不是 `ParticleLayerData`：调用方给的是「自己手上那份数据」
+	 * （inspector 的 `particle-layer-page.ts` 用的是它自己的宽松视图），这里只做引用比较。
+	 */
+	getLayer(layerData: object): ParticleLayerShape | undefined {
 		for (const layer of this.layers) {
 			if (layer.data === layerData) {
 				return layer;
@@ -351,7 +425,11 @@ class ParticleEmitter {
 		return count;
 	}
 
-	draw(opacity: number): void {
+	/**
+	 * 派发到各图层。`opacity` 有默认值：动画播放器那边就是 `emitter.draw()`（不传），
+	 * 而图层自己的实现是 `draw(opacity = 1)` ⇒ 不传时本来就按 1 走，这里只是把**声明**对齐运行期。
+	 */
+	draw(opacity = 1): void {
 		for (const layer of this.layers) {
 			layer.draw(opacity);
 		}
@@ -1335,14 +1413,7 @@ class ParticleElement {
 	}
 
 	// oxlint-disable-next-line no-explicit-any
-	static stage: {
-		matrix: Matrix;
-		requestRendering: () => void;
-		scrollLeft: number;
-		scrollTop: number;
-		scrollRight: number;
-		scrollBottom: number;
-	};
+	static stage: ParticleStageShape;
 
 	static sharedFloat64Array = new Float64Array(4);
 	static sharedClampedArray = new Uint8ClampedArray(4);

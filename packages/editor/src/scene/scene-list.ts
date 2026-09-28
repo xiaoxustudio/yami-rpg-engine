@@ -13,17 +13,31 @@ import { GlobalClipboard } from '@app/utils/clipboard';
 import type { MenuItem } from '@ui-kit';
 import { clone as deepClone } from '@app/utils/object';
 
-type SceneItem = {
+/**
+ * 场景树里的一个对象（列表项）。
+ *
+ * 第 235 轮**导出并与 `scene-events.ts` 合并**：这里原先有两份几乎同样的声明
+ * （本文件一份、`scene-events.ts` 一份），字段各有出入（那份多了 `tiles` / `presetId`、
+ * `parent` 写成可空）—— `SceneListExtensions` 收口时它们**互不兼容**（TS2345）才暴露出来。
+ * 现在全仓只有这一份，`scene-events.ts` 直接再导出它。
+ *
+ * 门面那份 `SceneListItem`（`scene-window.ts`）是它的**结构超集**，两者成对维护（见那里的说明）。
+ */
+export type SceneItem = {
 	class: string;
 	element: HTMLElement;
 	/** 树列表里的显示名（`copy` 写入、重命名读写） */
 	name?: string;
 	/** tilemap 的快捷栏编号（只有 tilemap 有） */
 	shortcut?: number;
-	/** 树列表挂上的父节点（新建时还没有，`!` 只在「已在树里」的读点用） */
-	parent?: SceneItem;
+	/** 树列表挂上的父节点（新建时还没有，`!` 只在「已在树里」的读点用）。`null` 是组件侧会写的值。 */
+	parent?: SceneItem | null;
 	/** 子树（叶子没有） */
 	children?: SceneItem[];
+	/** 瓦片地图的行数据（只有 tilemap 有）。类型与 codec 的 `TilemapData.tiles` 一致 —— 读点要 `.length`。 */
+	tiles?: Uint32Array;
+	/** 场景对象引用的预设 id（右键菜单「复制 id」读它） */
+	presetId?: string;
 };
 
 // 列表 - 复制

@@ -179,9 +179,12 @@ Scene.switchSettings = function (this: typeof Scene) {
 };
 
 Scene.switchTerrain = function (this: typeof Scene) {
+	// 两个 `!`：`saveData.terrain` 的类型是「保存槽或 null」（组件 `restore` 会把它置 null），
+	// 而这里已由 `key === 'terrain'` 判定走到 terrain 槽 —— 它由 `save('terrain')` 写入，
+	// 一定带 `terrain` 字段（见 `scene-marquee-engine.ts:89`）。运行期一行未改。
 	const context =
-		marqueeData(this.marquee).key === 'terrain' ? this.marquee : this.marquee.saveData.terrain;
-	context.terrain = (context.terrain + 2) % 3;
+		marqueeData(this.marquee).key === 'terrain' ? this.marquee : this.marquee.saveData.terrain!;
+	context.terrain = (context.terrain! + 2) % 3;
 	if (this.brush === 'eraser') {
 		this.switchBrush!('pencil');
 	}

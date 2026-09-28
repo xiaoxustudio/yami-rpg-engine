@@ -1,4 +1,5 @@
 import nodeFs from 'node:fs';
+import type { Dirent } from 'node:fs';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 
 export const FS = nodeFs;
@@ -6,28 +7,31 @@ export const FS = nodeFs;
 /**
  * `fs.promises` 的 IPC 代理：**就是 `fs.promises` 本体**，只把 `writeFile` 换成走 IPC 的实现。
  *
- * ## ⚠️ 这里的 `Record<string, any>` 是**承重**的，别顺手删（2026-09-20 实测过）
- *
- * 它掩盖过两个真实差别，两者都不是「补个类型名」就能解决的：
+ * 对外面 = 「`fs.promises` 的其余成员」+「被覆盖的 `writeFile`」。两处差别必须写明，否则会重演旧事故：
  *
  * 1. **`writeFile` 是语义不兼容的覆盖**：node 的第三参是 `options: ObjectEncodingOptions |
- *    BufferEncoding | null`，而这里换成了**布尔 `check`**（存在性预检，见 `main/ipc-handlers.ts`
- *    的 `if (check) await FSP.stat(filePath)`）。想收紧就必须先把「`FSP.writeFile` 到底接受什么」
- *    定下来，并同步改约 30 个调用点（`FSP.writeFile(path, json, true)`、
- *    `FSP.writeFile!(pConfig, …, {})` 这些形态在调用侧并不统一）。
- * 2. **`fs.promises` 上没有的成员也曾被静默放过** —— 实测踩中一次：
- *    `FileBrowser.vue` 曾写 `existsSync: (p) => FSP.existsSync(p)`，而 `fs.promises.existsSync`
- *    是 `undefined`（同步的 `existsSync` 只在 `fs` 上，`fs.promises` 只有异步 `access`）。
- *    ⇒ 调用即 `TypeError`，一路让**文件浏览器里重命名文件直接抛错**。
- *    已修正为 `FS.existsSync`（见该处注释）。
- *
- * ⇒ 收这条轴的正确做法是**先定义 `FSP` 的对外面**（哪些成员、各自什么签名），
- * 再逐个改调用点。在那之前 `any` 至少让两种差别保持在「可见的注释」里，
- * 而不是换成一个更窄但**不成立**的类型（那会把差别藏得更深）。
+ *    BufferEncoding | null`，这里换成了**布尔 `check`**（存在性预检，见 `main/ipc-handlers.ts`
+ *    的 `if (check) await FSP.stat(filePath)`）。类型写出来之后，调用点再传 `{}` 这类
+ *    「碰巧真值」的第三参就会在编译期露出来（已就地改成 `true`，语义不变）。
+ * 2. **`fs.promises` 上没有的成员不再被静默放过**：`FileBrowser.vue` 曾写
+ *    `existsSync: (p) => FSP.existsSync(p)`，而同步的 `existsSync` 只在 `fs` 上
+ *    （`fs.promises` 只有异步 `access`）⇒ 调用即 `TypeError`，一路让重命名文件直接抛错。
+ *    先前的 `Record<string, any>` 正好把这条差别藏住了；现在写错成员名即编译期报错。
  */
-// oxlint-disable-next-line no-explicit-any
-export const FSP = (FS.promises ?? {}) as Record<string, any>;
-
-FSP.writeFile = function (path: string, text: string | Buffer, check = false) {
-	return YamiIpc.invoke.writeFile(path, text, check);
+export type FSPShape = Omit<typeof FS.promises, 'writeFile' | 'readdir'> & {
+	/**
+	 * `readdir` 只保留**本仓实际用到**的两支重载，且把 `withFileTypes` 那支放在**最后**
+	 * （node 的类型里最后一支是 `encoding: 'buffer'`：元素类型 `Dirent<Buffer>`、`name` 是 Buffer，
+	 * 而本仓七处调用一律走默认 utf8 ⇒ `name` 是 `string`）。
+	 * 「取函数类型」的地方（如测试里的 `mockResolvedValue`）取的是**最后一个签名** ——
+	 * 留全四支就会要求 `Dirent<Buffer>`，与运行期不符，只能再写一次断言。
+	 */
+	readdir(path: string): Promise<string[]>;
+	readdir(path: string, options: { withFileTypes: true }): Promise<Dirent[]>;
+	writeFile(path: string, text: string | Uint8Array, check?: boolean): Promise<unknown>;
 };
+
+export const FSP: FSPShape = Object.assign(FS.promises, {
+	writeFile: (path: string, text: string | Uint8Array, check = false) =>
+		YamiIpc.invoke.writeFile(path, text, check)
+});

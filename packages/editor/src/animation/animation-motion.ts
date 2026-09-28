@@ -1,4 +1,4 @@
-import { Animation } from './animation-window.ts';
+import { Animation, type AnimationMotionData } from './animation-window.ts';
 import { createDetachedElement } from '@app/utils/dom';
 import type {
 	AnimationFrame,
@@ -194,7 +194,7 @@ Animation.previousKeyFrame = function (this: typeof Animation) {
 	} else {
 		let x = -Infinity;
 		const { count } = contexts;
-		for (let i = 0; i < count; i++) {
+		for (let i = 0; i < count!; i++) {
 			const { frames } = contexts[i].layer;
 			for (const frame of frames) {
 				if (frame.start < index) {
@@ -205,7 +205,7 @@ Animation.previousKeyFrame = function (this: typeof Animation) {
 			}
 		}
 		if (x === -Infinity) {
-			for (let i = 0; i < count; i++) {
+			for (let i = 0; i < count!; i++) {
 				const { frames } = contexts[i].layer;
 				if (frames.length !== 0) {
 					x = Math.max(x, frames[frames.length - 1].start);
@@ -243,7 +243,7 @@ Animation.nextKeyFrame = function (this: typeof Animation) {
 	} else {
 		let x = Infinity;
 		const { count } = contexts;
-		for (let i = 0; i < count; i++) {
+		for (let i = 0; i < count!; i++) {
 			const { frames } = contexts[i].layer;
 			for (const frame of frames) {
 				if (frame.start > index) {
@@ -253,7 +253,7 @@ Animation.nextKeyFrame = function (this: typeof Animation) {
 			}
 		}
 		if (x === Infinity) {
-			for (let i = 0; i < count; i++) {
+			for (let i = 0; i < count!; i++) {
 				const { frames } = contexts[i].layer;
 				if (frames.length !== 0) {
 					x = Math.min(x, frames[0].start);
@@ -322,7 +322,7 @@ Animation.setHover = function (this: typeof Animation, hover: AnimationFrame | n
 	}
 };
 
-Animation.setMotion = function (this: typeof Animation, motion: AnimationMotion | null) {
+Animation.setMotion = function (this: typeof Animation, motion: AnimationMotionData | null) {
 	if (getAnimationStore().motion !== motion) {
 		getAnimationStore().motion = motion;
 		this.updateMotionItem!();
@@ -468,7 +468,7 @@ Animation.revealTarget = (function IIFE() {
 	return function (this: typeof Animation) {
 		const target = getAnimationStore().target;
 		if (target && !timer.target) {
-			const matrix = GL.matrix.reset().multiply(this.targetContext.matrix);
+			const matrix = GL.matrix.reset().multiply(this.targetContext!.matrix);
 			const x = matrix[6];
 			const y = matrix[7];
 			const toleranceX = 0.5 / this.scaleX;
@@ -694,7 +694,7 @@ Animation.updateTargetContext = function (this: typeof Animation) {
 	if (target !== null) {
 		const { contexts } = this.player;
 		const { count } = contexts;
-		for (let i = 0; i < count; i++) {
+		for (let i = 0; i < count!; i++) {
 			const context = contexts[i];
 			if (context.frame === target) {
 				this.targetContext = context;
@@ -706,8 +706,8 @@ Animation.updateTargetContext = function (this: typeof Animation) {
 };
 
 Animation.updatePlayerMotion = function (this: typeof Animation) {
-	this.player.motion = getAnimationStore().motion;
-	this.player.direction = getAnimationStore().direction;
+	this.player.motion = getAnimationStore().motion as AnimationMotion | null;
+	this.player.direction = getAnimationStore().direction!;
 	this.player.layers = this.layers;
 };
 
@@ -735,7 +735,7 @@ Animation.updateSoundContexts = function (this: typeof Animation) {
 	const player = this.player;
 	const index = Math.floor(player.index);
 	const contexts = player.contexts;
-	const count = contexts.count;
+	const count = contexts.count!;
 	for (let i = 0; i < count; i++) {
 		const context = contexts[i];
 		const layer = context.layer;
@@ -755,7 +755,7 @@ Animation.updateSoundContexts = function (this: typeof Animation) {
 Animation.resetSoundContexts = function (this: typeof Animation) {
 	const player = this.player;
 	const contexts = player.contexts;
-	const count = contexts.count;
+	const count = contexts.count!;
 	for (let i = 0; i < count; i++) {
 		const context = contexts[i];
 		const layer = context.layer;
@@ -863,7 +863,7 @@ Animation.updateControlPoints = function (this: typeof Animation, context: Anima
 	rectResize.BL.y = y2 + oy2 - oy1;
 	rectResize.BR.x = x3 + ox3 - ox2;
 	rectResize.BR.y = y3 + oy3 - oy2;
-	let rotation = frame.rotation!;
+	let rotation = frame!.rotation!;
 	let node: AnimationContext | null = context;
 	while ((node = node.parent)) {
 		const frame = node.frame;
@@ -969,7 +969,7 @@ Animation.getKeyFrame = function (this: typeof Animation, x: number, y: number) 
 	if (this.timelineMarquee.isPointIn(x, y)) {
 		const { layer, x: sx, length } = this.timelineMarquee;
 		const ex = sx + length;
-		for (const frame of layer.frames) {
+		for (const frame of layer!.frames) {
 			const start = frame.start;
 			const end = frame.end;
 			if (sx >= end) continue;

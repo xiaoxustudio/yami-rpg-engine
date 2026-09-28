@@ -89,15 +89,21 @@ describe('Palette selection 元素 Vue 渲染（拖拽选区覆盖层）', () =>
 	it('customShiftAutoTile 移除双选区并交换图块', () => {
 		marquee.customSelect('source', 1, 1);
 		marquee.customSelect('destination', 2, 1);
+		// 夹具按 `PaletteTilesetShape` 的真实字段给全（`tileWidth` / `tileHeight` / `height` / `tags`
+		// 在本用例里用不到，但它们是那个接口的必填项 —— 真源 `Data.tilesets[guid]` 一定有）
 		Palette.tileset = {
 			width: 4,
+			height: 2,
+			tileWidth: 16,
+			tileHeight: 16,
+			tags: [],
 			tiles: [0, 0, 0, 0, 0, 1, 0, 0],
 			priorities: [0, 0, 0, 0, 0, 0, 0, 0],
 			terrains: [0, 0, 0, 0, 0, 0, 0, 0]
 		};
 		marquee.customShiftAutoTile();
 		expect(marquee.querySelectorAll('selection').length).toBe(0);
-		const { tiles } = Palette.tileset;
+		const { tiles } = Palette.tileset!;
 		expect(tiles[5]).toBe(0);
 		expect(tiles[6]).toBe(1);
 	});

@@ -173,7 +173,7 @@ export class DirectoryTree {
 	}
 
 	readdir(paths: string[]): Promise<Array<ReaddirNode>> {
-		const options = { withFileTypes: true };
+		const options = { withFileTypes: true } as const;
 		const read = (dirPath: string, dir: Array<ReaddirNode>): Promise<Array<ReaddirNode>> => {
 			return FSP.readdir(dirPath, options).then(
 				async (files: Array<{ name: string; isDirectory(): boolean }>) => {
@@ -434,7 +434,7 @@ async function copy(
 		existings[path] = true;
 		promises.push(
 			(existed ? Promise.resolve() : FSP.stat(path))
-				.then((_stats: { isDirectory(): boolean } | undefined) => {
+				.then((_stats: unknown) => {
 					for (let i = 2; ; i++) {
 						path = `${dirPath}/${base}${suffix} (${i})${ext}`;
 						if (existings[path]) {
@@ -490,7 +490,8 @@ function sortSorter(a: FileItem | FolderItem, b: FileItem | FolderItem): number 
 }
 
 function registerInoMap(map: Record<string, unknown>, item: FileItem | FolderItem): void {
-	map[item.stats!.ino!] = item;
+	// 对象键运行期本来就是字符串：`String()` 与原来的隐式转换逐字同键（bigint 也一样）
+	map[String(item.stats!.ino!)] = item;
 	if (item instanceof FolderItem) {
 		const children = item.children;
 		const length = children.length;

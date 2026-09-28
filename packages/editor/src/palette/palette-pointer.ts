@@ -1,4 +1,5 @@
 import { Palette } from './palette.ts';
+import type { PaletteDragEvent } from './palette.ts';
 import { relate, removeClass } from '@app/utils/element-utils';
 import { addScrollListener, removeScrollListener } from '@app/utils/scroll-listener';
 import { File } from '@app/file/file-system-core.ts';
@@ -38,7 +39,7 @@ Palette.marqueePointerdown = function (
 			// 如果正在修改图块组宽高，让它立即生效
 			(document.activeElement as HTMLElement | null)?.blur();
 			if (isDragKey(event)) {
-				this.dragging = event;
+				this.dragging = event as PaletteDragEvent;
 				event.mode = 'scroll';
 				event.scrollLeft = this.screen.scrollLeft;
 				event.scrollTop = this.screen.scrollTop;
@@ -51,13 +52,13 @@ Palette.marqueePointerdown = function (
 				const tileset = getPaletteStore().tileset;
 				if (tileset.type === 'auto') {
 					const i = x + y * tileset.width;
-					this.dragging = event;
+					this.dragging = event as PaletteDragEvent;
 					event.mode = 'edit';
 					event.active = true;
 					event.startX = x;
 					event.startY = y;
 					event.startIndex = i;
-					this.marqueePointerleave();
+					this.marqueePointerleave(event);
 					this.marquee.customSelect('source', x, y);
 					window.addEventListener('pointerup', this.pointerup);
 					window.addEventListener('pointermove', this.pointermove);
@@ -84,7 +85,7 @@ Palette.marqueePointerdown = function (
 						this.explicit = false;
 						removeClass(marquee, 'explicit');
 					}
-					this.dragging = event;
+					this.dragging = event as PaletteDragEvent;
 					event.mode = 'select';
 					window.addEventListener('pointerup', this.pointerup);
 					window.addEventListener('pointermove', this.pointermove);
@@ -107,7 +108,7 @@ Palette.marqueePointerdown = function (
 				case 'priority': {
 					const tileset = getPaletteStore().tileset;
 					const i = x + y * tileset.width;
-					this.dragging = event;
+					this.dragging = event as PaletteDragEvent;
 					event.mode = 'increase-priority';
 					event.active = true;
 					event.priorities = tileset.priorities;
@@ -122,7 +123,7 @@ Palette.marqueePointerdown = function (
 				case 'tag': {
 					const tileset = getPaletteStore().tileset;
 					const i = x + y * tileset.width;
-					this.dragging = event;
+					this.dragging = event as PaletteDragEvent;
 					event.mode = 'increase-tag';
 					event.active = true;
 					event.tags = tileset.tags;
@@ -147,7 +148,7 @@ Palette.marqueePointerdown = function (
 						case 'auto': {
 							const tiles = tileset.tiles;
 							if (tiles[i] !== 0) {
-								this.dragging = event;
+								this.dragging = event as PaletteDragEvent;
 								event.mode = 'ready-to-shift';
 								event.active = true;
 								event.tiles = tiles;
@@ -173,7 +174,7 @@ Palette.marqueePointerdown = function (
 		case 2:
 			switch (getPaletteStore().mode) {
 				case 'normal':
-					this.dragging = event;
+					this.dragging = event as PaletteDragEvent;
 					event.mode = 'scroll';
 					event.scrollLeft = this.screen.scrollLeft;
 					event.scrollTop = this.screen.scrollTop;
@@ -184,7 +185,7 @@ Palette.marqueePointerdown = function (
 				case 'priority': {
 					const tileset = getPaletteStore().tileset;
 					const i = x + y * tileset.width;
-					this.dragging = event;
+					this.dragging = event as PaletteDragEvent;
 					event.mode = 'ready-to-decrease-priority';
 					event.active = true;
 					event.priorities = tileset.priorities;
@@ -201,7 +202,7 @@ Palette.marqueePointerdown = function (
 				case 'tag': {
 					const tileset = getPaletteStore().tileset;
 					const i = x + y * tileset.width;
-					this.dragging = event;
+					this.dragging = event as PaletteDragEvent;
 					event.mode = 'ready-to-decrease-tag';
 					event.active = true;
 					event.tags = tileset.tags;
@@ -216,7 +217,7 @@ Palette.marqueePointerdown = function (
 					break;
 				}
 				case 'terrain':
-					this.dragging = event;
+					this.dragging = event as PaletteDragEvent;
 					event.mode = 'ready-to-increase-terrain';
 					event.active = true;
 					event.startX = x;
@@ -227,7 +228,7 @@ Palette.marqueePointerdown = function (
 					window.addEventListener('pointermove', this.pointermove);
 					break;
 				case 'edit':
-					this.dragging = event;
+					this.dragging = event as PaletteDragEvent;
 					event.mode = 'ready-to-scroll';
 					event.scrollLeft = this.screen.scrollLeft;
 					event.scrollTop = this.screen.scrollTop;

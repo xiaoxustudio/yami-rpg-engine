@@ -267,8 +267,12 @@ interface Props {
 		mkdir(p: string, options?: { recursive?: boolean }): Promise<void>;
 		// oxlint-disable-next-line no-explicit-any
 		copyFile(src: string, dst: string): Promise<any>;
+		/**
+		 * 第二参是 node 的 `StatOptions` **对象**（宿主传的是 `FolderItem.bigint = { bigint: true }`，
+		 * 见 `:1928`）—— 原先这里写成 `bigint?: boolean`，与实际传值不符（靠 `Promise<any>` 一路蒙过）。
+		 */
 		// oxlint-disable-next-line no-explicit-any
-		stat(p: string, bigint?: boolean): Promise<any>;
+		stat(p: string, options?: { bigint?: boolean }): Promise<any>;
 		// oxlint-disable-next-line no-explicit-any
 		rename(oldPath: string, newPath: string): Promise<any>;
 		existsSync(p: string): boolean;

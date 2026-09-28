@@ -172,6 +172,9 @@ EventBus.once('editor_loaded', () => {
 
 EventBus.once('editor_loaded', () => {
 	if (!AutoTile.templateList) return;
+	// 取原方法的**函数值**存下来，第 194 行用 `.call(this)` 显式传接收者 —— 这是有意的，
+	// 不是「忘了绑定」（`unbound-method` 的告警在此为误报）。
+	// oxlint-disable-next-line unbound-method
 	const originAutoTileTemplateUpdate = AutoTile.templateList.update;
 	AutoTile.templateList.update = function (this: HTMLElement) {
 		const autoList = Object.keys(Data.tilesets)

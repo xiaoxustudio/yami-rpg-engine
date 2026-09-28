@@ -661,7 +661,7 @@ Animation.outerTimelineListPointerdown = function (
 						Animation.loadFrames!(x);
 						listData.dragging = event;
 						event.mode = 'shift';
-						event.layer = layer;
+						event.layer = layer!;
 						event.pointerdownX = x;
 						event.pointerdownY = y;
 						event.enableDblclickEvent = true;
@@ -671,7 +671,7 @@ Animation.outerTimelineListPointerdown = function (
 							Animation.outerTimelineListPointermove
 						);
 						addScrollListener(this, 'both', 1, true, () => {
-							Animation.outerTimelineListPointermove!(event.latest);
+							Animation.outerTimelineListPointermove!(event.latest!);
 						});
 						return;
 					}
@@ -687,7 +687,7 @@ Animation.outerTimelineListPointerdown = function (
 				window.addEventListener('pointerup', Animation.outerTimelineListPointerup);
 				window.addEventListener('pointermove', Animation.outerTimelineListPointermove);
 				addScrollListener(this, 'horizontal', 1, true, () => {
-					Animation.outerTimelineListPointermove!(event.latest);
+					Animation.outerTimelineListPointermove!(event.latest!);
 				});
 			}
 			break;
@@ -741,7 +741,7 @@ Animation.outerTimelineListPointerup = function (
 						Animation.loadFrames!(x);
 					}
 					if (marquee.isPointIn(x, y)) {
-						const key = marquee.layer.class;
+						const key = marquee.layer!.class;
 						const selected = marquee.isSelected();
 						const pastable = Clipboard.has(`yami.animFrame.${key}`);
 						const extendable = selected || marquee.isExtendable();
@@ -812,7 +812,7 @@ Animation.outerTimelineListPointerup = function (
 								{
 									label: get('selectAll'),
 									accelerator: ctrl('A'),
-									enabled: marquee.layer.frames.length !== 0,
+									enabled: marquee.layer!.frames.length !== 0,
 									click: () => {
 										Animation.selectAllFrames!();
 									}

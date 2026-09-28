@@ -213,7 +213,7 @@ Deployment.check = function (this: typeof Deployment) {
 
 Deployment.readShellList = (function IIFE() {
 	let root = '';
-	const options = { withFileTypes: true };
+	const options = { withFileTypes: true } as const;
 	const read = (path: string, list: DeploymentFileItem[]) => {
 		return FSP.readdir(`${root}${path}`, options).then(
 			async (files: Array<{ name: string; isDirectory(): boolean }>) => {

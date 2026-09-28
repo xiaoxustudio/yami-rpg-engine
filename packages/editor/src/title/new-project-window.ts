@@ -149,7 +149,7 @@ NewProject.check = function (this: typeof NewProject) {
 };
 
 NewProject.readFileList = (function IIFE() {
-	const options = { withFileTypes: true };
+	const options = { withFileTypes: true } as const;
 	const read = (
 		dirname: string,
 		idFilter: unknown,
@@ -315,13 +315,13 @@ NewProject.confirm = function (this: typeof NewProject, ..._args: unknown[]) {
 	const dPath = Path.resolve!(location, folder);
 	Window.close!('newProject');
 	FSP.mkdir!(dPath, { recursive: true })
-		.then((_done: boolean) => {
+		.then((_done: unknown) => {
 			return template === 'minimized-project' ? Data.createReferencedFileIDMap!() : undefined;
 		})
 		.then((idFilter: unknown) => {
 			return NewProject.copyFilesTo!(sPath, dPath, idFilter);
 		})
-		.then((_done: boolean) => {
+		.then((_done: unknown) => {
 			return NewProject.writeData!(dPath);
 		})
 		.finally(() => {

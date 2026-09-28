@@ -166,6 +166,7 @@ import { paletteEls } from '@app/palette/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { AutoTile } from '@app/palette/auto-tile.ts';
+import type { AutoTileTemplateData } from '@app/palette/auto-tile.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useAutoTileStore } from '@app/stores/auto-tile';
@@ -195,11 +196,28 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	];
 };
 
+// —— 转发给单例的桥接层 ——
+//
+// 第 233 轮：`AutoTile` 从 `Record<string, any>` 收成了具名成员表（`palette/auto-tile.ts` 的
+// `AutoTileShape`），于是这里**必须**按「组件真正 emit 出来的东西」转发，两类不能混：
+//
+// ① **模板列表**用的是 `TreeList`，它的 emit 是 `select/popup/change: [event: Event & { value?: unknown }]`
+//    ⇒ 桥接层收到的是**事件对象**，`value` 是 `unknown`（组件层口径）—— 值的收窄只能发生在这一层
+//    （它知道这是自动图块窗口：`value` 是模板对象）。
+// ② **节点/帧列表**用的是 `CommonList`，它的 emit 是 `write: [value: unknown]` /
+//    `popup: [value: unknown, clientX, clientY]` ⇒ 收到的是**散开的参数**，桥接层再打包成载荷。
 const onTemplatesSelect = (event: Event & { value?: unknown }) => {
-	AutoTile?.templatesSelect?.(event);
+	AutoTile?.templatesSelect?.({ value: event.value as AutoTileTemplateData | undefined });
 };
 const onTemplatesPopup = (event: Event & { value?: unknown }) => {
-	AutoTile?.templatesPopup?.(event as MouseEvent & { value?: unknown });
+	// `TreeList` 的 popup 事件就是 DOM 的鼠标事件（组件只额外挂了 `value`），
+	// 所以这里收窄到 `MouseEvent` 取坐标 —— 与本次改动前那一行的写法一致（`as MouseEvent & …`）。
+	const mouse = event as MouseEvent & { value?: unknown };
+	AutoTile?.templatesPopup?.({
+		value: mouse.value as AutoTileTemplateData | null | undefined,
+		clientX: mouse.clientX,
+		clientY: mouse.clientY
+	});
 };
 const onTemplatesChange = (event: Event & { value?: unknown }) => {
 	AutoTile?.templatesChange?.(event);
@@ -217,19 +235,19 @@ const onOffsetYInput = () => {
 	AutoTile?.offsetYInput?.();
 };
 const onNodesWrite = (value: unknown) => {
-	AutoTile?.nodesWrite?.({ value });
+	AutoTile?.nodesWrite?.({ value: value as number | undefined });
 };
 const onRuleNeighborInput = () => {
 	AutoTile?.ruleNeighborInput?.();
 };
 const onNodesPopup = (value: unknown, clientX: number, clientY: number) => {
-	AutoTile?.nodesPopup?.({ value, clientX, clientY });
+	AutoTile?.nodesPopup?.({ value: value as number | null | undefined, clientX, clientY });
 };
 const onFramesWrite = (value: unknown) => {
-	AutoTile?.framesWrite?.({ value });
+	AutoTile?.framesWrite?.({ value: value as number | undefined });
 };
 const onFramesPopup = (value: unknown, clientX: number, clientY: number) => {
-	AutoTile?.framesPopup?.({ value, clientX, clientY });
+	AutoTile?.framesPopup?.({ value: value as number | null | undefined, clientX, clientY });
 };
 const onConfirm = () => {
 	AutoTile?.confirm?.();

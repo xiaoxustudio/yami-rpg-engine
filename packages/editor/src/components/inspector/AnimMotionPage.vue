@@ -45,6 +45,7 @@
 </template>
 
 <script setup lang="ts">
+import type { AnimationMotionData } from '@app/animation/animation-window.ts';
 import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement } from '@app/utils/element-registry';
@@ -81,7 +82,8 @@ onMounted(() => {
 	if (!animMotion) return;
 
 	animMotion.owner = {
-		setTarget: (motion: Record<string, unknown>) => {
+		// 面板回调实参就是运行期的 motion（store 里那一份），按共享模型收窄，而不是 Record
+		setTarget: (motion: AnimationMotionData) => {
 			Animation.setMotion!(motion);
 			Inspector.open!('animMotion', motion);
 		}

@@ -219,12 +219,11 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	getListConfig(list).removable = true;
 	getListConfig(list).foldable = false;
 	list.bind(() => this.data);
-	// ⚠️ 这处保留 `as unknown as`（第 81 轮试过并回退）：真正的病灶是本地别名
-	// `type CustomCommandMethod = ((...args: any[]) => any) | null`（`updateTextNode` 的类型），
-	// 它既带 `any` 又可空。适配器写法会撞上「输出 void vs any」与「可空」两件事，
-	// 而按「不改行为」的原则又不能给它加空值判断（原来是**把可能为 null 的值登记进去**，
-	// 调用点才抛）。⇒ 别名上的 `any` 需要另行整体收窄，不在这里硬做。
-	getListConfig(list).updaters.push(list.updateTextNode as unknown as (item: unknown) => void);
+	// 单次 `as` 就够（本轮实测推翻第 81 轮的判断）：目标 `(item: unknown) => void` **可赋给**
+	// 源联合 `((...args: any[]) => any) | null` 的函数那一支（`strictFunctionTypes` 下参数逆变，
+	// `any` 收得住 `unknown`；返回 `void` 收得住 `any`）⇒ 断言合法，`unknown` 跳板是多余的。
+	// 运行期一字未改：仍然**不加空值判断**，可空值照旧被登记进去、由调用点抛。
+	getListConfig(list).updaters.push(list.updateTextNode as (item: unknown) => void);
 
 	const frame = customCommandEls.get('command');
 	frame?.addEventListener('close', this.windowClose!);

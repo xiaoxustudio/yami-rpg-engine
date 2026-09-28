@@ -23,11 +23,75 @@ import {
 } from './useCommandColor.ts';
 import { append } from '@app/utils/array';
 
-interface CommandObjectShape {
+/**
+ * 命令对象（`CommandNode.params` 以及各选择器 / 位置 / 角度对象的**读侧**形状）。
+ *
+ * 这里原先是一行 `[k: string]: any`：读什么都行、拼错键也不报错。摘掉它之后 tsc 报出的
+ * 69 条错误**全在本文件**，正好给出「到底被读了哪些键」的清单 —— 于是逐键写出类型
+ * （第 151 轮对 `ParticleLayerData` 用的同一手法：从读点逆推，不靠猜）。
+ *
+ * 该接口只做**读侧**参数类型（全仓没有构造点：值来自工程 JSON），因此互斥出现的分支字段
+ * 按「全组可读」声明为必填 —— 与 `particle-engine.ts` 的 `ParticleLayerData` 同一取舍：
+ * 免得给每个分支字段各补一次非空断言。这条取舍是明写的，不是默认。
+ *
+ * 用 `type` 而不是 `interface`：对象字面量类型能**隐式**满足 `Record<string, unknown>`
+ * （interface 不行），于是 `handler.parse(params ?? {})` 那些把命令对象交给注册解析器的调用点
+ * 无需再为「索引签名缺失」写一次断言。
+ */
+type CommandObjectShape = {
 	type: string;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
-}
+	key: string;
+	eventId: string;
+	/** 嵌套选择器（`case 'actor'` 等分支各自读自己那一支） */
+	actor: CommandObjectShape;
+	skill: CommandObjectShape;
+	state: CommandObjectShape;
+	equipment: CommandObjectShape;
+	item: CommandObjectShape;
+	element: CommandObjectShape;
+	variable: CommandObjectShape;
+	trigger: CommandObjectShape;
+	light: CommandObjectShape;
+	region: CommandObjectShape;
+	position: CommandObjectShape;
+	ancestor: CommandObjectShape;
+	parent: CommandObjectShape;
+	focus: CommandObjectShape;
+	/** 数值位：可以是常量，也可以是取值变量对象（`parseVariableNumber` 两种都收） */
+	memberId: CommandObjectShape | number;
+	index: CommandObjectShape | number;
+	degrees: CommandObjectShape | number;
+	x: CommandObjectShape | number;
+	y: CommandObjectShape | number;
+	actorId: string;
+	presetId: string;
+	skillId: string;
+	stateId: string;
+	equipmentId: string;
+	itemId: string;
+	objectId: string;
+	slot: string;
+	mode: string;
+};
+
+/**
+ * 命令**选择器**：`parseActor` / `parseVariable` / … 的入参类型。
+ *
+ * 调用方给的往往是**最小对象** —— 只带自己那一支用到的字段（见 `useIfConditionSchema.ts`
+ * 的 `IfConditionOperandShape`，以及本文件的 `_localVarCtx`），而 `parse*` 一律**先按 `type` 分派**
+ * 再读分支字段。所以入参类型写成「`type` 必填 + 其余可选」：完整命令对象与最小对象都收得住。
+ */
+export type CommandSelectorShape = Partial<CommandObjectShape> & { type: string };
+
+/**
+ * 选择器 → **读侧视图**（`CommandObjectShape`）。
+ *
+ * 为什么这样收窄是成立的：这些函数在 `case` 分派之后才读分支字段，那些字段在对应分支里
+ * **必然存在**（运行期一直如此，只是调用方的静态形状不表达它）。收窄集中在这一处 ——
+ * 胜过在几十个分支读点各补一次 `!`，也胜过让调用方各写一次断言。
+ */
+const selectorOf = (selector: CommandSelectorShape): CommandObjectShape =>
+	selector as CommandObjectShape;
 
 interface CommandNode {
 	id: string;
@@ -166,10 +230,11 @@ export function fetchVariables(
 }
 
 export function parseVariable(
-	variable: CommandObjectShape,
+	selector: CommandSelectorShape,
 	valueType: string = '',
 	isLeftValue: boolean = false
 ): string | undefined {
+	const variable = selectorOf(selector);
 	const key = variable.key;
 	switch (variable.type) {
 		case 'local': {
@@ -294,6 +359,11 @@ export function parseAttributeTag(id: string, valueType?: string): string {
 
 const _localVarRegex = /(?<=<)local:([\s\S]+?)(?=>)/g;
 const _globalVarRegex = /(?<=<)global(::?)([0-9a-f]{16})(?=>)/g;
+/**
+ * 变量上下文：`parseVariable` 只在 `case 'local'` / `case 'global'` 两支读 `type` / `key`，
+ * 所以这两个对象**就是**最小的 `{ type, key }`（运行期确实没有其余字段）——
+ * 正是 `CommandSelectorShape` 描述的形态，无需任何断言。
+ */
 const _localVarCtx = { type: 'local', key: '' };
 const _globalVarCtx = { type: 'global', key: '' };
 
@@ -315,7 +385,7 @@ export function parseVariableTag(string: string): string {
 }
 
 export function parseVariableNumber(
-	number: CommandObjectShape | number,
+	number: CommandSelectorShape | number,
 	unit?: string
 ): string | undefined {
 	switch (typeof number) {
@@ -330,7 +400,7 @@ export function parseVariableNumber(
 	}
 }
 
-export function parseVariableString(string: CommandObjectShape | string): string | undefined {
+export function parseVariableString(string: CommandSelectorShape | string): string | undefined {
 	switch (typeof string) {
 		case 'string':
 			return setStringColor(`"${parseMultiLineString(string)}"`);
@@ -340,7 +410,7 @@ export function parseVariableString(string: CommandObjectShape | string): string
 }
 
 export function parseVariableTemplate(
-	content: CommandObjectShape | string,
+	content: CommandSelectorShape | string,
 	maxLength: number = 0
 ): string | undefined {
 	switch (typeof content) {
@@ -359,7 +429,7 @@ export function parseVariableTemplate(
 
 export function parseVariableAttr(
 	groupKey: string,
-	attrId: CommandObjectShape | string
+	attrId: CommandSelectorShape | string
 ): string | undefined {
 	switch (typeof attrId) {
 		case 'string':
@@ -371,7 +441,7 @@ export function parseVariableAttr(
 
 export function parseVariableEnum(
 	groupKey: string,
-	enumId: CommandObjectShape | string
+	enumId: CommandSelectorShape | string
 ): string | undefined {
 	switch (typeof enumId) {
 		case 'string':
@@ -381,7 +451,7 @@ export function parseVariableEnum(
 	}
 }
 
-export function parseVariableFile(fileId: CommandObjectShape | string): string | undefined {
+export function parseVariableFile(fileId: CommandSelectorShape | string): string | undefined {
 	switch (typeof fileId) {
 		case 'string':
 			return parseFileName(fileId);
@@ -390,7 +460,7 @@ export function parseVariableFile(fileId: CommandObjectShape | string): string |
 	}
 }
 
-export function parseVariableTeam(id: CommandObjectShape | string): string | undefined {
+export function parseVariableTeam(id: CommandSelectorShape | string): string | undefined {
 	switch (typeof id) {
 		case 'string':
 			return parseTeam(id);
@@ -452,21 +522,22 @@ export function parseGroupEnumString(groupKey: string, stringId: string): string
 }
 
 export function parseListItem(
-	variable: CommandObjectShape,
-	index: CommandObjectShape | number
+	selector: CommandSelectorShape,
+	index: CommandSelectorShape | number
 ): string {
-	const listName = parseVariable(variable, 'object');
+	const listName = parseVariable(selector, 'object');
 	const listIndex = parseVariableNumber(index);
 	return listName + Token('[') + listIndex + Token(']');
 }
 
-export function parseParameter(key: CommandObjectShape | string): string {
+export function parseParameter(key: CommandSelectorShape | string): string {
 	const label = t('parameter.param');
 	const paramKey = parseVariableString(key);
 	return label + Token('(') + paramKey + Token(')');
 }
 
-export function parseActor(actor: CommandObjectShape): string | undefined {
+export function parseActor(selector: CommandSelectorShape): string | undefined {
+	const actor = selectorOf(selector);
 	switch (actor.type) {
 		case 'trigger':
 			return setTextId('actor-object-trigger') + t('actor.trigger');
@@ -499,7 +570,8 @@ export function parseActor(actor: CommandObjectShape): string | undefined {
 	}
 }
 
-export function parseSkill(skill: CommandObjectShape): string | undefined {
+export function parseSkill(selector: CommandSelectorShape): string | undefined {
+	const skill = selectorOf(selector);
 	switch (skill.type) {
 		case 'trigger':
 			return setTextId('skill-object-trigger') + t('skill.trigger');
@@ -526,7 +598,8 @@ export function parseSkill(skill: CommandObjectShape): string | undefined {
 	}
 }
 
-export function parseState(state: CommandObjectShape): string | undefined {
+export function parseState(selector: CommandSelectorShape): string | undefined {
+	const state = selectorOf(selector);
 	switch (state.type) {
 		case 'trigger':
 			return setTextId('state-object-trigger') + t('state.trigger');
@@ -546,7 +619,8 @@ export function parseState(state: CommandObjectShape): string | undefined {
 	}
 }
 
-export function parseEquipment(equipment: CommandObjectShape): string | undefined {
+export function parseEquipment(selector: CommandSelectorShape): string | undefined {
+	const equipment = selectorOf(selector);
 	switch (equipment.type) {
 		case 'trigger':
 			return setTextId('equipment-object-trigger') + t('equipment.trigger');
@@ -575,7 +649,8 @@ export function parseEquipment(equipment: CommandObjectShape): string | undefine
 	}
 }
 
-export function parseItem(item: CommandObjectShape): string | undefined {
+export function parseItem(selector: CommandSelectorShape): string | undefined {
+	const item = selectorOf(selector);
 	switch (item.type) {
 		case 'trigger':
 			return setTextId('item-object-trigger') + t('item.trigger');
@@ -602,7 +677,8 @@ export function parseItem(item: CommandObjectShape): string | undefined {
 	}
 }
 
-export function parsePosition(position: CommandObjectShape): string | undefined {
+export function parsePosition(selector: CommandSelectorShape): string | undefined {
+	const position = selectorOf(selector);
 	switch (position.type) {
 		case 'absolute': {
 			const x = parseVariableNumber(position.x);
@@ -637,7 +713,8 @@ export function parsePosition(position: CommandObjectShape): string | undefined 
 	}
 }
 
-export function parseAngle(angle: CommandObjectShape): string | undefined {
+export function parseAngle(selector: CommandSelectorShape): string | undefined {
+	const angle = selectorOf(selector);
 	const type = angle.type;
 	const desc = t('angle.' + type);
 	switch (type) {
@@ -652,7 +729,8 @@ export function parseAngle(angle: CommandObjectShape): string | undefined {
 	}
 }
 
-export function parseTrigger(trigger: CommandObjectShape): string | undefined {
+export function parseTrigger(selector: CommandSelectorShape): string | undefined {
+	const trigger = selectorOf(selector);
 	switch (trigger.type) {
 		case 'trigger':
 			return setTextId('trigger-object-trigger') + t('trigger.trigger');
@@ -667,7 +745,8 @@ export function parseTrigger(trigger: CommandObjectShape): string | undefined {
 	}
 }
 
-export function parseLight(light: CommandObjectShape): string | undefined {
+export function parseLight(selector: CommandSelectorShape): string | undefined {
+	const light = selectorOf(selector);
 	switch (light.type) {
 		case 'trigger':
 			return setTextId('light-object-trigger') + t('light.trigger');
@@ -684,7 +763,8 @@ export function parseLight(light: CommandObjectShape): string | undefined {
 	}
 }
 
-export function parseRegion(region: CommandObjectShape): string | undefined {
+export function parseRegion(selector: CommandSelectorShape): string | undefined {
+	const region = selectorOf(selector);
 	switch (region.type) {
 		case 'trigger':
 			return setTextId('region-object-trigger') + t('region.trigger');
@@ -693,7 +773,8 @@ export function parseRegion(region: CommandObjectShape): string | undefined {
 	}
 }
 
-export function parseTilemap(tilemap: CommandObjectShape): string | undefined {
+export function parseTilemap(selector: CommandSelectorShape): string | undefined {
+	const tilemap = selectorOf(selector);
 	switch (tilemap.type) {
 		case 'trigger':
 			return setTextId('tilemap-object-trigger') + t('tilemap.trigger');
@@ -704,7 +785,8 @@ export function parseTilemap(tilemap: CommandObjectShape): string | undefined {
 	}
 }
 
-export function parseObject(object: CommandObjectShape): string | undefined {
+export function parseObject(selector: CommandSelectorShape): string | undefined {
+	const object = selectorOf(selector);
 	switch (object.type) {
 		case 'trigger':
 			return setTextId('preset-object-trigger') + t('object.trigger');
@@ -721,7 +803,8 @@ export function parseObject(object: CommandObjectShape): string | undefined {
 	}
 }
 
-export function parseElement(element: CommandObjectShape): string | undefined {
+export function parseElement(selector: CommandSelectorShape): string | undefined {
+	const element = selectorOf(selector);
 	switch (element.type) {
 		case 'trigger':
 			return setTextId('element-object-trigger') + t('element.trigger');

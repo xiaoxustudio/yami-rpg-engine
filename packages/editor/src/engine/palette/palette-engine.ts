@@ -82,7 +82,7 @@ interface PaletteEngineShape {
 
 export const PaletteEngine = {} as PaletteEngineShape;
 
-interface MarkPosition {
+export interface MarkPosition {
 	text: string;
 	start: number;
 	width: number;
@@ -90,7 +90,7 @@ interface MarkPosition {
 }
 
 // 标记画布（运行时挂载 fontSize/font/totalWidth/entries/positions）
-interface MarkCanvasShape extends HTMLCanvasElement {
+export interface MarkCanvasShape extends HTMLCanvasElement {
 	fontSize: number;
 	font: string;
 	totalWidth: number;
@@ -119,7 +119,14 @@ PaletteEngine.getTileCoords = (function IIFE() {
 	};
 })();
 
-PaletteEngine.updateCamera = function (this: typeof Palette, x = this.meta.x, y = this.meta.y) {
+PaletteEngine.updateCamera = function (
+	this: typeof Palette,
+	// `!`：本引擎的任何一次调用都发生在「图块组已打开」之后（`Palette.meta` 由 `open()` 赋上）。
+	// `?? 0`：`FileMeta.x/y` 类型上是 `number | null`，而这两个值只参与下面的算术 ——
+	// 原来的 `null * n` 与 `0 * n` 逐字等价（都是 0），所以这里只是把类型写实。
+	x = this.meta!.x ?? 0,
+	y = this.meta!.y ?? 0
+) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
 	const scrollX = x * this.scaledTileWidth + this.paddingLeft;
@@ -148,14 +155,17 @@ PaletteEngine.updateTransform = function (this: typeof Palette) {
 	this.context.setTransform(1, 0, 0, 1, -left, -top);
 	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX;
 	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY;
-	this.meta.x = roundTo((scrollX - this.paddingLeft) / this.scaledTileWidth, 4);
-	this.meta.y = roundTo((scrollY - this.paddingTop) / this.scaledTileHeight, 4);
+	// `!`：`updateTransform` 只在图块组打开后调用（`Palette.meta` 此刻非空）
+	this.meta!.x = roundTo((scrollX - this.paddingLeft) / this.scaledTileWidth, 4);
+	this.meta!.y = roundTo((scrollY - this.paddingTop) / this.scaledTileHeight, 4);
 	Data.manifest.changed = true;
 };
 
 // 保持图像与网格背景的相对位置 避免视觉干扰并且可以测量位置
 PaletteEngine.updateBackground = function (this: typeof Palette) {
-	const style = this.canvas.style;
+	// `backgroundX` / `backgroundY` 是就地挂在 `CSSStyleDeclaration` 上的**临时字段**
+	// （记住上次写过的位置，避免每帧都写 `backgroundPosition`）⇒ 需要具名扩展类型。
+	const style = this.canvas.style as CSSStyleDeclarationWithBackground;
 	const x = -this.screen.scrollLeft;
 	const y = -this.screen.scrollTop;
 	if (style.backgroundX !== x || style.backgroundY !== y) {
@@ -165,11 +175,18 @@ PaletteEngine.updateBackground = function (this: typeof Palette) {
 	}
 };
 
+/** `updateBackground` 在 `canvas.style` 上记住的两个临时字段（DOM 扩展，不是标准属性）。 */
+interface CSSStyleDeclarationWithBackground extends CSSStyleDeclaration {
+	backgroundX?: number;
+	backgroundY?: number;
+}
+
 PaletteEngine.createMarkCanvas = function (this: typeof Palette) {
 	let canvas = this.markCanvas;
 	if (canvas === null) {
 		const size = 128;
-		canvas = document.createElement('canvas');
+		// 紧接着的 4 行就挂上了 `MarkCanvasShape` 的字段（fontSize / font / entries / positions）⇒ 收窄一次
+		canvas = document.createElement('canvas') as MarkCanvasShape;
 		canvas.width = 0;
 		canvas.height = size * 3;
 		canvas.fontSize = size;
@@ -179,7 +196,8 @@ PaletteEngine.createMarkCanvas = function (this: typeof Palette) {
 			string,
 			MarkPosition
 		>);
-		const context = canvas.getContext('2d');
+		// 与 `palette-initialize.ts:32` 同理：刚建出来的离屏画布必然拿得到 2D 上下文
+		const context = canvas.getContext('2d')!;
 		const font = `${size}px sans-serif`;
 		canvas.font = font;
 		context.font = font;
@@ -415,8 +433,16 @@ PaletteEngine.drawPriorities = function (this: typeof Palette) {
 		const height = mark.fontSize;
 		const fs = ts / 2;
 		const oy = fs / 2;
-		let activeIndex;
-		let activeOffset;
+		/**
+		 * `activeIndex` / `activeOffset` 只在某些 mode 分支里成对赋值（`increase-priority` 那一组
+		 * 还要求 `dragging.active`）⇒ 类型上必须是 `| undefined`。
+		 *
+		 * 下面 4 处 `activeOffset!` 的理由是一条**可证的前提**：`sy = i === activeIndex ? activeOffset : 0`
+		 * 里 `i` 是数字，所以走真分支就说明 `activeIndex` 已被赋值；而两个变量在三个分支里都是**成对**
+		 * 赋值的（`:434/435` 或 `:439/440`）⇒ 真分支上 `activeOffset` 必然也已赋值。运行期一行未改。
+		 */
+		let activeIndex: number | null | undefined;
+		let activeOffset: number | undefined;
 		switch (dragging?.mode) {
 			case 'increase-priority':
 			case 'ready-to-decrease-priority':
@@ -438,12 +464,15 @@ PaletteEngine.drawPriorities = function (this: typeof Palette) {
 						const i = x + y * tro;
 						const priority = priorities[i];
 						if (priority === 0) continue;
-						const position = positions[priority];
+						// `!`（本文件两处同形）：`positions` 在 `createMarkCanvas` 里为 0-9 与 `add`
+						// 全部建好了（`palette-engine.ts:196` 起），而 `priority` 取自图块数据、必在其中。
+						// 严格模式下的索引访问是 `| undefined`，这里点明前提（运行期一行未改）。
+						const position = positions[priority]!;
 						const { start, width, aspectRatio } = position;
 						const dw = fs * aspectRatio;
 						const dx = (x + 0.5) * tw - dw / 2;
 						const dy = (y + 0.5) * th - oy;
-						const sy = i === activeIndex ? activeOffset : 0;
+						const sy = i === activeIndex ? activeOffset! : 0;
 						context.drawImage(mark, start, sy, width, height, dx, dy, dw, fs);
 					}
 				}
@@ -456,12 +485,13 @@ PaletteEngine.drawPriorities = function (this: typeof Palette) {
 						const tile = tiles[i];
 						const priority = priorities[i];
 						if (tile === 0 || priority === 0) continue;
-						const position = positions[priority];
+						// 与 `:450` 那处同形（`positions` 全部建好、值必在表中）⇒ 同一条 `!` 的理由。
+						const position = positions[priority]!;
 						const { start, width, aspectRatio } = position;
 						const dw = fs * aspectRatio;
 						const dx = (x + 0.5) * tw - dw / 2;
 						const dy = (y + 0.5) * th - oy;
-						const sy = i === activeIndex ? activeOffset : 0;
+						const sy = i === activeIndex ? activeOffset! : 0;
 						context.drawImage(mark, start, sy, width, height, dx, dy, dw, fs);
 					}
 				}
@@ -495,8 +525,16 @@ PaletteEngine.drawTags = function (this: typeof Palette) {
 		const height = mark.fontSize;
 		const fs = ts / 2;
 		const oy = fs / 2;
-		let activeIndex;
-		let activeOffset;
+		/**
+		 * `activeIndex` / `activeOffset` 只在某些 mode 分支里成对赋值（`increase-priority` 那一组
+		 * 还要求 `dragging.active`）⇒ 类型上必须是 `| undefined`。
+		 *
+		 * 下面 4 处 `activeOffset!` 的理由是一条**可证的前提**：`sy = i === activeIndex ? activeOffset : 0`
+		 * 里 `i` 是数字，所以走真分支就说明 `activeIndex` 已被赋值；而两个变量在三个分支里都是**成对**
+		 * 赋值的（`:434/435` 或 `:439/440`）⇒ 真分支上 `activeOffset` 必然也已赋值。运行期一行未改。
+		 */
+		let activeIndex: number | null | undefined;
+		let activeOffset: number | undefined;
 		switch (dragging?.mode) {
 			case 'increase-tag':
 			case 'ready-to-decrease-tag':
@@ -524,7 +562,7 @@ PaletteEngine.drawTags = function (this: typeof Palette) {
 						const dw = fs * aspectRatio;
 						const dx = (x + 0.5) * tw - dw / 2;
 						const dy = (y + 0.5) * th - oy;
-						const sy = i === activeIndex ? activeOffset : 0;
+						const sy = i === activeIndex ? activeOffset! : 0;
 						context.drawImage(mark, start, sy, width, height, dx, dy, dw, fs);
 					}
 				}
@@ -543,7 +581,7 @@ PaletteEngine.drawTags = function (this: typeof Palette) {
 						const dw = fs * aspectRatio;
 						const dx = (x + 0.5) * tw - dw / 2;
 						const dy = (y + 0.5) * th - oy;
-						const sy = i === activeIndex ? activeOffset : 0;
+						const sy = i === activeIndex ? activeOffset! : 0;
 						context.drawImage(mark, start, sy, width, height, dx, dy, dw, fs);
 					}
 				}
@@ -638,11 +676,14 @@ PaletteEngine.selectTiles = function (
 	}
 
 	Scene.marquee.tilesetMap = this.tilesetMap;
-	Scene.marquee.tilesetMap[1] = this.meta.guid;
+	Scene.marquee.tilesetMap[1] = this.meta!.guid;
 
 	const sceneMarquee = Scene.marquee;
+	// `!`（本文件两处同形）：`saveData.tile` 类型上可空（组件 `restore` 会把它置 null），
+	// 但这里已由 `key === 'tile'` 判定走到 tile 槽 —— 它由 `save('tile')` 写入、
+	// 一定带 `tiles`/`width`/`height`（见 `scene-marquee-engine.ts:78`）。运行期一行未改。
 	const marquee =
-		marqueeData(sceneMarquee).key === 'tile' ? sceneMarquee : sceneMarquee.saveData.tile;
+		marqueeData(sceneMarquee).key === 'tile' ? sceneMarquee : sceneMarquee.saveData.tile!;
 	marquee.tiles = dTiles;
 	marquee.width = width;
 	marquee.height = height;
@@ -677,7 +718,7 @@ PaletteEngine.copyTilesFromScene = function (
 
 	const sceneMarquee = Scene.marquee;
 	const marquee =
-		marqueeData(sceneMarquee).key === 'tile' ? sceneMarquee : sceneMarquee.saveData.tile;
+		marqueeData(sceneMarquee).key === 'tile' ? sceneMarquee : sceneMarquee.saveData.tile!;
 	marquee.tiles = dTiles;
 
 	for (let y = by; y < ey; y++) {
@@ -752,15 +793,17 @@ PaletteEngine.scrollToSelection = function (this: typeof Palette, shiftKey: bool
 		const x2 = mx + wh - toleranceX;
 		const y1 = mb - hh + toleranceY;
 		const y2 = my + hh - toleranceY;
-		const meta = this.meta;
+		// `!`：本读取点在图块组打开之后；`x/y` 的 `?? 0` 与 `updateCamera` 那条同理
+		// （`Math.min(null, n)` 在 JS 里就是 `Math.min(0, n)`）。
+		const meta = this.meta!;
 		const x =
 			shiftKey && mx === ox && mw > 1
-				? Math.max(Math.min(meta.x, x2), x1)
-				: Math.min(Math.max(meta.x, x1), x2);
+				? Math.max(Math.min(meta.x ?? 0, x2), x1)
+				: Math.min(Math.max(meta.x ?? 0, x1), x2);
 		const y =
 			shiftKey && my === oy && mh > 1
-				? Math.max(Math.min(meta.y, y2), y1)
-				: Math.min(Math.max(meta.y, y1), y2);
+				? Math.max(Math.min(meta.y ?? 0, y2), y1)
+				: Math.min(Math.max(meta.y ?? 0, y1), y2);
 		if (meta.x !== x || meta.y !== y) {
 			this.updateCamera(x, y);
 			this.updateTransform();

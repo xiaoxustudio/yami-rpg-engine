@@ -1,7 +1,8 @@
 import { elementDataOf } from '@ui-kit';
 import { getListConfig } from '@ui-kit';
 import { uiEls } from '@app/engine/ui/element-registry';
-import type { UIShape, UINodeShape, UIControlPoints } from './ui-singleton.ts';
+import { registryElement } from '@app/utils/element-registry.ts';
+import type { UIShape, UINodeShape, UIControlPoints, UIListNodeShape } from './ui-singleton.ts';
 // ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';
 import type { DynamicShape } from '@app/types/shapes.ts';
@@ -40,9 +41,12 @@ const initialize = function (this: UIShape) {
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
-	this.searcher = uiEls.get('ui-searcher') as YamiElement;
+	// 搜索框也走 `registryElement`：`UIShape.searcher` 在 `YamiElement` 之上换了更精确的 `input`
+	// （`HTMLElement` → `HTMLInputElement`）⇒ 裸 `as YamiElement` 不再够用，而这正是那处单点收窄的用途。
+	this.searcher = registryElement<UIShape['searcher']>(uiEls, 'ui-searcher')!;
 	const oldList = this.list;
-	this.list = uiEls.get('ui-list') as YamiElement;
+	// 列表句柄走 `registryElement`（单点收窄；返回 `T | null`）⇒ 补可见的 `!`（同 `ui-singleton.ts` 那处）
+	this.list = registryElement<UIListNodeShape>(uiEls, 'ui-list')!;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
@@ -186,7 +190,9 @@ const initialize = function (this: UIShape) {
 	};
 
 	this.searcher.addCloseButton();
-	this.searcher.addKeydownFilter();
+	// `addKeydownFilter` 全仓没有类型声明（`ui-kit` 的元素契约里也没有）⇒ 按 `scene-window.ts:614`
+	// 与 `stores/browser.ts:394` 的既有写法配 `?.`（那两个调用点对同一成员就是这么写的）。
+	this.searcher.addKeydownFilter?.();
 
 	const { list } = this;
 	getListConfig(list).removable = true;
@@ -273,7 +279,10 @@ const initialize = function (this: UIShape) {
 		data: { editor: DynamicShape; target: UINodeShape; anchorX: number; anchorY: number }
 	) => {
 		const { editor, target, anchorX, anchorY } = data;
-		const { instances, transform } = target;
+		// 历史记录里的目标一定是**已装配**的节点 ⇒ `instances` 存在
+		// （它是 `ui-prefab.ts` 挂上的运行期成员，数据形状里可选，见 `element-classes.ts` 顶部）。
+		const { transform } = target;
+		const instances = target.instances!;
 		data.anchorX = transform.anchorX;
 		data.anchorY = transform.anchorY;
 		// transform.anchorX = anchorX transform.anchorY = anchorY
@@ -292,7 +301,8 @@ const initialize = function (this: UIShape) {
 		data: { editor: DynamicShape; target: UINodeShape; x: number; y: number }
 	) => {
 		const { editor, target, x, y } = data;
-		const { instances, transform } = target;
+		const { transform } = target;
+		const instances = target.instances!;
 		data.x = transform.x;
 		data.y = transform.y;
 		// transform.x = x transform.y = y
@@ -311,7 +321,8 @@ const initialize = function (this: UIShape) {
 		data: { editor: DynamicShape; target: UINodeShape; width: number; height: number }
 	) => {
 		const { editor, target, width, height } = data;
-		const { instances, transform } = target;
+		const { transform } = target;
+		const instances = target.instances!;
 		data.width = transform.width;
 		data.height = transform.height;
 		// transform.width = width transform.height = height
@@ -330,7 +341,8 @@ const initialize = function (this: UIShape) {
 		data: { editor: DynamicShape; target: UINodeShape; rotation: number }
 	) => {
 		const { editor, target, rotation } = data;
-		const { instances, transform } = target;
+		const { transform } = target;
+		const instances = target.instances!;
 		data.rotation = transform.rotation;
 		// transform.rotation = rotation
 		instances.setProperty('transform-rotation', rotation);

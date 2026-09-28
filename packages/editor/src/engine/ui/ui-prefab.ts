@@ -1,4 +1,5 @@
 import { uiElClasses } from '@app/engine/ui/element-classes.ts';
+import type { UIElementInstance } from '@app/engine/ui/element-classes.ts';
 import type { UIShape, UINodeShape } from './ui-singleton.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Editor } from '@app/services/project/editor.ts';
@@ -104,14 +105,22 @@ const createElement = function (this: UIShape, node: UINodeShape, main?: boolean
 			value: new UIInstanceList()
 		});
 	}
-	node.instances.push(instance);
+	// `!` 的理由：上面那段 `defineProperty` **刚刚**保证了该成员存在
+	// （`Object.defineProperty` 不参与控制流分析，`tsc` 仍按 `UINodeShape.instances?` 的可选口径看它）。
+	node.instances!.push(instance);
 	return instance;
 };
 // 原先是**链式赋值** `uiElClasses.createElement = UI.createElement = function …`：
 // `uiElClasses` 是元素类注册表、与 UI 单例是**两个不同的目标** ⇒ 拆成两处（一行只对一个目标）。
 uiElClasses.createElement = createElement;
 
-const loadElement = function (this: UIShape, node: UINodeShape, parent?: UINodeShape) {
+/**
+ * 递归装配：给节点建实例、挂到父**实例**下。
+ *
+ * `parent` 是 `UIElementInstance` 而非 `UINodeShape`：下一句就是 `parent.appendChild(instance)`
+ * —— 挂载是**实例**的行为（`element-base.ts:250`），节点数据上根本没有这个方法。
+ */
+const loadElement = function (this: UIShape, node: UINodeShape, parent?: UIElementInstance) {
 	const instance = this.createElement!(node, true);
 	if (parent !== undefined) {
 		parent.appendChild(instance);

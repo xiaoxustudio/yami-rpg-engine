@@ -68,7 +68,7 @@ interface SelectListAdapter {
 }
 
 interface DetailWrap {
-	tag: string;
+	tag: 'detail-box';
 	box: DetailBoxElement;
 	summary: HTMLElement | null;
 	grid: HTMLElement;
@@ -76,15 +76,16 @@ interface DetailWrap {
 }
 
 type DetailBoxElement = HTMLElement & {
-	meta?: DetailMeta | null;
+	meta?: ManifestEntry | null;
 	data?: ScriptDef | null;
 	wrap?: DetailWrap;
 };
 
-interface DetailMeta {
-	manager: { states: Record<string, unknown> };
-	parameters: ParamDef[];
-}
+/*
+ * `DetailMeta` 已删除：`box.meta` 运行期就是**清单条目本身**（宿主挂上 `manager` / `langMap` 的
+ * `Meta` 实例，见 `editor/src/data/metadata.ts` 与 `plugin-parse-meta.ts` 的 `Object.defineProperties`），
+ * 原先这里另写一个 `{ manager, parameters }` 只是把同一个对象描述了两遍。
+ */
 
 type ParamInput = HTMLElement & {
 	parameters?: Record<string, unknown> | null;
@@ -107,8 +108,23 @@ interface ParamInputData {
 
 const inputData = (el: unknown): ParamInputData => elementDataOf<ParamInputData>(el);
 
+/**
+ * 控件包装的 tag：`createXxxBox` 各自的那个字面量（`repeatable-group` 同样是 `{ label, input }` 形态）。
+ * 写成字面量联合是为了让 `RecycleWrap` 能按 `tag` 判别（见下）。
+ */
+type ParamWrapTag =
+	| 'check-box'
+	| 'number-box'
+	| 'number-var'
+	| 'text-box'
+	| 'keyboard-box'
+	| 'select-box'
+	| 'color-box'
+	| 'custom-box'
+	| 'repeatable-group';
+
 interface ParamWrap {
-	tag: string;
+	tag: ParamWrapTag;
 	label: HTMLElement;
 	input: ParamInput;
 }
@@ -120,13 +136,12 @@ interface RepeatableRowWrap {
 	input: ParamInput;
 }
 
-interface RecycleWrap {
-	tag: string;
-	label: HTMLElement;
-	input: ParamInput;
-	box: DetailBoxElement;
-	children: ParamWrap[];
-}
+/**
+ * 回收池里的一件「包装」：**按 `tag` 判别**的两种形态 —— 明细块（`{ box, children }`）
+ * 或控件（`{ label, input }`）。两者成员互斥，`recycle()` 与各回收池都要能收下它们，
+ * 所以这里写成判别联合：`switch (wrap.tag)` 之后字段是确定的，不需要到处 `!`。
+ */
+type RecycleWrap = DetailWrap | ParamWrap;
 
 /**
  * 可重复参数组（元素是 `div.repeatable-group`）。
@@ -179,23 +194,25 @@ const emit = defineEmits<{
 const root = ref<HTMLElement | null>(null);
 const headPadRef = ref<HTMLElement | null>(null);
 
-// oxlint-disable-next-line no-explicit-any
-let el: (HTMLElement & { [k: string]: any }) | null = null;
-
+/**
+ * pane 的状态面 —— **唯一真源就是本对象**：`attachStateAccessors` 把它的每个字段以 get/set 装到
+ * 元素上（`PaneStateAccessors` 由它推导），所以字段类型写在这里一处就够。
+ */
 const paneState = {
-	scriptList: null as unknown,
-	headPad: null as unknown,
-	metas: [] as unknown[],
-	wraps: [] as unknown[],
-	detailBoxes: [] as unknown[],
-	checkBoxes: [] as unknown[],
-	numberBoxes: [] as unknown[],
-	numberVars: [] as unknown[],
-	textBoxes: [] as unknown[],
-	selectBoxes: [] as unknown[],
-	keyboardBoxes: [] as unknown[],
-	colorBoxes: [] as unknown[],
-	customBoxes: [] as unknown[],
+	/** `bind()` 收到的列表元素（参数列表挂 `object`、树列表挂 `data`） */
+	scriptList: null as ParamScriptListElement | null,
+	headPad: null as HTMLElement | null,
+	metas: [] as ManifestEntry[],
+	wraps: [] as DetailWrap[],
+	detailBoxes: [] as DetailWrap[],
+	checkBoxes: [] as ParamWrap[],
+	numberBoxes: [] as ParamWrap[],
+	numberVars: [] as ParamWrap[],
+	textBoxes: [] as ParamWrap[],
+	selectBoxes: [] as ParamWrap[],
+	keyboardBoxes: [] as ParamWrap[],
+	colorBoxes: [] as ParamWrap[],
+	customBoxes: [] as ParamWrap[],
 	updateEventEnabled: false
 };
 
@@ -216,8 +233,51 @@ const paneStateFields = [
 	'updateEventEnabled'
 ] as const;
 
-// oxlint-disable-next-line no-explicit-any
-const attachStateAccessors = (self: HTMLElement & { [k: string]: any }): void => {
+/** 元素上的状态访问器：与 `paneState` 的字段一一对应（映射类型 ⇒ 以后加字段不会漏） */
+type PaneStateAccessors = { [K in keyof typeof paneState]: (typeof paneState)[K] };
+
+/**
+ * 元素 API（`attachApi` 的键集合契约 —— 见 `utils/attach-api.ts` 的「新调用点必须写出类型参数」）。
+ *
+ * 原先元素类型写作 `HTMLElement & { [k: string]: any }`：挂什么都行、读什么都行，
+ * 键拼错也只会在运行期安静地失效。这里把实际装配的那一套名字下来。
+ */
+interface ParameterPaneApi {
+	getData: () => ScriptDef[];
+	windowLocalize: typeof windowLocalize;
+	scriptChange: typeof scriptChange;
+	bind: typeof bind;
+	rewrite: typeof rewrite;
+	update: typeof update;
+	appendHeadPad: typeof appendHeadPad;
+	createDetailBox: typeof createDetailBox;
+	createParamInput: typeof createParamInput;
+	updateParamInput: typeof updateParamInput;
+	updateParamDisplay: typeof updateParamDisplay;
+	createCheckBox: typeof createCheckBox;
+	createNumberBox: typeof createNumberBox;
+	createNumberVar: typeof createNumberVar;
+	createTextBox: typeof createTextBox;
+	createSelectBox: typeof createSelectBox;
+	createKeyboardBox: typeof createKeyboardBox;
+	createColorBox: typeof createColorBox;
+	createCustomBox: typeof createCustomBox;
+	createRepeatableGroup: typeof createRepeatableGroup;
+	recycle: typeof recycle;
+	clear: typeof clear;
+	on: typeof on;
+	componentChange: typeof componentChange;
+	applyAffix: typeof applyAffix;
+	/** 由宿主（编辑器侧的包装组件）补挂 —— 故可选 */
+	onResize?: () => void;
+}
+
+/** pane 元素 = `HTMLElement` + 状态访问器 + 元素 API（`onMounted` 里按这个类型装配） */
+type ParameterPaneElement = HTMLElement & PaneStateAccessors & ParameterPaneApi;
+
+let el: ParameterPaneElement | null = null;
+
+const attachStateAccessors = (self: ParameterPaneElement): void => {
 	for (const key of paneStateFields) {
 		Object.defineProperty(self, key, {
 			configurable: true,
@@ -282,6 +342,11 @@ const getSetTooltip = (): ((el: HTMLElement, tip: string) => void) | null => pro
 interface ParamScriptListElement extends HTMLElement {
 	object?: { update: (...args: unknown[]) => unknown };
 	data?: ScriptDef[];
+	/** 参数列表同时挂着历史记录器（`command-custom.ts` 侧的实现）；`componentChange` 用它存参数改动 */
+	history: {
+		editor: { target: unknown; meta: unknown } | null;
+		save(data: Record<string, unknown>): void;
+	};
 }
 
 const bind = (scriptList: ParamScriptListElement): void => {
@@ -299,7 +364,8 @@ const bind = (scriptList: ParamScriptListElement): void => {
 	}
 	if (scriptList.classList.contains('tree-list')) {
 		self.getData = () => {
-			const item = read(scriptList as HTMLElement);
+			// 树列表 `read()` 出来的是当前选中项，就是一个脚本条目（`utils/dom` 的 read 只给 `object`）
+			const item = read(scriptList as HTMLElement) as ScriptDef | null;
 			return item ? [item] : [];
 		};
 	}
@@ -308,7 +374,8 @@ const bind = (scriptList: ParamScriptListElement): void => {
 const rewrite = (parameters: Record<string, unknown>, key: string): void => {
 	const self = el!;
 	for (const wrap of self.wraps) {
-		const script = wrap.box.data;
+		// `wraps` 里的明细块都在 `update()` 里配过 `box.data`（`box.data = script`）⇒ 这里必然有值
+		const script = wrap.box.data!;
 		const map = script.parameters;
 		if (map !== parameters) continue;
 		for (const { input } of wrap.children) {
@@ -462,7 +529,7 @@ const createDetailBox = (): DetailWrap => {
 	const { detailBoxes } = self;
 	let box: HTMLElement;
 	if (detailBoxes.length !== 0) {
-		box = detailBoxes.pop().box;
+		box = detailBoxes.pop()!.box;
 		while (box.firstChild) {
 			box.removeChild(box.firstChild);
 		}
@@ -533,7 +600,7 @@ const updateParamInput = (wrap: ParamWrap, value: unknown): void => {
 
 const updateParamDisplay = (detailBox: DetailBoxElement): void => {
 	const { states } = detailBox.meta!.manager;
-	const mParams = detailBox.meta!.parameters;
+	const mParams = detailBox.meta!.parameters!;
 	const paramMap: Record<string, ParamDef> = {};
 	for (const p of mParams) paramMap[p.key] = p;
 	const wraps = detailBox.wrap!.children;
@@ -573,7 +640,7 @@ const createCheckBox = (): ParamWrap => {
 	const self = el!;
 	const { checkBoxes } = self;
 	if (checkBoxes.length !== 0) {
-		return checkBoxes.pop();
+		return checkBoxes.pop()!;
 	}
 	const tag = 'check-box';
 	const label = document.createElement('div');
@@ -591,7 +658,7 @@ const createNumberBox = (): ParamWrap => {
 	const self = el!;
 	const { numberBoxes } = self;
 	if (numberBoxes.length !== 0) {
-		return numberBoxes.pop();
+		return numberBoxes.pop()!;
 	}
 	const tag = 'number-box';
 	const label = document.createElement('div');
@@ -604,7 +671,7 @@ const createNumberVar = (): ParamWrap => {
 	const self = el!;
 	const { numberVars } = self;
 	if (numberVars.length !== 0) {
-		return numberVars.pop();
+		return numberVars.pop()!;
 	}
 	const tag = 'number-var';
 	const label = document.createElement('div');
@@ -617,7 +684,7 @@ const createTextBox = (): ParamWrap => {
 	const self = el!;
 	const { textBoxes } = self;
 	if (textBoxes.length !== 0) {
-		return textBoxes.pop();
+		return textBoxes.pop()!;
 	}
 	const tag = 'text-box';
 	const label = document.createElement('div');
@@ -645,7 +712,7 @@ const createSelectBox = (): ParamWrap => {
 	const self = el!;
 	const { selectBoxes } = self;
 	if (selectBoxes.length !== 0) {
-		return selectBoxes.pop();
+		return selectBoxes.pop()!;
 	}
 	const tag = 'select-box';
 	const label = document.createElement('div');
@@ -658,7 +725,7 @@ const createKeyboardBox = (): ParamWrap => {
 	const self = el!;
 	const { keyboardBoxes } = self;
 	if (keyboardBoxes.length !== 0) {
-		return keyboardBoxes.pop();
+		return keyboardBoxes.pop()!;
 	}
 	const tag = 'keyboard-box';
 	const label = document.createElement('div');
@@ -671,7 +738,7 @@ const createColorBox = (): ParamWrap => {
 	const self = el!;
 	const { colorBoxes } = self;
 	if (colorBoxes.length !== 0) {
-		return colorBoxes.pop();
+		return colorBoxes.pop()!;
 	}
 	const tag = 'color-box';
 	const label = document.createElement('div');
@@ -684,7 +751,7 @@ const createCustomBox = (): ParamWrap => {
 	const self = el!;
 	const { customBoxes } = self;
 	if (customBoxes.length !== 0) {
-		return customBoxes.pop();
+		return customBoxes.pop()!;
 	}
 	const tag = 'custom-box';
 	const label = document.createElement('div');
@@ -999,8 +1066,8 @@ defineExpose({
 });
 
 onMounted(() => {
-	// oxlint-disable-next-line no-explicit-any
-	const self = root.value as HTMLElement & { [k: string]: any };
+	// `root.value` 是模板 ref 的元素本身 ⇒ 单次断言到「元素 + 状态访问器 + API」这一个具名形状
+	const self = root.value as ParameterPaneElement;
 	if (!self) return;
 	el = self;
 	attachStateAccessors(self);
@@ -1018,8 +1085,8 @@ onMounted(() => {
 	self.colorBoxes = [];
 	self.customBoxes = [];
 	self.updateEventEnabled = false;
-	attachApi(self, {
-		getData: () => [],
+	attachApi<ParameterPaneApi>(self, {
+		getData: (): ScriptDef[] => [],
 		windowLocalize,
 		scriptChange,
 		bind,

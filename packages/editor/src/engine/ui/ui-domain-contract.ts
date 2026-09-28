@@ -4,7 +4,7 @@
  * 成员类型来自类型检查器对 `uiMembers` 的**推断**（源码里没有可抬的注解）。
  * 生成 75 条；跳过 7 条（原因见生成器输出）。
  */
-import type { UINodeShape } from './element-classes.ts';
+import type { UIElementInstance, UINodeShape } from './element-classes.ts';
 import type { UIPointerEvent } from './ui-singleton.ts';
 import type { YamiMouseEvent } from '../../types/editor-event.ts';
 
@@ -91,7 +91,13 @@ export interface UIDomainMembers {
 				submenu: { label: string; data: UINodeShape; click: () => void }[];
 		  })
 		| null;
-	loadElement: ((node: UINodeShape, parent?: UINodeShape) => void) | null;
+	/**
+	 * 递归装配节点树（`ui-prefab.ts` 的实现）。
+	 *
+	 * `parent` 是**实例**：实现里就是 `parent.appendChild(instance)`（`element-base.ts:250`
+	 * 的实例方法）。调用点（`ui-file.ts:92` 传 `this.root`）传的也正是根**实例**。
+	 */
+	loadElement: ((node: UINodeShape, parent?: UIElementInstance) => void) | null;
 	searcherInput: ((event: InputEvent) => void) | null;
 	listPointerdown: ((event: PointerEvent) => void) | null;
 	listSelect: ((event: Event) => void) | null;

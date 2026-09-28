@@ -1,5 +1,6 @@
 import { UI } from './ui-singleton.ts';
-import type { UIShape, UINodeShape, UIPointerEvent } from './ui-singleton.ts';
+import type { UIElementInstance } from '@app/engine/ui/element-classes.ts';
+import type { UIShape, UINodeShape, UIPointerEvent, UIDragEvent } from './ui-singleton.ts';
 // ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
@@ -19,7 +20,14 @@ import { getUIStore } from '@app/stores/ui';
 import { radians, degrees, modRadians } from '@app/utils/math';
 
 const selectObject = (function IIFE() {
-	const find = (elements: UINodeShape[], x: number, y: number): UINodeShape | null => {
+	/**
+	 * 在**实例树**里由外向内命中测试，命中就返回该实例对应的**节点数据**（调用方要的是 `target` 节点）。
+	 *
+	 * 形参是实例数组、不是节点数组：`element.visible` / `element.node` / `element.isPointIn`
+	 * 三样都长在**实例**上（`element-base.ts`），第二句 `element.node.instance === element`
+	 * 正是「这个实例是它节点的主实例」的自证。此前写 `UINodeShape[]` 是靠索引签名成立的。
+	 */
+	const find = (elements: UIElementInstance[], x: number, y: number): UINodeShape | null => {
 		const length = elements.length;
 		for (let i = length - 1; i >= 0; i--) {
 			const element = elements[i];
@@ -27,11 +35,14 @@ const selectObject = (function IIFE() {
 			if (target) return target;
 			if (
 				element.visible &&
-				element.node.instance === element &&
+				element.node?.instance === element &&
 				!element.node.locked &&
 				element.isPointIn(x, y)
 			) {
-				return element.node;
+				// `element.node` 必存在：上面那句 `element.node?.instance === element` 已经把它证明出来了
+				// （实例的 `node` 由 `ui-prefab.ts:94` 的 `instance.node = node` 挂上，只有 `node` 存在
+				// 才谈得上相等），这里改用 `!` 而不是 `?.`，避免把「命中却返回 null」这种静默失效写进类型。
+				return element.node!;
 			}
 		}
 		return null;
@@ -42,7 +53,9 @@ const selectObject = (function IIFE() {
 		// `Cannot read properties of undefined (reading 'children')`，
 		// 表现就是「**在画布上点选毫无反应**，但从左侧列表点选正常」
 		// （列表走 `UI.listSelect`，不经过这里）（2026-09-18 实测定位）。
-		const root = getUIStore().root as { children: UINodeShape[] } | null;
+		// `root` 的类型本来就是 `UIElementInstance | null`（`stores/ui.ts` 的 `root`），
+		// 原先那处 `as { children: UINodeShape[] }` 是索引签名时代的断言，本轮去掉。
+		const root = getUIStore().root;
 		if (root === null) return null;
 		return find(root.children, x, y);
 	};
@@ -55,7 +68,7 @@ const marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 	switch (event.button) {
 		case 0: {
 			if (isDragKey(event)) {
-				this.dragging = event;
+				this.dragging = event as UIDragEvent;
 				event.mode = 'scroll';
 				event.scrollLeft = this.screen.scrollLeft;
 				event.scrollTop = this.screen.scrollTop;
@@ -68,13 +81,14 @@ const marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 			if (this.controlPointActive && target) {
 				const { transform } = target;
 				const points = this.controlPoints!;
-				this.dragging = event;
+				this.dragging = event as UIDragEvent;
 				switch (this.controlPointActive) {
 					case points.rotate.TL:
 					case points.rotate.TR:
 					case points.rotate.BL:
 					case points.rotate.BR: {
-						const { instance } = target;
+						// 当前选中的节点必已装配（同 `element-classes.ts` 顶部那条不变式）⇒ `instance` 存在。
+						const instance = target.instance!;
 						const matrix = Matrix.instance.set(UI.matrix).multiply(instance.matrix);
 						const X = instance.x + instance.width * transform.anchorX;
 						const Y = instance.y + instance.height * transform.anchorY;
@@ -122,7 +136,7 @@ const marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 				object = this.selectObject!(x, y);
 			}
 			if (object) {
-				this.dragging = event;
+				this.dragging = event as UIDragEvent;
 				event.mode = 'object-move';
 				event.node = object;
 				event.enabled = false;
@@ -136,7 +150,7 @@ const marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 			break;
 		}
 		case 2:
-			this.dragging = event;
+			this.dragging = event as UIDragEvent;
 			event.mode = 'ready-to-scroll';
 			event.scrollLeft = this.screen.scrollLeft;
 			event.scrollTop = this.screen.scrollTop;
@@ -246,8 +260,12 @@ const pointermove = function (this: UIShape, event: UIPointerEvent) {
 			case 'object-resize': {
 				const target = getUIStore().target;
 				if (target) {
-					const { instance } = target;
-					const { parent, transform } = instance;
+					// 同上面 rotate 分支：选中的节点必已装配。
+					const instance = target.instance!;
+					// 父元素非空也是不变式：能选中就说明它在画布树里，而树里除根实例外都有父元素
+					// （根实例本身不可选）—— 缩放要用父元素的宽高做百分比换算。
+					const parent = instance.parent!;
+					const { transform } = instance;
 					const points = this.controlPoints!;
 					const point = this.controlPointActive!;
 					const angle = radians(point.angle + this.controlPointRotation);
@@ -383,7 +401,11 @@ const pointermove = function (this: UIShape, event: UIPointerEvent) {
 						y = Math.round(dragging.startY + distY);
 					}
 					if (transform.x !== x || transform.y !== y) {
-						UIEngine.shiftTarget!.call(this, x, y);
+						// `!` 的理由：`x` / `y` 在两个分支里**都必然被赋值** ——
+						// `section = (proportion * 4 + 0.5) % 4 ∈ [0, 4)` ⇒ `Math.floor(section)` 只可能是
+						// 0/1/2/3，而上面那四个 `case` 全覆盖（0/2 写一组、1/3 写另一组）。
+						// `tsc` 看不到 `%` 的值域，所以这里用可见的 `!` 写下这条前提（运行期一行未改）。
+						UIEngine.shiftTarget!.call(this, x!, y!);
 					}
 				}
 				break;

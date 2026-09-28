@@ -1,3 +1,4 @@
+import type { AnimationMotionData } from '@app/animation/animation-window.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { elementDataOf } from '@ui-kit';
 import { inspectorEls } from './element-registry.ts';
@@ -205,15 +206,15 @@ Inspector.initialize = function (this: typeof Inspector) {
 	processors['inspector-layer-change'] = (operation: string, data: InspectorLayerChangeData) => {
 		const { target, motion, direction } = data;
 		processors['inspector-change'](operation, data);
-		Animation.setMotion(motion);
-		Animation.setDirection(direction);
+		Animation.setMotion(motion as AnimationMotionData | null); // 面板载荷是动态类型：这里按运行期形状收窄一次
+		Animation.setDirection(direction as number);
 		Animation.openLayer(target);
 	};
 	processors['inspector-frame-change'] = (operation: string, data: InspectorLayerChangeData) => {
 		const { target, motion, direction } = data;
 		processors['inspector-change'](operation, data);
-		Animation.setMotion(motion);
-		Animation.setDirection(direction);
+		Animation.setMotion(motion as AnimationMotionData | null); // 面板载荷是动态类型：这里按运行期形状收窄一次
+		Animation.setDirection(direction as number);
 		Animation.selectFrame(target);
 	};
 	processors['script-parameter-change'] = (

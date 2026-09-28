@@ -9,8 +9,71 @@ import { Cursor } from '@app/composables/usePointerObjectWindow';
 import type { YamiElement } from '@app/types/element-api';
 import { clamp } from '@app/utils/math';
 
-// oxlint-disable-next-line no-explicit-any
-export const TileFrame: Record<string, any> = {
+/** 选框元素（`YMMarqueeArea` 挂上的运行期 API）—— 与 `engine/sprite/sprite.ts` 的 `SpriteMarquee` 同形 */
+interface TileFrameMarquee extends YamiElement {
+	visible: boolean;
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	scaleX: number;
+	scaleY: number;
+	select(x: number, y: number, width: number, height: number): void;
+}
+
+/** 信息文本元素：`marqueePointermove` 直接往它上面写 x/y */
+type TileFrameInfoElement = YamiElement & { x: number; y: number };
+
+/**
+ * 拖拽期间的指针事件：`marqueePointerdown` 会在**同一个事件对象**上挂这几个字段，
+ * `pointermove` / `pointerup` 随后读它（原先靠参数上的 `{ [k: string]: unknown }` 索引签名承接，
+ * 这里改成显式可选字段 —— 读侧因此仍需 `!` 或判空，但字段名受检）。
+ */
+type TileFrameDragEvent = PointerEvent & {
+	mode?: string;
+	screen?: HTMLElement & { scrollLeft: number; scrollTop: number };
+	scrollLeft?: number;
+	scrollTop?: number;
+};
+
+/**
+ * 帧索引窗口单例。
+ *
+ * 方法在**下面的对象字面量之后**逐个赋上实现（与本仓 `Data` 同一写法）：字面量里只放
+ * 取元素的 getter 与三个可变字段，方法不进字面量（进的话要么写 `null` 占位、要么就得
+ * 给每个读点补 `!`）。`satisfies Partial<…> as Partial<…> as …` 让「稍后装配」在类型上成立，
+ * 读侧（`TileFrame.open` / `AutoTile.editFrame` 那一票）因此都不必补 `!`。
+ *
+ * 方法成员**不写 `this` 形参**：它们经 `window.addEventListener` / `on(...)` 直接当监听器用，
+ * 而监听器位置的 `this` 是元素或 `window` —— 写死 `this: TileFrameShape` 会当场不可比。
+ */
+interface TileFrameShape {
+	get window(): YamiElement;
+	get screen(): YamiElement;
+	get clip(): YamiElement;
+	get mask(): YamiElement;
+	get image(): YamiElement;
+	get marquee(): TileFrameMarquee;
+	get info(): TileFrameInfoElement;
+	dragging: TileFrameDragEvent | null;
+	hframes: number | null;
+	vframes: number | null;
+	initialize: () => void;
+	open: () => void;
+	selectTileFrame: () => void;
+	scrollToSelection: () => void;
+	getDevicePixelClientBoxSize: (element: HTMLElement) => { width: number; height: number };
+	dprchange: (_event: Event) => void;
+	windowClosed: (_event: Event) => void;
+	keydown: (event: KeyboardEvent) => void;
+	marqueePointerdown: (event: TileFrameDragEvent) => void;
+	marqueePointermove: (event: PointerEvent) => void;
+	marqueePointerleave: (_event: Event) => void;
+	pointerup: (event: PointerEvent) => void;
+	pointermove: (event: PointerEvent) => void;
+}
+
+export const TileFrame = {
 	get window() {
 		return paletteEls.get('autoTile-frameIndex') as YamiElement;
 	},
@@ -27,28 +90,15 @@ export const TileFrame: Record<string, any> = {
 		return paletteEls.get('autoTile-frameIndex-image') as YamiElement;
 	},
 	get marquee() {
-		return paletteEls.get('autoTile-frameIndex-marquee') as YamiElement;
+		return paletteEls.get('autoTile-frameIndex-marquee') as TileFrameMarquee;
 	},
 	get info() {
-		return paletteEls.get('autoTile-frameIndex-info') as YamiElement;
+		return paletteEls.get('autoTile-frameIndex-info') as TileFrameInfoElement;
 	},
 	dragging: null,
 	hframes: null,
-	vframes: null,
-	initialize: null,
-	open: null,
-	selectTileFrame: null,
-	scrollToSelection: null,
-	getDevicePixelClientBoxSize: null,
-	dprchange: null,
-	windowClosed: null,
-	keydown: null,
-	marqueePointerdown: null,
-	marqueePointermove: null,
-	marqueePointerleave: null,
-	pointerup: null,
-	pointermove: null
-};
+	vframes: null
+} satisfies Partial<TileFrameShape> as Partial<TileFrameShape> as TileFrameShape;
 
 TileFrame.initialize = function (this: typeof TileFrame) {
 	if (!this.window) return;
@@ -65,18 +115,25 @@ TileFrame.open = function (this: typeof TileFrame) {
 	const MIN_CONTENT_WIDTH = 100;
 	const MIN_CONTENT_HEIGHT = 100;
 	const sprite = AutoTile.image;
+	// `AutoTile.image` 有三种状态：`null`（未打开）/ `symbol`（载图中，见 `auto-tile-engine.ts` 的
+	// `noImage` 哨兵）/ `HTMLImageElement`（已载入）。本窗口要 `.naturalWidth`/`.src` ⇒ 必须是后者。
+	// `AutoTile.editFrame` **已经**按同一条判定（`instanceof Image`）决定要不要打开本窗口，
+	// 所以这里的守卫是那条前提的落地（不是新行为路径）。
+	if (!(sprite instanceof Image)) return;
 	const windowFrame = this.window;
 	const screen = this.screen;
 	const clip = this.clip;
 	const mask = this.mask;
 	const image = this.image;
 	const marquee = this.marquee;
-	const tileWidth = Palette.tileset.tileWidth;
-	const tileHeight = Palette.tileset.tileHeight;
-	const frames = AutoTile.frames;
-	const offsetX = AutoTile.offsetX;
-	const offsetY = AutoTile.offsetY;
-	const index = frames[AutoTile.frameIndex];
+	const tileWidth = Palette.tileset!.tileWidth;
+	const tileHeight = Palette.tileset!.tileHeight;
+	// `frames` / `offsetX` / `offsetY` / `frameIndex` 的可空只在「窗口未打开」时成立；
+	// 能走到这里说明自动图块窗口正开着且有选中的模板/节点 ⇒ `!`（同 `AutoTile` 里那组不变式）。
+	const frames = AutoTile.frames!;
+	const offsetX = AutoTile.offsetX!;
+	const offsetY = AutoTile.offsetY!;
+	const index = frames[AutoTile.frameIndex!];
 	const hindex = offsetX + (index & 0xff);
 	const vindex = offsetY + (index >> 8);
 	const hframes = Math.floor(sprite.naturalWidth / tileWidth);
@@ -145,10 +202,12 @@ TileFrame.open = function (this: typeof TileFrame) {
 
 TileFrame.selectTileFrame = function (this: typeof TileFrame) {
 	let { x, y } = this.marquee;
-	x -= AutoTile.offsetX;
-	y -= AutoTile.offsetY;
+	// 同上：这是帧索引窗口的框选回调，窗口开着就说明自动图块那一侧的值都在。
+	x -= AutoTile.offsetX!;
+	y -= AutoTile.offsetY!;
 	if (x >= 0 && y >= 0) {
-		const { frames, frameIndex } = AutoTile;
+		const frames = AutoTile.frames!;
+		const frameIndex = AutoTile.frameIndex!;
 		frames[frameIndex] = Math.min(x | (y << 8), 0xffff);
 		AutoTile.changed = true;
 		AutoTile.updateFrameItem();
@@ -251,8 +310,10 @@ TileFrame.keydown = function (this: typeof TileFrame, event: KeyboardEvent) {
 					break;
 			}
 			const marquee = this.marquee;
-			const x = clamp(marquee.x + offsetX, 0, this.hframes - 1);
-			const y = clamp(marquee.y + offsetY, 0, this.vframes - 1);
+			// `hframes` / `vframes` 由 `open()` 填、`windowClosed` 置空；而本监听器正是 `open()` 里注册的
+			// ⇒ 走到这里必然非空（`!` 只写类型，运行期取值与原先逐字相同）。
+			const x = clamp(marquee.x + offsetX, 0, this.hframes! - 1);
+			const y = clamp(marquee.y + offsetY, 0, this.vframes! - 1);
 			if (marquee.x !== x || marquee.y !== y) {
 				marquee.select(x, y, 1, 1);
 				this.scrollToSelection();
@@ -262,10 +323,7 @@ TileFrame.keydown = function (this: typeof TileFrame, event: KeyboardEvent) {
 	}
 }.bind(TileFrame);
 
-TileFrame.marqueePointerdown = function (
-	this: typeof TileFrame,
-	event: PointerEvent & { [k: string]: unknown }
-) {
+TileFrame.marqueePointerdown = function (this: typeof TileFrame, event: TileFrameDragEvent) {
 	if (this.dragging) {
 		return;
 	}
@@ -367,8 +425,10 @@ TileFrame.pointermove = function (this: typeof TileFrame, event: PointerEvent) {
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
-				dragging.screen.scrollLeft = dragging.scrollLeft + dragging.clientX - event.clientX;
-				dragging.screen.scrollTop = dragging.scrollTop + dragging.clientY - event.clientY;
+				// 这两个字段由 `marqueePointerdown` 在同一个事件对象上写下（`!` 写明这条不变式）
+				dragging.screen!.scrollLeft =
+					dragging.scrollLeft! + dragging.clientX - event.clientX;
+				dragging.screen!.scrollTop = dragging.scrollTop! + dragging.clientY - event.clientY;
 				break;
 		}
 	}

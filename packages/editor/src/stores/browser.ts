@@ -453,7 +453,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		const path = `${dirname}/${fullname}`;
 		const route = File.path?.(path);
 		const json = data instanceof Object ? JSON.stringify(data, null, 2) : data;
-		FSP.writeFile(route, json)
+		FSP.writeFile(route, String(json))
 			.then(() => Directory?.update?.() ?? Promise.resolve(false))
 			.then((changed: unknown) => {
 				if (changed) {

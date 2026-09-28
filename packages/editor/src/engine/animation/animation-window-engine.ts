@@ -194,7 +194,7 @@ AnimationWindowEngine.drawEmitters = function (this: typeof Animation) {
 	const matrix = gl.matrix;
 	const { contexts } = this.player;
 	const { count } = contexts;
-	for (let i = 0; i < count; i++) {
+	for (let i = 0; i < count!; i++) {
 		const context = contexts[i];
 		const { layer, frame } = context;
 		if (layer.class === 'particle' && !layer.hidden && frame !== null) {
@@ -245,7 +245,7 @@ AnimationWindowEngine.emitParticles = function (this: typeof Animation, deltaTim
 	const { player } = this;
 	const { contexts } = player;
 	const { count } = contexts;
-	for (let i = 0; i < count; i++) {
+	for (let i = 0; i < count!; i++) {
 		const context = contexts[i];
 		const { layer } = context;
 		if (layer.class === 'particle' && !layer.hidden) {
@@ -359,7 +359,7 @@ AnimationWindowEngine.drawJointNodes = function (this: typeof Animation) {
 	const matrix = gl.matrix;
 	const { contexts } = this.player;
 	const { count } = contexts;
-	for (let i = 0; i < count; i++) {
+	for (let i = 0; i < count!; i++) {
 		const context = contexts[i];
 		const { layer, frame } = context;
 		if (layer.class === 'joint' && !layer.hidden && frame !== null) {
@@ -412,7 +412,7 @@ AnimationWindowEngine.drawJointArrows = function (this: typeof Animation) {
 	const matrix = gl.matrix;
 	const { contexts } = this.player;
 	const { count } = contexts;
-	for (let i = 0; i < count; i++) {
+	for (let i = 0; i < count!; i++) {
 		const context = contexts[i];
 		const { layer, frame, parent } = context;
 		if (
@@ -549,7 +549,7 @@ AnimationWindowEngine.drawHoverWireframe = function (this: typeof Animation) {
 	if (hover !== null && hover !== getAnimationStore().target) {
 		const { contexts } = this.player;
 		const { count } = contexts;
-		for (let i = 0; i < count; i++) {
+		for (let i = 0; i < count!; i++) {
 			const context = contexts[i];
 			if (context.frame === hover && !context.layer.hidden) {
 				switch (context.layer.class) {

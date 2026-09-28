@@ -47,7 +47,7 @@ Palette.setImage = function (this: typeof Palette, image: string) {
 	const tileset = getPaletteStore().tileset;
 	if (!tileset) return;
 	tileset.image = image;
-	this.loadImages();
+	void this.loadImages();
 };
 
 Palette.setSize = function (this: typeof Palette, width: number, height: number) {

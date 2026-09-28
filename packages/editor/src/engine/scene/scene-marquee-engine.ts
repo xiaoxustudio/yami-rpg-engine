@@ -1,5 +1,7 @@
 import { Data } from '@app/data/data-object.ts';
 import { Scene } from '@app/scene/scene-window.ts';
+import type { SceneMarqueeSaveData } from '@app/scene/scene-window.ts';
+import type { TileBuffer } from '@app/engine/scene/scene-edit-engine.ts';
 import { elementDataOf } from '@ui-kit';
 
 /**
@@ -30,7 +32,7 @@ const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarque
  * `.call(Scene.marquee, 5, 10, 20, 30)` 本来就传数字）。
  */
 interface SceneMarqueeEngineShape {
-	save: (this: typeof Scene.marquee, key?: string) => void;
+	save: (this: typeof Scene.marquee, key?: string | null) => void;
 	switch: (this: typeof Scene.marquee, key: string) => void;
 	resize: (this: typeof Scene.marquee) => void;
 	clear: (this: typeof Scene.marquee) => void;
@@ -41,26 +43,27 @@ interface SceneMarqueeEngineShape {
 		width?: number,
 		height?: number
 	) => void;
+	/** 三个 `selectIn*Mode` 的形参在实现里直接透传给 `select`（后者自带默认值）⇒ 声明成可选。 */
 	selectInPencilMode: (
 		this: typeof Scene.marquee,
-		x: number,
-		y: number,
-		width: number,
-		height: number
+		x?: number,
+		y?: number,
+		width?: number,
+		height?: number
 	) => void;
 	selectInRectMode: (
 		this: typeof Scene.marquee,
-		x: number,
-		y: number,
-		width: number,
-		height: number
+		x?: number,
+		y?: number,
+		width?: number,
+		height?: number
 	) => void;
 	selectInCopyMode: (
 		this: typeof Scene.marquee,
-		x: number,
-		y: number,
-		width: number,
-		height: number
+		x?: number,
+		y?: number,
+		width?: number,
+		height?: number
 	) => void;
 	selectInObjectMode: (this: typeof Scene.marquee, x: number, y: number) => void;
 	/** 返回图块数据；真正的形状还没收窄（`this.tiles` 仍走索引签名）⇒ 声明为 `unknown`。 */
@@ -69,11 +72,13 @@ interface SceneMarqueeEngineShape {
 
 export const SceneMarqueeEngine = {} as SceneMarqueeEngineShape;
 // 选框 - 保存状态
-SceneMarqueeEngine.save = function (this: typeof Scene.marquee, key = 'default') {
-	let data;
+SceneMarqueeEngine.save = function (this: typeof Scene.marquee, key: string | null = 'default') {
+	let data: SceneMarqueeSaveData;
 	switch (key) {
 		case 'object':
-			data = {} as Record<string, unknown>;
+			// `object` 槽**故意**是空对象（它的用途只是「占一个 key」，清位靠组件的 `restore` 置 null）——
+			// 与其它槽不同形，故在此收窄一次（第 236 轮：`Scene.marquee` 收口后这里才被检查到）。
+			data = {} as SceneMarqueeSaveData;
 			break;
 		case 'tile':
 			data = {
@@ -169,10 +174,10 @@ SceneMarqueeEngine.select = function (
 // 选框 - 选取矩形: 橡皮, 铅笔, 填充模式
 SceneMarqueeEngine.selectInPencilMode = function (
 	this: typeof Scene.marquee,
-	x: number,
-	y: number,
-	width: number,
-	height: number
+	x?: number,
+	y?: number,
+	width?: number,
+	height?: number
 ) {
 	this.backgroundColor = this.backgroundColorNormal;
 	this.borderColor = this.borderColorNormal;
@@ -186,10 +191,10 @@ SceneMarqueeEngine.selectInPencilMode = function (
 // 选框 - 选取矩形: 矩形, 椭圆模式
 SceneMarqueeEngine.selectInRectMode = function (
 	this: typeof Scene.marquee,
-	x: number,
-	y: number,
-	width: number,
-	height: number
+	x?: number,
+	y?: number,
+	width?: number,
+	height?: number
 ) {
 	this.backgroundColor = this.backgroundColorRect;
 	this.borderColor = this.borderColorRect;
@@ -201,10 +206,10 @@ SceneMarqueeEngine.selectInRectMode = function (
 // 选框 - 选取矩形: 复制模式
 SceneMarqueeEngine.selectInCopyMode = function (
 	this: typeof Scene.marquee,
-	x: number,
-	y: number,
-	width: number,
-	height: number
+	x?: number,
+	y?: number,
+	width?: number,
+	height?: number
 ) {
 	this.backgroundColor = this.backgroundColorCopy;
 	this.borderColor = this.borderColorCopy;
@@ -239,7 +244,10 @@ SceneMarqueeEngine.getTiles = function (this: typeof Scene.marquee, raw: boolean
 			const tileset = tilesets[guid];
 			if (tileset?.type === 'auto') {
 				if (dTiles === sTiles) {
-					dTiles = Scene.cloneTiles!(sTiles);
+					// `Scene.cloneTiles` 目前仍是 `SceneShape` 索引签名上的 `any`（收口它是另一轮的事），
+					// 这里按 `scene-edit-engine.ts:93` 的成员表收窄一次 —— 好让 `dTiles` 就此**确定**为
+					// `TileBuffer`（不这样做，`let dTiles = sTiles.standard` 的 `| undefined` 会一路带到循环里）。
+					dTiles = (Scene.cloneTiles as (sTiles: TileBuffer) => TileBuffer)(sTiles);
 				}
 				dTiles[i] = tile & 0xffffffc0;
 			}

@@ -123,8 +123,10 @@ const open = (
 	const MIN_CONTENT_HEIGHT = 100;
 	const windowFrame = composableEls.get('autoTile-selectNode') as YamiElement;
 	const screen = getScreen();
-	const tileWidth = Palette.tileset.tileWidth;
-	const tileHeight = Palette.tileset.tileHeight;
+	// `!`：这两个读点都发生在调色板已打开、`setTileSize` 之后（数值由那边的 `meta` 提供）；
+	// 桥键 `Palette.tileset` 类型上可空，而 `tileWidth` / `tileHeight` 在 `PaletteTilesetShape` 里是必填。
+	const tileWidth = Palette.tileset!.tileWidth;
+	const tileHeight = Palette.tileset!.tileHeight;
 	const nodesArr = sourceNodes as ArrayLike<unknown>;
 	const sourceHframes = Math.min(nodesArr.length, 8);
 	const sourceVframes = Math.ceil(nodesArr.length / 8);
@@ -202,14 +204,17 @@ const updateTransform = (): void => {
 	context!.setTransform(1, 0, 0, 1, -scrollLeft, -scrollTop);
 };
 
-const updateBackground = (...args: unknown[]): unknown => {
-	return Palette.updateBackground(...args);
+// `Palette.updateBackground` 的签名是**无参**（`palette-engine.ts:157`，读的都是单例上的字段）——
+// 原先这里把外部传来的实参透传过去，而那个实参从来用不到；收口后直接调用，行为一致。
+const updateBackground = (): unknown => {
+	return Palette.updateBackground();
 };
 
 const drawNodes = (): void => {
 	if (!nodes) return;
 	const drawContext = context!;
-	const tileset = Palette.tileset;
+	// `!`：绘制只发生在调色板打开之后（与上面 `tileWidth` 那两个读点同理）
+	const tileset = Palette.tileset!;
 	const drawImage = image!;
 	const drawNodesSource = nodes;
 	const length = drawNodesSource.length;
@@ -330,10 +335,13 @@ const keydown = (event: KeyboardEvent): void => {
 		case 'Enter':
 		case 'NumpadEnter': {
 			const { x, y } = getMarquee();
+			// 两个 `!`：`saveData.tile` 的类型是「保存槽或 null」（组件的 `restore` 会把它置 null），
+			// 而这里已由 `key === 'tile'` 走到 tile 槽 —— 它由 `save('tile')` 写入、一定带 `tiles`
+			// （见 `scene-marquee-engine.ts:78`）。运行期一行未改。
 			const tiles =
 				sceneMarqueeData(Scene.marquee).key === 'tile'
 					? Scene.marquee.tiles
-					: Scene.marquee.saveData.tile.tiles;
+					: Scene.marquee.saveData.tile!.tiles!;
 			const length = tiles.length;
 			for (let i = 0; i < length; i++) {
 				if (tiles[i] !== 0) {
@@ -445,7 +453,7 @@ const pointerup = (event: PointerEvent): void => {
 						const tiles =
 							sceneMarqueeData(Scene.marquee).key === 'tile'
 								? Scene.marquee.tiles
-								: Scene.marquee.saveData.tile.tiles;
+								: Scene.marquee.saveData.tile!.tiles!;
 						const length = tiles.length;
 						for (let i = 0; i < length; i++) {
 							if (tiles[i] !== 0) {

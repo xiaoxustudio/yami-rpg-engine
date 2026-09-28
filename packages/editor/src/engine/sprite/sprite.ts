@@ -169,7 +169,7 @@ Sprite.initialize = function (this: typeof Sprite) {
 Sprite.open = function (this: typeof Sprite, target: { spriteX: number; spriteY: number } | null) {
 	if (this.target !== target) {
 		this.close();
-		if (Animation.timelineMarquee.layer.sprite) {
+		if (Animation.timelineMarquee.layer!.sprite) {
 			this.state = 'loading';
 			this.target = target;
 			void this.loadImage();
@@ -249,7 +249,8 @@ Sprite.setZoom = (function IIFE() {
 
 Sprite.loadImage = async function (this: typeof Sprite) {
 	const symbol = (this.symbol = Symbol());
-	const name = Animation.timelineMarquee.layer.sprite;
+	// sprite 在 AnimationLayer 上声明为 unknown（那份类型是给图层数据用的）；选框所在图层必然有精灵名 ⇒ 收窄一次
+	const name = Animation.timelineMarquee.layer!.sprite as string;
 	let texture = Animation.player.textures[name];
 	if (texture instanceof Promise) {
 		texture = await texture;

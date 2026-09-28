@@ -35,7 +35,7 @@ export const Meta = (function IIFE() {
 		// 以下字段用 `declare` 仅作类型声明，运行期完全由 Object.defineProperties(this, descriptors) 定义为不可枚举属性。切勿写成类字段（如 `file;` 或 `file = null`）——useDefineForClassFields:true 下 TS 会发射 `Object.defineProperty(this,'file',{enumerable:true,...})`，使 JSON.stringify 看到 file -> FileItem.meta 循环引用。
 		declare file: FileItem;
 		declare guid: string;
-		declare mtimeMs: number | null;
+		declare mtimeMs: number | bigint | null;
 		declare versionId: number;
 		declare group: unknown[];
 		declare dataMap: Record<string, object> | null;
@@ -52,9 +52,19 @@ export const Meta = (function IIFE() {
 		parameters: ParamDef[] | null = null;
 		/**
 		 * 语言映射（运行期由元数据装载写入，编辑器侧没有静态写点）。
-		 * 形状取自 ui-kit 的读点：`meta.langMap.update().get(key)`（`YMParameterPane.vue:351/378`）。
+		 * 形状取自 ui-kit 的读点：`meta.langMap.active` 与 `meta.langMap.update().get(key)` /
+		 * `update().active`（`YMParameterPane.vue` 的 `windowLocalize`）。与 ui-kit 的
+		 * `ManifestEntry.langMap` **必须一致**，否则跨包 prop 绑定当场报 TS2322。
 		 */
-		declare langMap: { update(): { get(key: string | undefined): string } };
+		declare langMap: {
+			active: string;
+			update(): { active: string; get(key: string | undefined): string };
+		};
+		/**
+		 * 参数管理器（运行期由 `plugin-parse-meta.ts` 的 `Object.defineProperties` 挂上，
+		 * 值就是那里的 `OptionManager.sort()`）：ui-kit 的 `updateParamDisplay` 读 `states`。
+		 */
+		declare manager: { states: Record<string, boolean> };
 		/** 概览信息（运行期写入；ui-kit 只读 `overview.deprecated`，见 `:353-356`） */
 		declare overview?: { deprecated?: string };
 		// script 类型运行时由 Object.defineProperty 挂载（非枚举）

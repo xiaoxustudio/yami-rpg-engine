@@ -1,5 +1,6 @@
 import { UI } from './ui-singleton.ts';
 import { uiElClasses } from '@app/engine/ui/element-classes.ts';
+import type { UIElementInstance } from '@app/engine/ui/element-classes.ts';
 import type { UIShape, UINodeShape } from './ui-singleton.ts';
 import type { HoverNode } from './ui-facade.ts';
 // ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
@@ -16,23 +17,20 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 import type { YamiElement } from '@app/types/element-api';
 
 /**
+ * ⚠️ 这里原先有一个局部 `interface UIRootApi extends UINodeShape`（+ 三个文本/打印方法），
+ * 用来把 `getUIStore().root`（类型是 `UIElementInstance`）断言成「节点 + 额外成员」。
+ * 第 232 轮**删除**了它：`UINodeShape` 的索引签名退役后，那个断言的说法（「根实例也是节点数据」）
+ * 站不住 —— 根是**实例**，而这些函数真正遍历的也是**实例树**（下一句就 `instanceof uiElClasses.Text`
+ * 判定，那是实例判定）。方法本身（`updateTextContent` / `updatePrinter` / `resize`）现在
+ * 都声明在 `UIElementInstance` 上 ⇒ 读点不再需要任何断言或局部类型。
+ */
+
+/**
  * `updateTargetItem` 用到的 TreeList 专有方法（不在通用 `YamiElementApi` 上）。
  * 只补缺的那一个，避免为一个方法把整个 TreeList 类型搬进来。
  */
 interface UIListApi {
 	selectWithNoEvent(item: unknown): void;
-}
-
-/**
- * 遗留层各处对 UI 根节点实例的用法（`children` / 文本与打印刷新 / `resize`）。
- * `root` 已迁到 store，而 store 的类型把它标成 `UIElementInstance`（成员不够用）。
- * `extends UINodeShape` 是必需的：这些实例本身就要被当作 `UINodeShape` 传给
- * `update()` / `find()` 的递归参数，否则还得再断言一次。
- */
-interface UIRootApi extends UINodeShape {
-	updateTextContent?: () => void;
-	updatePrinter?: () => void;
-	resize(): void;
 }
 
 const setSize = function (this: UIShape, width: number, height: number) {
@@ -109,7 +107,9 @@ const revealTarget = (function IIFE() {
 	return function (this: UIShape) {
 		const target = getUIStore().target;
 		if (target && !timer.target) {
-			const instance = target.instance;
+			// `getUIStore().target` 是画布上**已装配**的节点 ⇒ `instance` 必存在
+			// （见 `element-classes.ts` 顶部对 `instance` / `instances` 可选的判定记录）。
+			const instance = target.instance!;
 			const matrix = instance.matrix;
 			const L = instance.x;
 			const T = instance.y;
@@ -181,10 +181,14 @@ const updateTargetItem = function (this: UIShape) {
 
 const updateElementFont = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
-		if (this.context.fontChanged) {
-			delete this.context.fontChanged;
+		// `state === 'open'` ⇒ 有打开的文档 ⇒ `this.context` 非空（`ui-file.ts` 的 `load()` 写、
+		// `close()` 时随 state 一起置回）。下面是本文件里同一前提的 3 组读点。
+		if (this.context!.fontChanged) {
+			delete this.context!.fontChanged;
 		}
-		const update = (element: UINodeShape) => {
+		// 递归遍历的是**实例树**（`root.children` 是 `UIElementInstance[]`），
+		// 下面的 `instanceof uiElClasses.Text` 也是实例判定 ⇒ 形参口径用实例类型。
+		const update = (element: UIElementInstance) => {
 			if (
 				element instanceof uiElClasses.Text! ||
 				element instanceof uiElClasses.TextBox! ||
@@ -193,10 +197,16 @@ const updateElementFont = function (this: UIShape) {
 			) {
 				let el = element;
 				if (el instanceof uiElClasses.Button!) {
-					el = el.shadowText;
+					// Button 的 `shadowText` 是它自己的文本子元素，构造时就建好
+					// （`button-element.ts:98` 的 `this.shadowText = this.createShadowText(data)`）
+					// ⇒ 这里用 `!`（缺了会当场抛，与原先「索引签名免检」时的行为一致）。
+					el = el.shadowText!;
 				}
+				// `printer` 在文本类元素的构造函数里就是 `null` 起步
+				// （`text-element.ts:77` / `text-box-element.ts:85`），只有文本类元素有它 ——
+				// 而能走到这里的前提正是上面那组 `instanceof` 判定 ⇒ `!` 表达「文本元素必有该成员」。
 				if (el.printer !== null) {
-					el.printer.reset();
+					el.printer!.reset();
 					if (el._font === '') {
 						el._font = undefined;
 						el.font = '';
@@ -210,39 +220,39 @@ const updateElementFont = function (this: UIShape) {
 				update(children[i]);
 			}
 		};
-		const root = getUIStore().root as UIRootApi | null;
+		const root = getUIStore().root;
 		if (root) update(root);
 	}
 };
 
 const updateElementLanguage = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
-		if (this.context.languageChanged) {
-			delete this.context.languageChanged;
+		if (this.context!.languageChanged) {
+			delete this.context!.languageChanged;
 		}
-		const update = (elements: UINodeShape[]) => {
+		const update = (elements: UIElementInstance[]) => {
 			for (const element of elements) {
 				element.updateTextContent?.();
 				update(element.children);
 			}
 		};
-		update((getUIStore().root as UIRootApi | null)?.children ?? []);
+		update(getUIStore().root?.children ?? []);
 		UIEngine.requestRendering!.call(this);
 	}
 };
 
 const updateElementTextScaling = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
-		if (this.context.scalingChanged) {
-			delete this.context.scalingChanged;
+		if (this.context!.scalingChanged) {
+			delete this.context!.scalingChanged;
 		}
-		const update = (elements: UINodeShape[]): void => {
+		const update = (elements: UIElementInstance[]): void => {
 			for (const element of elements) {
 				element.updatePrinter?.();
 				update(element.children);
 			}
 		};
-		update((getUIStore().root as UIRootApi | null)?.children ?? []);
+		update(getUIStore().root?.children ?? []);
 		UIEngine.requestRendering!.call(this);
 	}
 };
@@ -251,9 +261,13 @@ const updateIndexedColor = function (this: UIShape, index: number) {
 	if (getUIStore().state === 'open') {
 		const TextElement = uiElClasses.Text!;
 		const regexp = new RegExp(`<color:${index}>`, 'i');
-		const update = (element: UINodeShape): void => {
-			if (element instanceof TextElement && regexp.test(element.content)) {
-				element.printer.reset();
+		const update = (element: UIElementInstance): void => {
+			// `content` 只有文本类元素有（数据形状里可选）。`regexp.test(undefined)` 与
+			// `regexp.test('')` 对这个正则（`<color:N>`）都是 false，所以 `?? ''` 不改变行为、
+			// 也不需要再包一层 `!== undefined` 判断。
+			if (element instanceof TextElement && regexp.test(element.content ?? '')) {
+				// `printer` 同上一处：文本类元素的构造函数里必有它（`null` 起步）。
+				element.printer!.reset();
 				UIEngine.requestRendering!.call(this);
 			}
 			const children = element.children;
@@ -262,7 +276,7 @@ const updateIndexedColor = function (this: UIShape, index: number) {
 				update(children[i]);
 			}
 		};
-		const root = getUIStore().root as UIRootApi | null;
+		const root = getUIStore().root;
 		if (root) update(root);
 	}
 };
@@ -289,16 +303,18 @@ const updateAllPrinters = function (this: UIShape) {
 
 const updateAllReferences = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
-		const update = (elements: UINodeShape[]): void => {
+		const update = (elements: UIElementInstance[]): void => {
 			for (const element of elements) {
 				if (element instanceof uiElClasses.Reference!) {
-					element.update();
+					// `update` 是引用元素自己的方法（`reference-element.ts:127`），
+					// 上面的 `instanceof` 已证明类型；`!` 与原先「索引签名免检」的运行期行为一致。
+					element.update!();
 				} else {
 					update(element.children);
 				}
 			}
 		};
-		update((getUIStore().root as UIRootApi | null)?.children ?? []);
+		update(getUIStore().root?.children ?? []);
 	}
 };
 
@@ -308,7 +324,7 @@ const updateElement = function (this: UIShape, target: UINodeShape) {
 	let nodes: UINodeShape[] = [];
 	let instance;
 	const rootNodes = getUIStore().nodes as UINodeShape[] | null;
-	const root = getUIStore().root as UIRootApi | null;
+	const root = getUIStore().root;
 	if (rootNodes?.includes(target)) {
 		nodes = rootNodes;
 		instance = root;
@@ -321,8 +337,11 @@ const updateElement = function (this: UIShape, target: UINodeShape) {
 		 * 也没有序列化成员，只是为了把 store 的 root 与 nodes 凑成一次查找的入口。
 		 * 按读点收成这个局部形状之后，包装对象与递归用的真实节点都能传进来（断言消失）——
 		 * 与 `SceneAnimateThis` / `SceneSelectionThis` 是同一手法。
+		 *
+		 * `instance` 的类型是**元素实例**（不是 `UIRootApi` 那种「节点 + 附加成员」的混合体）：
+		 * 顶层来自 store 的根实例，下钻时来自真实节点的 `node.instance`。
 		 */
-		type FindNode = { children: UINodeShape[]; instance?: UIRootApi | null };
+		type FindNode = { children: UINodeShape[]; instance?: UIElementInstance | null };
 		const find = (node: FindNode): FindNode | null => {
 			const children = node.children;
 			if (children.includes(target)) {
@@ -343,14 +362,21 @@ const updateElement = function (this: UIShape, target: UINodeShape) {
 		}
 	}
 	if (instance) {
-		instance.appendChildTo(target.instance, nodes.indexOf(target));
+		// `appendChildTo` 的首参就是「要挂成子元素的实例」，而 `target.instance` 在类型上
+		// 还可能是 `undefined`（数据形状里可选）；该方法的头一句是 `instanceof` 判定 ⇒
+		// `undefined` 与 `null` 行为完全相同（都不进 `if`），这里只是把两者归一到同一写法。
+		instance.appendChildTo(target.instance ?? null, nodes.indexOf(target));
 	}
 	UIEngine.requestRendering!.call(this);
 };
 
 const deleteElement = function (this: UIShape, target: UINodeShape) {
-	target.instance.remove();
-	target.instance.destroy();
+	// 删除的是**实例**：`remove()` 从父元素的 `children` 里摘掉自己、`destroy()` 再从
+	// `node.instances` 里摘掉（`element-base.ts:241` / `:287`）。`target` 是当前选中的节点
+	// ⇒ 必已装配，`instance` 存在（同 `element-classes.ts` 顶部那条不变式）。
+	const instance = target.instance!;
+	instance.remove();
+	instance.destroy();
 };
 
 const updateHead = function (this: UIShape) {
@@ -402,7 +428,7 @@ const resize = function (this: UIShape) {
 		UIEngine.updateTransform!.call(this);
 		// `root` 已迁到 store（`ui-file.ts` 里写入），`this.root` 是 `undefined`
 		// ⇒ `Cannot read properties of undefined (reading 'resize')`（2026-09-18）。
-		(getUIStore().root as UIRootApi | null)?.resize();
+		getUIStore().root?.resize();
 		this.marquee.resize();
 		this.screen.updateScrollbars();
 	}

@@ -166,7 +166,7 @@ Home.parseRecentProjects = function (this: typeof Home) {
 
 		const path = item.path;
 		const dirname = Path.dirname!(path);
-		new Promise<string>((resolve: (val: string) => void, reject: (err: unknown) => void) => {
+		new Promise<string>((resolve, reject) => {
 			if (FS.existsSync!(path)) {
 				const dPath = `${dirname}/data/config.json`;
 				resolve(FSP.readFile!(dPath, 'utf8'));

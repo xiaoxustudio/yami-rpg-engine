@@ -1,4 +1,5 @@
 import { elementDataOf } from '@ui-kit';
+import type { MenuItem } from '@ui-kit';
 import { sceneEls } from '@app/scene/element-registry';
 import { registryElement } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
@@ -17,6 +18,8 @@ import { Layout, headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import { Palette } from '@app/palette/palette.ts';
 import { Particle } from '@app/particle/particle-window.ts';
 import { ObjectFolder } from './default-object-folder.ts';
+import type { SceneItem } from './scene-list.ts';
+import type { TileBuffer } from '@app/engine/scene/scene-edit-engine.ts';
 import { SceneShift } from './move-scene.ts';
 import { TilemapShortcuts } from './tilemap-shortcut-list.ts';
 import { History } from '@app/tools/history.ts';
@@ -42,6 +45,86 @@ interface SceneSearcherExtensions {
 	deleteInputContent?(): void;
 	addCloseButton?(): void;
 	addKeydownFilter?(): void;
+}
+
+/**
+ * 选框的一个「保存槽」（`Scene.marquee.save(key)` 的产物）。
+ *
+ * 注意**两种形状并存**，这是既有事实、不是这里写松了：
+ * - `ui-kit` 的 `YMMarqueeArea.vue:5` 存的是 `x/y/width/height/scaleX/scaleY`；
+ * - `engine/scene/scene-marquee-engine.ts:72` 的 `save`（运行时**覆盖**了组件那个）存的是
+ *   `x/y/width/height/offsetX/offsetY` 再加 `tiles` 或 `terrain`，**不含** `scaleX/scaleY`。
+ *
+ * 于是字段全写成可选、`scaleX/scaleY` 也在内（组件侧 `restore` 会读它们）。
+ */
+export type SceneMarqueeSaveData = {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	scaleX?: number;
+	scaleY?: number;
+	offsetX?: number;
+	offsetY?: number;
+	tiles?: TileBuffer;
+	terrain?: number;
+};
+
+/**
+ * `Scene.marquee`（场景选框）运行时挂载的扩展 —— 第 236 轮收口（此前该字段挂 `{ [k: string]: any }`）。
+ *
+ * 成员来源三处，逐条对齐：
+ * 1. `ui-kit` 的 `YMMarqueeArea.vue`（组件实例属性 + `onMounted` 挂上的元素方法）：
+ *    `x` / `y` / `width` / `height` / `scaleX` / `scaleY` / `visible` / `saveData`，
+ *    以及 `save` / `restore` / `resize` / `clear` / `select`；
+ * 2. `engine/scene/scene-marquee-engine.ts`：覆盖其中 4 个（`save` / `resize` / `clear` / `select`），
+ *    并补 `switch` / `selectInPencilMode` / `selectInRectMode` / `selectInCopyMode` /
+ *    `selectInObjectMode` / `getTiles`；
+ * 3. 本文件 `Scene.initialize`（`scene-window.ts:600` 起）另挂的选框状态：
+ *    `offsetX` / `offsetY` / `tilesetMap` / `tiles` / `terrain` / `previewTiles` / `pointerevent`
+ *    与 7 个颜色字段（`*Normal` / `*Copy` / `*Rect` / `backgroundColorInvalid`）。
+ */
+interface SceneMarqueeExtensions {
+	// —— 组件（`YMMarqueeArea.vue`） ——
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	scaleX: number;
+	scaleY: number;
+	visible: boolean;
+	saveData: Record<string, SceneMarqueeSaveData | null>;
+	/** `key` 也接受 `null`：引擎的 `switch` 会把「上一个 key」（可能是 null）直接传进来（原样保留该行为）。 */
+	save: (key?: string | null) => void;
+	restore: (key?: string) => void;
+	resize: () => void;
+	clear: () => void;
+	select: (x?: number, y?: number, width?: number, height?: number) => void;
+	// —— 场景引擎（`scene-marquee-engine.ts`） ——
+	switch: (key: string) => void;
+	/** 三个 `selectIn*Mode` 的形参在实现里可直接透传给 `select`（后者自带默认值）⇒ 声明成可选。 */
+	selectInPencilMode: (x?: number, y?: number, width?: number, height?: number) => void;
+	selectInRectMode: (x?: number, y?: number, width?: number, height?: number) => void;
+	selectInCopyMode: (x?: number, y?: number, width?: number, height?: number) => void;
+	selectInObjectMode: (x: number, y: number) => void;
+	getTiles: (raw: boolean) => unknown;
+	// —— 本文件另挂 ——
+	offsetX: number;
+	offsetY: number;
+	tilesetMap: Record<string, string>;
+	tiles: TileBuffer;
+	terrain: number;
+	previewTiles: boolean;
+	pointerevent: PointerEvent | null;
+	borderColor: number[];
+	backgroundColor: number[];
+	borderColorNormal: number[];
+	borderColorCopy: number[];
+	borderColorRect: number[];
+	backgroundColorNormal: number[];
+	backgroundColorCopy: number[];
+	backgroundColorRect: number[];
+	backgroundColorInvalid: number[];
 }
 
 interface SceneListExtensions {
@@ -70,6 +153,45 @@ interface SceneListExtensions {
 	// creators/updaters 数组（运行时挂载，供 push 挂载方法）
 	creators: unknown[];
 	updaters: unknown[];
+
+	// —— 第 235 轮补的 17 条：这些成员此前靠字段上的 `{ [k: string]: any }` 兜着 ——
+	//
+	// 分两类，形参口径按**实现侧到底谁在实现**给：
+	// ① 实现在 `ui-kit` 的树列表契约里（`update` / `resize` / `bind` / `rename` / `restore` /
+	//    `searchNodesDebounced` / `selectWithNoEvent` / `expandToSelection` / `scrollToSelection` /
+	//    `unselect` / `updateItemName` / `addNodeTo` / `getItemByProperties`）——
+	//    它们的形参由组件侧决定，这里只需「能收下调用点传的东西」，故用 `unknown`/宽松签名；
+	// ② 实现在本地 `scene-list.ts`（`duplicate` / `createFolder` / `createTilemapShortcutItems` /
+	//    `updateFolderState` / `canSwitchState`）—— 形参必须与那边的 `SceneItem` **逐字相容**
+	//    （strictFunctionTypes 下函数属性是逆变的），所以直接引用该类型（第 235 轮把它导出了）。
+	update: () => unknown;
+	resize: () => unknown;
+	/** 绑定行数据源（`scene-window.ts:621` 的 `list.bind(() => this.objects)`）。 */
+	bind: (data: () => unknown) => unknown;
+	rename: (item: unknown) => unknown;
+	/** 撤销/重做处理器用：`restore(operation, response)`（`scene-window.ts:628` 起 4 处）。 */
+	restore: (operation: string, response: unknown) => unknown;
+	searchNodesDebounced: (keyword: string) => unknown;
+	selectWithNoEvent: (item: unknown) => unknown;
+	expandToSelection: () => unknown;
+	scrollToSelection: () => unknown;
+	unselect: (item: unknown) => unknown;
+	updateItemName: (item: unknown) => unknown;
+	/** 首个参数是**被加进列表的项**（`Inspector.*.create()` 的产物 / `createFolder()` 的返回值）。 */
+	addNodeTo: (item: unknown, dItem?: unknown, insertBefore?: boolean) => unknown;
+	duplicate: (item: SceneItem) => unknown;
+	getItemByProperties: (properties: { class: string; name: string }) => SceneItem | undefined;
+	createFolder: () => {
+		class: string;
+		name: string;
+		expanded: boolean;
+		hidden: boolean;
+		locked: boolean;
+		children: unknown[];
+	};
+	createTilemapShortcutItems: (tilemap: SceneItem) => MenuItem[];
+	updateFolderState: (item: SceneItem, key: string) => unknown;
+	canSwitchState: (item: SceneItem) => boolean;
 }
 
 /**
@@ -87,12 +209,11 @@ export interface SceneShape {
 	screen: YamiElement;
 	// marquee 运行时挂载 .resize()/.terrain/.previewTiles/.pointerevent/.save/.switch/.select/.getTiles 等大量扩展 用 [ k: string ]: any 索引签名兜底所有运行时挂载字段，避免穷举
 	// oxlint-disable-next-line no-explicit-any
-	marquee: HTMLElement & { [k: string]: any };
+	marquee: HTMLElement & SceneMarqueeExtensions;
 	// searcher 运行时挂载 TextBox 的实例 API（`components/common/TextBox.vue` 暴露、经元素 API 挂上）
 	// 声明为可选：不保证每种形态都挂全，调用点用 `?.` / `!` 兜底
 	searcher: HTMLElement & SceneSearcherExtensions;
-	// oxlint-disable-next-line no-explicit-any
-	list: HTMLElement & SceneListExtensions & { [k: string]: any };
+	list: HTMLElement & SceneListExtensions;
 	initialize: (() => void) | null;
 	open: ((context: SceneContextShape) => void) | null;
 	close: (() => void) | null;
@@ -107,7 +228,23 @@ export interface SceneShape {
 	undo: (() => void) | null;
 	redo: (() => void) | null;
 	planToSave: (() => void) | null;
-	requestRendering: (() => void) | null;
+	/**
+	 * 渲染请求 —— **非空**（第 237 轮）：模块加载期由 `scene-window.ts` / 引擎镜像赋值，
+	 * 之前那个 `| null` 只是字面量里的 `null` 占位（已删），运行期没有一处把它写回 `null`。
+	 */
+	requestRendering: () => void;
+	/**
+	 * 舞台面（第 237 轮）：`Particle.Element.stage = Scene`（`scene-window.ts:1067`）要求这五项 ——
+	 * 它们由 `Scene.initialize` 赋真值（`this.matrix = new Matrix()`，`scene-window.ts:700`；
+	 * `scroll*` 由 `Scene.resize` 从屏幕滚动量算出），运行期没有任何一处写回 `null`。
+	 * 字面量里那 5 行 `null` 占位已删（与 `pointerevent` 那类「参与判等」的占位不同 ——
+	 * 这五个只参与绘制期算术，全部发生在 `initialize` 之后）。
+	 */
+	matrix: Matrix;
+	scrollLeft: number;
+	scrollTop: number;
+	scrollRight: number;
+	scrollBottom: number;
 	saveToConfig: ((config: EditorConfigShape) => void) | null;
 	loadFromConfig: ((config: EditorConfigShape) => void) | null;
 	saveToProject: ((project: EditorProjectShape) => void) | null;
@@ -169,14 +306,16 @@ export interface SceneContextShape {
 
 type PresetNodeShape = { presetId: string; children?: unknown } & Record<string, unknown>;
 
-export const Scene: SceneShape = {
+export const Scene = {
 	page: sceneEls.get('scene') as YamiElement,
 	head: sceneEls.get('scene-head') as YamiElement,
 	body: hide(sceneEls.get('scene-body') as YamiElement),
 	info: sceneEls.get('scene-info') as YamiElement,
 	screen: sceneEls.get('scene-screen') as YamiElement,
-	// oxlint-disable-next-line no-explicit-any
-	marquee: sceneEls.get('scene-marquee') || ({} as HTMLElement & { [k: string]: any }),
+	// 选框元素是 vue 组件（`YMMarqueeArea.vue`）建的 ⇒ 走具名注册表收窄（与 `ui-singleton.ts` 的 `ui-list` 同一手法）
+	marquee:
+		registryElement<SceneShape['marquee']>(sceneEls, 'scene-marquee') ??
+		({} as SceneShape['marquee']),
 	searcher: sceneEls.get('scene-searcher') as YamiElement,
 	list: (sceneEls.get('scene-list') as never) || ({} as never),
 	dragging: null,
@@ -192,7 +331,8 @@ export const Scene: SceneShape = {
 	animationFrame: null,
 	animationElapsed: null,
 	background: null,
-	matrix: null,
+	// `matrix` / `scroll*` 的 `null` 占位在第 237 轮删除（见 `SceneShape` 上那两条说明）：
+	// 它们是舞台面成员，非空声明 + `Particle.Element.stage = Scene` 的赋值点现在受检查。
 	zoomTimer: null,
 	scale: null,
 	scaledTileWidth: null,
@@ -200,10 +340,6 @@ export const Scene: SceneShape = {
 	aspectRatio: null,
 	outerWidth: null,
 	outerHeight: null,
-	scrollLeft: null,
-	scrollTop: null,
-	scrollRight: null,
-	scrollBottom: null,
 	scrollCenterX: null,
 	scrollCenterY: null,
 	centerOffsetX: null,
@@ -363,7 +499,6 @@ export const Scene: SceneShape = {
 	requestAnimation: null,
 	updateAnimation: null,
 	stopAnimation: null,
-	requestRendering: null,
 	renderingFunction: null,
 	stopRendering: null,
 	switchLayer: null,
@@ -433,7 +568,11 @@ export const Scene: SceneShape = {
 	listPageResize: null,
 	Textures: null,
 	Point: null
-};
+	// 第 237 轮改用单例惯用式（与 `particle-window.ts:405` / `ui-singleton.ts` 同一手法）：
+	// `SceneShape` 里已声明为**非空**的舞台面成员（`matrix` / `scroll*` / `requestRendering`）
+	// 不再需要在字面量里放 `null` 占位 —— 它们由 `Scene.initialize` 赋真值，
+	// 而 `Particle.Element.stage = Scene` 那个赋值点现在真正受检查了。
+} satisfies Partial<SceneShape> as Partial<SceneShape> as SceneShape;
 
 /** marquee 元素上的元素数据（`key` 原先靠原型访问器透明落到 WeakMap） */
 interface SceneMarqueeData {
@@ -441,20 +580,21 @@ interface SceneMarqueeData {
 }
 const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
-Scene.marquee.key = null;
-Scene.marquee.offsetX = null;
-Scene.marquee.offsetY = null;
-Scene.marquee.tilesetMap = null;
-Scene.marquee.tiles = null;
-Scene.marquee.terrain = null;
-Scene.marquee.previewTiles = false;
+// ⚠️ 第 236 轮：这里原有 14 行「装载期占位」（`Scene.marquee.X = null` / `previewTiles = false` /
+// `key = null`），现在**整块删除**：
+// - 那 10 个方法（`switch` / `selectIn*Mode` / `getTiles` 等）在 `SceneMarqueeExtensions` 里是**真声明**，
+//   写 `null` 既编不过也不再需要 —— 真实实现在 `scene-marquee.ts`（`SceneMarqueeEngine` 的逐条镜像）
+//   与 `YMMarqueeArea.vue` 的**模块/挂载期**赋值，调用点全在用户交互之后；
+// - `key` 的正源是**元素数据**（`marqueeData(this.marquee).key`，见上面那个接口与
+//   `scene-marquee-engine.ts:128`），直接写属性那一行是原型访问器退役前的残留；
+// - `offsetX` / `offsetY` / `tilesetMap` / `tiles` / `terrain` / `pointerevent` 的真实初值都在
+//   `Scene.initialize` 里（`scene-window.ts:675` 那一批），此处的中转 `null` 没有任何作用。
+//
+// 但下面**两行保留**，理由与前 12 行不同 —— 它们的初值参与运行期**判等**：
+// `scene-events-pointer.ts:244/292/301/305` 用 `marquee.pointerevent === null` / `!== null` 判断
+// 「当前有没有拖拽中的指针」，初值若是 `undefined` 会走进另一条分支；`previewTiles` 同理保留 `false`。
 Scene.marquee.pointerevent = null;
-Scene.marquee.switch = null;
-Scene.marquee.selectInPencilMode = null;
-Scene.marquee.selectInRectMode = null;
-Scene.marquee.selectInCopyMode = null;
-Scene.marquee.selectInObjectMode = null;
-Scene.marquee.getTiles = null;
+Scene.marquee.previewTiles = false;
 
 // `page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 elementDataOf<{ page?: HTMLElement | null }>(Scene.list).page = sceneEls.get(
@@ -463,9 +603,10 @@ elementDataOf<{ page?: HTMLElement | null }>(Scene.list).page = sceneEls.get(
 elementDataOf<{ head: HTMLElement }>(Scene.list).head = sceneEls.get(
 	'scene-list-head'
 ) as YamiElement;
-Scene.list.createTilemapShortcutItems = null;
-Scene.list.updateFolderState = null;
-Scene.list.canSwitchState = null;
+// ⚠️ 第 235 轮：`Scene.list.createTilemapShortcutItems = null` / `updateFolderState` / `canSwitchState`
+// 三行占位**已删除**：它们在 `SceneListExtensions` 里现在是**真声明**（非空），写 `null` 既编不过、
+// 也不再需要。行为不变 —— 真实实现在 `scene-list.ts:145/224/263` 的**模块加载期**赋值，
+// 而调用点全在用户交互路径（与 `ui-singleton.ts` 里那批 `UI.list.* = null` 占位同一处理）。
 
 Scene.initialize = function (this: SceneShape) {
 	this.page = sceneEls.get('scene') as YamiElement;
@@ -474,16 +615,13 @@ Scene.initialize = function (this: SceneShape) {
 	this.info = sceneEls.get('scene-info') as YamiElement;
 	this.screen = sceneEls.get('scene-screen') as YamiElement;
 	const oldMarquee = this.marquee;
-	this.marquee = sceneEls.get('scene-marquee') as YamiElement;
+	this.marquee = registryElement<SceneShape['marquee']>(sceneEls, 'scene-marquee')!;
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
 	this.searcher = sceneEls.get('scene-searcher') as YamiElement;
 	const oldList = this.list;
-	this.list = registryElement<
-		// oxlint-disable-next-line no-explicit-any
-		HTMLElement & SceneListExtensions & { [k: string]: any }
-	>(sceneEls, 'scene-list')!;
+	this.list = registryElement<HTMLElement & SceneListExtensions>(sceneEls, 'scene-list')!;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
@@ -627,7 +765,7 @@ Scene.initialize = function (this: SceneShape) {
 	};
 	History.processors['scene-object-create'] = (
 		operation: string,
-		data: { response: unknown; parent: unknown }
+		data: { response: unknown; parent: SceneItem }
 	) => {
 		const { response, parent } = data;
 		list.restore(operation, response);
@@ -636,7 +774,7 @@ Scene.initialize = function (this: SceneShape) {
 	};
 	History.processors['scene-object-delete'] = (
 		operation: string,
-		data: { response: { item: { parent: unknown } } }
+		data: { response: { item: { parent: SceneItem } } }
 	) => {
 		const { response } = data;
 		const parent = response.item.parent;
@@ -646,7 +784,7 @@ Scene.initialize = function (this: SceneShape) {
 	};
 	History.processors['scene-object-remove'] = (
 		operation: string,
-		data: { response: { source: { parent: unknown }; destination: { parent: unknown } } }
+		data: { response: { source: { parent: SceneItem }; destination: { parent: SceneItem } } }
 	) => {
 		const { response } = data;
 		const sParent = response.source.parent;
@@ -1321,7 +1459,9 @@ Scene.getDefaultObjectFolder = function (this: SceneShape, kind: string) {
 		? null
 		: this.list.getItemByProperties({
 				class: 'folder',
-				name: name
+				// `!name` 已排除 falsy；`defaultFolders` 就是「class → 文件夹名」这张表（值必是字符串），
+				// 而它来自 `Editor.project!.scene` 的宽松类型（`Record<string, unknown>`）⇒ 这里收窄一次。
+				name: name as string
 			});
 };
 

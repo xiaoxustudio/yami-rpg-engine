@@ -126,11 +126,11 @@ Animation.close = function (this: typeof Animation) {
 		getAnimationStore().state = 'closed';
 		this.context = null;
 		this.meta = null;
-		this.player = null;
+		this.player = null!; // 关闭文件时清空（读点都在打开状态内）
 		getAnimationStore().mode = null;
-		this.sprites = null;
+		this.sprites = null!; // 关闭文件时清空：类型上非空（读点都在打开状态内）
 		this.motions = null;
-		this.history = null;
+		this.history = null!; // 关闭文件时清掉：类型上非空（读点都在打开状态内），这里按收尾赋值
 		write(this.searcher, '');
 		clear(this.list);
 		clear(this.layerList);

@@ -28,6 +28,30 @@ interface CommandListShape {
 	findIndex: (cb: (v: unknown) => boolean) => number;
 	[i: number]: CommandItemElement & { fold?: boolean; mark?: string; buffer?: unknown };
 }
+
+/**
+ * `applyLineClasses` 真正用到的**行面**：除 `classList` 外全部可选。
+ *
+ * 这样 `Array.from(querySelectorAll('.command-item'))`（`Element[]`）能**直接**赋入 ——
+ * 原先复用 `CommandListShape` 时，它的数值索引签名要求完整的 `CommandItemElement`，
+ * 而查询回来的只是 `Element`，于是不得不写一次 `as unknown as` 跳板。
+ * 现在离屏元素（`CommandListShape`）与渲染行（`Element[]`）都结构满足本接口，两处都不再需要断言。
+ */
+interface CommandLineRow {
+	classList: DOMTokenList;
+	lines?: (HTMLElement & { mark?: string })[];
+	dataIndent?: number;
+	dataItem?: unknown;
+	fold?: boolean;
+	mark?: string;
+}
+
+/** 行集合：`count` 之外还有数值索引（离屏数组与 `Element[]` 都满足） */
+interface CommandLineRows {
+	count: number;
+	lineClassEnabled?: boolean;
+	[i: number]: CommandLineRow;
+}
 export function updateCommandElement(
 	this: typeof CommandList & { computeTextIndent: (indent: number) => string },
 	element: CommandItemElement
@@ -59,14 +83,12 @@ export function updateCommandElement(
 		element.lines[i] = line;
 	}
 
-	// ⚠️ 第 136 轮实测：内层这处**不能**降成单次 `as` —— `CommandList.prototype.elements` 的静态类型是
-	// `(...args: any[]) => any`（类侧是松散类型），与 `CommandListShape` 不可比 ⇒ `TS2352:
-	// neither type sufficiently overlaps`，`unknown` 跳板**承重**。（外层那处单次 `as` 是第 116 轮加上的，
-	// 两处作用不同：外层把「`elements` 或 `prototype.elements`」这个联合收成 `CommandListShape`。）
-	const list = ((this as { elements?: CommandListShape }).elements ??
-		(CommandList.prototype.elements as unknown as
-			| CommandListShape
-			| undefined)) as CommandListShape;
+	// `commandListPrototype` 上**没有** `elements` 成员 —— 它只在实例上由 `createCommandListApi`
+	// 赋值（ui-kit `command-api.ts` 的 `list.elements = Object.assign([], …)`），原型链上读到的是
+	// `undefined`。原先 `this.elements ?? CommandList.prototype.elements` 里的兜底分支因此恒为
+	// `undefined`（与「`this.elements` 不存在」同值），是死分支；删掉后这处只剩一次 `as`
+	// （`CommandListShape | undefined` → `CommandListShape`），运行期取值与原先逐字相同。
+	const list = (this as { elements?: CommandListShape }).elements as CommandListShape;
 	if (!element?.eventBinding) {
 		on(element, 'mouseenter', function () {
 			let indent: number | null = null;
@@ -116,7 +138,7 @@ export function updateCommandElement(
 }
 
 // 计算每条缩进线的显示状态：折叠块 header 短竖线、块结束标记（footer）L 形收尾、其余内容行隐藏
-function applyLineClasses(list: CommandListShape): void {
+function applyLineClasses(list: CommandLineRows): void {
 	if (!(list as { lineClassEnabled?: boolean }).lineClassEnabled) return;
 	// 反向遍历：每条竖线「延续 / 收尾」取决于其后是否还有同层/更深内容；
 	// 块结束标记（footer）做 L 形收尾；顶层不可折叠指令与普通内容行不显示折叠线
@@ -124,7 +146,10 @@ function applyLineClasses(list: CommandListShape): void {
 	for (let i = list.count - 1; i >= 0; i--) {
 		const e = list[i];
 		if (!e?.lines) continue;
-		const d = e.dataIndent;
+		// `dataIndent` 在行面里是可选的（渲染行是 `Element`），取不到时用 -1：
+		// 原先 `e.lines[undefined]` 与 `e.lines[-1]` 同样读到 `undefined`，
+		// `for (indent = 0; indent < undefined)` 与 `< -1` 亦同样零次 —— 取值逐字相同。
+		const d = e.dataIndent ?? -1;
 		const isReal = e.dataItem != null;
 		// 最深线（行自身的折叠线）
 		const deepest = e.lines[d];
@@ -168,19 +193,15 @@ function applyLineClasses(list: CommandListShape): void {
  */
 function renderedRowsOf(list: {
 	querySelectorAll?: (selector: string) => NodeListOf<Element>;
-}): (CommandListShape & { lineClassEnabled?: boolean }) | null {
+}): CommandLineRows | null {
 	const rendered = list.querySelectorAll?.('.command-item');
 	if (!rendered || rendered.length === 0) return null;
+	// `Array.from(rendered)` 是 `Element[]`；`CommandLineRow` 除 `classList` 外全可选 ⇒
+	// `Element` 结构性满足它，这里**不需要**任何断言（原先那处 `as unknown as` 已删）。
 	return Object.assign(Array.from(rendered), {
 		count: rendered.length,
 		lineClassEnabled: true
-		// ⚠️ 2026-09-22 第 123 轮**实测过**：这里不能用单次 `as` ——
-		// `Array.from(rendered)` 是 `Element[]`，而 `CommandListShape` 的数值索引签名要求
-		// `CommandItemElement & { fold?; mark?; buffer? }`；tsc 报「Type 'Element' is missing
-		// the following properties … accessKey, and 253 more」⇒ 索引签名不可比 ⇒ `unknown` 跳板**承重**。
-		// （`renderedRowsOf` 的产物确实是 `.command-item` 命中的那些行，运行期没问题；
-		// 只是「查询出来的是 Element」这个类型事实绕不过去。）
-	}) as unknown as CommandListShape & { lineClassEnabled?: boolean };
+	});
 }
 
 function resize(this: { elements: CommandListShape } & HTMLElement, ...args: unknown[]): unknown {

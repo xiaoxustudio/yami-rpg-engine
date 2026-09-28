@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-25T17:28:39.023Z",
+	"generatedAt": "2026-09-27T13:09:37.101Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -20,15 +20,15 @@
 			"target": "zero",
 			"value": {
 				"total": 0,
-				"storeRefs": 49
+				"storeRefs": 42
 			}
 		},
 		"any-hatches": {
 			"label": "泛型逃生口 [k|key: string]: any / Record<string, any>",
 			"target": "zero",
 			"value": {
-				"total": 27,
-				"files": 16
+				"total": 6,
+				"files": 5
 			}
 		},
 		"dom-on-exempted": {
@@ -133,17 +133,17 @@
 			"value": {
 				"total": 0,
 				"declared": 12,
-				"assigned": 132,
-				"storeRefs": 49,
-				"engineBacked": 7
+				"assigned": 133,
+				"storeRefs": 42,
+				"engineBacked": 0
 			}
 		},
 		"unknown-casts": {
 			"label": "双重断言 as unknown as",
 			"target": "zero",
 			"value": {
-				"total": 5,
-				"files": 4
+				"total": 0,
+				"files": 0
 			}
 		},
 		"unremovable-listeners": {

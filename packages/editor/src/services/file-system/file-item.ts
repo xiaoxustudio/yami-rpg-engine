@@ -7,7 +7,8 @@ export interface FileMetaLike {
 	guid: string;
 	path: string;
 	versionId: number;
-	mtimeMs: number | null;
+	/** `bigint: true` 的 stat 下 `fs.Stats.mtimeMs` 是 `bigint`（与 `FileItemStats` 同一口径） */
+	mtimeMs: number | bigint | null;
 	dataMap: Record<string, unknown> | null;
 	redirect(file: FileItem): boolean;
 }
@@ -69,8 +70,8 @@ export interface FileItemStats {
 	isDirectory(): boolean;
 	/** `fs.Stats.size`：`bigint: true` 的 stat 下是 `bigint`，否则是 `number`（见上方说明 1） */
 	size: number | bigint;
-	ino?: string | number;
-	mtimeMs?: number;
+	ino?: string | number | bigint;
+	mtimeMs?: number | bigint;
 }
 
 let display: FileItemDisplayHooks | null = null;
@@ -396,7 +397,12 @@ export class FolderItem {
 				if (name === '.DS_Store') {
 					continue;
 				}
-				const promise = FSP.stat(this.hooks.path(path), bigint);
+				// `stat` 的返回值被挂了个 expando（`promise.path`）—— 原先是 `any` 才允许；
+				// 这里显式声明「Promise + 可选 path」，不改变任何运行期行为。
+				const promise = FSP.stat(
+					this.hooks.path(path),
+					bigint
+				) as Promise<FileItemStats> & { path?: string };
 				promise.path = path;
 				promises[i] = promise;
 			}

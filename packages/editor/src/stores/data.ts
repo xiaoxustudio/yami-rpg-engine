@@ -119,6 +119,69 @@ export interface ContextDataShape extends Array<DataEntryShape> {
 	context?: Record<string, unknown>;
 }
 
+/** 语言条目：`config.localization.languages` 的元素
+ * （`services/updater/config.ts` 的 1.0.115 迁移把旧的**字符串**形态升级成它，故联合里两种都在） */
+export interface LanguageSettingsShape {
+	name: string;
+	font: string;
+	scale: number;
+}
+
+/**
+ * 工程配置（`Data/config.json`，即 `DataShape.config`）。
+ *
+ * 具名部分是**本仓类型化读到**的字段（`services/updater/config.ts` 的版本迁移逐个字段读写，
+ * `useProjectSettingsWindow` 的表单与之一一对应）。末尾的索引签名是 `unknown` 而非 `any`
+ * （第 152 轮起本仓的统一写法，见 `composables/useCommandParse.ts` 的 `CommandNode`）：
+ * 迁移循环要按 `Object.keys()` 逐键搬运，配置本身也是可扩展的（插件可加键）——
+ * 但读侧必须先收窄，拼错键不会静默变成 `any`。
+ */
+export type GameConfigShape = {
+	gameId: string;
+	/** 旧形态：1.0.54 迁移把它改名成 `text` */
+	font?: { imports: unknown; default: unknown };
+	text: {
+		highDefinition?: boolean;
+		importedFonts?: unknown;
+		fontFamily?: unknown;
+		wordWrap?: unknown;
+		/** 1.0.52 迁移删掉的旧字段 */
+		pixelated?: unknown;
+		threshold?: unknown;
+	};
+	collision?: {
+		trigger?: { collideWithActorShape: boolean };
+		actor?: { ignoreTeamMember?: unknown };
+	};
+	resolution: { sceneScale: number; uiScale: number };
+	localization?: { languages: Array<string | LanguageSettingsShape>; default?: string };
+	deployed?: boolean;
+	window: { display: string };
+	virtualAxis?: { up: string; down: string; left: string; right: string };
+	actor: {
+		playerTeam?: unknown;
+		playerActor?: unknown;
+		partyMembers?: unknown;
+		partyInventory?: unknown;
+	};
+	webgl: {
+		desynchronized: boolean;
+		textureMagFilter?: string;
+		textureMinFilter?: string;
+	};
+	script: { language?: unknown; outDir?: unknown; autoCompile: boolean };
+	save: { location: string; subdir: string | undefined };
+	event?: {
+		startup: string;
+		loadGame: string;
+		initScene: string;
+		showText: string;
+		showChoices: string;
+	};
+	preload?: string;
+	[k: string]: unknown;
+};
+
 export interface DataShape {
 	manifest: ManifestShape | null;
 	scenePresets: Record<string, ScenePresetShape> | null;
@@ -145,12 +208,7 @@ export interface DataShape {
 	localization: LocalizationShape | null;
 	plugins: Record<string, unknown> | null;
 	commands: DataListShape | null;
-	// ⚠️ 保留 `Record<string, any>`（第 155 轮实测）：降级成 `unknown` 后当场报 7 条错误，
-	// 全部在 `services/updater/config.ts`（读 `config.event.startup` / `loadGame` / `initScene` /
-	// `showText` / `showChoices` 等**具体字段**）⇒ 说明它不是「动态包」而是**有形状的项目配置**。
-	// 要收口得先把它声明成具名形状（`script` / `save` / `event` / `gameId` …），那是独立的一件事。
-	// oxlint-disable-next-line no-explicit-any
-	config: Record<string, any> | null;
+	config: GameConfigShape | null;
 }
 
 export const dataKeys: (keyof DataShape)[] = [

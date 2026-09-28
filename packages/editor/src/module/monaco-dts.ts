@@ -1,22 +1,13 @@
 import Path from 'node:path';
 import { fs } from './constants.ts';
+import type { MonacoApi } from '@app/utils/monaco';
 
-export function loadDtsFolder(
-	folderPath: string,
-	monaco: typeof import('monaco-editor'),
-	recursive = true
-) {
+export function loadDtsFolder(folderPath: string, monaco: MonacoApi, recursive = true) {
 	const disposables: unknown[] = [];
-	// ⚠️ 保留 `unknown` 跳板（第 150 轮实测）：monaco 0.55 的类型里 `languages.typescript` 只是
-	// 一个占位（tsc 原话：`Property 'javascriptDefaults' does not exist on type '{ deprecated: true; }'`），
-	// 而语言服务的类型**没地方 import** —— 贡献模块 `esm/vs/language/typescript/monaco.contribution.d.ts`
-	// 的内容就是一行 `export {}`（本轮实际打开确认过）。运行期那个对象是真的
-	// `LanguageServiceDefaults`（本仓 `utils/monaco.ts` 里 import 了贡献模块并挂上），
-	// 所以这里只能把形状写出来再断言。
-	const tsLang = monaco.languages.typescript as unknown as {
-		javascriptDefaults: { addExtraLib: (content: string, filePath?: string) => unknown };
-		typescriptDefaults: { addExtraLib: (content: string, filePath?: string) => unknown };
-	};
+	// 直接取 `languages.typescript`：`MonacoApi` 就是「`editor.api` + 本仓注册过的两个语言贡献」的
+	// 实情形状（见 `utils/monaco.ts`），`javascriptDefaults` / `typescriptDefaults` 有 monaco 自带的
+	// `LanguageServiceDefaults` 类型 ⇒ 原先那处 `as unknown as { … }` 已不需要。
+	const tsLang = monaco.languages.typescript;
 
 	function walkDirectory(currentPath: string) {
 		try {

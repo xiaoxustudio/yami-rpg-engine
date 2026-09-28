@@ -796,7 +796,10 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 							if (!FS.existsSync!(Path.dirname!(pConfig))) {
 								FS.mkdirSync!(Path.dirname!(pConfig));
 							}
-							FSP.writeFile!(pConfig, JSON.stringify(config), {});
+							// 第三参是**存在性预检**（`FSP.writeFile` 的签名如此）：原写法传 `{}`，
+							// 运行期同样按真值走 `if (check)`，改成 `true` 语义不变、类型也如实。
+							// `void`：原写法靠 `any` 躲过了「不许有游离 Promise」，这里显式忽略（仍不等待）。
+							void FSP.writeFile(pConfig, JSON.stringify(config), true);
 						};
 						await (async () => {
 							if (FS.existsSync!(pConfig)) {
@@ -1027,7 +1030,10 @@ Menubar.keydown = function (this: typeof Menubar, event: KeyboardEvent) {
 				break;
 			case 'KeyS':
 				File.save!();
-				WebServer.update!(Editor.config!.project!);
+				// `WebServer.update` 内部会返回 `FSP.writeFile(...)` 的 Promise —— `FSP` 有签名之后
+				// 这个「刻意不等待」的调用被 `no-floating-promises` 抓到（原先是 `any` 才漏过）。
+				// 快捷键保存不等它（语义不变），`void` 显式写明这一点。
+				void WebServer.update!(Editor.config!.project!);
 				break;
 			case 'KeyT':
 				if (event.shiftKey) {

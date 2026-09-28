@@ -43,7 +43,7 @@ Animation.selectFrame = function (
 	let layer;
 	const { contexts } = this.player;
 	const { count } = contexts;
-	for (let i = 0; i < count; i++) {
+	for (let i = 0; i < count!; i++) {
 		const sLayer = contexts[i].layer;
 		if (sLayer.frames.includes(frame)) {
 			layer = sLayer;
@@ -59,7 +59,7 @@ Animation.selectFrame = function (
 		const timelines = list.childNodes;
 		const length = timelines.length;
 		for (let y = 0; y < length; y++) {
-			if ((timelines[y] as HTMLElement & { layer?: unknown }).layer === layer) {
+			if ((timelines[y] as HTMLElement & { layer?: AnimationLayer }).layer === layer) {
 				const x = fStart ?? frame.start;
 				const w = fLength ?? 1;
 				const i = this.player.index;
@@ -85,10 +85,12 @@ Animation.selectMarquee = function (
 	const ex = this.frameMax;
 	const ey = timelines.length;
 	if (x >= 0 && x + length <= ex && y >= 0 && y < ey) {
-		const { layer } = timelines[y] as HTMLElement & { layer?: unknown };
-		const marquee = this.timelineMarquee;
+		const { layer } = timelines[y] as HTMLElement & { layer?: AnimationLayer };
+		const marquee = this.timelineMarquee as typeof this.timelineMarquee & {
+			layer: AnimationLayer;
+		};
 		if (marquee.layer !== layer || marquee.x !== x || marquee.length !== length) {
-			marquee.layer = layer;
+			marquee.layer = layer!;
 			marquee.x = x;
 			marquee.length = length;
 			this.updateMarquee!();
@@ -103,8 +105,13 @@ Animation.selectMarquee = function (
 	}
 };
 
-Animation.unselectMarquee = function (this: typeof Animation, frame?: AnimationFrame | null) {
-	const marquee = this.timelineMarquee;
+Animation.unselectMarquee = function (
+	this: typeof Animation,
+	frame?: AnimationFrame | Record<string, unknown> | null
+) {
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & {
+		layer: AnimationLayer | null;
+	};
 	if (frame !== undefined ? getAnimationStore().target === frame : marquee.layer !== null) {
 		marquee.layer = null;
 		if (getAnimationStore().target !== null) {
@@ -121,7 +128,7 @@ Animation.unselectMarquee = function (this: typeof Animation, frame?: AnimationF
 };
 
 Animation.updateMarquee = function (this: typeof Animation) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	const { layer } = marquee;
 	if (layer !== null) {
 		const y = this.getLayerIndex!(layer);
@@ -140,7 +147,9 @@ Animation.updateMarquee = function (this: typeof Animation) {
 };
 
 Animation.scrollToMarquee = function (this: typeof Animation, shiftKey: boolean) {
-	const { x, y, length } = this.timelineMarquee;
+	const { x, y, length } = this.timelineMarquee as typeof this.timelineMarquee & {
+		layer: AnimationLayer;
+	};
 	const origin = marqueeData(this.timelineMarquee).origin;
 	if (y !== -1) {
 		const list = this.outerTimelineList;
@@ -170,7 +179,7 @@ Animation.updateMarqueeShift = function (
 	const timelines = this.innerTimelineList.childNodes;
 	const marquee = this.timelineMarqueeShift;
 	marquee.layer =
-		(timelines[y] as (HTMLElement & { layer?: unknown }) | undefined)?.layer ?? null;
+		(timelines[y] as (HTMLElement & { layer?: AnimationLayer }) | undefined)?.layer ?? null;
 	if (marquee.x !== x) {
 		marquee.x = x;
 		marquee.style.left = `${x * 16}px`;
@@ -186,7 +195,7 @@ Animation.updateMarqueeShift = function (
 };
 
 Animation.selectFrameRelative = function (this: typeof Animation, direction: string) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	if (marquee.y === -1) {
 		return;
 	}
@@ -214,7 +223,7 @@ Animation.selectFrameRelative = function (this: typeof Animation, direction: str
 };
 
 Animation.selectFrameAtHomeEnd = function (this: typeof Animation, direction: string) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	if (marquee.y === -1) {
 		return;
 	}
@@ -245,7 +254,7 @@ Animation.selectFrameAtHomeEnd = function (this: typeof Animation, direction: st
 };
 
 Animation.selectAllFramesOfKey = function (this: typeof Animation) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	if (marquee.y === -1) {
 		return;
 	}
@@ -263,7 +272,7 @@ Animation.selectAllFramesOfKey = function (this: typeof Animation) {
 };
 
 Animation.multiSelectFramesRelative = function (this: typeof Animation, direction: string) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	if (marquee.y === -1) {
 		return;
 	}
@@ -294,7 +303,7 @@ Animation.multiSelectFramesRelative = function (this: typeof Animation, directio
 };
 
 Animation.multiSelectFramesToHomeEnd = function (this: typeof Animation, direction: string) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	if (marquee.y === -1) {
 		return;
 	}
@@ -330,7 +339,7 @@ Animation.multiSelectFramesToHomeEnd = function (this: typeof Animation, directi
 };
 
 Animation.openFrame = function (this: typeof Animation) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	const { layer, x } = marquee;
 	for (const frame of layer.frames) {
 		const start = frame.start;
@@ -364,7 +373,7 @@ Animation.loadTextures = function (this: typeof Animation) {
 	for (const sprite of this.sprites) {
 		const spriteId = sprite.id;
 		const imageId = sprite.image;
-		const texture = last[spriteId];
+		const texture = last![spriteId];
 		const { hframes, vframes } = sprite;
 		if (texture instanceof ImageTexture && texture.base!.guid === imageId) {
 			const { base } = texture;
@@ -400,7 +409,7 @@ Animation.loadTextures = function (this: typeof Animation) {
 		}
 	}
 	for (const spriteId of Object.keys(last)) {
-		const texture = last[spriteId];
+		const texture = last![spriteId];
 		if (texture !== textures[spriteId] && texture instanceof ImageTexture) {
 			texture.destroy();
 		}
@@ -562,7 +571,7 @@ Animation.cloneFrame = function (this: typeof Animation, frames: AnimationFrame[
 };
 
 Animation.insertFrame = function (this: typeof Animation) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	if (marquee.y === -1) {
 		return;
 	}
@@ -623,7 +632,7 @@ Animation.insertFrame = function (this: typeof Animation) {
 };
 
 Animation.extendFrame = function (this: typeof Animation) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	if (marquee.y === -1 || !marquee.isExtendable()) {
 		return;
 	}
@@ -658,7 +667,7 @@ Animation.extendFrame = function (this: typeof Animation) {
 };
 
 Animation.deleteFrame = function (this: typeof Animation, shrink = false) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	if (marquee.y === -1 || (!shrink && !marquee.isSelected())) {
 		return;
 	}
@@ -702,7 +711,7 @@ Animation.deleteFrame = function (this: typeof Animation, shrink = false) {
 };
 
 Animation.copyFrame = function (this: typeof Animation, returnData = false) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	if (marquee.y === -1) {
 		return;
 	}
@@ -748,13 +757,20 @@ Animation.pasteFrame = function (
 	data: AnimationFrameData | null | undefined,
 	destination: AnimationMarquee | null | undefined
 ) {
-	const { layer, x, y, length: sLength } = destination ?? this.timelineMarquee;
-	if (!data) data = Clipboard.read(`yami.animFrame.${layer.class}`);
+	const {
+		layer,
+		x,
+		y,
+		length: sLength
+	} = destination ??
+	(this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer });
+	if (!data) data = Clipboard.read(`yami.animFrame.${layer!.class}`);
 	if (!data || y === -1) {
 		return;
 	}
 	const { copies, length: dLength } = data;
-	this.selectMarquee!(x, y, dLength, x);
+	// y 来自文件数据（unknown）——这里按运行期约定收窄一次
+	this.selectMarquee!(x, y as number, dLength, x);
 	this.saveFrames!([layer], { layer, x, length: sLength }, { layer, x, length: dLength });
 	for (const frame of copies) {
 		frame.start += x;
@@ -792,7 +808,7 @@ Animation.pasteFrame = function (
 };
 
 Animation.selectAllFrames = function (this: typeof Animation) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	if (marquee.y === -1) {
 		return;
 	}
@@ -807,8 +823,17 @@ Animation.selectAllFrames = function (this: typeof Animation) {
 };
 
 Animation.dragAndDropFrame = function (this: typeof Animation) {
-	const { layer: sLayer, x: sx, y: sy, length } = this.timelineMarquee;
-	const { layer: dLayer, x: dx, y: dy } = this.timelineMarqueeShift;
+	const {
+		layer: sLayer,
+		x: sx,
+		y: sy,
+		length
+	} = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
+	const {
+		layer: dLayer,
+		x: dx,
+		y: dy
+	} = this.timelineMarqueeShift as typeof this.timelineMarqueeShift & { layer: AnimationLayer };
 	if (sx !== dx || (sy !== dy && sLayer.class === dLayer.class)) {
 		const data = this.copyFrame!(true);
 		if (data) {
@@ -835,7 +860,7 @@ Animation.dragAndDropFrame = function (this: typeof Animation) {
 };
 
 Animation.adjustMarquee = function (this: typeof Animation) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	if (marquee.y === -1) {
 		return;
 	}
@@ -906,12 +931,17 @@ Animation.shiftLayerPosition = function (
 };
 
 Animation.shiftSelectedFrames = function (this: typeof Animation, mode: string) {
-	const marquee = this.timelineMarquee;
+	const marquee = this.timelineMarquee as typeof this.timelineMarquee & { layer: AnimationLayer };
 	if (marquee.y === -1) {
 		return;
 	}
 	this.adjustMarquee!();
-	const { layer: sLayer, x: sx, y: sy, length } = marquee;
+	const {
+		layer: sLayer,
+		x: sx,
+		y: sy,
+		length
+	} = marquee as typeof marquee & { layer: AnimationLayer };
 	const timelines = this.innerTimelineList.childNodes;
 	const ex = this.frameMax;
 	const ey = timelines.length;
@@ -950,7 +980,8 @@ Animation.shiftSelectedFrames = function (this: typeof Animation, mode: string) 
 		const data = this.copyFrame!(true);
 		if (data) {
 			const { updateTimeline, openFrame, saveFrames } = this;
-			const dLayer = (timelines[dy] as HTMLElement & { layer?: unknown }).layer;
+			// !：dy 处的行必然带着图层（原实现直接把可能为 undefined 的值塞进数组，运行期行为未改）
+			const dLayer = (timelines[dy] as HTMLElement & { layer?: AnimationLayer }).layer!;
 			const destination = { layer: dLayer, x: dx, y: dy };
 			const sMarquee = { layer: sLayer, x: sx, length: length };
 			const dMarquee = { layer: dLayer, x: dx, length: 0 };

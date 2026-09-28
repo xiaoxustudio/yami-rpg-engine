@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import type { AnimationMotionData } from '@app/animation/animation-window.ts';
 import { getLazyWindow, loadWindow } from '@app/tools/window-registry';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
@@ -32,12 +33,8 @@ type AnimationFrameShape = {
 	[key: string]: unknown;
 };
 
-type AnimationMotionShape = {
-	id: string;
-	mode: string;
-	dirCases?: Record<string, unknown>[];
-	[key: string]: unknown;
-};
+// 与动画侧同一份模型：store 存的 motion 就是运行期对象（setMotion 直接存、setDirection 直接读 dirCases）。
+type AnimationMotionShape = AnimationMotionData;
 
 type AnimationContextShape = {
 	meta: { guid: string; path: string } & Record<string, unknown>;

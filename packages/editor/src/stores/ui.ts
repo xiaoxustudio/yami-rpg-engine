@@ -8,6 +8,7 @@ import { StageColor, safeHex } from '@app/utils/stage-color';
 import type { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import type { History } from '@app/tools/history.ts';
 import type { UIElementInstance, UINodeShape } from '@app/engine/ui/element-classes.ts';
+import type { UIShape } from '@app/engine/ui/ui-singleton.ts';
 import type { YamiElement } from '@app/types/element-api';
 
 /**
@@ -93,7 +94,8 @@ interface UIContextShape {
 	ui?: { width: number; height: number; nodes: UINodeShape[] } & Record<string, unknown>;
 	editor?: {
 		target: UINodeShape | null;
-		root: UINodeShape | null;
+		/** 根节点是**实例**（见 `engine/ui/ui-singleton.ts` 同名接口的说明）。 */
+		root: UIElementInstance | null;
 		history: History;
 		centerX: number;
 		centerY: number;
@@ -382,7 +384,7 @@ export const useUIStore = defineStore('ui', () => {
 	}
 
 	function requestRendering() {
-		UI?.requestRendering?.();
+		forwarders.requestRendering!();
 	}
 
 	function load(context: UIContextShape) {
@@ -443,7 +445,7 @@ export const useUIStore = defineStore('ui', () => {
 	}
 
 	function setZoom(zoomValue: number) {
-		UI?.setZoom?.(zoomValue);
+		forwarders.setZoom!(zoomValue);
 	}
 
 	function setSize(w: number, h: number) {
@@ -463,23 +465,23 @@ export const useUIStore = defineStore('ui', () => {
 	}
 
 	function shiftAnchor(anchorX: number, anchorY: number) {
-		UI?.shiftAnchor?.(anchorX, anchorY);
+		forwarders.shiftAnchor!(anchorX, anchorY);
 	}
 
 	function shiftTarget(x: number, y: number) {
-		UI?.shiftTarget?.(x, y);
+		forwarders.shiftTarget!(x, y);
 	}
 
 	function resizeTarget(width?: number, height?: number) {
-		UI?.resizeTarget?.(width, height);
+		forwarders.resizeTarget!(width, height);
 	}
 
 	function rotateTarget(rotation: number) {
-		UI?.rotateTarget?.(rotation);
+		forwarders.rotateTarget!(rotation);
 	}
 
 	function setControlPoint(point: UIControlPoint | null) {
-		UI?.setControlPoint?.(point);
+		forwarders.setControlPoint!(point);
 	}
 
 	function updateHover() {
@@ -564,18 +566,19 @@ export const useUIStore = defineStore('ui', () => {
 	 * 调用方写 `getUIStore().listChange(e)`，语义与 `UI.listChange(e)` 完全一致
 	 * （含 `this` 绑定、含不存在时静默跳过）。
 	 *
-	 * @param resolve 每次调用时求值，返回**真正的接收者对象**（延迟求值是这个机制的关键）
+	 * @param resolve 每次调用时求值，返回**真正的接收者对象**（延迟求值是这个机制的关键）。
 	 *
-	 * `resolve` 的返回类型是 `Record<string, unknown>` 而不是 `Record<string, any>`：
-	 * 两个调用点（`UI` 惰加载代理）本来就写的是 `() => UI as Record<string, unknown> | null`，
-	 * 这里只是把形参对齐到调用方已有的口径。`any` 换来的是 `target[key]` 不经 `typeof`
-	 * 检查就能当函数调用 —— 而下面紧跟着的就是那次检查，所以它没有任何作用。
+	 * 第 234 轮：`UIShape` 的索引签名退役后，这里不再写得出 `Record<string, unknown>` ——
+	 * 具名接口到记录类型不是合法转换（TS2352），而**键本来就是运行时才知道的**
+	 * （13 个事件槽位，一部分在 `UIDomainMembers` 里、一部分不在）。
+	 * ⇒ 这一次动态读取改用 `Reflect.get(target, key)`；后面的 `typeof` 检查、
+	 * 判空与 `.apply(target, args)` 全部保留，行为与 `target[key]` 逐字一致。
 	 */
-	const makeForwarder = (key: string, resolve: () => Record<string, unknown> | null) => {
+	const makeForwarder = (key: string, resolve: () => UIShape | null) => {
 		return (...args: unknown[]) => {
 			const target = resolve();
 			if (target === null) return undefined;
-			const fn = target[key];
+			const fn: unknown = Reflect.get(target, key);
 			if (typeof fn !== 'function') return undefined;
 			return fn.apply(target, args);
 		};
@@ -599,7 +602,7 @@ export const useUIStore = defineStore('ui', () => {
 				if (typeof fn !== 'function') return undefined;
 				return fn.apply(UI, args);
 			}
-			return makeForwarder(key, () => UI as Record<string, unknown> | null)(...args);
+			return makeForwarder(key, () => UI)(...args);
 		};
 	};
 
@@ -622,7 +625,7 @@ export const useUIStore = defineStore('ui', () => {
 	// oxlint-disable-next-line no-explicit-any
 	const forwarders: Record<string, (...args: any[]) => unknown> = {};
 	for (const key of uiForwardKeys) {
-		forwarders[key] = makeForwarder(key, () => UI as Record<string, unknown> | null);
+		forwarders[key] = makeForwarder(key, () => UI);
 	}
 
 	/**

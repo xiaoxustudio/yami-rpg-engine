@@ -111,8 +111,11 @@ AutoTileEngine.generateFrames = function (
 	const vframes = Math.floor(sprite.naturalHeight / tileHeight);
 	const ox = ((strideX % hframes) + hframes) % hframes;
 	const oy = ((strideY % vframes) + vframes) % vframes;
-	const maximum = this.frameMaximum;
-	const frames = this.frames;
+	// `frameMaximum` / `frames` 的可空是**数据形状**上的（`windowClosed` 会置 null、初值是 null），
+	// 而本函数只会在「窗口已打开、模板/节点已选中、帧列表已挂上」之后被调
+	// （菜单项 `generate` 的 `enabled: editable && insertable`）⇒ 这里用 `!` 表达该不变式。
+	const maximum = this.frameMaximum!;
+	const frames = this.frames!;
 	const frame = frames[id];
 	let x = frame & 0xff;
 	let y = frame >> 8;
@@ -131,7 +134,8 @@ AutoTileEngine.createFrameData = function (this: typeof AutoTile) {
 };
 
 AutoTileEngine.updateCanvas = function (this: typeof AutoTile) {
-	const canvas = this.canvas;
+	// 同上：`canvas` 在 `ensureDomBound()` 成功后就一直挂着，重算尺寸的调用点都在那之后。
+	const canvas = this.canvas!;
 	const { width, height } = getDevicePixelContentBoxSize(canvas);
 	if (canvas.width !== width) {
 		canvas.width = width;
@@ -142,8 +146,9 @@ AutoTileEngine.updateCanvas = function (this: typeof AutoTile) {
 };
 
 AutoTileEngine.drawFrame = function (this: typeof AutoTile) {
-	const canvas = this.canvas;
-	const context = canvas.getContext('2d');
+	const canvas = this.canvas!;
+	// 画布是 2d canvas（模板里就是 `<canvas>`），拿不到上下文说明浏览器侧不可能发生 ⇒ `!`
+	const context = canvas.getContext('2d')!;
 	const width = canvas.width;
 	const height = canvas.height;
 
@@ -159,7 +164,11 @@ AutoTileEngine.drawFrame = function (this: typeof AutoTile) {
 		return File.get!({
 			guid: guid,
 			type: 'image'
-		}).then((image: CanvasImageSource | null) => {
+			// 回调参数的注解从 `CanvasImageSource` 改成 `HTMLImageElement`：`File.get`（`FileMethod`）返回 `any`，
+			// 这个注解**只由本行决定**；而真源在 `file-system-core.ts:25` 的 `File.promises: Record<string, Promise<HTMLImageElement>>`
+			// —— 图片就是 HTMLImageElement。用更宽的类型会让下面那句 `this.image = image` 与
+			// `AutoTile.image` 的声明（读点要 `.src`/`.naturalWidth`）对不上。
+		}).then((image: HTMLImageElement | null) => {
 			if (this.image === symbol) {
 				if (image) {
 					this.image = image;
@@ -172,7 +181,7 @@ AutoTileEngine.drawFrame = function (this: typeof AutoTile) {
 	}
 
 	const image = this.image;
-	const frames = this.frames;
+	const frames = this.frames!;
 	const frame = frames[getAutoTileStore().frameIndex];
 	const tileWidth = getPaletteStore().tileset.tileWidth;
 	const tileHeight = getPaletteStore().tileset.tileHeight;

@@ -86,10 +86,11 @@ const load = function (this: UIShape, context: UIContextShape) {
 	this.centerY = editor!.centerY;
 
 	if (firstLoad) {
-		const nodes = this.nodes;
+		const nodes = this.nodes!;
 		const length = nodes.length;
 		for (let i = 0; i < length; i++) {
-			this.loadElement!(nodes[i], this.root);
+			// `this.root` 在上面几行刚由 `editor.root` 赋过（`ui-file.ts:81`）⇒ 此处非空
+			this.loadElement!(nodes[i], this.root!);
 		}
 	} else {
 		this.updateAllReferences!();
@@ -100,15 +101,17 @@ const load = function (this: UIShape, context: UIContextShape) {
 
 	this.setTarget!(editor!.target);
 
-	if (this.context.fontChanged) {
+	// `this.context` 同样是本函数开头那两行 `this.context = context` 定的；`load()` 就是「打开一份文档」
+	// 的入口 ⇒ 这里非空（与 `getUIStore().state === 'open'` 是同一时刻的前提）。
+	if (this.context!.fontChanged) {
 		this.updateElementFont!();
 	}
 
-	if (this.context.languageChanged) {
+	if (this.context!.languageChanged) {
 		this.updateElementLanguage!();
 	}
 
-	if (this.context.scalingChanged) {
+	if (this.context!.scalingChanged) {
 		this.updateElementTextScaling!();
 	}
 
@@ -117,15 +120,20 @@ const load = function (this: UIShape, context: UIContextShape) {
 
 const save = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
-		const { ui, editor } = this.context;
+		// `state === 'open'` 就是「有打开的文档」⇒ `this.context` 非空（`load()` 里赋值、`close()` 里置 null），
+		// 而 `context.ui` / `context.editor` 同样是那一步建的（`load()` 开头 `if (firstLoad) context.editor = …`，
+		// `open()` 里 `if (!context.ui) context.ui = Data.ui[meta.guid]` 且只有非空才走到这里）。
+		const context = this.context!;
+		const ui = context.ui!;
+		const editor = context.editor!;
 
 		ui.width = getUIStore().width!;
 		ui.height = getUIStore().height!;
-		ui.nodes = this.nodes;
+		ui.nodes = this.nodes!;
 
 		editor.target = getUIStore().target;
 		editor.root = this.root;
-		editor.history = this.history;
+		editor.history = this.history!;
 		editor.centerX = this.centerX;
 		editor.centerY = this.centerY;
 		// editor.listScrollTop = this.list.scrollTop
@@ -239,12 +247,14 @@ const createShortcut = function (this: UIShape, item: UINodeShape) {
 	reference.prefabId = item.presetId;
 	reference.synchronous = true;
 	reference.transform = { ...item.transform };
-	const index = item.parent.children.indexOf(item);
-	const next = item.parent.children[index + 1];
+	// `item.parent` 非空是不变式：快捷键只对画布树里的节点建（根节点不在列表里可选），
+	// 而类型上根节点的 `parent` 是 `null`（见 `element-classes.ts` 的 `UINodeShape.parent`）。
+	const index = item.parent!.children.indexOf(item);
+	const next = item.parent!.children[index + 1];
 	if (next) {
 		this.list.addNodeTo(reference, next, true);
 	} else {
-		this.list.addNodeTo(reference, item.parent);
+		this.list.addNodeTo(reference, item.parent!);
 	}
 };
 

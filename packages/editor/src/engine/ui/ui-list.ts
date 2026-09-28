@@ -16,10 +16,19 @@ import { dispatchChangeEvent, read, rect, write } from '@app/utils/element-utils
 import { Inspector } from '@app/inspector/inspector.ts';
 import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import { Menu } from '@app/components/menu-list.ts';
+import type { UIListNodeShape } from './ui-singleton.ts';
 import { Reference } from '@app/log/related-references.ts';
 import type { YamiMouseEvent } from '@app/types/editor-event';
 
-const searcherInput = function (this: UIShape, event: InputEvent) {
+/**
+ * 搜索框的 input 处理器。
+ *
+ * ⚠️ 第 234 轮更正 `this` 口径：它由 `ui-initialize.ts:363` 的 `on(this.searcher, 'input', …)`
+ * 注册 ⇒ 触发时 `this` 是**搜索框元素**，不是 UI 单例。类型直接取 `UIShape['searcher']`
+ * （该成员的说明里写了 `input` 为什么是 `HTMLInputElement`）——
+ * 原先标成 `UIShape` 是靠索引签名把 `this.input` 放成了 `any`。
+ */
+const searcherInput = function (this: UIShape['searcher'], event: InputEvent) {
 	if (event.inputType !== 'insertCompositionText') {
 		const text = this.input!.value;
 		UI.list.searchNodesDebounced(text);
@@ -67,7 +76,13 @@ const listKeydown = function (this: YamiElement, event: KeyboardEvent) {
 	}
 };
 
-const listPointerdown = function (this: UIShape, event: PointerEvent) {
+/**
+ * 列表上的 pointerdown 处理器。
+ *
+ * 同 `searcherInput`：`ui-initialize.ts` 用 `on(list, 'pointerdown', …)` 注册 ⇒ `this` 是**列表元素**，
+ * 而体内调的 `this.cancelSearch` 正是列表元素自己的方法（下面 `UI.list.cancelSearch = …` 装的）。
+ */
+const listPointerdown = function (this: UIListNodeShape, event: PointerEvent) {
 	switch (event.button) {
 		case 3:
 			this.cancelSearch!();
@@ -355,8 +370,13 @@ UI.marquee.resize = function (this: HTMLElement & { pointerevent?: UIPointerEven
 	}
 };
 
+// ⚠️ 下面 6 个挂在**列表元素**上（`UI.list.copy = …`），调用时 `this` 是列表元素 —— 不是 UI 单例。
+// 第 234 轮据此把 `this` 口径从 `UIShape` 改成 `TreeListElement`：体内读的 `this.data` /
+// `this.deleteNode!` / `this.update()` / `this.display` / `this.expandToSelection!` 全是列表面的成员，
+// 原先标 `UIShape` 只能靠索引签名（`this.data` 都是 `any`）通过。
+
 // 列表 - 复制
-UI.list.copy = function (this: UIShape, item: UINodeShape) {
+UI.list.copy = function (this: UIListNodeShape, item: UINodeShape) {
 	if (item) {
 		(GlobalClipboard as GlobalClipboardHost).write('yami.ui.object', item);
 	}
@@ -364,7 +384,7 @@ UI.list.copy = function (this: UIShape, item: UINodeShape) {
 
 // 列表 - 粘贴
 UI.list.paste = function (
-	this: UIShape,
+	this: UIListNodeShape,
 	dItem: UINodeShape | null,
 	callback?: (data: unknown) => void
 ) {
@@ -377,7 +397,7 @@ UI.list.paste = function (
 };
 
 // 列表 - 删除
-UI.list.delete = function (this: UIShape, item: UINodeShape) {
+UI.list.delete = function (this: UIListNodeShape, item: UINodeShape) {
 	if (item) {
 		this.deleteNode!(item);
 		UIEngine.requestRendering!.call(UI);
@@ -385,7 +405,7 @@ UI.list.delete = function (this: UIShape, item: UINodeShape) {
 };
 
 // 列表 - 开关
-UI.list.toggle = function (this: UIShape, item: UINodeShape) {
+UI.list.toggle = function (this: UIListNodeShape, item: UINodeShape) {
 	if (item) {
 		UI.history!.save({
 			type: 'ui-object-toggle',
@@ -400,7 +420,7 @@ UI.list.toggle = function (this: UIShape, item: UINodeShape) {
 };
 
 // 列表 - 取消搜索
-UI.list.cancelSearch = function (this: UIShape) {
+UI.list.cancelSearch = function (this: UIListNodeShape) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
 		UI.searcher.deleteInputContent();
@@ -411,7 +431,7 @@ UI.list.cancelSearch = function (this: UIShape) {
 };
 
 // 列表 - 更新头部位置
-UI.list.updateHead = function (this: UIShape) {
+UI.list.updateHead = function (this: UIListNodeShape) {
 	// `page` / `head` 已不在 DATA_FIELDS 内（原型访问器退役），`this` 是列表元素 ⇒ 解构 `this`
 	// 会拿到 undefined（`page.clientWidth` 抛错）。改读同一份元素数据。
 	const { page, head } = elementDataOf<{ page: HTMLElement; head: HTMLElement }>(this);

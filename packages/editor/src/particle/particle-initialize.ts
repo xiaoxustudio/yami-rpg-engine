@@ -134,6 +134,7 @@ Particle.initialize = function () {
 	on(this.list, 'change', this.listChange!);
 };
 
-Particle.Emitter = ParticleEngine.Emitter;
-Particle.Layer = ParticleEngine.Layer;
-Particle.Element = ParticleEngine.Element;
+// 三个类在 `particle-engine.ts` 末尾装配；本文件在初始化期运行，那时它们已就位
+Particle.Emitter = ParticleEngine.Emitter!;
+Particle.Layer = ParticleEngine.Layer!;
+Particle.Element = ParticleEngine.Element!;

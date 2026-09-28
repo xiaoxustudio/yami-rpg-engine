@@ -138,7 +138,10 @@ Scene.listRecord = function (
 			break;
 		}
 		case 'delete': {
-			const parent = response.item.parent;
+			// `parent` 类型上可空（`SceneItem.parent` 是 `SceneItem | null`，`create` 分支里还可能 undefined），
+			// 但走到这几个 case 时该项**已经在树里**（事件由列表自身派发）⇒ `!` 写下这条前提，
+			// 与 `scene-window.ts` 那几个 History 处理器里的同类读法一致。
+			const parent = response.item.parent!;
 			list.updateFolderState(parent, 'hidden');
 			list.updateFolderState(parent, 'locked');
 			Scene.history.save({
@@ -148,8 +151,8 @@ Scene.listRecord = function (
 			break;
 		}
 		case 'remove': {
-			const sParent = response.source.parent;
-			const dParent = response.destination.parent;
+			const sParent = response.source.parent!;
+			const dParent = response.destination.parent!;
 			list.updateFolderState(sParent, 'hidden');
 			list.updateFolderState(sParent, 'locked');
 			if (sParent !== dParent) {

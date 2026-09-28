@@ -8,7 +8,12 @@ import type { History } from '@app/tools/history.ts';
 import type { StageColor } from '@app/utils/stage-color';
 import type { Timer } from '@app/utils/timer';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
-import type { ParticleElementLayer } from '@app/engine/particle/particle-engine.ts';
+import type {
+	ParticleElementLayer,
+	ParticleLayerData,
+	ParticleLayerShape as EngineParticleLayerShape,
+	ParticleStageShape
+} from '@app/engine/particle/particle-engine.ts';
 import type { YamiElement } from '@app/types/element-api';
 import type { DragEventItem } from '@app/scene/scene-events.ts';
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
@@ -19,18 +24,15 @@ export type ParticleEmitterDataShape = {
 	layers: ParticleLayerDataShape[];
 } & Record<string, unknown>;
 
-export type ParticleLayerDataShape = {
-	interval: number;
-	delay: number;
-	area: {
-		type: 'edge' | 'point' | 'rectangle' | 'circle';
-		x?: number;
-		y?: number;
-		width?: number;
-		height?: number;
-		radius?: number;
-	} & Record<string, unknown>;
-} & Record<string, unknown>;
+/**
+ * 图层数据 —— **直接引用引擎侧那一份**。
+ *
+ * 第 145 轮已经把「引擎只读 `interval`/`delay`/`area`」与「元素读 `lifetime`/`anchor`/…」两份
+ * 同名声明合并到 `particle-engine.ts` 的 `ParticleLayerData`；这里却还留着一份更窄的副本，
+ * 于是 `new Particle.Emitter(data)` 的入参对不上（本轮摘掉 `ParticleEngine` 的索引签名时露出来）。
+ * 保留别名只是为了不动调用点（`particle-file.ts` 的 `ParticleEmitterDataShape`）。
+ */
+export type ParticleLayerDataShape = ParticleLayerData;
 
 export type ParticleElementShape = {
 	x: number;
@@ -41,36 +43,67 @@ export type ParticleElementShape = {
 	scaleFactor: number;
 };
 
-export interface ParticleLayerShape {
-	data: { name?: string; hidden?: boolean } & Record<string, unknown>;
-	// oxlint-disable-next-line no-explicit-any
-	elements: Array<Record<string, any>> & { count: number };
-	unitWidth: number;
-	unitHeight: number;
-	texture: unknown;
-	draw: (opacity?: number) => void;
+/**
+ * 图层实例 —— **就是引擎侧那一份**（`ParticleLayerShape`，本文件不再另写一份）。
+ *
+ * 原先这里是一份更窄的副本（`data` / `elements` / `unitWidth` / `unitHeight` / `texture` / `draw`
+ * 加 5 个 inspector 方法），与引擎的同名声明各自漂移：本轮摘掉 `ParticleEngine` 的索引签名后，
+ * `Particle.Layer` 的构造签名当场对不上（缺 `emitter` / `textureWidth` / `easing` / `capacity` / `reserves` …）。
+ * 合并之后「一份形状」既是构造签名、也是读侧视图。
+ */
+export type ParticleLayerShape = EngineParticleLayerShape;
+
+/** `calculateOuterRect()` 的产物（也直接挂在发射器上作 `bounding`，见 `scene-context.ts`） */
+export interface ParticleOuterRectShape {
+	left: number;
+	top: number;
+	right: number;
+	bottom: number;
+	width: number;
+	height: number;
+	hasArea: boolean;
 }
 
 export interface ParticleEmitterShape {
+	// —— 变换 / 外观（引擎与动画播放器都读写：`animation-player.ts` 的 `emitter.scale/speed/opacity/angle`）——
 	startX: number;
 	startY: number;
+	scale: number;
+	angle: number;
+	speed: number;
+	opacity: number;
+	matrix: Matrix | null;
 	layers: ParticleLayerShape[];
-	calculateOuterRect: () => {
-		left: number;
-		top: number;
-		right: number;
-		bottom: number;
-		width: number;
-		height: number;
-		hasArea: boolean;
-	};
+	// —— 包围盒：`calculateOuterRect()` 的结果由**调用方**回写（`animation-motion.ts` / `scene-context.ts`）——
+	bounding: ParticleOuterRectShape;
+	hasArea: boolean;
+	outerLeft: number;
+	outerTop: number;
+	outerRight: number;
+	outerBottom: number;
+	outerWidth: number;
+	outerHeight: number;
+	// —— 编辑器状态（粒子列表 / 指针用它们高亮当前发射器）——
+	active: boolean;
+	selected: boolean;
+	// —— 引擎运行期接口 ——
+	disabled: boolean;
+	isEmpty: () => boolean;
+	/** 按数据对象同一性取图层实例（实现见引擎，入参只做引用比较 ⇒ `object`；找不到时 `undefined`） */
+	getLayer: (data: object) => ParticleLayerShape | undefined;
+	/** 来源图层（动画播放器装配时挂上）。唯一读点是 `emitter.layer.order`（决定粒子画在精灵前/后），
+	 *  取值见运行期契约 `AnimationParticleOrder`（`yami.animation.d.ts`）。 */
+	layer: { order?: 'before' | 'after' };
+	draw: () => void;
+	emitParticles: (deltaTime: number) => void;
+	updateParticles: (deltaTime: number) => number;
+	// —— 窗口侧已声明的方法 ——
+	calculateOuterRect: () => ParticleOuterRectShape;
 	update: (deltaTime: number) => void;
 	updateLayers: () => void;
 	updateEasing: () => void;
 	clear: () => void;
 	destroy: () => void;
-	// oxlint-disable-next-line no-explicit-any
-	[k: string]: any;
 }
 
 // 粒子编辑器上下文（tab 传入 + open/load 运行时挂载 editor）
@@ -145,15 +178,21 @@ export interface ParticleShape {
 	translationTimer: Timer | null;
 	showAxes: boolean;
 	background: StageColor;
-	matrix: Matrix | null;
+	/**
+	 * 舞台面成员（第 237 轮改非空）：`Particle.Element.stage = Particle`（`particle-file.ts:23`）
+	 * 要求这五项与 `ParticleStageShape` 相容。它们由 `particle-initialize.ts:94`
+	 * （`this.matrix = new Matrix()`）与 `resize` 赋真值，全仓没有一处写回 `null`；
+	 * 字面量里那 5 行 `null` 占位已删（只参与绘制期算术）。
+	 */
+	matrix: Matrix;
 	zoomTimer: Timer | null;
 	scale: number | null;
 	outerWidth: number | null;
 	outerHeight: number | null;
-	scrollLeft: number | null;
-	scrollTop: number | null;
-	scrollRight: number | null;
-	scrollBottom: number | null;
+	scrollLeft: number;
+	scrollTop: number;
+	scrollRight: number;
+	scrollBottom: number;
 	centerX: number | null;
 	centerY: number | null;
 	centerOffsetX: number | null;
@@ -248,17 +287,13 @@ export interface ParticleShape {
 		/**
 		 * 元素类的静态共享面（`ParticleElement.stage`）—— **当前舞台**。
 		 *
-		 * ⚠️ 保留 `Record<string, any>`（第 155 轮实测 → 转成**行为问题**）：三条线索都要收 ——
-		 * `particle-file.ts:23` 存 `Particle` 单例、`scene-window.ts:945` 存 `Scene` 单例，
-		 * 而唯一读点是 `particle-engine.ts:571` 的 `.multiply(ParticleElement.stage.matrix)`。
-		 * 两份单例形状都试过：写任一都会在另一条赋值处报错；收成读点面 `{ matrix: Matrix }` 又暴露
-		 * **`SceneShape` 根本没有具名的 `matrix`**（运行期确实有：`scene-window.ts:195` 初始化成
-		 * `null`、`:578` 赋 `new Matrix()`，一直靠索引签名兜着）。
-		 * ⇒ 要收口得先判定「场景当舞台时 `.matrix` 是否保证非空」（读点直接进 `multiply`，传 `null`
-		 * 会当场抛）—— 那是行为判定，不能靠类型猜。
+		 * 第 237 轮收口：此前是 `Record<string, any>`（`any-hatches` 站点）。三条线索：
+		 * `particle-file.ts:23` 存 `Particle` 单例、`animation-file.ts:21` 存 `Animation` 单例、
+		 * `scene-window.ts:1067` 存 `Scene` 单例；唯一读点在 `particle-engine.ts`
+		 * （`.multiply(stage.matrix)` 与两组 `scroll*`）。两边现在引用**同一个**
+		 * `ParticleStageShape`（`engine/particle/particle-engine.ts` 导出）。
 		 */
-		// oxlint-disable-next-line no-explicit-any
-		stage: Record<string, any>;
+		stage: ParticleStageShape;
 	};
 }
 
@@ -285,15 +320,11 @@ export const Particle = {
 	translationKey: 0b0000,
 	translationTimer: null,
 	showAxes: true,
-	matrix: null,
+	// `matrix` / `scroll*` 的 `null` 占位在第 237 轮删除（见 `ParticleShape` 上那条说明）。
 	zoomTimer: null,
 	scale: null,
 	outerWidth: null,
 	outerHeight: null,
-	scrollLeft: null,
-	scrollTop: null,
-	scrollRight: null,
-	scrollBottom: null,
 	centerX: null,
 	centerY: null,
 	centerOffsetX: null,

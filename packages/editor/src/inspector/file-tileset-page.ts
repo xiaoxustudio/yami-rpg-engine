@@ -103,31 +103,33 @@ import { Scene } from '@app/scene/scene-window.ts';
 		key: string,
 		value: unknown
 	) {
+		// 每个 case 的 `value` 类型由 `key` 决定（调用方是该字段对应的输入控件）：`image` 是字符串、
+		// 其余是数值 ⇒ 在各调用点按 case 收窄一次（`value: unknown` 是控件回调的统一口径）。
 		File.planToSave!(this.meta);
 		switch (key) {
 			case 'image':
 				if (tileset.image !== value) {
-					Palette.setImage!(value);
+					Palette.setImage!(value as string);
 				}
 				break;
 			case 'width':
 				if (tileset.width !== value) {
-					Palette.setSize!(value, tileset.height);
+					Palette.setSize!(value as number, tileset.height as number);
 				}
 				break;
 			case 'height':
 				if (tileset.height !== value) {
-					Palette.setSize!(tileset.width, value);
+					Palette.setSize!(tileset.width as number, value as number);
 				}
 				break;
 			case 'tileWidth':
 				if (tileset.tileWidth !== value) {
-					Palette.setTileSize!(value, tileset.tileHeight);
+					Palette.setTileSize!(value as number, tileset.tileHeight as number);
 				}
 				break;
 			case 'tileHeight':
 				if (tileset.tileHeight !== value) {
-					Palette.setTileSize!(tileset.tileWidth, value);
+					Palette.setTileSize!(tileset.tileWidth as number, value as number);
 				}
 				break;
 			case 'globalOffsetX':

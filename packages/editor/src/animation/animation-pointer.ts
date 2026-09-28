@@ -5,28 +5,9 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { getAnimationStore } from '@app/stores/animation';
 import { isDragKey } from '@app/utils/event-accessors';
 import { roundTo, radians, degrees, modRadians } from '@app/utils/math';
+import type { AnimationDragEvent } from '@app/animation/animation-window.ts';
 
-Animation.marqueePointerdown = function (
-	this: typeof Animation,
-	event: PointerEvent & {
-		dragKey?: boolean;
-		mode?: string;
-		scrollLeft?: number;
-		scrollTop?: number;
-		absoluteAnchorX?: number;
-		absoluteAnchorY?: number;
-		lastAngle?: number;
-		rotationRadians?: number;
-		startRotation?: number;
-		startScaleX?: number;
-		startScaleY?: number;
-		startWidth?: number;
-		startHeight?: number;
-		enabled?: boolean;
-		startX?: number;
-		startY?: number;
-	}
-) {
+Animation.marqueePointerdown = function (this: typeof Animation, event: AnimationDragEvent) {
 	if (this.dragging || !getAnimationStore().motion) {
 		return;
 	}
@@ -54,7 +35,7 @@ Animation.marqueePointerdown = function (
 					case points.rectRotate.BL:
 					case points.rectRotate.BR: {
 						const rotation = target.rotation;
-						const matrix = GL.matrix.set(Animation.matrix).multiply(context.matrix);
+						const matrix = GL.matrix.set(Animation.matrix).multiply(context!.matrix);
 						const aax = matrix[6];
 						const aay = matrix[7];
 						const { x, y } = getRelativeCoords(event, GL.canvas);
@@ -75,23 +56,23 @@ Animation.marqueePointerdown = function (
 					case points.rectResize.TR:
 					case points.rectResize.BL:
 					case points.rectResize.BR: {
-						const layer = context.layer;
+						const layer = context!.layer;
 						event.mode = 'object-resize';
 						event.startScaleX = target.scaleX;
 						event.startScaleY = target.scaleY;
-						switch (context.layer.class) {
+						switch (context!.layer.class) {
 							case 'sprite': {
 								const key = layer.sprite;
 								const texture = this.player.textures[key];
-								event.startWidth = texture.width;
-								event.startHeight = texture.height;
+								event.startWidth = texture!.width;
+								event.startHeight = texture!.height;
 								break;
 							}
 							case 'particle': {
-								const emitter = context.emitter;
-								if (emitter.hasArea) {
-									event.startWidth = emitter.outerWidth;
-									event.startHeight = emitter.outerHeight;
+								const emitter = context!.emitter;
+								if (emitter!.hasArea) {
+									event.startWidth = emitter!.outerWidth;
+									event.startHeight = emitter!.outerHeight;
 								}
 								break;
 							}
@@ -202,14 +183,16 @@ Animation.pointermove = function (this: typeof Animation, event: PointerEvent) {
 			case 'object-rotate':
 				if (getAnimationStore().target) {
 					const { x, y } = getRelativeCoords(event, GL.canvas);
-					const distX = x * dpr - dragging.absoluteAnchorX;
-					const distY = y * dpr - dragging.absoluteAnchorY;
+					const distX = x * dpr - dragging.absoluteAnchorX!;
+					const distY = y * dpr - dragging.absoluteAnchorY!;
 					const currentAngle = Math.atan2(distY, distX);
-					const angle = modRadians(currentAngle - dragging.lastAngle);
+					const angle = modRadians(currentAngle - dragging.lastAngle!);
 					const increment = angle < Math.PI ? angle : angle - Math.PI * 2;
-					dragging.rotationRadians += getAnimationStore().mirror ? -increment : increment;
+					dragging.rotationRadians! += getAnimationStore().mirror
+						? -increment
+						: increment;
 					let rotation = Math.round(
-						dragging.startRotation + degrees(dragging.rotationRadians)
+						dragging.startRotation! + degrees(dragging.rotationRadians!)
 					);
 					if (event.shiftKey) {
 						rotation = Math.round(rotation / 15) * 15;
@@ -258,8 +241,8 @@ Animation.pointermove = function (this: typeof Animation, event: PointerEvent) {
 						case points.rectResize.BL:
 						case points.rectResize.BR:
 							if (event.shiftKey) {
-								const rectWidth = dragging.startWidth * dragging.startScaleX;
-								const rectHeight = dragging.startHeight * dragging.startScaleY;
+								const rectWidth = dragging.startWidth! * dragging.startScaleX!;
+								const rectHeight = dragging.startHeight! * dragging.startScaleY!;
 								const aspectAngle = Math.atan2(rectHeight, rectWidth);
 								let startAngle;
 								switch (point) {
@@ -301,12 +284,12 @@ Animation.pointermove = function (this: typeof Animation, event: PointerEvent) {
 					let scaleX = undefined;
 					let scaleY = undefined;
 					if (width !== undefined) {
-						scaleX = width / dragging.startWidth;
-						scaleX = roundTo(dragging.startScaleX + scaleX, 4);
+						scaleX = width / dragging.startWidth!;
+						scaleX = roundTo(dragging.startScaleX! + scaleX, 4);
 					}
 					if (height !== undefined) {
-						scaleY = height / dragging.startHeight;
-						scaleY = roundTo(dragging.startScaleY + scaleY, 4);
+						scaleY = height / dragging.startHeight!;
+						scaleY = roundTo(dragging.startScaleY! + scaleY, 4);
 					}
 					if (
 						(scaleX !== undefined && getAnimationStore().target!.scaleX !== scaleX) ||
@@ -345,28 +328,31 @@ Animation.pointermove = function (this: typeof Animation, event: PointerEvent) {
 						switch (Math.floor(section)) {
 							case 0:
 							case 2:
-								x = Math.round(dragging.startX + distX);
+								x = Math.round(dragging.startX! + distX);
 								y = dragging.startY;
 								break;
 							case 1:
 							case 3:
 								x = dragging.startX;
-								y = Math.round(dragging.startY + distY);
+								y = Math.round(dragging.startY! + distY);
 								break;
 						}
 					} else {
-						x = Math.round(dragging.startX + distX);
-						y = Math.round(dragging.startY + distY);
+						x = Math.round(dragging.startX! + distX);
+						y = Math.round(dragging.startY! + distY);
 					}
 					if (target.x !== x || target.y !== y) {
-						Animation.shiftTarget!(x, y);
+						Animation.shiftTarget!(x!, y!);
 					}
 				}
 				break;
 			case 'ready-to-scroll': {
 				const distX = event.clientX - dragging.clientX;
 				const distY = event.clientY - dragging.clientY;
-				Animation.screen.setScroll(dragging.scrollLeft - distX, dragging.scrollTop - distY);
+				Animation.screen.setScroll(
+					dragging.scrollLeft! - distX,
+					dragging.scrollTop! - distY
+				);
 				if (Math.sqrt(distX ** 2 + distY ** 2) > 4) {
 					dragging.mode = 'scroll';
 					Cursor.open('cursor-grab');
@@ -376,7 +362,10 @@ Animation.pointermove = function (this: typeof Animation, event: PointerEvent) {
 			case 'scroll': {
 				const distX = event.clientX - dragging.clientX;
 				const distY = event.clientY - dragging.clientY;
-				Animation.screen.setScroll(dragging.scrollLeft - distX, dragging.scrollTop - distY);
+				Animation.screen.setScroll(
+					dragging.scrollLeft! - distX,
+					dragging.scrollTop! - distY
+				);
 				break;
 			}
 		}

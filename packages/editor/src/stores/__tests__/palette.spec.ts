@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { getPaletteStore, paletteStateKeys } from '@app/stores/palette';
 import { Palette } from '@app/palette/palette.ts';
 
@@ -62,7 +62,17 @@ describe('usePaletteStore（Palette 工具栏状态反转：store 为源）', ()
 		expect(store.scrollable).toBe(true);
 		Palette.activeIndex = 7;
 		expect(store.activeIndex).toBe(7);
-		Palette.tileset = { type: 'auto', width: 8, tags: [] };
+		// 夹具按 `PaletteTilesetShape` 的必填项给全（`height`/`tileWidth`/`tileHeight`/`tiles`
+		// 在本用例里用不到，但接口里是必填 —— 真源 `Data.tilesets[guid]` 一定有）
+		Palette.tileset = {
+			type: 'auto',
+			width: 8,
+			height: 8,
+			tileWidth: 16,
+			tileHeight: 16,
+			tags: [],
+			tiles: {}
+		};
 		expect(store.tileset?.width).toBe(8);
 		Palette.state = 'closed';
 		Palette.mode = 'normal';

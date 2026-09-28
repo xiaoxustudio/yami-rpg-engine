@@ -33,33 +33,26 @@ import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 import type { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import type { StageColor } from '@app/utils/stage-color';
 import type { Timer } from '@app/utils/timer';
+import type { UIElementInstance, UINodeShape } from '@app/engine/ui/element-classes.ts';
 
 /**
- * 被 hover 的节点上，引擎真正碰到的部分：`drawHoverWireframe` 读 `instance.visible`
- * 并调 `instance.drawWireframe(color)`。
+ * `UIFacadeShape.hover` 的形状：**已建实例的节点**。
  *
- * ⚠️ 这里**刻意不用 `[k: string]: any`**：索引签名正是 ④ 要消灭的逃生口。其余成员由 UI 侧
- * 写入、引擎不读，所以不需要在契约里；将来若引擎开始读它们，`tsc` 会像这次一样点名。
- */
-export interface HoverInstance {
-	visible: boolean;
-	drawWireframe(color: number): void;
-}
-
-/**
- * `UIFacadeShape.hover` 的形状：节点本体（除 `instance` 外引擎不读别的）。
+ * 第 216 轮这里原是一份自写的最小结构 `HoverInstance`（`visible` + `drawWireframe`），
+ * 刻意不带索引签名；第 232 轮 `UINodeShape` 的索引签名退役后，把它直接写成
+ * 「节点 + **必填** `instance`」——同一条不变式，但**与 `getUIStore().target` 是同族类型**。
+ *
+ * 为什么必须同族：`ui-engine.ts` 的 `drawHoverWireframe` 要判 `this.hover !== getUIStore().target`
+ * （两者是同一个节点时不再画悬停框）。两份互不相干的局部形状会让这个比较报 TS2367
+ * 「两个类型没有重叠」，而它们描述的本来就是同一个对象。
  *
  * `instance` 声明为**必填**：这是引擎依赖的不变式 —— 能被 hover 的节点必然是
  * 「已建实例的主节点」（`ui-prefab.ts` 的 `createElement(node, true)` 会给它挂 `instance`）。
  * `drawHoverWireframe` 原本就没有守卫（缺 instance 一样会抛），声明必填只是把这条既有前提
- * 写进类型，**运行期行为逐字不变**。
+ * 写进类型，**运行期行为逐字不变**；`ui-transform.ts:60` 的 `setHover` 仍用那处已记录的
+ * 单次 `as` 把这条前提落到类型上（`ui-pointer.ts` 的形参口径没动）。
  */
-export interface HoverNode {
-	class: string;
-	children: HoverNode[];
-	instance: HoverInstance;
-	[k: string]: unknown;
-}
+export type HoverNode = UINodeShape & { instance: UIElementInstance };
 
 /** 控制点（旋转/缩放手柄）的几何描述。 */
 export interface ControlPoint {

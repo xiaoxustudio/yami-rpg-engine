@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useCurveWindow, type CurveFrame } from '@app/composables/useCurveWindow';
 import { animationEls } from '@app/animation/element-registry';
@@ -133,8 +133,9 @@ describe('useCurveWindow（动画过渡曲线窗口 composable：渲染状态机
 			registerElement(animationEls, id, document.getElementById(id));
 		}
 		vi.mocked(Data).easings = { map: {} };
-		vi.mocked(Animation).history.save.mockClear();
-		vi.mocked(Animation).planToSave.mockClear();
+		// 该模块被 vi.mock 整体替换成 mock：成员已是真实类型，不能再走 vi.mocked(Animation) 的深 mock
+		(Animation.history.save as Mock).mockClear();
+		(Animation.planToSave as Mock).mockClear();
 		vi.mocked(Timer.appendUpdater)!.mockClear();
 		vi.mocked(Timer.removeUpdater)!.mockClear();
 		vi.mocked(Easing).open.mockClear();

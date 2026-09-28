@@ -2009,7 +2009,11 @@ const onUiShortcutPointerdown = (event: PointerEvent) => {
 	UI?.shortcutPointerdown?.(event);
 };
 const onUiZoomInput = (value: number) => {
-	UI?.setZoom?.(value);
+	// 第 234 轮：这里原先写 `UI?.setZoom?.(value)`，而 `UI.setZoom` **运行期不存在**
+	// （`ui-window.ts` 的 21 行镜像在第 114 轮退役）⇒ 缩放框的输入其实是个**静默 no-op**。
+	// 改成直连引擎（本文件 `:1624` 的 `UIEngine.requestRendering!.call(UI)` 就是同一写法，
+	// `engine/ui/ui-events.ts:174` 的 `zoomInput` 也是这么调的），接收者仍是 `UI`。
+	UIEngine.setZoom!.call(UI, value);
 };
 const onUiZoomFocus = () => {
 	UI?.zoomFocus?.();

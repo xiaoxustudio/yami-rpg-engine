@@ -850,6 +850,9 @@ interface PlayerFrame {
 }
 
 interface PlayerLayer {
+	/** 图层开关：动画时间轴的判定与渲染都会读（animation-timeline.ts / animation-window-engine.ts）。 */
+	hidden?: boolean;
+	locked?: boolean;
 	class: string;
 	children: PlayerLayer[];
 	frames: PlayerFrame[];
@@ -859,6 +862,13 @@ interface PlayerLayer {
 	blend: string;
 	light: string;
 	particleId: string;
+	/**
+	 * 粒子图层相对精灵的前后顺序 —— 字段一直存在（运行期契约 `AnimationParticleOrder`，
+	 * 见 `template-arpg` 的 `yami.animation.d.ts`），读点在本文件 :348/:371 与
+	 * `animation-window-engine.ts:291/:302`。此前漏在声明外，靠 `ParticleEmitterShape` 的
+	 * 索引签名兜着 —— 摘掉那处 `any` 之后才露出来。
+	 */
+	order?: 'before' | 'after';
 }
 
 interface PlayerAnimation {
@@ -869,6 +879,8 @@ interface PlayerAnimation {
 }
 
 interface PlayerContext {
+	/** 上下文版本号：animation-motion.ts 用它判断本帧要不要重放声音（运行期必带）。 */
+	version?: number;
 	animation: PlayerAnimation;
 	parent: PlayerContext | null;
 	layer: PlayerLayer;

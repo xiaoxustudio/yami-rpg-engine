@@ -2,15 +2,19 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { elementDataValueOf, YMCommonList } from '@ui-kit';
 import { AutoTile } from '@app/palette/auto-tile.ts';
+import type { YamiElement } from '@app/types/element-api';
 import '@app/utils/number';
 
 describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
-	const createList = async (id: string): Promise<HTMLElement> => {
+	// 返回 `YamiElement` 而不是 `HTMLElement`：`AutoTile.nodeList` / `frameList` 的口径就是它
+	// （第 233 轮 `AutoTile` 的类型表落地后，`HTMLElement` 不再能直接赋给这两个字段）。
+	// `mount(YMCommonList)` 装出来的元素正是生产路径那种带列表 API 的元素 ⇒ 这个类型是如实的。
+	const createList = async (id: string): Promise<YamiElement> => {
 		const wrapper = mount(YMCommonList, { props: { id }, attachTo: document.body });
 		await wrapper.vm.$nextTick();
-		const list = document.getElementById(id) as HTMLElement | null;
+		const list = document.getElementById(id) as YamiElement | null;
 		expect(list).toBeTruthy();
-		if (!list) return document.createElement('div');
+		if (!list) throw new Error(`AutoTile 列表元素未渲染：#${id}`);
 		Object.defineProperty(list, 'clientHeight', { value: 400, configurable: true });
 		Object.defineProperty(list, 'innerHeight', { value: 400, configurable: true });
 		Object.defineProperty(list, 'clientWidth', { value: 300, configurable: true });
@@ -20,7 +24,9 @@ describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
 	it('createNodeItems 经 Vue 渲染 common-item 与 dataValue', async () => {
 		const list = await createList('autoTile-nodes');
 		AutoTile.nodeList = list;
-		AutoTile.template = { cover: 1 };
+		// 本用例只用到 `cover`，但样本按**完整契约**造（`AutoTileTemplateData` 有 4 个必填字段，
+		// 原先那个 `{ cover: 1 }` 能编译只是 `Record<string, any>` 时代的事）。
+		AutoTile.template = { id: 't', name: '', cover: 1, nodes: [] };
 		AutoTile.nodes = [
 			{ rule: 0, frames: [0] },
 			{ rule: 0, frames: [0] },

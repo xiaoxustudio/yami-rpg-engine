@@ -131,7 +131,9 @@ const fileSystemApi = {
 	mkdir: (p: string, options?: { recursive?: boolean; mode?: number }) => FSP.mkdir(p, options),
 	rename: (src: string, dst: string) => FSP.rename(src, dst),
 	copyFile: (src: string, dst: string) => FSP.copyFile(src, dst),
-	stat: (p: string, bigint?: boolean) => FSP.stat(p, bigint),
+	// ui-kit 侧契约的第二参是 node 的 `StatOptions` 对象（`{ bigint: true }`），照原样透传
+	// —— 原先写 `bigint?: boolean` 与实际传值不符，`FSP` 有签名之后当场露出来。
+	stat: (p: string, options?: { bigint?: boolean }) => FSP.stat(p, options),
 	addOversizeImagePaths: (p: string) => FileItem.addOversizeImagePaths?.(p)
 };
 const pathUtil = {
