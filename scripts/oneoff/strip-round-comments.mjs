@@ -36,7 +36,7 @@ for (const file of files) {
 	const text = readFileSync(file, 'utf8');
 	const eol = text.includes('\r\n') ? '\r\n' : '\n';
 	const lines = text.split(/\r?\n/);
-	const keep = new Array(lines.length).fill(true);
+	const keep = Array.from({ length: lines.length }, () => true);
 
 	// 1) 整行 // 注释
 	for (let i = 0; i < lines.length; i++) {
@@ -64,8 +64,10 @@ for (const file of files) {
 			i = end;
 			continue;
 		}
-		const body = block.filter((l) => !ROUND.test(l)).filter((l) => l.trim() !== '' && !/^\s*(\/\*\*?|\*\/)\s*$/.test(l));
-		if (body.length === 0 || body.every((l) => l.trim() === '*')) {
+		const body = block
+			.filter((l) => !ROUND.test(l))
+			.filter((l) => l.trim() !== '' && !/^\s*(\/\*\*?|\*\/)\s*$/.test(l));
+		if (body.every((l) => l.trim() === '*')) {
 			for (let k = i; k <= end; k++) keep[k] = false; // 整块只剩轮次叙述 ⇒ 全删
 		} else {
 			for (let k = i + 1; k < end; k++) if (ROUND.test(lines[k])) keep[k] = false; // 保留块壳与仍有用的话
@@ -74,7 +76,8 @@ for (const file of files) {
 	}
 	// 3) 整行 /** … */ 单行块
 	for (let i = 0; i < lines.length; i++) {
-		if (/^\s*\/\*\*?.*\*\/\s*$/.test(lines[i]) && ROUND.test(lines[i]) && !TODO.test(lines[i])) keep[i] = false;
+		if (/^\s*\/\*\*?.*\*\/\s*$/.test(lines[i]) && ROUND.test(lines[i]) && !TODO.test(lines[i]))
+			keep[i] = false;
 	}
 
 	const kept = lines.filter((_, idx) => keep[idx]);
@@ -85,5 +88,7 @@ for (const file of files) {
 		if (WRITE) writeFileSync(file, kept.join(eol), 'utf8');
 	}
 }
-console.log(`files with hits: ${report.length}, lines removed: ${removed}${WRITE ? '' : ' (dry run)'}`);
+console.log(
+	`files with hits: ${report.length}, lines removed: ${removed}${WRITE ? '' : ' (dry run)'}`
+);
 for (const line of report.slice(0, 40)) console.log('  ' + line);
