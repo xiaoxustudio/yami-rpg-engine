@@ -40,14 +40,21 @@ export const createEditorWindow = function (
 		event.preventDefault();
 	});
 
-	editor.webContents.on('console-message', (_event, level, message, line, sourceId) => {
-		const levelStr = ['log', 'warning', 'error'][level] || 'log';
-		const tag = `[renderer:${levelStr}]`;
-		const loc = `${sourceId}:${line}`;
-		if (level === 2) {
-			console.error(`${tag} ${message} (${loc})`);
-		} else {
-			console.log(`${tag} ${message} (${loc})`);
+	// 渲染进程 console 转发。
+	//
+	// 用 Electron 43 的非弃用签名（`details` 上直接带 message / level / lineNumber /
+	// sourceId）。旧的位置参数签名已标记 @deprecated，且 level 是 0..3 的数字，
+	// 原映射 `['log','warning','error'][level]` 会把 info 说成 warning、warning 说成 error。
+	//
+	// 生产环境只转发 error：全量转发意味着渲染进程每一条 console.log 都要跨一次进程
+	// 并写主进程 stdout，循环里的日志会直接变成瓶颈。
+	editor.webContents.on('console-message', (details) => {
+		const { level, message, lineNumber, sourceId } = details;
+		const text = `[renderer:${level}] ${message} (${sourceId}:${lineNumber})`;
+		if (level === 'error') {
+			console.error(text);
+		} else if (isDebugMode()) {
+			console.log(text);
 		}
 	});
 	editor.webContents.on('did-finish-load', () => {
