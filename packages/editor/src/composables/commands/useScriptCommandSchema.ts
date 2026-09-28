@@ -242,10 +242,8 @@ interface ScriptEditor {
 /**
  * monaco `ITextModel` 里**本模块用到的那几个成员**。
  *
- * 第 144 轮合并：此前这里只写 `setValue` / `getValue` / `getAlternativeVersionId`，而
  * `ScriptEditor.getModel()` 的返回类型只写 `{ getLanguageId(): string }` —— **同一个运行期对象
  * （monaco 的 `ITextModel`）被拆成两个互不相交的子集**，于是 `:333` 只能写
- * `editor!.getModel() as unknown as ScriptModel` 从半边跳到另半边（与第 118 轮
  * `ImageElementShape` / `EmbeddedImageShape` 是同一病症）。合并成一份之后两处读点共用它：
  * `model.getValue()`（`save`）与 `editor.getModel()!.getLanguageId()`（语言判定）。
  */

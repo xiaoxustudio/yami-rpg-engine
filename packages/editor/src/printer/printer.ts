@@ -5,7 +5,6 @@ import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { uiElClasses } from '@app/engine/ui/element-classes.ts';
-// 合并后的具名形状（第 118 轮）：本文件原先只写了一半的 `UIImageElementShape`，
 // 另一半在 `engine/ui/text-element.ts` ⇒ 那边只能 `as unknown as` 跳过来说话。见该接口的注释。
 import type { UIImageElementShape } from '@app/engine/ui/element-classes.ts';
 import { getUIStore } from '@app/stores/ui';
@@ -37,7 +36,6 @@ type DrawingMethod = (context: CanvasTextContext, command: TextCommandShape, tex
 /**
  * `drawingMethods` 的**取值面**：只能是这四个绘制方法名。
  *
- * 第 143 轮：这张表原本声明成 `Record<string, string>`，于是「表里的名字」与「类上真有这个方法」
  * 之间没有任何检查，取值只能靠 `Printer as unknown as Record<string, (...args: unknown[]) => unknown>`
  * 把整个 `Printer` 谎报成一张函数字典。收成方法名联合之后：① 表里写错名字当场报错；
  * ② `Printer[name]` 直接得到 `DrawingMethod`，断言与那句谎一起消失。
@@ -57,7 +55,6 @@ interface TextCommandShape {
 	/**
 	 * 文本颜色 —— 值就是 **CSS 颜色串**（`'rgba(r, g, b, a)'`）。
 	 *
-	 * ✅ **第 104 轮结案**（原为第 79 轮的「待决策」）：声明成 `string` 是**对的**，
 	 * 4 处 `context.fillStyle = color` 也是对的。原先怀疑「真实取值是打包整数」，
 	 * 但把来源一路量到底即可排除：
 	 *
@@ -70,7 +67,6 @@ interface TextCommandShape {
 	 * ⇒ 运行期从来不是整数。会让人误判的是**同文件另一条独立的颜色通道**（效果颜色用
 	 * `r + (g + (b + a * 256) * 256) * 256` 打包整数），那与 `fillStyle` 无关。
 	 * 唯一真正的谎言是占位命令里的 `0 as unknown as string`，已改为 `''`（见 `fetchCommand`）；
-	 * 第 143 轮又把同一处的 `drawingMethod: '' as unknown as …` 改成 `fnEmpty` ⇒ 占位对象零断言。
 	 */
 	color: string;
 	effect: TextEffectShape | null;
@@ -1257,7 +1253,6 @@ export class Printer {
 				imageHeight: 0,
 				imageSpacing: 0,
 				horizontalWidth: 0,
-				// 第 143 轮：占位值改用 `fnEmpty`（与 :471 那条路径同一个「空实现」），
 				// 于是原先那句 `'' as unknown as (...args: unknown[]) => unknown` 消失 ——
 				// 占位对象里现在一处断言都没有。
 				drawingMethod: fnEmpty

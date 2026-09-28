@@ -7,7 +7,6 @@ interface InputEditor {
 /**
  * 历史所有者（Owner）：调用方传的是遗留单例（Animation / Scene / UI）。
  *
- * ## 为什么是 object 而不是 { history: unknown }（2026-09-21 第 89 轮）
  *
  * 这里的 receiver **只用于透传**（真正的读取发生在 inspector.ts 的 owner.history!.save(data)），
  * 所以本接口**不需要**声明 history。而一旦声明，就会踩到 TS 的 **weak type 检测**：
@@ -17,8 +16,6 @@ interface InputEditor {
  * 于是这些调用点当时只能各写一遍 as unknown as { history: unknown }。
  * 声明成 object（不假设任何键）后，这些断言**本该全部消失** —— 这是「修声明，而不是修 N 个读点」。
  *
- * ⚠️ **但第 89 轮只改了声明、没清调用点**（原文这里写「这 18 处断言全部消失」，与代码不符）：
- * 到 2026-09-21 第 106 轮实测，仍有 **14 处**挂着早已多余的
  * `Animation / Scene as unknown as { history: unknown }`（7 个 Anim*Frame/LayerPage + 7 个
  * Scene*Page），而 `tsc` 全程没报错 —— 因为**多余的断言不是错误**，只是噪声。
  * 已在本轮清除。**「修完声明还要回头清调用点」在这一处被漏了整整 17 轮。**

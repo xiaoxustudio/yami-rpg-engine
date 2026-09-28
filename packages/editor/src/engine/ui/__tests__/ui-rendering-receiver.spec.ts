@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
 /**
- * `UIEngine.renderingFunction` 的**接收者语义** —— 第 111 轮新增。
  *
  * ## 这条用例守的是什么
  *

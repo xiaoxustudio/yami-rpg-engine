@@ -31,7 +31,6 @@ function updateIncrementalChanges(version: string) {
 		/**
 		 * 版本处理函数：按 `1.0.NNN` 命名（本类里共 19 个）。
 		 *
-		 * 第 150 轮补这条**模板字面量索引签名**：版本区间是连续的、处理器不是（`1.0.132` / `1.0.133` /
 		 * `1.0.138` 等是空档）⇒ 按版本号动态取值时**可能取到 `undefined`**（下方 `if (handler)`
 		 * 正为此存在）。写出来之后，原先那句
 		 * `(updater as unknown as Record<string, (update: boolean) => void>)[version]`

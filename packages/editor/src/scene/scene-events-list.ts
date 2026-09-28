@@ -32,7 +32,6 @@ Scene.listKeydown = function (this: typeof Scene, event: KeyboardEvent) {
 	if (!this.data) {
 		return;
 	}
-	// 第 124 轮：`read` 的形参早就是 `unknown`（内部自己收窄；还能识别组件 own 的 `read`）⇒
 	// 这里那次 `as unknown as HTMLElement` 是**签名放宽后忘了清的调用点**，直接删。
 	const item = read(this);
 	const isFile = item && item.class !== 'folder';

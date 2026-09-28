@@ -9,11 +9,9 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { UIInstanceList } from '@app/engine/ui/element-instance-list.ts';
 
-// 阶段 1c 第 ③ 步（2026-09-21 第 96 轮）：`registerPreset` / `unregisterPreset` / `setAsPrefab` /
 // `unsetAsPrefab`（以及此前的 `hasPrefab` / `clearInvalidPrefabs`）的**实现**都已搬到目录外的
 // `@app/engine/ui/ui-slots.ts`，由 `uiWindowReady` 动态 import 后绑定回单例。
 //
-// 阶段 1c 第 ④-3 步（2026-09-22 第 177 轮）：最后三个槽位也改成**成员对象** `uiPrefabMembers`，
 // 装配由 `ui-members.ts` 汇总、`ui-window.ts` 在 UI 诞生处挂上 ⇒ 本文件**不再 `import { UI }`**
 // —— 这是 ④-3 里第一个走完全程的域（`ui-domain-singleton-imports` 因此 6 → 5）。
 //

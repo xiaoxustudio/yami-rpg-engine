@@ -12,7 +12,6 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { registryElement } from '@app/utils/element-registry';
 
 /**
- * `setString` 指令的**操作数**形状 —— 第 214 轮由 `Record<string, any>` **枚举**而来
  * （台账轴 `any-hatches` 该处归零；那行 `no-explicit-any` 豁免同时删除）。
  *
  * ## 为什么可以就地枚举
@@ -27,7 +26,6 @@ import { registryElement } from '@app/utils/element-registry';
  * `type: 'object'` 带 `property`/`actor`/…。⇒ 除判别键 `type` 外全部可选。
  * 而消费它们的 `Command.parseXxx` 全是 `CommandMethod = (...args: any[]) => any`
  * （它们自己判形状、自己取默认值），所以这里**不该新增保证**：写 `unknown` 是如实；
- * 写具体类型等于凭空承诺一件实现没承诺的事（第 124 轮「这个断言在替谁干活」的判据）。
  *
  * ⚠️ 少数几个必须是 `string`：它们参与字符串运算（`operand.data.slice(-1)`）
  * 或被**原样当返回值**（`case 'script': return operand.script;`）—— `unknown` 进模板字面量会报错。

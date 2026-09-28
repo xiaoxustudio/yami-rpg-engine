@@ -1,5 +1,4 @@
 /**
- * ④-4 契约（生成物 —— 由 scripts/oneoff/gen-contract-members.mjs 产出，第 193 轮）。
  *
  * 成员类型来自类型检查器对 `uiMembers` 的**推断**（源码里没有可抬的注解）。
  * 生成 75 条；跳过 7 条（原因见生成器输出）。
@@ -118,7 +117,6 @@ export interface UIDomainMembers {
 	unsetAsPrefab: ((node: UINodeShape) => void) | null;
 }
 
-// ④-4 接线（**贪心**，第 198 轮）：只接不会让全仓变红的成员；其余留在 UIDomainMembers 里待定。
 // 待定 0 条：(无)
 declare module './ui-singleton.ts' {
 	interface UIShape extends Pick<

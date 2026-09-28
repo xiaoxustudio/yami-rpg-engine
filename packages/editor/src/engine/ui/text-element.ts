@@ -439,7 +439,6 @@ uiElClasses.Text = class TextElement extends uiElClasses.Element! {
 	}
 
 	resizeEmbeddedImages(offsetX: number, offsetY: number) {
-		// 第 118 轮：这里原来是 `as unknown as EmbeddedImageShape[] & { changed: boolean }`。
 		// 合并成一份具名形状后**整条断言都不需要了**：`printer.images` 已经是
 		// `UIImageElementShape[] & { changed?: boolean }`，`changed` 的读/写对可选布尔都成立。
 		const images = this.printer!.images;

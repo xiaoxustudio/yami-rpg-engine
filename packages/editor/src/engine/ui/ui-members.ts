@@ -1,5 +1,4 @@
 /**
- * ④-3 的**通用装配入口** —— 阶段 1c 第 ④ 步（2026-09-22 第 169 轮）。
  *
  * ## 它解决什么
  *
@@ -10,7 +9,6 @@
  *
  * ## 为什么要有这个中间模块（而不是在遗留文件里逐个域写一行）
  *
- * `legacy-ui-lines` 是**零目标**轴，而「一个域一行装配」会让它每个域上升 1（第 168 轮实测：
  * 多一行就报「✗ 上升」，8 个域 = +8）。所以汇总放到**目录外**：遗留文件里永远只有一行，
  * `import('…/ui-members.ts').then((m) => Object.assign(UI, m.uiMembers))`。
  *
@@ -38,21 +36,13 @@ import type { UIShape } from './ui-singleton.ts';
  * 而 `ui-window.ts` 那边由此保持**一行**（`legacy-ui-lines` 是零目标轴）。
  */
 export const uiMembers = {
-	// 预制体域（第 167 轮）
 	...uiSlotsMembers,
-	// DOM 引用与定时器初始化域（第 170 轮）
 	...uiInitializeMembers,
-	// 列表交互域（第 173 轮：只搬了 10 处顶层声明，函数体内的 `UI.` 原地保留）
 	...uiListMembers,
-	// 预制体域剩余 3 处（第 177 轮：**走完全程**的第一个域 —— 该文件已不再 import UI）
 	...uiPrefabMembers,
-	// 元素变换 / 属性同步域（第 179 轮：只搬了 18 处声明，函数体内的 `UI.` 原地保留）
 	...uiTransformMembers,
-	// 文档生命周期域（第 182 轮：只搬了 15 处声明，函数体内的 `UI.` 原地保留）
 	...uiFileMembers,
-	// 事件面域（第 183 轮：只搬声明）
 	...uiEventsMembers,
-	// 画布指针交互域（第 183 轮：只搬声明）
 	...uiPointerMembers
 };
 

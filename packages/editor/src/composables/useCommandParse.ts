@@ -28,7 +28,6 @@ import { append } from '@app/utils/array';
  *
  * 这里原先是一行 `[k: string]: any`：读什么都行、拼错键也不报错。摘掉它之后 tsc 报出的
  * 69 条错误**全在本文件**，正好给出「到底被读了哪些键」的清单 —— 于是逐键写出类型
- * （第 151 轮对 `ParticleLayerData` 用的同一手法：从读点逆推，不靠猜）。
  *
  * 该接口只做**读侧**参数类型（全仓没有构造点：值来自工程 JSON），因此互斥出现的分支字段
  * 按「全组可读」声明为必填 —— 与 `particle-engine.ts` 的 `ParticleLayerData` 同一取舍：
@@ -100,7 +99,6 @@ interface CommandNode {
 	/**
 	 * 命令节点还会带若干动态成员（脚本侧写入），故保留索引签名 —— 但**用 `unknown` 而不是 `any`**
 	 * （本仓既有写法，见 `element-classes.ts` 的 `UINodeShape`）：拼错键不会静默变成 `any`，
-	 * 读侧必须先收窄。第 152 轮从 `[k: string]: any` 降级来的（`any-hatches` 只数 `any`）。
 	 */
 	[k: string]: unknown;
 }
@@ -113,7 +111,6 @@ interface TextContent {
 	color?: string;
 	/**
 	 * 嵌套的子命令（`fetchVariables` 会递归进去 —— 分支/条件块就是这样放进子命令的）。
-	 * 第 152 轮：原先靠 `[k: string]: any` 兜着这个字段，摘掉索引签名后 tsc 直接指出
 	 * 它被当成 `CommandNode[]` 使用（`:140` 传给 `fetchVariables(commands: CommandNode[])`）。
 	 */
 	children?: CommandNode[];

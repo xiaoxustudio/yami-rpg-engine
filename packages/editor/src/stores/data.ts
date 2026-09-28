@@ -132,7 +132,6 @@ export interface LanguageSettingsShape {
  *
  * 具名部分是**本仓类型化读到**的字段（`services/updater/config.ts` 的版本迁移逐个字段读写，
  * `useProjectSettingsWindow` 的表单与之一一对应）。末尾的索引签名是 `unknown` 而非 `any`
- * （第 152 轮起本仓的统一写法，见 `composables/useCommandParse.ts` 的 `CommandNode`）：
  * 迁移循环要按 `Object.keys()` 逐键搬运，配置本身也是可扩展的（插件可加键）——
  * 但读侧必须先收窄，拼错键不会静默变成 `any`。
  */

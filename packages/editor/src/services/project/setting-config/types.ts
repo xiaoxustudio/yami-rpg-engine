@@ -37,7 +37,6 @@ export interface SettingSection {
 }
 
 /**
- * 设置配置（`yami-config.json`）的形状 —— 第 158 轮收 `SettingConfig.config` 时**按读者逆推**，
  * **不是**按 `settingSchema` 推：schema 是运行期数据（`SettingSection[]`，`id: string`），
  * `buildDefaultConfig()` 只返回 `Record<string, unknown>` ⇒ 类型层没有真源，只能手写。
  *

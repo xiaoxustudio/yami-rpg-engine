@@ -38,8 +38,6 @@ import type { UIElementInstance, UINodeShape } from '@app/engine/ui/element-clas
 /**
  * `UIFacadeShape.hover` 的形状：**已建实例的节点**。
  *
- * 第 216 轮这里原是一份自写的最小结构 `HoverInstance`（`visible` + `drawWireframe`），
- * 刻意不带索引签名；第 232 轮 `UINodeShape` 的索引签名退役后，把它直接写成
  * 「节点 + **必填** `instance`」——同一条不变式，但**与 `getUIStore().target` 是同族类型**。
  *
  * 为什么必须同族：`ui-engine.ts` 的 `drawHoverWireframe` 要判 `this.hover !== getUIStore().target`
@@ -87,7 +85,6 @@ export interface UIFacadeShape {
 	/**
 	 * 当前文档的历史栈。
 	 *
-	 * ⚠️ **第 216 轮改**：这里原先是**非空**的 `History`，而单例那一侧是 `History | null`
 	 * （`ui-file.ts:147` 关闭文档时**真的会写 `null`**）⇒ 两个类型对不上，且**单例那一侧才是如实的**。
 	 * 引擎有 4 处以 `this.history` 读它（`shiftTarget` / `shiftAnchor` / `resizeTarget` / `rotateTarget`），
 	 * 这些函数只在「文档已打开」之后才跑到 ⇒ 那条不变式现在写在**一处**（`historyOf()` 里的 `!`），
@@ -137,9 +134,7 @@ export interface UIFacadeShape {
 
 	// —— ④-1b 由 `tsc` 点名后补上的成员 ——
 	//
-	// ⚠️ **第 216 轮更正**：原先这里还有 3 个「引擎自有、但经 `this` 调用」的成员
 	// （`requestRendering` / `updateControlPoints` / `renderingFunction`）—— 它们**已删除**：
-	// 第 112 轮（④-2b）把那 70 处调用点改成了 `UIEngine.<x>!.call(this, …)`，实测
 	// `ui-engine.ts` 里 `this.requestRendering` / `this.updateControlPoints` /
 	// `this.renderingFunction` 的读取**一处都不剩** ⇒ 它们成了**没有依据的契约条目**。
 	//

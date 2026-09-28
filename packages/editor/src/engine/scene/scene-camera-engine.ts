@@ -9,7 +9,6 @@ import { clamp, roundTo } from '@app/utils/math';
 type ScenePoint = { x: number; y: number };
 
 /**
- * `rasterizeScrollPosition` **真正读**的字段（第 159 轮）。
  *
  * 声明整只 `Scene` 会两处受损：测试夹具（局部 mock）被迫补齐 22 个无关字段，而实现体的
  * `this` 也得跟着声明成整只（`this` 参数的检查是逆变的，两边必须一致）。
@@ -21,7 +20,6 @@ type RasterizeScrollThis = Pick<
 >;
 
 /**
- * `SceneCameraEngine` 的成员表（第 159 轮把 `Record<string, any>` 收成具名形状）。
  *
  * 这是「**先声明空对象、再在模块顶层逐条挂载**」的遗留单例写法，8 条成员全部在本文件内、
  * 每条只挂一次，消费方只有 `scene-camera.ts`（把 8 条整体拷到 `Scene` 上）与 `scene.spec.ts`
@@ -31,7 +29,6 @@ type RasterizeScrollThis = Pick<
  * （全部是无条件赋值）。`this` 一律是 `typeof Scene` —— 这些函数本来就是挂到 `Scene` 上调用的。
  *
  * 写成**函数属性**而不是方法简写：它们是赋值上去、被逐条搬运到 `Scene` 上的函数值，
- * 方法简写会让 `typescript(unbound-method)` 在那 8 个镜像点报警（第 131 轮的结论，
  * 同一个目录的 `scene-marquee-engine.ts` 已是同一手法）。
  */
 type SceneCameraEngineShape = {

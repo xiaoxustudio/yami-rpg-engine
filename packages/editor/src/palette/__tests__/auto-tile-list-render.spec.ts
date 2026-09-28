@@ -7,7 +7,6 @@ import '@app/utils/number';
 
 describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
 	// 返回 `YamiElement` 而不是 `HTMLElement`：`AutoTile.nodeList` / `frameList` 的口径就是它
-	// （第 233 轮 `AutoTile` 的类型表落地后，`HTMLElement` 不再能直接赋给这两个字段）。
 	// `mount(YMCommonList)` 装出来的元素正是生产路径那种带列表 API 的元素 ⇒ 这个类型是如实的。
 	const createList = async (id: string): Promise<YamiElement> => {
 		const wrapper = mount(YMCommonList, { props: { id }, attachTo: document.body });

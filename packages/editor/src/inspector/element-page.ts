@@ -51,7 +51,6 @@ const SIZE_INPUT_IDS = [
 		_elementInitialized?: boolean;
 		_openRetry?: number;
 	}
-	// `UIElementTransform` 已于 2026-09-21 第 108 轮提成**共享类型**
 	// （`engine/ui/element-classes.ts`，见该处注释）：`stores/ui.ts` 的 `UINodeShape.transform`
 	// 与引擎读点指向同一个对象，局部类型别处拿不到，只能退回索引签名。
 	interface UIElementData {
@@ -123,7 +122,6 @@ const SIZE_INPUT_IDS = [
 		const alignElements = $('.uiElement-transform-align');
 		alignElements.forEach((el) => on(el, 'click', this.alignmentClick!));
 		// 18 控件 input 经 Vue 模板转发（UIImagePage.vue @input → UIElement.paramInput）
-		// 第 124 轮：上面那行注释在 `54a7d809` 被**编码事故**毁成乱码（GBK↔UTF-8 误解码），
 		// 之后 `3f259bc9` 又在乱码上再毁一次；文本门禁当时看不见它（7 条规则都不管乱码）。
 		// 已按 `54a7d809^` 的历史版本**逐字恢复**。
 		// 顺带：这里原来的 `(alignElements as unknown as HTMLElement[])` 是多余的 ——
@@ -200,7 +198,6 @@ const SIZE_INPUT_IDS = [
 		// 再试一次 —— 绝不在元素为 null 的情况下继续往下读。
 		this.initialize!();
 		if (!this.pointerEvents) {
-			// 第 92 轮修：原先写 `?? NaN`，而 `undefined < 10` ≡ `NaN < 10` 恒为 false
 			// ⇒ **首次 `open()`（控件尚未登记）根本不重试**，重试路径实际是死的；
 			// 可下一行偏偏写 `(this._openRetry ?? 0) + 1`，可见本意就允许 `undefined`。
 			// 改用 `?? 0`：首次 open 也进入重试（上限 10 次），与下一行的意图一致。

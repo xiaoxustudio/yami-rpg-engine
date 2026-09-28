@@ -31,7 +31,6 @@ interface ParticleEmitterData {
 /**
  * 粒子图层数据（`layer.data`）。
  *
- * 第 145 轮合并：此前这里有**两份**声明描述同一个运行期对象 —— 本接口只写引擎发射逻辑用到的
  * `interval` / `delay` / `area`，而 `ParticleElementLayerData`（原 `:95`）写元素读到的
  * `lifetime` / `anchor` / `rotation` / … —— 于是 `new ParticleElement(this)` 处
  * `this` 不满足 `ParticleElementLayer`（`TS2345`：`ParticleLayerData` 缺 `lifetime`、
@@ -47,7 +46,6 @@ interface ParticleEmitterData {
 /**
  * 「当前舞台」（`ParticleElement.stage` / `Particle.Element.stage`）的面。
  *
- * 第 237 轮从类里的内联类型提出来并**导出**：窗口侧 `particle-window.ts` 的
  * `ParticleComponentShape.Element.stage` 此前是 `Record<string, any>`（`any-hatches` 的一个站点），
  * 现在两边引用同一个类型，写入点也就有了检查。
  *
@@ -125,7 +123,6 @@ export interface ParticleLayerData {
 		vframes: number;
 		interval: number;
 	};
-	// —— 以下六个字段是第 151 轮**从读点逆推**出来的：本接口原先靠 `[k: string]: any` 兜着，
 	//    摘掉那行索引签名后 tsc 只报了 12 条 TS2339、全在本文件，正好给出候选清单 ——
 	/** 排序模式：`draw` 里 `switch (data.sort)` 的三个 case（值来自工程数据，故不收成联合类型） */
 	sort: string;
@@ -249,7 +246,6 @@ export interface ParticleElementLayer {
 	/**
 	 * 缓动器：只用到 `ease(0..1)`（`Easing` 是值不是类型，故按结构写）。
 	 *
-	 * 第 145 轮补 `| null`：图层只在 `color.mode === 'easing'` 时才赋值（`:632`），
 	 * 而元素侧 `updateColor` 也只在同一模式下被装成 `updateColorEasing`（`:1057`）
 	 * ⇒ 读点（`:1281`）带 `!` 表达这条不变式；这样「类可空、元素要求非空」不再互斥，
 	 * `new ParticleElement(this)` 的断言得以删除，且不变式一旦被破坏仍是**当场抛错**（与改动前一致）。
@@ -473,11 +469,9 @@ class ParticleLayer {
 	unitHeight: number;
 	elapsed: number;
 	/**
-	 * 颜色缓动器。第 145 轮修正：原先声明 `Float32Array | null`，但 `:626` 赋的是
 	 * `Easing.get(color.easingId)`（`transition-window.ts:121` 的 `EasingMapInstance`，
 	 * 有 `ease(time): number`）；`:1268` 的读点也确实是 `easing.ease(...)`。
 	 * 声明成 `Float32Array` 之所以一直没报错，是因为赋值右侧是 `any` 面 —— 又一次
-	 * 「被 `any` 吞掉的错误声明」（同第 141 轮 `Curve.index`）。
 	 */
 	easing!: { ease(t: number): number } | null;
 	capacity: number;

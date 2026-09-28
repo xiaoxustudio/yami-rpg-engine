@@ -47,7 +47,6 @@ describe('全局挂载审计（window/globalThis 挂载点清除固化）', () =
 		for (const p of files) {
 			const code = stripComments(readFileSync(p, 'utf8'));
 			for (const line of code.split('\n')) {
-				// 第 138 轮：`__SKIP_AUTO_INIT__` / `__nodeRequire` 已改为在
 				// `preload-env.d.ts` 里给 `Window` 补声明，两条豁免随之删除；
 				// 原 `Window: typeof Window` 一条实测**匹配不到任何行**（陈旧豁免），一并删掉。
 				// 布局调试钩子 __yamiLayoutDebug：layout.ts 有意保留，供控制台手动输出布局诊断

@@ -41,7 +41,6 @@ import type { Matrix } from '@app/engine/webgl/matrix2.ts';
  * 当时刻意与既有约定保持一致，**不新造一套更严的类型体系**——那时的目标是拆掉遗留层的引用面，
  * 而不是重做 WebGL 元素系统的类型（那是独立的一件事）。
  *
- * 第 155 轮复核（代价扫描表里这一处是 **7 条**）：那行索引签名实际只被四个成员用到 ——
  * `draw` / `resize`（`element-base.ts:201` / `:209` 按 `children` 循环调用，均**无参**），
  * 以及 `addReference` / `tryUpdateReferenceElements`（**只有根元素有**：`root-element.ts:42` / `:59`）。
  * ⇒ 四个成员写出来、索引签名去掉（这一处在 `any-hatches` 口径里归零）；其它动态成员
@@ -137,7 +136,6 @@ export interface UIElementInstance {
 /**
  * **UI 图片元素实例**的形状（打印时嵌进文本里的那种图）。
  *
- * 2026-09-22 第 118 轮：**合并了两份「各写一半」的局部形状**。此前同一个运行期对象
  * （`new uiElClasses.Image!(…)`）被两处各描述了一个**子集**：
  *
  * - `printer/printer.ts` 的 `ImageElementShape` —— `image` / `display` / `clip` / `destroy`；
@@ -169,7 +167,6 @@ export interface UIImageElementShape {
 /**
  * UI 元素的**变换数据**（画布上可拖拽的那组属性）。
  *
- * 2026-09-21 第 108 轮从 `inspector/element-page.ts` 的**局部** interface 提上来共享。
  * 为什么必须共享：`stores/ui.ts` 的 `UINodeShape.transform` 与引擎的读点
  * （`ui-engine.ts` 的 `transform.anchorX` / `ui-pointer.ts` 的 `transform.x` …）
  * 都指向同一个对象，而局部类型拿不到 ⇒ 只能退回索引签名。提上来之后，
@@ -201,19 +198,15 @@ export interface UIElementTransform {
 /**
  * 画布 **UI 树节点**（序列化形态：`class` + `children` + 各类扩展字段）。
  *
- * 2026-09-21 第 109 轮：**合并了两份同名声明**。此前 `ui-singleton.ts` 与 `stores/ui.ts`
  * 各写一份 `UINodeShape`，靠各自的 `[k: string]: any` 索引签名「碰巧结构兼容」——
- * 也就是说两边可以各自漂移而无人发现。第 108 轮把 store 那份改成具名字段后，
  * `ui-transform.ts:59` 当场报「两者不兼容」，那是这个隐患第一次显形。
  * 现在全仓只有这一处声明：`ui-window.ts` 只做再导出，`stores/ui.ts` 直接 import。
  *
- * ⚠️ 索引签名**暂时保留**：第 108 轮实测，把它换成具名字段后 `tsc` 会露出 31 处问题，
  * 其中 **14 处是 `matrix` / `parent` 可空却被直接解引用**（`ui-engine` 6 + `ui-pointer` 8），
  * 另有 `instance` 到底可不可空（`ui-engine.ts:363` 会把 `null` 赋给它）。
  * 那些是**行为问题**（要么证明不变式、要么加守卫），必须实机判定，
  * 不能靠补一批 `!` 蒙过去 —— 那正是本仓反复记的静默失效制造机。
  *
- * ## 第 232 轮：按上面的口径逐个判定后，索引签名**已退役**
  *
  * - **`matrix` 可空是不成立的**：`element-base.ts:110` 构造时就是 `new Matrix()`，
  *   全仓没有第二处赋值 ⇒ 把 `UIElementInstance.matrix` 改成非空，13 处读点**不加任何 `!`** 即通过。

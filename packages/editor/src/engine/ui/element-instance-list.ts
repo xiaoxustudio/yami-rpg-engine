@@ -23,7 +23,6 @@ export class UIInstanceList extends Array {
 	/**
 	 * 把自己从列表里摘掉（`UIElement.destroy()` 用）。
 	 *
-	 * ⚠️ **2026-09-22 第 117 轮补上 —— 这是一个一直存在、但没人测到的崩溃。**
 	 * `element-base.ts` 的 `destroy()` 里一直写着 `node.instances.remove(this)`，
 	 * 而本类**从来没有 `remove`** ⇒ 只要 `node` 存在，那一行就抛
 	 * `TypeError: node.instances.remove is not a function`。

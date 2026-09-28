@@ -95,7 +95,6 @@ describe('UI 配色落盘：遗留影子副本缺失时以 store 为准', () => 
 });
 
 /**
- * `UI.loadFromConfig` 的**归一化**（第 211 轮）—— 同一个 config，两侧必须得到同一个颜色。
  *
  * `StageColor` 的入参是 **8 位 RGBA hex**（第 4 位是 alpha）。此前 `safeHex` 只写在 store 侧，
  * 于是同一份 config 在 store 造出 `'1e1e1eff'`（alpha 1），在遗留影子副本上却造出 `'1e1e1e'`

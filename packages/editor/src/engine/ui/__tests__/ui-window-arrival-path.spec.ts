@@ -4,11 +4,9 @@ import * as cluster from '@app/tools/window-cluster.ts';
 import { getLazyWindow, primeWindows } from '@app/tools/window-registry.ts';
 
 /**
- * 阶段 1c 第 ④ 步的**前置不变式**（第 110 轮新增）。
  *
  * ## 这条用例守的是什么
  *
- * 阶段 1c 的 ④ 计划（设计见 `xr.md` 第 99 轮）把「④-2c 删镜像 / ④-3 / ④-4 退役字面量」标成
  * **只有真机才能验收**，理由写的是：真机走 `main/initialize.ts:91` 的
  * `primeWindows(clusterRef)`，按小写键直接 `windows.set('ui', …)`，于是**绕过 `loadUI`**，
  * 而 vitest 走的正是 loader 路径 ⇒「套件会绿着骗你」。

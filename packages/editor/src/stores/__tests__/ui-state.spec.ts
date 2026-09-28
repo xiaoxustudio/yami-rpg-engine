@@ -8,7 +8,6 @@ import type { UINodeShape } from '@app/engine/ui/element-classes.ts';
 /**
  * 最小节点样本。
  *
- * 第 232 轮 `UINodeShape` 摘掉索引签名后，`{ class, children }` 这种「随手造一个」的写法
  * 会被 `tsc` 拒绝（缺 `name` / `transform` / `presetId` / `enabled` / `parent`）——
  * 这正是那条索引签名过去掩盖的东西：本测试只关心 `target` 的存取，但**节点数据的形状是契约**，
  * 样本就该按契约造。这里的取值都是「中性初值」（不变换、启用、无父节点）。
@@ -95,7 +94,6 @@ describe('useUIStore（UI 状态反转：store 为源）', () => {
 
 	it('引擎写入经 store 生效（store 为源）', () => {
 		const store = getUIStore();
-		// ⚠️ 阶段 1c 第 ④-2c 步（第 114 轮）起，`ui-window.ts` 不再把 `UIEngine.setZoom` 镜像到
 		// `UI.setZoom` 上，所以这里直连引擎、并显式传 `UI` 作接收者 —— 与镜像存在时的调用形态
 		// **逐字等价**（当时的 `UI.setZoom!(2)` 也是以 UI 为接收者调同一个函数对象）。
 		// 断言的东西没变：写入最终落到 store（`setZoom` 内部就是 `getUIStore().zoom = zoom`）。
@@ -120,9 +118,7 @@ describe('useUIStore（UI 状态反转：store 为源）', () => {
 	});
 
 	it('store 的 7 个引擎动作走「引擎注册表」转发（回归保护：曾经是静默 no-op）', async () => {
-		// 第 234 轮实测并修掉的一个**静默失效**：store 的 `setZoom` / `shiftAnchor` / `requestRendering`…
 		// 原先写的是 `UI?.setZoom?.(…)`，而 `UI.setZoom` **运行期并不存在**
-		// （`ui-window.ts` 的 21 行镜像早在第 114 轮就退役了）⇒ `?.()` 什么也不做、也不报错。
 		// 现在这 7 个都走 `makeEngineForwarder`（`uiEngineForwarders` 的注册表），这里钉住它。
 		const { uiWindowReady } = await import('@app/engine/ui/ui-singleton.ts');
 		await uiWindowReady;

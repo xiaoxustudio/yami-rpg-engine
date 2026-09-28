@@ -73,7 +73,6 @@ export class ScriptListInterface implements IScriptListInterface {
 
 		const { editor, owner } = this;
 		if (editor && owner) {
-			// ✅ 第 105 轮结案：这里原先写 `as unknown as IEditableHistory`，理由是
 			// 「`ParamHistory` 结构上不满足 `IEditableHistory`（缺 `stack`/`index`）」。
 			// 量到底的结论是**接口对这批消费方偏宽**：`ParamHistory` 是委托型适配器
 			// （栈在 `owner.history` 上），而消费方只调用方法、从不读 `stack`/`index`。
@@ -143,7 +142,6 @@ export class ScriptListInterface implements IScriptListInterface {
 	input(scriptId: string) {
 		this.script!.id = scriptId;
 		// 单个断言（不再用 `unknown` 换掉整张类型表）：`target` 是**带 `save()` 的元素**或 null。
-		// 断言目标里保留 `| null` 才能与源类型（同样含 null）「可比」——这正是第 73 轮那条
 		// 「不要为了好看把 `| null` 删掉」的规则在断言目标侧的同一件事；`!` 保持原来的空值语义。
 		(this.target as (HTMLElement & ScriptListTarget) | null)!.save();
 	}

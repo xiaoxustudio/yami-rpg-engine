@@ -46,7 +46,6 @@ Variable.listRecord = function (event: YamiMouseEvent) {
 Variable.listPopup = function (event: YamiMouseEvent) {
 	// 不需要断言：`createFolder` / `createVariable` / `copy` / `paste` / `delete` / `rename` /
 	// `addNodeTo` 这 7 个成员在 `YamiElementApi`（ui-kit）里都有声明 —— `createVariable` 此前是
-	// 那里**漏了的一行**，补上之后本处断言整条消失（第 134 轮）。
 	const list = Variable.list;
 	const item = event.value;
 	const selected = !!item;

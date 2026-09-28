@@ -1,7 +1,6 @@
 import { screenScrollData } from '@app/engine/screen-scroll-data';
 import { UI } from './ui-singleton.ts';
 import type { UIShape } from './ui-singleton.ts';
-// ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -24,7 +23,6 @@ const planToSave = function (this: UIShape) {
 };
 
 /**
- * 形参口径（第 211 轮，④-4 接线的最后两条之一）：`colors` 的值类型是 **`unknown`，不是 `string`**。
  *
  * 依据是**调用方今天就在传什么**：唯一调用方是 `stores/ui.ts`（它自己声明 `Record<string, unknown>`），
  * 而那份 config 来自 `config.json` 的解析结果（`EditorConfigShape.colors`）——**不可信的 JSON**，
@@ -59,7 +57,6 @@ const loadFromConfig = function (this: UIShape, config: { colors: Record<string,
 	// 这里只维护遗留单例上的那一份，给仍读 `this.background` 的遗留/插件路径用
 	// （`saveToConfig` 已改为读 store，不再依赖它是否被调用到——见上面的说明）。
 	//
-	// ⚠️ **必须归一化**（第 211 轮）：`StageColor` 的入参是 8 位 RGBA hex，6 位会让 `alpha = NaN`。
 	// 这条规则此前只有 store 侧有（`safeHex`），于是同一个 config 在这里会造出一份 alpha 为 NaN
 	// 的影子副本 —— 索引签名与 `Record<string, string>` 一起把这件事挡了几十轮。
 	// 契约改成 `unknown` 之后，这一处**不再是可选的**：类型说"值未校验"，实现就得校验。

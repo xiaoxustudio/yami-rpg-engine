@@ -23,7 +23,6 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 	/**
 	 * light 选择框元素（`#sceneTilemap-light`）的视图。
 	 *
-	 * 第 148 轮：从 `interface` 改成 `type = YamiElement & {…}` 的**交叉**写法 —— 它本来就是
 	 * 一个 DOM 元素（本文件的 `SceneTilemap` 用 `inspectorEls.get()` 拿到它），原声明却是纯手写
 	 * 形状、连 `HTMLElement` 都不含，于是「写变更记录」处（`input: lightBox`）无法满足
 	 * `InspectorChange.input: YamiElement`（实测 TS2322：`SceneTilemapLightBox` 缺 318 个成员）。
@@ -223,7 +222,6 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 	) {
 		// 运行时 `this` 是 lightBox 元素（`SceneTilemapPage.vue:373` 把本方法注册成 elLayer 的
 		// `input` 监听），并有元素成员 `changes`（inspector 的历史处理器读它）。
-		// 第 148 轮：`this` 形参按**读/写点**如实声明（与 `inspector.ts:473` 的
 		// `Inspector.inputBlur` 返回值同一手法）⇒ 原先那句
 		// `const element = this as unknown as HTMLElement` 整条消失。
 		if (managerData(Inspector.manager).focusing === this) {

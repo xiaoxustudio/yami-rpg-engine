@@ -16,7 +16,6 @@ import type { YamiMouseEvent } from '@app/types/editor-event';
 /**
  * 一次「输入 → 历史」的变更记录（`input` 是触发变更的元素）。
  *
- * 第 148 轮导出：`scene-tilemap-page.ts` 的 `layerInput` 也要按同一个形状描述它写到元素上的
  * `changes`（原先那里只有 `as unknown as HTMLElement` 一句断言，形状根本没写出来）。
  */
 export interface InspectorChange {

@@ -27,7 +27,6 @@ interface FileEntityPage {
 
 function createFileEntityPage(name: string, inspectorKey: string): FileEntityPage {
 	const domKey = 'file' + name;
-	// 第 123 轮：6 个方法**先各自定义、再在一个对象字面量里一次成型**（手法库第 4 条的一般形态）。
 	// 原来是先写一张 8 键的 `null` 占位表、再逐个填 —— 那张表的 `null` 与接口要求的函数不兼容，
 	// 于是只能 `as unknown as FileEntityPage`：**断言在替「表里先写 null」这一步背书**。
 	const initialize = function () {};

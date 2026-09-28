@@ -415,7 +415,6 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 			case 0: {
 				const { audio } = AudioManager.player!;
 				const { time } = FileAudio.pointer!;
-				// 第 92 轮修：`pointer.time` 在首次 `pointermove` 之前是 `undefined`（Vue 页只设 element、
 				// 不设 `time`），而 `undefined !== -1` 为真 ⇒ 旧写法会把 `undefined` 交给 `audio.currentTime`
 				// （按 NaN 处理，等于把播放头拉到开头却没给任何提示）。`-1` 是 pointerleave 的哨兵值，
 				// 两者都应视为「此刻没有有效位置」，什么都不做。收窄后断言也自然消失。

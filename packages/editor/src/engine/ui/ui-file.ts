@@ -1,6 +1,5 @@
 import { UI } from './ui-singleton.ts';
 import type { UIShape, UIContextShape, UINodeShape } from './ui-singleton.ts';
-// ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Particle } from '@app/particle/particle-window.ts';

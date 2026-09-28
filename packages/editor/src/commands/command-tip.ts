@@ -228,7 +228,6 @@ function bindListMethods() {
 			const element = treeRowElement(item);
 			if (element === undefined) return;
 			// `Command.words` 的真实类型本来就带 `push`/`join` ⇒ 直接读，无需断言形状
-			// （与第 83 轮在 command-custom.ts 删掉的 `WordListInstance` 是同一个多余别名）。
 			const words = Command.words;
 			words.push(item.class);
 			if (item.class !== 'custom') {
@@ -300,7 +299,6 @@ CommandSuggestion.open = function (): void {
 	// 定位点拿不到（活动行尚未物化 / 列表刚被清空）时**不能静默不打开**——那正是"双击没反应"。
 	// 退回列表自身位置：窗口位置只是观感，打开与否才是功能。
 	// 单次断言即可：`CommandTargetShape` 与 `HTMLElement` 是**可比较**的，tsc 会检查这一点；
-	// 原来的 `as unknown as` 会把这条检查一并绕掉（第 116 轮实测）。
 	const rect = (Command.target as HTMLElement).getBoundingClientRect?.();
 	const x = (point?.x ?? rect?.x ?? 0) - 5;
 	const y = point?.y ?? rect?.y ?? 0;

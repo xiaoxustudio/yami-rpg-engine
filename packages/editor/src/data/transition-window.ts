@@ -181,7 +181,6 @@ function ensureDomBound() {
 	if (Easing.list) return;
 	const list = dataEls.get('easing-list') as YamiElement;
 	if (!list) return;
-	// ⚠️ 这处原先写的理由是「`typeof Easing.list` 解析出来是字面量 `null`」—— **第 136 轮实测证伪**：
 	// 形状里 `list` 是 `EasingSlots.list`（一个带 9 个成员的联合类型，见上方 `:83`），
 	// 不去断言时 tsc 的真实报错是 **缺那 9 个成员**
 	// （`read` / `rename` / `restoreSelection` / `addNodeTo` / `deleteNode` / `select` / `update` /

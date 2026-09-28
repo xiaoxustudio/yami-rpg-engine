@@ -3,7 +3,6 @@ import { getListConfig } from '@ui-kit';
 import { uiEls } from '@app/engine/ui/element-registry';
 import { registryElement } from '@app/utils/element-registry.ts';
 import type { UIShape, UINodeShape, UIControlPoints, UIListNodeShape } from './ui-singleton.ts';
-// ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';
 import type { DynamicShape } from '@app/types/shapes.ts';
 import { addScrollbars, hide, on, write } from '@app/utils/element-utils.ts';
@@ -26,7 +25,6 @@ import { roundTo } from '@app/utils/math';
  * 的调用路径是 `LayoutPanel.vue` 的 `onMounted` → `nextTick(() => getUIStore().initialize())`
  * → store 转发 `UI?.initialize?.()` ⇒ 接收者恒为 UI；而体内所有嵌套回调（`History.processors[…]` ×9 ·
  * `File.get!().then` · `Timer.update` ×2 · `list.bind`）**都是箭头函数** ⇒ 捕获外层 `this`，
- * 语义与原写法逐字等价（第 168 轮核实）。
  */
 const initialize = function (this: UIShape) {
 	this.page = uiEls.get('ui') as YamiElement;
@@ -99,13 +97,11 @@ const initialize = function (this: UIShape) {
 	}).then((image: { guid?: string; [k: string]: unknown }) => {
 		if (!image) return;
 		image.guid = 'ui:control-point';
-		// 第 217 轮：`controlPointTexture` 现在如实声明为 `ImageTexture | null`（引擎契约要求），
 		// 「先写字段再解引用」不再能靠 `any` 蒙过去 —— 用局部变量表达"刚建好的这个"。
 		// **顺序与原实现逐字一致**（先赋值、再设 protected），不加断言、不改行为。
 		const texture = new ImageTexture(image);
 		this.controlPointTexture = texture;
 		// `base` 在类型上可空（`ImageTexture` 的声明如此），而这里刚构造完、一定有 ——
-		// 与第 101 轮 `ui-engine.ts` 那处 `texture.base.glTexture` 同一处理：用 `!` 写出既有不变式。
 		texture.base!.protected = true;
 	});
 

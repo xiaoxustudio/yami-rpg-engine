@@ -8,7 +8,6 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
  *
  * 与同目录 `scene-selection-engine.ts` 的 `SceneSelectionThis` 是同一手法：按读点枚举，
  * 而不是写 `this: typeof Scene`。后者会把承重形状 `SceneShape`（带 `[k: string]: any`，
- * 第 62 轮实测级联 **296 / 1446**）拉进来 —— 而收 `SceneShape` 必须与读侧分批做。
  *
  * 八个成员读到的全部只有这 5 个：`state`（`requestAnimation` / `requestRendering` 判状态）、
  * `showAnimation`、`updateAnimation` / `renderingFunction`（交给 `Timer` 当回调）、
@@ -60,7 +59,6 @@ SceneAnimateEngine.requestAnimation = function (this: SceneAnimateThis) {
  * 读的是 `GL.canvas` —— `webgl-init.ts` 里 `document.createElement('canvas')` 造的真画布
  * （初值 0×0，由 `GL.resize` 撑开），全仓 `GL.canvas` 取的就是它（`layout.ts` 还会把它插进 DOM）。
  *
- * 第 137 轮实测修正：这里原本读 `Scene.screen.width/height`，但 `#scene-screen` 是
  * `<div class="box" id="scene-screen">`（`components/layout/LayoutPanel.vue`），div 没有
  * `width`/`height` 属性（`undefined`），`undefined !== 0` 恒真 ⇒ 整条守卫从未生效，
  * 那个 `as unknown as HTMLCanvasElement | null | undefined` 只是把这次误读圆了过去。

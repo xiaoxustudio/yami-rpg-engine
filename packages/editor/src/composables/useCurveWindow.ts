@@ -13,7 +13,6 @@ import { registryElement } from '@app/utils/element-registry';
 export type CurveState = 'closed' | 'open' | 'suspended';
 
 /**
- * 第 141 轮：`easingIdWrite` / `easingIdInput` 收到的是**载荷对象** `{ value }`，**不是 DOM 事件**。
  *
  * 调用方是模板里的 `@write="onEasingIdWrite"` / `@input="onEasingIdInput"`（`SelectBox` 的 emit 载荷，
  * 见 `components/layout/LayoutPanel.vue`），运行期传进来的就是 `{ value }` 这个普通对象。
@@ -24,7 +23,6 @@ export type CurveState = 'closed' | 'open' | 'suspended';
  * 形状直接取 `EventPayloadFields.value`（`editor-event.ts` 的单点宽松别名），与事件载荷的读法一致；
  * 这里**刻意不收紧成 `string`**：`easingIdWrite` 会把值存进 `index`，而 `index` 的声明是
  * `number | null | ''`（`curve-window.ts:20`）—— 收紧 `value` 会当场暴露那个声明问题，
- * 那是独立的一件事（见第 141 轮文档的「已知但本轮不动」）。
  */
 export type EasingIdPayload = Pick<EventPayloadFields, 'value'>;
 
@@ -66,7 +64,6 @@ interface CurveWindow {
 	/**
 	 * 当前选中的缓动 **id**（`Data.easings.map` 的键），不是帧下标。
 	 *
-	 * 第 141 轮修正：这里原先声明 `number | null | ''` —— 与真实值冲突了三个地方：
 	 * `easingIdWrite` 把 `event.value`（缓动 id）写进来（`:396`）、当字符串键用
 	 * （`Data.easings.map[id]`）、并与 `''` 比较；`__tests__/useCurveWindow.spec.ts:200`
 	 * 也断言 `toBe('easing-1')`。之所以一直没报错，是因为 `event.value` 走

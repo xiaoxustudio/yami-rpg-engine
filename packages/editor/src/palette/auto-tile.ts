@@ -67,7 +67,6 @@ type AutoTileListElement = YamiElement & {
 /**
  * 自动图块（ruletile）窗口单例的成员表。
  *
- * ## 为什么现在才收（第 233 轮，`any-hatches` 收口）
  *
  * 此前是 `export const AutoTile: Record<string, any> = { …58 个 null 占位… }`：
  * 那一行让**任何**成员名、**任何**赋值形状都通过编译 —— 而本文件有 974 行、约 60 个成员，

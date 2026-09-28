@@ -56,7 +56,6 @@ export const Window: WindowShape = {
 		// #window-ambient 是 index.html 里的静态外壳元素（非组件控件），故保留 $()
 		return $('#window-ambient');
 	},
-	// 第 148 轮：原先 `[] as unknown as HTMLElement[] & {…}` 一步跨过去。改成**两级单次 `as`**：
 	// 第一级如实说明「空数组本来就是 `HTMLElement[]`」（这一步是真的，可验证），
 	// 第二级只主张「`append` / `remove` 会由下面的 `Object.defineProperty`（`:461` / `:487`）装上」。
 	// 之所以还要第二级：接口里这两个成员是**必需**的（20+ 个调用点直接用），而赋值点先于挂载点。

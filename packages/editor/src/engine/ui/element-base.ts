@@ -6,7 +6,6 @@ import { radians } from '@app/utils/math';
 import { append, remove } from '@app/utils/array';
 
 /**
- * 「元素」的公共面（第 164 轮收口）。
  *
  * 此前这里是**空接口 + `[k: string]: any`** —— 本文件 `:249` 那条 2026-09-18 的注释写得很清楚：
  * 「索引签名让 tsc 在这一层**完全瞎**」。本轮按实测把它收成 7 个成员：把索引签名摘掉后，
@@ -46,7 +45,6 @@ interface UIParentShape {
 	matrix: Matrix;
 	children: UIElementShape[];
 	/**
-	 * 父元素。第 152 轮补声明：`contains()` 沿它上溯（`:312` 的 `element = element.parent`），
 	 * 原先靠 `[k: string]: any` 索引签名兜着。基类字段本身就是 `UIParentShape | null`（`:61`）。
 	 */
 	parent: UIParentShape | null;
@@ -87,7 +85,6 @@ uiElClasses.Element = class UIElement {
 	matrix: Matrix;
 	opacity: number;
 	/**
-	 * 第 140 轮补声明：基类的 `drawDefaultImage()` 会读它，但**不是所有**元素都有 ——
 	 * 真正声明它的是 `image-element` / `text-element` / `progress-bar-element` / `video-element`
 	 * （各自 `blend: string`）。所以这里用可选 + `declare`（与上面 `node` / `resize` 同一手法）：
 	 * 只说「基类方法会读到一个可能是 string 的 blend」，**不产生任何运行期字段**（无 defineProperty、
@@ -120,7 +117,6 @@ uiElClasses.Element = class UIElement {
 	 * 画虚线框。`color` 是**颜色数值**：实现把它写进 `colors[i]`（`gl.arrays[0].uint32` 视图），
 	 * 那个 uint32 槽位就是它的口径。原先声明成 `Array<number> | string`，比实现宽
 	 * （写进 uint32 只会得到 NaN）；两处调用点（`ui-engine.ts` 的悬停/选中虚线框）传的都是
-	 * `0x…` 数值 ⇒ 第 232 轮按实现收紧（`UIElementInstance.drawWireframe` 同步为 `number`）。
 	 */
 	drawWireframe(color: number) {
 		const gl = GL;

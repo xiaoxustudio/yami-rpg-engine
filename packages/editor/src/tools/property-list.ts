@@ -60,7 +60,6 @@ export class AttributeListInterface implements IListInterface {
 
 		const { editor, owner } = this;
 		if (editor && owner) {
-			// 第 105 轮：字段类型收窄成 `IUndoRedoHistory` 后不再需要 `as unknown as`。
 			this.history = new ParamHistory(editor, owner, list);
 		}
 	}

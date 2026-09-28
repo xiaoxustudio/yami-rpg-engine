@@ -48,7 +48,6 @@ const options = {
 		read: (type: string) => Clipboard?.read?.(type),
 		has: (type: string) => Clipboard?.has?.(type)
 	},
-	// 第 162 轮：上游形状补齐后**重审这处登记保留项** —— `SettingConfigShape.other` 现在显式声明了
 	// `copyAsTextKeepEmptyLine: boolean`，所以 `SettingConfig` 直接满足 ui-kit 的
 	// `settingConfig` 契约（`command-api.ts:231`），原来的 `as unknown as` **整段去掉**。
 	// （手法库第 148/155 条：登记为「保留」的断言要随上游变化重审，不是永久豁免。）

@@ -27,7 +27,6 @@ export type ParticleEmitterDataShape = {
 /**
  * 图层数据 —— **直接引用引擎侧那一份**。
  *
- * 第 145 轮已经把「引擎只读 `interval`/`delay`/`area`」与「元素读 `lifetime`/`anchor`/…」两份
  * 同名声明合并到 `particle-engine.ts` 的 `ParticleLayerData`；这里却还留着一份更窄的副本，
  * 于是 `new Particle.Emitter(data)` 的入参对不上（本轮摘掉 `ParticleEngine` 的索引签名时露出来）。
  * 保留别名只是为了不动调用点（`particle-file.ts` 的 `ParticleEmitterDataShape`）。
@@ -179,7 +178,6 @@ export interface ParticleShape {
 	showAxes: boolean;
 	background: StageColor;
 	/**
-	 * 舞台面成员（第 237 轮改非空）：`Particle.Element.stage = Particle`（`particle-file.ts:23`）
 	 * 要求这五项与 `ParticleStageShape` 相容。它们由 `particle-initialize.ts:94`
 	 * （`this.matrix = new Matrix()`）与 `resize` 赋真值，全仓没有一处写回 `null`；
 	 * 字面量里那 5 行 `null` 占位已删（只参与绘制期算术）。
@@ -287,7 +285,6 @@ export interface ParticleShape {
 		/**
 		 * 元素类的静态共享面（`ParticleElement.stage`）—— **当前舞台**。
 		 *
-		 * 第 237 轮收口：此前是 `Record<string, any>`（`any-hatches` 站点）。三条线索：
 		 * `particle-file.ts:23` 存 `Particle` 单例、`animation-file.ts:21` 存 `Animation` 单例、
 		 * `scene-window.ts:1067` 存 `Scene` 单例；唯一读点在 `particle-engine.ts`
 		 * （`.multiply(stage.matrix)` 与两组 `scroll*`）。两边现在引用**同一个**
@@ -320,7 +317,6 @@ export const Particle = {
 	translationKey: 0b0000,
 	translationTimer: null,
 	showAxes: true,
-	// `matrix` / `scroll*` 的 `null` 占位在第 237 轮删除（见 `ParticleShape` 上那条说明）。
 	zoomTimer: null,
 	scale: null,
 	outerWidth: null,

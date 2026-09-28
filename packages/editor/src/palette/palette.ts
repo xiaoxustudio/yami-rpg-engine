@@ -13,7 +13,6 @@ import type { PaletteMode, PaletteState, PaletteTilesetShape } from '@app/stores
  * 形状取自 `palette-pointer.ts:16`（`marqueePointerdown` 的形参）与各读点
  * （`dragging.mode` / `.active` / `.startX` / `.startY` / `.startIndex` / `.latest` /
  * `.scrollLeft` / `.scrollTop` / `.priorities`，另有三处 `dragging === null` 判断）。
- * 写法沿用第 10 轮 `UIDragEvent`：字段列全并**设为必填**，写入点用一句 `as` 说明
  * 「这一刻它已被就地补全」（不同 mode 分支补的是不同字段），免得每个读点都写 `!`。
  */
 export interface PaletteDragEvent extends PointerEvent {
@@ -34,7 +33,6 @@ export interface PaletteDragEvent extends PointerEvent {
 /**
  * `Palette.marquee` 上挂的扩展（组件 `YMMarqueeArea.vue` 的通用面 + 本域另挂的那些）。
  *
- * 与第 12 轮 `SceneMarqueeExtensions` 同一手法：`visible` / `x` / `y` / `width` / `height` /
  * `scaleX` / `scaleY` / `select` / `resize` 来自组件；`originX` / `originY`（`palette-engine.ts`
  * 的绘制读）、`customSelect`（`palette-initialize.ts:71`）、`customUnselect`、
  * `customShiftAutoTile` 是本域挂的。
@@ -77,7 +75,6 @@ export interface PaletteCanvasElement extends HTMLCanvasElement {
 /**
  * 调色板单例（`Palette`）的形状。
  *
- * **第 238 轮收口**：此前是一行 `export const Palette: Record<string, any>` + 87 个 `null` 占位。
  * 成员分四类，逐条对齐来源：
  * 1. **DOM 元素**（`palette-initialize.ts:16-31` 的 `initialize` 逐个 `paletteEls.get(...)`）；
  * 2. **数据 / 数值字段**（同一处赋初值、`resize` 与各绘制函数读写）；

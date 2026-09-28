@@ -219,7 +219,6 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	getListConfig(list).removable = true;
 	getListConfig(list).foldable = false;
 	list.bind(() => this.data);
-	// 单次 `as` 就够（本轮实测推翻第 81 轮的判断）：目标 `(item: unknown) => void` **可赋给**
 	// 源联合 `((...args: any[]) => any) | null` 的函数那一支（`strictFunctionTypes` 下参数逆变，
 	// `any` 收得住 `unknown`；返回 `void` 收得住 `any`）⇒ 断言合法，`unknown` 跳板是多余的。
 	// 运行期一字未改：仍然**不加空值判断**，可空值照旧被登记进去、由调用点抛。

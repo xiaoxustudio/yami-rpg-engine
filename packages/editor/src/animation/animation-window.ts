@@ -13,7 +13,6 @@ import {
 /**
  * 动画窗口里那些由 Vue 组件建出来的元素（`animationEls`）。
  *
- * 第 222 轮收口：这里**不再挂 `{[k: string]: any}`**，改成纯别名 `= YamiElement`；
  * 各元素就地挂的扩展改由下面**按读点命名的面**描述，只挂在 `AnimationShape` 里真正需要它们的字段上。
  *
  * 为什么不交成一个宽面（像 `Scene.marquee` 那样）：`AnimationElement` 被 ~25 个字段共用，
@@ -147,7 +146,6 @@ export type AnimationFileContext = {
 	 * 编辑器状态（**由 tab 传入的上下文在 `open` / `load` 时才挂上**，所以是可选的 ——
 	 * 与 `particle-window.ts` 里 `ParticleContextShape.editor` 的注释同源）。
 	 *
-	 * 第 153 轮补声明：原先靠 `[k: string]: any` 索引签名兜着，摘掉后 tsc 指出 5 处访问
 	 * （全在 `animation-file.ts`），逐条落在这些成员上。`player` 直接复用
 	 * `Animation.player` 的类型（同一个实例在两边流转：`load` 里 `this.player = editor.player`、
 	 * `destroy` 里 `editor.player = this.player`），避免再写第三份局部形状。
@@ -288,7 +286,6 @@ export interface AnimationShape {
 	innerPointerArea: AnimationElement & AnimationPointerAreaExtensions;
 	pointer: AnimationElement & AnimationPointerAreaExtensions;
 	// editor + animation properties（运行时挂载具体值，统一 any | null）
-	// —— 单例成员（第 250 轮：由 scripts/oneoff/gen-anim-api.mjs 从实现里抽出） ——
 	adjustMarquee: () => unknown;
 	close: () => unknown;
 	copy: (...args: unknown[]) => unknown;
@@ -429,7 +426,6 @@ export interface AnimationShape {
 	webglRestored: (_event: Event) => unknown;
 	windowResize: (_event: Event) => unknown;
 	zoomInput: (_event: Event) => unknown;
-	// —— 属性（第 251 轮：类型取自各自的 this.x 赋值点） ——
 	scale: number;
 	scaleX: number;
 	scaleY: number;
@@ -439,7 +435,6 @@ export interface AnimationShape {
 	motion: AnimationMotion;
 	history: History;
 	planToSave: () => unknown;
-	// —— 第 252 轮补摆的方法（生成器抽取 + LOOSE 名单补 ...args） ——
 	cloneFrame: (frames: AnimationFrame[], index: number, ...args: unknown[]) => AnimationFrame;
 	saveFrames: (
 		layers: AnimationLayer[],
@@ -453,7 +448,6 @@ export interface AnimationShape {
 		...args: unknown[]
 	) => unknown;
 	outerTimelineListPointermove: (event: PointerEvent) => unknown;
-	// 第 252 轮的收口计划（player / targetContext 那 108 个点位）：把它们声明出来之后只剩 31 条错误，
 	// 全是三份并行模型对不上，不是机械活：
 	//   · PlayerContext 对 AnimationContext：isPointInFrame / drawSprite / drawSpriteWireframe /
 	//     drawEmitterWireframe / updateControlPoints 的形参（7 处）；
@@ -462,7 +456,6 @@ export interface AnimationShape {
 	// ⇒ 收口要么把 PlayerContext / PlayerFrame 导出去让动画侧形参收它们，要么反过来把 AnimationContext /
 	//   AnimationFrame 补成超集；两条路都要跨 animation-player.ts / animation-window.ts / animation-timeline.ts /
 	//   animation-window-engine.ts 改一轮，天然有一段红树。
-	// 第 254 轮的关键发现（前几轮都漏了）：player 那一侧的类型不是「形状对不上」，而是**模块重复定义** ——
 	// types/animation-player 里有它自己的 AnimationMotion / AnimationContext，与 animation/animation-window 的
 	// 同名类型是两个 identity。所以逐成员改形参永远收敛不了：改了声明，赋值点就报「两个模块的 AnimationMotion
 	// 不能互赋」。收口要先把 context / frame / motion 这三个模型合并到一处再各自 import —— 那是一次跨模块重构，

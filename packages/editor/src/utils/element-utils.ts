@@ -161,7 +161,6 @@ export function rect(el: unknown): DOMRect {
 /**
  * 清空元素内容。
  *
- * ⚠️ 第 124 轮：返回类型原来是 `HTMLElement`，但 `if (!el)` 那一支**真的返回 `null` / `undefined`**
  * —— 类型在说谎，`return el as unknown as HTMLElement` 就是替这个谎背书。
  * 已放宽为 `HTMLElement | null | undefined`。依据：全仓**没有任何调用方取用它的返回值**
  * （实测 `= clear(` / `return clear(` / `clear(…).x` 三种形态都是 0 处）⇒ 无涟漪。

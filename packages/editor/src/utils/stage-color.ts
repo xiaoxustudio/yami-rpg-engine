@@ -2,7 +2,6 @@ import { INTRGBA } from '@app/utils/color-utils';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 /**
- * `StageColor` 入参的合法性兜底 + 归一化（**唯一实现**，2026-09-25 第 211 轮）。
  *
  * ## 为什么必须归一化
  *

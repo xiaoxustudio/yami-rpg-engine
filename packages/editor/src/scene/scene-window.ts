@@ -71,7 +71,6 @@ export type SceneMarqueeSaveData = {
 };
 
 /**
- * `Scene.marquee`（场景选框）运行时挂载的扩展 —— 第 236 轮收口（此前该字段挂 `{ [k: string]: any }`）。
  *
  * 成员来源三处，逐条对齐：
  * 1. `ui-kit` 的 `YMMarqueeArea.vue`（组件实例属性 + `onMounted` 挂上的元素方法）：
@@ -154,7 +153,6 @@ interface SceneListExtensions {
 	creators: unknown[];
 	updaters: unknown[];
 
-	// —— 第 235 轮补的 17 条：这些成员此前靠字段上的 `{ [k: string]: any }` 兜着 ——
 	//
 	// 分两类，形参口径按**实现侧到底谁在实现**给：
 	// ① 实现在 `ui-kit` 的树列表契约里（`update` / `resize` / `bind` / `rename` / `restore` /
@@ -163,7 +161,6 @@ interface SceneListExtensions {
 	//    它们的形参由组件侧决定，这里只需「能收下调用点传的东西」，故用 `unknown`/宽松签名；
 	// ② 实现在本地 `scene-list.ts`（`duplicate` / `createFolder` / `createTilemapShortcutItems` /
 	//    `updateFolderState` / `canSwitchState`）—— 形参必须与那边的 `SceneItem` **逐字相容**
-	//    （strictFunctionTypes 下函数属性是逆变的），所以直接引用该类型（第 235 轮把它导出了）。
 	update: () => unknown;
 	resize: () => unknown;
 	/** 绑定行数据源（`scene-window.ts:621` 的 `list.bind(() => this.objects)`）。 */
@@ -229,12 +226,10 @@ export interface SceneShape {
 	redo: (() => void) | null;
 	planToSave: (() => void) | null;
 	/**
-	 * 渲染请求 —— **非空**（第 237 轮）：模块加载期由 `scene-window.ts` / 引擎镜像赋值，
 	 * 之前那个 `| null` 只是字面量里的 `null` 占位（已删），运行期没有一处把它写回 `null`。
 	 */
 	requestRendering: () => void;
 	/**
-	 * 舞台面（第 237 轮）：`Particle.Element.stage = Scene`（`scene-window.ts:1067`）要求这五项 ——
 	 * 它们由 `Scene.initialize` 赋真值（`this.matrix = new Matrix()`，`scene-window.ts:700`；
 	 * `scroll*` 由 `Scene.resize` 从屏幕滚动量算出），运行期没有任何一处写回 `null`。
 	 * 字面量里那 5 行 `null` 占位已删（与 `pointerevent` 那类「参与判等」的占位不同 ——
@@ -331,7 +326,6 @@ export const Scene = {
 	animationFrame: null,
 	animationElapsed: null,
 	background: null,
-	// `matrix` / `scroll*` 的 `null` 占位在第 237 轮删除（见 `SceneShape` 上那两条说明）：
 	// 它们是舞台面成员，非空声明 + `Particle.Element.stage = Scene` 的赋值点现在受检查。
 	zoomTimer: null,
 	scale: null,
@@ -568,7 +562,6 @@ export const Scene = {
 	listPageResize: null,
 	Textures: null,
 	Point: null
-	// 第 237 轮改用单例惯用式（与 `particle-window.ts:405` / `ui-singleton.ts` 同一手法）：
 	// `SceneShape` 里已声明为**非空**的舞台面成员（`matrix` / `scroll*` / `requestRendering`）
 	// 不再需要在字面量里放 `null` 占位 —— 它们由 `Scene.initialize` 赋真值，
 	// 而 `Particle.Element.stage = Scene` 那个赋值点现在真正受检查了。
@@ -580,7 +573,6 @@ interface SceneMarqueeData {
 }
 const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
-// ⚠️ 第 236 轮：这里原有 14 行「装载期占位」（`Scene.marquee.X = null` / `previewTiles = false` /
 // `key = null`），现在**整块删除**：
 // - 那 10 个方法（`switch` / `selectIn*Mode` / `getTiles` 等）在 `SceneMarqueeExtensions` 里是**真声明**，
 //   写 `null` 既编不过也不再需要 —— 真实实现在 `scene-marquee.ts`（`SceneMarqueeEngine` 的逐条镜像）
@@ -603,7 +595,6 @@ elementDataOf<{ page?: HTMLElement | null }>(Scene.list).page = sceneEls.get(
 elementDataOf<{ head: HTMLElement }>(Scene.list).head = sceneEls.get(
 	'scene-list-head'
 ) as YamiElement;
-// ⚠️ 第 235 轮：`Scene.list.createTilemapShortcutItems = null` / `updateFolderState` / `canSwitchState`
 // 三行占位**已删除**：它们在 `SceneListExtensions` 里现在是**真声明**（非空），写 `null` 既编不过、
 // 也不再需要。行为不变 —— 真实实现在 `scene-list.ts:145/224/263` 的**模块加载期**赋值，
 // 而调用点全在用户交互路径（与 `ui-singleton.ts` 里那批 `UI.list.* = null` 占位同一处理）。
@@ -1124,7 +1115,6 @@ Scene.open = function (this: SceneShape, context: SceneContextShape) {
  * 类型上必须带游标字段（否则助手读不到），但**声明这一刻它们确实还不存在**。
  * 与其在每个站点各写一遍断言，不如收敛到这一个工厂，把「为什么这里是谎」写在唯一的地方。
  *
- * ⚠️ **2026-09-22 第 116 轮更正**：原文写「这是本文件里唯一真正需要 `unknown` 的地方」——
  * **实测不成立**。对**未约束**的类型参数 `T`，`[] as T` 本身就通过（tsc `TS2352` 只在两边
  * 类型不可比时报），所以那个 `unknown` 跳板是**多余**的，已去掉。
  */

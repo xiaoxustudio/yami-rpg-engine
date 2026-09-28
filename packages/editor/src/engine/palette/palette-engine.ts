@@ -17,7 +17,6 @@ interface SceneMarqueeData {
 const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
 /**
- * `PaletteEngine` 的成员表 —— 口径收紧（2026-09-22，`any-hatches` 收口，第 134 轮）。
  *
  * 此前是 `export const PaletteEngine: Record<string, any> = {}` 后面跟 20 行赋值。
  * `any` 的代价与已收口的 `AutoTileEngine` / `SceneMarqueeEngine` 同一个：**成员名与形参表都不受检查**
@@ -27,9 +26,7 @@ const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarque
  * —— 注意 `Palette` 自己仍是 `Record<string, any>`（`palette.ts:4`），本轮不动它，
  * 所以这里的 `this: typeof Palette` 就是 `Record<string, any>`，与各实现的标注逐字一致。
  * 写法沿用前两轮的结论：**函数属性**（不是方法简写），避免 `typescript(unbound-method)`
- * 在 `palette.ts:110–119` 那批搬运点报警（见 `xr.md` 第 131 轮）。
  * ⚠️ 本文件的 spec（`palette.spec.ts:133`）把 mock 声明成 `const palette: any`，
- * 且 `.call(palette, new PointerEvent(…))` 传的是真的 `PointerEvent` ⇒ **不会**出现第 132 轮
  * camera 那种「部分 mock 不满足窗口形状」的级联（判据见 `xr.md` 第 132/133 轮）。
  */
 interface PaletteEngineShape {

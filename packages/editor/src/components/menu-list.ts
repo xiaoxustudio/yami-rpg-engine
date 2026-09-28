@@ -55,7 +55,6 @@ export function attachMenuListApi(el: HTMLElement): MenuListElement {
 	box.closeSubmenu = menu.closeSubmenu;
 	// oxlint-disable-next-line unbound-method
 	box.pointerenter = menu.pointerenter;
-	// ⚠️ 2026-09-22 第 122 轮：本函数**返回**这个已装好 API 的对象 —— 契约由此收在一处。
 	// 在此之前调用方 `createMenuList` 还要自己再断言一次，而且那次**必须**用 `as unknown as`：
 	// 它手上的 `el` 是 `createDetachedElement(): HTMLDivElement`，与 `MenuListElement`
 	// **两个方向都不可比**（前者缺后者的必填成员，后者又 extends `HTMLElement` 而非 `HTMLDivElement`）

@@ -78,7 +78,6 @@ Codec.encodeScene = function (scene: SceneData) {
 
 Codec.decodeScene = function (scene: SceneData) {
 	if (scene.terrainArray === undefined) {
-		// 第 139 轮拆断言：`SceneData.terrains` 声明是 `string`（:20），运行时也确实是 string
 		// （:74 由 `encodeTerrains` 赋值，它的返回类型就是 string）；而 `decodeTerrains` 本就收
 		// `Uint8Array | string`（:44）⇒ 原先那层 `as unknown as Uint8Array` 没有运行时作用，
 		// 唯一效果是把「值是 string」说成 `Uint8Array`。按 string 传即可，两侧都自洽。

@@ -37,7 +37,6 @@ export interface FileItemDisplayHooks {
 /**
  * 文件/目录的 `fs.Stats` 形状（只声明本仓真正读取的字段）。
  *
- * ## 为什么要有具名类型，且为什么必须有 `size`（2026-09-21 第 89 轮）
  *
  * 这段形状原先在**三处**逐字重复（`FileItem` 字段 / `FileItem` 构造参数 / `FolderItem` 字段），
  * 且三份里**都漏了 `size`** —— 而 `size` 在运行期一直存在：它来自

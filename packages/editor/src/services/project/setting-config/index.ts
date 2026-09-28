@@ -13,7 +13,6 @@ import type { YamiElement } from '@app/types/element-api';
 export const path = nodePath;
 
 export const SettingConfig = new (class {
-	// 第 158 轮：`Record<string, any>` → 具名形状（形状与三条约定见 `types.ts`）。
 	// `{}` 只是占位：构造函数第一句就 `load()`，而下面的 `renderer` 字段只存引用、不读它
 	// ⇒ 初值不可观测。这里的断言表达的是与 `apply()` 相同的前提（加载后各分区都在）。
 	config: SettingConfigShape = {} as SettingConfigShape;

@@ -16,7 +16,6 @@ import { clone as deepClone } from '@app/utils/object';
 /**
  * 场景树里的一个对象（列表项）。
  *
- * 第 235 轮**导出并与 `scene-events.ts` 合并**：这里原先有两份几乎同样的声明
  * （本文件一份、`scene-events.ts` 一份），字段各有出入（那份多了 `tiles` / `presetId`、
  * `parent` 写成可空）—— `SceneListExtensions` 收口时它们**互不兼容**（TS2345）才暴露出来。
  * 现在全仓只有这一份，`scene-events.ts` 直接再导出它。
@@ -125,7 +124,6 @@ Scene.list.toggle = function (this: typeof Scene, item: SceneItem) {
 		});
 		item.enabled = !item.enabled;
 		this.update();
-		// 第 124 轮：`dispatchChangeEvent` 的形参早就是 `unknown`（内部自己收窄到 `EventTarget`），
 		// 这里那次 `as unknown as HTMLElement` 是**签名放宽后忘了清的调用点** ⇒ 直接删。
 		dispatchChangeEvent(this);
 		Scene.requestRendering!();

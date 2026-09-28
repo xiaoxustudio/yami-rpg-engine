@@ -10,7 +10,6 @@ export type PaletteState = 'closed' | 'loading' | 'open' | 'suspended';
 /**
  * 图块组数据的**窄视图**（检查器/调色板读取用的那几个字段）。
  *
- * 第 238 轮：**补齐**运行期真正存在的字段（`tileWidth` / `tileHeight` / `height` / `tiles` /
  * `priorities` / `terrains`）—— 本文件的 `tileset` 是 `shallowRef<any>`（真源是
  * `Data.tilesets[guid]` 的 `DataEntry`），而 `Palette` 单例收口后，桥键 `Palette.tileset`
  * 与各读取点（`useTileNodeWindow.ts:126`、`palette/auto-tile.ts:1074`、

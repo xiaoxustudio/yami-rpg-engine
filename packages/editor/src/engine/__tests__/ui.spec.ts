@@ -346,7 +346,6 @@ describe('UI.Container', () => {
 	});
 
 	it('destroy 会把自己从 node.instances 里摘掉（`instances.remove` 必须真的存在）', () => {
-		// 2026-09-22 第 117 轮：这条用例守的是一个**一直存在但没人测到**的崩溃。
 		//
 		// `element-base.ts` 的 `destroy()` 里写着 `node.instances.remove(this)`，
 		// 而 `UIElementShape` 第 16 行把 `instances` **声明**成 `{ remove: (element) => void }`

@@ -3,7 +3,6 @@ import { uiElClasses } from '@app/engine/ui/element-classes.ts';
 import type { UIElementInstance } from '@app/engine/ui/element-classes.ts';
 import type { UIShape, UINodeShape } from './ui-singleton.ts';
 import type { HoverNode } from './ui-facade.ts';
-// ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';
 import { Easing } from '@app/data/transition-window.ts';
 import { getUIStore } from '@app/stores/ui';
@@ -19,7 +18,6 @@ import type { YamiElement } from '@app/types/element-api';
 /**
  * ⚠️ 这里原先有一个局部 `interface UIRootApi extends UINodeShape`（+ 三个文本/打印方法），
  * 用来把 `getUIStore().root`（类型是 `UIElementInstance`）断言成「节点 + 额外成员」。
- * 第 232 轮**删除**了它：`UINodeShape` 的索引签名退役后，那个断言的说法（「根实例也是节点数据」）
  * 站不住 —— 根是**实例**，而这些函数真正遍历的也是**实例树**（下一句就 `instanceof uiElClasses.Text`
  * 判定，那是实例判定）。方法本身（`updateTextContent` / `updatePrinter` / `resize`）现在
  * 都声明在 `UIElementInstance` 上 ⇒ 读点不再需要任何断言或局部类型。
@@ -50,7 +48,6 @@ const setSize = function (this: UIShape, width: number, height: number) {
 
 const setHover = function (this: UIShape, hover: UINodeShape | null) {
 	if (this.hover !== hover) {
-		// ⚠️ 第 217 轮：这里是**单次 `as`**（不是 `unknown` 跳板），依据是**引擎的读法** ——
 		// `drawHoverWireframe` 不判空就解引用 `hover.instance.visible`（`UIFacadeShape` 把
 		// `instance` 声明为**必填**），所以"被 hover 的节点必是已建实例的主节点"是一条
 		// **既有不变式**：违反它会在每帧抛错，而不是静默失效。这里只是把这条前提写进类型。
@@ -332,7 +329,6 @@ const updateElement = function (this: UIShape, target: UINodeShape) {
 		/**
 		 * 查找时**实际用到**的节点面：`children` 用于递归下钻，`instance` 用于回传。
 		 *
-		 * 第 145 轮：原先把「合成的根包装对象」`{ instance: root, children: rootNodes ?? [] }`
 		 * 断言成 `UINodeShape`（还得走 `unknown`）—— 而它**根本不是**一个节点：没有 `class`、
 		 * 也没有序列化成员，只是为了把 store 的 root 与 nodes 凑成一次查找的入口。
 		 * 按读点收成这个局部形状之后，包装对象与递归用的真实节点都能传进来（断言消失）——
@@ -437,7 +433,6 @@ const resize = function (this: UIShape) {
 /**
  * 本域提供的 18 个成员（第 ④-3 步：域模块只**提供**成员对象，装配见 `ui-members.ts`）。
  *
- * 本轮**只搬声明、不动函数体**（与第 173 轮 `ui-list` 同一策略）：体内 `UI.x` 原地保留 ⇒
  * 行为逐字不变、零风险；`import { UI }` 暂时保留（伴随判据因此仍记 5，如实）。
  * 走完全程（体内改 `this.` / 入口传参 + 删 import）见 PHASE 手法库 #47。
  */

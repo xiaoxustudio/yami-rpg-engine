@@ -5,7 +5,6 @@ import { Data } from '@app/data/data-object.ts';
 import { Editor } from '@app/services/project/editor.ts';
 
 /**
- * 阶段 1c 第 ③ 步的第一个切片（2026-09-21 第 96 轮）。
  *
  * ## 这条用例守的是什么
  *
@@ -20,7 +19,6 @@ import { Editor } from '@app/services/project/editor.ts';
  * ## 为什么盯 `uiWindowReady` 而不是 `loadUI`
  *
  * 原文此处写的是「真机上 UI 对象**不是**由 `loadUI` 到达的：`primeWindows` 直接塞缓存，
- * get trap 于是永远不调 loader」。⚠️ **第 110 轮更正：这条短路已经不存在了** ——
  * 第 ① 步（提交 `00729b15`）删掉了 `window-cluster.ts` 的 `export { UI }`，`primeWindows`
  * 遍历的是该模块的命名空间，没有 `UI` 就没有 `'ui'` 键，真机与 vitest 一样走 `loadUI`。
  * 该不变式由同目录的 `ui-window-arrival-path.spec.ts` 钉住（加回那行导出即变红）。

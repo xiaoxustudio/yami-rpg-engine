@@ -1,6 +1,5 @@
 // 编辑器操作历史共用接口。 项目中 CommandHistory / NumberHistory / TextHistory / ParamListHistory 等 History 类重复实现同一组栈式 undo/redo 契约： stack / index / reset / save / restore / canUndo / canRedo 此处提取为 IEditableHistory，供各 History 类 implements 复用， 消除字段重复声明与散落的 `history: any` / `owner.history: any` 耦合断言。 说明：未引入泛型化基类（避免改动 6 个已稳定运行的类继承链）， 仅以 interface 收敛类型契约，渐进式类型化下安全保守。
 //
-// ⚠️ 2026-09-21 第 105 轮更正：**`ParamHistory` 不在上面那批里**（原注释把它一并列出，正是「矛盾」的来源）。
 // 它是**委托型适配器** —— 自己不持栈，转发给 `this.owner.history`（`extends Array`，栈即数组自身），
 // 因此**没有也不该有** `stack` / `index`。它满足的是下面那个更窄的 `IUndoRedoHistory`。
 // 消费方（script-list / property-list / event-list / condition-list / list-interface）也已同步收窄。
@@ -16,9 +15,7 @@ export interface IEditableHistory extends IUndoRedoHistory {
 /**
  * 「只需要撤销/重做**操作**」的窄契约 —— 比 `IEditableHistory` 少了 `stack` / `index`。
  *
- * ## 为什么需要它（2026-09-21 第 105 轮结案）
  *
- * 第 80 轮发现 `tools/script-list.ts` 等处把 `new ParamHistory(...)` 当 `IEditableHistory` 用，
  * 而 `ParamHistory` 结构上**不满足**它（缺 `stack` / `index`），只能写
  * `as unknown as IEditableHistory` 硬跨过去，于是被记成「待用户决策的类型设计债务」。
  *

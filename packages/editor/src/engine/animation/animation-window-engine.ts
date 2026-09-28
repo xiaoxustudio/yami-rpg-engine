@@ -9,7 +9,6 @@ import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
 import { clamp, roundTo, dist, radians } from '@app/utils/math';
 
 /**
- * `AnimationWindowEngine` 的成员表（第 160 轮把 `Record<string, any>` 收成具名形状）。
  *
  * 与隔壁 `scene-camera-engine.ts` / `scene-marquee-engine.ts` **同一手法**（第 159 / 131 轮的结论）：
  * 27 条成员**全部在本文件内各挂一次**，消费方只有 `animation-window.ts`

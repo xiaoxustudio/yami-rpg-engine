@@ -330,7 +330,6 @@ export function useCallEventCommandSchema() {
 		let input: HTMLElement & CallEventInputApi;
 		switch (type) {
 			case 'boolean':
-				// 第 144 轮去掉断言：`createSelectBox()` 的静态类型就是 `SelectBoxApi`
 				// （`HTMLElement & { loadItems(...args: unknown[]): unknown; on(...): unknown; … }`），
 				// 它**本来就满足** `HTMLElement & CallEventInputApi` —— 原先那句
 				// `as unknown as YamiElement & CallEventInputApi` 多带了一个 `YamiElement`

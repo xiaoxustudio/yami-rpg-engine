@@ -8,7 +8,6 @@ import type { SceneShape } from '@app/scene/scene-window.ts';
 /**
  * 图块缓冲（`Uint32Array` + 三个排版字段 + 一个**缓存槽**）。
  *
- * 第 236 轮**导出并补 `standard`**：`scene-window.ts` 的 `SceneMarqueeExtensions.tiles` 要按这个类型声明
  * （`Scene.marquee.tiles = this.createTiles!(1, 1)`，而 `createTiles` 的实现就在这里）；
  * `standard` 是自动图块展开后的副本（`scene-marquee-engine.ts:229` 写入、`:247` 读、`palette-engine.ts:728` 也写）。
  */

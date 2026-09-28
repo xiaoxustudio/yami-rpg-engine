@@ -18,7 +18,6 @@ interface CurveShape {
 	list: CurveList | null;
 	canvas: CurveCanvas | null;
 	target: CurveFrame | null;
-	/** 当前选中的缓动 id（不是帧下标）；第 141 轮与 `useCurveWindow().index` 一起修正。 */
 	index: string | null;
 	curveMap: unknown;
 	initialize: (() => void) | null;

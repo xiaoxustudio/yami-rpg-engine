@@ -4,11 +4,9 @@ import { hide } from '@app/utils/element-utils.ts';
 import { registryElement } from '@app/utils/element-registry.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
 import { Scene } from '@app/scene/scene-window.ts';
-// ④-2c（第 114 轮）后本文件不再**用** UIEngine（21 行镜像已退役），但这条**副作用 import 必须留着**：
 // 它保证 `ui-engine.ts` 的模块体（末尾会 `registerUIEngine(UIEngine)`）在本文件**之前**求值。
 // 少了它，就可能出现「UI 对象已存在、但 `uiEngineRef` 还是 null」的窗口，而 store 的 7 个引擎转发
 // 在那种状态下会**静默返回 undefined**（`makeEngineForwarder` 的回退分支取不到任何函数）。
-// 见 `xr.md` 第 113 轮里那条等价性论证 —— 它的前提正是「读 UI 必先求值 UIEngine」。
 import '@app/engine/ui/ui-engine.ts';
 import { getUIStore } from '@app/stores/ui';
 
@@ -68,12 +66,10 @@ export interface UIShape {
 	paddingTop: number;
 	inspectorTypeMap: Record<string, string>;
 
-	// —— 引擎契约（`ui-facade.ts` 的 `UIFacadeShape`）要求、而上面那 35 条没有的 3 个（第 217 轮补） ——
 	//
 	// ⚠️ 为什么要补：`ui-engine.ts` 的成员表给 `this` 加了类型之后，「域模块的 `this`（单例）交给
 	// 引擎成员（要 `UIFacadeShape`）」这一步**第一次被检查**。原因是实打实的：
 	// `[k: string]: any` 只提供「**任意键可读**」，**不满足目标类型里具名的必填字段**
-	// —— 与第 211 轮 `createPrefab` 是同一条（索引签名在这里第二次不够用）。
 	//
 	// 三个都**在单例上真实存在、都有写入方**（不是为了"让它编过"才补的谎）。
 	/**
@@ -83,7 +79,6 @@ export interface UIShape {
 	 * 大量扩展、"避免穷举"）—— 但这里**两处都刻意不抄**：既不抄它的 `[k: string]: any`
 	 * （会让 `any-hatches` 上升），也**不加索引签名**：UI 侧的扩展只有下面这两个、是可枚举的，
 	 * 而带索引签名的目标类型会让字面量那处 `satisfies Partial<UIShape>` **不可比**
-	 * （"neither type sufficiently overlaps"，第 216 轮同一条教训的第三次现形）。
 	 */
 	marquee: YamiElement & {
 		/**
@@ -102,7 +97,6 @@ export interface UIShape {
 	/** 控制点贴图（`ui-initialize.ts:97` 载图后写）。 */
 	controlPointTexture: ImageTexture | null;
 
-	// —— 第 234 轮：索引签名退役时补上的「单例真的持有、但一直靠 `any` 兜着」的成员 ——
 	//
 	// 这 6 个都有明确的写入方（见 `UI` 字面量与 `ui-file.ts` 的赋值），此前只是**没写在类型里**：
 	// 读侧一律走索引签名拿到 `any`/`unknown`，于是「拼错成员名」与「成员不存在」都编译通过。
@@ -260,7 +254,6 @@ export type UIDragEvent = UIPointerEvent & {
 /**
  * UI 单例本体（**装配式**：这里只有它自己真正持有的成员，成员函数由 `uiWindowReady` 注入）。
  *
- * ## 阶段 1c 第 ④-4 步（2026-09-25 第 212 轮）：**123 行 `null` 占位表已退役**
  *
  * 此前这里跟着 134 个条目，其中 **123 个是 `initialize: null` / `open: null` / … 这类占位**
  * ——它们的用途是「给域模块先声明、后填充」（那时域模块逐个 `UI.x = …` **自我绑定**）。
@@ -270,8 +263,6 @@ export type UIDragEvent = UIPointerEvent & {
  *
  * 删掉它的依据（都是**实测**，不是推理）：
  * 1. **全仓没有任何地方枚举单例**（`Object.keys/entries/getOwnPropertyNames(UI)` / `...UI` /
- *    `for (const k in UI)` 命中 **0** 处，第 185 轮）⇒ 「表里有几条」对外不可观测；
- * 2. **134 个声明槽位全部另有提供者**（`declaredWithoutProvider()` **缺口 = 0**，第 187 轮）
  *    ⇒ 删掉字面量不会丢成员；
  * 3. 读侧一律是 `UI?.x?.()` / `this.x!`：`undefined` 与 `null` 在这两种写法下**行为相同**
  *    （都是 falsy、都不进 `?.` 的调用分支）。
@@ -285,7 +276,6 @@ export type UIDragEvent = UIPointerEvent & {
  * - `dragging` / `hover`：被 store 的 computed 与引擎读（`UI.dragging === null` 是 ui-events 的判断）；
  * - `translationKey`：位标志，初值 `0b0000`。
  *
- * ⚠️ **本文件现在就在 `engine/ui/` 下**（第 212 轮第二段：从 `legacy/` 搬出来，`legacy/` 整个删掉）。
  * 剩下的只有**真机走查**（画布渲染 / 平移缩放 / 点选 / 打开保存撤销 / 预制体）——
  * 这一类缺陷只有真机能发现（附录四/六/七/八/九记的全是这种）。
  *
@@ -305,7 +295,6 @@ export const UI = {
 	// `|| ({} as YamiElement)`：兜底对象**不是**元素，但它承重 —— 元素尚未登记时也要能加载，
 	// 而下面的挂载（`elementDataOf(UI.list).…`）需要它非空。
 	// 末尾那处断言是**单次** `as`（目标类型 = 源类型 & 两个扩展 ⇒ 向下断言，合法）：
-	// `YamiElement` 本身不含 `resize`/`pointerevent`，第 217 轮起 `UIShape.marquee` 声明了它们。
 	marquee: ((uiEls.get('ui-marquee') as YamiElement) ||
 		({} as YamiElement)) as UIShape['marquee'],
 	searcher: registryElement<UIShape['searcher']>(uiEls, 'ui-searcher')!,
@@ -332,7 +321,6 @@ export const UI = {
 // page 走显式元素数据（该字段不在 DATA_FIELDS 里）
 elementDataOf<{ page?: HTMLElement | null }>(UI.list).page = uiEls.get('ui-element') as YamiElement;
 elementDataOf<{ head: HTMLElement }>(UI.list).head = uiEls.get('ui-list-head') as YamiElement;
-// ⚠️ 第 234 轮：`UI.list.copy = null` / `paste` / `delete` / `toggle` / `cancelSearch` / `updateHead`
 // 这 6 行占位**已删除**。理由与上面 `UI.marquee.resize` 那处同一条：`TreeListElement` 契约里这些方法
 // 是**真声明**（非空），写 `null` 既编不过、也不再需要。
 // 行为同样不变：它们的真实实现就在 `ui-list.ts:359-414` 的**模块加载期**赋值（`loadUiDomains()` 里
@@ -361,11 +349,9 @@ for (const key of uiBridgeKeys) {
 	});
 }
 
-// 阶段 1c 第 ④-2c 步（第 114 轮）：把引擎的 21 个方法镜像到 UI 上的那些行已退役 ——
 // 调用点直连 `UIEngine`、store 的 7 个转发改走注册进来的引擎（理由见 `xr.md` 第 112–114 轮）。
 
 /**
- * 域模块的**加载顺序** —— 原 `legacy/register.ts` 的职责（第 212 轮第二段并进这里，那个文件已删）。
  *
  * ⚠️ 顺序有意义：`ui-initialize` 先建 DOM 引用与定时器、`ui-file` 挂文档生命周期；
  * 其余域只做赋值，彼此不依赖加载顺序。
@@ -389,9 +375,7 @@ export const uiWindowReady = Promise.all([
 	import('@app/engine/ui/element-register.ts'),
 	loadUiDomains(),
 	// 阶段 1c 第 ③/④-3 步：槽位模块。**必须动态 import**（静态会先于本模块体求值、踩 TDZ）。
-	// ④-3（第 167 轮）起改成 **facade 装配**：域模块只**提供**成员对象，由这里把它挂上去。
 	// 装配时机与「在域模块里自我绑定」等价 —— 两者都在 `uiWindowReady` 上、都在 `UI` 建好之后
-	// （⚠️ 第 110 轮更正：primeWindows 那条短路已在第 ① 步断掉，真机与 vitest 同走 loadUI）。
 	import('@app/engine/ui/ui-members.ts').then((m) => Object.assign(UI, m.uiMembers))
 ])
 	.then(() => undefined)

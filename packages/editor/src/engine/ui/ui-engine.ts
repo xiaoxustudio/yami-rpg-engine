@@ -22,7 +22,6 @@ const UI = getLazyWindow('ui', loadUI);
 /**
  * 引擎读 UI 成员的契约在 `ui-facade.ts`（**单一真源**，由台账轴 `ui-facade-gaps` 守着）。
  *
- * ④-1b（2026-09-21 第 101 轮）：**索引签名已退役**。原先这里挂着 `[k: string]: any`，
  * 于是「漏声明的成员」与「拼错的成员名」都通过编译，只在运行期表现为 `undefined` ——
  * 那正是本阶段要消灭的静默失效。现在 `this.<x>` 必须在 `UIFacadeShape` 里显式在案，
  * `tsc` 会逐个点名；缺的是**补进契约**，不是把 `any` 加回来。
@@ -30,7 +29,6 @@ const UI = getLazyWindow('ui', loadUI);
 type UIShape = UIFacadeShape;
 
 /**
- * 取当前文档的历史栈 —— **一处**写出「文档已打开」这条既有不变式（第 216 轮）。
  *
  * `history` 在契约与单例上都是**可空**的（`ui-file.ts:147` 关闭文档时真的会写 `null`，
  * `ui-file.ts:82` 打开时赋值），而引擎这 4 个读点（`shiftTarget` / `shiftAnchor` /
@@ -38,13 +36,11 @@ type UIShape = UIFacadeShape;
  * ⇒ 与 `this.planToSave!()` 同一手法：用 `!` 把前提写在**一处**，而不是在 4 个点各写一遍，
  * 也不是让契约宣称一个运行期不成立的形状。
  *
- * 第 216 轮之前 `UIFacadeShape.history` 写的是**非空**的 `History` —— 那与单例的
  * `History | null` 对不上，是「两个 `UIShape`」差异里的**最后一条**（另外几条见 `ui-facade.ts`）。
  */
 const historyOf = (ui: UIShape) => ui.history!;
 
 /**
- * 引擎成员表（第 217 轮）—— 取代原先的 `UIEngine: Record<string, any>` + 一行 `no-explicit-any` 豁免。
  *
  * ## 为什么需要它
  *
@@ -78,7 +74,6 @@ const historyOf = (ui: UIShape) => ui.history!;
  * ## 装表之后暴露的两件事（第 216/217 轮实测）
  *
  * 1. `this` 一有类型，「域模块的 `this: UIShape`（单例）交给引擎成员（要 `UIFacadeShape`）」
- *    这一步就**第一次被检查** ⇒ 暴露出两个类型之间的成员差（第 216 轮已清理：删 3 条无依据的
  *    契约条目、把 `history` 改成如实的可空、并把不变式收进 `historyOf()`）。
  * 2. 调用侧开始被检查 ⇒ 上面第 2 条那个形参分歧显形。
  */
@@ -221,7 +216,6 @@ UIEngine.shiftTarget = function (this: UIShape, x: number, y: number) {
 		instances.setProperty('transform-y', y);
 		// 这里原先有一块 `[DEBUG-instances]` 探针（`JSON.stringify` 打印 `instances instanceof Map`、
 		// `typeof instances.set`、`Object.keys(instances)`），只在 `instances[0].resize` 不是函数时输出。
-		// 第 232 轮删除：`instances` 的唯一创建点是 `ui-prefab.ts:104` 的 `new UIInstanceList()`
 		// （`Array` 子类，只有 `setProperty` / `resize` / `remove`），压进去的又都是元素实例
 		// （基类都有 `resize`）⇒ 那个分支与探针里的 `Map` / `.set` 判断永远不成立。
 		// 探针本身是「索引签名什么都能读」时代的产物：`instances.set` / `instances.name`
@@ -721,7 +715,6 @@ UIEngine.renderingFunction = function () {
 		//     `if (!this?.renderingFunction) return` 作保护：因为 `this` 恒为 `undefined`，
 		//     那个保护**每帧都提前 return** ⇒ **「不报错但整个 UI 画布一片黑」**（连错三次）。
 		//
-		// ⇒ 第 ④-2b 步（2026-09-22 第 112 轮）把全仓其余 63 处调用点改成
 		// `UIEngine.x!.call(this/UI, …)` 时，**这 7 处必须传 `UI`**，不能跟着写成 `.call(this)`：
 		// 别处的 `this` 是真实接收者，这里的 `this` 不存在 —— 形式相似，含义相反。
 		// 该不变式现在有会失败的用例兜着：`__tests__/ui-rendering-receiver.spec.ts`
@@ -744,7 +737,6 @@ UIEngine.stopRendering = function (this: UIShape) {
 	Timer.removeUpdater!('stageRendering', UIEngine.renderingFunction);
 };
 
-// 阶段 1c 第 ④-2a 步（2026-09-21 第 102 轮）：把引擎自己的实现注册给 store，让它的 7 个引擎
 // 转发优先走这里、而不是 `ui-window.ts` 的镜像。**必须放在文件末尾**（上面所有挂载都已就位）。
 // 为什么用注册而不是让 store import 本模块：本模块已静态 import store，反向会成静态环。
 // 见 `stores/ui.ts` 里 `registerUIEngine` 的说明。

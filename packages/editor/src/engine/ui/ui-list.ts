@@ -2,7 +2,6 @@ import { getListConfig, elementDataOf } from '@ui-kit';
 import { UI } from './ui-singleton.ts';
 import type { UIShape, UINodeShape, UIPointerEvent } from './ui-singleton.ts';
 import type { YamiElement } from '@app/types/element-api';
-// ④-2b（第 112 轮）：本文件里「以 UI 为接收者」的引擎调用改为直连 UIEngine（接收者仍显式传）。
 import { UIEngine } from './ui-engine.ts';
 import type { MenuItem } from '@ui-kit';
 import type { GlobalClipboardHost } from '@app/utils/clipboard';
@@ -23,7 +22,6 @@ import type { YamiMouseEvent } from '@app/types/editor-event';
 /**
  * 搜索框的 input 处理器。
  *
- * ⚠️ 第 234 轮更正 `this` 口径：它由 `ui-initialize.ts:363` 的 `on(this.searcher, 'input', …)`
  * 注册 ⇒ 触发时 `this` 是**搜索框元素**，不是 UI 单例。类型直接取 `UIShape['searcher']`
  * （该成员的说明里写了 `input` 为什么是 `HTMLInputElement`）——
  * 原先标成 `UIShape` 是靠索引签名把 `this.input` 放成了 `any`。
@@ -371,7 +369,6 @@ UI.marquee.resize = function (this: HTMLElement & { pointerevent?: UIPointerEven
 };
 
 // ⚠️ 下面 6 个挂在**列表元素**上（`UI.list.copy = …`），调用时 `this` 是列表元素 —— 不是 UI 单例。
-// 第 234 轮据此把 `this` 口径从 `UIShape` 改成 `TreeListElement`：体内读的 `this.data` /
 // `this.deleteNode!` / `this.update()` / `this.display` / `this.expandToSelection!` 全是列表面的成员，
 // 原先标 `UIShape` 只能靠索引签名（`this.data` 都是 `any`）通过。
 
@@ -480,7 +477,7 @@ getListConfig(UI.list).onResume = function (this: UIShape, item: UINodeShape) {
  * ⚠️ 本轮**只搬声明、不动函数体**：体内的 `UI.x` 原地保留 ⇒ 行为逐字不变（零风险），
  * 而 `this` 到底是不是 UI 这一点**尚未定论**（挂载由 `ui-initialize.ts` 的 `on(el, …, this.x)` 等
  * 注册，`on()` 对自定义元素转调 `el.on(...)`，接收者取决于各组件实现）—— 在验明之前
- * **不**把体内 `UI.x` 改成 `this.x`。详见 xr.md 第 173 轮与 PHASE 手法库 #45。
+ * **不**把体内 `UI.x` 改成 `this.x`：`this` 是否指 UI 尚未定论，理由见上。
  */
 export const uiListMembers = {
 	searcherInput,

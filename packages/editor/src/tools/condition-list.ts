@@ -69,7 +69,6 @@ export class ConditionListInterface implements IListInterface {
 
 		const { editor, owner } = this;
 		if (editor && owner) {
-			// 第 105 轮：字段类型收窄成 `IUndoRedoHistory` 后不再需要 `as unknown as`（见 types/history.ts）。
 			this.history = new ParamHistory(
 				editor as { target: unknown },
 				owner as { history: History },

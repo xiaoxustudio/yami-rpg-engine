@@ -19,7 +19,6 @@ import type { YamiElement } from '@app/types/element-api';
  * 而直接 `import { UI } from '@app/engine/ui/ui-singleton.ts'` 会与 `ui-window.ts → ui-engine.ts`
  * 形成静态循环导入。这个惰加载代理只在**运行时**解析目标，天然避开循环。
  *
- * 阶段 1c ①（2026-09-21 第 94 轮）：`UI` 的来源由 `tools/window-cluster.ts` 的**再导出**
  * 改为**直连遗留 UI 窗口模块** —— 桶文件里那行 `export { UI }` 已同步删除，
  * 于是「取 UI 对象」这条接线不再经过它。
  *
@@ -38,7 +37,7 @@ export const loadUI = async () => {
 const UI = getLazyWindow('ui', loadUI);
 
 /**
- * 引擎自身实现的注册点（`UIEngine`）—— 阶段 1c 第 ④-2a 步（2026-09-21 第 102 轮）。
+ * 引擎自身实现的注册点（`UIEngine`）。
  *
  * ## 为什么用「引擎注册自己」而不是 `import { UIEngine }`
  *
@@ -85,7 +84,6 @@ export const uiStateKeys = [
 	'hover'
 ] as const;
 
-// `UINodeShape` 的**唯一声明**在 `engine/ui/element-classes.ts`（2026-09-21 第 109 轮合并了
 // 此处与 `ui-singleton.ts` 的同名重复声明）。此前两份靠索引签名「碰巧兼容」，
 // 一旦其中一份收紧就会互不兼容（`ui-transform.ts:59` 曾当场报错）。
 
@@ -568,7 +566,6 @@ export const useUIStore = defineStore('ui', () => {
 	 *
 	 * @param resolve 每次调用时求值，返回**真正的接收者对象**（延迟求值是这个机制的关键）。
 	 *
-	 * 第 234 轮：`UIShape` 的索引签名退役后，这里不再写得出 `Record<string, unknown>` ——
 	 * 具名接口到记录类型不是合法转换（TS2352），而**键本来就是运行时才知道的**
 	 * （13 个事件槽位，一部分在 `UIDomainMembers` 里、一部分不在）。
 	 * ⇒ 这一次动态读取改用 `Reflect.get(target, key)`；后面的 `typeof` 检查、
@@ -640,10 +637,8 @@ export const useUIStore = defineStore('ui', () => {
 	 * 让它们改为直连 `UIEngine`，就把这 7 个从「依赖遗留层」移出去了：
 	 * `ui-slot-coverage` 轴的 `legacyOnly` 计数随之下降。
 	 *
-	 * ⚠️ 第 ① 步（2026-09-21 第 94 轮）已落地，但**只换了来源**：`UI` 仍是那个遗留对象
 	 * （改由 `loadUI` 直连 `engine/ui/ui-singleton.ts`，不再经 `window-cluster` 再导出）。
 	 *
-	 * ✅ **第 ④-2a 步（2026-09-21 第 102 轮）**：这 7 个已改为优先走引擎**注册进来的**
 	 * `UIEngine`（`makeEngineForwarder`），不再依赖 `ui-window.ts` 的镜像 —— 于是 ④-2b 删镜像时
 	 * store 这条路已经不受影响。接收者仍是 `UI`（见 `makeEngineForwarder` 的说明）。
 	 * 注意**不能**写成 `UIEngine.setZoom(…)`：那样 `this` 会变成 `UIEngine`，而实现里读的
@@ -666,7 +661,6 @@ export const useUIStore = defineStore('ui', () => {
 		UI?.saveToConfig?.(config);
 	}
 
-	// 配色归一化 `safeHex` 已挪到 `@app/utils/stage-color`（**唯一实现**，第 211 轮）：
 	// 它属于「`StageColor` 的输入格式」，而此前只有本文件做归一化，
 	// `ui-events.ts` 的 `UI.loadFromConfig` 拿到同一份 config 时**不归一化**
 	// （直接 `new StageColor(config.colors.…, …)`）⇒ 同一输入在两侧算出不同的 alpha（6 位 hex ⇒ NaN）。
