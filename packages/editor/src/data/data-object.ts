@@ -37,31 +37,8 @@ type ScriptFile = {
 };
 
 /**
- * `Data` 单例 —— **收口工作单（第 239 轮实测，未完成）**
- *
- * 这个接口的**方法**（下方 29 条）早就写明了，兜底索引签名只覆盖 26 个**数据字段**。
- * 本轮真的把它们写出来跑过一遍，量清了每一步：
- *
- * 1. 字段类型都有来源，不用猜：`createDataMaps`（本文件 `:262` 起）逐条给出
- *    14 个 `Record<string, DataEntry>`（actors/skills/…/tilesets）与 `scenePresets` / `uiPresets`
- *    的形状；`manifest: Manifest`（`:615` 的 `new Manifest()`）；`variables: VariableNode[]`（`:315`）；
- *    `localization: LocalizationNode[]`；`attribute` / `enumeration` 就是 `AttributeContext` /
- *    `EnumerationContext` 构造器收的 `Record<string, unknown>`；`easings` / `teams` 的
- *    `.map` / `.list.items` 由各读点定形。
- * 2. **口径**：这 26 个字段的正常状态是「装载后非空」，全仓按非空读它们、**没有任何一处**拿它们
- *    与 `null` 比较（只有 `close()` 会把它们写回 `null`）⇒ 声明为非空，`close()` 走一次
- *    `Reflect.set` 循环清空（写成 `| null` 会让几百处读点被迫加 `!`）。
- * 3. **实测数字**：按上面两步做完之后 **286 条**错误（只把索引签名换成 `unknown` 的对照是 539 条）。
- * 4. 剩下的分两拨：
- *    · **主拨是 `DataEntry` 这一层**：`DataEntry = { guid?; name?; [k: string]: unknown }`（`:16`）
- *      ⇒ 各数据类**自己的字段**（`area` / `startPosition` / `sw` / `sh` / `light` …）读出来都是
- *      `unknown`，实测 80 余条。收它要给每种数据（Actor / Skill / Item / …）各写一份接口 ——
- *      那是**独立的一件事**，与 `types/shapes.ts` 的 `DynamicShape`（另一处 888 条）同一个根。
- *    · 另一拨是本轮把几个字段类型写窄了：漏了 `autotiles`（读点存在）、`localization` 其实有
- *      `.list` / `.map`、`config` 有 `.localization` / `.window.title`、`plugins` 有 `.selection`
- *      ⇒ 各按读点修一次即可（十来处）。
- *
- * 也就是说：**单例这一层的形状很便宜**（本轮已定），**贵的是数据模型那一层**（要按数据类拆分）。
+ * `Data` 单例。装载后 26 个数据字段非空；`close()` 用 Reflect.set 清空，字面量占位写 `null!`。
+ * 已知的更外层问题：`DataEntry` 未按数据类拆分（读出来是 unknown），与 types/shapes.ts 的 DynamicShape 同根。
  */
 interface DataModule {
 	// oxlint-disable-next-line no-explicit-any
