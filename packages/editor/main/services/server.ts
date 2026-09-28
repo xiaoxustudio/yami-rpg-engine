@@ -5,10 +5,13 @@ import { ipcMain } from 'electron';
 import { CHANNELS } from '../../src/services/ipc/channels.ts';
 import type { ServerConfig } from '../../src/services/ipc/channels.ts';
 import fs from 'fs';
+import type { Stats } from 'fs';
 import path from 'path';
 import os from 'os';
 import type { Server } from 'http';
 import type { IpcMainInvokeEvent } from '../types/main.ts';
+
+const FSP = fs.promises;
 
 let isServerState = false;
 let instanceServer: PreviewServerApp | null = null;
@@ -16,6 +19,9 @@ let serverHandle: Server | null = null;
 
 interface PreviewContext {
 	path: string;
+	status: number;
+	/** Koa 的协商缓存判定（比对请求的 If-Modified-Since / If-None-Match 与响应头）。 */
+	readonly fresh: boolean;
 	set: (key: string, value: string | false) => void;
 	body: unknown;
 }
@@ -59,32 +65,55 @@ export const startServer = (_event: IpcMainInvokeEvent, config: ServerConfig): P
 	const previewRoot = path.resolve(path.dirname(config.path), '.preview');
 	instanceServer = new Koa();
 	instanceServer!.use(async (ctx: PreviewContext) => {
+		// 解码 + 归一化后强制落在 previewRoot 内，阻断路径穿越
+		let decoded: string;
 		try {
-			// 解码 + 归一化后强制落在 previewRoot 内，阻断路径穿越
-			let decoded: string;
-			try {
-				decoded = decodeURIComponent(ctx.path);
-			} catch {
-				ctx.body = '400 Bad Request';
-				return;
-			}
-			const filePath = path.resolve(previewRoot, '.' + decoded);
-			if (filePath !== previewRoot && !filePath.startsWith(previewRoot + path.sep)) {
-				ctx.body = '404 Not Found';
-				return;
-			}
-			const ext = path.extname(filePath);
-			const type = Mime.lookup(ext) || 'text/plain';
-			if (ctx.path === '/') {
-				ctx.set('Content-Type', Mime.lookup('html'));
-				ctx.body = fs.readFileSync(path.join(filePath, 'index.html'));
-			} else {
-				ctx.set('Content-Type', type);
-				ctx.body = fs.readFileSync(filePath);
-			}
+			decoded = decodeURIComponent(ctx.path);
 		} catch {
-			ctx.body = '404 Not Found';
+			ctx.status = 400;
+			ctx.body = '400 Bad Request';
+			return;
 		}
+		const filePath = path.resolve(previewRoot, '.' + decoded);
+		if (filePath !== previewRoot && !filePath.startsWith(previewRoot + path.sep)) {
+			ctx.status = 404;
+			ctx.body = '404 Not Found';
+			return;
+		}
+
+		// 目录请求落到 index.html（补上 isDirectory 判定，原先靠 readFileSync 抛 EISDIR）
+		const target = decoded.endsWith('/') ? path.join(filePath, 'index.html') : filePath;
+
+		let stat: Stats;
+		try {
+			stat = await FSP.stat(target);
+		} catch {
+			ctx.status = 404;
+			ctx.body = '404 Not Found';
+			return;
+		}
+		if (!stat.isFile()) {
+			ctx.status = 404;
+			ctx.body = '404 Not Found';
+			return;
+		}
+
+		const type = Mime.lookup(path.extname(target)) || 'text/plain';
+		// status 必须先落到 2xx：Koa 的 ctx.fresh 只在该区间内做比对
+		ctx.status = 200;
+		ctx.set('Content-Type', type);
+		ctx.set('Last-Modified', stat.mtime.toUTCString());
+
+		// 协商缓存命中：只回 304，不重传文件体（游戏反复重载同一批资源时收益明显）
+		if (ctx.fresh) {
+			ctx.status = 304;
+			ctx.body = null;
+			return;
+		}
+
+		// 流式输出：原先 fs.readFileSync 会把整个文件读进主进程内存并阻塞事件循环
+		ctx.set('Content-Length', String(stat.size));
+		ctx.body = fs.createReadStream(target);
 	});
 
 	return new Promise<boolean>((resolve) => {
