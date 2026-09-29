@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-27T13:09:37.101Z",
+	"generatedAt": "2026-09-29T09:54:59.004Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -35,8 +35,8 @@
 			"label": "DOM 受限 API 命中落在白名单内（设计豁免在用）",
 			"target": "stable",
 			"value": {
-				"total": 120,
-				"files": 46
+				"total": 119,
+				"files": 45
 			}
 		},
 		"dom-pending": {
