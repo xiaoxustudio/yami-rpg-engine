@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { escapeHtml } from '../../../utils/dom';
 
 interface Props {
 	message?: string;
@@ -21,12 +22,9 @@ const defaultIcon =
 	'<rect x="3" y="4" width="18" height="16" rx="2"/>' +
 	'<path d="M3 9h18"/></svg>';
 
-const iconHtml = computed(() => {
-	if (!props.icon) return defaultIcon;
-	const d = document.createElement('div');
-	d.textContent = props.icon;
-	return d.innerHTML;
-});
+// `icon` 属性按**文本**处理（不是 HTML）：转义后再交给 `v-html`。
+// 纯函数，不再在 computed 里建 DOM 读 `innerHTML`。
+const iconHtml = computed(() => (props.icon ? escapeHtml(props.icon) : defaultIcon));
 </script>
 
 <template>

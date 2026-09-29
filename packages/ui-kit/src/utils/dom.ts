@@ -212,3 +212,18 @@ export const macRedoKey = (e: KeyboardEvent): boolean =>
 export const hideDragImage = (dt: DataTransfer | null): void => {
 	if (dt) dt.setDragImage(new Image(), 0, 0);
 };
+
+/**
+ * 把**文本**转义成可安全交给 `v-html` 的 HTML 片段。
+ *
+ * 取代"建一个 `div`、写 `textContent`、再读 `innerHTML`"的往返：那条路径在**求值期**造 DOM，
+ * 放进 `computed` 里尤其不合适（每次失效都新建节点，且依赖 `document` 存在）。
+ * 转义口径与浏览器序列化文本节点一致——`&` 必须**最先**替换，否则会把后面生成的实体二次转义。
+ */
+export const escapeHtml = (value: string): string =>
+	value
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
