@@ -57,18 +57,9 @@ export const createEditorWindow = function (
 			console.log(text);
 		}
 	});
-	editor.webContents.on('did-finish-load', () => {
-		editor.webContents
-			.executeJavaScript(`
-			window.addEventListener('error', (e) => {
-				console.error('[Uncaught Error]', e.error && e.error.stack ? e.error.stack : e.message, '@', e.filename + ':' + e.lineno + ':' + e.colno);
-			});
-			window.addEventListener('unhandledrejection', (e) => {
-				console.error('[Unhandled Rejection]', e.reason && e.reason.stack ? e.reason.stack : e.reason);
-			});
-		`)
-			.catch(() => {});
-	});
+	// 未捕获错误 / 未处理 rejection 的兜底上报已移到 main/preload.ts：
+	// preload 在页面脚本之前执行，能覆盖启动期（模块求值）抛出的错误，
+	// 而原先这里的 did-finish-load + executeJavaScript 要等加载完成才注册。
 
 	if (useViteDev) {
 		// Vite dev 模式：载 dev server URL，HMR + 模块解析由 Vite 接管

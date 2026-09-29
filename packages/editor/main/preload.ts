@@ -99,3 +99,31 @@ if (process.contextIsolated) {
 	// contextIsolation:false（编辑器依赖渲染进程 Node 桥）时 contextBridge 不可用，直接挂载
 	window.yami = api;
 }
+
+/**
+ * 未捕获错误 / 未处理 rejection 的兜底上报。
+ *
+ * 放在 preload，而不是原先主进程的 `did-finish-load` + `executeJavaScript`：
+ * preload 在页面脚本之前执行，能覆盖**启动期（模块求值）**抛出的错误；原先那套要等
+ * 页面加载完成才注册，启动期错误全漏，而且每次加载都要跑一遍字符串求值。
+ *
+ * ⚠️ ResizeObserver 的口径必须与 `src/main.ts` 的抑制器一致：本监听器注册**更早**，
+ * 不过滤就会抢在抑制器之前把这条循环上限告警打成 console.error。
+ */
+const isResizeObserverNoise = (message: string): boolean =>
+	message === 'ResizeObserver loop limit exceeded';
+
+window.addEventListener('error', (event: ErrorEvent) => {
+	if (isResizeObserverNoise(event.message)) return;
+	console.error(
+		'[Uncaught Error]',
+		event.error?.stack ?? event.message,
+		'@',
+		`${event.filename}:${event.lineno}:${event.colno}`
+	);
+});
+
+window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
+	const reason = event.reason as Error | undefined;
+	console.error('[Unhandled Rejection]', reason?.stack ?? event.reason);
+});

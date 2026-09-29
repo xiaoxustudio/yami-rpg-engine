@@ -36,20 +36,40 @@ export const createElementRegistry = (mirror?: ElementRegistry): ElementRegistry
 	return registry;
 };
 
+/**
+ * `registryRef` 回调缓存。
+ *
+ * Vue 3 对函数 ref **不做身份判断**，每次 patch 都会用当前元素再调一次回调
+ * （见 runtime-core `setRef`：`isFunction(ref)` 分支无条件 `callWithErrorHandling`）。
+ * 而 `:ref="registryRef(reg, id)"` 这种内联写法每次渲染都会新建闭包 —— 全仓约 1300 处。
+ * 回调本身无状态，按 `(registry, id)` 缓存后返回稳定引用，省掉每次渲染的闭包分配与 GC 压力。
+ */
+const registryRefCallbacks = new WeakMap<ElementRegistry, Map<string, (el: unknown) => void>>();
+
 /** 生成模板 ref 回调：组件实例取 `$el`，元素直接用；卸载（null）时清空该项 */
-export const registryRef =
-	(registry: ElementRegistry, id: string) =>
-	(el: unknown): void => {
-		if (el === null || el === undefined) {
-			registry.set(id, null);
-			return;
-		}
-		const element =
-			el instanceof HTMLElement
-				? (el as YamiElement)
-				: ((el as { $el?: HTMLElement }).$el ?? null);
-		registry.set(id, element as YamiElement | null);
-	};
+export const registryRef = (registry: ElementRegistry, id: string): ((el: unknown) => void) => {
+	let callbacks = registryRefCallbacks.get(registry);
+	if (!callbacks) {
+		callbacks = new Map();
+		registryRefCallbacks.set(registry, callbacks);
+	}
+	let callback = callbacks.get(id);
+	if (!callback) {
+		callback = (el: unknown): void => {
+			if (el === null || el === undefined) {
+				registry.set(id, null);
+				return;
+			}
+			const element =
+				el instanceof HTMLElement
+					? (el as YamiElement)
+					: ((el as { $el?: HTMLElement }).$el ?? null);
+			registry.set(id, element as YamiElement | null);
+		};
+		callbacks.set(id, callback);
+	}
+	return callback;
+};
 
 /**
  * 命令式登记：用于 `:ref` 槽位已被占用的组件——例如 `<WindowFrame ref="frame">`

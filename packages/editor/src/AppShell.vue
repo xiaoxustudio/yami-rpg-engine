@@ -90,7 +90,7 @@
 				@vue:mounted="onComponentMounted"
 			/>
 		</Teleport>
-		<Teleport v-for="p in inspectorPages" :key="p.value" :to="p.target">
+		<Teleport v-for="p in inspectorPageComponents" :key="p.value" :to="p.target">
 			<component :is="p.comp" @vue:mounted="onComponentMounted" />
 		</Teleport>
 	</template>
@@ -116,6 +116,7 @@ import { useLocalStore } from '@app/stores/local';
 import { resolveLazyComponentsReady } from '@app/bootstrap';
 import { provideMenuService } from '@app/composables/useMenuService';
 import { Menu } from '@app/components/menu-list';
+import { inspectorPages, inspectorPageCount } from '@app/components/inspector/inspector-pages';
 
 const { t } = useI18n();
 
@@ -166,7 +167,6 @@ const toolModules = import.meta.glob([
 	'!**/TextSuggestions.vue'
 ]);
 const commandModules = import.meta.glob('./components/commands/*.vue');
-const inspectorModules = import.meta.glob('./components/inspector/*.vue');
 
 // PluginOverview 为窗口内子组件（Plugin/Command/FileScriptPage 使用），不作为独立窗口挂载
 const toolWindowEntries = Object.entries(toolModules).filter(
@@ -180,9 +180,7 @@ const toolWindowEntries = Object.entries(toolModules).filter(
 // 业务初始化（CommandSchema.initAll 等）需要所有弹窗组件的 DOM 已挂载，
 // 懒加载组件就绪前先阻塞 Editor.initialize，避免读取到 null DOM
 const lazyTotal =
-	toolWindowEntries.length +
-	Object.keys(commandModules).length +
-	Object.keys(inspectorModules).length;
+	toolWindowEntries.length + Object.keys(commandModules).length + inspectorPageCount;
 let lazyMounted = 0;
 const onComponentMounted = () => {
 	lazyMounted++;
@@ -244,29 +242,11 @@ const commandComponents = Object.fromEntries(
 		asyncComp(loader as () => Promise<Component>)
 	])
 );
-const inspectorSpecialTargets = new Set([
-	'fileImage',
-	'fileFont',
-	'fileScript',
-	'fileAudio',
-	'fileVideo',
-	'fileTileset'
-]);
-const inspectorPages = Object.entries(inspectorModules).map(([path, loader]) => {
-	const name = path
-		.split('/')
-		.pop()!
-		.replace(/\.vue$/, '')
-		.replace(/Page$/, '');
-	const raw = name.replace(/^UI(?=[A-Z])/, 'ui');
-	const value = raw.charAt(0).toLowerCase() + raw.slice(1);
-	const target = inspectorSpecialTargets.has(value) ? `#${value}` : `#${value}-vue-mount`;
-	return {
-		value,
-		target,
-		comp: asyncComp(loader as () => Promise<Component>)
-	};
-});
+const inspectorPageComponents = inspectorPages.map(({ value, target, loader }) => ({
+	value,
+	target,
+	comp: asyncComp(loader as () => Promise<Component>)
+}));
 </script>
 
 <style>

@@ -83,8 +83,17 @@ const serve = async (
 		fs.writeFileSync(target, content);
 	}
 	const port = await freePort();
-	await startServer({} as never, { path: path.join(dir, 'project.yami'), port });
-	return { base: `http://127.0.0.1:${port}`, root, dir };
+	const startPath = path.join(dir, 'project.yami');
+	// freePort 到真正 bind 之间有窗口，端口可能被别的进程抢走；
+	// startServer 绑定失败会 resolve(false)，这里换端口重试而不是让用例随机变红。
+	for (let attempt = 0; attempt < 5; attempt++) {
+		// oxlint-disable-next-line no-await-in-loop
+		const started = await startServer({} as never, { path: startPath, port: port + attempt });
+		if (started) {
+			return { base: `http://127.0.0.1:${port + attempt}`, root, dir };
+		}
+	}
+	throw new Error('预览服务器未能绑定端口');
 };
 
 afterEach(() => {
