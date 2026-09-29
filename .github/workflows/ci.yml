@@ -97,6 +97,18 @@ jobs:
             - name: 陈旧豁免注释（应为 0）
               run: pnpm run stale-exemptions
 
+            # 2026-10-01 补：editor 的组件 `<style>` 是**全局**的（255 个块都不带
+            # scoped/module），约定是「组件只写自己唯一的 #id 规则，通用类进
+            # Project/css/*.css」。实测当前 **0 处**违约 —— 也就是说这条约定此前
+            # 只靠人脑维持，没有任何工具拦得住下一处裸类选择器。
+            # 口径与「刻意不管什么」见 scripts/component-style-scope.mjs 头部。
+            # 先自证：门禁必须能对自己举出的反例变红，否则就是第二条永远绿的空检查。
+            - name: 组件样式作用域自证（门禁自身的口径）
+              run: pnpm run style:scope:selftest
+
+            - name: 组件样式作用域（裸类选择器应为 0）
+              run: pnpm run style:scope
+
             # 2026-09-21 补：`tsc` / `oxlint` / `oxfmt` / vitest **全都看不见**的一族写坏 ——
             # 单词首字母被换成控制字符、代码行被吞进 `//` 注释、整段注释被复制进自己。
             # 实测过 4 种形态且全绿通过既有门禁，因此必须单独量（口径与自证见 scripts/lib/text-integrity.mjs）。

@@ -48,6 +48,8 @@
 		"text:check": "node scripts/check-text-integrity.mjs",
 		"text:rules": "node scripts/check-text-integrity.mjs --rules",
 		"events:surface": "node scripts/event-surface.mjs",
+		"style:scope": "node scripts/component-style-scope.mjs",
+		"style:scope:selftest": "node scripts/component-style-scope.mjs --selftest",
 		"format": "oxfmt -c ./.oxfmtrc.json --write packages/editor packages/ui-kit",
 		"format:check": "oxfmt -c ./.oxfmtrc.json --check packages/editor packages/ui-kit"
 	},
