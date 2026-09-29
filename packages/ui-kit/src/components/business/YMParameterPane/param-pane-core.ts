@@ -6,9 +6,21 @@ export type ParamDef = {
 	prefix?: string;
 	suffix?: string;
 	readonly?: boolean;
-	validate?: boolean;
+	/**
+	 * 校验声明。ui-kit 只做**真值判断**（`if (parameter.validate)`），不读内部字段；
+	 * 宿主运行期放的是解析器产出的 `ParameterShape.validate`（对象）—— 故类型取
+	 * 「布尔 | 校验对象」的并集，让 `ParameterShape` 结构性满足本契约，宿主无需断言。
+	 */
+	validate?:
+		| boolean
+		| {
+				pattern: RegExp | null;
+				notEmpty: boolean | null;
+				minLength?: number;
+				maxLength?: number;
+		  };
 	hidden?: boolean;
-	group?: string;
+	group?: string | null;
 	value?: unknown;
 	repeatableGroup?: { parameters: ParamDef[] };
 };

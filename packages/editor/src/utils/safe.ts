@@ -3,10 +3,9 @@ import type { VariableNodeShape } from '@app/stores/data';
 
 export function getVariable(id: string | number | null | undefined): VariableNodeShape | undefined {
 	if (id == null) return undefined;
-	// `Data.variables` 上的 `map` 是 `createVariableMap()` 用 `defineProperty` 挂上的查表对象，
-	// 与 `Array.prototype.map` 同名 ⇒ 数组类型里看不到它，只能按运行期形状在此取一次。
-	const map = Data.variables?.map as unknown as Record<string, VariableNodeShape> | undefined;
-	return map?.[id];
+	// `Data.variables.mapById` 是 `createVariableMap()` 用 `defineProperty` 挂上的查表对象。
+	// 刻意避开 `map` 这个与 `Array.prototype.map` 同名的键，读侧因此无需任何断言。
+	return Data.variables?.mapById?.[id];
 }
 
 export function reportError(err: unknown, context?: string): void {

@@ -3,7 +3,7 @@ import { GUID } from '@app/services/file-system/guid.ts';
 import { AttributeContext } from '@app/attribute/attribute-context.ts';
 import type { AttributeItem } from '@app/attribute/attribute-window.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
-import { Manifest, type FileMeta } from './metadata-manifest.ts';
+import { Manifest, type FileMeta, type ProjectMeta } from './metadata-manifest.ts';
 import { EnumerationContext } from '@app/enum/enum-context.ts';
 import type { EnumItem } from '@app/enum/enum-window.ts';
 import type { LocalizationItem } from '@app/local/local-window.ts';
@@ -12,7 +12,7 @@ import { Log } from '@app/log/log-window.ts';
 import { Reference } from '@app/log/related-references.ts';
 
 import { PluginManager } from '@app/plugin/plugin.ts';
-import { dataKeys, getDataStore } from '@app/stores/data';
+import { dataKeys, getDataStore, type VariableNodeShape } from '@app/stores/data';
 import { computeIndexDigits } from '@app/utils/number';
 import { clone as deepClone } from '@app/utils/object';
 
@@ -74,7 +74,13 @@ interface DataModule {
 	jsonReplacer: (key: string, value: unknown) => unknown;
 	// 装载后非空（正常状态）；`close()` 用 Reflect.set 清回 null，故字面量占位写 `null!`。
 	manifest: Manifest;
-	variables: VariableNode[] & { scrollTop?: number };
+	// `variables` 是变量树数组，`createVariableMap()` 用 `defineProperty` 在其上挂一个查表对象。
+	// 该属性刻意不叫 `map` —— 与 `Array.prototype.map` 同名会让「数组方法 ∩ 查表对象」在类型上
+	// 无法并存（赋一个普通数组都会因 `map` 不兼容而报错）。改名后读侧零断言。
+	variables: VariableNode[] & {
+		scrollTop?: number;
+		mapById?: Record<string, VariableNodeShape>;
+	};
 	localization: {
 		list: LocalizationItem[];
 		map: Record<string, LocalizationItem>;
@@ -186,16 +192,17 @@ Data.loadFile = function (this: typeof Data, filename: string) {
 		if (!data) {
 			throw new SyntaxError(path);
 		}
-		const meta = {
+		// 「数据文件条目」（只有 guid/path/dataMap），比完整 `FileMeta` 少 file/group/versionId 等
+		// 运行期反引用字段。按 `ProjectMeta` 声明（`dataMap: unknown`）后 `FileMeta` 反向满足它，
+		// 因此写进 `guidMap` 只需**单次**断言 —— 它只作 `File.planToSave` / `File.saveFile` 的入参，
+		// 不参与 guidMap 的元数据查询。
+		const meta: ProjectMeta = {
 			guid: filename,
 			path: path,
 			dataMap: this
 		};
 		this.manifest.project[filename] = meta;
-		// 这里写入的是「数据文件条目」（只有 guid/path/dataMap），比完整 `FileMeta` 少
-		// file/group/versionId 等运行期反引用字段。它只作为 `File.planToSave` / `File.saveFile`
-		// 的入参使用，不参与 guidMap 的元数据查询 ⇒ 在此如实断言一次。
-		this.manifest.guidMap[meta.guid] = meta as unknown as FileMeta;
+		this.manifest.guidMap[meta.guid] = meta as FileMeta;
 		return (this[filename] = data);
 	});
 };
@@ -349,7 +356,7 @@ Data.createVariableMap = (function IIFE() {
 	return function (this: typeof Data) {
 		const map = {} as Record<string, VariableNode>;
 		set(this.variables, map);
-		Object.defineProperty(this.variables, 'map', {
+		Object.defineProperty(this.variables, 'mapById', {
 			configurable: true,
 			value: map
 		});

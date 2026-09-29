@@ -293,10 +293,10 @@ PluginManager.reconstruct = (function IIFE() {
 		const { id, parameters } = script;
 		const oEntries = Object.entries(parameters ?? {});
 		const meta = Data.manifest.guidMap[id];
-		// 运行期这里是解析器产出的完整参数（含 min/max/decimals/options，`validate` 为对象），
-		// 而 `Meta.parameters` 上的声明取的是 ui-kit 参数面板的窄契约 `ParamDef`（`validate` 为
-		// boolean、`value` 可省）—— 两者互不兼容，故在重建逻辑入口就地断言一次。
-		const mParameters = meta?.parameters as unknown as ParameterShape[] | null | undefined;
+		// 运行期这里是解析器产出的完整参数（含 min/max/decimals/options，`validate` 为对象）。
+		// `Meta.parameters` 已按运行期真相声明为 `ParameterShape[]`（ui-kit 的 `ParamDef` 随之放宽），
+		// 故此处无需断言。
+		const mParameters = meta?.parameters;
 		// 未找到元数据参数时保留脚本参数
 		if (mParameters === undefined || mParameters === null) {
 			return false;

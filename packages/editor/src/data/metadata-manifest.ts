@@ -6,7 +6,7 @@ import { remove } from '@app/utils/array';
 
 export type FileMeta = InstanceType<typeof Meta>;
 
-interface ProjectMeta {
+export interface ProjectMeta {
 	guid: string;
 	path: string;
 	dataMap: unknown;
