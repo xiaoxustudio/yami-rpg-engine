@@ -113,3 +113,98 @@ export const deriveFileRows = <T extends object>(
 		path: pathOf(item),
 		isFolder: isFolderOf(item)
 	}));
+
+/** 网格内边距（原 `updateContentSize` / 行定位的字面量 4） */
+export const FILE_GRID_PADDING = 4;
+
+/** 网格单元之间的间隙（原 `updateContentSize` 的字面量 2） */
+export const FILE_GRID_GAP = 2;
+
+/** 列表视图的固定行高（原行定位的字面量 20） */
+export const FILE_LIST_ROW_HEIGHT = 20;
+
+/** 行在网格中的定位（纯：按视图模式/列数/单元尺寸推导，不读写任何状态） */
+export const fileRowOffset = (
+	viewMode: FileBodyViewMode,
+	index: number,
+	countPerLine: number,
+	itemWidth: number,
+	itemSize: number
+): { left: string; top: string } => {
+	if (viewMode === 'list') {
+		const col = Math.floor(index / countPerLine);
+		const row = index % countPerLine;
+		return {
+			left: `${col * itemWidth + FILE_GRID_PADDING}px`,
+			top: `${row * FILE_LIST_ROW_HEIGHT}px`
+		};
+	}
+	const col = index % countPerLine;
+	const row = Math.floor(index / countPerLine);
+	return {
+		left: `${col * itemWidth + FILE_GRID_PADDING}px`,
+		top: `${row * itemSize + FILE_GRID_PADDING}px`
+	};
+};
+
+export interface FileBodyWindowRowInput<T extends object> {
+	files: readonly T[];
+	start: number;
+	end: number;
+	viewMode: FileBodyViewMode;
+	countPerLine: number;
+	itemWidth: number;
+	itemSize: number;
+	isFolderOf: (item: T) => boolean;
+	isSelected: (item: T) => boolean;
+	nameOf: (item: T) => string;
+}
+
+export interface FileBodyWindowRow {
+	/** 稳定行 key（`fileRowKeyOf` 发号） */
+	key: string;
+	/** 全局行下标 */
+	index: number;
+	/** 显示名（由消费方注入：文件取 `basename`、文件夹取 `name`） */
+	name: string;
+	isFolder: boolean;
+	selected: boolean;
+	style: { left: string; top: string };
+}
+
+/**
+ * 可见窗口 `[start, end)` → 行描述（纯推导：key/定位/名称/文件夹标记/选中态）。
+ * 原 `YMFileBodyPane.vue` 的 `rebuildRowDescriptors` 主体；名称与选中态由消费方注入，
+ * 不依赖 `instanceof` 或组件状态。
+ */
+export const buildFileBodyWindowRows = <T extends object>(
+	input: FileBodyWindowRowInput<T>
+): FileBodyWindowRow[] => {
+	const {
+		files,
+		start,
+		end,
+		viewMode,
+		countPerLine,
+		itemWidth,
+		itemSize,
+		isFolderOf,
+		isSelected,
+		nameOf
+	} = input;
+	const rows: FileBodyWindowRow[] = [];
+	for (let i = start; i < end; i++) {
+		const file = files[i];
+		if (file === undefined) continue;
+		const { left, top } = fileRowOffset(viewMode, i, countPerLine, itemWidth, itemSize);
+		rows.push({
+			key: fileRowKeyOf(file),
+			index: i,
+			name: nameOf(file),
+			isFolder: isFolderOf(file),
+			selected: isSelected(file),
+			style: { left, top }
+		});
+	}
+	return rows;
+};

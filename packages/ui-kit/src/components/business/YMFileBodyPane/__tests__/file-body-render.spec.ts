@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { createFileBodyCore } from '../file-body-core';
 import {
+	buildFileBodyWindowRows,
 	computeViewMetrics,
 	deriveFileRows,
+	FILE_GRID_GAP,
+	FILE_GRID_PADDING,
+	FILE_LIST_ROW_HEIGHT,
 	fileRowKeyOf,
+	fileRowOffset,
 	TILE_SIZE_BY_VIEW_MODE,
 	viewModeOfIndex,
 	VIEW_MODE_BY_INDEX
@@ -100,5 +105,78 @@ describe('file-body-render（派生层：行数据）', () => {
 	it('空输入：返回空数组', () => {
 		expect(deriveFileRows()).toEqual([]);
 		expect(deriveFileRows([])).toEqual([]);
+	});
+});
+
+describe('file-body-render（派生层：行定位与窗口行）', () => {
+	it('fileRowOffset：列表模式按列×行高定位（列宽×列 + 内边距，行×行高）', () => {
+		expect(fileRowOffset('list', 5, 4, 100, 999)).toEqual({
+			left: `${Math.floor(5 / 4) * 100 + FILE_GRID_PADDING}px`,
+			top: `${(5 % 4) * FILE_LIST_ROW_HEIGHT}px`
+		});
+		expect(fileRowOffset('list', 3, 10, 50, 999)).toEqual({
+			left: `${FILE_GRID_PADDING}px`,
+			top: `${3 * FILE_LIST_ROW_HEIGHT}px`
+		});
+	});
+
+	it('fileRowOffset：平铺模式按 列%列数/行÷列数 与单元尺寸定位（左侧/顶部均加内边距）', () => {
+		expect(fileRowOffset('medium', 5, 4, 100, 80)).toEqual({
+			left: `${(5 % 4) * 100 + FILE_GRID_PADDING}px`,
+			top: `${Math.floor(5 / 4) * 80 + FILE_GRID_PADDING}px`
+		});
+	});
+
+	it('常量：内边距/间隙/列表行高与既有字面量一致', () => {
+		expect(FILE_GRID_PADDING).toBe(4);
+		expect(FILE_GRID_GAP).toBe(2);
+		expect(FILE_LIST_ROW_HEIGHT).toBe(20);
+	});
+
+	it('buildFileBodyWindowRows：切片窗口、字段与 key 顺序与 deriveFileRows 一致', () => {
+		const files = [file('/a/0'), file('/a/1'), file('/a/2'), file('/a/3')];
+		const rows = buildFileBodyWindowRows({
+			files,
+			start: 1,
+			end: 3,
+			viewMode: 'list',
+			countPerLine: 1,
+			itemWidth: 100,
+			itemSize: 80,
+			isFolderOf: () => false,
+			isSelected: (item) => item === files[2],
+			nameOf: (item) => item.basename
+		});
+		expect(rows.map((row) => row.index)).toEqual([1, 2]);
+		expect(rows.map((row) => row.key)).toEqual(
+			deriveFileRows(files)
+				.slice(1, 3)
+				.map((row) => row.key)
+		);
+		expect(rows.map((row) => row.name)).toEqual(['1', '2']);
+		expect(rows.map((row) => row.isFolder)).toEqual([false, false]);
+		expect(rows.map((row) => row.selected)).toEqual([false, true]);
+		expect(rows[0].style).toEqual({
+			left: `${Math.floor(1 / 1) * 100 + FILE_GRID_PADDING}px`,
+			top: `${(1 % 1) * FILE_LIST_ROW_HEIGHT}px`
+		});
+	});
+
+	it('buildFileBodyWindowRows：跳过窗口内缺失的下标（稀疏数组）', () => {
+		const files: { path: string; basename: string }[] = [];
+		files[2] = file('/a/2');
+		const rows = buildFileBodyWindowRows({
+			files,
+			start: 0,
+			end: 3,
+			viewMode: 'list',
+			countPerLine: 1,
+			itemWidth: 10,
+			itemSize: 10,
+			isFolderOf: () => false,
+			isSelected: () => false,
+			nameOf: (item) => item.basename
+		});
+		expect(rows.map((row) => row.index)).toEqual([2]);
 	});
 });

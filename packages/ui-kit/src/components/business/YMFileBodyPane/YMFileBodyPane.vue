@@ -45,8 +45,10 @@ import { elementDataOf } from '../../../utils/element-data';
 import { renderDetached } from '../../../utils/detached';
 import { createFileBodyCore, type GridMetrics } from './file-body-core';
 import {
+	buildFileBodyWindowRows,
 	computeViewMetrics,
-	fileRowKeyOf,
+	FILE_GRID_GAP,
+	FILE_GRID_PADDING,
 	VIEW_MODE_BY_INDEX,
 	type FileBodyViewMode
 } from './file-body-render';
@@ -599,46 +601,27 @@ function bindRowElement(
 function rebuildRowDescriptors(start: number, end: number, cpl: number): void {
 	const content = contentEl.value as FileBodyContentApi;
 	const { countPerLine, itemSize, itemWidth } = content;
-	const descriptors: FileBodyRowDescriptor[] = [];
-	const keys: string[] = [];
-	for (let i = start; i < end; i++) {
-		const file = flatFiles[i];
-		if (file === undefined) continue;
-		let left: string;
-		let top: string;
-		if (viewMode === 'list') {
-			const col = Math.floor(i / countPerLine!);
-			const row = i % countPerLine!;
-			left = `${col * itemWidth! + 4}px`;
-			top = `${row * 20}px`;
-		} else {
-			const col = i % countPerLine!;
-			const row = Math.floor(i / countPerLine!);
-			left = `${col * itemWidth! + 4}px`;
-			top = `${row * itemSize! + 4}px`;
-		}
-		const key = fileRowKeyOf(file);
-		keys.push(key);
-		descriptors.push({
-			key,
-			index: i,
-			// 命名与命令式实现一致：文件用 `basename`（`updateFileElement`），文件夹用 `name`（`updateFolderElement`）
-			name:
-				file instanceof FileItem
-					? ((file as { basename?: string }).basename ?? '')
-					: file.name,
-			isFolder: !(file instanceof FileItem),
-			selected: selections.includes(file),
-			style: { left, top }
-		});
-	}
+	const rows = buildFileBodyWindowRows({
+		files: flatFiles,
+		start,
+		end,
+		viewMode: viewMode as FileBodyViewMode,
+		countPerLine: countPerLine!,
+		itemWidth: itemWidth!,
+		itemSize: itemSize!,
+		// 命名与命令式实现一致：文件用 `basename`（`updateFileElement`），文件夹用 `name`（`updateFolderElement`）
+		nameOf: (file) =>
+			file instanceof FileItem ? ((file as { basename?: string }).basename ?? '') : file.name,
+		isFolderOf: (file) => !(file instanceof FileItem),
+		isSelected: (file) => selections.includes(file)
+	});
 	rowModel.value = {
 		start,
 		end,
 		countPerLine: cpl,
 		viewMode: viewMode ?? 'list',
-		keys,
-		rows: descriptors
+		keys: rows.map((row) => row.key),
+		rows
 	};
 }
 
@@ -746,11 +729,9 @@ function updateContentSize(): void {
 	if (node.clientHeight !== 0 && (data.count !== count || content.cpl !== cpl)) {
 		data.count = count;
 		content.cpl = cpl;
-		const PADDING = 4;
-		const GAP = 2;
 		const { style, countPerLine, itemSize } = content;
 		const lines = Math.ceil(count / countPerLine!);
-		const length = Math.max(lines * itemSize! - GAP, 0) + PADDING * 2;
+		const length = Math.max(lines * itemSize! - FILE_GRID_GAP, 0) + FILE_GRID_PADDING * 2;
 		if (viewMode === 'list') {
 			style.width = `${length}px`;
 		} else {
