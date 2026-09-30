@@ -1,3 +1,5 @@
+import { clamp } from '../../../utils/dom';
+
 export interface NumberBoxCoreAccess {
 	getRoot: () => HTMLElement | null;
 	getInput: () => HTMLInputElement | null;
@@ -59,9 +61,6 @@ const whiteList = new Set([
 	'End',
 	'NumpadEnter'
 ]);
-
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
 
 const roundTo = (value: number, decimals: number): number => {
 	const factor = Math.pow(10, decimals);

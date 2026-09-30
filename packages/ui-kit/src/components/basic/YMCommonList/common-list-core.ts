@@ -1,4 +1,5 @@
 import { elementDataValueOf } from '../../../utils/element-data';
+import { clamp } from '../../../utils/dom';
 
 /** own 属性优先（组件自装访问器、普通对象夹具），否则读元素数据——见 `elementDataValueOf`。 */
 const itemDataValue = (item: { dataValue?: unknown }): unknown => elementDataValueOf(item);
@@ -16,9 +17,6 @@ export type HeadAndFootMargins = {
 	marginTop: number;
 	marginBottom: number;
 };
-
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
 
 export interface CommonListCore {
 	findItemIndex: (items: { dataValue?: unknown }[], count: number, value: unknown) => number;

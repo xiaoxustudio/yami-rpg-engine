@@ -1,3 +1,5 @@
+import { clamp } from '../../../utils/dom';
+
 export type GridMetrics = {
 	itemSize: number;
 	itemWidth: number;
@@ -36,9 +38,6 @@ export interface FileBodyCore {
 }
 
 export function createFileBodyCore(): FileBodyCore {
-	const clamp = (value: number, min: number, max: number): number =>
-		Math.min(Math.max(value, min), max);
-
 	const computeListGridMetrics = (cw: number, ch: number): GridMetrics => {
 		const WIDTH = 240;
 		const HEIGHT = 20;

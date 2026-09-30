@@ -1,3 +1,5 @@
+import { clamp } from '../../../utils/dom';
+
 export interface TextBoxCoreAccess {
 	getRoot: () => HTMLElement | null;
 	getInput: () => HTMLInputElement | null;
@@ -15,9 +17,6 @@ export interface TextBoxCore {
 	fitContent: () => void;
 	deleteInputContent: () => void;
 }
-
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
 
 export function createTextBoxCore(access: TextBoxCoreAccess): TextBoxCore {
 	const getRoot = (): HTMLElement | null => access.getRoot();

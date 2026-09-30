@@ -1,3 +1,5 @@
+import { clamp } from '../../../utils/dom';
+
 export type NavDirection = 'up' | 'down';
 
 export type SelectionRange = {
@@ -48,9 +50,6 @@ export interface FileNavCore {
 const ROW_HEIGHT = 20;
 
 export function createFileNavCore(): FileNavCore {
-	const clamp = (value: number, min: number, max: number): number =>
-		Math.min(Math.max(value, min), max);
-
 	const computeRelativeSelectionIndex = (
 		direction: NavDirection,
 		count: number,

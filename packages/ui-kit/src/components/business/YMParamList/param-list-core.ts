@@ -1,3 +1,5 @@
+import { clamp } from '../../../utils/dom';
+
 export type ParamDataItem = { enabled?: boolean };
 
 export type SelectionRange = {
@@ -19,9 +21,6 @@ export type ToggleResult = {
 	method: 'enable' | 'disable';
 	items: ParamDataItem[];
 };
-
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
 
 const ROW_HEIGHT = 20;
 
