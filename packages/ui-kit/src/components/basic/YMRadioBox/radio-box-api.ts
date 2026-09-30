@@ -1,6 +1,6 @@
 import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { addClass, hasClass } from '../../../utils/dom';
+import { addClass, hasClass, numberPattern } from '../../../utils/dom';
 import {
 	radioProxyMap,
 	createRadioProxy,
@@ -59,7 +59,7 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 	});
 
 	const string = box.getAttribute('value') ?? '';
-	const isNumber = /^-?\d+(?:\.\d+)?$/.test(string);
+	const isNumber = numberPattern.test(string);
 	const value = isNumber
 		? parseFloat(string)
 		: string === 'false'

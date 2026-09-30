@@ -1,5 +1,5 @@
 import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { addClass, removeClass, hasClass } from '../../../utils/dom';
+import { addClass, numberPattern, removeClass, hasClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
 export interface NavBarApi extends HTMLElement {
@@ -12,8 +12,6 @@ export interface NavBarApi extends HTMLElement {
 	on(...args: unknown[]): void;
 }
 
-const numberRegex = /^-?\d+(?:\.\d+)?$/;
-
 // nav-item 的 `dataValue`（按 `value` 属性解析出的选中值）走显式元素数据
 interface NavItemData {
 	dataValue?: unknown;
@@ -25,7 +23,7 @@ const parseValue = (element: HTMLElement & { dataValue?: unknown }): unknown => 
 	const data = navItemData(element);
 	if (data.dataValue === undefined) {
 		const string = element.getAttribute('value') ?? '';
-		const isNumber = numberRegex.test(string);
+		const isNumber = numberPattern.test(string);
 		data.dataValue = isNumber ? parseFloat(string) : string;
 	}
 	return data.dataValue;

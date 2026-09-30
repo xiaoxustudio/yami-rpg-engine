@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { numberPattern } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
 interface Props {
@@ -12,8 +13,6 @@ const root = ref<HTMLElement | null>(null);
 
 let writeEventEnabled = false;
 let selectEventEnabled = false;
-
-const numberPattern = /^-?\d+(?:\.\d+)?$/;
 
 const parseValue = (el: HTMLElement): unknown => {
 	const string = el.getAttribute('value') ?? '';
