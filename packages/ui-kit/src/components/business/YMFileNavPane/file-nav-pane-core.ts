@@ -45,6 +45,8 @@ export interface FileNavCore {
 	collectAncestorFolders: <T extends { parent?: T }>(folders: T[]) => T[];
 }
 
+const ROW_HEIGHT = 20;
+
 export function createFileNavCore(): FileNavCore {
 	const clamp = (value: number, min: number, max: number): number =>
 		Math.min(Math.max(value, min), max);
@@ -79,9 +81,16 @@ export function createFileNavCore(): FileNavCore {
 	): number | null => {
 		switch (mode) {
 			case 'active':
-				return clamp(scrollTop, index * 20 + 20 - innerHeight, index * 20);
+				return clamp(
+					scrollTop,
+					index * ROW_HEIGHT + ROW_HEIGHT - innerHeight,
+					index * ROW_HEIGHT
+				);
 			case 'middle':
-				return Math.round((index * 20 + 10 - innerHeight / 2) / 20) * 20;
+				return (
+					Math.round((index * ROW_HEIGHT + 10 - innerHeight / 2) / ROW_HEIGHT) *
+					ROW_HEIGHT
+				);
 			default:
 				return null;
 		}

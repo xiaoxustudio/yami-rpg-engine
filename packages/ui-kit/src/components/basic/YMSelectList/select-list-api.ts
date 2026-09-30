@@ -59,6 +59,8 @@ const itemData = (el: unknown): SelectItemElement => elementDataOf<SelectItemEle
 const itemDataOrUndefined = (el: unknown): SelectItemElement | undefined =>
 	el == null ? undefined : itemData(el);
 
+const ROW_HEIGHT = 20;
+
 export type SelectListApi = HTMLElement & {
 	state: 'open' | 'closed';
 	target: SelectTarget | null;
@@ -240,29 +242,29 @@ export function createSelectListApi(
 	};
 
 	const pageUp = (selectFlag: boolean): void => {
-		const scrollLines = Math.floor(box.clientHeight / 20) - 1;
+		const scrollLines = Math.floor(box.clientHeight / ROW_HEIGHT) - 1;
 		if (selectFlag) {
 			const bottom = box.scrollTop + box.clientHeight;
-			const bottomIndex = Math.floor(bottom / 20) - 1;
+			const bottomIndex = Math.floor(bottom / ROW_HEIGHT) - 1;
 			let index = getElementIndexOfSelection(Infinity);
 			index = Math.min(index, bottomIndex) - scrollLines;
 			index = Math.max(index, 0);
 			box.select(box.elements[index]);
 		}
-		box.scrollBy(0, -scrollLines * 20);
+		box.scrollBy(0, -scrollLines * ROW_HEIGHT);
 	};
 
 	const pageDown = (selectFlag: boolean): void => {
-		const scrollLines = Math.floor(box.clientHeight / 20) - 1;
+		const scrollLines = Math.floor(box.clientHeight / ROW_HEIGHT) - 1;
 		if (selectFlag) {
 			const count = box.elements.count;
-			const topIndex = Math.floor(box.scrollTop / 20);
+			const topIndex = Math.floor(box.scrollTop / ROW_HEIGHT);
 			let index = getElementIndexOfSelection(0);
 			index = Math.max(index, topIndex) + scrollLines;
 			index = Math.min(index, count - 1);
 			box.select(box.elements[index]);
 		}
-		box.scrollBy(0, +scrollLines * 20);
+		box.scrollBy(0, +scrollLines * ROW_HEIGHT);
 	};
 
 	const getElementIndexOfSelection = (defIndex: number): number => {
@@ -281,8 +283,8 @@ export function createSelectListApi(
 			if (index !== -1) {
 				const scrollTop = clamp(
 					box.scrollTop,
-					index * 20 + 20 - box.innerHeight,
-					index * 20
+					index * ROW_HEIGHT + ROW_HEIGHT - box.innerHeight,
+					index * ROW_HEIGHT
 				);
 				if (box.scrollTop !== scrollTop) {
 					box.scrollTop = scrollTop;
@@ -399,14 +401,14 @@ export function createSelectListApi(
 		const rw = r.width;
 		const count = box.elements.count;
 		const space = window.innerHeight - rb;
-		const below = space >= Math.min(count, 10) * 20;
-		const capacity = below ? Math.floor(space / 20) : Math.floor(rt / 20);
+		const below = space >= Math.min(count, 10) * ROW_HEIGHT;
+		const capacity = below ? Math.floor(space / ROW_HEIGHT) : Math.floor(rt / ROW_HEIGHT);
 		const lines = Math.min(count, capacity, MAX_LINES);
-		const top = below ? rb : rt - lines * 20;
+		const top = below ? rb : rt - lines * ROW_HEIGHT;
 		box.style.left = `${rl}px`;
 		box.style.top = `${top}px`;
 		box.style.width = `calc(${rw}px - var(--2dpx))`;
-		box.style.height = `${lines * 20}px`;
+		box.style.height = `${lines * ROW_HEIGHT}px`;
 		box.style.zIndex = `${getWindowFramesLength()}`;
 	};
 

@@ -3,6 +3,8 @@ import { elementDataValueOf } from '../../../utils/element-data';
 /** own 属性优先（组件自装访问器、普通对象夹具），否则读元素数据——见 `elementDataValueOf`。 */
 const itemDataValue = (item: { dataValue?: unknown }): unknown => elementDataValueOf(item);
 
+const ROW_HEIGHT = 20;
+
 export type RelativeDirection = 'up' | 'down';
 
 export type VisibleRange = {
@@ -60,8 +62,8 @@ export function createCommonListCore(): CommonListCore {
 		clientHeight: number,
 		count: number
 	): VisibleRange => {
-		const start = Math.min(Math.floor(scrollTop / 20), count - 1);
-		const length = Math.ceil(clientHeight / 20) + 1;
+		const start = Math.min(Math.floor(scrollTop / ROW_HEIGHT), count - 1);
+		const length = Math.ceil(clientHeight / ROW_HEIGHT) + 1;
 		const end = Math.min(start + length, count);
 		return { start, end };
 	};
@@ -74,13 +76,13 @@ export function createCommonListCore(): CommonListCore {
 	): HeadAndFootMargins => {
 		const pad = padded ? 1 : 0;
 		return {
-			marginTop: start * 20,
-			marginBottom: (count - end + pad) * 20
+			marginTop: start * ROW_HEIGHT,
+			marginBottom: (count - end + pad) * ROW_HEIGHT
 		};
 	};
 
 	const computeItemScrollTop = (scrollTop: number, index: number, clientHeight: number): number =>
-		clamp(scrollTop, index * 20 + 20 - clientHeight, index * 20);
+		clamp(scrollTop, index * ROW_HEIGHT + ROW_HEIGHT - clientHeight, index * ROW_HEIGHT);
 
 	const computeRelativeIndex = (
 		direction: RelativeDirection,

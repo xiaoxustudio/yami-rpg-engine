@@ -23,6 +23,8 @@ export type ToggleResult = {
 const clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max);
 
+const ROW_HEIGHT = 20;
+
 export interface ParamListCore {
 	resolveSelectionRange: (
 		start: number,
@@ -78,8 +80,8 @@ export function createParamListCore(): ParamListCore {
 		clientHeight: number,
 		count: number
 	): VisibleRange => {
-		const start = Math.min(Math.floor(scrollTop / 20), count - 1);
-		const length = Math.ceil(clientHeight / 20) + 1;
+		const start = Math.min(Math.floor(scrollTop / ROW_HEIGHT), count - 1);
+		const length = Math.ceil(clientHeight / ROW_HEIGHT) + 1;
 		const end = Math.min(start + length, count);
 		return { start, end };
 	};
@@ -92,18 +94,19 @@ export function createParamListCore(): ParamListCore {
 	): HeadAndFootMargins => {
 		const pad = padded ? 1 : 0;
 		return {
-			marginTop: start * 20,
-			marginBottom: (count - end + pad) * 20
+			marginTop: start * ROW_HEIGHT,
+			marginBottom: (count - end + pad) * ROW_HEIGHT
 		};
 	};
 
-	const computeFlexibleHeight = (count: number): number => Math.min(count * 20, 500) + 2;
+	const computeFlexibleHeight = (count: number): number => Math.min(count * ROW_HEIGHT, 500) + 2;
 
 	const computeSelectionScrollTop = (
 		scrollTop: number,
 		active: number,
 		innerHeight: number
-	): number => clamp(scrollTop, active * 20 + 20 - innerHeight, active * 20);
+	): number =>
+		clamp(scrollTop, active * ROW_HEIGHT + ROW_HEIGHT - innerHeight, active * ROW_HEIGHT);
 
 	const computeDragSelectIndex = (
 		y: number,
