@@ -31,15 +31,18 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 		}
 	};
 
+	const emitToggle = (value: string): void => {
+		if (!toggleEventEnabled) return;
+		const toggle = createPayloadEvent('toggle', {} as { value: string });
+		toggle.value = value;
+		box.dispatchEvent(toggle);
+	};
+
 	const open = function (): void {
 		if (!box.hasAttribute('open')) {
 			box.setAttribute('open', '');
 			apply(true);
-			if (toggleEventEnabled) {
-				const toggle = createPayloadEvent('toggle', {} as { value: string });
-				toggle.value = 'open';
-				box.dispatchEvent(toggle);
-			}
+			emitToggle('open');
 		}
 	};
 
@@ -47,11 +50,7 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 		if (box.hasAttribute('open')) {
 			box.removeAttribute('open');
 			apply(false);
-			if (toggleEventEnabled) {
-				const toggle = createPayloadEvent('toggle', {} as { value: string });
-				toggle.value = 'closed';
-				box.dispatchEvent(toggle);
-			}
+			emitToggle('closed');
 		}
 	};
 

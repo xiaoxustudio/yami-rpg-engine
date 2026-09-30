@@ -38,6 +38,12 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 	nav.writeEventEnabled = false;
 	nav.selectEventEnabled = false;
 
+	const emitValueEvent = (type: string, value: unknown): void => {
+		const event = createPayloadEvent(type, {} as { value: unknown });
+		event.value = value;
+		el.dispatchEvent(event);
+	};
+
 	nav.on = function (
 		type: string,
 		listener: (event: Event) => void,
@@ -87,9 +93,7 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 				addClass(target, 'selected');
 			}
 			if (nav.writeEventEnabled) {
-				const write = createPayloadEvent('write', {} as { value: unknown });
-				write.value = target ? value : undefined;
-				el.dispatchEvent(write);
+				emitValueEvent('write', target ? value : undefined);
 			}
 		}
 	};
@@ -109,9 +113,7 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 					const data = navItemData(element);
 					nav.write(parseValue(element));
 					if (nav.selectEventEnabled) {
-						const select = createPayloadEvent('select', {} as { value: unknown });
-						select.value = data.dataValue;
-						el.dispatchEvent(select);
+						emitValueEvent('select', data.dataValue);
 					}
 				}
 				break;

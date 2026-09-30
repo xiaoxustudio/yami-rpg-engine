@@ -20,6 +20,12 @@ const parseValue = (el: HTMLElement): unknown => {
 	return numberPattern.test(string) ? parseFloat(string) : string;
 };
 
+const emitValueEvent = (target: HTMLElement, type: string, value: unknown): void => {
+	const event = createPayloadEvent(type, {} as { value: unknown });
+	event.value = value;
+	target.dispatchEvent(event);
+};
+
 const read = (): unknown => {
 	const element = root.value;
 	if (!element) return undefined;
@@ -52,9 +58,7 @@ const write = (value: unknown): void => {
 			target.classList.add('selected');
 		}
 		if (writeEventEnabled) {
-			const writeEvent = createPayloadEvent('write', {} as { value: unknown });
-			writeEvent.value = target ? value : undefined;
-			element.dispatchEvent(writeEvent);
+			emitValueEvent(element, 'write', target ? value : undefined);
 		}
 	}
 };
@@ -93,9 +97,7 @@ const pointerdown = (event: PointerEvent): void => {
 		const value = parseValue(target);
 		write(value);
 		if (selectEventEnabled) {
-			const select = createPayloadEvent('select', {} as { value: unknown });
-			select.value = value;
-			element.dispatchEvent(select);
+			emitValueEvent(element, 'select', value);
 		}
 	}
 };
