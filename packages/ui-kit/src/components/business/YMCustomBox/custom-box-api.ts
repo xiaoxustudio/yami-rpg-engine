@@ -151,15 +151,19 @@ export function attachCustomBoxApi(
 		applyParse(state.dataValue);
 	};
 
+	const emitValueEvent = (type: string, value: unknown): void => {
+		const event = createPayloadEvent(type, {} as { value: unknown });
+		event.value = value;
+		box.dispatchEvent(event);
+	};
+
 	const write = (value: unknown): void => {
 		state.dataValue = value;
 		if (value !== null && value !== undefined) {
 			update();
 		}
 		if (state.writeEventEnabled) {
-			const writeEvent = createPayloadEvent('write', {} as { value: unknown });
-			writeEvent.value = state.dataValue;
-			box.dispatchEvent(writeEvent);
+			emitValueEvent('write', state.dataValue);
 		}
 	};
 
@@ -167,9 +171,7 @@ export function attachCustomBoxApi(
 		if (state.dataValue !== value) {
 			write(value);
 			if (state.inputEventEnabled) {
-				const inputEvent = createPayloadEvent('input', {} as { value: unknown });
-				inputEvent.value = state.dataValue;
-				box.dispatchEvent(inputEvent);
+				emitValueEvent('input', state.dataValue);
 			}
 			box.dispatchEvent(new Event('change', { bubbles: true }));
 		} else if (getType() === 'file') {

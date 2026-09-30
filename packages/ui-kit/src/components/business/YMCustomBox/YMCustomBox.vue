@@ -93,16 +93,18 @@ const update = (): void => {
 	applyParse(state.dataValue);
 };
 
+const emitValueEvent = (target: HTMLElement, type: string, value: unknown): void => {
+	const event = createPayloadEvent(type, {} as { value: unknown });
+	event.value = value;
+	target.dispatchEvent(event);
+};
+
 const write = (value: unknown): void => {
 	state.dataValue = value;
 	update();
 	const el = root.value as (HTMLElement & { [k: string]: unknown }) | null;
-	if (el) {
-		if (state.writeEventEnabled) {
-			const writeEvent = createPayloadEvent('write', {} as { value: unknown });
-			writeEvent.value = state.dataValue;
-			el.dispatchEvent(writeEvent);
-		}
+	if (el && state.writeEventEnabled) {
+		emitValueEvent(el, 'write', state.dataValue);
 	}
 	emit('write', state.dataValue);
 };
@@ -113,9 +115,7 @@ const input = (value: unknown): void => {
 		const el = root.value;
 		if (el) {
 			if (state.inputEventEnabled) {
-				const inputEvent = createPayloadEvent('input', {} as { value: unknown });
-				inputEvent.value = state.dataValue;
-				el.dispatchEvent(inputEvent);
+				emitValueEvent(el, 'input', state.dataValue);
 			}
 			dispatchChangeEvent(el);
 		}
