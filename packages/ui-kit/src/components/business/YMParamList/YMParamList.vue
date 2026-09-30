@@ -7,10 +7,12 @@ import {
 	addClass,
 	attachDoubleclick,
 	clamp,
+	cmdOrCtrlKey,
 	css,
 	dispatchChangeEvent,
 	hasClass,
 	isInContent,
+	macRedoKey,
 	read as readElement,
 	removeClass,
 	getRelativeCoords,
@@ -21,13 +23,6 @@ import { createParamListCore, type ParamDataItem } from './param-list-core';
 import { attachScrollListener, type ScrollListenerApi } from './scroll-listener';
 
 const core = createParamListCore();
-
-const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
-
-const cmdOrCtrlKey = (event: KeyboardEvent): boolean => (isMac ? event.metaKey : event.ctrlKey);
-
-const macRedoKey = (event: KeyboardEvent): boolean =>
-	isMac ? event.metaKey && event.shiftKey && event.code === 'KeyZ' : false;
 
 interface ClipboardAdapter {
 	write(type: string, data: unknown): void;

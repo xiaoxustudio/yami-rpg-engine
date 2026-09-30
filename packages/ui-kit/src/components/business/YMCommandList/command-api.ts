@@ -4,11 +4,13 @@ import {
 	addClass,
 	attachDoubleclick,
 	clamp,
+	cmdOrCtrlKey,
 	css,
 	dispatchChangeEvent,
 	dispatchUpdateEvent,
 	hasClass,
 	isInContent,
+	macRedoKey,
 	read,
 	rect,
 	removeClass,
@@ -26,13 +28,6 @@ const commandCore = createCommandCore();
 
 // 离屏建元素统一走 ui-kit 的 detached 接缝（本文件内不再直接建 DOM 节点）
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => renderDetached(vnode);
-
-const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
-
-const cmdOrCtrlKey = (event: KeyboardEvent): boolean => (isMac ? event.metaKey : event.ctrlKey);
-
-const macRedoKey = (event: KeyboardEvent): boolean =>
-	isMac ? event.metaKey && event.shiftKey && event.code === 'KeyZ' : false;
 
 const arrayAppend = (arr: unknown[], item: unknown): void => {
 	arr[arr.length] = item;

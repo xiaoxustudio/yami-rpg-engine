@@ -204,10 +204,16 @@ export const attachDoubleclick = (
 	element.addEventListener('doubleclick', listener as EventListener, options);
 };
 
+/** 运行期是否 macOS/iOS（沿用各处 `navigator.platform` 的宽口径 regex） */
+export const isMac =
+	typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+
+/** Cmd（mac）/ Ctrl（其他平台）是否按下——列表键盘处理的统一口径 */
+export const cmdOrCtrlKey = (event: KeyboardEvent): boolean =>
+	isMac ? event.metaKey : event.ctrlKey;
+
 export const macRedoKey = (e: KeyboardEvent): boolean =>
-	typeof navigator !== 'undefined' && navigator.platform.includes('Mac')
-		? e.metaKey && e.shiftKey && e.code === 'KeyZ'
-		: false;
+	isMac ? e.metaKey && e.shiftKey && e.code === 'KeyZ' : false;
 
 export const hideDragImage = (dt: DataTransfer | null): void => {
 	if (dt) dt.setDragImage(new Image(), 0, 0);
