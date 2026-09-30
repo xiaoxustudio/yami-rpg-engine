@@ -22,6 +22,7 @@
 			>
 				<img
 					id="autoTile-frameIndex-image"
+					alt=""
 					:ref="registryRef(paletteEls, 'autoTile-frameIndex-image')"
 				/>
 				<div

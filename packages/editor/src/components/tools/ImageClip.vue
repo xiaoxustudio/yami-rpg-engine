@@ -13,7 +13,7 @@
 			:ref="registryRef(imageClipEls, 'imageClip-screen')"
 			tabindex="-1"
 		>
-			<img id="imageClip-image" :ref="registryRef(imageClipEls, 'imageClip-image')" />
+			<img id="imageClip-image" alt="" :ref="registryRef(imageClipEls, 'imageClip-image')" />
 			<MarqueeArea
 				id="imageClip-marquee"
 				:ref="registryRef(imageClipEls, 'imageClip-marquee')"

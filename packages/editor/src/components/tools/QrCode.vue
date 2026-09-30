@@ -7,7 +7,9 @@
 		></template>
 
 		<div class="box">
-			<div class="box" id="qr-img-container"><img id="qr-code-img" :src="imgSrc" /></div>
+			<div class="box" id="qr-img-container">
+				<img id="qr-code-img" :src="imgSrc" alt="QR code" />
+			</div>
 			<br />
 			<div class="box" id="qr-code-content" ref="elContent">
 				<div>IP：{{ url }}</div>

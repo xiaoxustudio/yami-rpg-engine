@@ -25,7 +25,7 @@
 	<DetailBox id="fileImage-image-detail" ref="elImageDetail" open>
 		<DetailSummary>{{ t('components.fileImage-image-viewer.label') || 'Image' }}</DetailSummary>
 		<div class="box" id="fileImage-image-viewer">
-			<img id="fileImage-image" ref="elImage" />
+			<img id="fileImage-image" ref="elImage" alt="" />
 		</div>
 	</DetailBox>
 </template>
