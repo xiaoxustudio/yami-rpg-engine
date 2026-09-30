@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { relate, roundTo } from '../../../utils/dom';
 
 interface Props {
 	id?: string;
@@ -53,14 +54,7 @@ const state = {
 	} | null
 };
 
-const roundTo = (value: number, decimals: number): number => {
-	const factor = Math.pow(10, decimals);
-	return Math.round(value * factor) / factor;
-};
-
 const rectOf = (el: HTMLElement): DOMRect => el.getBoundingClientRect();
-
-const relate = (a: PointerEvent, b: PointerEvent): boolean => a.pointerId === b.pointerId;
 
 const updateHorizontalThumb = (left: number, width: number): void => {
 	const thumb = state.thumb;

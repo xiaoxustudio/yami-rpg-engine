@@ -1,4 +1,4 @@
-import { clamp } from '../../../utils/dom';
+import { clamp, roundTo } from '../../../utils/dom';
 
 export interface NumberBoxCoreAccess {
 	getRoot: () => HTMLElement | null;
@@ -61,11 +61,6 @@ const whiteList = new Set([
 	'End',
 	'NumpadEnter'
 ]);
-
-const roundTo = (value: number, decimals: number): number => {
-	const factor = Math.pow(10, decimals);
-	return Math.round(value * factor) / factor;
-};
 
 export function createNumberBoxCore(
 	access: NumberBoxCoreAccess,

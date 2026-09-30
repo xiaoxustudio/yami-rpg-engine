@@ -3,6 +3,12 @@ import { elementDataOf, elementDataValueOf } from './element-data';
 export const clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max);
 
+/** 四舍五入到指定小数位（与 editor `utils/math.ts` 同口径） */
+export const roundTo = (value: number, decimals: number): number => {
+	const factor = Math.pow(10, decimals);
+	return Math.round(value * factor) / factor;
+};
+
 /** 数字字面量正则：`value` 属性能否解析为数字的判定（与 editor `utils/regexp.ts` 同口径） */
 export const numberPattern = /^-?\d+(?:\.\d+)?$/;
 

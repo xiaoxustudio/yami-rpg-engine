@@ -1,5 +1,5 @@
 import { attachApi } from '../../../utils/attach-api';
-import { addClass, removeClass, rect } from '../../../utils/dom';
+import { addClass, relate, removeClass, rect, roundTo } from '../../../utils/dom';
 import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 
 export interface ScrollBarApiOptions {
@@ -62,13 +62,6 @@ interface ScrollBarData {
 	/** 显示状态（对应 `visible` class） */
 	visible: boolean;
 }
-
-const roundTo = (value: number, decimals: number): number => {
-	const factor = Math.pow(10, decimals);
-	return Math.round(value * factor) / factor;
-};
-
-const relate = (a: PointerEvent, b: PointerEvent): boolean => a.pointerId === b.pointerId;
 
 export function attachScrollBarApi(
 	el: HTMLElement,
