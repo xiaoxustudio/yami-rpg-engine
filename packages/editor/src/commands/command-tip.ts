@@ -31,6 +31,8 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { parseLocalTip } from '@app/localize/dom-localizer';
 import { compress } from '@app/utils/string';
 
+const ROW_HEIGHT = 20;
+
 export interface CommandSuggestionItem {
 	value: string;
 	name?: string;
@@ -428,15 +430,15 @@ CommandSuggestion.listPointerdown = function (event: PointerEvent): void {
 CommandSuggestion.listUpdate = function (_event: Event): void {
 	const MAX_LINES = 30;
 	const { x, y } = CommandSuggestion.widget;
-	const space = window.innerHeight - y - 20;
-	const below = space >= 200;
-	const capacity = below ? Math.floor(space / 20) : Math.floor(y / 20);
+	const space = window.innerHeight - y - ROW_HEIGHT;
+	const below = space >= 10 * ROW_HEIGHT;
+	const capacity = below ? Math.floor(space / ROW_HEIGHT) : Math.floor(y / ROW_HEIGHT);
 	const lines = Math.min(treeRowCount(this), capacity, MAX_LINES);
-	const top = below ? y + 20 : y - lines * 20;
+	const top = below ? y + ROW_HEIGHT : y - lines * ROW_HEIGHT;
 	if (lines !== 0) {
 		this.style.left = `${x}px`;
 		this.style.top = `${top}px`;
-		this.style.height = `${lines * 20}px`;
+		this.style.height = `${lines * ROW_HEIGHT}px`;
 		this.style.zIndex = (getWindowStore().stack.length + 1).toString();
 		show(this);
 	} else {

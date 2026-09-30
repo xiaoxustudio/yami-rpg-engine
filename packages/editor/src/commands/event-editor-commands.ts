@@ -15,6 +15,8 @@ import { Editor } from '@app/services/project/editor.ts';
 import { Data } from '@app/data/data-object.ts';
 import { clone as deepClone } from '@app/utils/object';
 
+const ROW_HEIGHT = 20;
+
 EventEditor.clearAllEventClasses = function (this: EventEditorShape, ...items: EventListItem[]) {
 	for (const item of items) {
 		setTreeItemClass(item, 'local-event', false);
@@ -152,7 +154,7 @@ EventEditor.resizeGutter = function (this: EventEditorShape) {
 	const { outerGutter, innerGutter } = this;
 	const height = outerGutter.clientHeight;
 	if (height !== 0) {
-		const length = Math.ceil(height / 20) + 1;
+		const length = Math.ceil(height / ROW_HEIGHT) + 1;
 		const nodes = innerGutter.childNodes;
 		let i = nodes.length;
 		if (i !== length) {
@@ -178,7 +180,7 @@ EventEditor.updateGutter = function (this: EventEditorShape) {
 	const { commandList } = this;
 	const { scrollTop } = commandList;
 	const { outerGutter, innerGutter } = EventEditor;
-	const start = Math.floor(scrollTop / 20) + 1;
+	const start = Math.floor(scrollTop / ROW_HEIGHT) + 1;
 	const end = commandList.elements.count + 1;
 	const nodes = innerGutter.childNodes;
 	const length = nodes.length;
@@ -192,7 +194,7 @@ EventEditor.updateGutter = function (this: EventEditorShape) {
 		}
 	}
 	const tolerance = 0.0001;
-	outerGutter.scrollTop = (scrollTop + tolerance) % 20;
+	outerGutter.scrollTop = (scrollTop + tolerance) % ROW_HEIGHT;
 };
 
 EventEditor.appendCommandsToCaches = function (this: EventEditorShape, commands: EventCommands) {

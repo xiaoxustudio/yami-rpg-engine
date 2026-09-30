@@ -20,6 +20,8 @@ import { Data } from '@app/data/data-object.ts';
 import { getEventEditorStore } from '@app/stores/event-editor';
 import type { YamiElement } from '@app/types/element-api';
 
+const ROW_HEIGHT = 20;
+
 /** 事件编辑器窗口的元素注册表——由 `Event.vue` 在模板里登记 */
 export const eventEditorEls = createElementRegistry();
 
@@ -490,7 +492,7 @@ EventEditor.initialize = function (this: EventEditorShape) {
 		value: INNER_HEIGHT
 	});
 
-	const PADDING_BOTTOM = INNER_HEIGHT - 20;
+	const PADDING_BOTTOM = INNER_HEIGHT - ROW_HEIGHT;
 	this.commandList.style.paddingBottom = `${PADDING_BOTTOM + 10}px`;
 	this.innerGutter.style.paddingBottom = `${PADDING_BOTTOM}px`;
 

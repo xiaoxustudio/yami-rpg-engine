@@ -15,6 +15,8 @@ import { hasClass, hide, on, rect, show } from '@app/utils/element-utils';
 import { createDetachedElement } from '@app/utils/dom';
 import { Fragment, h, render, type VNode } from 'vue';
 
+const ROW_HEIGHT = 20;
+
 interface TextSuggestionItem {
 	name: string;
 	icon?: string;
@@ -312,10 +314,10 @@ TextSuggestion.listUpdate = function (this: TextSuggestionList, _event: Event): 
 	const rb = r.bottom;
 	const rw = r.width;
 	const space = window.innerHeight - rb;
-	const below = space >= 200;
-	const capacity = below ? Math.floor(space / 20) : Math.floor(rt / 20);
+	const below = space >= 10 * ROW_HEIGHT;
+	const capacity = below ? Math.floor(space / ROW_HEIGHT) : Math.floor(rt / ROW_HEIGHT);
 	const lines = Math.min(treeRowCount(this), capacity, MAX_LINES);
-	const top = below ? rb : rt - lines * 20;
+	const top = below ? rb : rt - lines * ROW_HEIGHT;
 	if (
 		lines !== 0 &&
 		!(
@@ -326,7 +328,7 @@ TextSuggestion.listUpdate = function (this: TextSuggestionList, _event: Event): 
 		this.style.left = `${rl}px`;
 		this.style.top = `${top}px`;
 		this.style.width = `calc(${rw}px - var(--2dpx))`;
-		this.style.height = `${lines * 20}px`;
+		this.style.height = `${lines * ROW_HEIGHT}px`;
 		this.style.zIndex = (getWindowStore().stack.length + 1).toString();
 		show(this);
 	} else {

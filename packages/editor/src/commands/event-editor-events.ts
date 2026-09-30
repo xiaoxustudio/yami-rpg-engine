@@ -17,6 +17,8 @@ const loadCluster = () => import('@app/tools/window-cluster');
 const File = getLazyWindow('file', () => loadCluster().then((m) => m.File));
 const Inspector = getLazyWindow('inspector', () => loadCluster().then((m) => m.Inspector));
 
+const ROW_HEIGHT = 20;
+
 EventEditor.windowLocalize = function (this: EventEditorShape, _event: YamiMouseEvent) {
 	const types = EventEditor.types;
 	const getType = (key: string) => t('eventTypes.' + key);
@@ -92,14 +94,14 @@ EventEditor.windowResize = function (this: EventEditorShape, _event: YamiMouseEv
 	const { list, commandList } = EventEditor;
 	const parent = commandList.parentNode as HTMLElement;
 	const outerHeight = parent.clientHeight;
-	const innerHeight = Math.max(outerHeight - 20, 0);
+	const innerHeight = Math.max(outerHeight - ROW_HEIGHT, 0);
 	Object.defineProperty(commandList, 'innerHeight', {
 		configurable: true,
 		value: innerHeight
 	});
 
 	const { innerGutter } = EventEditor;
-	const paddingBottom = innerHeight - 20;
+	const paddingBottom = innerHeight - ROW_HEIGHT;
 	commandList.style.paddingBottom = `${paddingBottom + 10}px`;
 	innerGutter.style.paddingBottom = `${paddingBottom}px`;
 
