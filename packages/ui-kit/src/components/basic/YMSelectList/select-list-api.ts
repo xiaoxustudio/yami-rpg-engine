@@ -12,7 +12,8 @@ import {
 import {
 	commonListClearElements,
 	commonListUpdateHeadAndFoot,
-	commonListResize
+	commonListResize,
+	ROW_HEIGHT
 } from '../../../utils/common-list';
 import type { CommonListLike } from '../../../utils/common-list';
 export interface SelectItem {
@@ -58,8 +59,6 @@ const itemData = (el: unknown): SelectItemElement => elementDataOf<SelectItemEle
  */
 const itemDataOrUndefined = (el: unknown): SelectItemElement | undefined =>
 	el == null ? undefined : itemData(el);
-
-const ROW_HEIGHT = 20;
 
 export type SelectListApi = HTMLElement & {
 	state: 'open' | 'closed';

@@ -13,6 +13,8 @@
  *   ③缩进层级（`dataIndent`）由深度决定，与语言无关（缩进**宽度**另由 `computeTextIndent` 给）。
  */
 
+import { ROW_HEIGHT } from '../../../utils/common-list';
+
 /** 派生层看到的命令形状：只需要树结构 + 折叠态 + 禁用态 */
 export interface CommandRenderCommand {
 	id?: string;
@@ -159,8 +161,8 @@ export function deriveCommandRows(
 /** 可见行的缩进层级序列（给缩进线扩展点/调试用） */
 export const rowIndents = (rows: CommandRowDescriptor[]): number[] => rows.map((row) => row.indent);
 
-/** 命令列表行高（px）：与 CSS 一致；翻页/滚动/命中定位都用它 */
-export const ROW_HEIGHT = 20;
+/** 命令列表行高（px）：与 CSS 一致；翻页/滚动/命中定位都用它（统一出处 utils/common-list） */
+export { ROW_HEIGHT };
 
 /** 一次翻页滚动的行数（`innerHeight / 20 - 1`，下限 0） */
 export const pageScrollLines = (viewportHeight: number): number =>

@@ -1,10 +1,9 @@
 import { elementDataValueOf } from '../../../utils/element-data';
 import { clamp } from '../../../utils/dom';
+import { ROW_HEIGHT } from '../../../utils/common-list';
 
 /** own 属性优先（组件自装访问器、普通对象夹具），否则读元素数据——见 `elementDataValueOf`。 */
 const itemDataValue = (item: { dataValue?: unknown }): unknown => elementDataValueOf(item);
-
-const ROW_HEIGHT = 20;
 
 export type RelativeDirection = 'up' | 'down';
 

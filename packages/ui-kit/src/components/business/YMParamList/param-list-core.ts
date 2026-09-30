@@ -1,4 +1,5 @@
 import { clamp } from '../../../utils/dom';
+import { ROW_HEIGHT } from '../../../utils/common-list';
 
 export type ParamDataItem = { enabled?: boolean };
 
@@ -21,8 +22,6 @@ export type ToggleResult = {
 	method: 'enable' | 'disable';
 	items: ParamDataItem[];
 };
-
-const ROW_HEIGHT = 20;
 
 export interface ParamListCore {
 	resolveSelectionRange: (

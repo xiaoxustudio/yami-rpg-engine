@@ -9,6 +9,7 @@
  * （文件路径可能重复出现，且同一对象跨多次派生必须拿到同一个 key ⇒ Vue 只移动/复用行）。
  */
 import type { FileBodyCore, GridMetrics } from './file-body-core';
+import { ROW_HEIGHT } from '../../../utils/common-list';
 
 export type FileBodyViewMode = 'list' | 'small' | 'medium' | 'large' | 'huge';
 
@@ -138,8 +139,8 @@ export const FILE_GRID_PADDING = 4;
 /** 网格单元之间的间隙（原 `updateContentSize` 的字面量 2） */
 export const FILE_GRID_GAP = 2;
 
-/** 列表视图的固定行高（原行定位的字面量 20） */
-export const FILE_LIST_ROW_HEIGHT = 20;
+/** 列表视图的固定行高（统一出处 utils/common-list） */
+export const FILE_LIST_ROW_HEIGHT = ROW_HEIGHT;
 
 /** 行在网格中的定位（纯：按视图模式/列数/单元尺寸推导，不读写任何状态） */
 export const fileRowOffset = (

@@ -1,4 +1,5 @@
 import { clamp } from '../../../utils/dom';
+import { ROW_HEIGHT } from '../../../utils/common-list';
 
 export type NavDirection = 'up' | 'down';
 
@@ -46,8 +47,6 @@ export interface FileNavCore {
 	isForbiddenFileNameChar: (text: string) => boolean;
 	collectAncestorFolders: <T extends { parent?: T }>(folders: T[]) => T[];
 }
-
-const ROW_HEIGHT = 20;
 
 export function createFileNavCore(): FileNavCore {
 	const computeRelativeSelectionIndex = (

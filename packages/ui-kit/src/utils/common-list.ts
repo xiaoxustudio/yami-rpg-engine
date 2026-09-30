@@ -29,7 +29,7 @@ export interface CommonListLike {
 const versionOf = (el: unknown): { versionId?: number } =>
 	elementDataOf<{ versionId?: number }>(el);
 
-const ROW_HEIGHT = 20;
+export const ROW_HEIGHT = 20;
 
 export const commonListClearElements = (list: CommonListLike, start: number): void => {
 	let i = start;

@@ -20,8 +20,9 @@ import {
 } from 'vue';
 import type { NodeElement, TreeItem } from './tree-core';
 import { elementDataOf } from '../../../utils/element-data';
+import { ROW_HEIGHT } from '../../../utils/common-list';
 
-export const ROW_HEIGHT = 20;
+export { ROW_HEIGHT };
 
 export interface TreeRenderRow {
 	key: string;
