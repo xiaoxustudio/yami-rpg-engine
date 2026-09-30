@@ -33,12 +33,7 @@ import { addClass, hasClass, rect, removeClass, focusWithOptions } from '../../.
 import { elementDataOf } from '../../../utils/element-data';
 import YMTextBox from '../../basic/YMTextBox/YMTextBox.vue';
 import YMSliderBox from '../../basic/YMSliderBox/YMSliderBox.vue';
-
-interface FileItem {
-	name: string;
-	parent?: FileItem;
-	subfolders: FileItem[];
-}
+import { createFileHeadPaneCore, type AddressNode, type FileItem } from './file-head-pane-core';
 
 interface MenuOptions {
 	x: number;
@@ -104,15 +99,7 @@ const viewEl = ref<{
 	read(): number;
 } | null>(null);
 
-interface AddressNode {
-	id: number;
-	type: 'folder' | 'arrow' | 'link' | 'text';
-	text?: string;
-	file?: FileItem;
-	folders?: FileItem[];
-	target?: FileItem;
-	disabled?: boolean;
-}
+const core = createFileHeadPaneCore();
 
 const addressNodes = ref<AddressNode[]>([]);
 let addressSeq = 0;
@@ -145,63 +132,13 @@ const AddressPart = defineComponent({
 
 function updateAddress() {
 	const { browser, nav, body } = props.links;
-	const folders = nav.selections;
-	const nodes: AddressNode[] = [];
-	switch (browser.display) {
-		case 'normal':
-			if (folders.length === 1) {
-				let folder = folders[0];
-				const chain: AddressNode[] = [];
-				while (true) {
-					chain.push({ id: ++addressSeq, type: 'folder', text: folder.name });
-					const { parent } = folder;
-					if (props.isFolderItem(parent)) {
-						chain.push({
-							id: ++addressSeq,
-							type: 'arrow',
-							folders: parent!.subfolders
-						});
-						folder = parent!;
-					} else {
-						break;
-					}
-				}
-				const root = folder;
-				for (const node of chain) {
-					if (node.type === 'folder') {
-						node.file = root;
-					} else {
-						node.target = root;
-					}
-				}
-				chain[0].disabled = true;
-				nodes.push(...chain.reverse());
-			} else if (folders.length > 1) {
-				const length = folders.length;
-				for (let i = 0; i < length; i++) {
-					const folder = folders[i];
-					nodes.push({
-						id: ++addressSeq,
-						type: 'folder',
-						text: folder.name,
-						file: folder
-					});
-					if (folders[i + 1]) {
-						nodes.push({ id: ++addressSeq, type: 'link', text: '&' });
-					}
-				}
-			}
-			break;
-		case 'search': {
-			nodes.push({
-				id: ++addressSeq,
-				type: 'text',
-				text: `${body.elements.count} 个文件`
-			});
-			break;
-		}
-	}
-	addressNodes.value = nodes;
+	addressNodes.value = core.buildAddressNodes({
+		display: browser.display,
+		selections: nav.selections,
+		isFolderItem: props.isFolderItem,
+		nextId: () => ++addressSeq,
+		searchCount: body.elements.count
+	});
 }
 
 function pointerdown(event: PointerEvent) {
