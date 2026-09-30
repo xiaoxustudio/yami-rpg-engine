@@ -12,12 +12,11 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { parseLocalTip } from '@app/localize/dom-localizer';
 import { Menu } from '@app/components/menu-list.ts';
 import type { YamiMouseEvent } from '@app/types/editor-event';
+import { ROW_HEIGHT } from '@app/constants/editor.ts';
 
 const loadCluster = () => import('@app/tools/window-cluster');
 const File = getLazyWindow('file', () => loadCluster().then((m) => m.File));
 const Inspector = getLazyWindow('inspector', () => loadCluster().then((m) => m.Inspector));
-
-const ROW_HEIGHT = 20;
 
 EventEditor.windowLocalize = function (this: EventEditorShape, _event: YamiMouseEvent) {
 	const types = EventEditor.types;

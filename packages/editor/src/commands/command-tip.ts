@@ -30,8 +30,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { parseLocalTip } from '@app/localize/dom-localizer';
 import { compress } from '@app/utils/string';
-
-const ROW_HEIGHT = 20;
+import { ROW_HEIGHT } from '@app/constants/editor.ts';
 
 export interface CommandSuggestionItem {
 	value: string;

@@ -14,8 +14,7 @@ import { Enum } from '@app/enum/enum-window.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { Data } from '@app/data/data-object.ts';
 import { clone as deepClone } from '@app/utils/object';
-
-const ROW_HEIGHT = 20;
+import { ROW_HEIGHT } from '@app/constants/editor.ts';
 
 EventEditor.clearAllEventClasses = function (this: EventEditorShape, ...items: EventListItem[]) {
 	for (const item of items) {

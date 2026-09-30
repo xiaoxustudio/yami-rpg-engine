@@ -14,8 +14,7 @@ import { getWindowStore } from '@app/stores/window';
 import { hasClass, hide, on, rect, show } from '@app/utils/element-utils';
 import { createDetachedElement } from '@app/utils/dom';
 import { Fragment, h, render, type VNode } from 'vue';
-
-const ROW_HEIGHT = 20;
+import { ROW_HEIGHT } from '@app/constants/editor.ts';
 
 interface TextSuggestionItem {
 	name: string;

@@ -4,6 +4,9 @@
 export const ANIM_GRID_X = 16;
 export const ANIM_GRID_Y = 20;
 
+// 列表类提示（命令/文本）与事件编辑器行高（px，与 CSS 一致）
+export const ROW_HEIGHT = 20;
+
 // 资源节点 ping 阈值（ms）
 export const PING_SLOW_MS = 500;
 export const PING_WARN_MS = 1000;

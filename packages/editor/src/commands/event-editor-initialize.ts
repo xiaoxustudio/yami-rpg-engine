@@ -19,8 +19,7 @@ import { TreeList } from '@app/components/tree-list.ts';
 import { Data } from '@app/data/data-object.ts';
 import { getEventEditorStore } from '@app/stores/event-editor';
 import type { YamiElement } from '@app/types/element-api';
-
-const ROW_HEIGHT = 20;
+import { ROW_HEIGHT } from '@app/constants/editor.ts';
 
 /** 事件编辑器窗口的元素注册表——由 `Event.vue` 在模板里登记 */
 export const eventEditorEls = createElementRegistry();
