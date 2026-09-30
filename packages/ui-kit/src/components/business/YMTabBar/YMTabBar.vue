@@ -198,6 +198,26 @@ const insert = (item: TabItem): void => {
 	}
 };
 
+/**
+ * 三条关闭路径（单关 / 关其他 / 关右侧）共用的 `closed` 事件派发：构造 payload、
+ * `dispatchEvent`、再 `emit`。原先三处各抄一遍，字段一旦漂移就会不一致。
+ */
+const emitClosed = (closedItems: TabItem[], lastValue: TabItem | undefined): void => {
+	const el = root.value as TabBarElement | null;
+	if (!el?.closedEventEnabled) return;
+	const closedEvent = createPayloadEvent(
+		'closed',
+		{} as {
+			closedItems: TabItem[];
+			lastValue: TabItem | undefined;
+		}
+	);
+	closedEvent.closedItems = closedItems;
+	closedEvent.lastValue = lastValue;
+	el.dispatchEvent(closedEvent);
+	emit('closed', closedEvent.closedItems, closedEvent.lastValue);
+};
+
 const close = (item: TabItem): void => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return;
@@ -214,19 +234,7 @@ const close = (item: TabItem): void => {
 				write(value);
 			}
 		}
-		if (el.closedEventEnabled) {
-			const closedEvent = createPayloadEvent(
-				'closed',
-				{} as {
-					closedItems: TabItem[];
-					lastValue: TabItem | undefined;
-				}
-			);
-			closedEvent.closedItems = [item];
-			closedEvent.lastValue = value;
-			el.dispatchEvent(closedEvent);
-			emit('closed', closedEvent.closedItems, closedEvent.lastValue);
-		}
+		emitClosed([item], value);
 	}
 };
 
@@ -248,19 +256,7 @@ const closeOtherTabs = (item: TabItem): void => {
 	const closedItems = core.collectOtherTabs(items, item, el.dirItem);
 	if (closedItems.length !== 0) {
 		update();
-		if (el.closedEventEnabled) {
-			const closedEvent = createPayloadEvent(
-				'closed',
-				{} as {
-					closedItems: TabItem[];
-					lastValue: TabItem | undefined;
-				}
-			);
-			closedEvent.closedItems = closedItems;
-			closedEvent.lastValue = value;
-			el.dispatchEvent(closedEvent);
-			emit('closed', closedEvent.closedItems, closedEvent.lastValue);
-		}
+		emitClosed(closedItems, value);
 	}
 };
 
@@ -272,19 +268,7 @@ const closeTabsToTheRight = (item: TabItem): void => {
 	const closedItems = core.collectTabsToTheRight(items, item, el.dirItem);
 	if (closedItems.length !== 0) {
 		update();
-		if (el.closedEventEnabled) {
-			const closedEvent = createPayloadEvent(
-				'closed',
-				{} as {
-					closedItems: TabItem[];
-					lastValue: TabItem | undefined;
-				}
-			);
-			closedEvent.closedItems = closedItems;
-			closedEvent.lastValue = value;
-			el.dispatchEvent(closedEvent);
-			emit('closed', closedEvent.closedItems, closedEvent.lastValue);
-		}
+		emitClosed(closedItems, value);
 	}
 };
 
