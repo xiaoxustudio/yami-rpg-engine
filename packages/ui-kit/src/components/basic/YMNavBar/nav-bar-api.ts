@@ -1,5 +1,5 @@
 import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { addClass, numberPattern, removeClass, hasClass } from '../../../utils/dom';
+import { addClass, parseNumberOrString, removeClass, hasClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
 export interface NavBarApi extends HTMLElement {
@@ -23,8 +23,7 @@ const parseValue = (element: HTMLElement & { dataValue?: unknown }): unknown => 
 	const data = navItemData(element);
 	if (data.dataValue === undefined) {
 		const string = element.getAttribute('value') ?? '';
-		const isNumber = numberPattern.test(string);
-		data.dataValue = isNumber ? parseFloat(string) : string;
+		data.dataValue = parseNumberOrString(string);
 	}
 	return data.dataValue;
 };

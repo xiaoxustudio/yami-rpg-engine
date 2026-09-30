@@ -6,6 +6,10 @@ export const clamp = (value: number, min: number, max: number): number =>
 /** 数字字面量正则：`value` 属性能否解析为数字的判定（与 editor `utils/regexp.ts` 同口径） */
 export const numberPattern = /^-?\d+(?:\.\d+)?$/;
 
+/** 把 `value` 属性文本解析成 number（数字字面量）或原字符串 */
+export const parseNumberOrString = (string: string): unknown =>
+	numberPattern.test(string) ? parseFloat(string) : string;
+
 export const focusWithOptions = (el: Element | null | undefined, options?: FocusOptions): void => {
 	// 第 124 轮：`unknown` 跳板换成**交叉断言**（手法库第 6 条：保留对象类型、只补缺口那一支）——
 	// `Element & { focus(…) }` 与 `Element` 可比，所以 `tsc` 会**真的检查**这次收窄；

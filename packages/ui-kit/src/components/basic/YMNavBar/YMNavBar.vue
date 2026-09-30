@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { numberPattern } from '../../../utils/dom';
+import { parseNumberOrString } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
 interface Props {
@@ -14,10 +14,8 @@ const root = ref<HTMLElement | null>(null);
 let writeEventEnabled = false;
 let selectEventEnabled = false;
 
-const parseValue = (el: HTMLElement): unknown => {
-	const string = el.getAttribute('value') ?? '';
-	return numberPattern.test(string) ? parseFloat(string) : string;
-};
+const parseValue = (el: HTMLElement): unknown =>
+	parseNumberOrString(el.getAttribute('value') ?? '');
 
 const emitValueEvent = (target: HTMLElement, type: string, value: unknown): void => {
 	const event = createPayloadEvent(type, {} as { value: unknown });
