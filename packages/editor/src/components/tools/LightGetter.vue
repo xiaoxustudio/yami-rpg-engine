@@ -36,7 +36,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { composableEls } from '@app/composables/element-registry';
-import { registryElement, registryRef, registerElement } from '@app/utils/element-registry';
+import { getFormFields, setFormFields } from '@app/composables/form-fields';
+import { registryRef, registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { LightGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
 import {
@@ -55,30 +56,10 @@ const { t } = useI18n();
 const lightGetter = useLightGetterWindow();
 const form = lightGetter.form;
 
-const setForm = (data: Partial<PresetGetterForm>): void => {
-	Object.assign(form, data);
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		if (!(field in data)) continue;
-		const control = registryElement<HTMLElement & { write?: (value: unknown) => void }>(
-			composableEls,
-			id
-		);
-		if (control && typeof control.write === 'function') {
-			control.write(data[field] as never);
-		}
-	}
-};
+const setForm = (data: Partial<PresetGetterForm>): void =>
+	setFormFields<PresetGetterForm>(form, data, FIELD_BY_ID);
 
-const getForm = (): PresetGetterForm => {
-	const data = { ...form } as PresetGetterForm;
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = registryElement<HTMLElement & { read?: () => unknown }>(composableEls, id);
-		if (control && typeof control.read === 'function') {
-			data[field] = control.read() as never;
-		}
-	}
-	return data;
-};
+const getForm = (): PresetGetterForm => getFormFields<PresetGetterForm>(form, FIELD_BY_ID);
 
 const FIELD_BY_ID: Record<string, keyof PresetGetterForm> = {
 	'lightGetter-type': 'type',

@@ -33,8 +33,9 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { composableEls } from '@app/composables/element-registry';
+import { getFormFields, setFormFields } from '@app/composables/form-fields';
 import { sceneEls } from '@app/scene/element-registry';
-import { registryElement, registerElement, registryRef } from '@app/utils/element-registry';
+import { registerElement, registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { SceneShift, type SceneShiftForm } from '@app/scene/move-scene.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -46,30 +47,10 @@ const { t } = useI18n();
 
 const form = reactive<SceneShiftForm>({ x: 0, y: 0 });
 
-const setForm = (data: Partial<SceneShiftForm>): void => {
-	Object.assign(form, data);
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		if (!(field in data)) continue;
-		const control = registryElement<HTMLElement & { write?: (value: unknown) => void }>(
-			composableEls,
-			id
-		);
-		if (control && typeof control.write === 'function') {
-			control.write(data[field] as never);
-		}
-	}
-};
+const setForm = (data: Partial<SceneShiftForm>): void =>
+	setFormFields<SceneShiftForm>(form, data, FIELD_BY_ID);
 
-const getForm = (): SceneShiftForm => {
-	const data = { ...form } as SceneShiftForm;
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = registryElement<HTMLElement & { read?: () => unknown }>(composableEls, id);
-		if (control && typeof control.read === 'function') {
-			data[field] = control.read() as never;
-		}
-	}
-	return data;
-};
+const getForm = (): SceneShiftForm => getFormFields<SceneShiftForm>(form, FIELD_BY_ID);
 
 const FIELD_BY_ID: Record<string, keyof SceneShiftForm> = {
 	'scene-shift-x': 'x',

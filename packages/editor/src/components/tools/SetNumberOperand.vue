@@ -284,7 +284,8 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { composableEls } from '@app/composables/element-registry';
-import { registerElement, registryElement } from '@app/utils/element-registry';
+import { getFormFields, setFormFields } from '@app/composables/form-fields';
+import { registerElement } from '@app/utils/element-registry';
 import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema';
 import type { NumberOperandForm } from '@app/composables/useNumberOperandSchema';
 import {
@@ -342,30 +343,10 @@ const form = reactive<NumberOperandForm>({
 	otherTeamId: ''
 });
 
-const setForm = (data: Partial<NumberOperandForm>): void => {
-	Object.assign(form, data);
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		if (!(field in data)) continue;
-		const control = registryElement<HTMLElement & { write?: (value: unknown) => void }>(
-			composableEls,
-			id
-		);
-		if (control && typeof control.write === 'function') {
-			control.write(data[field] as never);
-		}
-	}
-};
+const setForm = (data: Partial<NumberOperandForm>): void =>
+	setFormFields<NumberOperandForm>(form, data, FIELD_BY_ID);
 
-const getForm = (): NumberOperandForm => {
-	const data = { ...form } as NumberOperandForm;
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = registryElement<HTMLElement & { read?: () => unknown }>(composableEls, id);
-		if (control && typeof control.read === 'function') {
-			data[field] = control.read() as never;
-		}
-	}
-	return data;
-};
+const getForm = (): NumberOperandForm => getFormFields<NumberOperandForm>(form, FIELD_BY_ID);
 
 const FIELD_BY_ID: Record<string, keyof NumberOperandForm> = {
 	'setNumber-operand-operation': 'operation',
