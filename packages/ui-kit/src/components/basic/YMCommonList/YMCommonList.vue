@@ -286,6 +286,25 @@ const pointerdown = (event: PointerEvent): void => {
 	}
 };
 
+/** 右键 `popup` 事件派发：命中项与非命中项两条分支只有 `value` 不同，共用这一处 */
+const emitPopup = (value: unknown, clientX: number, clientY: number): void => {
+	const el = root.value;
+	if (!el) return;
+	const popup = createPayloadEvent(
+		'popup',
+		{} as {
+			value: unknown;
+			clientX: number;
+			clientY: number;
+		}
+	);
+	popup.value = value;
+	popup.clientX = clientX;
+	popup.clientY = clientY;
+	el.dispatchEvent(popup);
+	emit('popup', popup.value, popup.clientX, popup.clientY);
+};
+
 const pointerup = (event: PointerEvent): void => {
 	const el = root.value;
 	if (!el) return;
@@ -294,33 +313,9 @@ const pointerup = (event: PointerEvent): void => {
 			if (popupEventEnabled && document.activeElement === el) {
 				const element = seek(event.target as HTMLElement, '.common-item');
 				if (element && hasClass(element, 'common-item') && hasClass(element, 'selected')) {
-					const popup = createPayloadEvent(
-						'popup',
-						{} as {
-							value: unknown;
-							clientX: number;
-							clientY: number;
-						}
-					);
-					popup.value = itemData(element).dataValue;
-					popup.clientX = event.clientX;
-					popup.clientY = event.clientY;
-					el.dispatchEvent(popup);
-					emit('popup', popup.value, popup.clientX, popup.clientY);
+					emitPopup(itemData(element).dataValue, event.clientX, event.clientY);
 				} else {
-					const popup = createPayloadEvent(
-						'popup',
-						{} as {
-							value: unknown;
-							clientX: number;
-							clientY: number;
-						}
-					);
-					popup.value = null;
-					popup.clientX = event.clientX;
-					popup.clientY = event.clientY;
-					el.dispatchEvent(popup);
-					emit('popup', popup.value, popup.clientX, popup.clientY);
+					emitPopup(null, event.clientX, event.clientY);
 				}
 			}
 			break;
