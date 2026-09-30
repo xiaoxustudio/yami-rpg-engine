@@ -29,6 +29,8 @@ export interface CommonListLike {
 const versionOf = (el: unknown): { versionId?: number } =>
 	elementDataOf<{ versionId?: number }>(el);
 
+const ROW_HEIGHT = 20;
+
 export const commonListClearElements = (list: CommonListLike, start: number): void => {
 	let i = start;
 	while (list.elements[i] !== undefined) {
@@ -59,8 +61,8 @@ export const commonListUpdateHeadAndFoot = (list: HeadAndFootListLike): void => 
 	if (count !== 0) {
 		// `padded` 不再是元素上的 expando，统一从列表配置读
 		const pad = getListConfig(list).padded ? 1 : 0;
-		const mt = start * 20;
-		const mb = (count - end + pad) * 20;
+		const mt = start * ROW_HEIGHT;
+		const mb = (count - end + pad) * ROW_HEIGHT;
 		list.elements.head = list.elements[start];
 		list.elements.head!.style.marginTop = `${mt}px`;
 		list.elements.foot = list.elements[end - 1];
@@ -78,8 +80,8 @@ export const commonListResize = (list: CommonListLike): void => {
 		el.textContent = '';
 		return;
 	}
-	const start = Math.min(Math.floor(st / 20), count - 1);
-	const length = Math.ceil(ch / 20) + 1;
+	const start = Math.min(Math.floor(st / ROW_HEIGHT), count - 1);
+	const length = Math.ceil(ch / ROW_HEIGHT) + 1;
 	const end = Math.min(start + length, count);
 	if (list.elements.start !== start || list.elements.end !== end) {
 		list.elements.start = start;
