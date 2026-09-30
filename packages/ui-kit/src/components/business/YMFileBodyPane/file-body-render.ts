@@ -160,17 +160,43 @@ export interface FileBodyWindowRowInput<T extends object> {
 	nameOf: (item: T) => string;
 }
 
-export interface FileBodyWindowRow {
+/** 单个可见行的模板所需数据（与 DOM 双写，便于逐项核对） */
+export interface FileBodyRowDescriptor {
 	/** 稳定行 key（`fileRowKeyOf` 发号） */
 	key: string;
-	/** 全局行下标 */
+	/** 全局行下标（在全部行中的位置） */
 	index: number;
 	/** 显示名（由消费方注入：文件取 `basename`、文件夹取 `name`） */
 	name: string;
 	isFolder: boolean;
+	/** 该行当前是否被选中（原实现通过 `selected` 类表达） */
 	selected: boolean;
+	/** 定位样式（原实现直接写 `element.style`） */
 	style: { left: string; top: string };
 }
+
+/** 可见行的数据模型（供 `v-for` 换源前的等价性验证与模板化使用） */
+export interface FileBodyRowModel {
+	/** 可见窗口起点（含） */
+	start: number;
+	/** 可见窗口终点（不含） */
+	end: number;
+	/** 每行（列表视图）或每行单元（平铺视图）数量 */
+	countPerLine: number;
+	/** 当前视图模式 */
+	viewMode: string;
+	/** 可见行的稳定 key，顺序与 DOM 中的行一致 */
+	keys: string[];
+	/** 模板渲染一行所需的全部数据（与 DOM 双写） */
+	rows: FileBodyRowDescriptor[];
+}
+
+/** `getRowModel` 用的只读副本（避免调用方改到内部状态） */
+export const cloneRowModel = (model: FileBodyRowModel): FileBodyRowModel => ({
+	...model,
+	keys: [...model.keys],
+	rows: model.rows.map((row) => ({ ...row, style: { ...row.style } }))
+});
 
 /**
  * 可见窗口 `[start, end)` → 行描述（纯推导：key/定位/名称/文件夹标记/选中态）。
@@ -179,7 +205,7 @@ export interface FileBodyWindowRow {
  */
 export const buildFileBodyWindowRows = <T extends object>(
 	input: FileBodyWindowRowInput<T>
-): FileBodyWindowRow[] => {
+): FileBodyRowDescriptor[] => {
 	const {
 		files,
 		start,
@@ -192,7 +218,7 @@ export const buildFileBodyWindowRows = <T extends object>(
 		isSelected,
 		nameOf
 	} = input;
-	const rows: FileBodyWindowRow[] = [];
+	const rows: FileBodyRowDescriptor[] = [];
 	for (let i = start; i < end; i++) {
 		const file = files[i];
 		if (file === undefined) continue;

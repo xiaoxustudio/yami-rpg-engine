@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createFileBodyCore } from '../file-body-core';
 import {
 	buildFileBodyWindowRows,
+	cloneRowModel,
 	computeViewMetrics,
 	deriveFileRows,
 	FILE_GRID_GAP,
@@ -9,6 +10,7 @@ import {
 	FILE_LIST_ROW_HEIGHT,
 	fileRowKeyOf,
 	fileRowOffset,
+	type FileBodyRowModel,
 	TILE_SIZE_BY_VIEW_MODE,
 	viewModeOfIndex,
 	VIEW_MODE_BY_INDEX
@@ -178,5 +180,31 @@ describe('file-body-render（派生层：行定位与窗口行）', () => {
 			nameOf: (item) => item.basename
 		});
 		expect(rows.map((row) => row.index)).toEqual([2]);
+	});
+
+	it('cloneRowModel：返回副本（keys/rows/style 均独立，改副本不影响原模型）', () => {
+		const model: FileBodyRowModel = {
+			start: 1,
+			end: 2,
+			countPerLine: 2,
+			viewMode: 'list',
+			keys: ['a'],
+			rows: [
+				{
+					key: 'a',
+					index: 1,
+					name: 'a',
+					isFolder: false,
+					selected: false,
+					style: { left: '1px', top: '2px' }
+				}
+			]
+		};
+		const copy = cloneRowModel(model);
+		expect(copy).toEqual(model);
+		copy.keys.push('b');
+		copy.rows[0].style.left = '9px';
+		expect(model.keys).toEqual(['a']);
+		expect(model.rows[0].style.left).toBe('1px');
 	});
 });

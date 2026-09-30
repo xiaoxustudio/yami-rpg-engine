@@ -46,10 +46,13 @@ import { renderDetached } from '../../../utils/detached';
 import { createFileBodyCore, type GridMetrics } from './file-body-core';
 import {
 	buildFileBodyWindowRows,
+	cloneRowModel,
 	computeViewMetrics,
 	FILE_GRID_GAP,
 	FILE_GRID_PADDING,
 	VIEW_MODE_BY_INDEX,
+	type FileBodyRowDescriptor,
+	type FileBodyRowModel,
 	type FileBodyViewMode
 } from './file-body-render';
 
@@ -525,35 +528,7 @@ function updateFiles(): void {
 	resize();
 }
 
-/** 单个可见行的**模板所需数据**（与 DOM 双写，便于逐项核对） */
-export interface FileBodyRowDescriptor {
-	key: string;
-	/** 全局行下标（在全部行中的位置） */
-	index: number;
-	/** 显示名（原 `updateFileElement` 取 `file.basename`） */
-	name: string;
-	isFolder: boolean;
-	/** 该行当前是否被选中（原实现通过 `selected` 类表达） */
-	selected: boolean;
-	/** 定位样式（原实现直接写 `element.style`） */
-	style: { left: string; top: string };
-}
-
-/** 可见行的**数据模型**（供 `v-for` 换源前的等价性验证与后续模板化使用） */
-export interface FileBodyRowModel {
-	/** 可见窗口起点（含） */
-	start: number;
-	/** 可见窗口终点（不含） */
-	end: number;
-	/** 每行（列表视图）或每行单元（平铺视图）数量 */
-	countPerLine: number;
-	/** 当前视图模式 */
-	viewMode: string;
-	/** 可见行的稳定 key，顺序与 DOM 中的行一致 */
-	keys: string[];
-	/** 模板渲染一行所需的全部数据（与 DOM 双写） */
-	rows: FileBodyRowDescriptor[];
-}
+export type { FileBodyRowDescriptor, FileBodyRowModel } from './file-body-render';
 
 const rowModel = shallowRef<FileBodyRowModel>({
 	start: 0,
@@ -647,11 +622,7 @@ function resize(): void {
 
 /** 读取可见行模型（只读副本，避免调用方改到内部状态） */
 function getRowModel(): FileBodyRowModel {
-	return {
-		...rowModel.value,
-		keys: [...rowModel.value.keys],
-		rows: rowModel.value.rows.map((row) => ({ ...row, style: { ...row.style } }))
-	};
+	return cloneRowModel(rowModel.value);
 }
 
 /**
