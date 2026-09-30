@@ -11,7 +11,7 @@ import {
 } from 'vue';
 import { createTreeListApi, type TreeListHost } from './tree-api';
 import type { TreeItem } from './tree-core';
-import type { TreeRenderRow, TreeRenderState } from './tree-render';
+import { ROW_HEIGHT, type TreeRenderRow, type TreeRenderState } from './tree-render';
 
 interface Props {
 	id?: string;
@@ -120,7 +120,10 @@ onBeforeUnmount(() => {
 <template>
 	<div ref="root" class="tree-list" :id="props.id" tabindex="0">
 		<template v-if="state !== null">
-			<div class="scroll-spacer top" :style="{ height: state.start.value * 20 + 'px' }" />
+			<div
+				class="scroll-spacer top"
+				:style="{ height: state.start.value * ROW_HEIGHT + 'px' }"
+			/>
 			<div
 				v-for="row in windowRows"
 				:key="row.key"
@@ -149,7 +152,7 @@ onBeforeUnmount(() => {
 			</div>
 			<div
 				class="scroll-spacer bottom"
-				:style="{ height: (state.rows.value.length - state.end.value) * 20 + 'px' }"
+				:style="{ height: (state.rows.value.length - state.end.value) * ROW_HEIGHT + 'px' }"
 			/>
 		</template>
 	</div>

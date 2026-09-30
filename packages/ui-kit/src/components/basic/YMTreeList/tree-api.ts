@@ -1165,13 +1165,15 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 							case 'active':
 								scrollTop = clamp(
 									this.scrollTop,
-									i * 20 + 20 - this.innerHeight,
-									i * 20
+									i * ROW_HEIGHT + ROW_HEIGHT - this.innerHeight,
+									i * ROW_HEIGHT
 								);
 								break;
 							case 'middle':
 								scrollTop =
-									Math.round((i * 20 + 10 - this.innerHeight / 2) / 20) * 20;
+									Math.round(
+										(i * ROW_HEIGHT + 10 - this.innerHeight / 2) / ROW_HEIGHT
+									) * ROW_HEIGHT;
 								break;
 							default:
 								return;
@@ -1211,31 +1213,31 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 		},
 
 		pageUp: function (this: TreeListHost, select: boolean): void {
-			const scrollLines = Math.floor(this.clientHeight / 20) - 1;
+			const scrollLines = Math.floor(this.clientHeight / ROW_HEIGHT) - 1;
 			if (select) {
 				const bottom = this.scrollTop + this.clientHeight;
-				const bottomIndex = Math.floor(bottom / 20) - 1;
+				const bottomIndex = Math.floor(bottom / ROW_HEIGHT) - 1;
 				let index = this.getElementIndexOfSelection(Infinity);
 				index = Math.min(index, bottomIndex) - scrollLines;
 				index = Math.max(index, 0);
 				this.select(this.rowItemAt(index));
 			}
 			// 等价于 scrollBy(0, -delta) 且 jsdom 也支持（jsdom 未实现 Element.scrollBy）
-			this.scrollTop -= scrollLines * 20;
+			this.scrollTop -= scrollLines * ROW_HEIGHT;
 		},
 
 		pageDown: function (this: TreeListHost, select: boolean): void {
-			const scrollLines = Math.floor(this.clientHeight / 20) - 1;
+			const scrollLines = Math.floor(this.clientHeight / ROW_HEIGHT) - 1;
 			if (select) {
 				const count = this.rowCount();
-				const topIndex = Math.floor(this.scrollTop / 20);
+				const topIndex = Math.floor(this.scrollTop / ROW_HEIGHT);
 				let index = this.getElementIndexOfSelection(0);
 				index = Math.max(index, topIndex) + scrollLines;
 				index = Math.min(index, count - 1);
 				this.select(this.rowItemAt(index));
 			}
 			// 等价于 scrollBy(0, +delta) 且 jsdom 也支持（jsdom 未实现 Element.scrollBy）
-			this.scrollTop += scrollLines * 20;
+			this.scrollTop += scrollLines * ROW_HEIGHT;
 		},
 
 		getElementIndexOfSelection: function (this: TreeListHost, defIndex: number): number {
@@ -1344,10 +1346,10 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 			if (event.cmdOrCtrlKey) {
 				switch (event.code) {
 					case 'ArrowUp':
-						this.scrollTop -= 20;
+						this.scrollTop -= ROW_HEIGHT;
 						break;
 					case 'ArrowDown':
-						this.scrollTop += 20;
+						this.scrollTop += ROW_HEIGHT;
 						break;
 					default:
 						return;
