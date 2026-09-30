@@ -10,6 +10,7 @@ import {
 	FILE_LIST_ROW_HEIGHT,
 	fileRowKeyOf,
 	fileRowOffset,
+	flattenFolderChildren,
 	type FileBodyRowModel,
 	TILE_SIZE_BY_VIEW_MODE,
 	viewModeOfIndex,
@@ -206,5 +207,53 @@ describe('file-body-render（派生层：行定位与窗口行）', () => {
 		copy.rows[0].style.left = '9px';
 		expect(model.keys).toEqual(['a']);
 		expect(model.rows[0].style.left).toBe('1px');
+	});
+});
+
+describe('file-body-render（派生层：文件夹展平）', () => {
+	const folder = (children: { id: string; type: string }[]) => ({ children });
+	const itemOf = (id: string, type: string) => ({ id, type });
+	const isFolder = (item: { type: string }) => item.type === 'folder';
+
+	it('filters 为 null：不过滤，直接展平全部 children 且顺序保持', () => {
+		const a = itemOf('a', 'png');
+		const b = itemOf('b', 'mp3');
+		const c = itemOf('c', 'ogg');
+		expect(
+			flattenFolderChildren(
+				[folder([a, b]), folder([c])],
+				null,
+				isFolder,
+				(item) => item.type
+			)
+		).toEqual([a, b, c]);
+	});
+
+	it('filters 为 undefined：同样不过滤', () => {
+		const a = itemOf('a', 'png');
+		expect(
+			flattenFolderChildren([folder([a])], undefined, isFolder, (item) => item.type)
+		).toEqual([a]);
+	});
+
+	it('filters 为空数组：数组为 truthy，走过滤分支，非文件夹全被剔除', () => {
+		const f = itemOf('f', 'folder');
+		const png = itemOf('png', 'png');
+		expect(
+			flattenFolderChildren([folder([f, png])], [], isFolder, (item) => item.type)
+		).toEqual([f]);
+	});
+
+	it('filters 存在：保留文件夹或类型命中项，其余剔除', () => {
+		const f = itemOf('f', 'folder');
+		const png = itemOf('png', 'png');
+		const mp3 = itemOf('mp3', 'mp3');
+		expect(
+			flattenFolderChildren([folder([f, png, mp3])], ['png'], isFolder, (item) => item.type)
+		).toEqual([f, png]);
+	});
+
+	it('空输入：返回空数组', () => {
+		expect(flattenFolderChildren([], null, isFolder, (item) => item.type)).toEqual([]);
 	});
 });

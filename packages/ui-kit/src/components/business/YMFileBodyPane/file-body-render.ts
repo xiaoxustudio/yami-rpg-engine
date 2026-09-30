@@ -114,6 +114,24 @@ export const deriveFileRows = <T extends object>(
 		isFolder: isFolderOf(item)
 	}));
 
+/** `getFiles` 的纯推导：多文件夹的 children 展平；`filters` 为空时不过滤，否则保留文件夹或类型命中项 */
+export const flattenFolderChildren = <T extends object>(
+	folders: readonly { children: readonly T[] }[],
+	filters: readonly string[] | null | undefined,
+	isFolder: (item: T) => boolean,
+	typeOf: (item: T) => string
+): T[] => {
+	const items: T[] = [];
+	for (const folder of folders) {
+		for (const item of folder.children) {
+			if (!filters || isFolder(item) || filters.includes(typeOf(item))) {
+				items.push(item);
+			}
+		}
+	}
+	return items;
+};
+
 /** 网格内边距（原 `updateContentSize` / 行定位的字面量 4） */
 export const FILE_GRID_PADDING = 4;
 

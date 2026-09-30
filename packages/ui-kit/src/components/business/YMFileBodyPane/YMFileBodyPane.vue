@@ -50,6 +50,7 @@ import {
 	computeViewMetrics,
 	FILE_GRID_GAP,
 	FILE_GRID_PADDING,
+	flattenFolderChildren,
 	VIEW_MODE_BY_INDEX,
 	type FileBodyRowDescriptor,
 	type FileBodyRowModel,
@@ -482,31 +483,12 @@ function updateViewMode(): void {
 
 function getFiles(): FileBodyFile[] {
 	const { browser, nav } = props.links;
-	const folders = nav.selections;
-	const filters = browser.filters;
-	if (!filters) {
-		let length = 0;
-		for (const folder of folders) {
-			length += folder.children.length;
-		}
-		let i = 0;
-		const items = Array.from<FileBodyFile>({ length });
-		for (const folder of folders) {
-			for (const item of folder.children) {
-				items[i++] = item;
-			}
-		}
-		return items;
-	}
-	const items: FileBodyFile[] = [];
-	for (const folder of folders) {
-		for (const item of folder.children) {
-			if (item instanceof FolderItem || filters.includes(item.type)) {
-				items.push(item);
-			}
-		}
-	}
-	return items;
+	return flattenFolderChildren(
+		nav.selections,
+		browser.filters,
+		(item) => item instanceof FolderItem,
+		(item) => item.type
+	);
 }
 
 function updateFiles(): void {
