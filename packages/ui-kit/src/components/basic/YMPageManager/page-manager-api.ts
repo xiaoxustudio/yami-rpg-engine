@@ -1,5 +1,5 @@
 import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { addClass, hasClass, removeClass } from '../../../utils/dom';
+import { addClass, dispatchResizeEvent, hasClass, removeClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
 export interface PageManagerApi extends HTMLElement {
@@ -19,10 +19,6 @@ type PageFrameElement = HTMLElement & {
 // （遮蔽原型），命令式 createPageManagerElement 走原型访问器——两种实现并存，读取方
 // （editor 的 layout.ts 等）按属性读，故这里保持原样。
 const frameData = (el: unknown): PageFrameElement => elementDataOf<PageFrameElement>(el);
-
-const dispatchResizeEvent = (el: HTMLElement): void => {
-	el.dispatchEvent(new Event('resize'));
-};
 
 export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 	const manager = el as PageManagerApi;

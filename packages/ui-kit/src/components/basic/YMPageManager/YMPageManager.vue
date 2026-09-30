@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { dispatchResizeEvent } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
 interface Props {
@@ -26,10 +27,6 @@ const state = reactive<{
 
 const hasClass = (el: unknown, cls: string): boolean =>
 	el instanceof Element && el.classList.contains(cls);
-
-const dispatchResizeEvent = (el: HTMLElement): void => {
-	el.dispatchEvent(new Event('resize'));
-};
 
 const switchover = (value: unknown): void => {
 	const element = root.value;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { relate, roundTo } from '../../../utils/dom';
+import { rect, relate, roundTo } from '../../../utils/dom';
 
 interface Props {
 	id?: string;
@@ -53,8 +53,6 @@ const state = {
 		_last: number;
 	} | null
 };
-
-const rectOf = (el: HTMLElement): DOMRect => el.getBoundingClientRect();
 
 const updateHorizontalThumb = (left: number, width: number): void => {
 	const thumb = state.thumb;
@@ -293,7 +291,7 @@ const pointerdown = (event: PointerEvent): void => {
 		window.addEventListener('pointerup', windowPointerup);
 		window.addEventListener('pointermove', windowPointermove);
 	} else {
-		const r = rectOf(thumb);
+		const r = rect(thumb);
 		switch (state.type) {
 			case 'horizontal':
 				scrollRelative(event.clientX < r.left ? -1 : 1);

@@ -165,6 +165,11 @@ export const dispatchUpdateEvent = (el: { dispatchEvent: (event: Event) => unkno
 	el.dispatchEvent(updateEvent);
 };
 
+const resizeEvent = new Event('resize');
+export const dispatchResizeEvent = (el: { dispatchEvent: (event: Event) => unknown }): void => {
+	el.dispatchEvent(resizeEvent);
+};
+
 export const getWindowFramesLength = (): number => {
 	const win = (window as Window & { Window?: { frames?: { length: number } } }).Window;
 	return (win?.frames?.length ?? 0) + 1;
