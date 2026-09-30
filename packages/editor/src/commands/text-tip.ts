@@ -14,7 +14,7 @@ import { getWindowStore } from '@app/stores/window';
 import { hasClass, hide, on, rect, show } from '@app/utils/element-utils';
 import { createDetachedElement } from '@app/utils/dom';
 import { Fragment, h, render, type VNode } from 'vue';
-import { ROW_HEIGHT } from '@app/constants/editor.ts';
+import { ROW_HEIGHT, TIP_MAX_LINES, TIP_MIN_BELOW_LINES } from '@app/constants/editor.ts';
 
 interface TextSuggestionItem {
 	name: string;
@@ -306,16 +306,15 @@ TextSuggestion.listPointerdown = function (this: TextSuggestionList, event: Even
 };
 
 TextSuggestion.listUpdate = function (this: TextSuggestionList, _event: Event): void {
-	const MAX_LINES = 30;
 	const r = rect(TextSuggestion.target!);
 	const rl = r.left;
 	const rt = r.top;
 	const rb = r.bottom;
 	const rw = r.width;
 	const space = window.innerHeight - rb;
-	const below = space >= 10 * ROW_HEIGHT;
+	const below = space >= TIP_MIN_BELOW_LINES * ROW_HEIGHT;
 	const capacity = below ? Math.floor(space / ROW_HEIGHT) : Math.floor(rt / ROW_HEIGHT);
-	const lines = Math.min(treeRowCount(this), capacity, MAX_LINES);
+	const lines = Math.min(treeRowCount(this), capacity, TIP_MAX_LINES);
 	const top = below ? rb : rt - lines * ROW_HEIGHT;
 	if (
 		lines !== 0 &&

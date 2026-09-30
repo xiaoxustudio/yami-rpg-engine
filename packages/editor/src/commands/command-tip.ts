@@ -30,7 +30,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { parseLocalTip } from '@app/localize/dom-localizer';
 import { compress } from '@app/utils/string';
-import { ROW_HEIGHT } from '@app/constants/editor.ts';
+import { ROW_HEIGHT, TIP_MAX_LINES, TIP_MIN_BELOW_LINES } from '@app/constants/editor.ts';
 
 export interface CommandSuggestionItem {
 	value: string;
@@ -427,12 +427,11 @@ CommandSuggestion.listPointerdown = function (event: PointerEvent): void {
 };
 
 CommandSuggestion.listUpdate = function (_event: Event): void {
-	const MAX_LINES = 30;
 	const { x, y } = CommandSuggestion.widget;
 	const space = window.innerHeight - y - ROW_HEIGHT;
-	const below = space >= 10 * ROW_HEIGHT;
+	const below = space >= TIP_MIN_BELOW_LINES * ROW_HEIGHT;
 	const capacity = below ? Math.floor(space / ROW_HEIGHT) : Math.floor(y / ROW_HEIGHT);
-	const lines = Math.min(treeRowCount(this), capacity, MAX_LINES);
+	const lines = Math.min(treeRowCount(this), capacity, TIP_MAX_LINES);
 	const top = below ? y + ROW_HEIGHT : y - lines * ROW_HEIGHT;
 	if (lines !== 0) {
 		this.style.left = `${x}px`;

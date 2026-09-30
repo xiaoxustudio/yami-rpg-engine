@@ -7,6 +7,10 @@ export const ANIM_GRID_Y = 20;
 // 列表类提示（命令/文本）与事件编辑器行高（px，与 CSS 一致）
 export const ROW_HEIGHT = 20;
 
+// 提示列表（命令/文本建议）最多可见行数，与"下方空间不足则翻到上方"的行数阈值
+export const TIP_MAX_LINES = 30;
+export const TIP_MIN_BELOW_LINES = 10;
+
 // 资源节点 ping 阈值（ms）
 export const PING_SLOW_MS = 500;
 export const PING_WARN_MS = 1000;
