@@ -670,8 +670,8 @@ function rebuildCommandRowModel(
 	const selection = commandListData(list);
 	const hasSelection = selection.start !== null && selection.end !== null;
 	// 几何与 `commonListUpdateHeadAndFoot` 一致：首行 marginTop、末行 marginBottom 撑出滚动高度
-	const marginTop = count === 0 ? 0 : start * 20;
-	const marginBottom = count === 0 ? 0 : (count - end + pad) * 20;
+	const marginTop = count === 0 ? 0 : start * commandRender.ROW_HEIGHT;
+	const marginBottom = count === 0 ? 0 : (count - end + pad) * commandRender.ROW_HEIGHT;
 	for (let i = 0; i < count; i++) {
 		const element = elements[i] as CommandItemElement | undefined;
 		if (element === undefined) continue;
@@ -933,8 +933,8 @@ export const commandListPrototype: Record<
 			return;
 		}
 		const st = this.scrollTop;
-		const start = Math.min(Math.floor(st / 20), count - 1);
-		const end = Math.min(start + Math.ceil(ch / 20) + 1, count);
+		const start = Math.min(Math.floor(st / commandRender.ROW_HEIGHT), count - 1);
+		const end = Math.min(start + Math.ceil(ch / commandRender.ROW_HEIGHT) + 1, count);
 		if (els.start !== start || els.end !== end) {
 			els.start = start;
 			els.end = end;
@@ -2787,10 +2787,10 @@ export const commandListPrototype: Record<
 					this.redo();
 					break;
 				case 'ArrowUp':
-					this.scrollTop -= 20;
+					this.scrollTop -= commandRender.ROW_HEIGHT;
 					break;
 				case 'ArrowDown':
-					this.scrollTop += 20;
+					this.scrollTop += commandRender.ROW_HEIGHT;
 					break;
 				case 'Home':
 					event.preventDefault();
@@ -2873,7 +2873,7 @@ export const commandListPrototype: Record<
 					break;
 				case 'End': {
 					event.preventDefault();
-					const scrollBottom = this.elements.count * 20;
+					const scrollBottom = this.elements.count * commandRender.ROW_HEIGHT;
 					const scrollTop = scrollBottom - this.innerHeight;
 					this.scroll(0, Math.max(this.scrollTop, scrollTop));
 					this.select(Infinity);
