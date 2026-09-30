@@ -17,6 +17,7 @@ import { elementDataOf } from '@app/utils/element-data';
 import { clamp, dist as mathDist } from '@app/utils/math';
 import { clone as deepClone } from '@app/utils/object';
 import { empty as fnEmpty } from '@app/utils/function';
+import { ANIM_GRID_X, ANIM_GRID_Y } from '@app/constants/editor.ts';
 
 const Clipboard = GlobalClipboard;
 
@@ -135,9 +136,9 @@ Animation.updateMarquee = function (this: typeof Animation) {
 		if (y !== -1) {
 			const { x, length } = marquee;
 			marquee.y = y;
-			marquee.style.left = `${x * 16}px`;
-			marquee.style.top = `${y * 20}px`;
-			marquee.style.width = `${length * 16}px`;
+			marquee.style.left = `${x * ANIM_GRID_X}px`;
+			marquee.style.top = `${y * ANIM_GRID_Y}px`;
+			marquee.style.width = `${length * ANIM_GRID_X}px`;
 			show(marquee);
 			return;
 		}
@@ -154,13 +155,17 @@ Animation.scrollToMarquee = function (this: typeof Animation, shiftKey: boolean)
 	if (y !== -1) {
 		const list = this.outerTimelineList;
 		const left = list.scrollLeft;
-		const min = x * 16 + length * 16 - list.clientWidth;
-		const max = x * 16;
+		const min = x * ANIM_GRID_X + length * ANIM_GRID_X - list.clientWidth;
+		const max = x * ANIM_GRID_X;
 		const scrollLeft =
 			shiftKey && x === origin && length > 1
 				? Math.max(Math.min(left, max), min)
 				: Math.min(Math.max(left, min), max);
-		const scrollTop = clamp(list.scrollTop, y * 20 + 20 - list.clientHeight, y * 20);
+		const scrollTop = clamp(
+			list.scrollTop,
+			y * ANIM_GRID_Y + ANIM_GRID_Y - list.clientHeight,
+			y * ANIM_GRID_Y
+		);
 		if (list.scrollLeft !== scrollLeft) {
 			list.scrollLeft = scrollLeft;
 		}
@@ -182,15 +187,15 @@ Animation.updateMarqueeShift = function (
 		(timelines[y] as (HTMLElement & { layer?: AnimationLayer }) | undefined)?.layer ?? null;
 	if (marquee.x !== x) {
 		marquee.x = x;
-		marquee.style.left = `${x * 16}px`;
+		marquee.style.left = `${x * ANIM_GRID_X}px`;
 	}
 	if (marquee.y !== y) {
 		marquee.y = y;
-		marquee.style.top = `${y * 20}px`;
+		marquee.style.top = `${y * ANIM_GRID_Y}px`;
 	}
 	if (length !== undefined && marquee.length !== length) {
 		marquee.length = length;
-		marquee.style.width = `${length * 16}px`;
+		marquee.style.width = `${length * ANIM_GRID_X}px`;
 	}
 };
 
@@ -468,13 +473,13 @@ Animation.createTimelines = (function IIFE() {
 						value: key
 					});
 				}
-				key.style.left = `${start * 16}px`;
+				key.style.left = `${start * ANIM_GRID_X}px`;
 				if (length !== 1) {
 					addClass(key, 'long');
-					key.style.width = `${length * 16}px`;
+					key.style.width = `${length * ANIM_GRID_X}px`;
 				} else {
 					removeClass(key, 'long');
-					key.style.width = '16px';
+					key.style.width = `${ANIM_GRID_X}px`;
 				}
 				if (key.easing !== easing) {
 					key.easing = easing;

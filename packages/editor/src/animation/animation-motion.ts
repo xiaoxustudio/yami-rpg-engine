@@ -1073,7 +1073,7 @@ Animation.updateRuler = function (this: typeof Animation) {
 	const { outerRuler, innerRuler } = this;
 	const width = outerRuler.clientWidth;
 	if (width !== 0) {
-		const length = Math.ceil((width + 16) / 80) + 1;
+		const length = Math.ceil((width + ANIM_GRID_X) / 80) + 1;
 		const nodes = innerRuler.childNodes;
 		let i = nodes.length;
 		if (i !== length) {
@@ -1117,7 +1117,8 @@ Animation.updateTimelineLength = function (this: typeof Animation) {
 	const max = Math.floor(end / 100 + 1) * 100;
 	if (this.frameMax !== max) {
 		this.frameMax = max;
-		this.innerTimelineList.style.width = this.innerPointerArea.style.width = `${max * 16}px`;
+		this.innerTimelineList.style.width =
+			this.innerPointerArea.style.width = `${max * ANIM_GRID_X}px`;
 	}
 };
 
@@ -1137,7 +1138,7 @@ Animation.updatePointer = function (this: typeof Animation) {
 	const { pointer } = this;
 	if (pointer.x !== x) {
 		pointer.x = x;
-		pointer.style.left = `${x * 16}px`;
+		pointer.style.left = `${x * ANIM_GRID_X}px`;
 	}
 };
 
@@ -1147,8 +1148,8 @@ Animation.updateCursor = function (this: typeof Animation, x: number, y: number)
 		timelineCursor.x = x;
 		timelineCursor.y = y;
 		if (x !== -1) {
-			timelineCursor.style.left = `${x * 16}px`;
-			timelineCursor.style.top = `${y * 20}px`;
+			timelineCursor.style.left = `${x * ANIM_GRID_X}px`;
+			timelineCursor.style.top = `${y * ANIM_GRID_Y}px`;
 			show(timelineCursor);
 		} else {
 			hide(timelineCursor);
