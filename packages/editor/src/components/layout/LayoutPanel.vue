@@ -7,142 +7,8 @@
 		<div class="page-frame" value="directory">
 			<div class="box" id="layout-content">
 				<LayoutPaletteHost>
-					<NavBar id="layout-nav" ref="paletteNavEl">
-						<PaletteNode value="project" source="tab">
-							<div class="nav-item" value="project">
-								<div class="nav-icon">&#xf07b;</div>
-								<div class="nav-text" id="nav-project">
-									{{ t('components.nav-project.content') }}
-								</div>
-							</div>
-						</PaletteNode>
-						<PaletteNode value="scene" source="tab">
-							<div class="nav-item" value="scene">
-								<div class="nav-icon">&#xf26c;</div>
-								<div class="nav-text" id="nav-scene">
-									{{ t('components.nav-scene.content') }}
-								</div>
-							</div>
-						</PaletteNode>
-						<PaletteNode value="scene-object" source="tab">
-							<div class="nav-item" value="scene-object">
-								<div class="nav-icon">&#xf1b2;</div>
-								<div class="nav-text" id="nav-scene-object">
-									{{ t('components.nav-scene-object.content') }}
-								</div>
-							</div>
-						</PaletteNode>
-						<PaletteNode value="ui" source="tab">
-							<div class="nav-item" value="ui">
-								<div class="nav-icon">&#xf26c;</div>
-								<div class="nav-text" id="nav-ui">
-									{{ t('components.nav-ui.content') }}
-								</div>
-							</div>
-						</PaletteNode>
-						<PaletteNode value="ui-element" source="tab">
-							<div class="nav-item" value="ui-element">
-								<div class="nav-icon">&#xf1b2;</div>
-								<div class="nav-text" id="nav-ui-element">
-									{{ t('components.nav-ui-element.content') }}
-								</div>
-							</div>
-						</PaletteNode>
-						<PaletteNode value="animation" source="tab">
-							<div class="nav-item" value="animation">
-								<div class="nav-icon">&#xf26c;</div>
-								<div class="nav-text" id="nav-animation">
-									{{ t('components.nav-animation.content') }}
-								</div>
-							</div>
-						</PaletteNode>
-						<PaletteNode value="animation-motion" source="tab">
-							<div class="nav-item" value="animation-motion">
-								<div class="nav-icon">&#xf1b2;</div>
-								<div class="nav-text" id="nav-animation-motion">
-									{{ t('components.nav-animation-motion.content') }}
-								</div>
-							</div>
-						</PaletteNode>
-						<PaletteNode value="animation-timeline" source="tab">
-							<div class="nav-item" value="animation-timeline">
-								<div class="nav-icon">&#xf017;</div>
-								<div class="nav-text" id="nav-animation-timeline">
-									{{ t('components.nav-animation-timeline.content') }}
-								</div>
-							</div>
-						</PaletteNode>
-						<PaletteNode value="animation-easing" source="tab">
-							<div class="nav-item" value="animation-easing">
-								<div class="nav-icon">&#xf201;</div>
-								<div class="nav-text" id="nav-animation-easing">
-									{{ t('components.nav-animation-easing.content') }}
-								</div>
-							</div>
-						</PaletteNode>
-						<PaletteNode value="particle" source="tab">
-							<div class="nav-item" value="particle">
-								<div class="nav-icon">&#xf26c;</div>
-								<div class="nav-text" id="nav-particle">
-									{{ t('components.nav-particle.content') }}
-								</div>
-							</div>
-						</PaletteNode>
-						<PaletteNode value="particle-layer" source="tab">
-							<div class="nav-item" value="particle-layer">
-								<div class="nav-icon">&#xf1b2;</div>
-								<div class="nav-text" id="nav-particle-layer">
-									{{ t('components.nav-particle-layer.content') }}
-								</div>
-							</div>
-						</PaletteNode>
-						<PaletteNode value="inspector" source="tab">
-							<div class="nav-item" value="inspector">
-								<div class="nav-icon">&#xf05a;</div>
-								<div class="nav-text" id="nav-inspector">
-									{{ t('components.nav-inspector.content') }}
-								</div>
-							</div>
-						</PaletteNode>
-					</NavBar>
-					<PageManager id="layout-page-manager" ref="paletteManagerEl">
-						<PaletteNode value="project" source="page">
-							<ProjectPanel />
-						</PaletteNode>
-						<PaletteNode value="scene" source="page">
-							<ScenePanel />
-						</PaletteNode>
-						<PaletteNode value="scene-object" source="page">
-							<SceneObjectPanel />
-						</PaletteNode>
-						<PaletteNode value="ui" source="page">
-							<UiPanel />
-						</PaletteNode>
-						<PaletteNode value="ui-element" source="page">
-							<UiElementPanel />
-						</PaletteNode>
-						<PaletteNode value="animation" source="page">
-							<AnimationPanel />
-						</PaletteNode>
-						<PaletteNode value="animation-motion" source="page">
-							<AnimationMotionPanel />
-						</PaletteNode>
-						<PaletteNode value="animation-timeline" source="page">
-							<AnimationTimelinePanel />
-						</PaletteNode>
-						<PaletteNode value="animation-easing" source="page">
-							<AnimationEasingPanel />
-						</PaletteNode>
-						<PaletteNode value="particle" source="page">
-							<ParticlePanel />
-						</PaletteNode>
-						<PaletteNode value="particle-layer" source="page">
-							<ParticleLayerPanel />
-						</PaletteNode>
-						<PaletteNode value="inspector" source="page">
-							<InspectorPanel />
-						</PaletteNode>
-					</PageManager>
+					<WorkspaceNav ref="paletteNavEl" />
+					<WorkspacePages ref="paletteManagerEl" />
 				</LayoutPaletteHost>
 			</div>
 		</div>
@@ -154,27 +20,14 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { nextTick, onMounted, ref } from 'vue';
 import { engineEls } from '@app/engine/element-registry';
 import { registerElement, registryRef } from '@app/utils/element-registry';
 import PageManager from '@app/components/common/PageManager.vue';
-import NavBar from '@app/components/common/NavBar.vue';
 import LayoutPaletteHost from '@app/components/layout/LayoutPaletteHost.vue';
-import PaletteNode from '@app/components/layout/PaletteNode.vue';
-import InspectorPanel from '@app/components/layout/InspectorPanel.vue';
 import HomePanel from '@app/components/layout/HomePanel.vue';
-import ProjectPanel from '@app/components/layout/ProjectPanel.vue';
-import ScenePanel from '@app/components/layout/ScenePanel.vue';
-import SceneObjectPanel from '@app/components/layout/SceneObjectPanel.vue';
-import UiPanel from '@app/components/layout/UiPanel.vue';
-import UiElementPanel from '@app/components/layout/UiElementPanel.vue';
-import AnimationPanel from '@app/components/layout/AnimationPanel.vue';
-import AnimationMotionPanel from '@app/components/layout/AnimationMotionPanel.vue';
-import AnimationTimelinePanel from '@app/components/layout/AnimationTimelinePanel.vue';
-import AnimationEasingPanel from '@app/components/layout/AnimationEasingPanel.vue';
-import ParticlePanel from '@app/components/layout/ParticlePanel.vue';
-import ParticleLayerPanel from '@app/components/layout/ParticleLayerPanel.vue';
+import WorkspaceNav from '@app/components/layout/WorkspaceNav.vue';
+import WorkspacePages from '@app/components/layout/WorkspacePages.vue';
 import { getUIStore } from '@app/stores/ui';
 import { getSceneStore } from '@app/stores/scene';
 import { getParticleStore } from '@app/stores/particle';
@@ -182,11 +35,9 @@ import { getAnimationStore } from '@app/stores/animation';
 import { registerLayoutItems } from '@app/engine/layout/layout.ts';
 import { collectPaletteItems } from '@app/components/layout/palette-items';
 
-const { t } = useI18n();
-
 // palette 容器 ref（显式登记 items 用）
-const paletteNavEl = ref<HTMLElement | null>(null);
-const paletteManagerEl = ref<HTMLElement | null>(null);
+const paletteNavEl = ref<InstanceType<typeof WorkspaceNav> | null>(null);
+const paletteManagerEl = ref<InstanceType<typeof WorkspacePages> | null>(null);
 
 onMounted(() => {
 	registerElement(engineEls, 'layout-nav', paletteNavEl.value);
