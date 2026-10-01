@@ -419,17 +419,17 @@ UIEngine.updateControlPoints = function (this: UIShape) {
 		resize.BR.x = x3 + ox3 - ox2;
 		resize.BR.y = y3 + oy3 - oy2;
 		let rotation = instance.transform.rotation;
-		// 沿父链累加旋转，**到「没有 transform 的祖先」为止**。
+		// 沿父链累加旋转，**到「没有 transform 的祖先」为止**（根实例没有自己的变换，见下）。
 		//
-		// ⚠️ 终止条件必须同时看 `transform`：`52ced02b1` 曾把它写成只判 `parent !== null`，
-		// 理由是「`transform` 在具名类型下非可选（`element-base.ts` 的 `transform: TransformShape`）」。**那条前提是错的** ——
-		// 根实例就是 `transform: null`（`root-element.ts` 的 `RootElement` 构造时显式传
-		// `{ transform: null }`，根不参与 transform 链），而 `element-base.ts` 构造函数里那句
-		// `this.transform = data.transform as TransformShape` 把这个 null 断言掉了。
-		// 只判 null 的循环会一路走到根并读 `null.rotation`：**每帧抛**
-		// `Cannot read properties of null (reading 'rotation')`（`drawControlPoints` 起点），
-		// 表现是「选中任意元素后控制点/选中框不再绘制，控制台每帧刷一条」。
-		// 这也正是重构前 `while ((element = element.parent)?.transform)` 的语义，此处逐字保留。
+		// 历史：`52ced02b1` 曾把它写成只判 `parent !== null`，理由是「`transform` 在具名类型下非可选」。
+		// 那条推理踩空了 —— 根实例当时显式传 `transform: null`（`root-element.ts`），循环一路走到根
+		// 读 `null.rotation`：**每帧抛** `Cannot read properties of null (reading 'rotation')`
+		// （`drawControlPoints` 起点 ⇒ 控制点/选中框画不出来）。
+		//
+		// 现在两道都在：① `element-base.ts` 的构造函数给每个实例补恒等变换（根也有一份），
+		// 「实例一定有 transform」结构上成立（与 `element-classes.ts` 顶部对 `matrix` 的判定同一手法）；
+		// ② 这里的真值判断留作第二道 —— 祖先的 transform 若被显式置空也只是「停下」，不会解引用。
+		// 两条都由 `__tests__/ui-control-point-rotation.spec.ts` 钉住。
 		for (let parent = instance.parent; parent?.transform; parent = parent.parent) {
 			rotation += parent.transform.rotation;
 		}

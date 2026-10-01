@@ -69,9 +69,14 @@ export interface UIElementInstance {
 	 */
 	matrix: Matrix;
 	/**
-	 * 元素自己的变换数据（`element-base.ts:98` 的 `transform`）。
+	 * 元素自己的变换数据（`element-base.ts` 的 `transform`）。
 	 * 引擎沿父链累加旋转（`ui-engine.ts` 的 `updateControlPoints`）时读它，
 	 * `ui-pointer.ts` 的缩放路径也要 `instance.transform.scaleX`。
+	 *
+	 * **非空**：`element-base.ts` 的构造函数在 `data.transform` 为 `null`/缺省时补一份恒等变换
+	 * （`createElementTransform()`）—— 根实例原先显式传 `transform: null`，于是「实例一定有
+	 * transform」在运行期是假的，父链累加走到根就每帧抛
+	 * `Cannot read properties of null (reading 'rotation')`（2026-10-01）。详见该处注释。
 	 */
 	transform: UIElementTransform;
 	parent: UIElementInstance | null;
@@ -210,6 +215,10 @@ export interface UIElementTransform {
  *
  * - **`matrix` 可空是不成立的**：`element-base.ts:110` 构造时就是 `new Matrix()`，
  *   全仓没有第二处赋值 ⇒ 把 `UIElementInstance.matrix` 改成非空，13 处读点**不加任何 `!`** 即通过。
+ * - **`transform` 可空也是不成立的**：只有根实例曾经传 `transform: null`（`root-element.ts`），
+ *   那是「根不参与变换链」的表达方式，却让父链累加（`ui-engine.ts` 的 `updateControlPoints`）
+ *   走到根时读 `null.rotation` 每帧抛错。判定与 `matrix` 同：**修运行期、不加 `!`** ——
+ *   构造函数改为「`null`/缺省都补恒等变换」，根改为不传 `transform`（2026-10-01）。
  * - **`parent` 可空是成立的**（根元素/根节点就是 `null`），所以它保留可空，读侧在
  *   「只可能在已装配的树上」的位置用 `!`（`ui-pointer.ts` 的缩放、`ui-file.ts` 的 `createShortcut`）。
  * - **`instance` / `instances` 是装配期挂上的运行期成员**，数据里**没有**它们：

@@ -14,10 +14,10 @@ uiElClasses.Root = class RootElement extends uiElClasses.Element! {
 	references: Record<string, Array<PrefabElementShape>> = {};
 
 	constructor() {
-		super({
-			transform: null,
-			hidden: false
-		});
+		// 根**没有自己的变换数据**（它不参与变换链，`calculatePosition()` 也从不作用于它），
+		// 所以这里不再传 `transform`。但实例的 `transform` 必须非空——基类会补一份恒等变换，
+		// 否则 `ui-engine.ts` 的父链旋转累加走到根会读 `null.rotation`（2026-10-01 的每帧崩溃）。
+		super({ hidden: false });
 		this.connected = true;
 		this.background = null;
 	}

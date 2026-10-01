@@ -1,4 +1,4 @@
-import { uiElClasses } from './element-classes.ts';
+import { uiElClasses, type UIElementTransform } from './element-classes.ts';
 import { getUIStore } from '@app/stores/ui';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
@@ -56,25 +56,40 @@ interface UIParentShape {
 	requestResizing?: () => void;
 }
 
-interface TransformShape {
-	x: number;
-	y: number;
-	x2: number;
-	y2: number;
-	width: number;
-	width2: number;
-	height: number;
-	height2: number;
-	anchorX: number;
-	anchorY: number;
-	rotation: number;
-	scaleX: number;
-	scaleY: number;
-	skewX: number;
-	skewY: number;
-	opacity: number;
-	[k: string]: unknown;
-}
+/**
+ * 元素的**变换数据**形状 —— 就是 `element-classes.ts` 的 `UIElementTransform`。
+ *
+ * 原先这里是一份**逐字抄写的第二份声明**（`element-classes.ts` 那边写着「字段照抄原处（15 个）」）：
+ * 同一形状两份声明，任一侧加字段都会漂移。改为别名，只留一处。
+ */
+type TransformShape = UIElementTransform;
+
+/**
+ * 造一份**恒等变换**数据（UI 元素的出厂态）。
+ *
+ * 字段口径与元素检视器的 `Inspector.uiElement.createTransform()`（`inspector/element-page.ts`）
+ * 一致——那边是「新建元素」的默认值。没有直接复用它：那是遗留检视器模块，让引擎与它互引
+ * 会牵动装配顺序（本仓对这类静态环有明确记录）。两处要改就一起改；引擎侧由
+ * `__tests__/element-transform-invariant.spec.ts` 钉住这 16 个字段与取值。
+ */
+export const createElementTransform = (): TransformShape => ({
+	anchorX: 0,
+	anchorY: 0,
+	x: 0,
+	x2: 0,
+	y: 0,
+	y2: 0,
+	width: 0,
+	width2: 0,
+	height: 0,
+	height2: 0,
+	rotation: 0,
+	scaleX: 1,
+	scaleY: 1,
+	skewX: 0,
+	skewY: 0,
+	opacity: 1
+});
 
 uiElClasses.Element = class UIElement {
 	declare node: UINodeShape | null;
@@ -92,6 +107,11 @@ uiElClasses.Element = class UIElement {
 	 * `(this as unknown as { blend: string }).blend`。
 	 */
 	declare blend?: string;
+	/**
+	 * 元素自己的变换数据。**非空**：构造函数保证（`data.transform` 为 `null`/缺省时补
+	 * `createElementTransform()` 的恒等变换），所以读点一律直接解引用。
+	 * 根实例是唯一的「没有自己的变换」的元素 —— 它拿到的是一份恒等变换（见构造函数注释）。
+	 */
 	transform: TransformShape;
 	parent: UIParentShape | null;
 	children: UIElementShape[];
@@ -106,12 +126,17 @@ uiElClasses.Element = class UIElement {
 		this.height = 0;
 		this.matrix = new Matrix();
 		this.opacity = 1;
-		// ⚠️ `data.transform` 允许是 `null`：`root-element.ts` 的 `RootElement` 就传 `{ transform: null }`
-		// （根不参与 transform 链）。所以下面这个 `as TransformShape` 是**已知的谎**——
-		// 任何时候按「实例一定有 transform」推理都会踩空（`ui-engine.ts` 的父链旋转累加曾因此每帧抛
-		// `Cannot read properties of null (reading 'rotation')`）。读 `instance.transform.x` 的路径
-		// 必须先确认它不是根实例。
-		this.transform = data.transform as TransformShape;
+		// **每个实例都必须有变换数据——根实例也不例外。**
+		//
+		// `root-element.ts` 的 `RootElement` 原先显式传 `{ transform: null }`（根不参与变换链），
+		// 旧写法 `data.transform as TransformShape` 把这个 null 断言掉了 ⇒「实例一定有 transform」
+		// 在运行期是假的：`ui-engine.ts` 的父链旋转累加走到根就抛
+		// `Cannot read properties of null (reading 'rotation')`（每帧一次，控制点画不出来）。
+		//
+		// 这里按「漏传/显式传 null 都补一份恒等变换」兜底，让 `transform: TransformShape` 这句声明
+		// **结构上成立** —— 于是任何读点都不需要 `!`（与 `element-classes.ts` 顶部对 `matrix`
+		// 的判定同一手法：不变式成立就收紧类型，而不是给读点补一批 `!` 蒙过去）。
+		this.transform = data.transform ?? createElementTransform();
 		this.parent = null;
 		this.children = [];
 		this.visible = !data.hidden;
