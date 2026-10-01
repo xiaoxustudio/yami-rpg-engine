@@ -175,6 +175,8 @@ import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement, registryRef } from '@app/utils/element-registry';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { fileSceneContextKey } from './context.ts';
 
 const { t } = useI18n();

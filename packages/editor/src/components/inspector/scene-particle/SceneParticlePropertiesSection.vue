@@ -197,6 +197,8 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { sceneParticleContextKey } from './context.ts';
 
 const { t } = useI18n();

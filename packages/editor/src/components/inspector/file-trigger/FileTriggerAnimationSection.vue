@@ -68,6 +68,8 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { fileTriggerContextKey } from './context.ts';
 
 const { t } = useI18n();

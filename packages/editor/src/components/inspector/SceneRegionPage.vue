@@ -17,6 +17,8 @@ import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { useSceneRegionPage } from '@app/composables/useSceneRegionPage';
 import { attachElementApi } from '@app/utils/attach-element-api';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { sceneRegionContextKey } from './scene-region/context.ts';
 import SceneRegionPropertiesSection from './scene-region/SceneRegionPropertiesSection.vue';
 import SceneRegionMetaSection from './scene-region/SceneRegionMetaSection.vue';
