@@ -412,6 +412,24 @@ const timer: {
 		}
 	}
 };
+
+/**
+ * 组件生命周期内挂在 `window` 上的临时监听（一次性 `pointerup`、Alt 拖拽序列）。
+ *
+ * 它们各自都有收尾分支会自行摘除，但**收尾分支不保证跑到**：手势进行到一半就卸载时，
+ * `{ once: true }` 还没触发，监听就连着闭包（引用着已卸载的 DOM）永久留在 window 上。
+ * 统一登记后由 `onBeforeUnmount` 兜底摘除；自清路径先摘过一遍也无妨（重复摘除是 no-op）。
+ */
+const windowListeners: { type: string; fn: EventListener }[] = [];
+
+function listenWindow<K extends keyof WindowEventMap>(
+	type: K,
+	fn: (event: WindowEventMap[K]) => void,
+	options?: AddEventListenerOptions
+): void {
+	window.addEventListener(type, fn, options);
+	windowListeners.push({ type, fn: fn as EventListener });
+}
 let elements: (FileBodyItemApi | undefined)[] & {
 	count: number;
 	start: number;
@@ -963,7 +981,7 @@ function activateFile(file: FileBodyFile): void {
 		}
 	};
 	pressing = pointerup;
-	window.addEventListener('pointerup', pointerup, { once: true });
+	listenWindow('pointerup', pointerup, { once: true });
 }
 
 function selectActiveFile(): void {
@@ -1646,7 +1664,7 @@ function pointerdown(event: PointerEvent): void {
 								}
 							};
 							pressing = pointerup;
-							window.addEventListener('pointerup', pointerup, { once: true });
+							listenWindow('pointerup', pointerup, { once: true });
 						}
 						return;
 					}
@@ -1688,7 +1706,7 @@ function pointerdown(event: PointerEvent): void {
 								}
 							};
 							pressing = pointerup;
-							window.addEventListener('pointerup', pointerup, { once: true });
+							listenWindow('pointerup', pointerup, { once: true });
 						} else {
 							activateFileViaElement((element as FileBodyItemApi).file);
 							if (
@@ -1773,8 +1791,8 @@ function windowKeydown(event: KeyboardEvent): void {
 			case 'AltLeft':
 				if (!Window?.getTopWindow() || Window?.getTopWindow()?.id === 'selector') {
 					addClass(contentEl.value, 'alt');
-					window.addEventListener('keyup', windowKeyup);
-					window.addEventListener('pointermove', windowPointermove);
+					listenWindow('keyup', windowKeyup);
+					listenWindow('pointermove', windowPointermove);
 				}
 				break;
 		}
@@ -2062,6 +2080,11 @@ onMounted(() => {
 onBeforeUnmount(() => {
 	window.removeEventListener('keydown', windowKeydownHandler);
 	window.removeEventListener('resize', windowResizeHandler);
+	// 手势 / Alt 按键序列中途卸载：把登记在案的临时 window 监听摘干净，并清掉待触发的
+	// 「改名」定时器（否则 500ms 后回调会打向已卸载的 DOM）。
+	for (const { type, fn } of windowListeners) window.removeEventListener(type, fn);
+	windowListeners.length = 0;
+	timer.remove();
 	resizeObserver?.disconnect?.();
 });
 
