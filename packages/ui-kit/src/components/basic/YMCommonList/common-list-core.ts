@@ -1,6 +1,6 @@
 import { elementDataValueOf } from '../../../utils/element-data';
 import { clamp } from '../../../utils/dom';
-import { ROW_HEIGHT } from '../../../utils/common-list';
+import { ROW_HEIGHT, computeRowMargins, computeVisibleRange } from '../../../utils/common-list';
 
 /** own 属性优先（组件自装访问器、普通对象夹具），否则读元素数据——见 `elementDataValueOf`。 */
 const itemDataValue = (item: { dataValue?: unknown }): unknown => elementDataValueOf(item);
@@ -54,30 +54,6 @@ export function createCommonListCore(): CommonListCore {
 		return index;
 	};
 
-	const computeVisibleRange = (
-		scrollTop: number,
-		clientHeight: number,
-		count: number
-	): VisibleRange => {
-		const start = Math.min(Math.floor(scrollTop / ROW_HEIGHT), count - 1);
-		const length = Math.ceil(clientHeight / ROW_HEIGHT) + 1;
-		const end = Math.min(start + length, count);
-		return { start, end };
-	};
-
-	const computeHeadAndFootMargins = (
-		count: number,
-		start: number,
-		end: number,
-		padded: boolean
-	): HeadAndFootMargins => {
-		const pad = padded ? 1 : 0;
-		return {
-			marginTop: start * ROW_HEIGHT,
-			marginBottom: (count - end + pad) * ROW_HEIGHT
-		};
-	};
-
 	const computeItemScrollTop = (scrollTop: number, index: number, clientHeight: number): number =>
 		clamp(scrollTop, index * ROW_HEIGHT + ROW_HEIGHT - clientHeight, index * ROW_HEIGHT);
 
@@ -110,8 +86,9 @@ export function createCommonListCore(): CommonListCore {
 
 	return {
 		findItemIndex,
+		// 窗口与边距公式统一走 `utils/common-list.ts` 的唯一一份（本地那份是逐字重复）
 		computeVisibleRange,
-		computeHeadAndFootMargins,
+		computeHeadAndFootMargins: computeRowMargins,
 		computeItemScrollTop,
 		computeRelativeIndex,
 		clearElements

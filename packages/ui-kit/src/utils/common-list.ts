@@ -31,6 +31,49 @@ const versionOf = (el: unknown): { versionId?: number } =>
 
 export const ROW_HEIGHT = 20;
 
+/** 虚拟滚动窗口 */
+export interface VisibleRange {
+	start: number;
+	end: number;
+}
+
+/**
+ * 虚拟滚动窗口公式（行高 `ROW_HEIGHT`）—— **全仓唯一一份**。
+ *
+ * 此前 `param-list-core`、`common-list-core`、`tree-render` 各抄了一遍**逐字相同**的实现，
+ * 三处的「与 common-list 现行公式一致」只靠注释与三份内容相同的测试维持；
+ * 现在改为共用本函数，公式再改只需要动这里。
+ *
+ * 调用方分两类，都保留自己的前置守卫：`commonListResize` 先判 `clientHeight === 0` /
+ * `count === 0`，`tree-render` 的 `computeWindow` 则把两种空情形都折成 `{0, 0}`。
+ */
+export const computeVisibleRange = (
+	scrollTop: number,
+	clientHeight: number,
+	count: number
+): VisibleRange => {
+	const start = Math.min(Math.floor(scrollTop / ROW_HEIGHT), count - 1);
+	const length = Math.ceil(clientHeight / ROW_HEIGHT) + 1;
+	return { start, end: Math.min(start + length, count) };
+};
+
+/**
+ * 首行 `marginTop` / 末行 `marginBottom`（撑出滚动高度）—— 同上，只有一份。
+ * `padded` 决定末行是否多留一行。
+ */
+export const computeRowMargins = (
+	count: number,
+	start: number,
+	end: number,
+	padded: boolean
+): { marginTop: number; marginBottom: number } => {
+	const pad = padded ? 1 : 0;
+	return {
+		marginTop: start * ROW_HEIGHT,
+		marginBottom: (count - end + pad) * ROW_HEIGHT
+	};
+};
+
 export const commonListClearElements = (list: CommonListLike, start: number): void => {
 	let i = start;
 	while (list.elements[i] !== undefined) {
@@ -60,13 +103,16 @@ export const commonListUpdateHeadAndFoot = (list: HeadAndFootListLike): void => 
 	const { count, start, end } = list.elements;
 	if (count !== 0) {
 		// `padded` 不再是元素上的 expando，统一从列表配置读
-		const pad = getListConfig(list).padded ? 1 : 0;
-		const mt = start * ROW_HEIGHT;
-		const mb = (count - end + pad) * ROW_HEIGHT;
+		const { marginTop, marginBottom } = computeRowMargins(
+			count,
+			start,
+			end,
+			!!getListConfig(list).padded
+		);
 		list.elements.head = list.elements[start];
-		list.elements.head!.style.marginTop = `${mt}px`;
+		list.elements.head!.style.marginTop = `${marginTop}px`;
 		list.elements.foot = list.elements[end - 1];
-		list.elements.foot!.style.marginBottom = `${mb}px`;
+		list.elements.foot!.style.marginBottom = `${marginBottom}px`;
 	}
 };
 
@@ -80,9 +126,7 @@ export const commonListResize = (list: CommonListLike): void => {
 		el.textContent = '';
 		return;
 	}
-	const start = Math.min(Math.floor(st / ROW_HEIGHT), count - 1);
-	const length = Math.ceil(ch / ROW_HEIGHT) + 1;
-	const end = Math.min(start + length, count);
+	const { start, end } = computeVisibleRange(st, ch, count);
 	if (list.elements.start !== start || list.elements.end !== end) {
 		list.elements.start = start;
 		list.elements.end = end;

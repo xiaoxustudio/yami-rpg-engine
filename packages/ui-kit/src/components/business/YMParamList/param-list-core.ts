@@ -1,5 +1,5 @@
 import { clamp } from '../../../utils/dom';
-import { ROW_HEIGHT } from '../../../utils/common-list';
+import { ROW_HEIGHT, computeRowMargins, computeVisibleRange } from '../../../utils/common-list';
 
 export type ParamDataItem = { enabled?: boolean };
 
@@ -73,30 +73,6 @@ export function createParamListCore(): ParamListCore {
 		return { start, end };
 	};
 
-	const computeVisibleRange = (
-		scrollTop: number,
-		clientHeight: number,
-		count: number
-	): VisibleRange => {
-		const start = Math.min(Math.floor(scrollTop / ROW_HEIGHT), count - 1);
-		const length = Math.ceil(clientHeight / ROW_HEIGHT) + 1;
-		const end = Math.min(start + length, count);
-		return { start, end };
-	};
-
-	const computeHeadAndFootMargins = (
-		count: number,
-		start: number,
-		end: number,
-		padded: boolean
-	): HeadAndFootMargins => {
-		const pad = padded ? 1 : 0;
-		return {
-			marginTop: start * ROW_HEIGHT,
-			marginBottom: (count - end + pad) * ROW_HEIGHT
-		};
-	};
-
 	const computeFlexibleHeight = (count: number): number => Math.min(count * ROW_HEIGHT, 500) + 2;
 
 	const computeSelectionScrollTop = (
@@ -160,8 +136,9 @@ export function createParamListCore(): ParamListCore {
 
 	return {
 		resolveSelectionRange,
+		// 窗口与边距公式统一走 `utils/common-list.ts` 的唯一一份（本地那份是逐字重复）
 		computeVisibleRange,
-		computeHeadAndFootMargins,
+		computeHeadAndFootMargins: computeRowMargins,
 		computeFlexibleHeight,
 		computeSelectionScrollTop,
 		computeDragSelectIndex,

@@ -20,7 +20,7 @@ import {
 } from 'vue';
 import type { NodeElement, TreeItem } from './tree-core';
 import { elementDataOf } from '../../../utils/element-data';
-import { ROW_HEIGHT } from '../../../utils/common-list';
+import { ROW_HEIGHT, computeVisibleRange } from '../../../utils/common-list';
 
 export { ROW_HEIGHT };
 
@@ -201,16 +201,14 @@ export const flattenRows = (state: TreeRenderState, options: FlattenOptions): Tr
 	return out;
 };
 
-/** 虚拟滚动窗口：与 common-list 现行公式一致（20px 行高，窗口 = ceil(ch/20)+1） */
+/** 虚拟滚动窗口：公式来自 `utils/common-list.ts` 的唯一一份，这里只加树自己的空情形守卫 */
 export const computeWindow = (
 	scrollTop: number,
 	clientHeight: number,
 	count: number
 ): { start: number; end: number } => {
 	if (clientHeight === 0 || count === 0) return { start: 0, end: 0 };
-	const start = Math.min(Math.floor(scrollTop / ROW_HEIGHT), count - 1);
-	const length = Math.ceil(clientHeight / ROW_HEIGHT) + 1;
-	return { start, end: Math.min(start + length, count) };
+	return computeVisibleRange(scrollTop, clientHeight, count);
 };
 
 export const windowRowsOf = (state: TreeRenderState): ComputedRef<TreeRenderRow[]> =>

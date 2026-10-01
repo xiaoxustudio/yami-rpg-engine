@@ -1,9 +1,17 @@
 import { describe, expect, it } from 'vitest';
+import { computeRowMargins, computeVisibleRange } from '../../../../utils/common-list';
 import { createParamListCore } from '../param-list-core';
 
 const core = createParamListCore();
 
 describe('param-list-core', () => {
+	it('窗口/边距公式与 utils/common-list 的唯一一份是同一个实现（防再抄一份）', () => {
+		// 身份比较而非取值比较：取值比较在「又抄一份」时依然通过，
+		// 而收口要保住的正是「只有一份实现」。
+		expect(core.computeVisibleRange).toBe(computeVisibleRange);
+		expect(core.computeHeadAndFootMargins).toBe(computeRowMargins);
+	});
+
 	describe('resolveSelectionRange', () => {
 		it('交换并夹紧起止索引', () => {
 			expect(core.resolveSelectionRange(5, 2, 10, () => true)).toEqual({ start: 2, end: 5 });
