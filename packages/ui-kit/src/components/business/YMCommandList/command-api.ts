@@ -7,6 +7,7 @@ import {
 	cmdOrCtrlKey,
 	css,
 	dispatchChangeEvent,
+	dispatchRowModelEvent,
 	dispatchUpdateEvent,
 	hasClass,
 	isInContent,
@@ -648,6 +649,26 @@ interface CommandElementsView {
 	[i: number]: unknown;
 }
 
+/**
+ * **可见窗口**（行高 `ROW_HEIGHT`）—— `resize()` 与 `update()` 共用同一份公式。
+ *
+ * 为什么要有它：`update()` 也要按当前窗口重建行模型（否则会拿上一次的 `end` 建出一段错窗口），
+ * 而 `resize()` 的窗口重算发生在 `update` 事件**之后**（editor 侧的 `mark` 依赖事件先到）。
+ * 两处必须同口径，故收成这一个纯函数。
+ *
+ * 调用方自己保留「列表隐藏（`clientHeight === 0`）时不重算」的语义：本函数只做算术。
+ */
+function commandVisibleRange(list: {
+	scrollTop: number;
+	clientHeight: number;
+	elements: { count: number };
+}): { start: number; end: number } {
+	const count = list.elements.count;
+	const start = Math.min(Math.floor(list.scrollTop / commandRender.ROW_HEIGHT), count - 1);
+	const length = Math.ceil(list.clientHeight / commandRender.ROW_HEIGHT) + 1;
+	return { start, end: Math.min(start + length, count) };
+}
+
 /** 从 `elements[]` 重建行模型（在 `update`/`resize` 之后调用） */
 function rebuildCommandRowModel(
 	list: { elements: CommandElementsView },
@@ -667,7 +688,14 @@ function rebuildCommandRowModel(
 	// 几何与 `commonListUpdateHeadAndFoot` 一致：首行 marginTop、末行 marginBottom 撑出滚动高度
 	const marginTop = count === 0 ? 0 : start * commandRender.ROW_HEIGHT;
 	const marginBottom = count === 0 ? 0 : (count - end + pad) * commandRender.ROW_HEIGHT;
-	for (let i = 0; i < count; i++) {
+	// **只建可见窗口 `[start, end)` 的行**。模板 `v-for` 就按这份模型挂行，窗口外的行由
+	// `marginTop` / `marginBottom` 顶出来（撑出滚动高度）——与 `YMFileBodyPane` 的
+	// `buildFileBodyWindowRows(start, end, …)` 同构。
+	//
+	// ⚠️ 这里曾经遍历 `0..count`（整个离屏元素池）⇒ 模型与 DOM 都变成**全部行**、虚拟滚动失效，
+	// 而 margins 又按窗口算 ⇒ 内容高度约为真实值的两倍、滚动映射整体错位。2026-10-01 用户报的
+	// 「事件编辑器滚动时大片空白 / 行号与行错位 / 每跨一行边界整块跳 20px / 滚动条回弹」即此。
+	for (let i = start; i < end; i++) {
 		const element = elements[i] as CommandItemElement | undefined;
 		if (element === undefined) continue;
 		const key = element.rowKey ?? '';
@@ -824,6 +852,14 @@ export const commandListPrototype: Record<
 		// `updateOnResize` 声明，`CommonListLike.textContent` 也改回 DOM 的 `string | null`。
 		commonListClearElements(this, elements.count);
 
+		// 行模型必须**按当前窗口**建：下面的 `resize()` 里还有一次窗口重算，但它发生在
+		// `dispatchUpdateEvent` **之后**（editor 侧的 `mark` 依赖 update 事件先到），
+		// 所以这里先自己把窗口定下来 —— 否则模型会拿上一次的 `end` 建出一段错窗口
+		// （窗口化之后这件事才会有可见后果：DOM 与模型不一致、margins 把内容顶错）。
+		const range = commandVisibleRange(this);
+		elements.start = range.start;
+		elements.end = range.end;
+
 		// 重建行数据与行模型快照
 		rebuildCommandRowData(elements);
 		rebuildCommandRowModel(this, { padded: getListConfig(this).padded === true });
@@ -914,26 +950,27 @@ export const commandListPrototype: Record<
 
 	resize: function (this: CommandListHost, ..._args: unknown[]): void {
 		// **不再调用 `commonListResize`**——它负责的"把行挂进根元素"
-		// 现在归模板（`v-for`）。api 只算可见窗口并更新行模型；几何仍与原实现一致
-		// （行高 20、窗口起点 = floor(scrollTop/20)、窗口长度 = ceil(clientHeight/20)+1）。
+		// 现在归模板（`v-for`）。api 只算可见窗口并更新行模型（公式见 `commandVisibleRange`）。
 		const els = this.elements;
 		const ch = this.clientHeight;
-		const count = els.count;
 		if (ch === 0) return;
-		if (count === 0) {
+		if (els.count === 0) {
 			els.start = 0;
 			els.end = 0;
 			rebuildCommandRowModel(this, { padded: getListConfig(this).padded === true });
 			this.scheduleCheckVariables();
 			return;
 		}
-		const st = this.scrollTop;
-		const start = Math.min(Math.floor(st / commandRender.ROW_HEIGHT), count - 1);
-		const end = Math.min(start + Math.ceil(ch / commandRender.ROW_HEIGHT) + 1, count);
+		const { start, end } = commandVisibleRange(this);
 		if (els.start !== start || els.end !== end) {
 			els.start = start;
 			els.end = end;
 			rebuildCommandRowModel(this, { padded: getListConfig(this).padded === true });
+			// 窗口动过 ⇒ 通知**渲染行的那一方**重建行。
+			// 为什么不能用现成的 `update` 事件：editor 侧（`eslints`）在 `update` 里遍历**全部**行
+			// 重算 `mark` + 折叠线分类，按窗口边界（滚动时约每 20px 一次）触发会把它变成滚动热路径
+			// ⇒ 抖动。也不能靠渲染方监听 `scroll`：那是每个滚动事件都触发，且要按行绑元素 + 强制布局。
+			dispatchRowModelEvent(this);
 		}
 
 		this.scheduleCheckVariables();

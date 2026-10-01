@@ -79,9 +79,16 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	createCommandListApi(el, props.options ?? {});
-	// api 初始化时就挂好了自己的 scroll→resize 监听；这里在其后再补一拍刷新行模型
+	// 刷新时机**只有两个**，都表示"行模型真的变了"：
+	// - `update`：数据重建 / 选区变化（模型重建后 api 派发）
+	// - `rowmodel`：可见窗口移动（api 的 `resize` 里窗口真的动了才派发）
+	//
+	// ⚠️ 不要监听 `scroll`：滚动事件每个像素都来（滚轮一次几十个），而 `refreshRows` 会按行
+	// 重绑元素（`bindRowElement` → `updateCommandElement`）并在下一拍跑 `updateLineClasses`
+	// （读 `getBoundingClientRect`）⇒ 滚动热路径上反复强制布局，实机表现为行内容闪烁/抖动。
+	// 窗口没动时 `scroll` 本来也不需要刷新：行、margins 都由模型决定。
 	el.addEventListener('update', refreshRows);
-	el.addEventListener('scroll', refreshRows);
+	el.addEventListener('rowmodel', refreshRows);
 	refreshRows();
 });
 
@@ -89,7 +96,7 @@ onBeforeUnmount(() => {
 	const el = root.value as CommandListRootElement | null;
 	if (!el) return;
 	el.removeEventListener('update', refreshRows);
-	el.removeEventListener('scroll', refreshRows);
+	el.removeEventListener('rowmodel', refreshRows);
 	el.removeEventListener('scroll', el.resize);
 	el.removeEventListener('focus', el.listFocus);
 	el.removeEventListener('blur', el.listBlur);
@@ -121,6 +128,10 @@ onBeforeUnmount(() => {
 	width: 100%;
 	height: 100%;
 	overflow-y: auto;
+	/* 虚拟滚动：窗口移动会改首/末行的 margin ⇒ 内容高度在锚点上方变化，
+	   浏览器默认的滚动锚定（overflow-anchor: auto）会去"补偿"scrollTop，与列表自己的
+	   窗口计算互相拉扯（实机表现：滚动条回弹/自动跑、内容整块跳一行）。由列表自己管滚动。 */
+	overflow-anchor: none;
 	font-family: var(--font-family-mono);
 	user-select: none;
 }

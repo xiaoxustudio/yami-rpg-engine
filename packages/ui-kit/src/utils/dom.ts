@@ -165,6 +165,20 @@ export const dispatchUpdateEvent = (el: { dispatchEvent: (event: Event) => unkno
 	el.dispatchEvent(updateEvent);
 };
 
+const rowModelEvent = new Event('rowmodel');
+/**
+ * **可见行窗口变了**（虚拟滚动窗口移动）——比 `update` 轻得多：只让"渲染行的那一方"重建行，
+ * 不触发数据/标记重算。
+ *
+ * 为什么需要它：模板化行渲染（行由 `v-for` 挂）之后，窗口一变模型就变，而渲染方只有
+ * `update`（太重：editor 侧会遍历**全部**行重算 mark）与 `scroll`（太频：每个滚动事件一次，
+ * 每次都要按行绑元素并强制布局）两个信号可用。虚拟列表需要一个"窗口真的动了"的信号；
+ * 缺了它就只剩这两个坏选择，实机表现是滚动抖动/行内容闪烁（2026-10-01）。
+ */
+export const dispatchRowModelEvent = (el: { dispatchEvent: (event: Event) => unknown }): void => {
+	el.dispatchEvent(rowModelEvent);
+};
+
 const resizeEvent = new Event('resize');
 export const dispatchResizeEvent = (el: { dispatchEvent: (event: Event) => unknown }): void => {
 	el.dispatchEvent(resizeEvent);
