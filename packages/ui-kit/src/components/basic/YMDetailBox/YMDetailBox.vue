@@ -49,7 +49,7 @@ const close = (): void => {
 
 const toggle = (): void => (state.open ? close() : open());
 
-provide<DetailBoxContext>(DetailBoxKey, { toggle });
+provide<DetailBoxContext>(DetailBoxKey, { toggle, isOpen: () => state.open });
 
 defineExpose({ toggle, open, close, root });
 

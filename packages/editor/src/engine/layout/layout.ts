@@ -655,7 +655,7 @@ Layout.initialize = function () {
 	getLayoutStore().focusableSelector = `
   input, textarea, button, .select-box, .check-box, .radio-box,
   .color-box, .custom-box, .common-list, .tree-list, .param-list,
-  .command-list, file-body-content`;
+  .command-list, file-body-content, .detail-summary`;
 
 	window.addEventListener('resize', this.windowResize!);
 	window.addEventListener('localize', this.windowLocalize!);
