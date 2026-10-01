@@ -692,8 +692,17 @@ spacing {
 	width: 8px;
 }
 
-:focus {
+/*
+ * 键盘焦点必须可见（与 ui-kit `styles/components.css` 同口径，两处都要改：
+ * 本文件在 cascade 里更靠后，只改 ui-kit 那份会被这里重新压掉）。
+ */
+:focus:not(:focus-visible) {
 	outline: none;
+}
+
+:focus-visible {
+	outline: var(--1dpx) solid var(--input-border-color-focus);
+	outline-offset: -1px;
 }
 
 .hidden {

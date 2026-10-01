@@ -311,8 +311,18 @@ spacing {
 	width: 8px;
 }
 
-:focus {
+/*
+ * 键盘焦点必须可见：原先写的是裸 `:focus { outline: none }`，鼠标点击不显示描边了，
+ * 但键盘 Tab / 方向键用户也一并失去位置感（`outline: none` 不区分输入方式）。
+ * 改成只压制「非 focus-visible」的描边，键盘焦点交回显式描边。
+ */
+:focus:not(:focus-visible) {
 	outline: none;
+}
+
+:focus-visible {
+	outline: var(--1dpx) solid var(--input-border-color-focus);
+	outline-offset: -1px;
 }
 
 ::selection {
