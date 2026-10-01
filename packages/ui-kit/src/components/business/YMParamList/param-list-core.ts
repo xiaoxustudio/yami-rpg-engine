@@ -1,5 +1,10 @@
 import { clamp } from '../../../utils/dom';
-import { ROW_HEIGHT, computeRowMargins, computeVisibleRange } from '../../../utils/common-list';
+import {
+	ROW_HEIGHT,
+	clearElementSlots,
+	computeRowMargins,
+	computeVisibleRange
+} from '../../../utils/common-list';
 
 export type ParamDataItem = { enabled?: boolean };
 
@@ -127,16 +132,9 @@ export function createParamListCore(): ParamListCore {
 		}
 	};
 
-	const clearElements = (list: unknown[], start: number): void => {
-		let i = start;
-		while (list[i] !== undefined) {
-			list[i++] = undefined;
-		}
-	};
-
 	return {
 		resolveSelectionRange,
-		// 窗口与边距公式统一走 `utils/common-list.ts` 的唯一一份（本地那份是逐字重复）
+		// 窗口/边距/清空槽位统一走 `utils/common-list.ts` 的唯一一份（本地那三份是逐字重复）
 		computeVisibleRange,
 		computeHeadAndFootMargins: computeRowMargins,
 		computeFlexibleHeight,
@@ -144,6 +142,6 @@ export function createParamListCore(): ParamListCore {
 		computeDragSelectIndex,
 		collectToggleItems,
 		setItemsEnabled,
-		clearElements
+		clearElements: clearElementSlots
 	};
 }

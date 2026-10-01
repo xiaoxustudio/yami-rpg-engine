@@ -74,12 +74,21 @@ export const computeRowMargins = (
 	};
 };
 
-export const commonListClearElements = (list: CommonListLike, start: number): void => {
+/**
+ * 把 `start` 起的连续槽位清空（稀疏游标数组的收尾动作）—— **唯一一份实现**。
+ *
+ * `commonListClearElements` 是它的「列表形态」包装；`param-list-core` / `common-list-core`
+ * 各自的 `clearElements(element[], start)` 直接就是它本身（此前三处逐字重复）。
+ */
+export const clearElementSlots = <T>(elements: T[], start: number): void => {
 	let i = start;
-	while (list.elements[i] !== undefined) {
-		list.elements[i++] = undefined as never;
+	while (elements[i] !== undefined) {
+		elements[i++] = undefined as never;
 	}
 };
+
+export const commonListClearElements = (list: CommonListLike, start: number): void =>
+	clearElementSlots(list.elements, start);
 
 /**
  * `commonListUpdateHeadAndFoot` 真正需要的东西只有 `elements` 上的窗口游标 ——

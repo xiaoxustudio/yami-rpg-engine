@@ -1,15 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { computeRowMargins, computeVisibleRange } from '../../../../utils/common-list';
+import {
+	clearElementSlots,
+	computeRowMargins,
+	computeVisibleRange
+} from '../../../../utils/common-list';
 import { createCommonListCore } from '../common-list-core';
 
 const core = createCommonListCore();
 
 describe('common-list-core', () => {
-	it('窗口/边距公式与 utils/common-list 的唯一一份是同一个实现（防再抄一份）', () => {
-		// 这两条断言是**身份**比较，不是取值比较：取值比较在「又抄一份」时依然会通过，
+	it('窗口/边距/清空槽位与 utils/common-list 的唯一一份是同一个实现（防再抄一份）', () => {
+		// 这几条断言是**身份**比较，不是取值比较：取值比较在「又抄一份」时依然会通过，
 		// 而本次收口要保住的正是「只有一份实现」。`tree-render` / `param-list-core` 同理。
 		expect(core.computeVisibleRange).toBe(computeVisibleRange);
 		expect(core.computeHeadAndFootMargins).toBe(computeRowMargins);
+		expect(core.clearElements).toBe(clearElementSlots);
 	});
 
 	describe('findItemIndex', () => {
