@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { elementDataOf } from '../../../utils/element-data';
 import { addClass, removeClass, hasClass, hide, show, rect } from '../../../utils/dom';
 import { createDragAndDropHintElement } from '../YMDragAndDropHint/drag-and-drop-hint-api';
@@ -21,6 +21,10 @@ interface TabDraggingEvent {
 	target: HTMLElement;
 	offsetX: number;
 	mode?: 'close' | 'popup';
+	/**
+	 * 「pointerup 落点是否算命中」的判据。**可选**：只有 close 手势需要它（拖离关闭键就不算命中），
+	 * popup 的命中由自己比较 `target` 完成，缺省即不限制落点。
+	 */
 	relate?(event: PointerEvent): boolean;
 }
 
@@ -316,18 +320,30 @@ const on = (
 	}
 };
 
+/**
+ * 一次手势占用的资源统一在这里回收：`dragging` 状态、window 上的 `pointerup` 监听、
+ * 以及插到**组件子树之外**（`el.parentNode`）的拖拽提示元素。
+ *
+ * `dragend`（自然结束）与 `onBeforeUnmount`（拖拽中途卸载）共用它——否则组件的 window 监听
+ * 与游离 hint 会永久残留。
+ */
+const clearGesture = (el: TabBarElement): void => {
+	const data = tabBarData(el);
+	data.dragging?.hint?.remove();
+	data.dragging = null;
+	window.removeEventListener('pointerup', windowPointerup);
+	removeClass(el, 'dragging');
+	el.removeEventListener('dragenter', dragenter);
+	el.removeEventListener('dragleave', dragleave);
+	el.removeEventListener('dragover', dragover);
+	el.removeEventListener('drop', drop);
+};
+
 const dragend = (): void => {
 	const el = root.value as TabBarElement | null;
 	if (!el || !el.parentNode) return;
-	const data = tabBarData(el);
-	if (data.dragging) {
-		removeClass(el, 'dragging');
-		data.dragging.hint?.remove();
-		data.dragging = null;
-		el.removeEventListener('dragenter', dragenter);
-		el.removeEventListener('dragleave', dragleave);
-		el.removeEventListener('dragover', dragover);
-		el.removeEventListener('drop', drop);
+	if (tabBarData(el).dragging) {
+		clearGesture(el);
 	}
 };
 
@@ -517,40 +533,45 @@ const drop = (event: DragEvent): void => {
 const windowPointerup = (event: PointerEvent): void => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return;
-	const data = tabBarData(el);
-	const dragging = data.dragging;
-	if (dragging && dragging.relate!(event)) {
-		switch (dragging.mode) {
-			case 'close': {
-				const target = (event.target as HTMLElement).closest(
-					'.tab-item'
-				) as TabDragTarget | null;
-				if (target && dragging.target === target) {
-					close(tabData(target).item);
-				}
-				break;
+	const dragging = tabBarData(el).dragging;
+	if (!dragging) return;
+	// pointerup 一律结束这次手势：先把 `dragging` 与 window 监听收干净，再判断落点是否命中。
+	// 反过来（先判 relate 再清理）会让「按下后把指针移开再松开」永久留下手势态，
+	// 之后 `dragstart` 的 `if (!data.dragging)` 会把整条拖拽路径挡死。
+	clearGesture(el);
+	if (dragging.mode !== 'close' && dragging.mode !== 'popup') return;
+	// 只有 close / popup 会注册本监听，且 `relate` 是可选字段：缺省视为「不限制落点」，
+	// popup 的命中判断由下面各分支自己比较目标完成。
+	// （修复前这里是 `dragging.relate!(event)`：popup 分支没有 relate，右键松开时当场 TypeError。）
+	if (dragging.relate && !dragging.relate(event)) return;
+	switch (dragging.mode) {
+		case 'close': {
+			const target = (event.target as HTMLElement).closest(
+				'.tab-item'
+			) as TabDragTarget | null;
+			if (target && dragging.target === target) {
+				close(tabData(target).item);
 			}
-			case 'popup':
-				if (dragging.target === event.target) {
-					const popupEvent = createPayloadEvent(
-						'popup',
-						{} as {
-							value?: TabItem | null;
-							clientX: number;
-							clientY: number;
-						}
-					);
-					const item = tabData(event.target).item;
-					popupEvent.value = item ?? null;
-					popupEvent.clientX = event.clientX;
-					popupEvent.clientY = event.clientY;
-					el.dispatchEvent(popupEvent);
-					emit('popup', popupEvent.value, popupEvent.clientX, popupEvent.clientY);
-				}
-				break;
+			break;
 		}
-		data.dragging = null;
-		window.removeEventListener('pointerup', windowPointerup);
+		case 'popup':
+			if (dragging.target === event.target) {
+				const popupEvent = createPayloadEvent(
+					'popup',
+					{} as {
+						value?: TabItem | null;
+						clientX: number;
+						clientY: number;
+					}
+				);
+				const item = tabData(event.target).item;
+				popupEvent.value = item ?? null;
+				popupEvent.clientX = event.clientX;
+				popupEvent.clientY = event.clientY;
+				el.dispatchEvent(popupEvent);
+				emit('popup', popupEvent.value, popupEvent.clientX, popupEvent.clientY);
+			}
+			break;
 	}
 };
 
@@ -601,6 +622,14 @@ onMounted(() => {
 	el.addEventListener('pointerdown', pointerdown);
 	el.addEventListener('dragstart', dragstart);
 	el.addEventListener('dragend', dragend);
+});
+
+// 拖拽/长按途中被卸载：window 上的 pointerup 监听与插到组件子树之外的 hint 都不归 Vue 管，
+// 必须在卸载前显式回收（挂在 el 自身的三个监听随元素一起销毁，不需要处理）。
+onBeforeUnmount(() => {
+	const el = root.value as TabBarElement | null;
+	if (!el) return;
+	clearGesture(el);
 });
 </script>
 
