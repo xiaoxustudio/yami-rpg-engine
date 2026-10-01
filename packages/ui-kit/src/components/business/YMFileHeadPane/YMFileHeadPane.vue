@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent, h, type PropType, onMounted, ref } from 'vue';
+import { defineComponent, h, type PropType, onBeforeUnmount, onMounted, ref } from 'vue';
 import { addClass, hasClass, rect, removeClass, focusWithOptions } from '../../../utils/dom';
 import { elementDataOf } from '../../../utils/element-data';
 import YMTextBox from '../../basic/YMTextBox/YMTextBox.vue';
@@ -104,6 +104,24 @@ const core = createFileHeadPaneCore();
 const addressNodes = ref<AddressNode[]>([]);
 let addressSeq = 0;
 
+/**
+ * 组件生命周期内挂在 `window` 上的临时监听，卸载时兜底摘除。
+ *
+ * 地址栏按下后注册的 `pointerup` 带 `{ once: true }`，正常情况下会被下一次 pointerup
+ * 消费掉；但**按下与抬起之间组件被卸载**（切页 / 关项目）时它还没触发，监听连同闭包
+ * （引用着那个地址元素）会留在 window 上。重复摘除是 no-op，所以正常路径不受影响。
+ */
+const windowListeners: { type: string; fn: EventListener }[] = [];
+
+function listenWindow<K extends keyof WindowEventMap>(
+	type: K,
+	fn: (event: WindowEventMap[K]) => void,
+	options?: AddEventListenerOptions
+): void {
+	window.addEventListener(type, fn, options);
+	windowListeners.push({ type, fn: fn as EventListener });
+}
+
 const AddressPart = defineComponent({
 	props: {
 		node: { type: Object as PropType<AddressNode>, required: true }
@@ -168,7 +186,7 @@ function addressPointerdown(event: PointerEvent) {
 				if (hasClass(element, 'active')) {
 					return;
 				}
-				window.addEventListener(
+				listenWindow(
 					'pointerup',
 					(event: PointerEvent) => {
 						if (event.button === 0 && element === event.target) {
@@ -235,6 +253,11 @@ function addressPointerdown(event: PointerEvent) {
 		}
 	}
 }
+
+onBeforeUnmount(() => {
+	for (const { type, fn } of windowListeners) window.removeEventListener(type, fn);
+	windowListeners.length = 0;
+});
 
 function backButtonClick(_event: Event) {
 	const { browser } = props.links;
