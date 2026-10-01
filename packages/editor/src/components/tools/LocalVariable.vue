@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.localVariable-key.label') }}</div>
 			<TextBox
+				:label="t('components.localVariable-key.label')"
 				id="localVariable-key"
 				v-tip="t('components.localVariable-key.tip')"
 				:ref="registryRef(textCaptureEls, 'localVariable-key')"

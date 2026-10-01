@@ -55,6 +55,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-number-constant-value.label') }}</div>
 		<NumberBox
+			:label="t('components.if-condition-number-constant-value.label')"
 			id="if-condition-number-constant-value"
 			v-tip="t('components.if-condition-number-constant-value.tip')"
 			:ref="fieldRef('if-condition-number-constant-value')"
@@ -79,6 +80,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-string-constant-value.label') }}</div>
 		<TextArea
+			:label="t('components.if-condition-string-constant-value.label')"
 			id="if-condition-string-constant-value"
 			v-tip="t('components.if-condition-string-constant-value.tip')"
 			:ref="fieldRef('if-condition-string-constant-value')"
@@ -237,6 +239,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-actor-quantity.label') }}</div>
 		<NumberBox
+			:label="t('components.if-condition-actor-quantity.label')"
 			id="if-condition-actor-quantity"
 			v-tip="t('components.if-condition-actor-quantity.tip')"
 			:ref="fieldRef('if-condition-actor-quantity')"
@@ -276,6 +279,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-keyboard-keycode.label') }}</div>
 		<KeyboardBox
+			:label="t('components.if-condition-keyboard-keycode.label')"
 			id="if-condition-keyboard-keycode"
 			v-tip="t('components.if-condition-keyboard-keycode.tip')"
 			v-focus
@@ -290,6 +294,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-gamepad-button.label') }}</div>
 		<GamepadBox
+			:label="t('components.if-condition-gamepad-button.label')"
 			id="if-condition-gamepad-button"
 			v-tip="t('components.if-condition-gamepad-button.tip')"
 			v-focus

@@ -98,6 +98,7 @@
 			</div>
 			<div class="text">{{ t('components.setButton-property-imageOpacity.label') }}</div>
 			<NumberBox
+				:label="t('components.setButton-property-imageOpacity.label')"
 				id="setButton-property-imageOpacity"
 				:ref="fieldRef('setButton-property-imageOpacity')"
 				min="0"
@@ -115,6 +116,7 @@
 			/>
 			<div class="text">{{ t('components.setButton-property-size.label') }}</div>
 			<NumberBox
+				:label="t('components.setButton-property-size.label')"
 				id="setButton-property-size"
 				:ref="fieldRef('setButton-property-size')"
 				min="10"
@@ -124,6 +126,7 @@
 			/>
 			<div class="text">{{ t('components.setButton-property-letterSpacing.label') }}</div>
 			<NumberBox
+				:label="t('components.setButton-property-letterSpacing.label')"
 				id="setButton-property-letterSpacing"
 				:ref="fieldRef('setButton-property-letterSpacing')"
 				min="-10"

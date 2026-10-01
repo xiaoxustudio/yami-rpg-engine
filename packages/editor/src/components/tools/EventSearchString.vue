@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.event-search-string-search.label') }}</div>
 			<TextBox
+				:label="t('components.event-search-string-search.label')"
 				id="event-search-string-search"
 				v-tip="t('components.event-search-string-search.tip')"
 				:ref="registryRef(storesEls, 'event-search-string-search')"

@@ -26,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-priority.label') || 'Priority' }}</div>
 			<NumberBox
+				:label="t('components.fileTrigger-priority.label') || 'Priority'"
 				id="fileTrigger-priority"
 				v-tip="t('components.fileTrigger-priority.tip')"
 				v-model="form.priority"
@@ -35,6 +36,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-offsetY.label') || 'Offset Y' }}</div>
 			<NumberBox
+				:label="t('components.fileTrigger-offsetY.label') || 'Offset Y'"
 				id="fileTrigger-offsetY"
 				v-tip="t('components.fileTrigger-offsetY.tip')"
 				v-model="form.offsetY"

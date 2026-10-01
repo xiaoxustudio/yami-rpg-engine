@@ -9,6 +9,9 @@
 			</div>
 			<div class="flex-box" id="particleLayer-movement-angle-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-movement-angle-box.label') || 'Movement Angle'
+					"
 					id="particleLayer-movement-angle-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-movement-angle-0')"
 					v-tip="t('components.particleLayer-movement-angle-0.tip')"
@@ -40,6 +43,9 @@
 			</div>
 			<div class="flex-box" id="particleLayer-movement-speed-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-movement-speed-box.label') || 'Movement Speed'
+					"
 					id="particleLayer-movement-speed-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-movement-speed-0')"
 					v-tip="t('components.particleLayer-movement-speed-0.tip')"
@@ -67,6 +73,9 @@
 			</div>
 			<div class="flex-box" id="particleLayer-movement-accelAngle-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-movement-accelAngle-box.label') || 'Accel Angle'
+					"
 					id="particleLayer-movement-accelAngle-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-movement-accelAngle-0')"
 					v-tip="t('components.particleLayer-movement-accelAngle-0.tip')"
@@ -98,6 +107,7 @@
 			</div>
 			<div class="flex-box" id="particleLayer-movement-accel-box">
 				<NumberBox
+					:label="t('components.particleLayer-movement-accel-box.label') || 'Accel'"
 					id="particleLayer-movement-accel-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-movement-accel-0')"
 					v-tip="t('components.particleLayer-movement-accel-0.tip')"

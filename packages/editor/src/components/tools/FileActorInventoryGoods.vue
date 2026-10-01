@@ -31,6 +31,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-inventory-item-quantity.label') }}</div>
 			<NumberBox
+				:label="t('components.fileActor-inventory-item-quantity.label')"
 				id="fileActor-inventory-item-quantity"
 				v-tip="t('components.fileActor-inventory-item-quantity.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-inventory-item-quantity')"
@@ -50,6 +51,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-inventory-money.label') }}</div>
 			<NumberBox
+				:label="t('components.fileActor-inventory-money.label')"
 				id="fileActor-inventory-money"
 				v-tip="t('components.fileActor-inventory-money.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-inventory-money')"

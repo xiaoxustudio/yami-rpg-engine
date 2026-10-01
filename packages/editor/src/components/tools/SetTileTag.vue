@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setTileTag-tag.label') }}</div>
 			<NumberBox
+				:label="t('components.setTileTag-tag.label')"
 				id="setTileTag-tag"
 				v-tip="t('components.setTileTag-tag.tip')"
 				:ref="registryRef(moduleEls, 'setTileTag-tag')"

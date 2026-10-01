@@ -71,6 +71,7 @@
 			</div>
 			<div class="text">{{ t('components.uiButton-content.label') || 'Content' }}</div>
 			<TextBox
+				:label="t('components.uiButton-content.label') || 'Content'"
 				id="uiButton-content"
 				:ref="registryRef(inspectorEls, 'uiButton-content')"
 				v-tip="t('components.uiButton-content.tip')"
@@ -93,6 +94,7 @@
 					step="2"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.uiButton-size-box.label') || 'Size'"
 					id="uiButton-size"
 					ref="elSize"
 					v-model="form.size"
@@ -120,6 +122,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.uiButton-letterSpacing-box.label') || 'Letter Spacing'"
 					id="uiButton-letterSpacing"
 					ref="elLetterSpacing"
 					v-model="form.letterSpacing"
@@ -147,6 +150,7 @@
 					step="2"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.uiButton-textPadding-box.label') || 'Padding'"
 					id="uiButton-textPadding"
 					ref="elTextPadding"
 					v-model="form.textPadding"
@@ -159,6 +163,7 @@
 			</div>
 			<div class="text">{{ t('components.uiButton-font.label') || 'Font' }}</div>
 			<TextBox
+				:label="t('components.uiButton-font.label') || 'Font'"
 				id="uiButton-font"
 				:placeholder="t('components.uiButton-font.placeholder')"
 				:ref="registryRef(inspectorEls, 'uiButton-font')"
@@ -186,6 +191,7 @@
 				{{ t('components.uiButton-textEffect-shadowOffsetX.label') || 'Shadow X' }}
 			</div>
 			<NumberBox
+				:label="t('components.uiButton-textEffect-shadowOffsetX.label') || 'Shadow X'"
 				id="uiButton-textEffect-shadowOffsetX"
 				v-tip="t('components.uiButton-textEffect-shadowOffsetX.tip')"
 				ref="elShadowOffsetX"
@@ -199,6 +205,7 @@
 				{{ t('components.uiButton-textEffect-shadowOffsetY.label') || 'Shadow Y' }}
 			</div>
 			<NumberBox
+				:label="t('components.uiButton-textEffect-shadowOffsetY.label') || 'Shadow Y'"
 				id="uiButton-textEffect-shadowOffsetY"
 				v-tip="t('components.uiButton-textEffect-shadowOffsetY.tip')"
 				ref="elShadowOffsetY"
@@ -212,6 +219,7 @@
 				{{ t('components.uiButton-textEffect-strokeWidth.label') || 'Stroke Width' }}
 			</div>
 			<NumberBox
+				:label="t('components.uiButton-textEffect-strokeWidth.label') || 'Stroke Width'"
 				id="uiButton-textEffect-strokeWidth"
 				v-tip="t('components.uiButton-textEffect-strokeWidth.tip')"
 				ref="elStrokeWidth"

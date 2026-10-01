@@ -11,6 +11,7 @@
 		{{ t('components.uiDialogBox-effect-shadowOffsetX.label') || 'Shadow X' }}
 	</div>
 	<NumberBox
+		:label="t('components.uiDialogBox-effect-shadowOffsetX.label') || 'Shadow X'"
 		ref="elShadowOffsetX"
 		id="uiDialogBox-effect-shadowOffsetX"
 		v-tip="t('components.uiDialogBox-effect-shadowOffsetX.tip')"
@@ -24,6 +25,7 @@
 		{{ t('components.uiDialogBox-effect-shadowOffsetY.label') || 'Shadow Y' }}
 	</div>
 	<NumberBox
+		:label="t('components.uiDialogBox-effect-shadowOffsetY.label') || 'Shadow Y'"
 		ref="elShadowOffsetY"
 		id="uiDialogBox-effect-shadowOffsetY"
 		v-tip="t('components.uiDialogBox-effect-shadowOffsetY.tip')"
@@ -37,6 +39,7 @@
 		{{ t('components.uiDialogBox-effect-strokeWidth.label') || 'Stroke Width' }}
 	</div>
 	<NumberBox
+		:label="t('components.uiDialogBox-effect-strokeWidth.label') || 'Stroke Width'"
 		ref="elStrokeWidth"
 		id="uiDialogBox-effect-strokeWidth"
 		v-tip="t('components.uiDialogBox-effect-strokeWidth.tip')"

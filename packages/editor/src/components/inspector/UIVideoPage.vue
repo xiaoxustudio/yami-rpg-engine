@@ -18,6 +18,7 @@
 				{{ t('components.uiVideo-playbackRate.label') || 'Playback Rate' }}
 			</div>
 			<NumberBox
+				:label="t('components.uiVideo-playbackRate.label') || 'Playback Rate'"
 				id="uiVideo-playbackRate"
 				v-tip="t('components.uiVideo-playbackRate.tip')"
 				ref="elPlaybackRate"

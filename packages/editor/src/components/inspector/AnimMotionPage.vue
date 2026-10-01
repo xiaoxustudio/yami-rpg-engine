@@ -32,6 +32,7 @@
 			></CheckBox>
 			<div class="text">{{ t('components.animMotion-loopStart.label') || 'Loop Start' }}</div>
 			<NumberBox
+				:label="t('components.animMotion-loopStart.label') || 'Loop Start'"
 				id="animMotion-loopStart"
 				v-tip="t('components.animMotion-loopStart.tip')"
 				ref="elLoopStart"

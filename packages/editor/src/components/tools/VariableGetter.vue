@@ -65,6 +65,7 @@
 			/>
 			<div class="text">{{ t('components.variableGetter-common-key.label') }}</div>
 			<TextBox
+				:label="t('components.variableGetter-common-key.label')"
 				id="variableGetter-common-key"
 				:ref="registryRef(composableEls, 'variableGetter-common-key')"
 				v-tip="t('components.variableGetter-common-key.tip')"

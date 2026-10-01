@@ -37,6 +37,7 @@
 	></SelectBox>
 	<div class="text">{{ t('components.uiProgressBar-centerX.label') || 'Center X' }}</div>
 	<NumberBox
+		:label="t('components.uiProgressBar-centerX.label') || 'Center X'"
 		id="uiProgressBar-centerX"
 		v-tip="t('components.uiProgressBar-centerX.tip')"
 		ref="elCenterX"
@@ -49,6 +50,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiProgressBar-centerY.label') || 'Center Y' }}</div>
 	<NumberBox
+		:label="t('components.uiProgressBar-centerY.label') || 'Center Y'"
 		id="uiProgressBar-centerY"
 		v-tip="t('components.uiProgressBar-centerY.tip')"
 		ref="elCenterY"
@@ -63,6 +65,7 @@
 		{{ t('components.uiProgressBar-startAngle.label') || 'Start Angle' }}
 	</div>
 	<NumberBox
+		:label="t('components.uiProgressBar-startAngle.label') || 'Start Angle'"
 		id="uiProgressBar-startAngle"
 		v-tip="t('components.uiProgressBar-startAngle.tip')"
 		ref="elStartAngle"
@@ -78,6 +81,7 @@
 		{{ t('components.uiProgressBar-centralAngle.label') || 'Central Angle' }}
 	</div>
 	<NumberBox
+		:label="t('components.uiProgressBar-centralAngle.label') || 'Central Angle'"
 		id="uiProgressBar-centralAngle"
 		v-tip="t('components.uiProgressBar-centralAngle.tip')"
 		ref="elCentralAngle"
@@ -91,6 +95,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiProgressBar-step.label') || 'Step' }}</div>
 	<NumberBox
+		:label="t('components.uiProgressBar-step.label') || 'Step'"
 		id="uiProgressBar-step"
 		:ref="registryRef(inspectorEls, 'uiProgressBar-step')"
 		v-tip="t('components.uiProgressBar-step.tip')"
@@ -101,6 +106,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiProgressBar-progress.label') || 'Progress' }}</div>
 	<NumberBox
+		:label="t('components.uiProgressBar-progress.label') || 'Progress'"
 		id="uiProgressBar-progress"
 		:ref="registryRef(inspectorEls, 'uiProgressBar-progress')"
 		v-tip="t('components.uiProgressBar-progress.tip')"

@@ -55,6 +55,7 @@
 			/>
 			<div class="text">{{ t('components.followActor-offset.label') }}</div>
 			<NumberBox
+				:label="t('components.followActor-offset.label')"
 				id="followActor-offset"
 				v-tip="t('components.followActor-offset.tip')"
 				:ref="registryRef(fieldEls, 'followActor-offset')"
@@ -66,6 +67,7 @@
 			/>
 			<div class="text">{{ t('components.followActor-vertDist.label') }}</div>
 			<NumberBox
+				:label="t('components.followActor-vertDist.label')"
 				id="followActor-vertDist"
 				v-tip="t('components.followActor-vertDist.tip')"
 				:ref="registryRef(fieldEls, 'followActor-vertDist')"
@@ -77,6 +79,7 @@
 			/>
 			<div class="text">{{ t('components.followActor-bufferDist.label') }}</div>
 			<NumberBox
+				:label="t('components.followActor-bufferDist.label')"
 				id="followActor-bufferDist"
 				:ref="registryRef(fieldEls, 'followActor-bufferDist')"
 				v-tip="t('components.followActor-bufferDist.tip')"

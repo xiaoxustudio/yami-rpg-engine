@@ -34,6 +34,7 @@
 			/>
 			<div class="text">{{ t('components.insertImage-width.label') }}</div>
 			<NumberBox
+				:label="t('components.insertImage-width.label')"
 				id="insertImage-width"
 				v-tip="t('components.insertImage-width.tip')"
 				:ref="registryRef(textCaptureEls, 'insertImage-width')"
@@ -43,6 +44,7 @@
 			/>
 			<div class="text">{{ t('components.insertImage-height.label') }}</div>
 			<NumberBox
+				:label="t('components.insertImage-height.label')"
 				id="insertImage-height"
 				v-tip="t('components.insertImage-height.tip')"
 				:ref="registryRef(textCaptureEls, 'insertImage-height')"

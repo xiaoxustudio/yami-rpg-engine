@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.deployment-folder.label') }}</div>
 			<TextBox
+				:label="t('components.deployment-folder.label')"
 				id="deployment-folder"
 				v-tip="t('components.deployment-folder.tip')"
 				v-model="Deployment.form.folder"
@@ -27,6 +28,7 @@
 			<div class="text">{{ t('components.deployment-location-box.label') }}</div>
 			<div class="flex-box" id="deployment-location-box">
 				<TextBox
+					:label="t('components.deployment-location-box.label')"
 					id="deployment-location"
 					v-tip="t('components.deployment-location.tip')"
 					v-model="Deployment.form.location"

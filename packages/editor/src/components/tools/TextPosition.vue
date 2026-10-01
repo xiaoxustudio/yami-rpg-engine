@@ -24,6 +24,7 @@
 			/>
 			<div class="text">{{ t('components.textPosition-value.label') }}</div>
 			<NumberBox
+				:label="t('components.textPosition-value.label')"
 				id="textPosition-value"
 				v-tip="t('components.textPosition-value.tip')"
 				min="-1000"

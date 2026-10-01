@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="sceneActor-general-grid">
 			<div class="text">{{ t('components.sceneActor-name.label') || 'Name' }}</div>
 			<TextBox
+				:label="t('components.sceneActor-name.label') || 'Name'"
 				id="sceneActor-name"
 				:ref="registryRef(inspectorEls, 'sceneActor-name')"
 				v-tip="t('components.sceneActor-name.tip')"
@@ -41,6 +42,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.sceneActor-x.label') || 'X' }}</div>
 			<NumberBox
+				:label="t('components.sceneActor-x.label') || 'X'"
 				id="sceneActor-x"
 				:ref="registryRef(inspectorEls, 'sceneActor-x')"
 				v-tip="t('components.sceneActor-x.tip')"
@@ -53,6 +55,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneActor-y.label') || 'Y' }}</div>
 			<NumberBox
+				:label="t('components.sceneActor-y.label') || 'Y'"
 				id="sceneActor-y"
 				:ref="registryRef(inspectorEls, 'sceneActor-y')"
 				v-tip="t('components.sceneActor-y.tip')"
@@ -78,6 +81,7 @@
 					step="45"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneActor-angle-box.label') || 'Angle'"
 					ref="elAngle"
 					id="sceneActor-angle"
 					v-model="form.angle"
@@ -104,6 +108,7 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneActor-scale-box.label') || 'Scale'"
 					ref="elScale"
 					id="sceneActor-scale"
 					v-model="form.scale"

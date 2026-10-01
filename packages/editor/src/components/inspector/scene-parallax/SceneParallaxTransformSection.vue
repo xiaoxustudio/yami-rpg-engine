@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="sceneParallax-parallax-grid">
 			<div class="text">{{ t('components.sceneParallax-scaleX.label') || 'Scale X' }}</div>
 			<NumberBox
+				:label="t('components.sceneParallax-scaleX.label') || 'Scale X'"
 				id="sceneParallax-scaleX"
 				:ref="registryRef(inspectorEls, 'sceneParallax-scaleX')"
 				v-tip="t('components.sceneParallax-scaleX.tip')"
@@ -18,6 +19,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneParallax-scaleY.label') || 'Scale Y' }}</div>
 			<NumberBox
+				:label="t('components.sceneParallax-scaleY.label') || 'Scale Y'"
 				id="sceneParallax-scaleY"
 				:ref="registryRef(inspectorEls, 'sceneParallax-scaleY')"
 				v-tip="t('components.sceneParallax-scaleY.tip')"
@@ -30,6 +32,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneParallax-repeatX.label') || 'Repeat X' }}</div>
 			<NumberBox
+				:label="t('components.sceneParallax-repeatX.label') || 'Repeat X'"
 				id="sceneParallax-repeatX"
 				:ref="registryRef(inspectorEls, 'sceneParallax-repeatX')"
 				v-tip="t('components.sceneParallax-repeatX.tip')"
@@ -40,6 +43,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneParallax-repeatY.label') || 'Repeat Y' }}</div>
 			<NumberBox
+				:label="t('components.sceneParallax-repeatY.label') || 'Repeat Y'"
 				id="sceneParallax-repeatY"
 				:ref="registryRef(inspectorEls, 'sceneParallax-repeatY')"
 				v-tip="t('components.sceneParallax-repeatY.tip')"
@@ -50,6 +54,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneParallax-anchorX.label') || 'Anchor X' }}</div>
 			<NumberBox
+				:label="t('components.sceneParallax-anchorX.label') || 'Anchor X'"
 				id="sceneParallax-anchorX"
 				:ref="registryRef(inspectorEls, 'sceneParallax-anchorX')"
 				v-tip="t('components.sceneParallax-anchorX.tip')"
@@ -62,6 +67,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneParallax-anchorY.label') || 'Anchor Y' }}</div>
 			<NumberBox
+				:label="t('components.sceneParallax-anchorY.label') || 'Anchor Y'"
 				id="sceneParallax-anchorY"
 				:ref="registryRef(inspectorEls, 'sceneParallax-anchorY')"
 				v-tip="t('components.sceneParallax-anchorY.tip')"
@@ -74,6 +80,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneParallax-offsetX.label') || 'Offset X' }}</div>
 			<NumberBox
+				:label="t('components.sceneParallax-offsetX.label') || 'Offset X'"
 				id="sceneParallax-offsetX"
 				:ref="registryRef(inspectorEls, 'sceneParallax-offsetX')"
 				v-tip="t('components.sceneParallax-offsetX.tip')"
@@ -85,6 +92,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneParallax-offsetY.label') || 'Offset Y' }}</div>
 			<NumberBox
+				:label="t('components.sceneParallax-offsetY.label') || 'Offset Y'"
 				id="sceneParallax-offsetY"
 				:ref="registryRef(inspectorEls, 'sceneParallax-offsetY')"
 				v-tip="t('components.sceneParallax-offsetY.tip')"
@@ -98,6 +106,7 @@
 				{{ t('components.sceneParallax-parallaxFactorX.label') || 'Parallax Factor X' }}
 			</div>
 			<NumberBox
+				:label="t('components.sceneParallax-parallaxFactorX.label') || 'Parallax Factor X'"
 				id="sceneParallax-parallaxFactorX"
 				:ref="registryRef(inspectorEls, 'sceneParallax-parallaxFactorX')"
 				v-tip="t('components.sceneParallax-parallaxFactorX.tip')"
@@ -112,6 +121,7 @@
 				{{ t('components.sceneParallax-parallaxFactorY.label') || 'Parallax Factor Y' }}
 			</div>
 			<NumberBox
+				:label="t('components.sceneParallax-parallaxFactorY.label') || 'Parallax Factor Y'"
 				id="sceneParallax-parallaxFactorY"
 				:ref="registryRef(inspectorEls, 'sceneParallax-parallaxFactorY')"
 				v-tip="t('components.sceneParallax-parallaxFactorY.tip')"
@@ -126,6 +136,7 @@
 				{{ t('components.sceneParallax-shiftSpeedX.label') || 'Shift Speed X' }}
 			</div>
 			<NumberBox
+				:label="t('components.sceneParallax-shiftSpeedX.label') || 'Shift Speed X'"
 				id="sceneParallax-shiftSpeedX"
 				:ref="registryRef(inspectorEls, 'sceneParallax-shiftSpeedX')"
 				v-tip="t('components.sceneParallax-shiftSpeedX.tip')"
@@ -141,6 +152,7 @@
 				{{ t('components.sceneParallax-shiftSpeedY.label') || 'Shift Speed Y' }}
 			</div>
 			<NumberBox
+				:label="t('components.sceneParallax-shiftSpeedY.label') || 'Shift Speed Y'"
 				id="sceneParallax-shiftSpeedY"
 				:ref="registryRef(inspectorEls, 'sceneParallax-shiftSpeedY')"
 				v-tip="t('components.sceneParallax-shiftSpeedY.tip')"
@@ -169,6 +181,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneParallax-tint-0-box.label') || 'Tint - Red'"
 					id="sceneParallax-tint-0"
 					ref="elTint0"
 					v-model="tint[0]"
@@ -195,6 +208,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneParallax-tint-1-box.label') || 'Tint - Green'"
 					id="sceneParallax-tint-1"
 					ref="elTint1"
 					v-model="tint[1]"
@@ -221,6 +235,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneParallax-tint-2-box.label') || 'Tint - Blue'"
 					id="sceneParallax-tint-2"
 					ref="elTint2"
 					v-model="tint[2]"
@@ -247,6 +262,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneParallax-tint-3-box.label') || 'Tint - Grayscale'"
 					id="sceneParallax-tint-3"
 					ref="elTint3"
 					v-model="tint[3]"

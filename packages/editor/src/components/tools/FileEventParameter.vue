@@ -17,6 +17,7 @@
 			/>
 			<div class="text">{{ t('components.fileEvent-parameter-key.label') }}</div>
 			<TextBox
+				:label="t('components.fileEvent-parameter-key.label')"
 				id="fileEvent-parameter-key"
 				v-tip="t('components.fileEvent-parameter-key.tip')"
 				v-focus
@@ -24,6 +25,7 @@
 			/>
 			<div class="text">{{ t('components.fileEvent-parameter-note.label') }}</div>
 			<TextArea
+				:label="t('components.fileEvent-parameter-note.label')"
 				id="fileEvent-parameter-note"
 				v-tip="t('components.fileEvent-parameter-note.tip')"
 				v-model="form.note"

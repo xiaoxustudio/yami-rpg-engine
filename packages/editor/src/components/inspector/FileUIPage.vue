@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="fileUI-foreground-grid">
 			<div class="text">{{ t('components.fileUI-width.label') || 'Width' }}</div>
 			<NumberBox
+				:label="t('components.fileUI-width.label') || 'Width'"
 				id="fileUI-width"
 				v-tip="t('components.fileUI-width.tip')"
 				ref="elWidth"
@@ -17,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.fileUI-height.label') || 'Height' }}</div>
 			<NumberBox
+				:label="t('components.fileUI-height.label') || 'Height'"
 				id="fileUI-height"
 				v-tip="t('components.fileUI-height.tip')"
 				ref="elHeight"

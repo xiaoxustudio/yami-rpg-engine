@@ -10,6 +10,7 @@
 		<div class="detail-grid" id="uiElement-general-grid">
 			<div class="text">{{ t('components.uiElement-name.label') || 'Name' }}</div>
 			<TextBox
+				:label="t('components.uiElement-name.label') || 'Name'"
 				id="uiElement-name"
 				v-tip="t('components.uiElement-name.tip')"
 				:ref="registryRef(inspectorEls, 'uiElement-name')"

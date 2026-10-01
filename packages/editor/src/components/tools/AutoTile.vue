@@ -21,6 +21,7 @@
 				/>
 				<div class="text">{{ t('components.autoTile-x.label') }}</div>
 				<NumberBox
+					:label="t('components.autoTile-x.label')"
 					id="autoTile-x"
 					v-tip="t('components.autoTile-x.tip')"
 					min="0"
@@ -30,6 +31,7 @@
 				/>
 				<div class="text">{{ t('components.autoTile-y.label') }}</div>
 				<NumberBox
+					:label="t('components.autoTile-y.label')"
 					id="autoTile-y"
 					v-tip="t('components.autoTile-y.tip')"
 					min="0"

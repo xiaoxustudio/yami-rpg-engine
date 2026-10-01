@@ -33,6 +33,7 @@
 			/>
 			<div class="text">{{ t('components.setString-operand-common-value.label') }}</div>
 			<TextArea
+				:label="t('components.setString-operand-common-value.label')"
 				id="setString-operand-common-value"
 				:ref="registryRef(fieldEls, 'setString-operand-common-value')"
 				menu="tag-local-var tag-global-var tag-localization"
@@ -86,6 +87,7 @@
 				{{ t('components.setString-operand-string-pad-start-length.label') }}
 			</div>
 			<NumberBox
+				:label="t('components.setString-operand-string-pad-start-length.label')"
 				id="setString-operand-string-pad-start-length"
 				v-tip="t('components.setString-operand-string-pad-start-length.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-pad-start-length')"
@@ -97,6 +99,7 @@
 				{{ t('components.setString-operand-string-pad-start-pad.label') }}
 			</div>
 			<TextBox
+				:label="t('components.setString-operand-string-pad-start-pad.label')"
 				id="setString-operand-string-pad-start-pad"
 				v-tip="t('components.setString-operand-string-pad-start-pad.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-pad-start-pad')"
@@ -238,6 +241,7 @@
 			/>
 			<div class="text">{{ t('components.setString-operand-script.label') }}</div>
 			<TextBox
+				:label="t('components.setString-operand-script.label')"
 				id="setString-operand-script"
 				v-tip="t('components.setString-operand-script.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-script')"
@@ -278,6 +282,7 @@
 				{{ t('components.setString-operand-parse-timestamp-format.label') }}
 			</div>
 			<TextBox
+				:label="t('components.setString-operand-parse-timestamp-format.label')"
 				id="setString-operand-parse-timestamp-format"
 				v-tip="t('components.setString-operand-parse-timestamp-format.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-parse-timestamp-format')"
@@ -285,6 +290,7 @@
 			/>
 			<div class="text">{{ t('components.setString-operand-screenshot-width.label') }}</div>
 			<NumberBox
+				:label="t('components.setString-operand-screenshot-width.label')"
 				id="setString-operand-screenshot-width"
 				v-tip="t('components.setString-operand-screenshot-width.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-screenshot-width')"
@@ -295,6 +301,7 @@
 			/>
 			<div class="text">{{ t('components.setString-operand-screenshot-height.label') }}</div>
 			<NumberBox
+				:label="t('components.setString-operand-screenshot-height.label')"
 				id="setString-operand-screenshot-height"
 				v-tip="t('components.setString-operand-screenshot-height.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-screenshot-height')"

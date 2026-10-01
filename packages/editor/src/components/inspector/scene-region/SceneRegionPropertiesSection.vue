@@ -1,6 +1,7 @@
 <template>
 	<div class="text">{{ t('components.sceneRegion-name.label') || 'Name' }}</div>
 	<TextBox
+		:label="t('components.sceneRegion-name.label') || 'Name'"
 		id="sceneRegion-name"
 		v-tip="t('components.sceneRegion-name.tip')"
 		ref="elName"
@@ -17,6 +18,7 @@
 	></ColorBox>
 	<div class="text">{{ t('components.sceneRegion-x.label') || 'X' }}</div>
 	<NumberBox
+		:label="t('components.sceneRegion-x.label') || 'X'"
 		id="sceneRegion-x"
 		v-tip="t('components.sceneRegion-x.tip')"
 		ref="elX"
@@ -29,6 +31,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.sceneRegion-y.label') || 'Y' }}</div>
 	<NumberBox
+		:label="t('components.sceneRegion-y.label') || 'Y'"
 		id="sceneRegion-y"
 		v-tip="t('components.sceneRegion-y.tip')"
 		ref="elY"
@@ -41,6 +44,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.sceneRegion-width.label') || 'Width' }}</div>
 	<NumberBox
+		:label="t('components.sceneRegion-width.label') || 'Width'"
 		id="sceneRegion-width"
 		v-tip="t('components.sceneRegion-width.tip')"
 		ref="elWidth"
@@ -52,6 +56,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.sceneRegion-height.label') || 'Height' }}</div>
 	<NumberBox
+		:label="t('components.sceneRegion-height.label') || 'Height'"
 		id="sceneRegion-height"
 		v-tip="t('components.sceneRegion-height.tip')"
 		ref="elHeight"

@@ -6,6 +6,7 @@
 	>
 		<div class="text" id="command-searcher-mark">&gt;</div>
 		<TextBox
+			:label="'&gt;'"
 			id="command-searcher"
 			:ref="registryRef(commandSuggestionEls, 'command-searcher')"
 		/>

@@ -1,6 +1,7 @@
 <template>
 	<div class="text">{{ t('components.uiDialogBox-content.label') || 'Content' }}</div>
 	<TextArea
+		:label="t('components.uiDialogBox-content.label') || 'Content'"
 		id="uiDialogBox-content"
 		:ref="registryRef(inspectorEls, 'uiDialogBox-content')"
 		v-tip="t('components.uiDialogBox-content.tip')"
@@ -12,6 +13,7 @@
 		{{ t('components.uiDialogBox-interval.label') || 'Print Interval' }}
 	</div>
 	<NumberBox
+		:label="t('components.uiDialogBox-interval.label') || 'Print Interval'"
 		id="uiDialogBox-interval"
 		:ref="registryRef(inspectorEls, 'uiDialogBox-interval')"
 		v-tip="t('components.uiDialogBox-interval.tip')"
@@ -36,6 +38,7 @@
 			step="2"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.uiDialogBox-size-box.label') || 'Size'"
 			ref="elSize"
 			id="uiDialogBox-size"
 			v-model="form.size"
@@ -62,6 +65,7 @@
 			step="1"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.uiDialogBox-lineSpacing-box.label') || 'Line Spacing'"
 			ref="elLineSpacing"
 			id="uiDialogBox-lineSpacing"
 			v-model="form.lineSpacing"
@@ -88,6 +92,7 @@
 			step="1"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.uiDialogBox-letterSpacing-box.label') || 'Letter Spacing'"
 			ref="elLetterSpacing"
 			id="uiDialogBox-letterSpacing"
 			v-model="form.letterSpacing"
@@ -108,6 +113,7 @@
 	></ColorBox>
 	<div class="text">{{ t('components.uiDialogBox-font.label') || 'Font' }}</div>
 	<TextBox
+		:label="t('components.uiDialogBox-font.label') || 'Font'"
 		id="uiDialogBox-font"
 		:placeholder="t('components.uiDialogBox-font.placeholder')"
 		:ref="registryRef(inspectorEls, 'uiDialogBox-font')"

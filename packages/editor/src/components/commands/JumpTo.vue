@@ -17,6 +17,7 @@
 			/>
 			<div class="text">{{ t('components.jumpTo-label.label') }}</div>
 			<TextBox
+				:label="t('components.jumpTo-label.label')"
 				id="jumpTo-label"
 				v-tip="t('components.jumpTo-label.tip')"
 				:ref="registryRef(fieldEls, 'jumpTo-label')"

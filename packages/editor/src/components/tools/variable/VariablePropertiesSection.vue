@@ -9,6 +9,7 @@
 			<div class="flex-item">
 				<div class="text">{{ t('components.variable-name.label') }}</div>
 				<TextBox
+					:label="t('components.variable-name.label')"
 					id="variable-name"
 					v-tip="t('components.variable-name.tip')"
 					:ref="registryRef(variableEls, 'variable-name')"
@@ -177,6 +178,7 @@
 			<div class="flex-item">
 				<div class="text">{{ t('components.variable-note.label') }}</div>
 				<TextArea
+					:label="t('components.variable-note.label')"
 					id="variable-note"
 					v-tip="t('components.variable-note.tip')"
 					:ref="registryRef(variableEls, 'variable-note')"

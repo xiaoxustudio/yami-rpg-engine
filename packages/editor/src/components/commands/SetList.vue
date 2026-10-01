@@ -62,6 +62,7 @@
 			/>
 			<div class="text">{{ t('components.setList-number.label') }}</div>
 			<NumberBox
+				:label="t('components.setList-number.label')"
 				id="setList-number"
 				v-tip="t('components.setList-number.tip')"
 				:ref="registryRef(fieldEls, 'setList-number')"
@@ -72,6 +73,7 @@
 			/>
 			<div class="text">{{ t('components.setList-string.label') }}</div>
 			<TextArea
+				:label="t('components.setList-string.label')"
 				id="setList-string"
 				v-tip="t('components.setList-string.tip')"
 				:ref="registryRef(fieldEls, 'setList-string')"

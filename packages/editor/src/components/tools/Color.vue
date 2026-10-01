@@ -60,6 +60,7 @@
 		<div class="grid-box" id="color-rgba-grid">
 			<div class="text">#</div>
 			<TextBox
+				:label="'#'"
 				id="color-hex"
 				v-tip="t('components.color-hex.tip')"
 				:ref="registryRef(colorEls, 'color-hex')"
@@ -70,6 +71,7 @@
 			/>
 			<div class="text">R</div>
 			<NumberBox
+				:label="'R'"
 				id="color-r"
 				v-tip="t('components.color-r.tip')"
 				min="0"
@@ -79,6 +81,7 @@
 			/>
 			<div class="text">G</div>
 			<NumberBox
+				:label="'G'"
 				id="color-g"
 				v-tip="t('components.color-g.tip')"
 				min="0"
@@ -88,6 +91,7 @@
 			/>
 			<div class="text">B</div>
 			<NumberBox
+				:label="'B'"
 				id="color-b"
 				v-tip="t('components.color-b.tip')"
 				min="0"
@@ -97,6 +101,7 @@
 			/>
 			<div class="text">A</div>
 			<NumberBox
+				:label="'A'"
 				id="color-a"
 				v-tip="t('components.color-a.tip')"
 				min="0"

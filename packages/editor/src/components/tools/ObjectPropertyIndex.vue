@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.ObjectProperty-index-name.label') }}</div>
 			<TextBox
+				:label="t('components.ObjectProperty-index-name.label')"
 				id="ObjectProperty-index-name"
 				v-tip="t('components.ObjectProperty-index-name.tip')"
 				v-focus

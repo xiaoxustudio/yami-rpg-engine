@@ -36,6 +36,7 @@
 				v-tip="t('components.fileAudio-volume-box.tip')"
 			>
 				<SliderBox
+					:label="t('components.fileAudio-volume-box.label') || 'Volume'"
 					id="fileAudio-volume"
 					v-model="form.volume"
 					@input="onParamInput"
@@ -52,6 +53,7 @@
 				v-tip="t('components.fileAudio-pan-box.tip')"
 			>
 				<SliderBox
+					:label="t('components.fileAudio-pan-box.label') || 'Pan'"
 					id="fileAudio-pan"
 					v-model="form.pan"
 					@input="onParamInput"
@@ -68,6 +70,7 @@
 				v-tip="t('components.fileAudio-dry-box.tip')"
 			>
 				<SliderBox
+					:label="t('components.fileAudio-dry-box.label') || 'Reverb - Dry'"
 					id="fileAudio-dry"
 					v-model="form.dry"
 					@input="onParamInput"
@@ -84,6 +87,7 @@
 				v-tip="t('components.fileAudio-wet-box.tip')"
 			>
 				<SliderBox
+					:label="t('components.fileAudio-wet-box.label') || 'Reverb - Wet'"
 					id="fileAudio-wet"
 					v-model="form.wet"
 					@input="onParamInput"

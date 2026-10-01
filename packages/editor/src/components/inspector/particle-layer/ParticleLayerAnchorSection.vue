@@ -9,6 +9,7 @@
 			</div>
 			<div class="flex-box" id="particleLayer-anchor-x-box">
 				<NumberBox
+					:label="t('components.particleLayer-anchor-x-box.label') || 'Anchor X'"
 					id="particleLayer-anchor-x-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-anchor-x-0')"
 					v-tip="t('components.particleLayer-anchor-x-0.tip')"
@@ -38,6 +39,7 @@
 			</div>
 			<div class="flex-box" id="particleLayer-anchor-y-box">
 				<NumberBox
+					:label="t('components.particleLayer-anchor-y-box.label') || 'Anchor Y'"
 					id="particleLayer-anchor-y-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-anchor-y-0')"
 					v-tip="t('components.particleLayer-anchor-y-0.tip')"
@@ -67,6 +69,9 @@
 			</div>
 			<div class="flex-box" id="particleLayer-anchor-speedX-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-anchor-speedX-box.label') || 'Anchor Speed X'
+					"
 					id="particleLayer-anchor-speedX-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-anchor-speedX-0')"
 					v-tip="t('components.particleLayer-anchor-speedX-0.tip')"
@@ -96,6 +101,9 @@
 			</div>
 			<div class="flex-box" id="particleLayer-anchor-speedY-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-anchor-speedY-box.label') || 'Anchor Speed Y'
+					"
 					id="particleLayer-anchor-speedY-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-anchor-speedY-0')"
 					v-tip="t('components.particleLayer-anchor-speedY-0.tip')"

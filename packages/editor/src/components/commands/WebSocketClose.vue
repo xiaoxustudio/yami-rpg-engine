@@ -16,6 +16,7 @@
 			/>
 			<div class="text">{{ t('components.webSocketClose-code.label') }}</div>
 			<NumberBox
+				:label="t('components.webSocketClose-code.label')"
 				id="webSocketClose-code"
 				v-tip="t('components.webSocketClose-code.tip')"
 				min="1000"

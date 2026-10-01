@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="sceneTilemap-general-grid">
 			<div class="text">{{ t('components.sceneTilemap-name.label') || 'Name' }}</div>
 			<TextBox
+				:label="t('components.sceneTilemap-name.label') || 'Name'"
 				id="sceneTilemap-name"
 				:ref="registryRef(inspectorEls, 'sceneTilemap-name')"
 				v-tip="t('components.sceneTilemap-name.tip')"
@@ -23,6 +24,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.sceneTilemap-order.label') || 'Order' }}</div>
 			<NumberBox
+				:label="t('components.sceneTilemap-order.label') || 'Order'"
 				id="sceneTilemap-order"
 				:ref="registryRef(inspectorEls, 'sceneTilemap-order')"
 				v-model="form.order"
@@ -49,6 +51,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.sceneTilemap-x.label') || 'X' }}</div>
 			<NumberBox
+				:label="t('components.sceneTilemap-x.label') || 'X'"
 				id="sceneTilemap-x"
 				:ref="registryRef(inspectorEls, 'sceneTilemap-x')"
 				v-tip="t('components.sceneTilemap-x.tip')"
@@ -62,6 +65,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneTilemap-y.label') || 'Y' }}</div>
 			<NumberBox
+				:label="t('components.sceneTilemap-y.label') || 'Y'"
 				id="sceneTilemap-y"
 				:ref="registryRef(inspectorEls, 'sceneTilemap-y')"
 				v-tip="t('components.sceneTilemap-y.tip')"
@@ -75,6 +79,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneTilemap-width.label') || 'Width' }}</div>
 			<NumberBox
+				:label="t('components.sceneTilemap-width.label') || 'Width'"
 				id="sceneTilemap-width"
 				v-tip="t('components.sceneTilemap-width.tip')"
 				v-model="form.width"
@@ -85,6 +90,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneTilemap-height.label') || 'Height' }}</div>
 			<NumberBox
+				:label="t('components.sceneTilemap-height.label') || 'Height'"
 				id="sceneTilemap-height"
 				v-tip="t('components.sceneTilemap-height.tip')"
 				v-model="form.height"
@@ -95,6 +101,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneTilemap-anchorX.label') || 'Anchor X' }}</div>
 			<NumberBox
+				:label="t('components.sceneTilemap-anchorX.label') || 'Anchor X'"
 				id="sceneTilemap-anchorX"
 				:ref="registryRef(inspectorEls, 'sceneTilemap-anchorX')"
 				v-tip="t('components.sceneTilemap-anchorX.tip')"
@@ -107,6 +114,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneTilemap-anchorY.label') || 'Anchor Y' }}</div>
 			<NumberBox
+				:label="t('components.sceneTilemap-anchorY.label') || 'Anchor Y'"
 				id="sceneTilemap-anchorY"
 				:ref="registryRef(inspectorEls, 'sceneTilemap-anchorY')"
 				v-tip="t('components.sceneTilemap-anchorY.tip')"
@@ -119,6 +127,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneTilemap-offsetX.label') || 'Offset X' }}</div>
 			<NumberBox
+				:label="t('components.sceneTilemap-offsetX.label') || 'Offset X'"
 				id="sceneTilemap-offsetX"
 				:ref="registryRef(inspectorEls, 'sceneTilemap-offsetX')"
 				v-tip="t('components.sceneTilemap-offsetX.tip')"
@@ -130,6 +139,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneTilemap-offsetY.label') || 'Offset Y' }}</div>
 			<NumberBox
+				:label="t('components.sceneTilemap-offsetY.label') || 'Offset Y'"
 				id="sceneTilemap-offsetY"
 				:ref="registryRef(inspectorEls, 'sceneTilemap-offsetY')"
 				v-tip="t('components.sceneTilemap-offsetY.tip')"
@@ -143,6 +153,7 @@
 				{{ t('components.sceneTilemap-parallaxFactorX.label') || 'Parallax Factor X' }}
 			</div>
 			<NumberBox
+				:label="t('components.sceneTilemap-parallaxFactorX.label') || 'Parallax Factor X'"
 				id="sceneTilemap-parallaxFactorX"
 				:ref="registryRef(inspectorEls, 'sceneTilemap-parallaxFactorX')"
 				v-tip="t('components.sceneTilemap-parallaxFactorX.tip')"
@@ -157,6 +168,7 @@
 				{{ t('components.sceneTilemap-parallaxFactorY.label') || 'Parallax Factor Y' }}
 			</div>
 			<NumberBox
+				:label="t('components.sceneTilemap-parallaxFactorY.label') || 'Parallax Factor Y'"
 				id="sceneTilemap-parallaxFactorY"
 				:ref="registryRef(inspectorEls, 'sceneTilemap-parallaxFactorY')"
 				v-tip="t('components.sceneTilemap-parallaxFactorY.tip')"
@@ -169,6 +181,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneTilemap-opacity.label') || 'Opacity' }}</div>
 			<NumberBox
+				:label="t('components.sceneTilemap-opacity.label') || 'Opacity'"
 				id="sceneTilemap-opacity"
 				:ref="registryRef(inspectorEls, 'sceneTilemap-opacity')"
 				v-tip="t('components.sceneTilemap-opacity.tip')"

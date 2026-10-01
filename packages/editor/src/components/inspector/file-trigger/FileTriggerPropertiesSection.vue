@@ -34,6 +34,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-hitCount.label') || 'Hit Count' }}</div>
 			<NumberBox
+				:label="t('components.fileTrigger-hitCount.label') || 'Hit Count'"
 				id="fileTrigger-hitCount"
 				v-tip="t('components.fileTrigger-hitCount.tip')"
 				ref="elHitCount"
@@ -52,6 +53,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-shape-width.label') || 'Width' }}</div>
 			<NumberBox
+				:label="t('components.fileTrigger-shape-width.label') || 'Width'"
 				id="fileTrigger-shape-width"
 				v-tip="t('components.fileTrigger-shape-width.tip')"
 				ref="elShapeWidth"
@@ -64,6 +66,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-shape-height.label') || 'Height' }}</div>
 			<NumberBox
+				:label="t('components.fileTrigger-shape-height.label') || 'Height'"
 				id="fileTrigger-shape-height"
 				v-tip="t('components.fileTrigger-shape-height.tip')"
 				ref="elShapeHeight"
@@ -76,6 +79,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-shape-anchor.label') || 'Anchor' }}</div>
 			<NumberBox
+				:label="t('components.fileTrigger-shape-anchor.label') || 'Anchor'"
 				id="fileTrigger-shape-anchor"
 				v-tip="t('components.fileTrigger-shape-anchor.tip')"
 				ref="elShapeAnchor"
@@ -87,6 +91,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-shape-radius.label') || 'Radius' }}</div>
 			<NumberBox
+				:label="t('components.fileTrigger-shape-radius.label') || 'Radius'"
 				id="fileTrigger-shape-radius"
 				v-tip="t('components.fileTrigger-shape-radius.tip')"
 				ref="elShapeRadius"
@@ -101,6 +106,7 @@
 				{{ t('components.fileTrigger-shape-centralAngle.label') || 'Central Angle' }}
 			</div>
 			<NumberBox
+				:label="t('components.fileTrigger-shape-centralAngle.label') || 'Central Angle'"
 				id="fileTrigger-shape-centralAngle"
 				v-tip="t('components.fileTrigger-shape-centralAngle.tip')"
 				ref="elShapeCentralAngle"
@@ -113,6 +119,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-speed.label') || 'Speed' }}</div>
 			<NumberBox
+				:label="t('components.fileTrigger-speed.label') || 'Speed'"
 				id="fileTrigger-speed"
 				v-tip="t('components.fileTrigger-speed.tip')"
 				v-model="form.speed"
@@ -134,6 +141,7 @@
 				{{ t('components.fileTrigger-hitInterval.label') || 'Hit Interval' }}
 			</div>
 			<NumberBox
+				:label="t('components.fileTrigger-hitInterval.label') || 'Hit Interval'"
 				id="fileTrigger-hitInterval"
 				v-tip="t('components.fileTrigger-hitInterval.tip')"
 				ref="elHitInterval"
@@ -147,6 +155,7 @@
 				{{ t('components.fileTrigger-initialDelay.label') || 'Initial Delay' }}
 			</div>
 			<NumberBox
+				:label="t('components.fileTrigger-initialDelay.label') || 'Initial Delay'"
 				id="fileTrigger-initialDelay"
 				v-tip="t('components.fileTrigger-initialDelay.tip')"
 				v-model="form.initialDelay"
@@ -159,6 +168,7 @@
 				{{ t('components.fileTrigger-effectiveTime.label') || 'Effective Time' }}
 			</div>
 			<NumberBox
+				:label="t('components.fileTrigger-effectiveTime.label') || 'Effective Time'"
 				id="fileTrigger-effectiveTime"
 				v-tip="t('components.fileTrigger-effectiveTime.tip')"
 				v-model="form.effectiveTime"
@@ -169,6 +179,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-duration.label') || 'Duration' }}</div>
 			<NumberBox
+				:label="t('components.fileTrigger-duration.label') || 'Duration'"
 				id="fileTrigger-duration"
 				v-tip="t('components.fileTrigger-duration.tip')"
 				v-model="form.duration"

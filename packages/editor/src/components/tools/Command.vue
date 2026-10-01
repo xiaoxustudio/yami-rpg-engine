@@ -51,6 +51,7 @@
 				<div class="detail-grid" id="command-settings-grid">
 					<div class="text">{{ t('components.command-alias.label') }}</div>
 					<TextBox
+						:label="t('components.command-alias.label')"
 						id="command-alias"
 						:placeholder="t('components.command-alias.placeholder')"
 						v-tip="t('components.command-alias.tip')"
@@ -59,6 +60,7 @@
 					/>
 					<div class="text">{{ t('components.command-keywords.label') }}</div>
 					<TextBox
+						:label="t('components.command-keywords.label')"
 						id="command-keywords"
 						:placeholder="t('components.command-keywords.placeholder')"
 						v-tip="t('components.command-keywords.tip')"

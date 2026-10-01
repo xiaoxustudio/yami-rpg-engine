@@ -66,6 +66,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-speed.label') }}</div>
 			<NumberBox
+				:label="t('components.fileActor-speed.label')"
 				id="fileActor-speed"
 				v-tip="t('components.fileActor-speed.tip')"
 				v-model="form.speed"
@@ -85,6 +86,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-size.label') }}</div>
 			<NumberBox
+				:label="t('components.fileActor-size.label')"
 				id="fileActor-size"
 				v-tip="t('components.fileActor-size.tip')"
 				v-model="form.size"
@@ -97,6 +99,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-weight.label') }}</div>
 			<NumberBox
+				:label="t('components.fileActor-weight.label')"
 				id="fileActor-weight"
 				v-tip="t('components.fileActor-weight.tip')"
 				v-model="form.weight"
@@ -116,6 +119,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-scale.label') }}</div>
 			<NumberBox
+				:label="t('components.fileActor-scale.label')"
 				id="fileActor-scale"
 				v-tip="t('components.fileActor-scale.tip')"
 				v-model="form.scale"
@@ -127,6 +131,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-priority.label') }}</div>
 			<NumberBox
+				:label="t('components.fileActor-priority.label')"
 				id="fileActor-priority"
 				v-tip="t('components.fileActor-priority.tip')"
 				v-model="form.priority"

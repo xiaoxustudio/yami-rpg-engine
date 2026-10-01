@@ -37,6 +37,7 @@
 				<div class="flex-item">
 					<div class="text">{{ t('components.enum-name.label') }}</div>
 					<TextBox
+						:label="t('components.enum-name.label')"
 						id="enum-name"
 						v-tip="t('components.enum-name.tip')"
 						:ref="registryRef(enumEls, 'enum-name')"
@@ -47,6 +48,7 @@
 				<div class="flex-item">
 					<div class="text">{{ t('components.enum-value.label') }}</div>
 					<TextBox
+						:label="t('components.enum-value.label')"
 						id="enum-value"
 						:placeholder="t('components.enum-value.placeholder')"
 						v-tip="t('components.enum-value.tip')"
@@ -59,6 +61,7 @@
 				<div class="flex-item">
 					<div class="text">{{ t('components.enum-note.label') }}</div>
 					<TextArea
+						:label="t('components.enum-note.label')"
 						id="enum-note"
 						v-tip="t('components.enum-note.tip')"
 						:ref="registryRef(enumEls, 'enum-note')"

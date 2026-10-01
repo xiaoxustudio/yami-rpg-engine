@@ -94,6 +94,7 @@
 				{{ t('components.animParticleFrame-scale.label') || 'Particle Scale' }}
 			</div>
 			<NumberBox
+				:label="t('components.animParticleFrame-scale.label') || 'Particle Scale'"
 				id="animParticleFrame-scale"
 				v-tip="t('components.animParticleFrame-scale.tip')"
 				ref="elScale"
@@ -106,6 +107,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.animParticleFrame-speed.label') || 'Speed' }}</div>
 			<NumberBox
+				:label="t('components.animParticleFrame-speed.label') || 'Speed'"
 				id="animParticleFrame-speed"
 				v-tip="t('components.animParticleFrame-speed.tip')"
 				ref="elSpeed"

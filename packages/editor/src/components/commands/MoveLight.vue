@@ -31,6 +31,7 @@
 			/>
 			<div class="text">{{ t('components.moveLight-duration.label') }}</div>
 			<NumberBox
+				:label="t('components.moveLight-duration.label')"
 				id="moveLight-duration"
 				:ref="registryRef(fieldEls, 'moveLight-duration')"
 				name="duration"

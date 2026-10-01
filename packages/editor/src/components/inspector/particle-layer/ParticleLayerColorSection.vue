@@ -14,6 +14,7 @@
 	</div>
 	<div class="flex-box" id="particleLayer-color-rgba-box" ref="elColorRgbaBox">
 		<NumberBox
+			:label="t('components.particleLayer-color-rgba-box.label') || 'Color'"
 			id="particleLayer-color-rgba-0"
 			:ref="registryRef(inspectorEls, 'particleLayer-color-rgba-0')"
 			v-tip="t('components.particleLayer-color-rgba-0.tip')"
@@ -63,6 +64,7 @@
 	</div>
 	<div class="flex-box" id="particleLayer-color-min-box" ref="elColorMinBox">
 		<NumberBox
+			:label="t('components.particleLayer-color-min-box.label') || 'Color Min'"
 			id="particleLayer-color-min-0"
 			:ref="registryRef(inspectorEls, 'particleLayer-color-min-0')"
 			v-tip="t('components.particleLayer-color-min-0.tip')"
@@ -112,6 +114,7 @@
 	</div>
 	<div class="flex-box" id="particleLayer-color-max-box" ref="elColorMaxBox">
 		<NumberBox
+			:label="t('components.particleLayer-color-max-box.label') || 'Color Max'"
 			id="particleLayer-color-max-0"
 			:ref="registryRef(inspectorEls, 'particleLayer-color-max-0')"
 			v-tip="t('components.particleLayer-color-max-0.tip')"
@@ -171,6 +174,7 @@
 	</div>
 	<div class="flex-box" id="particleLayer-color-startMin-box" ref="elColorStartMinBox">
 		<NumberBox
+			:label="t('components.particleLayer-color-startMin-box.label') || 'Color Start Min'"
 			id="particleLayer-color-startMin-0"
 			:ref="registryRef(inspectorEls, 'particleLayer-color-startMin-0')"
 			v-tip="t('components.particleLayer-color-startMin-0.tip')"
@@ -220,6 +224,7 @@
 	</div>
 	<div class="flex-box" id="particleLayer-color-startMax-box" ref="elColorStartMaxBox">
 		<NumberBox
+			:label="t('components.particleLayer-color-startMax-box.label') || 'Color Start Max'"
 			id="particleLayer-color-startMax-0"
 			:ref="registryRef(inspectorEls, 'particleLayer-color-startMax-0')"
 			v-tip="t('components.particleLayer-color-startMax-0.tip')"
@@ -269,6 +274,7 @@
 	</div>
 	<div class="flex-box" id="particleLayer-color-endMin-box" ref="elColorEndMinBox">
 		<NumberBox
+			:label="t('components.particleLayer-color-endMin-box.label') || 'Color End Min'"
 			id="particleLayer-color-endMin-0"
 			:ref="registryRef(inspectorEls, 'particleLayer-color-endMin-0')"
 			v-tip="t('components.particleLayer-color-endMin-0.tip')"
@@ -318,6 +324,7 @@
 	</div>
 	<div class="flex-box" id="particleLayer-color-endMax-box" ref="elColorEndMaxBox">
 		<NumberBox
+			:label="t('components.particleLayer-color-endMax-box.label') || 'Color End Max'"
 			id="particleLayer-color-endMax-0"
 			:ref="registryRef(inspectorEls, 'particleLayer-color-endMax-0')"
 			v-tip="t('components.particleLayer-color-endMax-0.tip')"
@@ -380,6 +387,7 @@
 			step="15"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.particleLayer-color-tint-0-box.label') || 'Tint - Red'"
 			id="particleLayer-color-tint-0"
 			ref="elTint0"
 			v-model="form.color.tint[0]"
@@ -407,6 +415,7 @@
 			step="15"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.particleLayer-color-tint-1-box.label') || 'Tint - Green'"
 			id="particleLayer-color-tint-1"
 			ref="elTint1"
 			v-model="form.color.tint[1]"
@@ -434,6 +443,7 @@
 			step="15"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.particleLayer-color-tint-2-box.label') || 'Tint - Blue'"
 			id="particleLayer-color-tint-2"
 			ref="elTint2"
 			v-model="form.color.tint[2]"
@@ -461,6 +471,7 @@
 			step="15"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.particleLayer-color-tint-3-box.label') || 'Tint - Grayscale'"
 			id="particleLayer-color-tint-3"
 			ref="elTint3"
 			v-model="form.color.tint[3]"

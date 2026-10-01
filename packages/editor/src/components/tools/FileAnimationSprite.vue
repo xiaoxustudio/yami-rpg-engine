@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileAnimation-sprite-name.label') }}</div>
 			<TextBox
+				:label="t('components.fileAnimation-sprite-name.label')"
 				id="fileAnimation-sprite-name"
 				v-tip="t('components.fileAnimation-sprite-name.tip')"
 				v-focus
@@ -25,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.fileAnimation-sprite-hframes.label') }}</div>
 			<NumberBox
+				:label="t('components.fileAnimation-sprite-hframes.label')"
 				id="fileAnimation-sprite-hframes"
 				v-tip="t('components.fileAnimation-sprite-hframes.tip')"
 				min="1"
@@ -33,6 +35,7 @@
 			/>
 			<div class="text">{{ t('components.fileAnimation-sprite-vframes.label') }}</div>
 			<NumberBox
+				:label="t('components.fileAnimation-sprite-vframes.label')"
 				id="fileAnimation-sprite-vframes"
 				v-tip="t('components.fileAnimation-sprite-vframes.tip')"
 				min="1"

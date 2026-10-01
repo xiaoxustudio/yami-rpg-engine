@@ -56,6 +56,7 @@
 			/>
 			<div class="text">{{ t('components.setTextBox-property-decimals.label') }}</div>
 			<NumberBox
+				:label="t('components.setTextBox-property-decimals.label')"
 				id="setTextBox-property-decimals"
 				:ref="fieldRef('setTextBox-property-decimals')"
 				min="0"

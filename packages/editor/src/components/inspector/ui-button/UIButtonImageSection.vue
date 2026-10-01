@@ -86,6 +86,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.uiButton-border.label') || 'Border' }}</div>
 			<NumberBox
+				:label="t('components.uiButton-border.label') || 'Border'"
 				id="uiButton-border"
 				v-tip="t('components.uiButton-border.tip')"
 				ref="elBorder"
@@ -111,6 +112,7 @@
 					max="20"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.uiButton-imagePadding-box.label') || 'Padding'"
 					id="uiButton-imagePadding"
 					ref="elImagePadding"
 					v-model="form.imagePadding"
@@ -137,6 +139,7 @@
 					step="0.05"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.uiButton-imageOpacity-box.label') || 'Opacity'"
 					id="uiButton-imageOpacity"
 					ref="elImageOpacity"
 					v-model="form.imageOpacity"

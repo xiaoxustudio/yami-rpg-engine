@@ -38,6 +38,7 @@
 			/>
 			<div class="text">{{ t('components.httpRequest-timeout.label') }}</div>
 			<NumberBox
+				:label="t('components.httpRequest-timeout.label')"
 				id="httpRequest-timeout"
 				:ref="registryRef(fieldEls, 'httpRequest-timeout')"
 				v-tip="t('components.httpRequest-timeout.tip')"

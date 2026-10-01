@@ -16,6 +16,7 @@
 			></CustomBox>
 			<div class="text">{{ t('components.animSoundFrame-volume.label') || 'Volume' }}</div>
 			<NumberBox
+				:label="t('components.animSoundFrame-volume.label') || 'Volume'"
 				id="animSoundFrame-volume"
 				v-tip="t('components.animSoundFrame-volume.tip')"
 				ref="elVolume"

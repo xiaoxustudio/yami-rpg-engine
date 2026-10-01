@@ -29,6 +29,7 @@
 			/>
 			<div class="text">{{ t('components.switch-condition-number-value.label') }}</div>
 			<NumberBox
+				:label="t('components.switch-condition-number-value.label')"
 				id="switch-condition-number-value"
 				v-tip="t('components.switch-condition-number-value.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-number-value')"
@@ -39,6 +40,7 @@
 			/>
 			<div class="text">{{ t('components.switch-condition-string-value.label') }}</div>
 			<TextArea
+				:label="t('components.switch-condition-string-value.label')"
 				id="switch-condition-string-value"
 				v-tip="t('components.switch-condition-string-value.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-string-value')"
@@ -66,6 +68,7 @@
 			/>
 			<div class="text">{{ t('components.switch-condition-keyboard-keycode.label') }}</div>
 			<KeyboardBox
+				:label="t('components.switch-condition-keyboard-keycode.label')"
 				id="switch-condition-keyboard-keycode"
 				v-tip="t('components.switch-condition-keyboard-keycode.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-keyboard-keycode')"
@@ -73,6 +76,7 @@
 			/>
 			<div class="text">{{ t('components.switch-condition-gamepad-button.label') }}</div>
 			<GamepadBox
+				:label="t('components.switch-condition-gamepad-button.label')"
 				id="switch-condition-gamepad-button"
 				v-tip="t('components.switch-condition-gamepad-button.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-gamepad-button')"

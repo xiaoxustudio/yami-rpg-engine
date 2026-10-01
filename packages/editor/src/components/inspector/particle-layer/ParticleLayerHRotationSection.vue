@@ -9,6 +9,9 @@
 			</div>
 			<div class="flex-box" id="particleLayer-hRotation-radius-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-hRotation-radius-box.label') || 'Initial Radius'
+					"
 					id="particleLayer-hRotation-radius-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-hRotation-radius-0')"
 					v-tip="t('components.particleLayer-hRotation-radius-0.tip')"
@@ -41,6 +44,10 @@
 			</div>
 			<div class="flex-box" id="particleLayer-hRotation-expansionSpeed-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-hRotation-expansionSpeed-box.label') ||
+						'Expansion Speed'
+					"
 					id="particleLayer-hRotation-expansionSpeed-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-hRotation-expansionSpeed-0')"
 					v-tip="t('components.particleLayer-hRotation-expansionSpeed-0.tip')"
@@ -71,6 +78,10 @@
 			</div>
 			<div class="flex-box" id="particleLayer-hRotation-expansionAccel-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-hRotation-expansionAccel-box.label') ||
+						'Expansion Accel'
+					"
 					id="particleLayer-hRotation-expansionAccel-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-hRotation-expansionAccel-0')"
 					v-tip="t('components.particleLayer-hRotation-expansionAccel-0.tip')"
@@ -98,6 +109,9 @@
 			</div>
 			<div class="flex-box" id="particleLayer-hRotation-angle-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-hRotation-angle-box.label') || 'Rotation Angle'
+					"
 					id="particleLayer-hRotation-angle-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-hRotation-angle-0')"
 					v-tip="t('components.particleLayer-hRotation-angle-0.tip')"
@@ -132,6 +146,10 @@
 			</div>
 			<div class="flex-box" id="particleLayer-hRotation-angularSpeed-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-hRotation-angularSpeed-box.label') ||
+						'Angular Velocity'
+					"
 					id="particleLayer-hRotation-angularSpeed-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-hRotation-angularSpeed-0')"
 					v-tip="t('components.particleLayer-hRotation-angularSpeed-0.tip')"
@@ -164,6 +182,10 @@
 			</div>
 			<div class="flex-box" id="particleLayer-hRotation-angularAccel-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-hRotation-angularAccel-box.label') ||
+						'Angular Accel'
+					"
 					id="particleLayer-hRotation-angularAccel-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-hRotation-angularAccel-0')"
 					v-tip="t('components.particleLayer-hRotation-angularAccel-0.tip')"

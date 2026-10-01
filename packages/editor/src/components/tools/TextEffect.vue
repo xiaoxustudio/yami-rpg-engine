@@ -17,6 +17,7 @@
 			/>
 			<div class="text">{{ t('components.textEffect-shadowOffsetX.label') }}</div>
 			<NumberBox
+				:label="t('components.textEffect-shadowOffsetX.label')"
 				id="textEffect-shadowOffsetX"
 				v-tip="t('components.textEffect-shadowOffsetX.tip')"
 				:ref="registryRef(textCaptureEls, 'textEffect-shadowOffsetX')"
@@ -27,6 +28,7 @@
 			/>
 			<div class="text">{{ t('components.textEffect-shadowOffsetY.label') }}</div>
 			<NumberBox
+				:label="t('components.textEffect-shadowOffsetY.label')"
 				id="textEffect-shadowOffsetY"
 				v-tip="t('components.textEffect-shadowOffsetY.tip')"
 				:ref="registryRef(textCaptureEls, 'textEffect-shadowOffsetY')"
@@ -37,6 +39,7 @@
 			/>
 			<div class="text">{{ t('components.textEffect-strokeWidth.label') }}</div>
 			<NumberBox
+				:label="t('components.textEffect-strokeWidth.label')"
 				id="textEffect-strokeWidth"
 				v-tip="t('components.textEffect-strokeWidth.tip')"
 				:ref="registryRef(textCaptureEls, 'textEffect-strokeWidth')"

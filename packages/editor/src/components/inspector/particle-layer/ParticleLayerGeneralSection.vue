@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="particleLayer-general-grid">
 			<div class="text">{{ t('components.particleLayer-name.label') || 'Name' }}</div>
 			<TextBox
+				:label="t('components.particleLayer-name.label') || 'Name'"
 				id="particleLayer-name"
 				:ref="registryRef(inspectorEls, 'particleLayer-name')"
 				v-tip="t('components.particleLayer-name.tip')"
@@ -24,6 +25,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.particleLayer-area-x.label') || 'X' }}</div>
 			<NumberBox
+				:label="t('components.particleLayer-area-x.label') || 'X'"
 				id="particleLayer-area-x"
 				v-tip="t('components.particleLayer-area-x.tip')"
 				ref="elAreaX"
@@ -35,6 +37,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.particleLayer-area-y.label') || 'Y' }}</div>
 			<NumberBox
+				:label="t('components.particleLayer-area-y.label') || 'Y'"
 				id="particleLayer-area-y"
 				v-tip="t('components.particleLayer-area-y.tip')"
 				ref="elAreaY"
@@ -46,6 +49,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.particleLayer-area-width.label') || 'Width' }}</div>
 			<NumberBox
+				:label="t('components.particleLayer-area-width.label') || 'Width'"
 				id="particleLayer-area-width"
 				v-tip="t('components.particleLayer-area-width.tip')"
 				ref="elAreaWidth"
@@ -59,6 +63,7 @@
 				{{ t('components.particleLayer-area-height.label') || 'Height' }}
 			</div>
 			<NumberBox
+				:label="t('components.particleLayer-area-height.label') || 'Height'"
 				id="particleLayer-area-height"
 				v-tip="t('components.particleLayer-area-height.tip')"
 				ref="elAreaHeight"
@@ -72,6 +77,7 @@
 				{{ t('components.particleLayer-area-radius.label') || 'Radius' }}
 			</div>
 			<NumberBox
+				:label="t('components.particleLayer-area-radius.label') || 'Radius'"
 				id="particleLayer-area-radius"
 				v-tip="t('components.particleLayer-area-radius.tip')"
 				ref="elAreaRadius"
@@ -85,6 +91,7 @@
 				{{ t('components.particleLayer-count.label') || 'Emission Count' }}
 			</div>
 			<NumberBox
+				:label="t('components.particleLayer-count.label') || 'Emission Count'"
 				id="particleLayer-count"
 				:ref="registryRef(inspectorEls, 'particleLayer-count')"
 				v-tip="t('components.particleLayer-count.tip')"
@@ -97,6 +104,7 @@
 				{{ t('components.particleLayer-delay.label') || 'Initial Delay' }}
 			</div>
 			<NumberBox
+				:label="t('components.particleLayer-delay.label') || 'Initial Delay'"
 				id="particleLayer-delay"
 				:ref="registryRef(inspectorEls, 'particleLayer-delay')"
 				v-tip="t('components.particleLayer-delay.tip')"
@@ -108,6 +116,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.particleLayer-interval.label') || 'Interval' }}</div>
 			<NumberBox
+				:label="t('components.particleLayer-interval.label') || 'Interval'"
 				id="particleLayer-interval"
 				:ref="registryRef(inspectorEls, 'particleLayer-interval')"
 				v-tip="t('components.particleLayer-interval.tip')"
@@ -119,6 +128,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.particleLayer-lifetime.label') || 'Lifetime' }}</div>
 			<NumberBox
+				:label="t('components.particleLayer-lifetime.label') || 'Lifetime'"
 				id="particleLayer-lifetime"
 				:ref="registryRef(inspectorEls, 'particleLayer-lifetime')"
 				v-tip="t('components.particleLayer-lifetime.tip')"
@@ -132,6 +142,7 @@
 				{{ t('components.particleLayer-lifetimeDev.label') || 'Lifetime Dev' }}
 			</div>
 			<NumberBox
+				:label="t('components.particleLayer-lifetimeDev.label') || 'Lifetime Dev'"
 				id="particleLayer-lifetimeDev"
 				:ref="registryRef(inspectorEls, 'particleLayer-lifetimeDev')"
 				v-tip="t('components.particleLayer-lifetimeDev.tip')"
@@ -143,6 +154,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.particleLayer-fadeout.label') || 'Fadeout' }}</div>
 			<NumberBox
+				:label="t('components.particleLayer-fadeout.label') || 'Fadeout'"
 				id="particleLayer-fadeout"
 				:ref="registryRef(inspectorEls, 'particleLayer-fadeout')"
 				v-tip="t('components.particleLayer-fadeout.tip')"

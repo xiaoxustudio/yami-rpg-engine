@@ -26,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.object-attribute-number-value.label') }}</div>
 			<NumberBox
+				:label="t('components.object-attribute-number-value.label')"
 				id="object-attribute-number-value"
 				v-tip="t('components.object-attribute-number-value.tip')"
 				:ref="registryRef(objectAttributeEls, 'object-attribute-number-value')"
@@ -37,6 +38,7 @@
 			/>
 			<div class="text">{{ t('components.object-attribute-string-value.label') }}</div>
 			<TextArea
+				:label="t('components.object-attribute-string-value.label')"
 				id="object-attribute-string-value"
 				v-tip="t('components.object-attribute-string-value.tip')"
 				:ref="registryRef(objectAttributeEls, 'object-attribute-string-value')"

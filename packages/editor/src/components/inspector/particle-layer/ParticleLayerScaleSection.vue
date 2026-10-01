@@ -9,6 +9,7 @@
 			</div>
 			<div class="flex-box" id="particleLayer-scale-factor-box">
 				<NumberBox
+					:label="t('components.particleLayer-scale-factor-box.label') || 'Scale Factor'"
 					id="particleLayer-scale-factor-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-scale-factor-0')"
 					v-tip="t('components.particleLayer-scale-factor-0.tip')"
@@ -38,6 +39,9 @@
 			</div>
 			<div class="flex-box" id="particleLayer-scale-speed-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-scale-speed-box.label') || 'Expansion Speed'
+					"
 					id="particleLayer-scale-speed-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-scale-speed-0')"
 					v-tip="t('components.particleLayer-scale-speed-0.tip')"
@@ -67,6 +71,9 @@
 			</div>
 			<div class="flex-box" id="particleLayer-scale-accel-box">
 				<NumberBox
+					:label="
+						t('components.particleLayer-scale-accel-box.label') || 'Expansion Accel'
+					"
 					id="particleLayer-scale-accel-0"
 					:ref="registryRef(inspectorEls, 'particleLayer-scale-accel-0')"
 					v-tip="t('components.particleLayer-scale-accel-0.tip')"

@@ -13,6 +13,7 @@
 		>
 			<div class="text">{{ t('components.tintScreen-tint-0.label') }}</div>
 			<NumberBox
+				:label="t('components.tintScreen-tint-0.label')"
 				id="tintScreen-tint-0"
 				:ref="registryRef(fieldEls, 'tintScreen-tint-0')"
 				v-tip="t('components.tintScreen-tint-0.tip')"
@@ -24,6 +25,7 @@
 			/>
 			<div class="text">{{ t('components.tintScreen-tint-1.label') }}</div>
 			<NumberBox
+				:label="t('components.tintScreen-tint-1.label')"
 				id="tintScreen-tint-1"
 				:ref="registryRef(fieldEls, 'tintScreen-tint-1')"
 				v-tip="t('components.tintScreen-tint-1.tip')"
@@ -34,6 +36,7 @@
 			/>
 			<div class="text">{{ t('components.tintScreen-tint-2.label') }}</div>
 			<NumberBox
+				:label="t('components.tintScreen-tint-2.label')"
 				id="tintScreen-tint-2"
 				:ref="registryRef(fieldEls, 'tintScreen-tint-2')"
 				v-tip="t('components.tintScreen-tint-2.tip')"
@@ -44,6 +47,7 @@
 			/>
 			<div class="text">{{ t('components.tintScreen-tint-3.label') }}</div>
 			<NumberBox
+				:label="t('components.tintScreen-tint-3.label')"
 				id="tintScreen-tint-3"
 				:ref="registryRef(fieldEls, 'tintScreen-tint-3')"
 				v-tip="t('components.tintScreen-tint-3.tip')"
@@ -61,6 +65,7 @@
 			/>
 			<div class="text">{{ t('components.tintScreen-duration.label') }}</div>
 			<NumberBox
+				:label="t('components.tintScreen-duration.label')"
 				id="tintScreen-duration"
 				:ref="registryRef(fieldEls, 'tintScreen-duration')"
 				name="duration"

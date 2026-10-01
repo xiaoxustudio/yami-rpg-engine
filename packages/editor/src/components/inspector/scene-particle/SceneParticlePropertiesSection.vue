@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="sceneParticle-general-grid">
 			<div class="text">{{ t('components.sceneParticle-name.label') || 'Name' }}</div>
 			<TextBox
+				:label="t('components.sceneParticle-name.label') || 'Name'"
 				id="sceneParticle-name"
 				:ref="registryRef(inspectorEls, 'sceneParticle-name')"
 				v-tip="t('components.sceneParticle-name.tip')"
@@ -26,6 +27,7 @@
 			></CustomBox>
 			<div class="text">{{ t('components.sceneParticle-x.label') || 'X' }}</div>
 			<NumberBox
+				:label="t('components.sceneParticle-x.label') || 'X'"
 				id="sceneParticle-x"
 				:ref="registryRef(inspectorEls, 'sceneParticle-x')"
 				v-tip="t('components.sceneParticle-x.tip')"
@@ -38,6 +40,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneParticle-y.label') || 'Y' }}</div>
 			<NumberBox
+				:label="t('components.sceneParticle-y.label') || 'Y'"
 				id="sceneParticle-y"
 				:ref="registryRef(inspectorEls, 'sceneParticle-y')"
 				v-tip="t('components.sceneParticle-y.tip')"
@@ -63,6 +66,7 @@
 					step="45"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneParticle-angle-box.label') || 'Angle'"
 					id="sceneParticle-angle"
 					ref="elAngle"
 					v-model="form.angle"
@@ -89,6 +93,7 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneParticle-scale-box.label') || 'Scale'"
 					id="sceneParticle-scale"
 					ref="elScale"
 					v-model="form.scale"
@@ -114,6 +119,7 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneParticle-speed-box.label') || 'Speed'"
 					id="sceneParticle-speed"
 					ref="elSpeed"
 					v-model="form.speed"
@@ -141,6 +147,7 @@
 					step="0.05"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneParticle-opacity-box.label') || 'Opacity'"
 					id="sceneParticle-opacity"
 					ref="elOpacity"
 					v-model="form.opacity"
@@ -168,6 +175,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneParticle-priority-box.label') || 'Priority'"
 					id="sceneParticle-priority"
 					ref="elPriority"
 					v-model="form.priority"

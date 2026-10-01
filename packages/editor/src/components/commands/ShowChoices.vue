@@ -17,6 +17,7 @@
 			/>
 			<div class="text">{{ t('components.showChoices-parameters.label') }}</div>
 			<TextBox
+				:label="t('components.showChoices-parameters.label')"
 				id="showChoices-parameters"
 				:ref="registryRef(fieldEls, 'showChoices-parameters')"
 				v-tip="t('components.showChoices-parameters.tip')"

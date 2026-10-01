@@ -4,6 +4,7 @@
 		<div class="detail-grid" id="fileScene-general-grid">
 			<div class="text">{{ t('components.fileScene-width.label') || 'Width' }}</div>
 			<NumberBox
+				:label="t('components.fileScene-width.label') || 'Width'"
 				id="fileScene-width"
 				v-tip="t('components.fileScene-width.tip')"
 				v-model="form.width"
@@ -14,6 +15,7 @@
 			/>
 			<div class="text">{{ t('components.fileScene-height.label') || 'Height' }}</div>
 			<NumberBox
+				:label="t('components.fileScene-height.label') || 'Height'"
 				id="fileScene-height"
 				v-tip="t('components.fileScene-height.tip')"
 				v-model="form.height"
@@ -24,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.fileScene-tileWidth.label') || 'Tile Width' }}</div>
 			<NumberBox
+				:label="t('components.fileScene-tileWidth.label') || 'Tile Width'"
 				id="fileScene-tileWidth"
 				:ref="registryRef(inspectorEls, 'fileScene-tileWidth')"
 				v-tip="t('components.fileScene-tileWidth.tip')"
@@ -37,6 +40,7 @@
 				{{ t('components.fileScene-tileHeight.label') || 'Tile Height' }}
 			</div>
 			<NumberBox
+				:label="t('components.fileScene-tileHeight.label') || 'Tile Height'"
 				id="fileScene-tileHeight"
 				:ref="registryRef(inspectorEls, 'fileScene-tileHeight')"
 				v-tip="t('components.fileScene-tileHeight.tip')"
@@ -68,6 +72,7 @@
 					step="5"
 				/>
 				<NumberBox
+					:label="t('components.fileScene-ambient-red-box.label') || 'Red'"
 					id="fileScene-ambient-red"
 					ref="elAmbientRed"
 					v-model="form.ambientRed"
@@ -94,6 +99,7 @@
 					step="5"
 				/>
 				<NumberBox
+					:label="t('components.fileScene-ambient-green-box.label') || 'Green'"
 					id="fileScene-ambient-green"
 					ref="elAmbientGreen"
 					v-model="form.ambientGreen"
@@ -118,6 +124,7 @@
 					step="5"
 				/>
 				<NumberBox
+					:label="t('components.fileScene-ambient-blue-box.label') || 'Blue'"
 					id="fileScene-ambient-blue"
 					ref="elAmbientBlue"
 					v-model="form.ambientBlue"
@@ -144,6 +151,9 @@
 					step="0.05"
 				/>
 				<NumberBox
+					:label="
+						t('components.fileScene-ambient-direct-box.label') || 'Direct Light Ratio'
+					"
 					id="fileScene-ambient-direct"
 					ref="elAmbientDirect"
 					v-model="form.ambientDirect"

@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.scene-shift-x.label') }}</div>
 			<NumberBox
+				:label="t('components.scene-shift-x.label')"
 				id="scene-shift-x"
 				:ref="registryRef(composableEls, 'scene-shift-x')"
 				v-tip="t('components.scene-shift-x.tip')"
@@ -19,6 +20,7 @@
 			/>
 			<div class="text">{{ t('components.scene-shift-y.label') }}</div>
 			<NumberBox
+				:label="t('components.scene-shift-y.label')"
 				id="scene-shift-y"
 				:ref="registryRef(composableEls, 'scene-shift-y')"
 				v-tip="t('components.scene-shift-y.tip')"

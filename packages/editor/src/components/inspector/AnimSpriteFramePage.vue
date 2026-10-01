@@ -161,6 +161,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.animSpriteFrame-tint-0-box.label') || 'Tint - Red'"
 					id="animSpriteFrame-tint-0"
 					ref="elTint0"
 					v-model="tint[0]"
@@ -186,6 +187,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.animSpriteFrame-tint-1-box.label') || 'Tint - Green'"
 					id="animSpriteFrame-tint-1"
 					ref="elTint1"
 					v-model="tint[1]"
@@ -211,6 +213,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.animSpriteFrame-tint-2-box.label') || 'Tint - Blue'"
 					id="animSpriteFrame-tint-2"
 					ref="elTint2"
 					v-model="tint[2]"
@@ -236,6 +239,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.animSpriteFrame-tint-3-box.label') || 'Tint - Grayscale'"
 					id="animSpriteFrame-tint-3"
 					ref="elTint3"
 					v-model="tint[3]"

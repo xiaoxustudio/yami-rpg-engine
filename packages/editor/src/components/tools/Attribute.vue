@@ -36,6 +36,7 @@
 				<div class="flex-item">
 					<div class="text">{{ t('components.attribute-name.label') }}</div>
 					<TextBox
+						:label="t('components.attribute-name.label')"
 						id="attribute-name"
 						v-tip="t('components.attribute-name.tip')"
 						:ref="registryRef(attributeEls, 'attribute-name')"
@@ -46,6 +47,7 @@
 				<div class="flex-item">
 					<div class="text">{{ t('components.attribute-key.label') }}</div>
 					<TextBox
+						:label="t('components.attribute-key.label')"
 						id="attribute-key"
 						:placeholder="t('components.attribute-key.placeholder')"
 						v-tip="t('components.attribute-key.tip')"
@@ -147,6 +149,7 @@
 				<div class="flex-item">
 					<div class="text">{{ t('components.attribute-note.label') }}</div>
 					<TextArea
+						:label="t('components.attribute-note.label')"
 						id="attribute-note"
 						v-tip="t('components.attribute-note.tip')"
 						:ref="registryRef(attributeEls, 'attribute-note')"

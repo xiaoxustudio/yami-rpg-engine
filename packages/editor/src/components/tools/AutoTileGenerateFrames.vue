@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.autoTile-generateFrames-strideX.label') }}</div>
 			<NumberBox
+				:label="t('components.autoTile-generateFrames-strideX.label')"
 				id="autoTile-generateFrames-strideX"
 				v-tip="t('components.autoTile-generateFrames-strideX.tip')"
 				v-focus
@@ -22,6 +23,7 @@
 			/>
 			<div class="text">{{ t('components.autoTile-generateFrames-strideY.label') }}</div>
 			<NumberBox
+				:label="t('components.autoTile-generateFrames-strideY.label')"
 				id="autoTile-generateFrames-strideY"
 				v-tip="t('components.autoTile-generateFrames-strideY.tip')"
 				min="-128"
@@ -30,6 +32,7 @@
 			/>
 			<div class="text">{{ t('components.autoTile-generateFrames-count.label') }}</div>
 			<NumberBox
+				:label="t('components.autoTile-generateFrames-count.label')"
 				id="autoTile-generateFrames-count"
 				v-tip="t('components.autoTile-generateFrames-count.tip')"
 				min="1"

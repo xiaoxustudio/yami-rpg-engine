@@ -42,6 +42,7 @@
 			></CheckBox>
 			<div class="text">{{ t('components.uiAnimation-angle.label') || 'Angle' }}</div>
 			<NumberBox
+				:label="t('components.uiAnimation-angle.label') || 'Angle'"
 				id="uiAnimation-angle"
 				v-tip="t('components.uiAnimation-angle.tip')"
 				ref="elAngle"
@@ -53,6 +54,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.uiAnimation-frame.label') || 'Frame' }}</div>
 			<NumberBox
+				:label="t('components.uiAnimation-frame.label') || 'Frame'"
 				id="uiAnimation-frame"
 				v-tip="t('components.uiAnimation-frame.tip')"
 				ref="elFrame"

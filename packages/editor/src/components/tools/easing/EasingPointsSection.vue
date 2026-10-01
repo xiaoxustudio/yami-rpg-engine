@@ -17,6 +17,7 @@
 				{{ t('components.easing-points-0.content') }}
 			</div>
 			<NumberBox
+				:label="t('components.easing-points-0.content')"
 				id="easing-points-0-x"
 				:ref="registryRef(dataEls, 'easing-points-0-x')"
 				v-tip="t('components.easing-points-0-x.tip')"
@@ -42,6 +43,7 @@
 				{{ t('components.easing-points-1.content') }}
 			</div>
 			<NumberBox
+				:label="t('components.easing-points-1.content')"
 				id="easing-points-1-x"
 				:ref="registryRef(dataEls, 'easing-points-1-x')"
 				v-tip="t('components.easing-points-1-x.tip')"
@@ -67,6 +69,7 @@
 				{{ t('components.easing-points-2.content') }}
 			</div>
 			<NumberBox
+				:label="t('components.easing-points-2.content')"
 				id="easing-points-2-x"
 				:ref="registryRef(dataEls, 'easing-points-2-x')"
 				v-tip="t('components.easing-points-2-x.tip')"
@@ -92,6 +95,7 @@
 				{{ t('components.easing-points-3.content') }}
 			</div>
 			<NumberBox
+				:label="t('components.easing-points-3.content')"
 				id="easing-points-3-x"
 				:ref="registryRef(dataEls, 'easing-points-3-x')"
 				v-tip="t('components.easing-points-3-x.tip')"
@@ -117,6 +121,7 @@
 				{{ t('components.easing-points-4.content') }}
 			</div>
 			<NumberBox
+				:label="t('components.easing-points-4.content')"
 				id="easing-points-4-x"
 				:ref="registryRef(dataEls, 'easing-points-4-x')"
 				v-tip="t('components.easing-points-4-x.tip')"
@@ -142,6 +147,7 @@
 				{{ t('components.easing-points-5.content') }}
 			</div>
 			<NumberBox
+				:label="t('components.easing-points-5.content')"
 				id="easing-points-5-x"
 				:ref="registryRef(dataEls, 'easing-points-5-x')"
 				v-tip="t('components.easing-points-5-x.tip')"
@@ -167,6 +173,7 @@
 				{{ t('components.easing-points-6.content') }}
 			</div>
 			<NumberBox
+				:label="t('components.easing-points-6.content')"
 				id="easing-points-6-x"
 				:ref="registryRef(dataEls, 'easing-points-6-x')"
 				v-tip="t('components.easing-points-6-x.tip')"
@@ -192,6 +199,7 @@
 				{{ t('components.easing-points-7.content') }}
 			</div>
 			<NumberBox
+				:label="t('components.easing-points-7.content')"
 				id="easing-points-7-x"
 				:ref="registryRef(dataEls, 'easing-points-7-x')"
 				v-tip="t('components.easing-points-7-x.tip')"

@@ -77,6 +77,7 @@
 			></CustomBox>
 			<div class="text">{{ t('components.uiImage-border.label') || 'Border' }}</div>
 			<NumberBox
+				:label="t('components.uiImage-border.label') || 'Border'"
 				ref="elBorder"
 				id="uiImage-border"
 				v-tip="t('components.uiImage-border.tip')"
@@ -101,6 +102,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.uiImage-tint-0-box.label') || 'Tint - Red'"
 					ref="elTint0"
 					id="uiImage-tint-0"
 					v-model="form['tint-0']"
@@ -125,6 +127,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.uiImage-tint-1-box.label') || 'Tint - Green'"
 					ref="elTint1"
 					id="uiImage-tint-1"
 					v-model="form['tint-1']"
@@ -149,6 +152,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.uiImage-tint-2-box.label') || 'Tint - Blue'"
 					ref="elTint2"
 					id="uiImage-tint-2"
 					v-model="form['tint-2']"
@@ -175,6 +179,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.uiImage-tint-3-box.label') || 'Tint - Grayscale'"
 					ref="elTint3"
 					id="uiImage-tint-3"
 					v-model="form['tint-3']"

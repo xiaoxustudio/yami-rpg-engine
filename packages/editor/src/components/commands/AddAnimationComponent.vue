@@ -53,6 +53,7 @@
 			/>
 			<div class="text">{{ t('components.addAnimationComponent-priority.label') }}</div>
 			<NumberBox
+				:label="t('components.addAnimationComponent-priority.label')"
 				id="addAnimationComponent-priority"
 				:ref="registryRef(fieldEls, 'addAnimationComponent-priority')"
 				v-tip="t('components.addAnimationComponent-priority.tip')"
@@ -62,6 +63,7 @@
 			/>
 			<div class="text">{{ t('components.addAnimationComponent-offsetY.label') }}</div>
 			<NumberBox
+				:label="t('components.addAnimationComponent-offsetY.label')"
 				id="addAnimationComponent-offsetY"
 				:ref="registryRef(fieldEls, 'addAnimationComponent-offsetY')"
 				v-tip="t('components.addAnimationComponent-offsetY.tip')"

@@ -63,6 +63,7 @@
 			/>
 			<div class="text">{{ t('components.playAnimation-priority.label') }}</div>
 			<NumberBox
+				:label="t('components.playAnimation-priority.label')"
 				id="playAnimation-priority"
 				:ref="registryRef(fieldEls, 'playAnimation-priority')"
 				v-tip="t('components.playAnimation-priority.tip')"

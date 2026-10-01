@@ -26,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.gameData-variables.label') }}</div>
 			<TextBox
+				:label="t('components.gameData-variables.label')"
 				id="gameData-variables"
 				:placeholder="t('components.gameData-variables.placeholder')"
 				v-tip="t('components.gameData-variables.tip')"

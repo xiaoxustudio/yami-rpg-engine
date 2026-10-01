@@ -49,6 +49,7 @@
 			/>
 			<div class="text">{{ t('components.condition-number-value.label') }}</div>
 			<NumberBox
+				:label="t('components.condition-number-value.label')"
 				id="condition-number-value"
 				v-tip="t('components.condition-number-value.tip')"
 				:ref="registryRef(conditionEls, 'condition-number-value')"
@@ -66,6 +67,7 @@
 			/>
 			<div class="text">{{ t('components.condition-string-value.label') }}</div>
 			<TextArea
+				:label="t('components.condition-string-value.label')"
 				id="condition-string-value"
 				v-tip="t('components.condition-string-value.tip')"
 				:ref="registryRef(conditionEls, 'condition-string-value')"

@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.label-name.label') }}</div>
 			<TextBox
+				:label="t('components.label-name.label')"
 				id="label-name"
 				v-tip="t('components.label-name.tip')"
 				v-focus

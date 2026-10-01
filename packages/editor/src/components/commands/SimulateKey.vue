@@ -17,6 +17,7 @@
 			/>
 			<div class="text">{{ t('components.simulateKey-keycode.label') }}</div>
 			<KeyboardBox
+				:label="t('components.simulateKey-keycode.label')"
 				id="simulateKey-keycode"
 				:ref="registryRef(fieldEls, 'simulateKey-keycode')"
 				v-tip="t('components.simulateKey-keycode.tip')"

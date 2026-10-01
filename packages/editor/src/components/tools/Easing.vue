@@ -51,6 +51,7 @@
 				/>
 				<div class="text">{{ t('components.easing-preview-duration.label') }}</div>
 				<NumberBox
+					:label="t('components.easing-preview-duration.label')"
 					id="easing-preview-duration"
 					v-tip="t('components.easing-preview-duration.tip')"
 					min="1"
@@ -61,6 +62,7 @@
 				/>
 				<div class="text">{{ t('components.easing-preview-delay.label') }}</div>
 				<NumberBox
+					:label="t('components.easing-preview-delay.label')"
 					id="easing-preview-delay"
 					v-tip="t('components.easing-preview-delay.tip')"
 					min="0"

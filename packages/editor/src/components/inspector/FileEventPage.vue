@@ -53,6 +53,7 @@
 				{{ t('components.fileEvent-description.label') || 'Description' }}
 			</div>
 			<TextArea
+				:label="t('components.fileEvent-description.label') || 'Description'"
 				id="fileEvent-description"
 				v-tip="t('components.fileEvent-description.tip')"
 				v-model="form.description"

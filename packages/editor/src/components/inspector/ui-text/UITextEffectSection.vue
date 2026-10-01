@@ -11,6 +11,7 @@
 		{{ t('components.uiText-effect-shadowOffsetX.label') || 'Shadow X' }}
 	</div>
 	<NumberBox
+		:label="t('components.uiText-effect-shadowOffsetX.label') || 'Shadow X'"
 		ref="elShadowOffsetX"
 		id="uiText-effect-shadowOffsetX"
 		v-tip="t('components.uiText-effect-shadowOffsetX.tip')"
@@ -24,6 +25,7 @@
 		{{ t('components.uiText-effect-shadowOffsetY.label') || 'Shadow Y' }}
 	</div>
 	<NumberBox
+		:label="t('components.uiText-effect-shadowOffsetY.label') || 'Shadow Y'"
 		ref="elShadowOffsetY"
 		id="uiText-effect-shadowOffsetY"
 		v-tip="t('components.uiText-effect-shadowOffsetY.tip')"
@@ -37,6 +39,7 @@
 		{{ t('components.uiText-effect-strokeWidth.label') || 'Stroke Width' }}
 	</div>
 	<NumberBox
+		:label="t('components.uiText-effect-strokeWidth.label') || 'Stroke Width'"
 		ref="elStrokeWidth"
 		id="uiText-effect-strokeWidth"
 		v-tip="t('components.uiText-effect-strokeWidth.tip')"

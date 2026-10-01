@@ -20,6 +20,7 @@
 			/>
 			<div class="text">{{ t('components.fileTileset-width.label') || 'Width' }}</div>
 			<NumberBox
+				:label="t('components.fileTileset-width.label') || 'Width'"
 				id="fileTileset-width"
 				v-tip="t('components.fileTileset-width.tip')"
 				v-model="form.width"
@@ -30,6 +31,7 @@
 			/>
 			<div class="text">{{ t('components.fileTileset-height.label') || 'Height' }}</div>
 			<NumberBox
+				:label="t('components.fileTileset-height.label') || 'Height'"
 				id="fileTileset-height"
 				v-tip="t('components.fileTileset-height.tip')"
 				v-model="form.height"
@@ -42,6 +44,7 @@
 				{{ t('components.fileTileset-tileWidth.label') || 'Tile Width' }}
 			</div>
 			<NumberBox
+				:label="t('components.fileTileset-tileWidth.label') || 'Tile Width'"
 				id="fileTileset-tileWidth"
 				v-tip="t('components.fileTileset-tileWidth.tip')"
 				v-model="form.tileWidth"
@@ -54,6 +57,7 @@
 				{{ t('components.fileTileset-tileHeight.label') || 'Tile Height' }}
 			</div>
 			<NumberBox
+				:label="t('components.fileTileset-tileHeight.label') || 'Tile Height'"
 				id="fileTileset-tileHeight"
 				v-tip="t('components.fileTileset-tileHeight.tip')"
 				v-model="form.tileHeight"
@@ -66,6 +70,7 @@
 				{{ t('components.fileTileset-globalOffsetX.label') || 'Tile Offset X' }}
 			</div>
 			<NumberBox
+				:label="t('components.fileTileset-globalOffsetX.label') || 'Tile Offset X'"
 				id="fileTileset-globalOffsetX"
 				v-tip="t('components.fileTileset-globalOffsetX.tip')"
 				v-model="form.globalOffsetX"
@@ -78,6 +83,7 @@
 				{{ t('components.fileTileset-globalOffsetY.label') || 'Tile Offset Y' }}
 			</div>
 			<NumberBox
+				:label="t('components.fileTileset-globalOffsetY.label') || 'Tile Offset Y'"
 				id="fileTileset-globalOffsetY"
 				v-tip="t('components.fileTileset-globalOffsetY.tip')"
 				v-model="form.globalOffsetY"
@@ -90,6 +96,7 @@
 				{{ t('components.fileTileset-globalPriority.label') || 'Tile Priority' }}
 			</div>
 			<NumberBox
+				:label="t('components.fileTileset-globalPriority.label') || 'Tile Priority'"
 				id="fileTileset-globalPriority"
 				v-tip="t('components.fileTileset-globalPriority.tip')"
 				v-model="form.globalPriority"

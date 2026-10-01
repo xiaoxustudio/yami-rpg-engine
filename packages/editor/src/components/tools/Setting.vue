@@ -14,6 +14,7 @@
 			</div>
 			<div class="text">{{ t('components.setting-server-port.label') }}</div>
 			<NumberBox
+				:label="t('components.setting-server-port.label')"
 				id="setting-server-port"
 				v-tip="t('components.setting-server-port.tip')"
 				min="0"
@@ -30,16 +31,19 @@
 			</div>
 			<div class="text">{{ t('components.setting-apkbuild-outputDir.label') }}</div>
 			<TextBox
+				:label="t('components.setting-apkbuild-outputDir.label')"
 				id="setting-apkbuild-outputDir"
 				v-tip="t('components.setting-apkbuild-outputDir.tip')"
 			/>
 			<div class="text">{{ t('components.setting-apkbuild-newApkPath.label') }}</div>
 			<TextBox
+				:label="t('components.setting-apkbuild-newApkPath.label')"
 				id="setting-apkbuild-newApkPath"
 				v-tip="t('components.setting-apkbuild-newApkPath.tip')"
 			/>
 			<div class="text">{{ t('components.setting-apkbuild-apktoolPath.label') }}</div>
 			<TextBox
+				:label="t('components.setting-apkbuild-apktoolPath.label')"
 				id="setting-apkbuild-apktoolPath"
 				v-tip="t('components.setting-apkbuild-apktoolPath.tip')"
 			/>
@@ -48,36 +52,43 @@
 			</div>
 			<div class="text">{{ t('components.setting-signed-jksPath.label') }}</div>
 			<TextBox
+				:label="t('components.setting-signed-jksPath.label')"
 				id="setting-signed-jksPath"
 				v-tip="t('components.setting-signed-jksPath.tip')"
 			/>
 			<div class="text">{{ t('components.setting-signed-keyStorePassword.label') }}</div>
 			<TextBox
+				:label="t('components.setting-signed-keyStorePassword.label')"
 				id="setting-signed-keyStorePassword"
 				v-tip="t('components.setting-signed-keyStorePassword.tip')"
 			/>
 			<div class="text">{{ t('components.setting-signed-keyAlias.label') }}</div>
 			<TextBox
+				:label="t('components.setting-signed-keyAlias.label')"
 				id="setting-signed-keyAlias"
 				v-tip="t('components.setting-signed-keyAlias.tip')"
 			/>
 			<div class="text">{{ t('components.setting-signed-keyPassword.label') }}</div>
 			<TextBox
+				:label="t('components.setting-signed-keyPassword.label')"
 				id="setting-signed-keyPassword"
 				v-tip="t('components.setting-signed-keyPassword.tip')"
 			/>
 			<div class="text">{{ t('components.setting-signed-apksignerPath.label') }}</div>
 			<TextBox
+				:label="t('components.setting-signed-apksignerPath.label')"
 				id="setting-signed-apksignerPath"
 				v-tip="t('components.setting-signed-apksignerPath.tip')"
 			/>
 			<div class="text">{{ t('components.setting-signed-zipalignPath.label') }}</div>
 			<TextBox
+				:label="t('components.setting-signed-zipalignPath.label')"
 				id="setting-signed-zipalignPath"
 				v-tip="t('components.setting-signed-zipalignPath.tip')"
 			/>
 			<div class="text">{{ t('components.setting-signed-signedApkPath.label') }}</div>
 			<TextBox
+				:label="t('components.setting-signed-signedApkPath.label')"
 				id="setting-signed-signedApkPath"
 				v-tip="t('components.setting-signed-signedApkPath.tip')"
 			/>

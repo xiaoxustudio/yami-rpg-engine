@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="sceneParallax-general-grid">
 			<div class="text">{{ t('components.sceneParallax-name.label') || 'Name' }}</div>
 			<TextBox
+				:label="t('components.sceneParallax-name.label') || 'Name'"
 				id="sceneParallax-name"
 				:ref="registryRef(inspectorEls, 'sceneParallax-name')"
 				v-tip="t('components.sceneParallax-name.tip')"
@@ -32,6 +33,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.sceneParallax-order.label') || 'Order' }}</div>
 			<NumberBox
+				:label="t('components.sceneParallax-order.label') || 'Order'"
 				id="sceneParallax-order"
 				:ref="registryRef(inspectorEls, 'sceneParallax-order')"
 				v-tip="t('components.sceneParallax-order.tip')"
@@ -60,6 +62,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.sceneParallax-opacity.label') || 'Opacity' }}</div>
 			<NumberBox
+				:label="t('components.sceneParallax-opacity.label') || 'Opacity'"
 				id="sceneParallax-opacity"
 				:ref="registryRef(inspectorEls, 'sceneParallax-opacity')"
 				v-tip="t('components.sceneParallax-opacity.tip')"
@@ -72,6 +75,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneParallax-x.label') || 'X' }}</div>
 			<NumberBox
+				:label="t('components.sceneParallax-x.label') || 'X'"
 				id="sceneParallax-x"
 				:ref="registryRef(inspectorEls, 'sceneParallax-x')"
 				v-tip="t('components.sceneParallax-x.tip')"
@@ -85,6 +89,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneParallax-y.label') || 'Y' }}</div>
 			<NumberBox
+				:label="t('components.sceneParallax-y.label') || 'Y'"
 				id="sceneParallax-y"
 				:ref="registryRef(inspectorEls, 'sceneParallax-y')"
 				v-tip="t('components.sceneParallax-y.tip')"

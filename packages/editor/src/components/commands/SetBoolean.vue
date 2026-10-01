@@ -67,6 +67,7 @@
 			/>
 			<div class="text">{{ t('components.setBoolean-script.label') }}</div>
 			<TextBox
+				:label="t('components.setBoolean-script.label')"
 				id="setBoolean-script"
 				v-tip="t('components.setBoolean-script.tip')"
 				:ref="registryRef(fieldEls, 'setBoolean-script')"

@@ -35,6 +35,7 @@
 			/>
 			<div class="text">{{ t('components.setVolume-duration.label') }}</div>
 			<NumberBox
+				:label="t('components.setVolume-duration.label')"
 				id="setVolume-duration"
 				:ref="registryRef(fieldEls, 'setVolume-duration')"
 				name="duration"

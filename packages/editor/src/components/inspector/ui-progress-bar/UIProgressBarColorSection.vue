@@ -25,6 +25,7 @@
 			step="5"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.uiProgressBar-color-0-box.label') || 'Red'"
 			id="uiProgressBar-color-0"
 			ref="elColor0"
 			v-model="form.color[0]"
@@ -50,6 +51,7 @@
 			step="5"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.uiProgressBar-color-1-box.label') || 'Green'"
 			id="uiProgressBar-color-1"
 			ref="elColor1"
 			v-model="form.color[1]"
@@ -75,6 +77,7 @@
 			step="5"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.uiProgressBar-color-2-box.label') || 'Blue'"
 			id="uiProgressBar-color-2"
 			ref="elColor2"
 			v-model="form.color[2]"
@@ -100,6 +103,7 @@
 			step="5"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.uiProgressBar-color-3-box.label') || 'Alpha'"
 			id="uiProgressBar-color-3"
 			ref="elColor3"
 			v-model="form.color[3]"

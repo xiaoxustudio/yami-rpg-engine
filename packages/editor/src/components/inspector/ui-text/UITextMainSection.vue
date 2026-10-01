@@ -66,6 +66,7 @@
 	</div>
 	<div class="text">{{ t('components.uiText-content.label') || 'Content' }}</div>
 	<TextArea
+		:label="t('components.uiText-content.label') || 'Content'"
 		id="uiText-content"
 		:ref="registryRef(inspectorEls, 'uiText-content')"
 		v-tip="t('components.uiText-content.tip')"
@@ -84,6 +85,7 @@
 			step="2"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.uiText-size-box.label') || 'Size'"
 			ref="elSize"
 			id="uiText-size"
 			v-model="form.size"
@@ -111,6 +113,7 @@
 			step="1"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.uiText-lineSpacing-box.label') || 'Line Spacing'"
 			ref="elLineSpacing"
 			id="uiText-lineSpacing"
 			v-model="form.lineSpacing"
@@ -138,6 +141,7 @@
 			step="1"
 		></SliderBox>
 		<NumberBox
+			:label="t('components.uiText-letterSpacing-box.label') || 'Letter Spacing'"
 			ref="elLetterSpacing"
 			id="uiText-letterSpacing"
 			v-model="form.letterSpacing"
@@ -158,6 +162,7 @@
 	></ColorBox>
 	<div class="text">{{ t('components.uiText-font.label') || 'Font' }}</div>
 	<TextBox
+		:label="t('components.uiText-font.label') || 'Font'"
 		id="uiText-font"
 		:placeholder="t('components.uiText-font.placeholder')"
 		:ref="registryRef(inspectorEls, 'uiText-font')"

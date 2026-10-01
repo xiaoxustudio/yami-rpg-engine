@@ -56,6 +56,7 @@
 			/>
 			<div class="text">{{ t('components.setObjectAnimation-tint-0.label') }}</div>
 			<NumberBox
+				:label="t('components.setObjectAnimation-tint-0.label')"
 				id="setObjectAnimation-tint-0"
 				v-tip="t('components.setObjectAnimation-tint-0.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-0')"
@@ -66,6 +67,7 @@
 			/>
 			<div class="text">{{ t('components.setObjectAnimation-tint-1.label') }}</div>
 			<NumberBox
+				:label="t('components.setObjectAnimation-tint-1.label')"
 				id="setObjectAnimation-tint-1"
 				v-tip="t('components.setObjectAnimation-tint-1.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-1')"
@@ -76,6 +78,7 @@
 			/>
 			<div class="text">{{ t('components.setObjectAnimation-tint-2.label') }}</div>
 			<NumberBox
+				:label="t('components.setObjectAnimation-tint-2.label')"
 				id="setObjectAnimation-tint-2"
 				v-tip="t('components.setObjectAnimation-tint-2.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-2')"
@@ -86,6 +89,7 @@
 			/>
 			<div class="text">{{ t('components.setObjectAnimation-tint-3.label') }}</div>
 			<NumberBox
+				:label="t('components.setObjectAnimation-tint-3.label')"
 				id="setObjectAnimation-tint-3"
 				v-tip="t('components.setObjectAnimation-tint-3.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-3')"
@@ -136,6 +140,7 @@
 			/>
 			<div class="text">{{ t('components.setObjectAnimation-duration.label') }}</div>
 			<NumberBox
+				:label="t('components.setObjectAnimation-duration.label')"
 				id="setObjectAnimation-duration"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-duration')"
 				name="duration"

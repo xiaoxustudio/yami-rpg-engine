@@ -1,6 +1,7 @@
 <template>
 	<div class="text">{{ t('components.uiTextBox-padding.label') || 'Padding' }}</div>
 	<NumberBox
+		:label="t('components.uiTextBox-padding.label') || 'Padding'"
 		id="uiTextBox-padding"
 		:ref="registryRef(inspectorEls, 'uiTextBox-padding')"
 		v-tip="t('components.uiTextBox-padding.tip')"
@@ -12,6 +13,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiTextBox-size.label') || 'Size' }}</div>
 	<NumberBox
+		:label="t('components.uiTextBox-size.label') || 'Size'"
 		id="uiTextBox-size"
 		:ref="registryRef(inspectorEls, 'uiTextBox-size')"
 		v-tip="t('components.uiTextBox-size.tip')"
@@ -23,6 +25,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiTextBox-font.label') || 'Font' }}</div>
 	<TextBox
+		:label="t('components.uiTextBox-font.label') || 'Font'"
 		id="uiTextBox-font"
 		:placeholder="t('components.uiTextBox-font.placeholder')"
 		:ref="registryRef(inspectorEls, 'uiTextBox-font')"

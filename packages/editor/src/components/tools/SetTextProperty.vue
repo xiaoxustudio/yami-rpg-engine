@@ -24,6 +24,7 @@
 			/>
 			<div class="text">{{ t('components.setText-property-size.label') }}</div>
 			<NumberBox
+				:label="t('components.setText-property-size.label')"
 				id="setText-property-size"
 				:ref="fieldRef('setText-property-size')"
 				min="10"
@@ -33,6 +34,7 @@
 			/>
 			<div class="text">{{ t('components.setText-property-lineSpacing.label') }}</div>
 			<NumberBox
+				:label="t('components.setText-property-lineSpacing.label')"
 				id="setText-property-lineSpacing"
 				:ref="fieldRef('setText-property-lineSpacing')"
 				min="-10"
@@ -42,6 +44,7 @@
 			/>
 			<div class="text">{{ t('components.setText-property-letterSpacing.label') }}</div>
 			<NumberBox
+				:label="t('components.setText-property-letterSpacing.label')"
 				id="setText-property-letterSpacing"
 				:ref="fieldRef('setText-property-letterSpacing')"
 				min="-10"
@@ -57,6 +60,7 @@
 			/>
 			<div class="text">{{ t('components.setText-property-font.label') }}</div>
 			<TextBox
+				:label="t('components.setText-property-font.label')"
 				id="setText-property-font"
 				:ref="fieldRef('setText-property-font')"
 				v-model="font"
@@ -71,6 +75,7 @@
 				{{ t('components.setText-property-effect-shadowOffsetX.label') }}
 			</div>
 			<NumberBox
+				:label="t('components.setText-property-effect-shadowOffsetX.label')"
 				id="setText-property-effect-shadowOffsetX"
 				:ref="fieldRef('setText-property-effect-shadowOffsetX')"
 				min="-9"
@@ -82,6 +87,7 @@
 				{{ t('components.setText-property-effect-shadowOffsetY.label') }}
 			</div>
 			<NumberBox
+				:label="t('components.setText-property-effect-shadowOffsetY.label')"
 				id="setText-property-effect-shadowOffsetY"
 				:ref="fieldRef('setText-property-effect-shadowOffsetY')"
 				min="-9"
@@ -91,6 +97,7 @@
 			/>
 			<div class="text">{{ t('components.setText-property-effect-strokeWidth.label') }}</div>
 			<NumberBox
+				:label="t('components.setText-property-effect-strokeWidth.label')"
 				id="setText-property-effect-strokeWidth"
 				:ref="fieldRef('setText-property-effect-strokeWidth')"
 				min="1"

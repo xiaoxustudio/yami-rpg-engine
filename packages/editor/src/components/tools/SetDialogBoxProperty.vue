@@ -23,6 +23,7 @@
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-interval.label') }}</div>
 			<NumberBox
+				:label="t('components.setDialogBox-property-interval.label')"
 				id="setDialogBox-property-interval"
 				:ref="fieldRef('setDialogBox-property-interval')"
 				min="0"
@@ -32,6 +33,7 @@
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-size.label') }}</div>
 			<NumberBox
+				:label="t('components.setDialogBox-property-size.label')"
 				id="setDialogBox-property-size"
 				:ref="fieldRef('setDialogBox-property-size')"
 				min="10"
@@ -41,6 +43,7 @@
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-lineSpacing.label') }}</div>
 			<NumberBox
+				:label="t('components.setDialogBox-property-lineSpacing.label')"
 				id="setDialogBox-property-lineSpacing"
 				:ref="fieldRef('setDialogBox-property-lineSpacing')"
 				min="-10"
@@ -50,6 +53,7 @@
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-letterSpacing.label') }}</div>
 			<NumberBox
+				:label="t('components.setDialogBox-property-letterSpacing.label')"
 				id="setDialogBox-property-letterSpacing"
 				:ref="fieldRef('setDialogBox-property-letterSpacing')"
 				min="-10"
@@ -65,6 +69,7 @@
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-font.label') }}</div>
 			<TextBox
+				:label="t('components.setDialogBox-property-font.label')"
 				id="setDialogBox-property-font"
 				:ref="fieldRef('setDialogBox-property-font')"
 				v-model="font"
@@ -79,6 +84,7 @@
 				{{ t('components.setDialogBox-property-effect-shadowOffsetX.label') }}
 			</div>
 			<NumberBox
+				:label="t('components.setDialogBox-property-effect-shadowOffsetX.label')"
 				id="setDialogBox-property-effect-shadowOffsetX"
 				:ref="fieldRef('setDialogBox-property-effect-shadowOffsetX')"
 				min="-9"
@@ -90,6 +96,7 @@
 				{{ t('components.setDialogBox-property-effect-shadowOffsetY.label') }}
 			</div>
 			<NumberBox
+				:label="t('components.setDialogBox-property-effect-shadowOffsetY.label')"
 				id="setDialogBox-property-effect-shadowOffsetY"
 				:ref="fieldRef('setDialogBox-property-effect-shadowOffsetY')"
 				min="-9"
@@ -101,6 +108,7 @@
 				{{ t('components.setDialogBox-property-effect-strokeWidth.label') }}
 			</div>
 			<NumberBox
+				:label="t('components.setDialogBox-property-effect-strokeWidth.label')"
 				id="setDialogBox-property-effect-strokeWidth"
 				:ref="fieldRef('setDialogBox-property-effect-strokeWidth')"
 				min="1"

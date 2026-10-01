@@ -31,6 +31,7 @@
 			/>
 			<div class="text">{{ t('components.setNumber-operand-constant-value.label') }}</div>
 			<NumberBox
+				:label="t('components.setNumber-operand-constant-value.label')"
 				id="setNumber-operand-constant-value"
 				v-tip="t('components.setNumber-operand-constant-value.tip')"
 				:ref="fieldRef('setNumber-operand-constant-value')"
@@ -179,6 +180,7 @@
 			/>
 			<div class="text">{{ t('components.setNumber-operand-math-decimals.label') }}</div>
 			<NumberBox
+				:label="t('components.setNumber-operand-math-decimals.label')"
 				id="setNumber-operand-math-decimals"
 				v-tip="t('components.setNumber-operand-math-decimals.tip')"
 				:ref="fieldRef('setNumber-operand-math-decimals')"
@@ -247,6 +249,7 @@
 			/>
 			<div class="text">{{ t('components.setNumber-operand-script.label') }}</div>
 			<TextBox
+				:label="t('components.setNumber-operand-script.label')"
 				id="setNumber-operand-script"
 				v-tip="t('components.setNumber-operand-script.tip')"
 				:ref="fieldRef('setNumber-operand-script')"

@@ -27,6 +27,7 @@
 			/>
 			<div class="text">{{ t('components.playAudio-volume.label') }}</div>
 			<NumberBox
+				:label="t('components.playAudio-volume.label')"
 				id="playAudio-volume"
 				:ref="registryRef(fieldEls, 'playAudio-volume')"
 				v-tip="t('components.playAudio-volume.tip')"

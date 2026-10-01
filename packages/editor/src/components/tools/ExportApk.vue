@@ -10,19 +10,36 @@
 			<div class="grid-box" id="export-apk-grid">
 				<div class="text project-summary">应用配置</div>
 				<div class="text">应用名称</div>
-				<TextBox id="export-apk-apkName" v-model="exportApkForm.apkName" />
+				<TextBox
+					:label="'应用名称'"
+					id="export-apk-apkName"
+					v-model="exportApkForm.apkName"
+				/>
 				<div class="text">应用图标</div>
 				<TextBox
+					:label="'应用图标'"
 					id="export-apk-apkIcon"
 					:ref="registryRef(titleEls, 'export-apk-apkIcon')"
 					v-model="exportApkForm.apkIcon"
 				/>
 				<div class="text">应用包名</div>
-				<TextBox id="export-apk-apkPackageName" v-model="exportApkForm.apkPackageName" />
+				<TextBox
+					:label="'应用包名'"
+					id="export-apk-apkPackageName"
+					v-model="exportApkForm.apkPackageName"
+				/>
 				<div class="text">应用版本</div>
-				<TextBox id="export-apk-apkVersionName" v-model="exportApkForm.apkVersionName" />
+				<TextBox
+					:label="'应用版本'"
+					id="export-apk-apkVersionName"
+					v-model="exportApkForm.apkVersionName"
+				/>
 				<div class="text">应用版本号</div>
-				<TextBox id="export-apk-apkVersionCode" v-model="exportApkForm.apkVersionCode" />
+				<TextBox
+					:label="'应用版本号'"
+					id="export-apk-apkVersionCode"
+					v-model="exportApkForm.apkVersionCode"
+				/>
 			</div>
 			<!-- 超链接点击由本组件转发（Menubar.initialize 不再全文档查 `.href`） -->
 			<div class="box" id="export-apk-PS" @click="onHrefClick">

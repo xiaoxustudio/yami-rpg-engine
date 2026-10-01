@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="sceneLight-general-grid">
 			<div class="text">{{ t('components.sceneLight-name.label') || 'Name' }}</div>
 			<TextBox
+				:label="t('components.sceneLight-name.label') || 'Name'"
 				id="sceneLight-name"
 				:ref="registryRef(inspectorEls, 'sceneLight-name')"
 				v-tip="t('components.sceneLight-name.tip')"
@@ -30,6 +31,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.sceneLight-x.label') || 'X' }}</div>
 			<NumberBox
+				:label="t('components.sceneLight-x.label') || 'X'"
 				id="sceneLight-x"
 				:ref="registryRef(inspectorEls, 'sceneLight-x')"
 				v-tip="t('components.sceneLight-x.tip')"
@@ -42,6 +44,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneLight-y.label') || 'Y' }}</div>
 			<NumberBox
+				:label="t('components.sceneLight-y.label') || 'Y'"
 				id="sceneLight-y"
 				:ref="registryRef(inspectorEls, 'sceneLight-y')"
 				v-tip="t('components.sceneLight-y.tip')"
@@ -68,6 +71,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneLight-range-box.label') || 'Range'"
 					id="sceneLight-range"
 					ref="elRange"
 					v-model="form.range"
@@ -95,6 +99,7 @@
 					step="0.05"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneLight-intensity-box.label') || 'Intensity'"
 					id="sceneLight-intensity"
 					ref="elIntensity"
 					v-model="form.intensity"
@@ -131,6 +136,7 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneLight-anchorX-box.label') || 'Anchor X'"
 					id="sceneLight-anchorX"
 					ref="elAnchorX"
 					v-model="form.anchorX"
@@ -157,6 +163,7 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneLight-anchorY-box.label') || 'Anchor Y'"
 					id="sceneLight-anchorY"
 					ref="elAnchorY"
 					v-model="form.anchorY"
@@ -183,6 +190,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneLight-width-box.label') || 'Width'"
 					id="sceneLight-width"
 					ref="elWidth"
 					v-model="form.width"
@@ -209,6 +217,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneLight-height-box.label') || 'Height'"
 					id="sceneLight-height"
 					ref="elHeight"
 					v-model="form.height"
@@ -235,6 +244,7 @@
 					step="5"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneLight-angle-box.label') || 'Angle'"
 					id="sceneLight-angle"
 					ref="elAngle"
 					v-model="form.angle"
@@ -261,6 +271,7 @@
 					step="5"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneLight-red-box.label') || 'Red'"
 					id="sceneLight-red"
 					ref="elRed"
 					v-model="form.red"
@@ -286,6 +297,7 @@
 					step="5"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneLight-green-box.label') || 'Green'"
 					id="sceneLight-green"
 					ref="elGreen"
 					v-model="form.green"
@@ -311,6 +323,7 @@
 					step="5"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneLight-blue-box.label') || 'Blue'"
 					id="sceneLight-blue"
 					ref="elBlue"
 					v-model="form.blue"
@@ -338,6 +351,7 @@
 					step="0.05"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneLight-direct-box.label') || 'Direct Light Ratio'"
 					id="sceneLight-direct"
 					ref="elDirect"
 					v-model="form.direct"

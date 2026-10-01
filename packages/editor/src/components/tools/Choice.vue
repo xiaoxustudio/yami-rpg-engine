@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.choice-content.label') }}</div>
 			<TextBox
+				:label="t('components.choice-content.label')"
 				id="choice-content"
 				:ref="registryRef(fieldEls, 'choice-content')"
 				v-tip="t('components.choice-content.tip')"

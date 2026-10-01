@@ -17,6 +17,7 @@
 	></SelectBox>
 	<div class="text">{{ t('components.uiTextBox-text.label') || 'Text' }}</div>
 	<TextBox
+		:label="t('components.uiTextBox-text.label') || 'Text'"
 		ref="elText"
 		id="uiTextBox-text"
 		v-tip="t('components.uiTextBox-text.tip')"
@@ -25,6 +26,7 @@
 	></TextBox>
 	<div class="text">{{ t('components.uiTextBox-maxLength.label') || 'Max Length' }}</div>
 	<NumberBox
+		:label="t('components.uiTextBox-maxLength.label') || 'Max Length'"
 		ref="elMaxLength"
 		id="uiTextBox-maxLength"
 		v-tip="t('components.uiTextBox-maxLength.tip')"
@@ -35,6 +37,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiTextBox-number.label') || 'Number' }}</div>
 	<NumberBox
+		:label="t('components.uiTextBox-number.label') || 'Number'"
 		ref="elNumber"
 		id="uiTextBox-number"
 		v-tip="t('components.uiTextBox-number.tip')"
@@ -43,6 +46,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiTextBox-min.label') || 'Min' }}</div>
 	<NumberBox
+		:label="t('components.uiTextBox-min.label') || 'Min'"
 		ref="elMin"
 		id="uiTextBox-min"
 		v-tip="t('components.uiTextBox-min.tip')"
@@ -54,6 +58,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiTextBox-max.label') || 'Max' }}</div>
 	<NumberBox
+		:label="t('components.uiTextBox-max.label') || 'Max'"
 		ref="elMax"
 		id="uiTextBox-max"
 		v-tip="t('components.uiTextBox-max.tip')"
@@ -67,6 +72,7 @@
 		{{ t('components.uiTextBox-decimals.label') || 'Decimal Places' }}
 	</div>
 	<NumberBox
+		:label="t('components.uiTextBox-decimals.label') || 'Decimal Places'"
 		ref="elDecimals"
 		id="uiTextBox-decimals"
 		v-tip="t('components.uiTextBox-decimals.tip')"

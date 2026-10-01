@@ -49,6 +49,7 @@
 		{{ t('components.particleLayer-sprite-hframes.label') || 'Horiz Frames' }}
 	</div>
 	<NumberBox
+		:label="t('components.particleLayer-sprite-hframes.label') || 'Horiz Frames'"
 		id="particleLayer-sprite-hframes"
 		:ref="registryRef(inspectorEls, 'particleLayer-sprite-hframes')"
 		v-tip="t('components.particleLayer-sprite-hframes.tip')"
@@ -61,6 +62,7 @@
 		{{ t('components.particleLayer-sprite-vframes.label') || 'Vert Frames' }}
 	</div>
 	<NumberBox
+		:label="t('components.particleLayer-sprite-vframes.label') || 'Vert Frames'"
 		id="particleLayer-sprite-vframes"
 		:ref="registryRef(inspectorEls, 'particleLayer-sprite-vframes')"
 		v-tip="t('components.particleLayer-sprite-vframes.tip')"
@@ -73,6 +75,7 @@
 		{{ t('components.particleLayer-sprite-interval.label') || 'Animation Interval' }}
 	</div>
 	<NumberBox
+		:label="t('components.particleLayer-sprite-interval.label') || 'Animation Interval'"
 		id="particleLayer-sprite-interval"
 		v-tip="t('components.particleLayer-sprite-interval.tip')"
 		ref="elSpriteInterval"

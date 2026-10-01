@@ -16,6 +16,7 @@
 			/>
 			<div class="text">{{ t('components.shakeScreen-power.label') }}</div>
 			<NumberBox
+				:label="t('components.shakeScreen-power.label')"
 				id="shakeScreen-power"
 				:ref="registryRef(fieldEls, 'shakeScreen-power')"
 				v-tip="t('components.shakeScreen-power.tip')"
@@ -25,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.shakeScreen-speed.label') }}</div>
 			<NumberBox
+				:label="t('components.shakeScreen-speed.label')"
 				id="shakeScreen-speed"
 				:ref="registryRef(fieldEls, 'shakeScreen-speed')"
 				v-tip="t('components.shakeScreen-speed.tip')"
@@ -41,6 +43,7 @@
 			/>
 			<div class="text">{{ t('components.shakeScreen-duration.label') }}</div>
 			<NumberBox
+				:label="t('components.shakeScreen-duration.label')"
 				id="shakeScreen-duration"
 				:ref="registryRef(fieldEls, 'shakeScreen-duration')"
 				name="duration"

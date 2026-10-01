@@ -24,6 +24,7 @@
 			/>
 			<div class="text">{{ t('components.language-scale.label') }}</div>
 			<NumberBox
+				:label="t('components.language-scale.label')"
 				id="language-scale"
 				:ref="registryRef(composableEls, 'language-scale')"
 				v-tip="t('components.language-scale.tip')"

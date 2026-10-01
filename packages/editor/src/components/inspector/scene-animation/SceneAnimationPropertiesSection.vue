@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="sceneAnimation-general-grid">
 			<div class="text">{{ t('components.sceneAnimation-name.label') || 'Name' }}</div>
 			<TextBox
+				:label="t('components.sceneAnimation-name.label') || 'Name'"
 				id="sceneAnimation-name"
 				:ref="registryRef(inspectorEls, 'sceneAnimation-name')"
 				v-tip="t('components.sceneAnimation-name.tip')"
@@ -45,6 +46,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.sceneAnimation-x.label') || 'X' }}</div>
 			<NumberBox
+				:label="t('components.sceneAnimation-x.label') || 'X'"
 				id="sceneAnimation-x"
 				:ref="registryRef(inspectorEls, 'sceneAnimation-x')"
 				v-tip="t('components.sceneAnimation-x.tip')"
@@ -58,6 +60,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.sceneAnimation-y.label') || 'Y' }}</div>
 			<NumberBox
+				:label="t('components.sceneAnimation-y.label') || 'Y'"
 				id="sceneAnimation-y"
 				:ref="registryRef(inspectorEls, 'sceneAnimation-y')"
 				v-tip="t('components.sceneAnimation-y.tip')"
@@ -84,6 +87,7 @@
 					step="45"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneAnimation-angle-box.label') || 'Angle'"
 					id="sceneAnimation-angle"
 					ref="elAngle"
 					v-model="form.angle"
@@ -110,6 +114,7 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneAnimation-scale-box.label') || 'Scale'"
 					id="sceneAnimation-scale"
 					ref="elScale"
 					v-model="form.scale"
@@ -135,6 +140,7 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneAnimation-speed-box.label') || 'Speed'"
 					id="sceneAnimation-speed"
 					ref="elSpeed"
 					v-model="form.speed"
@@ -162,6 +168,7 @@
 					step="0.05"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneAnimation-opacity-box.label') || 'Opacity'"
 					id="sceneAnimation-opacity"
 					ref="elOpacity"
 					v-model="form.opacity"
@@ -189,6 +196,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
+					:label="t('components.sceneAnimation-priority-box.label') || 'Priority'"
 					id="sceneAnimation-priority"
 					ref="elPriority"
 					v-model="form.priority"

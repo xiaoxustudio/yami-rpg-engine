@@ -9,6 +9,7 @@
 	></SelectBox>
 	<div class="text">{{ t('components.uiWindow-scrollX.label') || 'Scroll X' }}</div>
 	<NumberBox
+		:label="t('components.uiWindow-scrollX.label') || 'Scroll X'"
 		ref="elScrollX"
 		id="uiWindow-scrollX"
 		v-tip="t('components.uiWindow-scrollX.tip')"
@@ -20,6 +21,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiWindow-scrollY.label') || 'Scroll Y' }}</div>
 	<NumberBox
+		:label="t('components.uiWindow-scrollY.label') || 'Scroll Y'"
 		ref="elScrollY"
 		id="uiWindow-scrollY"
 		v-tip="t('components.uiWindow-scrollY.tip')"
@@ -31,6 +33,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiWindow-gridWidth.label') || 'Grid Width' }}</div>
 	<NumberBox
+		:label="t('components.uiWindow-gridWidth.label') || 'Grid Width'"
 		ref="elGridWidth"
 		id="uiWindow-gridWidth"
 		v-tip="t('components.uiWindow-gridWidth.tip')"
@@ -42,6 +45,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiWindow-gridHeight.label') || 'Grid Height' }}</div>
 	<NumberBox
+		:label="t('components.uiWindow-gridHeight.label') || 'Grid Height'"
 		ref="elGridHeight"
 		id="uiWindow-gridHeight"
 		v-tip="t('components.uiWindow-gridHeight.tip')"
@@ -53,6 +57,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiWindow-gridGapX.label') || 'Grid Gap X' }}</div>
 	<NumberBox
+		:label="t('components.uiWindow-gridGapX.label') || 'Grid Gap X'"
 		ref="elGridGapX"
 		id="uiWindow-gridGapX"
 		v-tip="t('components.uiWindow-gridGapX.tip')"
@@ -64,6 +69,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiWindow-gridGapY.label') || 'Grid Gap Y' }}</div>
 	<NumberBox
+		:label="t('components.uiWindow-gridGapY.label') || 'Grid Gap Y'"
 		ref="elGridGapY"
 		id="uiWindow-gridGapY"
 		v-tip="t('components.uiWindow-gridGapY.tip')"
@@ -75,6 +81,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiWindow-paddingX.label') || 'Padding X' }}</div>
 	<NumberBox
+		:label="t('components.uiWindow-paddingX.label') || 'Padding X'"
 		ref="elPaddingX"
 		id="uiWindow-paddingX"
 		v-tip="t('components.uiWindow-paddingX.tip')"
@@ -86,6 +93,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiWindow-paddingY.label') || 'Padding Y' }}</div>
 	<NumberBox
+		:label="t('components.uiWindow-paddingY.label') || 'Padding Y'"
 		ref="elPaddingY"
 		id="uiWindow-paddingY"
 		v-tip="t('components.uiWindow-paddingY.tip')"
