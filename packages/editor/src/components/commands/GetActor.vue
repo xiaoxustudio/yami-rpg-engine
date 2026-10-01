@@ -27,6 +27,7 @@
 			/>
 			<div class="text">{{ t('components.getActor-area.label') }}</div>
 			<SelectBox
+				:label="t('components.getActor-area.label')"
 				id="getActor-area"
 				v-tip="t('components.getActor-area.tip')"
 				:ref="registryRef(fieldEls, 'getActor-area')"
@@ -56,6 +57,7 @@
 			/>
 			<div class="text">{{ t('components.getActor-selector.label') }}</div>
 			<SelectBox
+				:label="t('components.getActor-selector.label')"
 				id="getActor-selector"
 				v-tip="t('components.getActor-selector.tip')"
 				:ref="registryRef(fieldEls, 'getActor-selector')"
@@ -70,6 +72,7 @@
 			/>
 			<div class="text">{{ t('components.getActor-condition.label') }}</div>
 			<SelectBox
+				:label="t('components.getActor-condition.label')"
 				id="getActor-condition"
 				v-tip="t('components.getActor-condition.tip')"
 				:ref="registryRef(fieldEls, 'getActor-condition')"
@@ -77,6 +80,7 @@
 			/>
 			<div class="text">{{ t('components.getActor-attribute.label') }}</div>
 			<SelectBox
+				:label="t('components.getActor-attribute.label')"
 				id="getActor-attribute"
 				v-tip="t('components.getActor-attribute.tip')"
 				:ref="registryRef(fieldEls, 'getActor-attribute')"
@@ -85,6 +89,7 @@
 			/>
 			<div class="text">{{ t('components.getActor-divisor.label') }}</div>
 			<SelectBox
+				:label="t('components.getActor-divisor.label')"
 				id="getActor-divisor"
 				v-tip="t('components.getActor-divisor.tip')"
 				:ref="registryRef(fieldEls, 'getActor-divisor')"
@@ -93,6 +98,7 @@
 			/>
 			<div class="text">{{ t('components.getActor-activation.label') }}</div>
 			<SelectBox
+				:label="t('components.getActor-activation.label')"
 				id="getActor-activation"
 				v-tip="t('components.getActor-activation.tip')"
 				:ref="registryRef(fieldEls, 'getActor-activation')"
@@ -100,6 +106,7 @@
 			/>
 			<div class="text">{{ t('components.getActor-exclusion.label') }}</div>
 			<SelectBox
+				:label="t('components.getActor-exclusion.label')"
 				id="getActor-exclusion"
 				v-tip="t('components.getActor-exclusion.tip')"
 				:ref="registryRef(fieldEls, 'getActor-exclusion')"

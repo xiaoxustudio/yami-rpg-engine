@@ -19,6 +19,7 @@
 			/>
 			<div class="text">{{ t('components.setObject-operand-type.label') }}</div>
 			<SelectBox
+				:label="t('components.setObject-operand-type.label')"
 				id="setObject-operand-type"
 				v-tip="t('components.setObject-operand-type.tip')"
 				:ref="registryRef(fieldEls, 'setObject-operand-type')"

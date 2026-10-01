@@ -21,6 +21,7 @@
 			/>
 			<div class="text">{{ t('components.changeActorSkill-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.changeActorSkill-operation.label')"
 				id="changeActorSkill-operation"
 				:ref="registryRef(fieldEls, 'changeActorSkill-operation')"
 				v-model="form.operation"

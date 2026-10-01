@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.setTerrain-terrain.label') }}</div>
 			<SelectBox
+				:label="t('components.setTerrain-terrain.label')"
 				id="setTerrain-terrain"
 				v-tip="t('components.setTerrain-terrain.tip')"
 				:ref="registryRef(fieldEls, 'setTerrain-terrain')"

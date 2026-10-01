@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.castSkill-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.castSkill-mode.label')"
 				id="castSkill-mode"
 				v-tip="t('components.castSkill-mode.tip')"
 				:ref="registryRef(fieldEls, 'castSkill-mode')"
@@ -25,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.castSkill-key.label') }}</div>
 			<SelectBox
+				:label="t('components.castSkill-key.label')"
 				id="castSkill-key"
 				v-tip="t('components.castSkill-key.tip')"
 				:ref="registryRef(fieldEls, 'castSkill-key')"
@@ -58,6 +60,7 @@
 			/>
 			<div class="text">{{ t('components.castSkill-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.castSkill-wait.label')"
 				id="castSkill-wait"
 				:ref="registryRef(fieldEls, 'castSkill-wait')"
 				name="wait"

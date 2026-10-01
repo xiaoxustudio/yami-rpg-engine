@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="fileTrigger-general-grid">
 			<div class="text">{{ t('components.fileTrigger-selector.label') || 'Selector' }}</div>
 			<SelectBox
+				:label="t('components.fileTrigger-selector.label') || 'Selector'"
 				id="fileTrigger-selector"
 				v-tip="t('components.fileTrigger-selector.tip')"
 				ref="elSelector"
@@ -16,6 +17,7 @@
 				{{ t('components.fileTrigger-onHitWalls.label') || 'On Hit Walls' }}
 			</div>
 			<SelectBox
+				:label="t('components.fileTrigger-onHitWalls.label') || 'On Hit Walls'"
 				id="fileTrigger-onHitWalls"
 				v-tip="t('components.fileTrigger-onHitWalls.tip')"
 				ref="elOnHitWalls"
@@ -26,6 +28,7 @@
 				{{ t('components.fileTrigger-onHitActors.label') || 'On Hit Actors' }}
 			</div>
 			<SelectBox
+				:label="t('components.fileTrigger-onHitActors.label') || 'On Hit Actors'"
 				id="fileTrigger-onHitActors"
 				v-tip="t('components.fileTrigger-onHitActors.tip')"
 				ref="elOnHitActors"
@@ -45,6 +48,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-shape-type.label') || 'Shape' }}</div>
 			<SelectBox
+				:label="t('components.fileTrigger-shape-type.label') || 'Shape'"
 				id="fileTrigger-shape-type"
 				v-tip="t('components.fileTrigger-shape-type.tip')"
 				ref="elShapeType"
@@ -131,6 +135,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-hitMode.label') || 'Hit Mode' }}</div>
 			<SelectBox
+				:label="t('components.fileTrigger-hitMode.label') || 'Hit Mode'"
 				id="fileTrigger-hitMode"
 				v-tip="t('components.fileTrigger-hitMode.tip')"
 				ref="elHitMode"

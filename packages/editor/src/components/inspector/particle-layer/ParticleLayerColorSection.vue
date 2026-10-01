@@ -3,6 +3,7 @@
 		{{ t('components.particleLayer-color-mode.label') || 'Color Mode' }}
 	</div>
 	<SelectBox
+		:label="t('components.particleLayer-color-mode.label') || 'Color Mode'"
 		id="particleLayer-color-mode"
 		v-tip="t('components.particleLayer-color-mode.tip')"
 		ref="elColorMode"
@@ -163,6 +164,7 @@
 		{{ t('components.particleLayer-color-easingId.label') || 'Color Easing' }}
 	</div>
 	<SelectBox
+		:label="t('components.particleLayer-color-easingId.label') || 'Color Easing'"
 		id="particleLayer-color-easingId"
 		v-tip="t('components.particleLayer-color-easingId.tip')"
 		ref="elColorEasingId"

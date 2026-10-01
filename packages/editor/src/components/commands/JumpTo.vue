@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.jumpTo-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.jumpTo-operation.label')"
 				id="jumpTo-operation"
 				v-tip="t('components.jumpTo-operation.tip')"
 				:ref="registryRef(fieldEls, 'jumpTo-operation')"

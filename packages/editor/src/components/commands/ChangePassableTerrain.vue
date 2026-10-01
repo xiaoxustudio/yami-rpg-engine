@@ -22,6 +22,7 @@
 			/>
 			<div class="text">{{ t('components.changePassableTerrain-passage.label') }}</div>
 			<SelectBox
+				:label="t('components.changePassableTerrain-passage.label')"
 				id="changePassableTerrain-passage"
 				v-tip="t('components.changePassableTerrain-passage.tip')"
 				:ref="registryRef(fieldEls, 'changePassableTerrain-passage')"

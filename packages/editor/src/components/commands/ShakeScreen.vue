@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.shakeScreen-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.shakeScreen-mode.label')"
 				id="shakeScreen-mode"
 				:ref="registryRef(fieldEls, 'shakeScreen-mode')"
 				v-focus
@@ -36,6 +37,7 @@
 			/>
 			<div class="text">{{ t('components.shakeScreen-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.shakeScreen-easingId.label')"
 				id="shakeScreen-easingId"
 				:ref="registryRef(fieldEls, 'shakeScreen-easingId')"
 				name="easing"
@@ -54,6 +56,7 @@
 			/>
 			<div class="text">{{ t('components.shakeScreen-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.shakeScreen-wait.label')"
 				id="shakeScreen-wait"
 				:ref="registryRef(fieldEls, 'shakeScreen-wait')"
 				name="wait"

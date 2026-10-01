@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="animSpriteLayer-properties-grid">
 			<div class="text">{{ t('components.animSpriteLayer-sprite.label') || 'Sprite' }}</div>
 			<SelectBox
+				:label="t('components.animSpriteLayer-sprite.label') || 'Sprite'"
 				id="animSpriteLayer-sprite"
 				v-tip="t('components.animSpriteLayer-sprite.tip')"
 				ref="elSprite"
@@ -14,6 +15,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.animSpriteLayer-blend.label') || 'Blend' }}</div>
 			<SelectBox
+				:label="t('components.animSpriteLayer-blend.label') || 'Blend'"
 				id="animSpriteLayer-blend"
 				v-tip="t('components.animSpriteLayer-blend.tip')"
 				ref="elBlend"
@@ -24,6 +26,7 @@
 				{{ t('components.animSpriteLayer-light.label') || 'Light Sampling' }}
 			</div>
 			<SelectBox
+				:label="t('components.animSpriteLayer-light.label') || 'Light Sampling'"
 				id="animSpriteLayer-light"
 				v-tip="t('components.animSpriteLayer-light.tip')"
 				ref="elLight"

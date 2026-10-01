@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.moveActor-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.moveActor-mode.label')"
 				id="moveActor-mode"
 				v-tip="t('components.moveActor-mode.tip')"
 				:ref="registryRef(fieldEls, 'moveActor-mode')"
@@ -44,6 +45,7 @@
 			/>
 			<div class="text">{{ t('components.moveActor-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.moveActor-wait.label')"
 				id="moveActor-wait"
 				:ref="registryRef(fieldEls, 'moveActor-wait')"
 				name="wait"

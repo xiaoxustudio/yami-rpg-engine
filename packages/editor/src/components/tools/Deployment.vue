@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.deployment-platform.label') }}</div>
 			<SelectBox
+				:label="t('components.deployment-platform.label')"
 				id="deployment-platform"
 				v-tip="t('components.deployment-platform.tip')"
 				:ref="registryRef(titleEls, 'deployment-platform')"

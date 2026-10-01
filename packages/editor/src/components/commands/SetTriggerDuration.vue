@@ -22,6 +22,7 @@
 			/>
 			<div class="text">{{ t('components.setTriggerDuration-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setTriggerDuration-operation.label')"
 				id="setTriggerDuration-operation"
 				v-tip="t('components.setTriggerDuration-operation.tip')"
 				:ref="registryRef(fieldEls, 'setTriggerDuration-operation')"

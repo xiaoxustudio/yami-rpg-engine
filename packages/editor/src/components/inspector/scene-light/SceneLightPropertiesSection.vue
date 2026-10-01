@@ -15,6 +15,7 @@
 			></TextBox>
 			<div class="text">{{ t('components.sceneLight-type.label') || 'Type' }}</div>
 			<SelectBox
+				:label="t('components.sceneLight-type.label') || 'Type'"
 				id="sceneLight-type"
 				v-tip="t('components.sceneLight-type.tip')"
 				ref="elType"
@@ -23,6 +24,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.sceneLight-blend.label') || 'Blend' }}</div>
 			<SelectBox
+				:label="t('components.sceneLight-blend.label') || 'Blend'"
 				id="sceneLight-blend"
 				v-tip="t('components.sceneLight-blend.tip')"
 				ref="elBlend"

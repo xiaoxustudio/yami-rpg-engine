@@ -30,6 +30,7 @@
 			></NumberBox>
 			<div class="text">{{ t('components.uiVideo-loop.label') || 'Loop' }}</div>
 			<SelectBox
+				:label="t('components.uiVideo-loop.label') || 'Loop'"
 				id="uiVideo-loop"
 				v-tip="t('components.uiVideo-loop.tip')"
 				ref="elLoop"
@@ -38,6 +39,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.uiVideo-flip.label') || 'Flip' }}</div>
 			<SelectBox
+				:label="t('components.uiVideo-flip.label') || 'Flip'"
 				id="uiVideo-flip"
 				v-tip="t('components.uiVideo-flip.tip')"
 				ref="elFlip"
@@ -46,6 +48,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.uiVideo-blend.label') || 'Blend' }}</div>
 			<SelectBox
+				:label="t('components.uiVideo-blend.label') || 'Blend'"
 				id="uiVideo-blend"
 				v-tip="t('components.uiVideo-blend.tip')"
 				ref="elBlend"

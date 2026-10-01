@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setTeamRelation-teamId1.label') }}</div>
 			<SelectBox
+				:label="t('components.setTeamRelation-teamId1.label')"
 				id="setTeamRelation-teamId1"
 				v-tip="t('components.setTeamRelation-teamId1.tip')"
 				:ref="registryRef(fieldEls, 'setTeamRelation-teamId1')"
@@ -21,6 +22,7 @@
 			/>
 			<div class="text">{{ t('components.setTeamRelation-teamId2.label') }}</div>
 			<SelectBox
+				:label="t('components.setTeamRelation-teamId2.label')"
 				id="setTeamRelation-teamId2"
 				v-tip="t('components.setTeamRelation-teamId2.tip')"
 				:ref="registryRef(fieldEls, 'setTeamRelation-teamId2')"
@@ -28,6 +30,7 @@
 			/>
 			<div class="text">{{ t('components.setTeamRelation-relation.label') }}</div>
 			<SelectBox
+				:label="t('components.setTeamRelation-relation.label')"
 				id="setTeamRelation-relation"
 				v-tip="t('components.setTeamRelation-relation.tip')"
 				:ref="registryRef(fieldEls, 'setTeamRelation-relation')"

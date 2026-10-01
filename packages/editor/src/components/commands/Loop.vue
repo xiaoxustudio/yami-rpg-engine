@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.loop-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.loop-mode.label')"
 				id="loop-mode"
 				v-tip="t('components.loop-mode.tip')"
 				:ref="registryRef(fieldEls, 'loop-mode')"

@@ -15,6 +15,7 @@
 			></TextBox>
 			<div class="text">{{ t('components.sceneActor-type.label') || 'Type' }}</div>
 			<SelectBox
+				:label="t('components.sceneActor-type.label') || 'Type'"
 				ref="elType"
 				id="sceneActor-type"
 				v-tip="t('components.sceneActor-type.tip')"
@@ -34,6 +35,7 @@
 			></CustomBox>
 			<div class="text">{{ t('components.sceneActor-teamId.label') || 'Team' }}</div>
 			<SelectBox
+				:label="t('components.sceneActor-teamId.label') || 'Team'"
 				id="sceneActor-teamId"
 				v-tip="t('components.sceneActor-teamId.tip')"
 				:ref="registryRef(inspectorEls, 'sceneActor-teamId')"

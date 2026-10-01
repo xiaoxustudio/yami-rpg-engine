@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.activateScene-pointer.label') }}</div>
 			<SelectBox
+				:label="t('components.activateScene-pointer.label')"
 				id="activateScene-pointer"
 				v-tip="t('components.activateScene-pointer.tip')"
 				:ref="registryRef(fieldEls, 'activateScene-pointer')"

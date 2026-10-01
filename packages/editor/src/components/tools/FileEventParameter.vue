@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileEvent-parameter-type.label') }}</div>
 			<SelectBox
+				:label="t('components.fileEvent-parameter-type.label')"
 				id="fileEvent-parameter-type"
 				v-tip="t('components.fileEvent-parameter-type.tip')"
 				:ref="registryRef(inspectorEls, 'fileEvent-parameter-type')"

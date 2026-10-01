@@ -28,6 +28,7 @@
 			/>
 			<div class="text">{{ t('components.downloadFile-method.label') }}</div>
 			<SelectBox
+				:label="t('components.downloadFile-method.label')"
 				id="downloadFile-method"
 				v-tip="t('components.downloadFile-method.tip')"
 				:ref="registryRef(fieldEls, 'downloadFile-method')"

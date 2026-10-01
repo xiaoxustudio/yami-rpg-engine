@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.moveLight-property-key.label') }}</div>
 			<SelectBox
+				:label="t('components.moveLight-property-key.label')"
 				id="moveLight-property-key"
 				:ref="fieldRef('moveLight-property-key')"
 				v-model="form.key"

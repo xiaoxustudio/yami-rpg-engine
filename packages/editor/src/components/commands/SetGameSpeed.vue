@@ -25,6 +25,7 @@
 			/>
 			<div class="text">{{ t('components.setGameSpeed-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.setGameSpeed-easingId.label')"
 				id="setGameSpeed-easingId"
 				:ref="registryRef(fieldEls, 'setGameSpeed-easingId')"
 				name="easing"
@@ -42,6 +43,7 @@
 			/>
 			<div class="text">{{ t('components.setGameSpeed-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.setGameSpeed-wait.label')"
 				id="setGameSpeed-wait"
 				:ref="registryRef(fieldEls, 'setGameSpeed-wait')"
 				name="wait"

@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.ancestorGetter-type.label') }}</div>
 			<SelectBox
+				:label="t('components.ancestorGetter-type.label')"
 				id="ancestorGetter-type"
 				v-tip="t('components.ancestorGetter-type.tip')"
 				:ref="fieldRef('ancestorGetter-type')"

@@ -16,6 +16,7 @@
 			></CustomBox>
 			<div class="text">{{ t('components.uiImage-display.label') || 'Display' }}</div>
 			<SelectBox
+				:label="t('components.uiImage-display.label') || 'Display'"
 				ref="elDisplay"
 				id="uiImage-display"
 				v-tip="t('components.uiImage-display.tip')"
@@ -24,6 +25,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.uiImage-flip.label') || 'Flip' }}</div>
 			<SelectBox
+				:label="t('components.uiImage-flip.label') || 'Flip'"
 				ref="elFlip"
 				id="uiImage-flip"
 				v-tip="t('components.uiImage-flip.tip')"
@@ -32,6 +34,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.uiImage-blend.label') || 'Blend' }}</div>
 			<SelectBox
+				:label="t('components.uiImage-blend.label') || 'Blend'"
 				ref="elBlend"
 				id="uiImage-blend"
 				v-tip="t('components.uiImage-blend.tip')"

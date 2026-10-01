@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setFocus-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setFocus-operation.label')"
 				id="setFocus-operation"
 				v-tip="t('components.setFocus-operation.tip')"
 				:ref="registryRef(fieldEls, 'setFocus-operation')"
@@ -25,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.setFocus-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.setFocus-mode.label')"
 				id="setFocus-mode"
 				v-tip="t('components.setFocus-mode.tip')"
 				:ref="registryRef(fieldEls, 'setFocus-mode')"

@@ -10,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.variableGetter-type.label') }}</div>
 			<SelectBox
+				:label="t('components.variableGetter-type.label')"
 				id="variableGetter-type"
 				:ref="registryRef(composableEls, 'variableGetter-type')"
 				v-tip="t('components.variableGetter-type.tip')"

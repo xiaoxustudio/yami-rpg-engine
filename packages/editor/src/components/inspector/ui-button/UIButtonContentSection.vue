@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="uiButton-text-properties-grid">
 			<div class="text">{{ t('components.uiButton-direction.label') || 'Direction' }}</div>
 			<SelectBox
+				:label="t('components.uiButton-direction.label') || 'Direction'"
 				id="uiButton-direction"
 				v-tip="t('components.uiButton-direction.tip')"
 				ref="elDirection"
@@ -173,6 +174,7 @@
 			></TextBox>
 			<div class="text">{{ t('components.uiButton-typeface.label') || 'Typeface' }}</div>
 			<SelectBox
+				:label="t('components.uiButton-typeface.label') || 'Typeface'"
 				id="uiButton-typeface"
 				v-tip="t('components.uiButton-typeface.tip')"
 				ref="elTypeface"
@@ -181,6 +183,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.uiButton-textEffect-type.label') || 'Effect' }}</div>
 			<SelectBox
+				:label="t('components.uiButton-textEffect-type.label') || 'Effect'"
 				id="uiButton-textEffect-type"
 				v-tip="t('components.uiButton-textEffect-type.tip')"
 				ref="elTextEffectType"
@@ -233,6 +236,7 @@
 				{{ t('components.uiButton-textEffect-color.label') || 'Effect Color' }}
 			</div>
 			<ColorBox
+				:label="t('components.uiButton-textEffect-color.label') || 'Effect Color'"
 				id="uiButton-textEffect-color"
 				v-tip="t('components.uiButton-textEffect-color.tip')"
 				ref="elEffectColor"
@@ -243,6 +247,7 @@
 				{{ t('components.uiButton-normalColor.label') || 'Normal Color' }}
 			</div>
 			<ColorBox
+				:label="t('components.uiButton-normalColor.label') || 'Normal Color'"
 				id="uiButton-normalColor"
 				:ref="registryRef(inspectorEls, 'uiButton-normalColor')"
 				v-tip="t('components.uiButton-normalColor.tip')"
@@ -251,6 +256,7 @@
 			></ColorBox>
 			<div class="text">{{ t('components.uiButton-hoverColor.label') || 'Hover Color' }}</div>
 			<ColorBox
+				:label="t('components.uiButton-hoverColor.label') || 'Hover Color'"
 				id="uiButton-hoverColor"
 				:ref="registryRef(inspectorEls, 'uiButton-hoverColor')"
 				v-tip="t('components.uiButton-hoverColor.tip')"
@@ -261,6 +267,7 @@
 				{{ t('components.uiButton-activeColor.label') || 'Active Color' }}
 			</div>
 			<ColorBox
+				:label="t('components.uiButton-activeColor.label') || 'Active Color'"
 				id="uiButton-activeColor"
 				:ref="registryRef(inspectorEls, 'uiButton-activeColor')"
 				v-tip="t('components.uiButton-activeColor.tip')"

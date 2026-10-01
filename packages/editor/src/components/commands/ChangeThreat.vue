@@ -30,6 +30,7 @@
 			/>
 			<div class="text">{{ t('components.changeThreat-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.changeThreat-operation.label')"
 				id="changeThreat-operation"
 				v-tip="t('components.changeThreat-operation.tip')"
 				:ref="registryRef(fieldEls, 'changeThreat-operation')"

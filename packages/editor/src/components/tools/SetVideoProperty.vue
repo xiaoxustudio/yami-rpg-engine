@@ -10,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setVideo-property-key.label') }}</div>
 			<SelectBox
+				:label="t('components.setVideo-property-key.label')"
 				id="setVideo-property-key"
 				:ref="fieldRef('setVideo-property-key')"
 				v-tip="t('components.setVideo-property-key.tip')"
@@ -34,18 +35,21 @@
 			/>
 			<div class="text">{{ t('components.setVideo-property-loop.label') }}</div>
 			<SelectBox
+				:label="t('components.setVideo-property-loop.label')"
 				id="setVideo-property-loop"
 				:ref="fieldRef('setVideo-property-loop')"
 				v-model="form.loop"
 			/>
 			<div class="text">{{ t('components.setVideo-property-flip.label') }}</div>
 			<SelectBox
+				:label="t('components.setVideo-property-flip.label')"
 				id="setVideo-property-flip"
 				:ref="fieldRef('setVideo-property-flip')"
 				v-model="form.flip"
 			/>
 			<div class="text">{{ t('components.setVideo-property-blend.label') }}</div>
 			<SelectBox
+				:label="t('components.setVideo-property-blend.label')"
 				id="setVideo-property-blend"
 				:ref="fieldRef('setVideo-property-blend')"
 				v-model="form.blend"

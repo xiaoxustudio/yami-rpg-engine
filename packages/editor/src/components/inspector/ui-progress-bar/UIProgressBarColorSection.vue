@@ -3,6 +3,7 @@
 		{{ t('components.uiProgressBar-colorMode.label') || 'Color Mode' }}
 	</div>
 	<SelectBox
+		:label="t('components.uiProgressBar-colorMode.label') || 'Color Mode'"
 		id="uiProgressBar-colorMode"
 		v-tip="t('components.uiProgressBar-colorMode.tip')"
 		ref="elColorMode"

@@ -34,6 +34,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-idleMotion.label') }}</div>
 			<SelectBox
+				:label="t('components.fileActor-idleMotion.label')"
 				id="fileActor-idleMotion"
 				v-tip="t('components.fileActor-idleMotion.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-idleMotion')"
@@ -42,6 +43,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-moveMotion.label') }}</div>
 			<SelectBox
+				:label="t('components.fileActor-moveMotion.label')"
 				id="fileActor-moveMotion"
 				v-tip="t('components.fileActor-moveMotion.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-moveMotion')"
@@ -50,6 +52,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-rotatable.label') }}</div>
 			<SelectBox
+				:label="t('components.fileActor-rotatable.label')"
 				id="fileActor-rotatable"
 				v-tip="t('components.fileActor-rotatable.tip')"
 				ref="elRotatable"
@@ -58,6 +61,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-passage.label') }}</div>
 			<SelectBox
+				:label="t('components.fileActor-passage.label')"
 				id="fileActor-passage"
 				v-tip="t('components.fileActor-passage.tip')"
 				ref="elPassage"
@@ -78,6 +82,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-shape.label') }}</div>
 			<SelectBox
+				:label="t('components.fileActor-shape.label')"
 				id="fileActor-shape"
 				v-tip="t('components.fileActor-shape.tip')"
 				ref="elShape"
@@ -111,6 +116,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-immovable.label') }}</div>
 			<SelectBox
+				:label="t('components.fileActor-immovable.label')"
 				id="fileActor-immovable"
 				v-tip="t('components.fileActor-immovable.tip')"
 				ref="elImmovable"

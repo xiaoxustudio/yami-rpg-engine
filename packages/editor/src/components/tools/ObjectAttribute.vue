@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.object-attribute-key.label') }}</div>
 			<SelectBox
+				:label="t('components.object-attribute-key.label')"
 				id="object-attribute-key"
 				v-tip="t('components.object-attribute-key.tip')"
 				:ref="registryRef(objectAttributeEls, 'object-attribute-key')"
@@ -18,6 +19,7 @@
 			/>
 			<div class="text">{{ t('components.object-attribute-boolean-value.label') }}</div>
 			<SelectBox
+				:label="t('components.object-attribute-boolean-value.label')"
 				id="object-attribute-boolean-value"
 				v-tip="t('components.object-attribute-boolean-value.tip')"
 				:ref="registryRef(objectAttributeEls, 'object-attribute-boolean-value')"
@@ -48,6 +50,7 @@
 			/>
 			<div class="text">{{ t('components.object-attribute-enum-value.label') }}</div>
 			<SelectBox
+				:label="t('components.object-attribute-enum-value.label')"
 				id="object-attribute-enum-value"
 				v-tip="t('components.object-attribute-enum-value.tip')"
 				:ref="registryRef(objectAttributeEls, 'object-attribute-enum-value')"

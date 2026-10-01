@@ -33,6 +33,7 @@
 			/>
 			<div class="text">{{ t('components.setAnimationComponent-motion.label') }}</div>
 			<SelectBox
+				:label="t('components.setAnimationComponent-motion.label')"
 				id="setAnimationComponent-motion"
 				v-tip="t('components.setAnimationComponent-motion.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-motion')"
@@ -41,6 +42,7 @@
 			/>
 			<div class="text">{{ t('components.setAnimationComponent-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setAnimationComponent-operation.label')"
 				id="setAnimationComponent-operation"
 				v-tip="t('components.setAnimationComponent-operation.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-operation')"
@@ -110,6 +112,7 @@
 			/>
 			<div class="text">{{ t('components.setAnimationComponent-spriteId.label') }}</div>
 			<SelectBox
+				:label="t('components.setAnimationComponent-spriteId.label')"
 				id="setAnimationComponent-spriteId"
 				v-tip="t('components.setAnimationComponent-spriteId.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-spriteId')"
@@ -127,6 +130,7 @@
 			/>
 			<div class="text">{{ t('components.setAnimationComponent-playMotion.label') }}</div>
 			<SelectBox
+				:label="t('components.setAnimationComponent-playMotion.label')"
 				id="setAnimationComponent-playMotion"
 				v-tip="t('components.setAnimationComponent-playMotion.tip')"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-playMotion')"
@@ -135,6 +139,7 @@
 			/>
 			<div class="text">{{ t('components.setAnimationComponent-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.setAnimationComponent-wait.label')"
 				id="setAnimationComponent-wait"
 				:ref="registryRef(fieldEls, 'setAnimationComponent-wait')"
 				name="wait"

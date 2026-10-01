@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setNumber-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setNumber-operation.label')"
 				id="setNumber-operation"
 				v-tip="t('components.setNumber-operation.tip')"
 				:ref="fieldRef('setNumber-operation')"
@@ -23,6 +24,7 @@
 			/>
 			<div class="text">{{ t('components.setNumber-operand-type.label') }}</div>
 			<SelectBox
+				:label="t('components.setNumber-operand-type.label')"
 				id="setNumber-operand-type"
 				v-tip="t('components.setNumber-operand-type.tip')"
 				:ref="fieldRef('setNumber-operand-type')"
@@ -42,6 +44,7 @@
 			/>
 			<div class="text">{{ t('components.setNumber-operand-math-method.label') }}</div>
 			<SelectBox
+				:label="t('components.setNumber-operand-math-method.label')"
 				id="setNumber-operand-math-method"
 				v-tip="t('components.setNumber-operand-math-method.tip')"
 				:ref="fieldRef('setNumber-operand-math-method')"
@@ -49,6 +52,7 @@
 			/>
 			<div class="text">{{ t('components.setNumber-operand-string-method.label') }}</div>
 			<SelectBox
+				:label="t('components.setNumber-operand-string-method.label')"
 				id="setNumber-operand-string-method"
 				v-tip="t('components.setNumber-operand-string-method.tip')"
 				:ref="fieldRef('setNumber-operand-string-method')"
@@ -56,6 +60,7 @@
 			/>
 			<div class="text">{{ t('components.setNumber-operand-object-property.label') }}</div>
 			<SelectBox
+				:label="t('components.setNumber-operand-object-property.label')"
 				id="setNumber-operand-object-property"
 				v-tip="t('components.setNumber-operand-object-property.tip')"
 				:ref="fieldRef('setNumber-operand-object-property')"
@@ -63,6 +68,7 @@
 			/>
 			<div class="text">{{ t('components.setNumber-operand-element-property.label') }}</div>
 			<SelectBox
+				:label="t('components.setNumber-operand-element-property.label')"
 				id="setNumber-operand-element-property"
 				v-tip="t('components.setNumber-operand-element-property.tip')"
 				:ref="fieldRef('setNumber-operand-element-property')"
@@ -258,6 +264,7 @@
 			/>
 			<div class="text">{{ t('components.setNumber-operand-other-data.label') }}</div>
 			<SelectBox
+				:label="t('components.setNumber-operand-other-data.label')"
 				id="setNumber-operand-other-data"
 				v-tip="t('components.setNumber-operand-other-data.tip')"
 				:ref="fieldRef('setNumber-operand-other-data')"
@@ -274,6 +281,7 @@
 			/>
 			<div class="text">{{ t('components.setNumber-operand-other-teamId.label') }}</div>
 			<SelectBox
+				:label="t('components.setNumber-operand-other-teamId.label')"
 				id="setNumber-operand-other-teamId"
 				v-tip="t('components.setNumber-operand-other-teamId.tip')"
 				:ref="fieldRef('setNumber-operand-other-teamId')"

@@ -105,6 +105,7 @@
 	</div>
 	<div class="text">{{ t('components.uiDialogBox-color.label') || 'Color' }}</div>
 	<ColorBox
+		:label="t('components.uiDialogBox-color.label') || 'Color'"
 		id="uiDialogBox-color"
 		:ref="registryRef(inspectorEls, 'uiDialogBox-color')"
 		v-tip="t('components.uiDialogBox-color.tip')"
@@ -123,6 +124,7 @@
 	></TextBox>
 	<div class="text">{{ t('components.uiDialogBox-typeface.label') || 'Typeface' }}</div>
 	<SelectBox
+		:label="t('components.uiDialogBox-typeface.label') || 'Typeface'"
 		ref="elTypeface"
 		id="uiDialogBox-typeface"
 		v-tip="t('components.uiDialogBox-typeface.tip')"

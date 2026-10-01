@@ -34,6 +34,7 @@
 			/>
 			<div class="text">{{ t('components.detectTargets-selector.label') }}</div>
 			<SelectBox
+				:label="t('components.detectTargets-selector.label')"
 				id="detectTargets-selector"
 				v-tip="t('components.detectTargets-selector.tip')"
 				:ref="registryRef(fieldEls, 'detectTargets-selector')"
@@ -41,6 +42,7 @@
 			/>
 			<div class="text">{{ t('components.detectTargets-inSight.label') }}</div>
 			<SelectBox
+				:label="t('components.detectTargets-inSight.label')"
 				id="detectTargets-inSight"
 				v-tip="t('components.detectTargets-inSight.tip')"
 				:ref="registryRef(fieldEls, 'detectTargets-inSight')"

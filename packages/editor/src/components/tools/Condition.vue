@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.condition-type.label') }}</div>
 			<SelectBox
+				:label="t('components.condition-type.label')"
 				id="condition-type"
 				v-tip="t('components.condition-type.tip')"
 				:ref="registryRef(conditionEls, 'condition-type')"
@@ -28,6 +29,7 @@
 			/>
 			<div class="text">{{ t('components.condition-boolean-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.condition-boolean-operation.label')"
 				id="condition-boolean-operation"
 				v-tip="t('components.condition-boolean-operation.tip')"
 				:ref="registryRef(conditionEls, 'condition-boolean-operation')"
@@ -35,6 +37,7 @@
 			/>
 			<div class="text">{{ t('components.condition-boolean-value.label') }}</div>
 			<SelectBox
+				:label="t('components.condition-boolean-value.label')"
 				id="condition-boolean-value"
 				v-tip="t('components.condition-boolean-value.tip')"
 				:ref="registryRef(conditionEls, 'condition-boolean-value')"
@@ -42,6 +45,7 @@
 			/>
 			<div class="text">{{ t('components.condition-number-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.condition-number-operation.label')"
 				id="condition-number-operation"
 				v-tip="t('components.condition-number-operation.tip')"
 				:ref="registryRef(conditionEls, 'condition-number-operation')"
@@ -60,6 +64,7 @@
 			/>
 			<div class="text">{{ t('components.condition-string-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.condition-string-operation.label')"
 				id="condition-string-operation"
 				v-tip="t('components.condition-string-operation.tip')"
 				:ref="registryRef(conditionEls, 'condition-string-operation')"

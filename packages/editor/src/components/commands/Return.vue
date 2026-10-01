@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.return-type.label') }}</div>
 			<SelectBox
+				:label="t('components.return-type.label')"
 				id="return-type"
 				v-tip="t('components.return-type.tip')"
 				:ref="registryRef(fieldEls, 'return-type')"
@@ -17,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.return-boolean.label') }}</div>
 			<SelectBox
+				:label="t('components.return-boolean.label')"
 				id="return-boolean"
 				v-tip="t('components.return-boolean.tip')"
 				:ref="registryRef(fieldEls, 'return-boolean')"

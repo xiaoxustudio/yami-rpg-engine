@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.lightGetter-type.label') }}</div>
 			<SelectBox
+				:label="t('components.lightGetter-type.label')"
 				id="lightGetter-type"
 				:ref="registryRef(composableEls, 'lightGetter-type')"
 				v-tip="t('components.lightGetter-type.tip')"

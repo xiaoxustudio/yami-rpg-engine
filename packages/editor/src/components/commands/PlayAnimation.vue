@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.playAnimation-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.playAnimation-mode.label')"
 				id="playAnimation-mode"
 				v-tip="t('components.playAnimation-mode.tip')"
 				:ref="registryRef(fieldEls, 'playAnimation-mode')"
@@ -48,6 +49,7 @@
 			/>
 			<div class="text">{{ t('components.playAnimation-motion.label') }}</div>
 			<SelectBox
+				:label="t('components.playAnimation-motion.label')"
 				id="playAnimation-motion"
 				:ref="registryRef(fieldEls, 'playAnimation-motion')"
 				v-tip="t('components.playAnimation-motion.tip')"
@@ -56,6 +58,7 @@
 			/>
 			<div class="text">{{ t('components.playAnimation-rotatable.label') }}</div>
 			<SelectBox
+				:label="t('components.playAnimation-rotatable.label')"
 				id="playAnimation-rotatable"
 				v-tip="t('components.playAnimation-rotatable.tip')"
 				:ref="registryRef(fieldEls, 'playAnimation-rotatable')"
@@ -105,6 +108,7 @@
 			/>
 			<div class="text">{{ t('components.playAnimation-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.playAnimation-wait.label')"
 				id="playAnimation-wait"
 				:ref="registryRef(fieldEls, 'playAnimation-wait')"
 				name="wait"

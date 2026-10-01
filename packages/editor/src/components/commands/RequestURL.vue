@@ -24,6 +24,7 @@
 			/>
 			<div class="text">{{ t('components.requestURL-method.label') }}</div>
 			<SelectBox
+				:label="t('components.requestURL-method.label')"
 				id="requestURL-method"
 				v-tip="t('components.requestURL-method.tip')"
 				:ref="registryRef(fieldEls, 'requestURL-method')"

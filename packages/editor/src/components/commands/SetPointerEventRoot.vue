@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setPointerEventRoot-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setPointerEventRoot-operation.label')"
 				id="setPointerEventRoot-operation"
 				v-tip="t('components.setPointerEventRoot-operation.tip')"
 				:ref="registryRef(fieldEls, 'setPointerEventRoot-operation')"

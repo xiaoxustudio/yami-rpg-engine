@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.getTarget-selector.label') }}</div>
 			<SelectBox
+				:label="t('components.getTarget-selector.label')"
 				id="getTarget-selector"
 				v-tip="t('components.getTarget-selector.tip')"
 				:ref="registryRef(fieldEls, 'getTarget-selector')"
@@ -25,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.getTarget-condition.label') }}</div>
 			<SelectBox
+				:label="t('components.getTarget-condition.label')"
 				id="getTarget-condition"
 				v-tip="t('components.getTarget-condition.tip')"
 				:ref="registryRef(fieldEls, 'getTarget-condition')"
@@ -32,6 +34,7 @@
 			/>
 			<div class="text">{{ t('components.getTarget-attribute.label') }}</div>
 			<SelectBox
+				:label="t('components.getTarget-attribute.label')"
 				id="getTarget-attribute"
 				v-tip="t('components.getTarget-attribute.tip')"
 				:ref="registryRef(fieldEls, 'getTarget-attribute')"
@@ -40,6 +43,7 @@
 			/>
 			<div class="text">{{ t('components.getTarget-divisor.label') }}</div>
 			<SelectBox
+				:label="t('components.getTarget-divisor.label')"
 				id="getTarget-divisor"
 				v-tip="t('components.getTarget-divisor.tip')"
 				:ref="registryRef(fieldEls, 'getTarget-divisor')"

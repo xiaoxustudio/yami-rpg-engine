@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setPartyMember-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setPartyMember-operation.label')"
 				id="setPartyMember-operation"
 				v-tip="t('components.setPartyMember-operation.tip')"
 				:ref="registryRef(fieldEls, 'setPartyMember-operation')"

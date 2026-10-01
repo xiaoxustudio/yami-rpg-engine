@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-motion.label') || 'Motion' }}</div>
 			<SelectBox
+				:label="t('components.fileTrigger-motion.label') || 'Motion'"
 				id="fileTrigger-motion"
 				v-tip="t('components.fileTrigger-motion.tip')"
 				:ref="registryRef(inspectorEls, 'fileTrigger-motion')"
@@ -47,6 +48,7 @@
 			/>
 			<div class="text">{{ t('components.fileTrigger-rotatable.label') || 'Rotatable' }}</div>
 			<SelectBox
+				:label="t('components.fileTrigger-rotatable.label') || 'Rotatable'"
 				id="fileTrigger-rotatable"
 				v-tip="t('components.fileTrigger-rotatable.tip')"
 				ref="elRotatable"

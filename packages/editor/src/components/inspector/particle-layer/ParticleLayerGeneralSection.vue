@@ -17,6 +17,7 @@
 				{{ t('components.particleLayer-area-type.label') || 'Emission Area' }}
 			</div>
 			<SelectBox
+				:label="t('components.particleLayer-area-type.label') || 'Emission Area'"
 				id="particleLayer-area-type"
 				v-tip="t('components.particleLayer-area-type.tip')"
 				ref="elAreaType"

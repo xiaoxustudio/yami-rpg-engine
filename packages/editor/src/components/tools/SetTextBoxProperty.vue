@@ -10,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setTextBox-property-key.label') }}</div>
 			<SelectBox
+				:label="t('components.setTextBox-property-key.label')"
 				id="setTextBox-property-key"
 				:ref="fieldRef('setTextBox-property-key')"
 				v-tip="t('components.setTextBox-property-key.tip')"
@@ -17,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.setTextBox-property-type.label') }}</div>
 			<SelectBox
+				:label="t('components.setTextBox-property-type.label')"
 				id="setTextBox-property-type"
 				:ref="fieldRef('setTextBox-property-type')"
 				v-model="form.type"
@@ -65,6 +67,7 @@
 			/>
 			<div class="text">{{ t('components.setTextBox-property-color.label') }}</div>
 			<ColorBox
+				:label="t('components.setTextBox-property-color.label')"
 				id="setTextBox-property-color"
 				:ref="fieldRef('setTextBox-property-color')"
 				v-model="color"

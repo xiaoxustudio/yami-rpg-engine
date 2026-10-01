@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.useItem-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.useItem-mode.label')"
 				id="useItem-mode"
 				v-tip="t('components.useItem-mode.tip')"
 				:ref="registryRef(fieldEls, 'useItem-mode')"
@@ -25,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.useItem-key.label') }}</div>
 			<SelectBox
+				:label="t('components.useItem-key.label')"
 				id="useItem-key"
 				v-tip="t('components.useItem-key.tip')"
 				:ref="registryRef(fieldEls, 'useItem-key')"
@@ -51,6 +53,7 @@
 			/>
 			<div class="text">{{ t('components.useItem-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.useItem-wait.label')"
 				id="useItem-wait"
 				:ref="registryRef(fieldEls, 'useItem-wait')"
 				name="wait"

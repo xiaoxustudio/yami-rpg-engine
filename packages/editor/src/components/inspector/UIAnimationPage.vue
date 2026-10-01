@@ -16,6 +16,7 @@
 			></CustomBox>
 			<div class="text">{{ t('components.uiAnimation-motion.label') || 'Motion' }}</div>
 			<SelectBox
+				:label="t('components.uiAnimation-motion.label') || 'Motion'"
 				id="uiAnimation-motion"
 				v-tip="t('components.uiAnimation-motion.tip')"
 				ref="elMotion"

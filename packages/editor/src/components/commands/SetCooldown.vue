@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.setCooldown-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setCooldown-operation.label')"
 				id="setCooldown-operation"
 				v-tip="t('components.setCooldown-operation.tip')"
 				:ref="registryRef(fieldEls, 'setCooldown-operation')"

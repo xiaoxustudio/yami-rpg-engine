@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.loadImage-type.label') }}</div>
 			<SelectBox
+				:label="t('components.loadImage-type.label')"
 				id="loadImage-type"
 				v-tip="t('components.loadImage-type.tip')"
 				:ref="registryRef(fieldEls, 'loadImage-type')"

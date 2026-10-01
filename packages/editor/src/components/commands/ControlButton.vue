@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.controlButton-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.controlButton-operation.label')"
 				id="controlButton-operation"
 				v-tip="t('components.controlButton-operation.tip')"
 				:ref="registryRef(fieldEls, 'controlButton-operation')"

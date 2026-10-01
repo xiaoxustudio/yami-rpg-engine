@@ -22,6 +22,7 @@
 			/>
 			<div class="text">{{ t('components.discardTargets-selector.label') }}</div>
 			<SelectBox
+				:label="t('components.discardTargets-selector.label')"
 				id="discardTargets-selector"
 				v-tip="t('components.discardTargets-selector.tip')"
 				:ref="registryRef(fieldEls, 'discardTargets-selector')"

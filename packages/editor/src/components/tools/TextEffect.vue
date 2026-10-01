@@ -10,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.textEffect-type.label') }}</div>
 			<SelectBox
+				:label="t('components.textEffect-type.label')"
 				id="textEffect-type"
 				v-tip="t('components.textEffect-type.tip')"
 				:ref="registryRef(textCaptureEls, 'textEffect-type')"
@@ -50,6 +51,7 @@
 			/>
 			<div class="text">{{ t('components.textEffect-color.label') }}</div>
 			<ColorBox
+				:label="t('components.textEffect-color.label')"
 				id="textEffect-color"
 				v-tip="t('components.textEffect-color.tip')"
 				:ref="registryRef(textCaptureEls, 'textEffect-color')"

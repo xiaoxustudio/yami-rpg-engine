@@ -15,6 +15,7 @@
 			></TextBox>
 			<div class="text">{{ t('components.sceneTilemap-layer.label') || 'Layer' }}</div>
 			<SelectBox
+				:label="t('components.sceneTilemap-layer.label') || 'Layer'"
 				ref="elLayer"
 				id="sceneTilemap-layer"
 				v-tip="t('components.sceneTilemap-layer.tip')"
@@ -36,6 +37,7 @@
 				{{ t('components.sceneTilemap-light.label') || 'Light Sampling' }}
 			</div>
 			<SelectBox
+				:label="t('components.sceneTilemap-light.label') || 'Light Sampling'"
 				ref="elLight"
 				id="sceneTilemap-light"
 				v-model="form.light"
@@ -43,6 +45,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.sceneTilemap-blend.label') || 'Blend' }}</div>
 			<SelectBox
+				:label="t('components.sceneTilemap-blend.label') || 'Blend'"
 				ref="elBlend"
 				id="sceneTilemap-blend"
 				v-tip="t('components.sceneTilemap-blend.tip')"

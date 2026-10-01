@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setReverb-type.label') }}</div>
 			<SelectBox
+				:label="t('components.setReverb-type.label')"
 				id="setReverb-type"
 				v-tip="t('components.setReverb-type.tip')"
 				:ref="registryRef(fieldEls, 'setReverb-type')"
@@ -39,6 +40,7 @@
 			/>
 			<div class="text">{{ t('components.setReverb-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.setReverb-easingId.label')"
 				id="setReverb-easingId"
 				:ref="registryRef(fieldEls, 'setReverb-easingId')"
 				name="easing"
@@ -57,6 +59,7 @@
 			/>
 			<div class="text">{{ t('components.setReverb-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.setReverb-wait.label')"
 				id="setReverb-wait"
 				:ref="registryRef(fieldEls, 'setReverb-wait')"
 				name="wait"

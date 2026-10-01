@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileActor-inventory-type.label') }}</div>
 			<SelectBox
+				:label="t('components.fileActor-inventory-type.label')"
 				id="fileActor-inventory-type"
 				v-tip="t('components.fileActor-inventory-type.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-inventory-type')"

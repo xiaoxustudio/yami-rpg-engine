@@ -32,6 +32,7 @@
 			/>
 			<div class="text">{{ t('components.changeActorSprite-spriteId.label') }}</div>
 			<SelectBox
+				:label="t('components.changeActorSprite-spriteId.label')"
 				id="changeActorSprite-spriteId"
 				:ref="registryRef(fieldEls, 'changeActorSprite-spriteId')"
 				v-tip="t('components.changeActorSprite-spriteId.tip')"

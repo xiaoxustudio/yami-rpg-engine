@@ -44,6 +44,7 @@
 			<div class="grid-box" id="easing-preview-grid">
 				<div class="text">{{ t('components.easing-preview-reverse.label') }}</div>
 				<SelectBox
+					:label="t('components.easing-preview-reverse.label')"
 					id="easing-preview-reverse"
 					v-tip="t('components.easing-preview-reverse.tip')"
 					:ref="registryRef(dataEls, 'easing-preview-reverse')"

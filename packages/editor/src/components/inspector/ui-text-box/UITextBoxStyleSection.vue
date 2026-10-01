@@ -35,6 +35,7 @@
 	></TextBox>
 	<div class="text">{{ t('components.uiTextBox-color.label') || 'Text Color' }}</div>
 	<ColorBox
+		:label="t('components.uiTextBox-color.label') || 'Text Color'"
 		id="uiTextBox-color"
 		:ref="registryRef(inspectorEls, 'uiTextBox-color')"
 		v-tip="t('components.uiTextBox-color.tip')"
@@ -45,6 +46,7 @@
 		{{ t('components.uiTextBox-selectionColor.label') || 'Selection Color' }}
 	</div>
 	<ColorBox
+		:label="t('components.uiTextBox-selectionColor.label') || 'Selection Color'"
 		id="uiTextBox-selectionColor"
 		:ref="registryRef(inspectorEls, 'uiTextBox-selectionColor')"
 		v-tip="t('components.uiTextBox-selectionColor.tip')"
@@ -55,6 +57,7 @@
 		{{ t('components.uiTextBox-selectionBgColor.label') || 'Selection Bg Color' }}
 	</div>
 	<ColorBox
+		:label="t('components.uiTextBox-selectionBgColor.label') || 'Selection Bg Color'"
 		id="uiTextBox-selectionBgColor"
 		:ref="registryRef(inspectorEls, 'uiTextBox-selectionBgColor')"
 		v-tip="t('components.uiTextBox-selectionBgColor.tip')"

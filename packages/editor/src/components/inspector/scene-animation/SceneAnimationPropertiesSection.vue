@@ -28,6 +28,7 @@
 			></CustomBox>
 			<div class="text">{{ t('components.sceneAnimation-motion.label') || 'Motion' }}</div>
 			<SelectBox
+				:label="t('components.sceneAnimation-motion.label') || 'Motion'"
 				id="sceneAnimation-motion"
 				v-tip="t('components.sceneAnimation-motion.tip')"
 				:ref="registryRef(inspectorEls, 'sceneAnimation-motion')"
@@ -38,6 +39,7 @@
 				{{ t('components.sceneAnimation-rotatable.label') || 'Rotatable' }}
 			</div>
 			<SelectBox
+				:label="t('components.sceneAnimation-rotatable.label') || 'Rotatable'"
 				id="sceneAnimation-rotatable"
 				v-tip="t('components.sceneAnimation-rotatable.tip')"
 				ref="elRotatable"

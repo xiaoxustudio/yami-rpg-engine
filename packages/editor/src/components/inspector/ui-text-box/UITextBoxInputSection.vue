@@ -1,6 +1,7 @@
 <template>
 	<div class="text">{{ t('components.uiTextBox-type.label') || 'Type' }}</div>
 	<SelectBox
+		:label="t('components.uiTextBox-type.label') || 'Type'"
 		ref="elType"
 		id="uiTextBox-type"
 		v-tip="t('components.uiTextBox-type.tip')"
@@ -9,6 +10,7 @@
 	></SelectBox>
 	<div class="text">{{ t('components.uiTextBox-align.label') || 'Align' }}</div>
 	<SelectBox
+		:label="t('components.uiTextBox-align.label') || 'Align'"
 		ref="elAlign"
 		id="uiTextBox-align"
 		v-tip="t('components.uiTextBox-align.tip')"

@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.setActive-active.label') }}</div>
 			<SelectBox
+				:label="t('components.setActive-active.label')"
 				id="setActive-active"
 				v-tip="t('components.setActive-active.tip')"
 				:ref="registryRef(fieldEls, 'setActive-active')"

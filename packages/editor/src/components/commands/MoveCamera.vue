@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.moveCamera-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.moveCamera-mode.label')"
 				id="moveCamera-mode"
 				v-tip="t('components.moveCamera-mode.tip')"
 				:ref="registryRef(fieldEls, 'moveCamera-mode')"
@@ -33,6 +34,7 @@
 			/>
 			<div class="text">{{ t('components.moveCamera-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.moveCamera-easingId.label')"
 				id="moveCamera-easingId"
 				:ref="registryRef(fieldEls, 'moveCamera-easingId')"
 				name="easing"
@@ -51,6 +53,7 @@
 			/>
 			<div class="text">{{ t('components.moveCamera-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.moveCamera-wait.label')"
 				id="moveCamera-wait"
 				:ref="registryRef(fieldEls, 'moveCamera-wait')"
 				name="wait"

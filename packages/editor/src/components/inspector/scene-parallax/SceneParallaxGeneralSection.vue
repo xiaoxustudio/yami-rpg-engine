@@ -25,6 +25,7 @@
 			></CustomBox>
 			<div class="text">{{ t('components.sceneParallax-layer.label') || 'Layer' }}</div>
 			<SelectBox
+				:label="t('components.sceneParallax-layer.label') || 'Layer'"
 				id="sceneParallax-layer"
 				v-tip="t('components.sceneParallax-layer.tip')"
 				ref="elLayer"
@@ -46,6 +47,7 @@
 				{{ t('components.sceneParallax-light.label') || 'Light Sampling' }}
 			</div>
 			<SelectBox
+				:label="t('components.sceneParallax-light.label') || 'Light Sampling'"
 				id="sceneParallax-light"
 				v-tip="t('components.sceneParallax-light.tip')"
 				ref="elLight"
@@ -54,6 +56,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.sceneParallax-blend.label') || 'Blend' }}</div>
 			<SelectBox
+				:label="t('components.sceneParallax-blend.label') || 'Blend'"
 				id="sceneParallax-blend"
 				v-tip="t('components.sceneParallax-blend.tip')"
 				ref="elBlend"

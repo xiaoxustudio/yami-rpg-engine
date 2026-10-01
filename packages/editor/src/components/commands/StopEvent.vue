@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.stopEvent-type.label') }}</div>
 			<SelectBox
+				:label="t('components.stopEvent-type.label')"
 				id="stopEvent-type"
 				v-tip="t('components.stopEvent-type.tip')"
 				:ref="registryRef(fieldEls, 'stopEvent-type')"
@@ -84,6 +85,7 @@
 			/>
 			<div class="text">{{ t('components.stopEvent-eventType.label') }}</div>
 			<SelectBox
+				:label="t('components.stopEvent-eventType.label')"
 				id="stopEvent-eventType"
 				v-tip="t('components.stopEvent-eventType.tip')"
 				:ref="registryRef(fieldEls, 'stopEvent-eventType')"

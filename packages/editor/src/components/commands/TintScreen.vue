@@ -58,6 +58,7 @@
 			/>
 			<div class="text">{{ t('components.tintScreen-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.tintScreen-easingId.label')"
 				id="tintScreen-easingId"
 				:ref="registryRef(fieldEls, 'tintScreen-easingId')"
 				name="easing"
@@ -76,6 +77,7 @@
 			/>
 			<div class="text">{{ t('components.tintScreen-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.tintScreen-wait.label')"
 				id="tintScreen-wait"
 				:ref="registryRef(fieldEls, 'tintScreen-wait')"
 				name="wait"

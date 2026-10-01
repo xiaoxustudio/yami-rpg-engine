@@ -19,6 +19,7 @@
 			/>
 			<div class="text">{{ t('components.setList-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setList-operation.label')"
 				id="setList-operation"
 				v-tip="t('components.setList-operation.tip')"
 				:ref="registryRef(fieldEls, 'setList-operation')"
@@ -55,6 +56,7 @@
 			/>
 			<div class="text">{{ t('components.setList-boolean.label') }}</div>
 			<SelectBox
+				:label="t('components.setList-boolean.label')"
 				id="setList-boolean"
 				v-tip="t('components.setList-boolean.tip')"
 				:ref="registryRef(fieldEls, 'setList-boolean')"

@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.stopAudio-type.label') }}</div>
 			<SelectBox
+				:label="t('components.stopAudio-type.label')"
 				id="stopAudio-type"
 				v-tip="t('components.stopAudio-type.tip')"
 				:ref="registryRef(fieldEls, 'stopAudio-type')"

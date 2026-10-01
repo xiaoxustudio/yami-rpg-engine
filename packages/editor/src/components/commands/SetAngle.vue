@@ -26,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.setAngle-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.setAngle-easingId.label')"
 				id="setAngle-easingId"
 				:ref="registryRef(fieldEls, 'setAngle-easingId')"
 				name="easing"
@@ -43,6 +44,7 @@
 			/>
 			<div class="text">{{ t('components.setAngle-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.setAngle-wait.label')"
 				id="setAngle-wait"
 				:ref="registryRef(fieldEls, 'setAngle-wait')"
 				name="wait"

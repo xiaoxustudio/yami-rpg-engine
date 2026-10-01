@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setPan-type.label') }}</div>
 			<SelectBox
+				:label="t('components.setPan-type.label')"
 				id="setPan-type"
 				v-tip="t('components.setPan-type.tip')"
 				:ref="registryRef(fieldEls, 'setPan-type')"
@@ -28,6 +29,7 @@
 			/>
 			<div class="text">{{ t('components.setPan-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.setPan-easingId.label')"
 				id="setPan-easingId"
 				:ref="registryRef(fieldEls, 'setPan-easingId')"
 				name="easing"
@@ -46,6 +48,7 @@
 			/>
 			<div class="text">{{ t('components.setPan-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.setPan-wait.label')"
 				id="setPan-wait"
 				:ref="registryRef(fieldEls, 'setPan-wait')"
 				name="wait"

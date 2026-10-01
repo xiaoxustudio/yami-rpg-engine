@@ -19,6 +19,7 @@
 			/>
 			<div class="text">{{ t('components.loadScene-transfer.label') }}</div>
 			<SelectBox
+				:label="t('components.loadScene-transfer.label')"
 				id="loadScene-transfer"
 				v-tip="t('components.loadScene-transfer.tip')"
 				:ref="registryRef(fieldEls, 'loadScene-transfer')"

@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.gameData-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.gameData-operation.label')"
 				id="gameData-operation"
 				v-tip="t('components.gameData-operation.tip')"
 				:ref="registryRef(fieldEls, 'gameData-operation')"

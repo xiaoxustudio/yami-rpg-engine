@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="animMotion-general-grid">
 			<div class="text">{{ t('components.animMotion-mode.label') || 'Direction' }}</div>
 			<SelectBox
+				:label="t('components.animMotion-mode.label') || 'Direction'"
 				id="animMotion-mode"
 				v-tip="t('components.animMotion-mode.tip')"
 				ref="elMode"

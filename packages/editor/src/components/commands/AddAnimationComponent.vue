@@ -32,6 +32,7 @@
 			/>
 			<div class="text">{{ t('components.addAnimationComponent-motion.label') }}</div>
 			<SelectBox
+				:label="t('components.addAnimationComponent-motion.label')"
 				id="addAnimationComponent-motion"
 				:ref="registryRef(fieldEls, 'addAnimationComponent-motion')"
 				v-tip="t('components.addAnimationComponent-motion.tip')"
@@ -39,6 +40,7 @@
 			/>
 			<div class="text">{{ t('components.addAnimationComponent-rotatable.label') }}</div>
 			<SelectBox
+				:label="t('components.addAnimationComponent-rotatable.label')"
 				id="addAnimationComponent-rotatable"
 				v-tip="t('components.addAnimationComponent-rotatable.tip')"
 				:ref="registryRef(fieldEls, 'addAnimationComponent-rotatable')"
@@ -46,6 +48,7 @@
 			/>
 			<div class="text">{{ t('components.addAnimationComponent-syncAngle.label') }}</div>
 			<SelectBox
+				:label="t('components.addAnimationComponent-syncAngle.label')"
 				id="addAnimationComponent-syncAngle"
 				v-tip="t('components.addAnimationComponent-syncAngle.tip')"
 				:ref="registryRef(fieldEls, 'addAnimationComponent-syncAngle')"

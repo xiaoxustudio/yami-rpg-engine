@@ -22,6 +22,7 @@
 			/>
 			<div class="text">{{ t('components.tintImage-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.tintImage-mode.label')"
 				id="tintImage-mode"
 				v-tip="t('components.tintImage-mode.tip')"
 				:ref="registryRef(fieldEls, 'tintImage-mode')"
@@ -73,6 +74,7 @@
 			/>
 			<div class="text">{{ t('components.tintImage-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.tintImage-easingId.label')"
 				id="tintImage-easingId"
 				:ref="registryRef(fieldEls, 'tintImage-easingId')"
 				name="easing"
@@ -91,6 +93,7 @@
 			/>
 			<div class="text">{{ t('components.tintImage-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.tintImage-wait.label')"
 				id="tintImage-wait"
 				:ref="registryRef(fieldEls, 'tintImage-wait')"
 				name="wait"

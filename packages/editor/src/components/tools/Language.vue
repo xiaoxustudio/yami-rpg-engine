@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.language-name.label') }}</div>
 			<SelectBox
+				:label="t('components.language-name.label')"
 				id="language-name"
 				:ref="registryRef(composableEls, 'language-name')"
 				v-tip="t('components.language-name.tip')"

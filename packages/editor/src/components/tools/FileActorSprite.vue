@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.fileActor-sprite-id.label') }}</div>
 			<SelectBox
+				:label="t('components.fileActor-sprite-id.label')"
 				id="fileActor-sprite-id"
 				v-tip="t('components.fileActor-sprite-id.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-sprite-id')"

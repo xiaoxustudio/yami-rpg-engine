@@ -26,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.followActor-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.followActor-mode.label')"
 				id="followActor-mode"
 				v-tip="t('components.followActor-mode.tip')"
 				:ref="registryRef(fieldEls, 'followActor-mode')"
@@ -91,6 +92,7 @@
 			/>
 			<div class="text">{{ t('components.followActor-navigate.label') }}</div>
 			<SelectBox
+				:label="t('components.followActor-navigate.label')"
 				id="followActor-navigate"
 				v-tip="t('components.followActor-navigate.tip')"
 				:ref="registryRef(fieldEls, 'followActor-navigate')"
@@ -98,6 +100,7 @@
 			/>
 			<div class="text">{{ t('components.followActor-bypass.label') }}</div>
 			<SelectBox
+				:label="t('components.followActor-bypass.label')"
 				id="followActor-bypass"
 				v-tip="t('components.followActor-bypass.tip')"
 				:ref="registryRef(fieldEls, 'followActor-bypass')"
@@ -105,6 +108,7 @@
 			/>
 			<div class="text">{{ t('components.followActor-once.label') }}</div>
 			<SelectBox
+				:label="t('components.followActor-once.label')"
 				id="followActor-once"
 				v-tip="t('components.followActor-once.tip')"
 				:ref="registryRef(fieldEls, 'followActor-once')"
@@ -112,6 +116,7 @@
 			/>
 			<div class="text">{{ t('components.followActor-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.followActor-wait.label')"
 				id="followActor-wait"
 				:ref="registryRef(fieldEls, 'followActor-wait')"
 				name="wait"

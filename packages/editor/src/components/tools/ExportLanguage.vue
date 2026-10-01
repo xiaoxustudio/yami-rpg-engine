@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.exportLanguage-first.label') }}</div>
 			<SelectBox
+				:label="t('components.exportLanguage-first.label')"
 				id="exportLanguage-first"
 				v-tip="t('components.exportLanguage-first.tip')"
 				:ref="registryRef(localEls, 'exportLanguage-first')"
@@ -16,6 +17,7 @@
 			/>
 			<div class="text">{{ t('components.exportLanguage-second.label') }}</div>
 			<SelectBox
+				:label="t('components.exportLanguage-second.label')"
 				id="exportLanguage-second"
 				v-tip="t('components.exportLanguage-second.tip')"
 				:ref="registryRef(localEls, 'exportLanguage-second')"

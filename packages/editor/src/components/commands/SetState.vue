@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.setState-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setState-operation.label')"
 				id="setState-operation"
 				v-tip="t('components.setState-operation.tip')"
 				:ref="registryRef(fieldEls, 'setState-operation')"

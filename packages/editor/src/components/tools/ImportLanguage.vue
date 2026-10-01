@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.importLanguage-language.label') }}</div>
 			<SelectBox
+				:label="t('components.importLanguage-language.label')"
 				id="importLanguage-language"
 				v-tip="t('components.importLanguage-language.tip')"
 				:ref="registryRef(localEls, 'importLanguage-language')"

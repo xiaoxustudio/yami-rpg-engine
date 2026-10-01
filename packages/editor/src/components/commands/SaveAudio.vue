@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.saveAudio-type.label') }}</div>
 			<SelectBox
+				:label="t('components.saveAudio-type.label')"
 				id="saveAudio-type"
 				v-tip="t('components.saveAudio-type.tip')"
 				:ref="registryRef(fieldEls, 'saveAudio-type')"

@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setProgressBar-property-key.label') }}</div>
 			<SelectBox
+				:label="t('components.setProgressBar-property-key.label')"
 				id="setProgressBar-property-key"
 				:ref="fieldRef('setProgressBar-property-key')"
 				v-tip="t('components.setProgressBar-property-key.tip')"
@@ -24,12 +25,14 @@
 			/>
 			<div class="text">{{ t('components.setProgressBar-property-display.label') }}</div>
 			<SelectBox
+				:label="t('components.setProgressBar-property-display.label')"
 				id="setProgressBar-property-display"
 				:ref="fieldRef('setProgressBar-property-display')"
 				v-model="form.display"
 			/>
 			<div class="text">{{ t('components.setProgressBar-property-blend.label') }}</div>
 			<SelectBox
+				:label="t('components.setProgressBar-property-blend.label')"
 				id="setProgressBar-property-blend"
 				:ref="fieldRef('setProgressBar-property-blend')"
 				v-model="form.blend"

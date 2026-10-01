@@ -17,6 +17,7 @@
 			/>
 			<div class="text">{{ t('components.setShortcut-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setShortcut-operation.label')"
 				id="setShortcut-operation"
 				v-tip="t('components.setShortcut-operation.tip')"
 				:ref="registryRef(fieldEls, 'setShortcut-operation')"

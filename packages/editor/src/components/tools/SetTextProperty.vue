@@ -10,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setText-property-key.label') }}</div>
 			<SelectBox
+				:label="t('components.setText-property-key.label')"
 				id="setText-property-key"
 				:ref="fieldRef('setText-property-key')"
 				v-tip="t('components.setText-property-key.tip')"
@@ -54,6 +55,7 @@
 			/>
 			<div class="text">{{ t('components.setText-property-color.label') }}</div>
 			<ColorBox
+				:label="t('components.setText-property-color.label')"
 				id="setText-property-color"
 				:ref="fieldRef('setText-property-color')"
 				v-model="color"
@@ -67,6 +69,7 @@
 			/>
 			<div class="text">{{ t('components.setText-property-effect-type.label') }}</div>
 			<SelectBox
+				:label="t('components.setText-property-effect-type.label')"
 				id="setText-property-effect-type"
 				:ref="fieldRef('setText-property-effect-type')"
 				v-model="form['effect-type']"
@@ -107,12 +110,14 @@
 			/>
 			<div class="text">{{ t('components.setText-property-effect-color.label') }}</div>
 			<ColorBox
+				:label="t('components.setText-property-effect-color.label')"
 				id="setText-property-effect-color"
 				:ref="fieldRef('setText-property-effect-color')"
 				v-model="effectColor"
 			/>
 			<div class="text">{{ t('components.setText-property-blend.label') }}</div>
 			<SelectBox
+				:label="t('components.setText-property-blend.label')"
 				id="setText-property-blend"
 				:ref="fieldRef('setText-property-blend')"
 				v-model="form.blend"

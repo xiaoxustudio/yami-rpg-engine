@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setButton-property-key.label') }}</div>
 			<SelectBox
+				:label="t('components.setButton-property-key.label')"
 				id="setButton-property-key"
 				v-tip="t('components.setButton-property-key.tip')"
 				:ref="fieldRef('setButton-property-key')"

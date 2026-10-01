@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.commandLine-type.label') }}</div>
 			<SelectBox
+				:label="t('components.commandLine-type.label')"
 				id="commandLine-type"
 				:ref="registryRef(fieldEls, 'commandLine-type')"
 				v-model="form.type"

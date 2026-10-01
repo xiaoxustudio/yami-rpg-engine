@@ -17,6 +17,7 @@
 		>
 			<div class="text">{{ t('components.setObjectAnimation-sort.label') }}</div>
 			<SelectBox
+				:label="t('components.setObjectAnimation-sort.label')"
 				id="setObjectAnimation-sort"
 				v-tip="t('components.setObjectAnimation-sort.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-sort')"
@@ -49,6 +50,7 @@
 			/>
 			<div class="text">{{ t('components.setObjectAnimation-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setObjectAnimation-operation.label')"
 				id="setObjectAnimation-operation"
 				v-tip="t('components.setObjectAnimation-operation.tip')"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-operation')"
@@ -133,6 +135,7 @@
 			/>
 			<div class="text">{{ t('components.setObjectAnimation-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.setObjectAnimation-easingId.label')"
 				id="setObjectAnimation-easingId"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-easingId')"
 				name="easing"
@@ -151,6 +154,7 @@
 			/>
 			<div class="text">{{ t('components.setObjectAnimation-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.setObjectAnimation-wait.label')"
 				id="setObjectAnimation-wait"
 				:ref="registryRef(fieldEls, 'setObjectAnimation-wait')"
 				name="wait"

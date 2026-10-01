@@ -8,6 +8,7 @@
 		>
 			<div class="text">{{ t('components.easing-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.easing-mode.label')"
 				id="easing-mode"
 				v-tip="t('components.easing-mode.tip')"
 				:ref="registryRef(dataEls, 'easing-mode')"

@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.if-branch-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.if-branch-mode.label')"
 				id="if-branch-mode"
 				v-tip="t('components.if-branch-mode.tip')"
 				:ref="registryRef(fieldEls, 'if-branch-mode')"

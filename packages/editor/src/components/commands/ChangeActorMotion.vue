@@ -22,6 +22,7 @@
 			/>
 			<div class="text">{{ t('components.changeActorMotion-type.label') }}</div>
 			<SelectBox
+				:label="t('components.changeActorMotion-type.label')"
 				id="changeActorMotion-type"
 				v-tip="t('components.changeActorMotion-type.tip')"
 				:ref="registryRef(fieldEls, 'changeActorMotion-type')"

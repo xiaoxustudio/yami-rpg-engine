@@ -25,6 +25,7 @@
 			/>
 			<div class="text">{{ t('components.moveElement-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.moveElement-easingId.label')"
 				id="moveElement-easingId"
 				:ref="registryRef(fieldEls, 'moveElement-easingId')"
 				name="easing"
@@ -43,6 +44,7 @@
 			/>
 			<div class="text">{{ t('components.moveElement-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.moveElement-wait.label')"
 				id="moveElement-wait"
 				:ref="registryRef(fieldEls, 'moveElement-wait')"
 				name="wait"

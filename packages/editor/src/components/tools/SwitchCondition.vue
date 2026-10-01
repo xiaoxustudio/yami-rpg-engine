@@ -14,6 +14,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.switch-condition-type.label') }}</div>
 			<SelectBox
+				:label="t('components.switch-condition-type.label')"
 				id="switch-condition-type"
 				v-tip="t('components.switch-condition-type.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-type')"
@@ -22,6 +23,7 @@
 			/>
 			<div class="text">{{ t('components.switch-condition-boolean-value.label') }}</div>
 			<SelectBox
+				:label="t('components.switch-condition-boolean-value.label')"
 				id="switch-condition-boolean-value"
 				v-tip="t('components.switch-condition-boolean-value.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-boolean-value')"
@@ -84,6 +86,7 @@
 			/>
 			<div class="text">{{ t('components.switch-condition-mouse-button.label') }}</div>
 			<SelectBox
+				:label="t('components.switch-condition-mouse-button.label')"
 				id="switch-condition-mouse-button"
 				v-tip="t('components.switch-condition-mouse-button.tip')"
 				:ref="registryRef(fieldEls, 'switch-condition-mouse-button')"

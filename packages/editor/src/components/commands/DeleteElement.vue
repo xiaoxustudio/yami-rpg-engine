@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.deleteElement-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.deleteElement-operation.label')"
 				id="deleteElement-operation"
 				v-tip="t('components.deleteElement-operation.tip')"
 				:ref="registryRef(fieldEls, 'deleteElement-operation')"

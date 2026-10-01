@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.registerEvent-target.label') }}</div>
 			<SelectBox
+				:label="t('components.registerEvent-target.label')"
 				id="registerEvent-target"
 				v-tip="t('components.registerEvent-target.tip')"
 				:ref="registryRef(fieldEls, 'registerEvent-target')"
@@ -38,6 +39,7 @@
 			/>
 			<div class="text">{{ t('components.registerEvent-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.registerEvent-operation.label')"
 				id="registerEvent-operation"
 				v-tip="t('components.registerEvent-operation.tip')"
 				:ref="registryRef(fieldEls, 'registerEvent-operation')"
@@ -46,6 +48,7 @@
 			/>
 			<div class="text">{{ t('components.registerEvent-type.label') }}</div>
 			<SelectBox
+				:label="t('components.registerEvent-type.label')"
 				id="registerEvent-type"
 				:ref="registryRef(fieldEls, 'registerEvent-type')"
 				v-tip="t('components.registerEvent-type.tip')"

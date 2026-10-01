@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.setString-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setString-operation.label')"
 				id="setString-operation"
 				v-tip="t('components.setString-operation.tip')"
 				:ref="registryRef(fieldEls, 'setString-operation')"
@@ -25,6 +26,7 @@
 			/>
 			<div class="text">{{ t('components.setString-operand-type.label') }}</div>
 			<SelectBox
+				:label="t('components.setString-operand-type.label')"
 				id="setString-operand-type"
 				v-tip="t('components.setString-operand-type.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-type')"
@@ -41,6 +43,7 @@
 			/>
 			<div class="text">{{ t('components.setString-operand-string-method.label') }}</div>
 			<SelectBox
+				:label="t('components.setString-operand-string-method.label')"
 				id="setString-operand-string-method"
 				v-tip="t('components.setString-operand-string-method.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-string-method')"
@@ -146,6 +149,7 @@
 			/>
 			<div class="text">{{ t('components.setString-operand-object-property.label') }}</div>
 			<SelectBox
+				:label="t('components.setString-operand-object-property.label')"
 				id="setString-operand-object-property"
 				v-tip="t('components.setString-operand-object-property.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-object-property')"
@@ -153,6 +157,7 @@
 			/>
 			<div class="text">{{ t('components.setString-operand-element-property.label') }}</div>
 			<SelectBox
+				:label="t('components.setString-operand-element-property.label')"
 				id="setString-operand-element-property"
 				v-tip="t('components.setString-operand-element-property.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-element-property')"
@@ -250,6 +255,7 @@
 			/>
 			<div class="text">{{ t('components.setString-operand-other-data.label') }}</div>
 			<SelectBox
+				:label="t('components.setString-operand-other-data.label')"
 				id="setString-operand-other-data"
 				v-tip="t('components.setString-operand-other-data.tip')"
 				:ref="registryRef(fieldEls, 'setString-operand-other-data')"

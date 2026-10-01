@@ -11,6 +11,7 @@
 	></CustomBox>
 	<div class="text">{{ t('components.uiProgressBar-display.label') || 'Display' }}</div>
 	<SelectBox
+		:label="t('components.uiProgressBar-display.label') || 'Display'"
 		id="uiProgressBar-display"
 		v-tip="t('components.uiProgressBar-display.tip')"
 		ref="elDisplay"
@@ -29,6 +30,7 @@
 	></CustomBox>
 	<div class="text">{{ t('components.uiProgressBar-type.label') || 'Type' }}</div>
 	<SelectBox
+		:label="t('components.uiProgressBar-type.label') || 'Type'"
 		id="uiProgressBar-type"
 		v-tip="t('components.uiProgressBar-type.tip')"
 		ref="elType"
@@ -119,6 +121,7 @@
 	></NumberBox>
 	<div class="text">{{ t('components.uiProgressBar-blend.label') || 'Blend' }}</div>
 	<SelectBox
+		:label="t('components.uiProgressBar-blend.label') || 'Blend'"
 		id="uiProgressBar-blend"
 		v-tip="t('components.uiProgressBar-blend.tip')"
 		ref="elBlend"

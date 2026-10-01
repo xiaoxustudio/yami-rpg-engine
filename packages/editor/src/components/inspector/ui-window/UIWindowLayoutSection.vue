@@ -1,6 +1,7 @@
 <template>
 	<div class="text">{{ t('components.uiWindow-layout.label') || 'Layout' }}</div>
 	<SelectBox
+		:label="t('components.uiWindow-layout.label') || 'Layout'"
 		ref="elLayout"
 		id="uiWindow-layout"
 		v-tip="t('components.uiWindow-layout.tip')"

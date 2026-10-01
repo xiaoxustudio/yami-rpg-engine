@@ -25,6 +25,7 @@
 			/>
 			<div class="text">{{ t('components.uploadFile-method.label') }}</div>
 			<SelectBox
+				:label="t('components.uploadFile-method.label')"
 				id="uploadFile-method"
 				v-tip="t('components.uploadFile-method.tip')"
 				:ref="registryRef(fieldEls, 'uploadFile-method')"

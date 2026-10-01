@@ -41,6 +41,7 @@
 			/>
 			<div class="text">{{ t('components.playActorAnimation-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.playActorAnimation-wait.label')"
 				id="playActorAnimation-wait"
 				:ref="registryRef(fieldEls, 'playActorAnimation-wait')"
 				name="wait"

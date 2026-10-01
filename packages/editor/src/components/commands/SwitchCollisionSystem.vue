@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.switchCollisionSystem-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.switchCollisionSystem-operation.label')"
 				id="switchCollisionSystem-operation"
 				v-tip="t('components.switchCollisionSystem-operation.tip')"
 				:ref="registryRef(fieldEls, 'switchCollisionSystem-operation')"

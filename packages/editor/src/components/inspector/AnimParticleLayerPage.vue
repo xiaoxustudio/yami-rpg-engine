@@ -20,6 +20,7 @@
 				{{ t('components.animParticleLayer-position.label') || 'Position' }}
 			</div>
 			<SelectBox
+				:label="t('components.animParticleLayer-position.label') || 'Position'"
 				id="animParticleLayer-position"
 				v-tip="t('components.animParticleLayer-position.tip')"
 				ref="elPosition"
@@ -28,6 +29,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.animParticleLayer-angle.label') || 'Angle' }}</div>
 			<SelectBox
+				:label="t('components.animParticleLayer-angle.label') || 'Angle'"
 				id="animParticleLayer-angle"
 				v-tip="t('components.animParticleLayer-angle.tip')"
 				ref="elAngle"
@@ -36,6 +38,7 @@
 			></SelectBox>
 			<div class="text">{{ t('components.animParticleLayer-order.label') || 'Order' }}</div>
 			<SelectBox
+				:label="t('components.animParticleLayer-order.label') || 'Order'"
 				id="animParticleLayer-order"
 				v-tip="t('components.animParticleLayer-order.tip')"
 				ref="elOrder"

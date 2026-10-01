@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.fileActor-skill-key.label') }}</div>
 			<SelectBox
+				:label="t('components.fileActor-skill-key.label')"
 				id="fileActor-skill-key"
 				v-tip="t('components.fileActor-skill-key.tip')"
 				:ref="registryRef(inspectorEls, 'fileActor-skill-key')"

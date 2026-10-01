@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.insertImage-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.insertImage-mode.label')"
 				id="insertImage-mode"
 				v-tip="t('components.insertImage-mode.tip')"
 				:ref="registryRef(textCaptureEls, 'insertImage-mode')"

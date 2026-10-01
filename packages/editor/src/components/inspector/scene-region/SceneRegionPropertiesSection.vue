@@ -10,6 +10,7 @@
 	></TextBox>
 	<div class="text">{{ t('components.sceneRegion-color.label') || 'Color' }}</div>
 	<ColorBox
+		:label="t('components.sceneRegion-color.label') || 'Color'"
 		id="sceneRegion-color"
 		v-tip="t('components.sceneRegion-color.tip')"
 		ref="elColor"

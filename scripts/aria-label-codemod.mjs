@@ -31,8 +31,21 @@
 import { writeFileSync } from 'node:fs';
 import { collectFiles, readSource } from './lib/scan.mjs';
 
-/** 已支持 `label` → `aria-label` 的输入原语（ui-kit 组件在模板里的标签名） */
-const TARGETS = ['TextBox', 'TextArea', 'NumberBox', 'SliderBox', 'KeyboardBox', 'GamepadBox'];
+/**
+ * 已支持 `label` → `aria-label` 的输入原语（ui-kit 组件在模板里的标签名）。
+ * `SelectBox` / `ColorBox` 的交互元素是自绘 div，它们的可访问性靠 role 才成立
+ * （见各自组件的 `role="combobox"` / `role="button"`），所以放在第二批接线。
+ */
+const TARGETS = [
+	'TextBox',
+	'TextArea',
+	'NumberBox',
+	'SliderBox',
+	'KeyboardBox',
+	'GamepadBox',
+	'SelectBox',
+	'ColorBox'
+];
 
 const TEXT_BLOCK_RE = /<div\s+class="text"[^>]*>([\s\S]*?)<\/div>/g;
 // 三个捕获组都要用：`lead` 是缩进，`wrapperTag` 是 flex-box 自己的开标签，

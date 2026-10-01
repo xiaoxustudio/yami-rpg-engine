@@ -21,6 +21,7 @@
 				{{ t('components.uiElement-pointerEvents.label') || 'Pointer Events' }}
 			</div>
 			<SelectBox
+				:label="t('components.uiElement-pointerEvents.label') || 'Pointer Events'"
 				id="uiElement-pointerEvents"
 				v-tip="t('components.uiElement-pointerEvents.tip')"
 				:ref="registryRef(inspectorEls, 'uiElement-pointerEvents')"

@@ -8,6 +8,7 @@
 				{{ t('components.animSoundLayer-playbackRate.label') || 'Playback Rate' }}
 			</div>
 			<SelectBox
+				:label="t('components.animSoundLayer-playbackRate.label') || 'Playback Rate'"
 				id="animSoundLayer-playbackRate"
 				v-tip="t('components.animSoundLayer-playbackRate.tip')"
 				ref="elPlaybackRate"

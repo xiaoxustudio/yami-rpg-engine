@@ -39,6 +39,7 @@
 			/>
 			<div class="text">{{ t('components.transition-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.transition-easingId.label')"
 				id="transition-easingId"
 				:ref="registryRef(fieldEls, 'transition-easingId')"
 				name="easing"

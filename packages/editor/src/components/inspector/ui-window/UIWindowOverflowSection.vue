@@ -1,6 +1,7 @@
 <template>
 	<div class="text">{{ t('components.uiWindow-overflow.label') || 'Overflow' }}</div>
 	<SelectBox
+		:label="t('components.uiWindow-overflow.label') || 'Overflow'"
 		ref="elOverflow"
 		id="uiWindow-overflow"
 		v-tip="t('components.uiWindow-overflow.tip')"

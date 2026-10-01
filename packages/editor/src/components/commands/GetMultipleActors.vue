@@ -31,6 +31,7 @@
 			/>
 			<div class="text">{{ t('components.getMultipleActors-area.label') }}</div>
 			<SelectBox
+				:label="t('components.getMultipleActors-area.label')"
 				id="getMultipleActors-area"
 				v-tip="t('components.getMultipleActors-area.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-area')"
@@ -71,6 +72,7 @@
 			/>
 			<div class="text">{{ t('components.getMultipleActors-selector.label') }}</div>
 			<SelectBox
+				:label="t('components.getMultipleActors-selector.label')"
 				id="getMultipleActors-selector"
 				v-tip="t('components.getMultipleActors-selector.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-selector')"
@@ -85,6 +87,7 @@
 			/>
 			<div class="text">{{ t('components.getMultipleActors-activation.label') }}</div>
 			<SelectBox
+				:label="t('components.getMultipleActors-activation.label')"
 				id="getMultipleActors-activation"
 				v-tip="t('components.getMultipleActors-activation.tip')"
 				:ref="registryRef(fieldEls, 'getMultipleActors-activation')"

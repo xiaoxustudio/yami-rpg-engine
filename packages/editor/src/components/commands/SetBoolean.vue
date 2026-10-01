@@ -19,12 +19,14 @@
 			/>
 			<div class="text">{{ t('components.setBoolean-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setBoolean-operation.label')"
 				id="setBoolean-operation"
 				:ref="registryRef(fieldEls, 'setBoolean-operation')"
 				v-model="form.operation"
 			/>
 			<div class="text">{{ t('components.setBoolean-operand-type.label') }}</div>
 			<SelectBox
+				:label="t('components.setBoolean-operand-type.label')"
 				id="setBoolean-operand-type"
 				v-tip="t('components.setBoolean-operand-type.tip')"
 				:ref="registryRef(fieldEls, 'setBoolean-operand-type')"
@@ -33,6 +35,7 @@
 			/>
 			<div class="text">{{ t('components.setBoolean-constant-value.label') }}</div>
 			<SelectBox
+				:label="t('components.setBoolean-constant-value.label')"
 				id="setBoolean-constant-value"
 				v-tip="t('components.setBoolean-constant-value.tip')"
 				:ref="registryRef(fieldEls, 'setBoolean-constant-value')"

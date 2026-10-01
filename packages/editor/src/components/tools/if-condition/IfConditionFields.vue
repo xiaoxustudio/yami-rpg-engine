@@ -2,6 +2,7 @@
 	<div class="grid-box">
 		<div class="text">{{ t('components.if-condition-type.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-type.label')"
 			id="if-condition-type"
 			v-tip="t('components.if-condition-type.tip')"
 			v-focus
@@ -21,6 +22,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-boolean-operation.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-boolean-operation.label')"
 			id="if-condition-boolean-operation"
 			v-tip="t('components.if-condition-boolean-operation.tip')"
 			:ref="fieldRef('if-condition-boolean-operation')"
@@ -28,6 +30,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-boolean-operand-type.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-boolean-operand-type.label')"
 			id="if-condition-boolean-operand-type"
 			v-tip="t('components.if-condition-boolean-operand-type.tip')"
 			:ref="fieldRef('if-condition-boolean-operand-type')"
@@ -35,12 +38,14 @@
 		/>
 		<div class="text">{{ t('components.if-condition-boolean-constant-value.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-boolean-constant-value.label')"
 			id="if-condition-boolean-constant-value"
 			:ref="fieldRef('if-condition-boolean-constant-value')"
 			:model-value="form.booleanConstantValue"
 		/>
 		<div class="text">{{ t('components.if-condition-number-operation.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-number-operation.label')"
 			id="if-condition-number-operation"
 			v-tip="t('components.if-condition-number-operation.tip')"
 			:ref="fieldRef('if-condition-number-operation')"
@@ -48,6 +53,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-number-operand-type.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-number-operand-type.label')"
 			id="if-condition-number-operand-type"
 			v-tip="t('components.if-condition-number-operand-type.tip')"
 			:ref="fieldRef('if-condition-number-operand-type')"
@@ -66,6 +72,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-string-operation.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-string-operation.label')"
 			id="if-condition-string-operation"
 			v-tip="t('components.if-condition-string-operation.tip')"
 			:ref="fieldRef('if-condition-string-operation')"
@@ -73,6 +80,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-string-operand-type.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-string-operand-type.label')"
 			id="if-condition-string-operand-type"
 			v-tip="t('components.if-condition-string-operand-type.tip')"
 			:ref="fieldRef('if-condition-string-operand-type')"
@@ -97,6 +105,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-object-operation.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-object-operation.label')"
 			id="if-condition-object-operation"
 			v-tip="t('components.if-condition-object-operation.tip')"
 			:ref="fieldRef('if-condition-object-operation')"
@@ -104,6 +113,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-object-operand-type.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-object-operand-type.label')"
 			id="if-condition-object-operand-type"
 			v-tip="t('components.if-condition-object-operand-type.tip')"
 			:ref="fieldRef('if-condition-object-operand-type')"
@@ -111,6 +121,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-list-operation.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-list-operation.label')"
 			id="if-condition-list-operation"
 			v-tip="t('components.if-condition-list-operation.tip')"
 			:ref="fieldRef('if-condition-list-operation')"
@@ -128,6 +139,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-actor-operation.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-actor-operation.label')"
 			id="if-condition-actor-operation"
 			v-tip="t('components.if-condition-actor-operation.tip')"
 			:ref="fieldRef('if-condition-actor-operation')"
@@ -265,6 +277,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-actor-teamId.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-actor-teamId.label')"
 			id="if-condition-actor-teamId"
 			v-tip="t('components.if-condition-actor-teamId.tip')"
 			:ref="fieldRef('if-condition-actor-teamId')"
@@ -272,6 +285,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-element-operation.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-element-operation.label')"
 			id="if-condition-element-operation"
 			v-tip="t('components.if-condition-element-operation.tip')"
 			:ref="fieldRef('if-condition-element-operation')"
@@ -287,6 +301,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-keyboard-state.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-keyboard-state.label')"
 			id="if-condition-keyboard-state"
 			v-tip="t('components.if-condition-keyboard-state.tip')"
 			:ref="fieldRef('if-condition-keyboard-state')"
@@ -302,6 +317,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-gamepad-state.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-gamepad-state.label')"
 			id="if-condition-gamepad-state"
 			v-tip="t('components.if-condition-gamepad-state.tip')"
 			:ref="fieldRef('if-condition-gamepad-state')"
@@ -309,6 +325,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-mouse-button.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-mouse-button.label')"
 			id="if-condition-mouse-button"
 			v-tip="t('components.if-condition-mouse-button.tip')"
 			:ref="fieldRef('if-condition-mouse-button')"
@@ -316,6 +333,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-mouse-state.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-mouse-state.label')"
 			id="if-condition-mouse-state"
 			v-tip="t('components.if-condition-mouse-state.tip')"
 			:ref="fieldRef('if-condition-mouse-state')"
@@ -323,6 +341,7 @@
 		/>
 		<div class="text">{{ t('components.if-condition-other-key.label') }}</div>
 		<SelectBox
+			:label="t('components.if-condition-other-key.label')"
 			id="if-condition-other-key"
 			v-tip="t('components.if-condition-other-key.tip')"
 			:ref="fieldRef('if-condition-other-key')"

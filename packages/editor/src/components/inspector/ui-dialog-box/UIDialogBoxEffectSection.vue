@@ -1,6 +1,7 @@
 <template>
 	<div class="text">{{ t('components.uiDialogBox-effect-type.label') || 'Effect' }}</div>
 	<SelectBox
+		:label="t('components.uiDialogBox-effect-type.label') || 'Effect'"
 		ref="elEffectType"
 		id="uiDialogBox-effect-type"
 		v-tip="t('components.uiDialogBox-effect-type.tip')"
@@ -53,6 +54,7 @@
 		{{ t('components.uiDialogBox-effect-color.label') || 'Effect Color' }}
 	</div>
 	<ColorBox
+		:label="t('components.uiDialogBox-effect-color.label') || 'Effect Color'"
 		ref="elEffectColor"
 		id="uiDialogBox-effect-color"
 		v-tip="t('components.uiDialogBox-effect-color.tip')"
@@ -61,6 +63,7 @@
 	></ColorBox>
 	<div class="text">{{ t('components.uiDialogBox-blend.label') || 'Blend' }}</div>
 	<SelectBox
+		:label="t('components.uiDialogBox-blend.label') || 'Blend'"
 		ref="elBlend"
 		id="uiDialogBox-blend"
 		v-tip="t('components.uiDialogBox-blend.tip')"

@@ -22,6 +22,7 @@
 			/>
 			<div class="text">{{ t('components.setInventory-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setInventory-operation.label')"
 				id="setInventory-operation"
 				v-tip="t('components.setInventory-operation.tip')"
 				:ref="registryRef(fieldEls, 'setInventory-operation')"

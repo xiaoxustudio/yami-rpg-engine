@@ -25,6 +25,7 @@
 			/>
 			<div class="text">{{ t('components.setZoomFactor-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.setZoomFactor-easingId.label')"
 				id="setZoomFactor-easingId"
 				:ref="registryRef(fieldEls, 'setZoomFactor-easingId')"
 				name="easing"
@@ -42,6 +43,7 @@
 			/>
 			<div class="text">{{ t('components.setZoomFactor-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.setZoomFactor-wait.label')"
 				id="setZoomFactor-wait"
 				:ref="registryRef(fieldEls, 'setZoomFactor-wait')"
 				name="wait"

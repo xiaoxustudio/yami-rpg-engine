@@ -107,6 +107,7 @@
 				{{ t('components.setting-other-browserSearchHistoryLimit.label') }}
 			</div>
 			<SelectBox
+				:label="t('components.setting-other-browserSearchHistoryLimit.label')"
 				id="setting-other-browserSearchHistoryLimit"
 				v-tip="t('components.setting-other-browserSearchHistoryLimit.tip')"
 			/>
@@ -118,6 +119,7 @@
 			</div>
 			<div class="text">{{ t('components.setting-github-accelerationNode.label') }}</div>
 			<SelectBox
+				:label="t('components.setting-github-accelerationNode.label')"
 				id="setting-github-accelerationNode"
 				v-tip="t('components.setting-github-accelerationNode.tip')"
 			/>

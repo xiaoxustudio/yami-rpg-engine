@@ -32,6 +32,7 @@
 			/>
 			<div class="text">{{ t('components.removeAnimationComponent-motion.label') }}</div>
 			<SelectBox
+				:label="t('components.removeAnimationComponent-motion.label')"
 				id="removeAnimationComponent-motion"
 				:ref="registryRef(fieldEls, 'removeAnimationComponent-motion')"
 				v-tip="t('components.removeAnimationComponent-motion.tip')"

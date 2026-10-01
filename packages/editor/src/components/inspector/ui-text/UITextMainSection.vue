@@ -1,6 +1,7 @@
 <template>
 	<div class="text">{{ t('components.uiText-direction.label') || 'Direction' }}</div>
 	<SelectBox
+		:label="t('components.uiText-direction.label') || 'Direction'"
 		ref="elDirection"
 		id="uiText-direction"
 		v-tip="t('components.uiText-direction.tip')"
@@ -154,6 +155,7 @@
 	</div>
 	<div class="text">{{ t('components.uiText-color.label') || 'Color' }}</div>
 	<ColorBox
+		:label="t('components.uiText-color.label') || 'Color'"
 		id="uiText-color"
 		:ref="registryRef(inspectorEls, 'uiText-color')"
 		v-tip="t('components.uiText-color.tip')"
@@ -172,6 +174,7 @@
 	></TextBox>
 	<div class="text">{{ t('components.uiText-typeface.label') || 'Typeface' }}</div>
 	<SelectBox
+		:label="t('components.uiText-typeface.label') || 'Typeface'"
 		ref="elTypeface"
 		id="uiText-typeface"
 		v-tip="t('components.uiText-typeface.tip')"

@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setVolume-type.label') }}</div>
 			<SelectBox
+				:label="t('components.setVolume-type.label')"
 				id="setVolume-type"
 				v-tip="t('components.setVolume-type.tip')"
 				:ref="registryRef(fieldEls, 'setVolume-type')"
@@ -28,6 +29,7 @@
 			/>
 			<div class="text">{{ t('components.setVolume-easingId.label') }}</div>
 			<SelectBox
+				:label="t('components.setVolume-easingId.label')"
 				id="setVolume-easingId"
 				:ref="registryRef(fieldEls, 'setVolume-easingId')"
 				name="easing"
@@ -46,6 +48,7 @@
 			/>
 			<div class="text">{{ t('components.setVolume-wait.label') }}</div>
 			<SelectBox
+				:label="t('components.setVolume-wait.label')"
 				id="setVolume-wait"
 				:ref="registryRef(fieldEls, 'setVolume-wait')"
 				name="wait"

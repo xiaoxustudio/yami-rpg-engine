@@ -22,6 +22,7 @@
 			/>
 			<div class="text">{{ t('components.changeActorTeam-teamId.label') }}</div>
 			<SelectBox
+				:label="t('components.changeActorTeam-teamId.label')"
 				id="changeActorTeam-teamId"
 				v-tip="t('components.changeActorTeam-teamId.tip')"
 				:ref="registryRef(fieldEls, 'changeActorTeam-teamId')"

@@ -22,6 +22,7 @@
 			/>
 			<div class="text">{{ t('components.controlDialog-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.controlDialog-operation.label')"
 				id="controlDialog-operation"
 				v-tip="t('components.controlDialog-operation.tip')"
 				:ref="registryRef(fieldEls, 'controlDialog-operation')"

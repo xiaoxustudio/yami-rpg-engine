@@ -1,6 +1,7 @@
 <template>
 	<div class="text">{{ t('components.uiText-effect-type.label') || 'Effect' }}</div>
 	<SelectBox
+		:label="t('components.uiText-effect-type.label') || 'Effect'"
 		ref="elEffectType"
 		id="uiText-effect-type"
 		v-tip="t('components.uiText-effect-type.tip')"
@@ -53,6 +54,7 @@
 		{{ t('components.uiText-effect-color.label') || 'Effect Color' }}
 	</div>
 	<ColorBox
+		:label="t('components.uiText-effect-color.label') || 'Effect Color'"
 		ref="elEffectColor"
 		id="uiText-effect-color"
 		v-tip="t('components.uiText-effect-color.tip')"
@@ -61,6 +63,7 @@
 	></ColorBox>
 	<div class="text">{{ t('components.uiText-overflow.label') || 'Overflow' }}</div>
 	<SelectBox
+		:label="t('components.uiText-overflow.label') || 'Overflow'"
 		ref="elOverflow"
 		id="uiText-overflow"
 		v-tip="t('components.uiText-overflow.tip')"
@@ -69,6 +72,7 @@
 	></SelectBox>
 	<div class="text">{{ t('components.uiText-blend.label') || 'Blend' }}</div>
 	<SelectBox
+		:label="t('components.uiText-blend.label') || 'Blend'"
 		ref="elBlend"
 		id="uiText-blend"
 		v-tip="t('components.uiText-blend.tip')"

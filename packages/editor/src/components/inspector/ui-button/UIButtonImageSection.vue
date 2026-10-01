@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="uiButton-image-properties-grid">
 			<div class="text">{{ t('components.uiButton-display.label') || 'Display' }}</div>
 			<SelectBox
+				:label="t('components.uiButton-display.label') || 'Display'"
 				id="uiButton-display"
 				v-tip="t('components.uiButton-display.tip')"
 				ref="elDisplay"
@@ -78,6 +79,7 @@
 			></CustomBox>
 			<div class="text">{{ t('components.uiButton-flip.label') || 'Flip' }}</div>
 			<SelectBox
+				:label="t('components.uiButton-flip.label') || 'Flip'"
 				id="uiButton-flip"
 				v-tip="t('components.uiButton-flip.tip')"
 				ref="elFlip"
@@ -152,6 +154,7 @@
 			</div>
 			<div class="text">{{ t('components.uiButton-imageEffect.label') || 'Effect' }}</div>
 			<SelectBox
+				:label="t('components.uiButton-imageEffect.label') || 'Effect'"
 				id="uiButton-imageEffect"
 				v-tip="t('components.uiButton-imageEffect.tip')"
 				ref="elImageEffect"

@@ -13,6 +13,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.renderOutline-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.renderOutline-operation.label')"
 				id="renderOutline-operation"
 				v-tip="t('components.renderOutline-operation.tip')"
 				:ref="registryRef(fieldEls, 'renderOutline-operation')"
@@ -29,6 +30,7 @@
 			/>
 			<div class="text">{{ t('components.renderOutline-color.label') }}</div>
 			<ColorBox
+				:label="t('components.renderOutline-color.label')"
 				id="renderOutline-color"
 				v-tip="t('components.renderOutline-color.tip')"
 				:ref="registryRef(fieldEls, 'renderOutline-color')"

@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.forEach-data.label') }}</div>
 			<SelectBox
+				:label="t('components.forEach-data.label')"
 				id="forEach-data"
 				v-tip="t('components.forEach-data.tip')"
 				:ref="registryRef(fieldEls, 'forEach-data')"

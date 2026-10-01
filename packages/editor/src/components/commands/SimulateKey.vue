@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.simulateKey-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.simulateKey-operation.label')"
 				id="simulateKey-operation"
 				v-tip="t('components.simulateKey-operation.tip')"
 				:ref="registryRef(fieldEls, 'simulateKey-operation')"

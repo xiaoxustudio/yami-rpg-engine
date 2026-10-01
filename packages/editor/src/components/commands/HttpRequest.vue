@@ -17,6 +17,7 @@
 			/>
 			<div class="text">{{ t('components.httpRequest-method.label') }}</div>
 			<SelectBox
+				:label="t('components.httpRequest-method.label')"
 				id="httpRequest-method"
 				v-tip="t('components.httpRequest-method.tip')"
 				:ref="registryRef(fieldEls, 'httpRequest-method')"
@@ -46,6 +47,7 @@
 			/>
 			<div class="text">{{ t('components.httpRequest-responseType.label') }}</div>
 			<SelectBox
+				:label="t('components.httpRequest-responseType.label')"
 				id="httpRequest-responseType"
 				v-tip="t('components.httpRequest-responseType.tip')"
 				:ref="registryRef(fieldEls, 'httpRequest-responseType')"

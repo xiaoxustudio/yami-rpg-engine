@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.positionGetter-type.label') }}</div>
 			<SelectBox
+				:label="t('components.positionGetter-type.label')"
 				id="positionGetter-type"
 				v-tip="t('components.positionGetter-type.tip')"
 				:ref="fieldRef('positionGetter-type')"
@@ -71,6 +72,7 @@
 			/>
 			<div class="text">{{ t('components.positionGetter-region-mode.label') }}</div>
 			<SelectBox
+				:label="t('components.positionGetter-region-mode.label')"
 				id="positionGetter-region-mode"
 				v-tip="t('components.positionGetter-region-mode.tip')"
 				:ref="fieldRef('positionGetter-region-mode')"

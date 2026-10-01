@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setEvent-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.setEvent-operation.label')"
 				id="setEvent-operation"
 				v-tip="t('components.setEvent-operation.tip')"
 				:ref="registryRef(fieldEls, 'setEvent-operation')"

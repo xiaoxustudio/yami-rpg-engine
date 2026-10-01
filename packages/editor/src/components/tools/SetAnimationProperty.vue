@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setAnimation-property-key.label') }}</div>
 			<SelectBox
+				:label="t('components.setAnimation-property-key.label')"
 				id="setAnimation-property-key"
 				v-tip="t('components.setAnimation-property-key.tip')"
 				:ref="fieldRef('setAnimation-property-key')"

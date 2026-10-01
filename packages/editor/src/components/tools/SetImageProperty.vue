@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setImage-property-key.label') }}</div>
 			<SelectBox
+				:label="t('components.setImage-property-key.label')"
 				id="setImage-property-key"
 				:ref="fieldRef('setImage-property-key')"
 				v-model="form.key"
@@ -23,18 +24,21 @@
 			/>
 			<div class="text">{{ t('components.setImage-property-display.label') }}</div>
 			<SelectBox
+				:label="t('components.setImage-property-display.label')"
 				id="setImage-property-display"
 				:ref="fieldRef('setImage-property-display')"
 				v-model="form.display"
 			/>
 			<div class="text">{{ t('components.setImage-property-flip.label') }}</div>
 			<SelectBox
+				:label="t('components.setImage-property-flip.label')"
 				id="setImage-property-flip"
 				:ref="fieldRef('setImage-property-flip')"
 				v-model="form.flip"
 			/>
 			<div class="text">{{ t('components.setImage-property-blend.label') }}</div>
 			<SelectBox
+				:label="t('components.setImage-property-blend.label')"
 				id="setImage-property-blend"
 				:ref="fieldRef('setImage-property-blend')"
 				v-model="form.blend"

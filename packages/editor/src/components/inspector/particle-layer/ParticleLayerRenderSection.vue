@@ -11,6 +11,7 @@
 	></CustomBox>
 	<div class="text">{{ t('components.particleLayer-blend.label') || 'Blend' }}</div>
 	<SelectBox
+		:label="t('components.particleLayer-blend.label') || 'Blend'"
 		id="particleLayer-blend"
 		v-tip="t('components.particleLayer-blend.tip')"
 		ref="elBlend"
@@ -21,6 +22,7 @@
 		{{ t('components.particleLayer-light.label') || 'Light Sampling' }}
 	</div>
 	<SelectBox
+		:label="t('components.particleLayer-light.label') || 'Light Sampling'"
 		id="particleLayer-light"
 		v-tip="t('components.particleLayer-light.tip')"
 		ref="elLight"
@@ -29,6 +31,7 @@
 	></SelectBox>
 	<div class="text">{{ t('components.particleLayer-sort.label') || 'Sort' }}</div>
 	<SelectBox
+		:label="t('components.particleLayer-sort.label') || 'Sort'"
 		id="particleLayer-sort"
 		v-tip="t('components.particleLayer-sort.tip')"
 		ref="elSort"
@@ -39,6 +42,7 @@
 		{{ t('components.particleLayer-sprite-mode.label') || 'Sprite Mode' }}
 	</div>
 	<SelectBox
+		:label="t('components.particleLayer-sprite-mode.label') || 'Sprite Mode'"
 		id="particleLayer-sprite-mode"
 		v-tip="t('components.particleLayer-sprite-mode.tip')"
 		ref="elSpriteMode"

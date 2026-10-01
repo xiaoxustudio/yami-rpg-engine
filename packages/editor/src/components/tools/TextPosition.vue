@@ -10,6 +10,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.textPosition-axis.label') }}</div>
 			<SelectBox
+				:label="t('components.textPosition-axis.label')"
 				id="textPosition-axis"
 				v-tip="t('components.textPosition-axis.tip')"
 				:ref="registryRef(textCaptureEls, 'textPosition-axis')"
@@ -17,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.textPosition-operation.label') }}</div>
 			<SelectBox
+				:label="t('components.textPosition-operation.label')"
 				id="textPosition-operation"
 				v-tip="t('components.textPosition-operation.tip')"
 				:ref="registryRef(textCaptureEls, 'textPosition-operation')"

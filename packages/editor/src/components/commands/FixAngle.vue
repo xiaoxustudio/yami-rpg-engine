@@ -18,6 +18,7 @@
 			/>
 			<div class="text">{{ t('components.fixAngle-fixed.label') }}</div>
 			<SelectBox
+				:label="t('components.fixAngle-fixed.label')"
 				id="fixAngle-fixed"
 				v-tip="t('components.fixAngle-fixed.tip')"
 				:ref="registryRef(fieldEls, 'fixAngle-fixed')"

@@ -22,6 +22,7 @@
 			/>
 			<div class="text">{{ t('components.setMovementSpeed-property.label') }}</div>
 			<SelectBox
+				:label="t('components.setMovementSpeed-property.label')"
 				id="setMovementSpeed-property"
 				v-tip="t('components.setMovementSpeed-property.tip')"
 				:ref="registryRef(fieldEls, 'setMovementSpeed-property')"

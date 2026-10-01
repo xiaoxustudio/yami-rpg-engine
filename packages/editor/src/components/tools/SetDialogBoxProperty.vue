@@ -9,6 +9,7 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.setDialogBox-property-key.label') }}</div>
 			<SelectBox
+				:label="t('components.setDialogBox-property-key.label')"
 				id="setDialogBox-property-key"
 				:ref="fieldRef('setDialogBox-property-key')"
 				v-tip="t('components.setDialogBox-property-key.tip')"
@@ -63,6 +64,7 @@
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-color.label') }}</div>
 			<ColorBox
+				:label="t('components.setDialogBox-property-color.label')"
 				id="setDialogBox-property-color"
 				:ref="fieldRef('setDialogBox-property-color')"
 				v-model="color"
@@ -76,6 +78,7 @@
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-effect-type.label') }}</div>
 			<SelectBox
+				:label="t('components.setDialogBox-property-effect-type.label')"
 				id="setDialogBox-property-effect-type"
 				:ref="fieldRef('setDialogBox-property-effect-type')"
 				v-model="form['effect-type']"
@@ -118,12 +121,14 @@
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-effect-color.label') }}</div>
 			<ColorBox
+				:label="t('components.setDialogBox-property-effect-color.label')"
 				id="setDialogBox-property-effect-color"
 				:ref="fieldRef('setDialogBox-property-effect-color')"
 				v-model="effectColor"
 			/>
 			<div class="text">{{ t('components.setDialogBox-property-blend.label') }}</div>
 			<SelectBox
+				:label="t('components.setDialogBox-property-blend.label')"
 				id="setDialogBox-property-blend"
 				:ref="fieldRef('setDialogBox-property-blend')"
 				v-model="form.blend"

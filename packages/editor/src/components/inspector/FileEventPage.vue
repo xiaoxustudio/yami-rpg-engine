@@ -6,6 +6,7 @@
 		<div class="detail-grid" id="fileEvent-general-grid">
 			<div class="text">{{ t('components.fileEvent-type.label') || 'Type' }}</div>
 			<SelectBox
+				:label="t('components.fileEvent-type.label') || 'Type'"
 				ref="elType"
 				id="fileEvent-type"
 				v-tip="t('components.fileEvent-type.tip')"
@@ -43,6 +44,7 @@
 				{{ t('components.fileEvent-returnType.label') || 'Return Type' }}
 			</div>
 			<SelectBox
+				:label="t('components.fileEvent-returnType.label') || 'Return Type'"
 				ref="elReturnType"
 				id="fileEvent-returnType"
 				v-tip="t('components.fileEvent-returnType.tip')"
