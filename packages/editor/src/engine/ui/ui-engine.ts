@@ -419,11 +419,18 @@ UIEngine.updateControlPoints = function (this: UIShape) {
 		resize.BR.x = x3 + ox3 - ox2;
 		resize.BR.y = y3 + oy3 - oy2;
 		let rotation = instance.transform.rotation;
-		// 沿父链累加旋转。原写法 `while ((element = element.parent)?.transform)` ——
-		// `transform` 在具名类型下是**非可选**的（`element-base.ts:98` 每个元素实例都有），
-		// 所以那个 `?.transform` 真值判断只可能在「父元素为 `null`」时为假，语义与下面等价；
-		// 写成显式判空是为了让「父链到根为止」这条循环条件直接读得出来。
-		for (let parent = instance.parent; parent !== null; parent = parent.parent) {
+		// 沿父链累加旋转，**到「没有 transform 的祖先」为止**。
+		//
+		// ⚠️ 终止条件必须同时看 `transform`：`52ced02b1` 曾把它写成只判 `parent !== null`，
+		// 理由是「`transform` 在具名类型下非可选（`element-base.ts` 的 `transform: TransformShape`）」。**那条前提是错的** ——
+		// 根实例就是 `transform: null`（`root-element.ts` 的 `RootElement` 构造时显式传
+		// `{ transform: null }`，根不参与 transform 链），而 `element-base.ts` 构造函数里那句
+		// `this.transform = data.transform as TransformShape` 把这个 null 断言掉了。
+		// 只判 null 的循环会一路走到根并读 `null.rotation`：**每帧抛**
+		// `Cannot read properties of null (reading 'rotation')`（`drawControlPoints` 起点），
+		// 表现是「选中任意元素后控制点/选中框不再绘制，控制台每帧刷一条」。
+		// 这也正是重构前 `while ((element = element.parent)?.transform)` 的语义，此处逐字保留。
+		for (let parent = instance.parent; parent?.transform; parent = parent.parent) {
 			rotation += parent.transform.rotation;
 		}
 		this.controlPointRotation = rotation;

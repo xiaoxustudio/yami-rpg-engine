@@ -106,6 +106,11 @@ uiElClasses.Element = class UIElement {
 		this.height = 0;
 		this.matrix = new Matrix();
 		this.opacity = 1;
+		// ⚠️ `data.transform` 允许是 `null`：`root-element.ts` 的 `RootElement` 就传 `{ transform: null }`
+		// （根不参与 transform 链）。所以下面这个 `as TransformShape` 是**已知的谎**——
+		// 任何时候按「实例一定有 transform」推理都会踩空（`ui-engine.ts` 的父链旋转累加曾因此每帧抛
+		// `Cannot read properties of null (reading 'rotation')`）。读 `instance.transform.x` 的路径
+		// 必须先确认它不是根实例。
 		this.transform = data.transform as TransformShape;
 		this.parent = null;
 		this.children = [];
