@@ -4,7 +4,7 @@
 		:name="props.name"
 		:value="props.value"
 		:standard="isStandard"
-		:disabled="isDisabled"
+		:disabled="props.disabled"
 		:selected="isSelected"
 		:id="props.id"
 		@select="onSelect"
@@ -71,7 +71,6 @@ const state = reactive({
 	dataValue: '' as number | string | boolean
 });
 
-const isDisabled = ref(props.disabled);
 const isSelected = ref(false);
 
 const attrs = useAttrs();
@@ -120,6 +119,10 @@ const onSelect = (): void => {
 
 defineExpose({ read, write, input, enable, disable, relate, on, root });
 
+// 这条命令式 watch 与其他输入框适配器不同，是**有意保留**的：
+// `disable()`/`enable()` 走 radioProxy，会按 name 把整组单选
+// （`document.getElementsByName`）与 `relate()` 登记的关联元素一并禁用；
+// ui-kit 的 YMRadioBox 只认自己的 `disabled` prop，不做组内传播。
 watch(
 	() => props.disabled,
 	(val) => (val ? disable() : enable())

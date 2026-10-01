@@ -3,7 +3,7 @@
 		ref="ym"
 		:model-value="props.modelValue"
 		:items="props.items"
-		:disabled="isDisabled"
+		:disabled="props.disabled"
 		:popup="false"
 		:id="props.id"
 		@open="onOpen"
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, watchEffect } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { YMSelectBox } from '@ui-kit';
 import { setTooltip as setTooltipElement, dispatchChangeEvent } from '@app/utils/element-utils';
@@ -73,7 +73,6 @@ const emit = defineEmits<{
 	change: [value: unknown];
 }>();
 
-const isDisabled = ref(props.disabled);
 let originalTip = '';
 
 const ym = ref<{
@@ -214,7 +213,8 @@ const createTooltip = (): void => {
 
 const openSelect = (): void => {
 	const el = root.value;
-	if (!el || isDisabled.value) return;
+	// 读 props 而不是本地 ref：本地那份是挂载时的快照，运行期改 disabled 后守卫会失效
+	if (!el || props.disabled) return;
 	Select.open(el);
 };
 
@@ -256,11 +256,6 @@ defineExpose({
 	on,
 	root
 });
-
-watch(
-	() => props.disabled,
-	(val) => (val ? disable() : enable())
-);
 
 // 语言切换时重挂选项名（`applyLocalizedOptions` 内部调 `t`，故本 effect 会随语言变化重跑）
 watchEffect(() => {

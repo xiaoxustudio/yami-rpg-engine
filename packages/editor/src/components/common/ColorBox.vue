@@ -2,7 +2,7 @@
 	<YMColorBox
 		ref="ym"
 		:model-value="props.modelValue"
-		:disabled="isDisabled"
+		:disabled="props.disabled"
 		:popup="false"
 		:id="props.id"
 		@open="openColor"
@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import type { YamiEvent } from '@app/types/editor-event';
 import { YMColorBox } from '@ui-kit';
 import { Color } from '@app/tools/color-picker-window';
@@ -47,8 +47,6 @@ const emit = defineEmits<{
 	'update:modelValue': [value: string];
 	input: [value: string];
 }>();
-
-const isDisabled = ref(props.disabled);
 
 const ym = ref<{
 	root: HTMLElement | null;
@@ -88,16 +86,12 @@ const on = (
 
 const openColor = (): void => {
 	const el = root.value;
-	if (!el || isDisabled.value) return;
+	// 读 props 而不是本地 ref：本地那份是挂载时的快照，运行期改 disabled 后守卫会失效
+	if (!el || props.disabled) return;
 	Color.open(el);
 };
 
 defineExpose({ read, write, input, enable, disable, on, root });
-
-watch(
-	() => props.disabled,
-	(val) => (val ? disable() : enable())
-);
 
 onMounted(() => {
 	const el = root.value as ColorBoxElement | null;

@@ -66,4 +66,29 @@ describe('包装层输入事件转发（输入事件 Vue 化回归保护）', ()
 		expect(wrapper.emitted('input')).toBeTruthy();
 		wrapper.unmount();
 	});
+
+	it('RadioBox 运行期切成 disabled 后点击不再生效，切回来又生效', async () => {
+		const wrapper = mount(RadioBox, {
+			props: { id: 'test-radio-toggle', name: 'test-group-toggle', value: 'a' },
+			attachTo: document.body
+		});
+		await wrapper.vm.$nextTick();
+		const el = wrapper.element as HTMLElement;
+
+		// 适配器原先用「挂载时的 `isDisabled` 快照」喂 `:disabled`，运行期改动传不进去，
+		// 于是被标成 disabled 的单选仍然照常响应点击。`props.disabled` 直连后由 ui-kit 侧拦截。
+		await wrapper.setProps({ disabled: true });
+		await wrapper.vm.$nextTick();
+		el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+		await wrapper.vm.$nextTick();
+		expect(wrapper.emitted('input')).toBeFalsy();
+
+		// 解除禁用后同一条点击路径必须生效——否则上面那句可能只是「路径本来就不通」
+		await wrapper.setProps({ disabled: false });
+		await wrapper.vm.$nextTick();
+		el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+		await wrapper.vm.$nextTick();
+		expect(wrapper.emitted('input')).toBeTruthy();
+		wrapper.unmount();
+	});
 });

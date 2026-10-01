@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMNumberBox
 		ref="ym"
 		:model-value="props.modelValue"
@@ -7,7 +7,7 @@
 		:step="props.step"
 		:decimals="props.decimals"
 		:unit="props.unit"
-		:disabled="isDisabled"
+		:disabled="props.disabled"
 		:id="props.id"
 		@change="onChange"
 		@focus="onFocus"
@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { YMNumberBox } from '@ui-kit';
 import { NumberHistory, type HistoryInputElement } from '@ui-kit';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -65,8 +65,6 @@ const emit = defineEmits<{
 	blur: [event: FocusEvent];
 }>();
 
-const isDisabled = ref(props.disabled);
-
 const ym = ref<{
 	root: HTMLElement | null;
 	input: HTMLInputElement | null;
@@ -107,11 +105,6 @@ const onFocus = (event: FocusEvent): void => emit('focus', event);
 const onBlur = (event: FocusEvent): void => emit('blur', event);
 
 defineExpose({ read, write, enable, disable, getFocus, on, root });
-
-watch(
-	() => props.disabled,
-	(val) => (val ? disable() : enable())
-);
 
 onMounted(() => {
 	const el = root.value as NumberBoxElement | null;

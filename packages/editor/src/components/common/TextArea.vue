@@ -1,8 +1,8 @@
-﻿<template>
+<template>
 	<YMTextArea
 		ref="ym"
 		:model-value="props.modelValue"
-		:disabled="isDisabled"
+		:disabled="props.disabled"
 		:id="props.id"
 		@input="onInput"
 		@focus="onFocus"
@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { YMTextArea } from '@ui-kit';
 import { TextHistory, type HistoryTextAreaElement } from '@ui-kit';
 import { listenDraggingScrollbarEvent } from '@app/utils/element-utils';
@@ -49,8 +49,6 @@ const emit = defineEmits<{
 	focus: [event: FocusEvent];
 	blur: [event: FocusEvent];
 }>();
-
-const isDisabled = ref(props.disabled);
 
 const ym = ref<{
 	root: HTMLElement | null;
@@ -94,11 +92,6 @@ const onFocus = (event: FocusEvent): void => emit('focus', event);
 const onBlur = (event: FocusEvent): void => emit('blur', event);
 
 defineExpose({ read, write, insert, enable, disable, getFocus, on, root });
-
-watch(
-	() => props.disabled,
-	(val) => (val ? disable() : enable())
-);
 
 onMounted(() => {
 	const el = root.value as TextAreaElement | null;

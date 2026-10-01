@@ -2,7 +2,7 @@
 	<YMTextBox
 		ref="ym"
 		:model-value="props.modelValue"
-		:disabled="isDisabled"
+		:disabled="props.disabled"
 		:id="props.id"
 		@input="onInput"
 		@change="onChange"
@@ -60,8 +60,6 @@ const emit = defineEmits<{
 	focus: [event: FocusEvent];
 	blur: [event: FocusEvent];
 }>();
-
-const isDisabled = ref(props.disabled);
 
 const ym = ref<{
 	root: HTMLElement | null;
@@ -147,11 +145,6 @@ defineExpose({
 	on,
 	root
 });
-
-watch(
-	() => props.disabled,
-	(val) => (val ? disable() : enable())
-);
 
 onMounted(() => {
 	const el = root.value as TextBoxElement | null;
