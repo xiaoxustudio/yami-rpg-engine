@@ -12,6 +12,8 @@ interface Props {
 	decimals?: number | string;
 	unit?: string;
 	disabled?: boolean;
+	/** 可访问名（aria-label），不渲染可见文本 */
+	label?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -21,7 +23,8 @@ const props = withDefaults(defineProps<Props>(), {
 	step: '1',
 	decimals: 0,
 	unit: '',
-	disabled: false
+	disabled: false,
+	label: ''
 });
 
 const emit = defineEmits<{
@@ -145,6 +148,7 @@ onMounted(() => {
 			ref="inputEl"
 			class="number-box-input"
 			type="number"
+			:aria-label="props.label || undefined"
 			:min="props.min"
 			:max="props.max"
 			:step="props.step"

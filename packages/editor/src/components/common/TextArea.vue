@@ -4,6 +4,7 @@
 		:model-value="props.modelValue"
 		:disabled="props.disabled"
 		:id="props.id"
+		:label="props.label"
 		@input="onInput"
 		@focus="onFocus"
 		@blur="onBlur"
@@ -36,11 +37,14 @@ interface Props {
 	id?: string;
 	modelValue?: string;
 	disabled?: boolean;
+	/** 可访问名（透传给 ui-kit 的 aria-label），不渲染可见文本 */
+	label?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	modelValue: '',
-	disabled: false
+	disabled: false,
+	label: ''
 });
 
 const emit = defineEmits<{

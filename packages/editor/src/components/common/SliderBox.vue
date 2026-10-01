@@ -9,6 +9,7 @@
 		:active-wheel="props.activeWheel"
 		:disabled="isDisabled"
 		:id="props.id"
+		:label="props.label"
 		@input="onInput"
 	/>
 </template>
@@ -58,6 +59,8 @@ interface Props {
 	hotkey?: string;
 	activeWheel?: boolean;
 	disabled?: boolean;
+	/** 可访问名（透传给 ui-kit 的 aria-label），不渲染可见文本 */
+	label?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -67,7 +70,8 @@ const props = withDefaults(defineProps<Props>(), {
 	step: '1',
 	hotkey: '',
 	activeWheel: false,
-	disabled: false
+	disabled: false,
+	label: ''
 });
 
 const emit = defineEmits<{

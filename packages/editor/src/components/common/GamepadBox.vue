@@ -1,5 +1,5 @@
 <template>
-	<YMGamepadBox ref="ym" :id="props.id" />
+	<YMGamepadBox ref="ym" :id="props.id" :label="props.label" />
 </template>
 
 <script setup lang="ts">
@@ -17,9 +17,11 @@ interface GamepadBoxElement extends HTMLElement {
 
 interface Props {
 	id?: string;
+	/** 可访问名（透传给 ui-kit 的 aria-label），不渲染可见文本 */
+	label?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), { id: '' });
+const props = withDefaults(defineProps<Props>(), { id: '', label: '' });
 
 const ym = ref<{
 	root: HTMLElement | null;

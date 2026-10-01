@@ -4,9 +4,11 @@ import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
+	/** 可访问名（aria-label），不渲染可见文本 */
+	label?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), { id: '' });
+const props = withDefaults(defineProps<Props>(), { id: '', label: '' });
 
 const root = ref<HTMLElement | null>(null);
 const input = ref<HTMLInputElement | null>(null);
@@ -149,6 +151,7 @@ defineExpose({ read, write, inputCode, enable, disable, getFocus, on, root, inpu
 			:class="$style.input"
 			ref="input"
 			type="text"
+			:aria-label="props.label || undefined"
 			v-show="!isDisabled"
 			@keydown="inputKeydown"
 			@focus="inputFocus"

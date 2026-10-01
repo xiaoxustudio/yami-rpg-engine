@@ -10,6 +10,8 @@ interface Props {
 	hotkey?: string;
 	activeWheel?: boolean;
 	disabled?: boolean;
+	/** 可访问名（aria-label），不渲染可见文本 */
+	label?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -20,7 +22,8 @@ const props = withDefaults(defineProps<Props>(), {
 	step: '1',
 	hotkey: '',
 	activeWheel: false,
-	disabled: false
+	disabled: false,
+	label: ''
 });
 
 const emit = defineEmits<{
@@ -108,6 +111,7 @@ defineExpose({ root, bar, filler, input: inputEl, read, write, updateFiller });
 			class="slider-input"
 			:class="$style.input"
 			type="range"
+			:aria-label="props.label || undefined"
 			:min="min"
 			:max="max"
 			:step="step"

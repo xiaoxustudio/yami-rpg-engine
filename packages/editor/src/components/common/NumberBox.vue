@@ -9,6 +9,7 @@
 		:unit="props.unit"
 		:disabled="props.disabled"
 		:id="props.id"
+		:label="props.label"
 		@change="onChange"
 		@focus="onFocus"
 		@blur="onBlur"
@@ -46,6 +47,8 @@ interface Props {
 	decimals?: number | string;
 	unit?: string;
 	disabled?: boolean;
+	/** 可访问名（透传给 ui-kit 的 aria-label），不渲染可见文本 */
+	label?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -55,7 +58,8 @@ const props = withDefaults(defineProps<Props>(), {
 	step: '1',
 	decimals: 0,
 	unit: '',
-	disabled: false
+	disabled: false,
+	label: ''
 });
 
 const emit = defineEmits<{

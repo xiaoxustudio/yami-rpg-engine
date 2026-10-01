@@ -8,11 +8,14 @@ interface Props {
 	id?: string;
 	modelValue?: string;
 	disabled?: boolean;
+	/** 可访问名（aria-label），不渲染可见文本 */
+	label?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	modelValue: '',
-	disabled: false
+	disabled: false,
+	label: ''
 });
 
 const emit = defineEmits<{
@@ -271,6 +274,7 @@ onMounted(initializeApi);
 			class="text-box-input"
 			:class="$style.input"
 			type="text"
+			:aria-label="props.label || undefined"
 			@compositionstart="onCompositionStart"
 			@compositionend="onCompositionEnd"
 			@keydown.capture="onInputKeydown"

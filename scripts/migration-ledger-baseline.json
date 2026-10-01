@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-09-30T17:00:13.899Z",
+	"generatedAt": "2026-10-01T06:05:42.161Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -53,7 +53,7 @@
 			"value": {
 				"total": 0,
 				"patterns": 14,
-				"coveredFiles": 220
+				"coveredFiles": 221
 			}
 		},
 		"dom-whitelist-size": {

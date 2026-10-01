@@ -6,11 +6,14 @@ interface Props {
 	id?: string;
 	modelValue?: string;
 	disabled?: boolean;
+	/** 可访问名（aria-label），不渲染可见文本 */
+	label?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	modelValue: '',
-	disabled: false
+	disabled: false,
+	label: ''
 });
 
 const emit = defineEmits<{
@@ -186,7 +189,12 @@ onMounted(() => {
 
 <template>
 	<div ref="root" class="text-area" :class="$style.box" :id="props.id">
-		<textarea ref="inputEl" class="text-area-input" :class="$style.input" />
+		<textarea
+			ref="inputEl"
+			class="text-area-input"
+			:class="$style.input"
+			:aria-label="props.label || undefined"
+		/>
 	</div>
 </template>
 
