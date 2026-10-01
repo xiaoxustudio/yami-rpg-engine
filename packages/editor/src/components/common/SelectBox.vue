@@ -6,6 +6,7 @@
 		:disabled="props.disabled"
 		:popup="false"
 		:id="props.id"
+		:label="props.label"
 		@open="onOpen"
 		@input="onInput"
 		@write="onWrite"
@@ -58,12 +59,15 @@ interface Props {
 	modelValue?: unknown;
 	items?: unknown[];
 	disabled?: boolean;
+	/** 可访问名（透传给 ui-kit 的 aria-label），不渲染可见文本 */
+	label?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	modelValue: null as never,
 	items: () => [],
-	disabled: false
+	disabled: false,
+	label: ''
 });
 
 const emit = defineEmits<{

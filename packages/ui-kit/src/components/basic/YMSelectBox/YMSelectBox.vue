@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import {
@@ -15,14 +15,31 @@ interface Props {
 	items?: unknown[];
 	disabled?: boolean;
 	popup?: boolean;
+	/** 可访问名（aria-label），不渲染可见文本 */
+	label?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	modelValue: null as never,
 	items: () => [],
 	disabled: false,
-	popup: true
+	popup: true,
+	label: ''
 });
+
+/**
+ * 弹层 id：`aria-controls` 要指向它。关闭时该元素不存在，属 ARIA 允许的情形
+ * （`aria-expanded="false"` 已表达「没展开」）；没有 `id` 时整条属性不写。
+ *
+ * 模板上的 ARIA 按 ARIA APG 的 **select-only combobox** 模式标注：根节点是 combobox，
+ * 值由节点文本（`.select-box-text`）承担，可访问名由 `label` 提供，弹层是 listbox、
+ * 选项是 option。根节点在 `initializeApi` 里被设为 `tabIndex = 0`，所以这些语义确实
+ * 会被读到（不是挂在不可聚焦元素上空转）。
+ *
+ * ⚠️ 说明文字别写进 `<template>`：模板里出现 HTML 注释会让组件变成**多根**，
+ * 父级 `class`/`style` 会被静默丢弃（`YMToastManager` 上刚踩过一次）。
+ */
+const popupId = computed(() => (props.id ? `${props.id}-popup` : undefined));
 
 const emit = defineEmits<{
 	'update:modelValue': [value: unknown];
@@ -269,16 +286,30 @@ onBeforeUnmount(() => {
 		class="select-box"
 		:class="{ disabled }"
 		:id="props.id"
+		role="combobox"
+		aria-haspopup="listbox"
+		:aria-expanded="builtinOpen"
+		:aria-disabled="disabled || undefined"
+		:aria-label="props.label || undefined"
+		:aria-controls="popupId"
 		@keydown="onKeydown"
 		@pointerdown="onPointerdown"
 	>
 		<div class="select-box-text" ref="info" :data-v-ref="''" />
-		<div v-if="builtinOpen" class="select-popup" :class="$style.popup">
+		<div
+			v-if="builtinOpen"
+			:id="popupId"
+			class="select-popup"
+			:class="$style.popup"
+			role="listbox"
+		>
 			<div
 				v-for="item in state.dataItems"
 				:key="item.value as PropertyKey"
 				class="select-item"
 				:class="{ selected: item.value === state.dataValue }"
+				role="option"
+				:aria-selected="item.value === state.dataValue"
 				@pointerdown.stop="pick(item)"
 			>
 				{{ item.name }}

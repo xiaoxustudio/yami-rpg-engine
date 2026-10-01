@@ -6,16 +6,20 @@ import YMNumberBox from '../YMNumberBox/YMNumberBox.vue';
 import YMSliderBox from '../YMSliderBox/YMSliderBox.vue';
 import YMKeyboardBox from '../YMKeyboardBox/YMKeyboardBox.vue';
 import YMGamepadBox from '../YMGamepadBox/YMGamepadBox.vue';
+import YMSelectBox from '../YMSelectBox/YMSelectBox.vue';
+import YMColorBox from '../YMColorBox/YMColorBox.vue';
 
 /**
- * 可访问名（`aria-label`）透传。
+ * 可访问名（`aria-label`）与自绘控件的 ARIA 语义。
  *
  * 背景：本仓的可见标签是控件**前面**的 `<div class="text">`（例如
  * `<div class="text">应用名称</div>` + `<TextBox id="..."/>`），控件与标签在 DOM 上并无关联，
- * 读屏聚焦时只会念「编辑框」。`label` 让调用方把这个可见标签同时作为可访问名交给原生控件。
+ * 读屏聚焦时只会念「编辑框」。`label` 让调用方把这个可见标签同时作为可访问名交给控件。
  *
- * 这里逐一点名 6 个「原生控件」型原语（input / textarea / range）：
- * `YMSelectBox` / `YMColorBox` 的交互元素是自绘 div，需先定 role，不在本用例范围。
+ * 分两类：
+ *   - 6 个「原生控件」型（input / textarea / range）：`aria-label` 落在原生控件上；
+ *   - `YMSelectBox` / `YMColorBox`：交互元素是自绘 div，只挂 `aria-label` 会被 AT 忽略，
+ *     所以先定 role（select-only combobox / button）再挂名字。
  */
 const cases = [
 	{ name: 'YMTextBox', component: YMTextBox, control: 'input' },
@@ -40,4 +44,66 @@ describe('输入原语的可访问名', () => {
 			wrapper.unmount();
 		});
 	}
+});
+
+describe('自绘控件的 ARIA 语义', () => {
+	it('YMSelectBox: 按 select-only combobox 标注，值仍由节点文本承担', () => {
+		const wrapper = mount(YMSelectBox, {
+			props: { id: 'sb', label: '类型', items: [{ name: 'A', value: 'a' }] }
+		});
+		expect(wrapper.attributes('role')).toBe('combobox');
+		expect(wrapper.attributes('aria-haspopup')).toBe('listbox');
+		expect(wrapper.attributes('aria-expanded')).toBe('false');
+		expect(wrapper.attributes('aria-label')).toBe('类型');
+		expect(wrapper.attributes('aria-controls')).toBe('sb-popup');
+		wrapper.unmount();
+	});
+
+	it('YMSelectBox: 展开后弹层是 listbox、选项是带选中态的 option', async () => {
+		const wrapper = mount(YMSelectBox, {
+			props: {
+				id: 'sb',
+				items: [
+					{ name: 'A', value: 'a' },
+					{ name: 'B', value: 'b' }
+				],
+				modelValue: 'b'
+			}
+		});
+		// 用真实 PointerEvent 直发：`wrapper.trigger` 造的是 MouseEvent，而 `button` 在
+		// MouseEvent 上只有 getter，VTU 赋值会抛 TypeError（实测）。
+		wrapper.element.dispatchEvent(
+			new PointerEvent('pointerdown', { button: 0, bubbles: true })
+		);
+		await wrapper.vm.$nextTick();
+		expect(wrapper.attributes('aria-expanded')).toBe('true');
+		const listbox = wrapper.find('[role="listbox"]');
+		expect(listbox.exists()).toBe(true);
+		expect(listbox.attributes('id')).toBe('sb-popup');
+		const options = wrapper.findAll('[role="option"]');
+		expect(options.length).toBe(2);
+		expect(options[0].attributes('aria-selected')).toBe('false');
+		expect(options[1].attributes('aria-selected')).toBe('true');
+		wrapper.unmount();
+	});
+
+	it('YMSelectBox: 不传 label / id 时不写 aria-label 与 aria-controls', () => {
+		const wrapper = mount(YMSelectBox);
+		expect(wrapper.attributes('aria-label')).toBeUndefined();
+		expect(wrapper.attributes('aria-controls')).toBeUndefined();
+		wrapper.unmount();
+	});
+
+	it('YMColorBox: 按 button 标注（值不在本次范围，见组件内注释）', () => {
+		const enabled = mount(YMColorBox, { props: { label: '颜色' } });
+		expect(enabled.attributes('role')).toBe('button');
+		expect(enabled.attributes('aria-label')).toBe('颜色');
+		expect(enabled.attributes('aria-disabled')).toBeUndefined();
+		enabled.unmount();
+
+		const disabled = mount(YMColorBox, { props: { disabled: true } });
+		expect(disabled.attributes('aria-disabled')).toBe('true');
+		expect(disabled.attributes('aria-label')).toBeUndefined();
+		disabled.unmount();
+	});
 });
