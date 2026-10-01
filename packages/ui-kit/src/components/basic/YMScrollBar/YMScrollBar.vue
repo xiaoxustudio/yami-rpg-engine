@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { rect, relate, roundTo } from '../../../utils/dom';
 
 interface Props {
@@ -315,6 +315,15 @@ onMounted(() => {
 	element.updateHorizontalBar = updateHorizontalBar;
 	element.updateVerticalBar = updateVerticalBar;
 	element.updateDisplay = updateDisplay;
+});
+
+onBeforeUnmount(() => {
+	// 拖拽/滚动动画中途卸载：`windowPointerup` 只在自己跑到时才摘监听，卸载时不会；
+	// 留着的话 `windowPointermove` 会继续打向已卸载的元素，动画帧也不会停。
+	window.removeEventListener('pointerup', windowPointerup);
+	window.removeEventListener('pointermove', windowPointermove);
+	state.dragging = null;
+	stopAnimation();
 });
 
 defineExpose({ bind, updateHorizontalBar, updateVerticalBar, updateDisplay, root });

@@ -25,6 +25,24 @@ import { createPayloadEvent } from '../../../utils/payload-event';
 
 const core = createFileNavCore();
 
+/**
+ * 组件生命周期内挂在 `window` 上的临时监听，卸载时兜底摘除。
+ *
+ * 多选/框选按下后注册的 `pointerup` 带 `{ once: true }`，正常会被下一次 pointerup 消费；
+ * 但**按下与抬起之间组件被卸载**时它还没触发，监听连同闭包（引用着那个行元素）会留在
+ * window 上。重复摘除是 no-op，正常路径不受影响。
+ */
+const windowListeners: { type: string; fn: EventListener }[] = [];
+
+function listenWindow<K extends keyof WindowEventMap>(
+	type: K,
+	fn: (event: WindowEventMap[K]) => void,
+	options?: AddEventListenerOptions
+): void {
+	window.addEventListener(type, fn, options);
+	windowListeners.push({ type, fn: fn as EventListener });
+}
+
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
 	const host = document.createElement('div');
 	render(vnode, host);
@@ -579,7 +597,7 @@ function pointerdown(event: PointerEvent): void {
 								}
 							};
 							pressing = pointerup;
-							window.addEventListener('pointerup', pointerup, { once: true });
+							listenWindow('pointerup', pointerup, { once: true });
 						}
 						return;
 					}
@@ -612,7 +630,7 @@ function pointerdown(event: PointerEvent): void {
 								}
 							};
 							pressing = pointerup;
-							window.addEventListener('pointerup', pointerup, { once: true });
+							listenWindow('pointerup', pointerup, { once: true });
 						} else if (
 							props.menuState?.() === 'closed' &&
 							document.activeElement === node &&
@@ -841,6 +859,8 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
 	window.removeEventListener('dirchange', dirchangeHandler);
+	for (const { type, fn } of windowListeners) window.removeEventListener(type, fn);
+	windowListeners.length = 0;
 	resizeObserver?.disconnect?.();
 });
 

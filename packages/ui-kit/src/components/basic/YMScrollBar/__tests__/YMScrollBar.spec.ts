@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMScrollBar from '../YMScrollBar.vue';
 import type { ScrollBarApi } from '../scroll-bar-api';
@@ -45,5 +45,33 @@ describe('YMScrollBar', () => {
 		expect(typeof el.updateHorizontalBar).toBe('function');
 		expect(typeof el.updateVerticalBar).toBe('function');
 		expect(typeof el.updateDisplay).toBe('function');
+	});
+});
+
+describe('YMScrollBar 的卸载清理', () => {
+	/** 在滑块上按下 ⇒ 进入 scroll 拖拽模式，登记 window 上的 pointerup / pointermove */
+	const pressThumb = (wrapper: ReturnType<typeof mount>) => {
+		const vm = wrapper.vm as unknown as ScrollBarApi;
+		const target = document.createElement('div');
+		Object.defineProperty(target, 'clientHeight', { value: 100, configurable: true });
+		Object.defineProperty(target, 'scrollHeight', { value: 300, configurable: true });
+		vm.bind(target, 'vertical');
+		const thumb = wrapper.find('.scroll-thumb').element as HTMLElement;
+		thumb.dispatchEvent(new PointerEvent('pointerdown', { button: 0, bubbles: true }));
+	};
+
+	it('拖拽中卸载：摘掉 window 上的 pointerup / pointermove', () => {
+		const wrapper = mount(YMScrollBar);
+		pressThumb(wrapper);
+
+		const removed: string[] = [];
+		const spy = vi
+			.spyOn(window, 'removeEventListener')
+			.mockImplementation((type: string | symbol) => void removed.push(String(type)));
+		wrapper.unmount();
+		spy.mockRestore();
+
+		expect(removed).toContain('pointerup');
+		expect(removed).toContain('pointermove');
 	});
 });
