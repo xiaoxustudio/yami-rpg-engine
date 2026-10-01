@@ -220,8 +220,7 @@ const state = {
 	inserting: false,
 	focusing: false,
 	dragging: null as unknown,
-	history: null as unknown,
-	togglable: false
+	history: null as unknown
 };
 
 const exposedStateFields = [
@@ -238,8 +237,7 @@ const exposedStateFields = [
 	'inserting',
 	'focusing',
 	'dragging',
-	'history',
-	'togglable'
+	'history'
 ] as const;
 
 const attachStateAccessors = (self: ParamListElement): void => {
@@ -1252,6 +1250,17 @@ onMounted(() => {
 	self.dragging = null;
 	self.history = null;
 	getListConfig(self).togglable = false;
+	// `togglable` 不在 `state` 里：它是列表配置（`ListConfig`）的一部分，真源只有一个 ——
+	// 经 `getListConfig()` 读写。原先它同时存在于 `state.togglable`（元素访问器写这份）
+	// 与 `getListConfig().togglable`（行为只读这份，见 :686 / :1119）⇒ `el.togglable = true`
+	// 写了也没人读。这里保留元素访问器这一对外形状，但把它代理到唯一真源。
+	Object.defineProperty(self, 'togglable', {
+		configurable: true,
+		get: () => getListConfig(self).togglable,
+		set: (value: boolean | undefined) => {
+			getListConfig(self).togglable = value;
+		}
+	});
 	self.height = undefined;
 	// `_paddingTop` 在类型里本来就是可选的（`_paddingTop?: number`）⇒ 赋 `undefined` 无需断言。
 	self._paddingTop = undefined;

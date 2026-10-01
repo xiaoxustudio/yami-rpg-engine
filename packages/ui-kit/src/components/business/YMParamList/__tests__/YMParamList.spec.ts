@@ -153,6 +153,28 @@ describe('YMParamList', () => {
 		expect(data[1].enabled).toBe(false);
 	});
 
+	it('元素访问器 togglable 与 getListConfig 是同一份真源', () => {
+		const wrapper = mount(YMParamList);
+		const el = wrapper.element as unknown as ParamListElement;
+		mockHeight(el);
+		el.bind(makeObject());
+		el.focus();
+		// 走元素访问器设置（playground / 宿主的老写法）。修复前它只写进 `state.togglable`，
+		// 而 toggle() 读的是 getListConfig —— 写了等于没写。
+		el.togglable = true;
+		expect(getListConfig(el).togglable).toBe(true);
+		expect(el.togglable).toBe(true);
+		const data = [
+			{ name: 'One', enabled: true },
+			{ name: 'Two', enabled: true }
+		];
+		el.write(data);
+		el.select(0, 1);
+		el.toggle();
+		expect(data[0].enabled).toBe(false);
+		expect(data[1].enabled).toBe(false);
+	});
+
 	it('save dispatches change and replaces item', () => {
 		const wrapper = mount(YMParamList);
 		const el = wrapper.element as unknown as ParamListElement;
