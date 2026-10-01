@@ -68,4 +68,30 @@ describe('YMCheckBox', () => {
 		await wrapper.setProps({ modelValue: true });
 		expect(wrapper.classes()).toContain('selected');
 	});
+
+	it('对外暴露 checkbox 语义（role + aria-checked / aria-disabled）', async () => {
+		const wrapper = mount(YMCheckBox, { props: { standard: true, modelValue: true } });
+		expect(wrapper.attributes('role')).toBe('checkbox');
+		expect(wrapper.attributes('aria-checked')).toBe('true');
+		// 未禁用时不写 aria-disabled，避免噪音属性
+		expect(wrapper.attributes('aria-disabled')).toBeUndefined();
+		await wrapper.setProps({ modelValue: false });
+		expect(wrapper.attributes('aria-checked')).toBe('false');
+
+		const disabled = mount(YMCheckBox, { props: { disabled: true } });
+		expect(disabled.attributes('aria-disabled')).toBe('true');
+	});
+
+	it('空格切换勾选并拦掉默认滚动', async () => {
+		const wrapper = mount(YMCheckBox, { props: { standard: true, modelValue: false } });
+		const event = new KeyboardEvent('keydown', {
+			code: 'Space',
+			bubbles: true,
+			cancelable: true
+		});
+		wrapper.element.dispatchEvent(event);
+		await wrapper.vm.$nextTick();
+		expect(wrapper.emitted('update:modelValue')![0]).toEqual([true]);
+		expect(event.defaultPrevented).toBe(true);
+	});
 });

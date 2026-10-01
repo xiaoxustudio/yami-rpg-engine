@@ -63,6 +63,15 @@ const emit = defineEmits<{
 
 const root = ref<HTMLElement | null>(null);
 
+/*
+ * 模板根节点带 `role="dialog"`（窗口框架对外就是对话框）。**不写 `aria-modal`**：
+ * 模态与否由宿主窗口管理器决定（`editor/.../window-object.ts` 的
+ * activateModalMode / deactivateModalMode），组件自身无从得知，写死 `true`
+ * 会让非模态工具窗谎报模态、把读屏困在窗内。
+ *
+ * 同理，说明性文字不要写成模板里的 HTML 注释 —— 模板里出现注释会让组件变成多根。
+ */
+
 const state = reactive({
 	enableAmbient: true,
 	activeElement: null as HTMLElement | null,
@@ -452,7 +461,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="window-frame" ref="root" :id="props.id">
+	<div class="window-frame" ref="root" :id="props.id" role="dialog">
 		<slot name="title" />
 		<div class="content-frame">
 			<slot />

@@ -38,6 +38,12 @@ describe('YMToastManager', () => {
 		vi.useRealTimers();
 	});
 
+	it('容器是常驻 live region（动态插入的 toast 才会被读屏播报）', () => {
+		const wrapper = mount(YMToastManager);
+		expect(wrapper.attributes('role')).toBe('status');
+		expect(wrapper.attributes('aria-live')).toBe('polite');
+	});
+
 	it('does not dismiss elements outside the manager', async () => {
 		const wrapper = mount(YMToastManager);
 		const vm = wrapper.vm as unknown as Record<string, any>;

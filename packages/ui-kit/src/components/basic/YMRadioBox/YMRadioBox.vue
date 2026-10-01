@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { radioGroups, type RadioGroupMember } from './group';
 
@@ -61,6 +61,13 @@ const onKeydown = (event: KeyboardEvent): void => {
 	if (event.code === 'Enter' || event.code === 'NumpadEnter') {
 		event.stopPropagation();
 		select();
+		return;
+	}
+	if (event.code === 'Space') {
+		// 空格是 radio 的标准激活键（读屏会按 role=radio 提示它）；必须拦默认滚动
+		event.preventDefault();
+		event.stopPropagation();
+		select();
 	}
 };
 
@@ -89,6 +96,9 @@ defineExpose({ root, select });
 		ref="root"
 		class="radio-box"
 		:class="[$style.radioBox, { selected: selected, standard, disabled }]"
+		role="radio"
+		:aria-checked="selected"
+		:aria-disabled="disabled || undefined"
 		:id="props.id"
 		:name="props.name"
 		:tabindex="standard && !disabled ? 0 : undefined"

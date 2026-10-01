@@ -47,6 +47,45 @@ const onPointerdown = (event: PointerEvent): void => {
 	if (props.disabled || event.button !== 0) return;
 	write(read() + 1);
 };
+
+/** 循环步进：`write` 自己会取模，这里只保证 step(-1) 不会传进负数 */
+const step = (delta: number): void => {
+	write((read() + delta + length.value) % length.value);
+};
+
+/**
+ * 这个控件的真实用法是 `:length="3"` 的多态循环（AutoTile 的邻接位），
+ * 不是布尔开关 —— 所以对外按 `spinbutton` 暴露当前值，而不是 `switch` + `aria-checked`
+ * （后者只有开/关两态，会谎报状态）。相应地补上 spinbutton 约定的方向键。
+ */
+const onKeydown = (event: KeyboardEvent): void => {
+	if (props.disabled) return;
+	switch (event.code) {
+		case 'Enter':
+		case 'NumpadEnter':
+			event.stopPropagation();
+			step(1);
+			break;
+		case 'Space':
+			// 空格是激活键的通用约定；必须拦默认滚动
+			event.preventDefault();
+			event.stopPropagation();
+			step(1);
+			break;
+		case 'ArrowUp':
+		case 'ArrowRight':
+			event.preventDefault();
+			event.stopPropagation();
+			step(1);
+			break;
+		case 'ArrowDown':
+		case 'ArrowLeft':
+			event.preventDefault();
+			event.stopPropagation();
+			step(-1);
+			break;
+	}
+};
 </script>
 
 <template>
@@ -54,16 +93,14 @@ const onPointerdown = (event: PointerEvent): void => {
 		ref="root"
 		class="switch-item"
 		:class="[$style.switchItem, stateClasses[value], { disabled }]"
+		role="spinbutton"
+		:aria-valuenow="value"
+		aria-valuemin="0"
+		:aria-valuemax="length - 1"
+		:aria-disabled="disabled || undefined"
 		:tabindex="disabled ? undefined : 0"
 		@pointerdown="onPointerdown"
-		@keydown="
-			(event: KeyboardEvent) => {
-				if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-					event.stopPropagation();
-					write(read() + 1);
-				}
-			}
-		"
+		@keydown="onKeydown"
 	/>
 </template>
 

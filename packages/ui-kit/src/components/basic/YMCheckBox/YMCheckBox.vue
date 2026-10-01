@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { ref, watch } from 'vue';
 
 interface Props {
@@ -52,6 +52,13 @@ const onKeydown = (event: KeyboardEvent): void => {
 	if (event.code === 'Enter' || event.code === 'NumpadEnter') {
 		event.stopPropagation();
 		toggle();
+		return;
+	}
+	if (event.code === 'Space') {
+		// 空格是 checkbox 的标准激活键（读屏会按 role=checkbox 提示它）；必须拦默认滚动
+		event.preventDefault();
+		event.stopPropagation();
+		toggle();
 	}
 };
 </script>
@@ -61,6 +68,9 @@ const onKeydown = (event: KeyboardEvent): void => {
 		ref="root"
 		class="check-box"
 		:class="[$style.checkBox, { selected: value, standard, large, disabled }]"
+		role="checkbox"
+		:aria-checked="value"
+		:aria-disabled="disabled || undefined"
 		:tabindex="standard && !disabled ? 0 : undefined"
 		@pointerdown="onPointerdown"
 		@keydown="onKeydown"

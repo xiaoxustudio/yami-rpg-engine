@@ -74,4 +74,30 @@ describe('YMRadioBox', () => {
 		await second.vm.$nextTick();
 		expect(second.classes()).toContain('selected');
 	});
+
+	it('对外暴露 radio 语义（role + aria-checked / aria-disabled）', async () => {
+		const wrapper = mount(YMRadioBox, {
+			props: { name: 'g', value: 'a', standard: true, selected: false }
+		});
+		expect(wrapper.attributes('role')).toBe('radio');
+		expect(wrapper.attributes('aria-checked')).toBe('false');
+		await wrapper.setProps({ selected: true });
+		expect(wrapper.attributes('aria-checked')).toBe('true');
+
+		const disabled = mount(YMRadioBox, { props: { name: 'g', value: 'a', disabled: true } });
+		expect(disabled.attributes('aria-disabled')).toBe('true');
+	});
+
+	it('空格选中并拦掉默认滚动', async () => {
+		const wrapper = mount(YMRadioBox, { props: { name: 'g', value: 'a' } });
+		const event = new KeyboardEvent('keydown', {
+			code: 'Space',
+			bubbles: true,
+			cancelable: true
+		});
+		wrapper.element.dispatchEvent(event);
+		await wrapper.vm.$nextTick();
+		expect(wrapper.emitted('select')![0]).toEqual(['a']);
+		expect(event.defaultPrevented).toBe(true);
+	});
 });
