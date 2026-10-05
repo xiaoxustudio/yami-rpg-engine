@@ -7,6 +7,7 @@ import {
 	leavesOf,
 	moveLayoutTab,
 	moveTabWithin,
+	nodesOf,
 	parseLayoutScheme,
 	splitGroupWithTab,
 	toLayoutScheme,
@@ -431,5 +432,91 @@ describe('splitGroupWithTab region 边缘 drop（navDrop 数据层）', () => {
 		const [source, target] = ids(root);
 		expect(splitGroupWithTab(root, 'missing', source, 'inspector', 'right')).toBe(root);
 		expect(splitGroupWithTab(root, target, source, 'missing', 'right')).toBe(root);
+	});
+});
+
+describe('splitGroupWithTab 容器落点（region 给的 root/父容器/外层容器）', () => {
+	// region 的落点不只有叶子：`regionDragover` 会把 target 指到 root / 父容器 / 外层容器，
+	// hint 画的正是「该盒子的一半」。容器落点若只认叶子，就会出现「占位框出现、松手没效果」。
+	const nested = (): LayoutTreeNode =>
+		parseLayoutScheme({
+			end: 1,
+			split: 'horizontal',
+			children: [
+				{
+					end: 0.6,
+					split: 'horizontal',
+					children: [
+						{ end: 0.5, tabs: ['project'] },
+						{ end: 1, tabs: ['scene'] }
+					]
+				},
+				{ end: 1, tabs: ['inspector'] }
+			]
+		});
+
+	it('落点是容器（轴不同）：容器整块被包进同轴容器，新叶子取容器跨度的一半', () => {
+		const root = nested();
+		const container = nodesOf(root)[1]; // 先序第 2 个节点 = 左侧容器
+		expect(container.kind).toBe('split');
+		const source = leavesOf(root).find((leaf) => leaf.tabs.includes('inspector'))!.id;
+
+		const out = splitGroupWithTab(root, container.id, source, 'inspector', 'bottom');
+		expect(toLayoutScheme(out!)).toEqual({
+			end: 1,
+			split: 'vertical',
+			children: [
+				{
+					end: 0.5,
+					split: 'horizontal',
+					children: [
+						{ end: 0.5, tabs: ['project'] },
+						{ end: 1, tabs: ['scene'] }
+					]
+				},
+				{ end: 1, tabs: ['inspector'] }
+			]
+		});
+	});
+
+	it('落点是根容器：整棵树被包进同轴容器，页签落进新叶子', () => {
+		const root = nested();
+		const container = nodesOf(root)[0]; // 根
+		const source = leavesOf(root).find((leaf) => leaf.tabs.includes('inspector'))!.id;
+
+		const out = splitGroupWithTab(root, container.id, source, 'inspector', 'top');
+		expect(toLayoutScheme(out!)).toEqual({
+			end: 1,
+			split: 'vertical',
+			children: [
+				{ end: 0.5, tabs: ['inspector'] },
+				{
+					end: 1,
+					split: 'horizontal',
+					children: [
+						{ end: 0.5, tabs: ['project'] },
+						{ end: 1, tabs: ['scene'] }
+					]
+				}
+			]
+		});
+	});
+
+	it('nodesOf 先序含容器与叶子，与 parseLayoutScheme 的 id 分配同序', () => {
+		const root = nested();
+		expect(nodesOf(root).map((node) => node.kind)).toEqual([
+			'split',
+			'split',
+			'group',
+			'group',
+			'group'
+		]);
+		expect(nodesOf(root).map((node) => node.id)).toEqual([
+			'layout-1',
+			'layout-2',
+			'layout-3',
+			'layout-4',
+			'layout-5'
+		]);
 	});
 });

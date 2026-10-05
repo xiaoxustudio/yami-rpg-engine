@@ -76,6 +76,27 @@ export function deserializeGroupElement(group: Element): LayoutTreeNode {
 	return build(group);
 }
 
+/**
+ * **先序节点元素表**：与 `deserializeGroupElement` 的 id 分配（`layout-1`…`layout-N`）严格同序，
+ * 供结构性 drop 把落点元素映射回 scheme 节点 —— 落点既可能是叶子，也可能是容器
+ * （`regionDragover` 会给出 `root` / 父容器 / 外层容器）。
+ *
+ * ⚠️ 判据必须与上面的 `build` 完全一致：`split` expando 判容器（轴非法按叶子处理），
+ * 否则两边的先序序会错位，drop 会落到错误的节点上。
+ */
+export function groupTreeElements(group: Element): Element[] {
+	const elements: Element[] = [];
+	const walk = (element: Element): void => {
+		elements.push(element);
+		if (splitOf(element as GroupShape) === undefined) return;
+		for (const child of Array.from(element.children)) {
+			if (isGroup(child)) walk(child);
+		}
+	};
+	walk(group);
+	return elements;
+}
+
 // 宿主 page-frame 的第一个子节点若是 group 树则反序列化，否则返回 null。
 // 对应 home / 未物化工作区 / 无 scheme 页。
 export function deserializePage(page: Element): LayoutTreeNode | null {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { toLayoutScheme, leavesOf, type LayoutTreeNode } from '../layout-scheme';
-import { deserializeGroupElement, deserializePage } from '../layout-deserialize';
+import { toLayoutScheme, leavesOf, nodesOf, type LayoutTreeNode } from '../layout-scheme';
+import { deserializeGroupElement, deserializePage, groupTreeElements } from '../layout-deserialize';
 import '@app/utils/math';
 import {
 	buildLayoutFixture,
@@ -111,5 +111,57 @@ describe('deserialize 与布局结构同步', () => {
 		switchWorkspace(fixture, 'directory');
 		const after = toLayoutScheme(deserializePage(fixture.directory) as LayoutTreeNode);
 		expect(after).toEqual(before);
+	});
+});
+
+// 结构性 drop 的落点映射依赖这条不变量：`groupTreeElements(root)` 的第 k 个元素
+// ↔ 反序列化（进而 `parseLayoutScheme` 的 `layout-(k+1)`）的第 k 个节点。
+// 两边判据不同（元素表按 `split` expando 判容器；叶子宿主按 nav/manager 判定），
+// 一旦错位，drop 会把页签搬进错误的组（甚至只删不插）。
+describe('groupTreeElements 与反序列化节点先序同序', () => {
+	it('嵌套容器 + 叶子：元素表与 nodesOf 序一一对应（容器/叶子判定一致）', async () => {
+		const fixture = buildLayoutFixture();
+		registerLayout(fixture);
+		switchWorkspace(fixture, 'directory');
+		await mountScheme('directory', NESTED_MERGE_SCHEME);
+		const root = fixture.directory.firstElementChild as HTMLElement;
+
+		const elements = groupTreeElements(root);
+		const nodes = nodesOf(deserializeGroupElement(root));
+
+		expect(elements).toHaveLength(nodes.length);
+		expect(nodes.map((node) => node.kind)).toEqual([
+			'split',
+			'split',
+			'group',
+			'group',
+			'group'
+		]);
+		expect(
+			elements.map((element) =>
+				(element as HTMLElement & { split?: string }).split === undefined
+					? 'group'
+					: 'split'
+			)
+		).toEqual(nodes.map((node) => node.kind));
+		expect(elements[0]).toBe(root);
+		expect(nodes.filter((node) => node.kind === 'group').map((node) => node.tabs)).toEqual([
+			['project'],
+			['scene'],
+			['inspector']
+		]);
+	});
+
+	it('根即单组（无容器）：元素表只有一个叶子节点', async () => {
+		const fixture = buildLayoutFixture();
+		registerLayout(fixture);
+		switchWorkspace(fixture, 'directory');
+		await mountScheme('directory', { end: 1, tabs: ['project', 'inspector'] });
+		const root = fixture.directory.firstElementChild as HTMLElement;
+
+		const elements = groupTreeElements(root);
+		const nodes = nodesOf(deserializeGroupElement(root));
+		expect(elements).toEqual([root]);
+		expect(nodes.map((node) => node.kind)).toEqual(['group']);
 	});
 });

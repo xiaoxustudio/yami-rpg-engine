@@ -93,6 +93,24 @@ export function leavesOf(root: LayoutTreeNode | null): LayoutGroupNode[] {
 	return leaves;
 }
 
+/**
+ * **先序全体节点**（容器 + 叶子），与 `parseLayoutScheme` 分配 `layout-N` id 的顺序一致。
+ * 结构性 drop 把 DOM 落点（可能是容器）映射回 scheme 节点时用：`ids[k]` ↔ 第 k 个组元素。
+ */
+export function nodesOf(root: LayoutTreeNode | null): LayoutTreeNode[] {
+	if (root === null) return [];
+	const nodes: LayoutTreeNode[] = [];
+	const walk = (node: LayoutTreeNode): void => {
+		nodes.push(node);
+		if (node.kind === 'group') return;
+		for (const child of node.children) {
+			walk(child);
+		}
+	};
+	walk(root);
+	return nodes;
+}
+
 export function findGroup(root: LayoutTreeNode | null, groupId: string): LayoutGroupNode | null {
 	return leavesOf(root).find((leaf) => leaf.id === groupId) ?? null;
 }
@@ -263,16 +281,20 @@ const withChild = (
 };
 
 /**
- * 在目标叶子旁开一个新叶子（region 边缘 drop）。
+ * 在目标节点旁开一个新叶子（region 边缘 drop）。
  *
  * 与「命令式版」逐条对应：
  * - 目标父容器的轴与本次方向一致 ⇒ 直接插到目标前/后（左/上取目标跨度中点、右/下让目标收缩到中点）；
- * - 轴不同（或目标本身就是根叶子）⇒ 先把目标包进一层**同轴**容器：容器继承目标的 end、目标 end 置 1，
+ * - 轴不同（或目标本身就是根节点）⇒ 先把目标包进一层**同轴**容器：容器继承目标的 end、目标 end 置 1，
  *   新叶子再按方向放进容器（此时跨度是 [0,1]，中点 0.5）。
+ *
+ * `targetNodeId` 可以是**叶子，也可以是容器**（`regionDragover` 的落点既会给出叶子，
+ * 也会给出 `root` / 父容器 / 外层容器——hint 画的是「目标盒子的一半」）。容器落点同样走
+ * 「包一层同轴容器」：容器落点若只认叶子，hint 会出现而 drop 静默失效。
  */
 const insertLeafBeside = (
 	node: LayoutTreeNode,
-	targetGroupId: string,
+	targetNodeId: string,
 	direction: LayoutDropDirection
 ): { node: LayoutTreeNode; leaf: LayoutGroupNode } | null => {
 	const axis = dropAxis(direction);
@@ -286,9 +308,9 @@ const insertLeafBeside = (
 		active: null
 	});
 
-	// 目标叶子本身就是当前节点（= 它的父不是 split，例如它就是根）：包一层同轴容器
-	if (node.kind === 'group') {
-		if (node.id !== targetGroupId) return null;
+	// 落点就是当前节点（**叶子或容器**）：包一层同轴容器承接新叶子。
+	// 容器沿用旧命令式语义：容器继承目标的 end、目标 end 置 1，新叶子取容器跨度的一半。
+	if (node.id === targetNodeId) {
 		const wrapped: LayoutSplitNode = {
 			kind: 'split',
 			id: `drop-wrap-${dropSeq}`,
@@ -298,9 +320,11 @@ const insertLeafBeside = (
 		};
 		return { node: wrapped, leaf: leaf(0.5) };
 	}
+	// 叶子不是落点：不再往下找（叶子的子节点不属于组树）
+	if (node.kind === 'group') return null;
 
 	const index = node.children.findIndex(
-		(child) => child.kind === 'group' && child.id === targetGroupId
+		(child) => child.kind === 'group' && child.id === targetNodeId
 	);
 	if (index >= 0) {
 		const target = node.children[index] as LayoutGroupNode;
@@ -345,7 +369,7 @@ const insertLeafBeside = (
 	for (let i = 0; i < node.children.length; i++) {
 		const child = node.children[i];
 		if (child.kind !== 'split') continue;
-		const stepped = insertLeafBeside(child, targetGroupId, direction);
+		const stepped = insertLeafBeside(child, targetNodeId, direction);
 		if (stepped !== null) {
 			return {
 				node: { ...node, children: withChild(node.children, i, stepped.node) },
@@ -401,12 +425,15 @@ const removeLeafForDrop = (root: LayoutTreeNode, leafId: string): LayoutTreeNode
 };
 
 /**
- * region 边缘 drop 的**纯数据变换**：把 `tab` 从 `fromGroupId` 搬到「贴着 `targetGroupId` 新开的叶子」。
- * 找不到目标叶子时返回 `root`（调用方按 no-op 处理）；源叶子被搬空会导致整棵树消失时返回 `null`。
+ * region 边缘 drop 的**纯数据变换**：把 `tab` 从 `fromGroupId` 搬到「贴着 `targetNodeId` 新开的叶子」。
+ *
+ * `targetNodeId` 是**叶子或容器**（`regionDragover` 的落点两者都可能给）：容器会被包进一层
+ * 同轴容器，新叶子取容器跨度的一半（与 hint「目标盒子的一半」一致），源页签直接落进新叶子。
+ * 找不到落点时返回 `root`（调用方按 no-op 处理）；源叶子被搬空会导致整棵树消失时返回 `null`。
  */
 export function splitGroupWithTab(
 	root: LayoutTreeNode,
-	targetGroupId: string,
+	targetNodeId: string,
 	fromGroupId: string,
 	tab: string,
 	direction: LayoutDropDirection
@@ -414,7 +441,7 @@ export function splitGroupWithTab(
 	// 先校验落点：源叶子必须真的有这个页签（否则原样返回，绝不留下一片空叶子）
 	const source = findGroup(root, fromGroupId);
 	if (source === null || source.tabs.indexOf(tab) === -1) return root;
-	const stepped = insertLeafBeside(root, targetGroupId, direction);
+	const stepped = insertLeafBeside(root, targetNodeId, direction);
 	if (stepped === null) return root;
 	const leafId = stepped.leaf.id;
 	const withTab = moveTabToLeaf(stepped.node, fromGroupId, leafId, tab);

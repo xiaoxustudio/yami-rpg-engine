@@ -23,14 +23,15 @@ import {
 	toLayoutScheme,
 	moveTabWithin,
 	moveLayoutTab,
-	leavesOf,
+	findGroup,
+	nodesOf,
 	splitGroupWithTab,
 	parseLayoutScheme,
 	collapseRedundantSplits,
 	type LayoutSchemeData,
 	type LayoutTreeNode
 } from './layout-scheme';
-import { deserializeGroupElement } from './layout-deserialize';
+import { deserializeGroupElement, groupTreeElements } from './layout-deserialize';
 import { collectPageTargets } from './layout-page-targets';
 import { mountVueGroupTree, type VueGroupTreeHandle } from './layout-vue-tree';
 import { File } from '@app/file/file-system-core.ts';
@@ -375,8 +376,9 @@ const dropInsertIndex = (
 /**
  * 结构性 drop 的**数据路径**入口。
  *
- * 做法：从当前 DOM 反读一次（`saveLayoutScheme`，位置顺序与 `collectLeafHosts` 一致）拿到「当前树」，
- * 在**数据**上算出下一棵树（`moveLayoutTab` / `splitGroupWithTab`），写回 `layout[key]` 后整树重挂载。
+ * 做法：从当前 DOM 反读一次（`saveLayoutScheme` + `groupTreeElements`：两者按同一先序口径
+ * 枚举容器与叶子）拿到「当前树」，在**数据**上算出下一棵树（`moveLayoutTab` / `splitGroupWithTab`），
+ * 写回 `layout[key]` 后整树重挂载。
  * 挂载完成后只剩**像素口径的尺寸收敛**（`mergeGroups` + `setGroupSize`）—— 那两步仍按原实现调用，
  * 因为它们的入参是真实像素（`clientWidth/clientLeft` + 拖拽 hint），jsdom 里 `space === 0` 走不到公式。
  *
@@ -389,22 +391,29 @@ const applyStructuralDrop = (input: StructuralDropInput): Promise<void> | null =
 	if (tab === undefined || !page || root === null || !hasClass(root, 'group')) return null;
 	if (vueTreeHandles.get(page) === undefined) return null;
 
-	const leaves = collectLeafHosts(root);
-	const sourceIndex = leaves.findIndex((leaf) => leaf === input.sGroup);
-	const targetIndex = leaves.findIndex((leaf) => leaf === input.target);
+	const nodeElements = groupTreeElements(root);
+	const sourceIndex = nodeElements.findIndex((element) => element === input.sGroup);
+	const targetIndex = nodeElements.findIndex((element) => element === input.target);
 	if (sourceIndex === -1 || targetIndex === -1) return null;
 
 	const key = page.getAttribute('value') ?? Layout.manager?.index ?? '';
 	const current = parseLayoutScheme(Layout.saveLayoutScheme!(root) as LayoutSchemeData);
-	// scheme 的叶子 id 是**先序**分配的，与 collectLeafHosts 的顺序一一对应
-	const ids = leavesOf(current).map((leaf) => leaf.id);
+	// scheme 的先序节点（容器 + 叶子）与 `groupTreeElements` 的元素表一一对应；
+	// **落点可以是容器**（region 给的 root/父容器/外层容器）—— 只让叶子参与会让 hint 生效而 drop 静默失效。
+	const ids = nodesOf(current).map((node) => node.id);
+	// 源页签所在组必须是叶子（nav 的父节点即叶子组）；id 若对不上则宁可不做事，也不做「只删不插」的危险移动
+	const sourceLeafId = findGroup(current, ids[sourceIndex])?.id;
+	if (sourceLeafId === undefined) return null;
 	const direction = input.direction;
 	let next: LayoutTreeNode | null;
 	if (direction === 'inside') {
+		// 同组/跨组搬入只对叶子成立（nav 落点由 navDragenter 给出，target 必为叶子组）
+		const targetLeafId = findGroup(current, ids[targetIndex])?.id;
+		if (targetLeafId === undefined) return null;
 		next = moveLayoutTab(
 			current,
-			ids[sourceIndex],
-			ids[targetIndex],
+			sourceLeafId,
+			targetLeafId,
 			tab,
 			dropInsertIndex(input.target, input.trigger, tab)
 		);
@@ -414,7 +423,7 @@ const applyStructuralDrop = (input: StructuralDropInput): Promise<void> | null =
 		direction === 'top' ||
 		direction === 'bottom'
 	) {
-		next = splitGroupWithTab(current, ids[targetIndex], ids[sourceIndex], tab, direction);
+		next = splitGroupWithTab(current, ids[targetIndex], sourceLeafId, tab, direction);
 	} else {
 		return null;
 	}

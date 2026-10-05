@@ -13,7 +13,7 @@ import {
 	registerLayout,
 	switchWorkspace
 } from './layout-spec-utils';
-import type { LayoutLeaf } from './layout-spec-utils';
+import type { LayoutLeaf, SchemeNode } from './layout-spec-utils';
 
 // navDrop 生效动作金标准。
 // 锁定 nav 拖拽 drop 的 DOM/数据语义（同组重排/插前、跨组搬入）。
@@ -305,5 +305,266 @@ describe('navDrop region 边缘（结构性分割，几何用例的 jsdom 侧）
 			['scene']
 		]);
 		expect(scheme.children?.map((child) => child.end)).toEqual([0.25, 0.5, 1]);
+	});
+});
+
+/* ---------------- region 落点是**容器**（回归：hint 出现但松手没效果） ----------------
+ *
+ * 复现路径（动画工作区）：把底部时间轴页签拖到别处，再拖回原来的底部位置。
+ * 指针压到「底部一条」时 `regionDragover` 会把 target 指到**容器**（父容器 / root / 外层容器），
+ * hint 画的正是「该容器的一半」；此前结构性 drop 只认叶子落点 → `applyStructuralDrop` 返回 null，
+ * 占位框照旧出现、松手毫无效果（页签既没回去也没报错）。 */
+
+const ANIMATION_VALUES = [
+	'animation-motion',
+	'animation',
+	'animation-timeline',
+	'inspector',
+	'animation-easing'
+] as const;
+
+/** 与 Project/default.json 的 animation 页同形：左列 = motion|animation + 底部时间轴，右列 = inspector + easing */
+const ANIMATION_SCHEME: SchemeNode = {
+	end: 1,
+	split: 'horizontal',
+	children: [
+		{
+			end: 0.82,
+			split: 'vertical',
+			children: [
+				{
+					end: 0.74,
+					split: 'horizontal',
+					children: [
+						{ end: 0.18, tabs: ['animation-motion'] },
+						{ end: 1, tabs: ['animation'] }
+					]
+				},
+				{ end: 1, tabs: ['animation-timeline'] }
+			]
+		},
+		{
+			end: 1,
+			split: 'vertical',
+			children: [
+				{ end: 0.74, tabs: ['inspector'] },
+				{ end: 1, tabs: ['animation-easing'] }
+			]
+		}
+	]
+};
+
+const mountAnimation = async () => {
+	const fixture = buildLayoutFixture(ANIMATION_VALUES);
+	registerLayout(fixture);
+	Layout.heads = [];
+	switchWorkspace(fixture, 'directory');
+	await mountScheme('directory', ANIMATION_SCHEME);
+	return fixture;
+};
+
+/** 「拖到其他位置」那一步：时间轴页签落进右下角 easing 组（跨组 inside）；返回重挂载后的叶子表 */
+const moveTimelineIntoEasing = async (
+	fixture: Awaited<ReturnType<typeof mountAnimation>>
+): Promise<LayoutLeaf[]> => {
+	const leaves = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
+	dragDrop(leaves[2], {
+		dragItem: 'animation-timeline',
+		trigger: leaves[4].nav,
+		target: leaves[4].nav.parentNode as HTMLElement,
+		direction: 'inside'
+	});
+	await awaitVueLayoutLoad();
+	placePaletteIntoLeaves(fixture);
+	return collectLeaves(fixture.directory.firstElementChild as HTMLElement);
+};
+
+/** 对 region 元素派发一次已进入 location 的结构性 drop（落点/方向由调用方给定，模拟几何命中结果） */
+const regionDrop = (
+	srcLeaf: LayoutLeaf,
+	opts: {
+		dragItem: string;
+		target: HTMLElement;
+		direction: string;
+		/** 指针所在叶子（其 region 元素派发事件）；缺省用源叶子 */
+		regionOf?: LayoutLeaf;
+	}
+): void => {
+	const event = createDragEvent();
+	try {
+		Layout.navDragstart!.call(srcLeaf.nav, event as never);
+		const state = getLayoutStore().dragging as unknown as DragState;
+		state.target = itemOf(srcLeaf, opts.dragItem);
+		const host = opts.regionOf ?? srcLeaf;
+		const region = state.regions.find((r) => r.parentNode === host.nav.parentNode);
+		expect(region).toBeDefined();
+		state.location = { trigger: region!, target: opts.target, direction: opts.direction };
+		region!.dispatchEvent(new Event('drop', { bubbles: true, cancelable: true }));
+	} finally {
+		if (getLayoutStore().dragging) Layout.navDragend!(event as never);
+	}
+};
+
+/** 把时间轴搬进 easing 组后的树：左列塌成单个横向容器，时间轴挂在右下角 */
+const MOVED_AWAY_SCHEME = {
+	end: 1,
+	split: 'horizontal',
+	children: [
+		{
+			end: 0.82,
+			split: 'horizontal',
+			children: [
+				{ end: 0.18, tabs: ['animation-motion'] },
+				{ end: 1, tabs: ['animation'] }
+			]
+		},
+		{
+			end: 1,
+			split: 'vertical',
+			children: [
+				{ end: 0.74, tabs: ['inspector'] },
+				{ end: 1, tabs: ['animation-easing', 'animation-timeline'] }
+			]
+		}
+	]
+};
+
+describe('navDrop region 容器落点（页签拖回原底部位置）', () => {
+	it('搬到右下角后拖回左侧栏底部（落点=父容器）：容器下半开新叶子，页签回到底部', async () => {
+		const fixture = await mountAnimation();
+		const leaves = await moveTimelineIntoEasing(fixture);
+		expect(Layout.layout!.directory).toEqual(MOVED_AWAY_SCHEME);
+
+		const easeLeaf = leaves[3]; // [animation-easing, animation-timeline]
+		const animationLeaf = leaves[1];
+		const leftColumn = animationLeaf.nav.parentNode?.parentNode as HTMLElement;
+
+		regionDrop(easeLeaf, {
+			dragItem: 'animation-timeline',
+			target: leftColumn, // ← region 的容器落点（原来这里是叶子落点）
+			direction: 'bottom',
+			regionOf: animationLeaf
+		});
+
+		// 数据先行：drop 同步生效 —— 左侧栏被包进竖向容器，容器上半留给 motion|animation，下半承接时间轴
+		expect(Layout.layout!.directory).toEqual({
+			end: 1,
+			split: 'horizontal',
+			children: [
+				{
+					end: 0.82,
+					split: 'vertical',
+					children: [
+						{
+							end: 0.5,
+							split: 'horizontal',
+							children: [
+								{ end: 0.18, tabs: ['animation-motion'] },
+								{ end: 1, tabs: ['animation'] }
+							]
+						},
+						{ end: 1, tabs: ['animation-timeline'] }
+					]
+				},
+				{
+					end: 1,
+					split: 'vertical',
+					children: [
+						{ end: 0.74, tabs: ['inspector'] },
+						{ end: 1, tabs: ['animation-easing'] }
+					]
+				}
+			]
+		});
+
+		// 重挂载后 DOM 与数据一致：时间轴回到左列底部，且是独立一组
+		await awaitVueLayoutLoad();
+		placePaletteIntoLeaves(fixture);
+		const next = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
+		expect(next.map((leaf) => navValues(leaf.nav))).toEqual([
+			['animation-motion'],
+			['animation'],
+			['animation-timeline'],
+			['inspector'],
+			['animation-easing']
+		]);
+		expect(next.map((leaf) => managerValues(leaf.manager))).toEqual([
+			['animation-motion'],
+			['animation'],
+			['animation-timeline'],
+			['inspector'],
+			['animation-easing']
+		]);
+	});
+
+	it('落点=根容器（窗口最下缘）：整棵树包进同轴容器，时间轴独占底部一行', async () => {
+		const fixture = await mountAnimation();
+		const leaves = await moveTimelineIntoEasing(fixture);
+
+		const easeLeaf = leaves[3];
+		const root = fixture.directory.firstElementChild as HTMLElement;
+
+		regionDrop(easeLeaf, {
+			dragItem: 'animation-timeline',
+			target: root, // ← region 的 root 落点（y > 高度 - 8）
+			direction: 'bottom',
+			regionOf: leaves[1]
+		});
+
+		expect(Layout.layout!.directory).toEqual({
+			end: 1,
+			split: 'vertical',
+			children: [
+				{
+					end: 0.5,
+					split: 'horizontal',
+					children: [
+						{
+							end: 0.82,
+							split: 'horizontal',
+							children: [
+								{ end: 0.18, tabs: ['animation-motion'] },
+								{ end: 1, tabs: ['animation'] }
+							]
+						},
+						{
+							end: 1,
+							split: 'vertical',
+							children: [
+								{ end: 0.74, tabs: ['inspector'] },
+								{ end: 1, tabs: ['animation-easing'] }
+							]
+						}
+					]
+				},
+				{ end: 1, tabs: ['animation-timeline'] }
+			]
+		});
+	});
+
+	it('右侧落点（轴不同的容器）：源组剩余页签原样保留，时间轴独占右侧一列', async () => {
+		const fixture = await mountAnimation();
+		const leaves = await moveTimelineIntoEasing(fixture);
+		const easeLeaf = leaves[3];
+		const root = fixture.directory.firstElementChild as HTMLElement;
+
+		regionDrop(easeLeaf, {
+			dragItem: 'animation-timeline',
+			target: root,
+			direction: 'right',
+			regionOf: leaves[1]
+		});
+
+		await awaitVueLayoutLoad();
+		placePaletteIntoLeaves(fixture);
+		const next = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
+		// 源组（easing）还剩 animation-easing —— 既没被搬空折叠，也没丢页签
+		expect(next.map((leaf) => navValues(leaf.nav))).toEqual([
+			['animation-motion'],
+			['animation'],
+			['inspector'],
+			['animation-easing'],
+			['animation-timeline']
+		]);
 	});
 });
