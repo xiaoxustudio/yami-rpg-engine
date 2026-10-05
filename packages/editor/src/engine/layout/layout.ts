@@ -330,6 +330,32 @@ const orderLeafHostChildren = (leaf: LayoutGroupElement): void => {
 	}
 };
 
+/**
+ * 把一个叶子的页框可见性钉到「刚激活的页签」：只有这一个 `.visible`。
+ *
+ * 为什么需要：页框的 `.visible` 是**旧组**留下的 —— Teleport 把整壳页面搬进新 manager 时不会清，
+ * 而 `switch()` 有「index 未变就早退」的短路（`if (last !== value)`）⇒ 该叶子可能同时留着两个
+ * `.visible` 页框。页框是 `position: absolute; inset: 0`，两页于是**完全叠在一起**：实机表现
+ * 就是「切换页签后，另一个面板的头部（播放栏/刻度尺等）与内容还画在原处」。
+ */
+const syncLeafVisiblePages = (leaf: LayoutGroupElement, value: string): void => {
+	const manager = leaf.manager;
+	if (manager === undefined) return;
+	for (const child of Array.from(manager.children)) {
+		if (!hasClass(child, 'page-frame')) continue;
+		const active = (child as HTMLElement).getAttribute('value') === value;
+		if (active) addClass(child, 'visible');
+		else removeClass(child, 'visible');
+	}
+};
+
+/** 激活叶子上的一个页签：写 nav（走既有 write → manager.switch 通路）后把可见性收敛到它 */
+const activateLeafTab = (leaf: LayoutGroupElement, value: string | undefined): void => {
+	if (value === undefined || leaf.nav === undefined) return;
+	write(leaf.nav, value);
+	syncLeafVisiblePages(leaf, value);
+};
+
 // 同组 drop（inside）生效动作数据化。
 // 由 group.tabs 数据 + moveTabWithin 直接推导目标顺序，再按 tabs 序收敛 nav/manager
 // 子节点序（「排序 pass」语义），取代命令式 insertBefore/appendChild 差量；
@@ -1387,10 +1413,13 @@ Layout.loadLayoutSchemeVueTeleport = async function (
 	for (const leaf of leaves) {
 		orderLeafHostChildren(leaf);
 		if (isFirst) {
-			write(leaf.nav!, leaf.tabs?.[0]);
+			activateLeafTab(leaf, leaf.tabs?.[0]);
 		} else {
 			// 二次进入的会话恢复值读引擎内部
-			write(leaf.nav!, navLastValues.get(leaf.nav!) ?? leaf.tabs?.[0]);
+			activateLeafTab(
+				leaf,
+				(leaf.nav === undefined ? null : navLastValues.get(leaf.nav)) ?? leaf.tabs?.[0]
+			);
 		}
 	}
 	this.updateGroups!();
@@ -1449,7 +1478,7 @@ async function mountSchemeIntoPage(
 	await nextTick();
 	for (const leaf of leaves) {
 		orderLeafHostChildren(leaf);
-		write(leaf.nav!, leaf.tabs?.[0]);
+		activateLeafTab(leaf, leaf.tabs?.[0]);
 	}
 	Layout.updateGroups!();
 	syncLayoutMirror(page);
@@ -1458,7 +1487,7 @@ async function mountSchemeIntoPage(
 	if (activateTab !== undefined) {
 		for (const leaf of leaves) {
 			if ((leaf.tabs ?? []).includes(activateTab)) {
-				write(leaf.nav!, activateTab);
+				activateLeafTab(leaf, activateTab);
 				break;
 			}
 		}
