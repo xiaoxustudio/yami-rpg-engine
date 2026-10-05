@@ -22,14 +22,23 @@
 					v-tip="t('components.animation-timeline-previousKey.tip')"
 					value="previousKey"
 					hotkey="Z"
-				></div>
+				>
+					<svg viewBox="0 0 16 16" aria-hidden="true">
+						<rect x="1.5" y="2" width="2" height="12" />
+						<path d="M14.5 2 L4.5 8 L14.5 14 Z" />
+					</svg>
+				</div>
 				<div
 					class="item toolbar-item"
 					id="animation-timeline-previous"
 					v-tip="t('components.animation-timeline-previous.tip')"
 					value="previous"
 					hotkey="Q"
-				></div>
+				>
+					<svg viewBox="0 0 16 16" aria-hidden="true">
+						<path d="M8 2 L1 8 L8 14 Z M15 2 L8 8 L15 14 Z" />
+					</svg>
+				</div>
 				<div
 					class="item toolbar-item"
 					id="animation-timeline-play"
@@ -37,28 +46,56 @@
 					value="play"
 					hotkey="R"
 					:class="{ playing: animation.playing }"
-				></div>
+				>
+					<svg v-if="animation.playing" viewBox="0 0 16 16" aria-hidden="true">
+						<rect x="3" y="2" width="3.5" height="12" />
+						<rect x="9.5" y="2" width="3.5" height="12" />
+					</svg>
+					<svg v-else viewBox="0 0 16 16" aria-hidden="true">
+						<path d="M3.5 1.5 L14.5 8 L3.5 14.5 Z" />
+					</svg>
+				</div>
 				<div
 					class="item toolbar-item"
 					id="animation-timeline-next"
 					v-tip="t('components.animation-timeline-next.tip')"
 					value="next"
 					hotkey="E"
-				></div>
+				>
+					<svg viewBox="0 0 16 16" aria-hidden="true">
+						<path d="M1 2 L8 8 L1 14 Z M8 2 L15 8 L8 14 Z" />
+					</svg>
+				</div>
 				<div
 					class="item toolbar-item"
 					id="animation-timeline-nextKey"
 					v-tip="t('components.animation-timeline-nextKey.tip')"
 					value="nextKey"
 					hotkey="X"
-				></div>
+				>
+					<svg viewBox="0 0 16 16" aria-hidden="true">
+						<path d="M1 2 L11.5 8 L1 14 Z" />
+						<rect x="12.5" y="2" width="2" height="12" />
+					</svg>
+				</div>
 				<div
 					class="item toolbar-item"
 					id="animation-timeline-loop"
 					v-tip="t('components.animation-timeline-loop.tip')"
 					value="loop"
 					:class="{ selected: animation.loop }"
-				></div>
+				>
+					<svg viewBox="0 0 16 16" aria-hidden="true">
+						<path
+							d="M2.5 8 A5.5 5.5 0 0 1 8 2.5 H11 M13.5 8 A5.5 5.5 0 0 1 8 13.5 H5"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						/>
+						<path d="M9 0.5 L12.5 2.5 L9 4.5 Z" />
+						<path d="M7 11.5 L3.5 13.5 L7 15.5 Z" />
+					</svg>
+				</div>
 			</div>
 			<div
 				class="box"
@@ -126,6 +163,8 @@
 				></div>
 			</div>
 		</div>
+		<!-- 播放栏在 `#animation-timeline-head` 里（紧跟页签之后、刻度尺之前）：
+		     head 带 `z-index` 压在分组页签带之上，所以两者都看得见。 -->
 	</div>
 </template>
 

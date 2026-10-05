@@ -247,6 +247,11 @@ Animation.initialize = function (this: typeof Animation) {
 	const { list } = this;
 	getListConfig(list).removable = true;
 	list.bind(() => this.motions);
+	// updater 由 YMTreeList 的 `onUpdated → applyRowUpdaters()` 在**每次 patch** 里调用。
+	// `updateItemName` 现在是幂等的（派生文本没变就不重派生、不 bump，见 ui-kit
+	// `YMTreeList/tree-api.ts`），所以这里保留「每次刷新名字」是安全的——枚举改名/本地化
+	// 变化后无需额外触发点。**不要**改成 `list.update()`：那会无条件重派生 + bump，
+	// 在 updater 里等于自激，Vue 会报 Maximum recursive updates exceeded。
 	getListConfig(list).updaters.push((item: unknown) =>
 		list.updateItemName(item as AnimationMotion)
 	);

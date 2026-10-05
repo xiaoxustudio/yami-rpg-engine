@@ -31,6 +31,7 @@ import { GlobalClipboard } from '@app/utils/clipboard';
 import { elementDataOf, getElementData } from '@app/utils/element-data';
 import { clamp } from '@app/utils/math';
 import { empty as fnEmpty } from '@app/utils/function';
+import { timelineRulerLeft, timelineHeadLeft } from './timeline-header-layout.ts';
 
 const Clipboard = GlobalClipboard;
 
@@ -1084,25 +1085,33 @@ getListConfig(Animation.layerList).onDelete = function (
 // 时间轴 - 更新头部位置
 Animation.timeline.updateHead = function (this: typeof Animation) {
 	// 同 `Animation.list.updateHead`——`head` 在元素数据里，不再走原型访问器。
-	// `padding` 不属元素数据（是 head 元素上的普通 expando），故在形状里一并声明。
-	const { head } = elementDataOf<{ head: HTMLElement & { padding?: number } }>(this);
-	if (this.clientWidth !== 0) {
-		const nav = headNavOf(head);
-		const item = lastNavItemOf(nav);
-		if (!nav || !item) return;
-		const nRect = rect(nav);
-		const iRect = rect(item);
-		const left = iRect.right - nRect.left;
-		head.style.left = `${left}px`;
-		const bRect = rect(Animation.outerTimelineList);
-		const padding = Math.max(bRect.left - iRect.right, 0);
-		if (head.padding !== padding) {
-			head.padding = padding;
-			Animation.toolbar.style.width = `${padding}px`;
-			Animation.outerRuler.style.left = `${padding}px`;
-		}
-		Animation.updateRuler!();
-	}
+	//
+	// 播放栏（`#animation-timeline-toolbar`）已搬出 head：它由 `AnimationTimelinePanel.vue`
+	// `<Teleport>` 进分组页签条、作为最后一个 flex 项贴最右侧（见 `AnimationTimelineToolbar.vue`），
+	// 因此这里**不再**计算它的 left/width —— 旧公式逐帧写 `toolbar.style.width`，
+	// 空隙为 0 时就是 `width: 0px`，被 `overflow: hidden` 整条裁掉（实机「播放按钮全不见」）。
+	// 这里只负责两件事：① head 的横向位置 ② 刻度尺相对 head 的左偏移。
+	const { head } = elementDataOf<{ head?: HTMLElement }>(this);
+	// ⚠️ 元素数据是 `Animation.initialize` 期写死的：那一刻面板若还没登记（注册表为空）它就是
+	// undefined，而下面每一行都要碰 `head`。旧实现是靠 `if (!nav || !item) return` 顺带兜住的
+	// —— 去掉那个提前 return 之后必须显式判空，否则会新引入 `head.style` 的 TypeError。
+	if (head === undefined || this.clientWidth === 0) return;
+
+	const ruler = Animation.outerRuler;
+	const list = Animation.outerTimelineList;
+	// 这两个成员可能是模块加载期的 `{}` 占位（`if (x)` 拦不住，`x.style`/`rect()` 才是 undefined）
+	if (!(ruler instanceof HTMLElement) || !(list instanceof HTMLElement)) return;
+
+	const nav = headNavOf(head);
+	const item = lastNavItemOf(nav);
+	// 分组没有页签时 `nav`/`item` 为 null（旧实现此处直接 return ⇒ head 因 CSS 无 left
+	// 收窄成 0 宽、子元素被挤出可视区），退回页面框左缘。
+	const navItemRight = item === null ? null : rect(item).right;
+	const frameRect = rect(this as unknown as HTMLElement);
+	head.style.left = `${timelineHeadLeft(navItemRight, frameRect.left)}px`;
+	// 用 head **实测**左缘算空隙（= 内容列左缘 − head 左缘），两种定位路径都成立。
+	ruler.style.left = `${timelineRulerLeft(rect(list).left - rect(head).left)}px`;
+	Animation.updateRuler!();
 };
 
 // 时间轴列表 - 恢复动作和图层对象

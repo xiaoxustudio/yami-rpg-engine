@@ -508,6 +508,18 @@ body.border > .window-frame.maximized {
 	top: 25px;
 	bottom: 0;
 	height: auto;
+	/* ✱ 各窗口 head（`#animation-timeline-head`、`#animation-head` …）都靠 `top: -25px`
+	 * 把自己伸进**页签带**里 —— head 里装的正是时间轴的播放工具条与刻度尺。
+	 * 但 YMPageManager 的 CSS Module `.manager` 带 `overflow: hidden`（特异性 0,1,0），
+	 * 而 manager 的盒子从页签带**下方**才开始（本规则的 `top: 25px`），于是整条 head
+	 * （位于页签带内）被裁掉：播放按钮、刻度数字整条看不见，且该点上
+	 * `document.elementsFromPoint` 根本返回不到 head —— 实机「动画时间轴底部看不到播放栏」。
+	 *
+	 * 不能简单改成 `overflow: visible` 全放开：页面内容向下 / 向左右溢出时仍需裁剪
+	 * （本文件上方「底部溢出」诊断靠它兜底）。这里改用 `clip-path` 只裁**左右与下沿**、
+	 * 上沿打开 —— head 得以露出，其余裁剪语义与盒子几何完全不变。 */
+	overflow: visible;
+	clip-path: inset(-1000px 0 0 0);
 }
 
 /* --------------------------------

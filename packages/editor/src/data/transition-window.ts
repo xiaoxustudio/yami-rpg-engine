@@ -196,12 +196,29 @@ function ensureDomBound() {
 	list.updateTextNode = Easing.list_updateTextNode;
 }
 
+/**
+ * `drawImage` 的 source 必须是真实的 `CanvasImageSource`，传 `undefined`/`null`
+ * 会直接抛 `TypeError: Failed to execute 'drawImage' ... The provided value is not of type ...`。
+ * `pointImage` 由 `createPointImage()` 异步填充，填充前是 `undefined`（旧守卫只判 `=== null`，
+ * 于是打到 `drawImage(undefined, …)` 就整帧渲染链断裂）。另外图片加载失败（404/坏图）时
+ * `File.get` 仍会 resolve 一个 `naturalWidth === 0` 的 `<img>`，直接画它会抛 InvalidStateError。
+ */
+function isDrawableImage(
+	source: CanvasImageSource | null | undefined
+): source is CanvasImageSource {
+	if (!source) return false;
+	if (source instanceof HTMLImageElement && source.naturalWidth === 0) return false;
+	return true;
+}
+
 // 用箭头函数绑定 Easing 词法作用域，避免裸调 initialize() 时 this===undefined 炸 （initialize.js 用 .call(Easing) 绑 this，但若别处裸调会丢上下文；箭头函数根除问题）
 Easing.initialize = () => {
 	ensureDomBound();
 	if (!Easing.list) return;
 	Easing.startPoint = { x: 0, y: 0 };
 	Easing.endPoint = { x: 1, y: 1 };
+	// 显式置空：形状里声明的就是 `null`，运行时默认的 `undefined` 会被旧的 `=== null` 守卫漏掉
+	Easing.pointImage = null;
 
 	const { list } = Easing;
 	getListConfig(list).removable = true;
@@ -621,7 +638,8 @@ Easing.drawCurve = function (this: typeof Easing) {
 	}
 
 	const image = this.pointImage;
-	if (image === null) return;
+	// 标记图是异步加载的：就绪前（或加载失败）跳过整段标记绘制，而不是让 drawImage 抛错中断渲染
+	if (!isDrawableImage(image)) return;
 	for (let i = 0; i < pLength; i++) {
 		const point = points[i];
 		const x = originX + Math.round(point.x * fullSize);
@@ -645,7 +663,10 @@ Easing.drawPreview = function (this: typeof Easing) {
 	const canvas = this.preview!;
 	const width = canvas.width;
 	const height = canvas.height;
-	const image = this.previewImage!;
+	const image = this.previewImage;
+	// previewImage 在 open() 同步建好、windowClosed() 置空；这里同样用守卫而不是非空断言，
+	// 避免极端时序（timer 回调落在关闭之后）下 `image.height` 直接抛错
+	if (!image) return;
 	const size = image.height;
 	const halfsize = size / 2;
 	const spacingX = Math.floor((width - size * 4) / 5);
@@ -757,14 +778,21 @@ Easing.selectPointByCoords = function (this: typeof Easing, mouseX: number, mous
 };
 
 Easing.createPointImage = function (this: typeof Easing) {
-	if (!this.pointImage) {
-		File.get!({
-			local: 'Images/curve_mark.png',
-			type: 'image'
-		}).then((image: CanvasImageSource) => {
+	if (isDrawableImage(this.pointImage)) return;
+	// File.get 按 path 缓存 in-flight promise：并发/重复调用不会重复发请求
+	File.get!({
+		local: 'Images/curve_mark.png',
+		type: 'image'
+	})
+		.then((image: CanvasImageSource) => {
+			// 加载失败时不落缓存，下次 open 会重试；成功则补一次重绘（否则要等下一个 timer tick）
+			if (!isDrawableImage(image)) return;
 			this.pointImage = image;
+			this.requestRendering();
+		})
+		.catch(() => {
+			// 读取失败：保持 pointImage 为空，由 isDrawableImage 守卫跳过标记绘制
 		});
-	}
 };
 
 Easing.createPreviewImage = function (this: typeof Easing) {

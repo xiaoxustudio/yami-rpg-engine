@@ -101,19 +101,36 @@ export const createTreeRenderState = (owner?: unknown): TreeRenderState => {
 	};
 };
 
+/**
+ * 注册/取消行 class。
+ *
+ * **幂等**：取值没有真正变化时不 `bump()`（与 `setItemText` 的守卫同一不变式）。
+ * 这不是优化而是正确性：`bump()` 会让 `version` 自增，而 `YMTreeList` 的渲染 effect
+ * 正好依赖它；消费方在更新路径里注册 class（`onUpdated → applyRowUpdaters →
+ * updater / updateNodeElement`，如 text-tip / command-tip）时，无条件 bump 等于在同一个
+ * flush 里反复排队自己，Vue 随即报
+ * `Maximum recursive updates exceeded in component <YMTreeList>`（实测 101 次后中止渲染）。
+ */
 export const setItemClass = (
 	state: TreeRenderState,
 	item: TreeItem,
 	className: string,
 	on = true
 ): void => {
-	let set = state.itemClasses.get(item);
+	const set = state.itemClasses.get(item);
 	if (set === undefined) {
-		set = new Set<string>();
-		state.itemClasses.set(item, set);
+		// 本来就没有记录，且是「取消」⇒ 无变化
+		if (!on) return;
+		state.itemClasses.set(item, new Set<string>([className]));
+		state.bump();
+		return;
 	}
-	if (on) set.add(className);
-	else set.delete(className);
+	if (on) {
+		if (set.has(className)) return;
+		set.add(className);
+	} else if (!set.delete(className)) {
+		return;
+	}
 	state.bump();
 };
 

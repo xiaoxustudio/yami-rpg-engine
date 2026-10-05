@@ -1675,7 +1675,10 @@ Layout.navDragstart = function (this: typeof Layout, event: LayoutDragEvent) {
 			regions.push(region);
 		}
 		for (const head of Layout.heads ?? []) {
-			if (head) head.style.pointerEvents = 'none';
+			// `Layout.heads` 里可能混着**模块加载期的 `{}` 占位**（见 `initialize` 里
+			// `?? {}` 那段注释）：真值判断拦不住它，`head.style` 才是 undefined —— 实机
+			// `TypeError: Cannot set properties of undefined (setting 'pointerEvents')`。
+			if (head instanceof HTMLElement) head.style.pointerEvents = 'none';
 		}
 	}
 };
@@ -1697,7 +1700,8 @@ Layout.navDragend = function (_event: EditorEvent) {
 			region.remove();
 		}
 		for (const head of Layout.heads ?? []) {
-			if (head) head.style.pointerEvents = '';
+			// 同 `navDragstart`：占位对象没有 `.style`，必须按元素判定
+			if (head instanceof HTMLElement) head.style.pointerEvents = '';
 		}
 		Layout.updateHint!(null);
 		getLayoutStore().dragging = null;

@@ -35,6 +35,7 @@ import {
 	isItemRendered,
 	bindRowElement,
 	rowElementOf,
+	rowKeyOf,
 	stateOfItem,
 	ROW_HEIGHT,
 	type TreeRenderState
@@ -650,6 +651,22 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 		},
 
 		updateItemName: function (this: TreeListHost, item: TreeItem): void {
+			// **幂等**：重派生会产出的文本与当前派生行一致时直接返回，不做 `syncRenderRows()`。
+			//
+			// 这不是优化而是正确性：消费方会把它挂进 `updaters`
+			// （实机：`animation-initialize.ts` 的 `updaters.push((item) => list.updateItemName(item))`），
+			// 而 updater 由 `YMTreeList` 的 `onUpdated → applyRowUpdaters()` 在**每次 patch** 里调用；
+			// `syncRenderRows()` 里的 `bump()` 无条件让组件渲染 effect 失效 ⇒ 同一个 flush 里
+			// 反复排队自己 ⇒ Vue 报
+			// `Maximum recursive updates exceeded in component <YMTreeList>`（实测 101 次后中止渲染）。
+			const state = renderStateOf(this);
+			const derived = state === undefined ? undefined : state.rowData.get(rowKeyOf(item));
+			const renderedName =
+				state === undefined
+					? undefined
+					: (state.textOverrides.get(item) ?? this.parseName(item));
+			if (derived !== undefined && derived.name === renderedName) return;
+
 			// 步骤 5：行文本由派生层渲染 —— 名称变更触发重派生（直写 textNode 会被 patch 覆盖）
 			const last = item?.name;
 			this.syncRenderRows();
