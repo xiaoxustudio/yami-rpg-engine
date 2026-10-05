@@ -173,13 +173,16 @@
 	justify-content: center;
 }
 
-/* 图标是内联 SVG（见 `AnimationTimelineToolbar.vue`）：不依赖
+/* 图标是内联 SVG（见 `AnimationTimelinePanel.vue`）：不依赖
    `Project/Images/timeline_buttons.png` 蒙版图，也不需要额外的 CSS 变量 */
 #animation-timeline-toolbar > .toolbar-item > svg {
 	width: 16px;
 	height: 16px;
 	fill: currentColor;
 	stroke: currentColor;
+	/* 图标只是装饰：不参与命中测试，指针事件一律落到 `.item` 上。
+	   否则 `event.target` 会是 `svg`/`path`，按钮命中区也被缩到图形本身的绘制范围。 */
+	pointer-events: none;
 }
 
 #animation-timeline-toolbar > .toolbar-item.selected {

@@ -264,8 +264,13 @@ Animation.timelinePageResize = function (this: typeof Animation, _event: Event) 
 Animation.timelineToolbarPointerdown = function (this: typeof Animation, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target as HTMLElement;
-			if (hasClass(element, 'item')) {
+			// 图标是内联 SVG（见 `AnimationTimelinePanel.vue`）：`event.target` 通常是
+			// `path`/`rect`/`svg` 而不是 `.item` 本身。按**最近的 `.item`** 判定归属 ——
+			// 只认 `event.target` 会变成「点图标正中没反应、点按钮留白才有反应」，
+			// 播放/循环的状态也就跟着不变。监听只挂在播放栏容器上，`closest` 不会越出播放栏。
+			const { target } = event;
+			const element = target instanceof Element ? target.closest('.item') : null;
+			if (element !== null) {
 				switch (element.getAttribute('value')) {
 					case 'previousKey':
 						return Animation.previousKeyFrame!();
