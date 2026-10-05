@@ -32,6 +32,7 @@ import {
 	type LayoutTreeNode
 } from './layout-scheme';
 import { deserializeGroupElement, groupTreeElements } from './layout-deserialize';
+import { findGroupOverlaps, type LayoutGeometryProbe } from './layout-diagnostics';
 import { collectPageTargets } from './layout-page-targets';
 import { mountVueGroupTree, type VueGroupTreeHandle } from './layout-vue-tree';
 import { File } from '@app/file/file-system-core.ts';
@@ -833,9 +834,27 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 		lines.push(`active page-frame[value=${page.getAttribute('value')}]: ${describe(page)}`);
 		const root = layoutRootOf(page) as LayoutGroupElement | null;
 		if (root !== null && hasClass(root, 'group')) {
-			const walk = (group: LayoutGroupElement, depth: number): void => {
+			// 组几何探针：给 `findGroupOverlaps` 做「同层相互压盖」判定（原先完全没有这项检查）
+			const probes: LayoutGeometryProbe[] = [];
+			const labelOf = (group: LayoutGroupElement): string => {
+				const tabs = group.tabs;
+				if (tabs !== undefined && tabs.length !== 0) return tabs.join('|');
+				return group.manager !== undefined ? '空组' : `容器(${group.split ?? '-'})`;
+			};
+			const walk = (group: LayoutGroupElement, depth: number, path: string): void => {
 				const indent = ' '.repeat(depth * 2);
 				const groupEnd = groupData(group).end;
+				const rect = group.getBoundingClientRect();
+				probes.push({
+					path,
+					label: labelOf(group),
+					rect: {
+						left: rect.left,
+						top: rect.top,
+						right: rect.right,
+						bottom: rect.bottom
+					}
+				});
 				lines.push(
 					`${indent}group: ${describe(group)} end:${groupEnd} split:${group.split ?? '-'}`
 				);
@@ -845,11 +864,14 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 					lines.push(
 						`${indent}  group-manager: ${describe(groupManager)} scrollTop:${groupManager.scrollTop}`
 					);
+					// 同一个组内「同时可见多个页框」= 两页内容完全叠在一起（页框是 position:absolute; inset:0）
+					const visibleValues: string[] = [];
 					for (const child of Array.from(groupManager.children)) {
 						if (!hasClass(child, 'page-frame')) continue;
 						const frame = child as HTMLElement;
 						const value = frame.getAttribute('value');
 						const visible = hasClass(frame, 'visible');
+						if (visible && value !== null) visibleValues.push(value);
 						lines.push(
 							`${indent}  page-frame[value=${value}] visible:${visible}: ${describe(frame)}`
 						);
@@ -872,14 +894,22 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 							);
 						}
 					}
+					if (visibleValues.length > 1) {
+						problems.push(
+							`组「${labelOf(group)}」内同时可见 ${visibleValues.length} 个 page-frame（${visibleValues.join(', ')}）⇒ 两页内容完全叠在一起`
+						);
+					}
 				}
+				let index = 0;
 				for (const child of Array.from(group.children)) {
 					if (hasClass(child, 'group')) {
-						walk(child as LayoutGroupElement, depth + 1);
+						walk(child as LayoutGroupElement, depth + 1, `${path}/${index}`);
+						index++;
 					}
 				}
 			};
-			walk(root, 0);
+			walk(root, 0, '0');
+			problems.push(...findGroupOverlaps(probes));
 		}
 	}
 	// 布局诊断里改读注册表（原先 document.getElementById）
@@ -912,10 +942,12 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 			for (const line of lines) {
 				console.log(line);
 			}
+			console.groupEnd();
+			// 问题**不放进折叠组**：控制台默认折叠，「发现 N 个问题」若不展开就等于没说，
+			// 而这里正是塌陷/压盖这类一眼要看见的结论。
 			for (const problem of problems) {
 				console.warn(`- ${problem}`);
 			}
-			console.groupEnd();
 			/* oxlint-enable no-console */
 		}
 	}
