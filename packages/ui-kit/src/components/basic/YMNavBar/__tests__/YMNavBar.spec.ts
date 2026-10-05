@@ -60,4 +60,34 @@ describe('YMNavBar', () => {
 		vm.unselect();
 		expect(vm.read()).toBeUndefined();
 	});
+
+	// 回归（实机「点哪个页签都同时显示 active」）：页签由整壳 Teleport 在分组间搬运，
+	// 搬进来的页签带着旧组的 `selected`；旧 `unselect` 只清第一个 ⇒ 残留 + 新选中同时亮。
+	it('unselect 清掉全部 selected（不只第一个）', () => {
+		const wrapper = mountNav();
+		const vm = wrapper.vm as unknown as NavBarApi;
+		const items = wrapper.findAll('.nav-item');
+		vm.write('a');
+		items[1].element.classList.add('selected');
+
+		vm.unselect();
+
+		expect(wrapper.element.querySelectorAll('.selected')).toHaveLength(0);
+	});
+
+	it('页签晚于 write 到达（Teleport）：按当前值重放选中，残留被清掉', async () => {
+		const wrapper = mountNav();
+		const vm = wrapper.vm as unknown as NavBarApi;
+		vm.write('a');
+
+		const stale = document.createElement('div');
+		stale.className = 'nav-item selected';
+		stale.setAttribute('value', 'b');
+		wrapper.element.appendChild(stale);
+		await Promise.resolve(); // MutationObserver 走微任务
+
+		expect(wrapper.element.querySelectorAll('.selected')).toHaveLength(1);
+		expect(wrapper.findAll('.nav-item')[0].classes()).toContain('selected');
+		expect(stale.classList.contains('selected')).toBe(false);
+	});
 });

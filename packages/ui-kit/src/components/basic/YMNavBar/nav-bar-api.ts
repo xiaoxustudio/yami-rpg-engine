@@ -35,6 +35,10 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 	nav.writeEventEnabled = false;
 	nav.selectEventEnabled = false;
 
+	// 最近一次写入的值：页签是**整壳 Teleport**搬进 nav 的，搬运会连 `selected` 残留一起带过来
+	// （每个面板的壳在自己的组里都是选中态）。子节点一变就按这个值重放一次选中（幂等）。
+	let current: unknown;
+
 	const emitValueEvent = (type: string, value: unknown): void => {
 		const event = createPayloadEvent(type, {} as { value: unknown });
 		event.value = value;
@@ -70,6 +74,7 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 	};
 
 	nav.write = function (value: unknown): void {
+		current = value;
 		const items = el.childNodes;
 		const length = items.length;
 		if (length !== 0) {
@@ -95,10 +100,17 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 		}
 	};
 
+	/**
+	 * 清掉**全部** `selected`，而不是只清第一个。
+	 *
+	 * 页签由整壳 Teleport 在分组间搬运，搬进来的页签带着它原来那个组的 `selected`：
+	 * 旧实现用 `querySelector('.selected')` 只清一个 ⇒ 残留 + 新选中同时亮
+	 * （实机「点哪个页签都同时显示 active」），且点击时 `pointerdown` 还会因为
+	 * `hasClass(element,'selected')` 为真而**跳过写入**（点活动页签什么都不发生）。
+	 */
 	nav.unselect = function (): void {
-		const item = el.querySelector('.selected');
-		if (item) {
-			removeClass(item as HTMLElement, 'selected');
+		for (const item of Array.from(el.querySelectorAll('.selected'))) {
+			removeClass(item, 'selected');
 		}
 	};
 
@@ -134,6 +146,12 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 			}
 		}
 	}
+
+	// Teleport 把页签搬进来的**那一刻**带着旧组的 `selected`，而调用方的 `write()` 早就发生了
+	// （搬入通常晚于激活写入）—— 只靠 write 时清残留会漏掉这一批。子节点一变就重放当前值。
+	new MutationObserver(() => {
+		if (current !== undefined) nav.write(current);
+	}).observe(el, { childList: true });
 
 	markApiAttached(nav);
 	return nav;

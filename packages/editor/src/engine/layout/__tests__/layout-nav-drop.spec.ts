@@ -198,6 +198,82 @@ describe('navDrop 跨组搬入', () => {
 	});
 });
 
+/* ---------------- 组内合并后的「唯一激活」不变量 ----------------
+ *
+ * 回归（实机：把「动作」拖到时间轴面板上）：
+ *  · 两个页签**同时**是选中态（点哪个都亮）；
+ *  · 内容永远停在被拖进来的那个面板上。
+ * 根因是同一类「只清一个」：页签/页框由整壳 Teleport 在分组间搬运，会把**旧组的** `selected`
+ * / `visible` 一起带过来，而旧实现只清「自己记着的那一个」——
+ *   · `YMNavBar.unselect()` 用 `querySelector('.selected')` 只清第一个 ⇒ 残留 + 新选中同时亮；
+ *   · `YMPageManager` 只 `removeClass(active,'visible')` ⇒ 第二个 `.visible` 页框永远留着，
+ *     而页框是 `position:absolute; inset:0`，DOM 序靠后的那个盖在上面 ⇒ 看到的一直是它。
+ */
+
+const selectedValues = (nav: HTMLElement): string[] =>
+	Array.from(nav.querySelectorAll('.nav-item.selected')).map(
+		(item) => item.getAttribute('value') ?? ''
+	);
+
+const visibleValues = (manager: HTMLElement): string[] =>
+	Array.from(manager.querySelectorAll('.page-frame.visible')).map(
+		(frame) => frame.getAttribute('value') ?? ''
+	);
+
+describe('组内合并（动作 → 时间轴）：每个叶子只允许一个选中 / 一个可见', () => {
+	const mergeMotionIntoTimeline = async () => {
+		const fixture = await mountAnimation();
+		let leaves = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
+		const timelineLeaf = leaves[2]; // [animation-timeline]
+		const motionLeaf = leaves[0]; // [animation-motion]
+		dragDrop(motionLeaf, {
+			dragItem: 'animation-motion',
+			trigger: timelineLeaf.nav,
+			target: timelineLeaf.nav.parentNode as HTMLElement,
+			direction: 'inside'
+		});
+		await awaitVueLayoutLoad();
+		placePaletteIntoLeaves(fixture);
+		// Teleport 落位（以及两个组件的 MutationObserver）在微任务里，等一拍再断言
+		await nextTick();
+		leaves = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
+		const merged = leaves.find((leaf) =>
+			(leaf.nav.parentNode as HTMLElement & { tabs?: string[] }).tabs?.includes(
+				'animation-motion'
+			)
+		);
+		expect(merged).toBeDefined();
+		return { fixture, leaves, merged: merged! };
+	};
+
+	it('合并后：nav 与 manager 各只有一个激活，且两者一致', async () => {
+		const { merged } = await mergeMotionIntoTimeline();
+
+		expect(navValues(merged.nav)).toEqual(['animation-timeline', 'animation-motion']);
+		expect(managerValues(merged.manager)).toEqual(['animation-timeline', 'animation-motion']);
+		// 旧实现这里分别是 ['animation-timeline','animation-motion']（两个都亮 / 两个都可见）
+		expect(selectedValues(merged.nav)).toHaveLength(1);
+		expect(visibleValues(merged.manager)).toHaveLength(1);
+		// 「亮着的页签」与「显示的页」必须是同一个
+		expect(selectedValues(merged.nav)).toEqual(visibleValues(merged.manager));
+	});
+
+	it('合并后点击另一个页签：选中与可见一起迁移，仍各只有一个', async () => {
+		const { merged } = await mergeMotionIntoTimeline();
+		const before = selectedValues(merged.nav)[0];
+		const target = before === 'animation-motion' ? 'animation-timeline' : 'animation-motion';
+
+		// 真机点击路径：nav 的 pointerdown（旧实现里若点的是残留的「活动」页签会直接跳过写入）
+		itemOf(merged, target).dispatchEvent(
+			new MouseEvent('pointerdown', { bubbles: true, button: 0 })
+		);
+		await nextTick();
+
+		expect(selectedValues(merged.nav)).toEqual([target]);
+		expect(visibleValues(merged.manager)).toEqual([target]);
+	});
+});
+
 describe('navDrop region 边缘（结构性分割，几何用例的 jsdom 侧）', () => {
 	it('drop 到目标组右缘：右侧新建叶子承接页签，源组保留其余页签', async () => {
 		const { fixture, leaves } = await mountDirectory();
