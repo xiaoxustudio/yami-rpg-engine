@@ -24,11 +24,15 @@ export const timelineHeadLeft = (navItemRight: number | null, frameLeft: number)
 
 /**
  * 刻度尺（`#animation-timeline-ruler-outer`）相对 head 左缘的偏移
- * = 「head 左缘 → 时间轴内容列」的空隙，保证帧号与帧网格对齐。
+ * = 「head 左缘 → 时间轴内容列」的空隙，**再让过播放栏**（head 里刻度尺前面那个 flex 项）。
  *
- * 空隙为负时（页签条压过内容列）归零：负值会让刻度尺向左伸到页签条上，配合 head 的
- * `z-index` 就会反过来盖住页签，所以宁可让刻度尺从 head 左缘起画。
+ * 它是 `margin-left` 而不是 absolute 的 `left`：两条都是 head 的 flex 项，宽度瓜分、结构上不会
+ * 互相压。空隙不足时（面板窄、页签条宽）归零 ⇒ 刻度尺从播放栏右缘起画，刻度会与帧网格错开
+ * 一点，但**绝不会滑到按钮底下**（旧实现正好相反：这里 clamp 到 0，刻度尺整条压在播放栏上，
+ * 只能靠 `z-index` 遮丑）。
  *
  * @param gap head 左缘到时间轴内容列左缘的空隙；页签过宽时 ≤ 0
+ * @param toolbarWidth 播放栏宽度（不传按 0 处理，等价于旧的「只按空隙对齐」口径）
  */
-export const timelineRulerLeft = (gap: number): number => Math.max(gap, 0);
+export const timelineRulerLeft = (gap: number, toolbarWidth = 0): number =>
+	Math.max(gap - toolbarWidth, 0);
