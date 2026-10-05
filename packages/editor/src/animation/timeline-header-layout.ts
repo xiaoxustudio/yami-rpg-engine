@@ -24,15 +24,18 @@ export const timelineHeadLeft = (navItemRight: number | null, frameLeft: number)
 
 /**
  * 刻度尺（`#animation-timeline-ruler-outer`）相对 head 左缘的偏移
- * = 「head 左缘 → 时间轴内容列」的空隙，**再让过播放栏**（head 里刻度尺前面那个 flex 项）。
+ * = 「head 左缘 → 时间轴内容列」的空隙。
  *
- * 它是 `margin-left` 而不是 absolute 的 `left`：两条都是 head 的 flex 项，宽度瓜分、结构上不会
- * 互相压。空隙不足时（面板窄、页签条宽）归零 ⇒ 刻度尺从播放栏右缘起画，刻度会与帧网格错开
- * 一点，但**绝不会滑到按钮底下**（旧实现正好相反：这里 clamp 到 0，刻度尺整条压在播放栏上，
- * 只能靠 `z-index` 遮丑）。
+ * ⚠️ 这里**只按空隙**算，绝不能把播放栏宽度也减掉：刻度尺的刻度是靠
+ * `outerRuler.scrollLeft` 镜像帧网格的滚动来对齐的（见 `outerTimelineListScroll`），
+ * 所以刻度尺**盒子的左缘必须精确落在内容列左缘**（帧网格起点）。把盒子右移 = 整条刻度
+ * 偏移相同的像素、和下面的帧格再也对不上（实机反馈）。播放栏与它的关系是「压在它上面」：
+ * 播放栏底板不透明（见 `animation.css`），因此落在按钮下面的那一段刻度不可见，
+ * 但露出来的部分仍然与帧网格严格对齐。
+ *
+ * 空隙为负时（页签条压过内容列）归零：负值会让刻度尺向左伸到页签条上，配合 head 的
+ * `z-index` 就会反过来盖住页签，所以宁可让刻度尺从 head 左缘起画。
  *
  * @param gap head 左缘到时间轴内容列左缘的空隙；页签过宽时 ≤ 0
- * @param toolbarWidth 播放栏宽度（不传按 0 处理，等价于旧的「只按空隙对齐」口径）
  */
-export const timelineRulerLeft = (gap: number, toolbarWidth = 0): number =>
-	Math.max(gap - toolbarWidth, 0);
+export const timelineRulerLeft = (gap: number): number => Math.max(gap, 0);

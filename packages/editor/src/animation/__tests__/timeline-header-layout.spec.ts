@@ -35,18 +35,19 @@ describe('timelineRulerLeft', () => {
 		expect(timelineRulerLeft(-120)).toBe(0);
 	});
 
-	// 「没有自适应」那次的回归：刻度尺必须**让过播放栏**，否则面板一窄它整条压在按钮上。
-	it('让过播放栏：空隙够时偏移 = 空隙 − 播放栏宽度（刻度仍与帧网格对齐）', () => {
-		expect(timelineRulerLeft(400, 180)).toBe(220);
-	});
-
-	it('空隙不够放下播放栏时归零（从按钮右缘起画，绝不滑到按钮底下）', () => {
-		expect(timelineRulerLeft(100, 180)).toBe(0);
-		expect(timelineRulerLeft(180, 180)).toBe(0);
-		expect(timelineRulerLeft(-50, 180)).toBe(0);
-	});
-
-	it('不传播放栏宽度时等价于旧口径（按空隙对齐）', () => {
-		expect(timelineRulerLeft(240, 0)).toBe(timelineRulerLeft(240));
+	// 回归（实机「改完和上面的时间轴对不齐了」）：刻度尺的左缘**只按空隙**算，
+	// 不能因为播放栏占位而右移 —— 刻度对齐靠 `outerRuler.scrollLeft` 镜像帧网格滚动，
+	// 盒子右移会让整条刻度跟着偏移。与之重叠的那一段靠播放栏的不透明底板遮住（CSS 负责）。
+	it('与播放栏无关：任何播放栏宽度都不会改变刻度尺偏移', () => {
+		expect(timelineRulerLeft(240)).toBe(240);
+		expect(timelineRulerLeft(0)).toBe(0);
+		expect(timelineRulerLeft(-50)).toBe(0);
+		// 多传一个「播放栏宽度」也不能改口径：旧写法（空隙 − 播放栏宽）在这里会返回 0
+		const withExtra = timelineRulerLeft as unknown as (
+			gap: number,
+			toolbarWidth: number
+		) => number;
+		expect(withExtra(100, 180)).toBe(100);
+		expect(withExtra(400, 180)).toBe(400);
 	});
 });

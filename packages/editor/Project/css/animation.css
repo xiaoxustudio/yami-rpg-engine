@@ -143,23 +143,26 @@
 	background-color: var(--group-head-background);
 	/* 2 保证刻度尺可见（页签条画在页框之上） */
 	z-index: 2;
-	/* 自适应版式：head 内**只有**「播放栏 + 刻度尺」两个 flex 项，按剩余宽度瓜分。
-	   它们原先各写各的 absolute left/right，面板一窄刻度尺就滑到按钮底下 —— 旧实现只能给
-	   播放栏更高的 z-index 遮丑（见下方注释原文），重叠本身没解决。flex + overflow:hidden
-	   之后：两者结构上不可能重叠，也不会画到相邻分组的头上（窄到放不下时按钮被裁，不越界）。 */
-	display: flex;
-	align-items: center;
+	/* 裁剪：head 里的播放栏宽度由内容撑开（约 180px），面板比它窄时不许画到相邻分组的头上
+	   （页签条、别的面板的头部都在同一条 24px 带子里）。 */
 	overflow: hidden;
 }
 
 #animation-timeline-toolbar {
 	display: flex;
 	align-items: center;
-	/* 版式：`[页签] → 播放栏 → 刻度尺`。播放栏是 head 的第一个 flex 项：不收缩、宽度由内容撑开；
-	   刻度尺吃剩下的宽度，其相对偏移由 `updateHead()` 写成 `margin-left`（先让过播放栏，见下）。 */
-	position: relative;
-	flex: 0 0 auto;
+	/* 版式：`[页签] → 播放栏(left:0) → 刻度尺(left = 内容列左缘)`。
+	   播放栏宽度由内容撑开（6×16px），不拉伸；刻度尺盒子的左缘必须落在内容列左缘（帧网格
+	   起点，对齐靠 `outerRuler.scrollLeft` 镜像滚动），所以窄面板里刻度尺的左边一段会落在
+	   播放栏下面 —— 靠这里**不透明的底板**遮住（旧实现没有背景色，刻度会从按钮盒子后面
+	   透出来，看起来就是「时间轴和播放按钮重叠」）。 */
+	position: absolute;
+	left: 0;
+	top: 0;
 	height: 24px;
+	background-color: var(--group-head-background);
+	/* 刻度尺与它是同一行里的兄弟：空隙不够（页签压过内容列）时刻度尺会盖到按钮上，
+	   这里给它一个层级压在刻度尺之上。 */
 	z-index: 1;
 	/* 6 个 `.toolbar-item`（各 `min-width: 16px`）—— 保底宽度，保证按钮不会被裁 */
 	min-width: 96px;
@@ -192,13 +195,17 @@
 }
 
 #animation-timeline-ruler-outer {
-	/* head 的第二个 flex 项：宽度 = 页签条之后剩下的部分（按钮右侧起，到 head 右缘）。
-	   `position: relative` 是内层刻度尺（absolute）的定位祖先，必须保留。 */
-	position: relative;
-	flex: 1 1 auto;
-	min-width: 0;
+	position: absolute;
 	top: 0;
+	/* 兜底左缘：正常由 `updateHead()` 写成「head 左缘 → 时间轴内容列」的空隙（内联 left）。
+	   没跑到时用与 `#animation-timeline-list-outer` 同源的 `18%`：head 的兜底 left 是 0，
+	   于是 18%（head 宽 = 页面宽）= 内容列左缘 ⇒ 刻度尺仍与帧网格对齐，且不会盖住左侧按钮。
+	   ⚠️ 这个左缘就是帧网格的起点，**不能因为播放栏占位而右移**（刻度靠 scrollLeft 镜像滚动
+	   对齐），否则整条刻度和下面的帧格错开。 */
+	left: 18%;
+	right: 0;
 	height: 24px;
+	/* background-color: green; */
 	overflow: hidden;
 }
 

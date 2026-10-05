@@ -1091,12 +1091,10 @@ getListConfig(Animation.layerList).onDelete = function (
 Animation.timeline.updateHead = function (this: typeof Animation) {
 	// 同 `Animation.list.updateHead`——`head` 在元素数据里，不再走原型访问器。
 	//
-	// head 里现在是两个 flex 项：播放栏（`#animation-timeline-toolbar`，不收缩、宽度由内容撑开）
-	// 与刻度尺（`flex: 1 1 auto`，吃剩下的宽度）。这里只负责：
-	//   ① head 的横向位置（= 分组最后一个页签的右缘）
-	//   ② 刻度尺相对 head 左缘的偏移 `margin-left`（先让过播放栏，见 `timelineRulerLeft`）
-	// 不再写 `width`/`left` —— 那两个内联量会让 flex 项退化成「按旧值固定」，正是旧实机
-	// 「播放按钮整条不见 / 刻度尺压在按钮上」的来源。
+	// head 里是「播放栏（绝对定位在 head 左缘）+ 刻度尺（绝对定位在内容列左缘）」，
+	// 两者由 CSS 的层级与**播放栏的不透明底板**决定观感（见 animation.css）：
+	// 窄面板里播放栏会盖住刻度尺的左边一段，但不会露出刻度（不透明），露出来的部分仍与帧格对齐。
+	// 这里只负责：① head 的横向位置（= 分组最后一个页签的右缘）② 刻度尺相对 head 的左偏移。
 	const { head } = elementDataOf<{ head?: HTMLElement }>(this);
 	// ⚠️ 元素数据是 `Animation.initialize` 期写死的：那一刻面板若还没登记（注册表为空）它就是
 	// undefined，而下面每一行都要碰 `head`。旧实现是靠 `if (!nav || !item) return` 顺带兜住的
@@ -1115,16 +1113,12 @@ Animation.timeline.updateHead = function (this: typeof Animation) {
 	const navItemRight = item === null ? null : rect(item).right;
 	const frameRect = rect(this as unknown as HTMLElement);
 	head.style.left = `${timelineHeadLeft(navItemRight, frameRect.left)}px`;
-	// head 实测左缘算空隙（= 内容列左缘 − head 左缘），再让过播放栏实测宽度。
-	// 旧实现是把刻度尺写成 absolute + `left`（clamp 到 0 就压在按钮上）；flex 版式下用
-	// `margin-left`，并清掉可能残留的内联 `left`（`position: relative` 下它会再顶一次）。
-	const toolbar = Animation.toolbar as HTMLElement | undefined;
-	const toolbarWidth = toolbar instanceof HTMLElement ? rect(toolbar).width : 0;
-	ruler.style.left = '';
-	ruler.style.marginLeft = `${timelineRulerLeft(
-		rect(list).left - rect(head).left,
-		toolbarWidth
-	)}px`;
+	// 用 head **实测**左缘算空隙（= 内容列左缘 − head 左缘），两种定位路径都成立。
+	// ⚠️ 只用空隙，不要减播放栏宽度：刻度尺盒子的左缘必须精确落在内容列左缘（帧网格起点），
+	// 否则整条刻度会跟着盒子一起偏移、与下面的帧格对不上（刻度对齐靠 `scrollLeft` 镜像滚动）。
+	// 播放栏压在刻度尺上面，靠它自己的不透明底板遮住重叠段（见 animation.css）。
+	ruler.style.marginLeft = '';
+	ruler.style.left = `${timelineRulerLeft(rect(list).left - rect(head).left)}px`;
 	Animation.updateRuler!();
 };
 
