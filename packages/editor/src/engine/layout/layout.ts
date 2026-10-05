@@ -28,6 +28,7 @@ import {
 	splitGroupWithTab,
 	parseLayoutScheme,
 	collapseRedundantSplits,
+	clampEnds,
 	type LayoutSchemeData,
 	type LayoutTreeNode
 } from './layout-scheme';
@@ -151,6 +152,32 @@ const hasAnyTabs = (node: LayoutScheme | null | undefined): boolean => {
 // 序列化兜底成 1 → 兄弟重叠、边界线不可拖拽缩放）。
 const groupChildrenOf = (parent: Element): LayoutGroupElement[] =>
 	Array.from(parent.children).filter((child) => hasClass(child, 'group')) as LayoutGroupElement[];
+
+/**
+ * 写像素前把整棵组树的兄弟 `end` 收口成「严格单调且 ≤ 1」（见 `clampEnds`）。
+ *
+ * `Layout.updateGroups` 按 `end` 写内联 `left/width`，非单调的 end 会写出负宽、非有限值会写出
+ * `NaNpx` —— 浏览器两种都拒收，元素保留旧几何（实机「两个面板互相压住」）。
+ */
+const clampEndsWithin = (group: LayoutGroupElement): void => {
+	const children = groupChildrenOf(group);
+	if (children.length !== 0) {
+		const space =
+			group.split === 'horizontal'
+				? group.clientWidth
+				: group.split === 'vertical'
+					? group.clientHeight
+					: 0;
+		const ends = clampEnds(
+			children.map((child) => groupData(child).end),
+			space
+		);
+		children.forEach((child, index) => {
+			groupData(child).end = ends[index];
+		});
+	}
+	for (const child of children) clampEndsWithin(child);
+};
 
 const prevGroupOf = (group: Element): LayoutGroupElement | null => {
 	let node: Element | null = group.previousElementSibling;
@@ -463,6 +490,10 @@ const applyStructuralDrop = (input: StructuralDropInput): Promise<void> | null =
 				);
 			}
 		}
+		// 像素收敛（`setGroupSize` + `computeSizes*`）只保证「大致比例」：窄容器里那套
+		// `min = min(0.1, 32/space)` 间距会把后面的 end 推过下一个兄弟 ⇒ 负宽 ⇒ 浏览器拒收 ⇒
+		// 元素保留旧几何、同层压盖。写像素之前按「严格单调且 ≤ 1」收口一次。
+		clampEndsWithin(mounted);
 		Layout.updateGroups!(true);
 		// 尺寸收敛只改元素上的 end ⇒ 从 DOM 反读一次，把最终比例写回 layout 与运行时镜像。
 		// ⚠️ `layout[key]` 与「宿主 page 的 scheme」必须是**同一个对象**：`getPageScheme` 按同一性判等。
@@ -1013,11 +1044,19 @@ Layout.setGroupSize = function (
 			size = group.clientTop + hint.height;
 			break;
 	}
+	// 父容器不是 split（`parent.split` 为 undefined，例如新叶子被提升成组根、父节点是页面框）时
+	// `space`/`size` 会**保持 undefined**：旧实现只判 `space !== 0`，而 `undefined !== 0` 成立
+	// ⇒ 一路带着 undefined 算出 `end = undefined / undefined = NaN` 写进元素数据；
+	// `updateGroups` 随后写 `left/width = NaNpx`，浏览器**拒收非法内联值** ⇒ 该组保留上一次的
+	// 或退回静态位置（≈ left 0），它后面那个兄弟的 `start` 也是 NaN ⇒ 同样保留旧左缘 ——
+	// 同层两个组就此**互相压住**，而且每次重算都会再写一次 NaN，属于永久性错位。
+	if (space === undefined || size === undefined) return;
 	if (next !== null) {
-		size! += 1;
+		size += 1;
 	}
 	if (space !== 0) {
-		let end = size! / space!;
+		let end = size / space;
+		if (!Number.isFinite(end)) return;
 		switch (direction) {
 			case 'forward':
 				if (prev) {
@@ -1026,6 +1065,7 @@ Layout.setGroupSize = function (
 				if (next === null) {
 					end = 1;
 				}
+				if (!Number.isFinite(end)) return;
 				groupData(group).end = roundTo(end, 6);
 				this.computeSizesBefore!(group);
 				this.computeSizesAfter!(group);
@@ -1033,6 +1073,7 @@ Layout.setGroupSize = function (
 			case 'backward':
 				if (prev) {
 					end = groupData(group).end - end;
+					if (!Number.isFinite(end)) return;
 					groupData(prev).end = roundTo(end, 6);
 					this.computeSizesBefore!(prev);
 					this.computeSizesAfter!(prev);

@@ -87,4 +87,30 @@ describe('Layout.setGroupSize / computeSizes（锚点安全）', () => {
 		expect(sizedData(g1).end).toBeLessThanOrEqual(sizedData(g2).end);
 		expect(sizedData(g2).end).toBe(1);
 	});
+
+	// 回归（实机「两个面板互相压住」）：新叶子被提升成组根 / 父节点不是 split 时，
+	// 旧实现只判 `space !== 0`，而 `undefined !== 0` 成立 ⇒ 一路带着 undefined 算出
+	// `end = undefined / undefined = NaN` 写进元素数据；`updateGroups` 随后写
+	// `left/width = NaNpx`，浏览器拒收非法内联值 ⇒ 该组与它后面那个兄弟都保留旧几何
+	// （left 退回 0）⇒ 同层压盖，而且每次重算都再写一次 NaN，属永久性错位。
+	it('父节点不是 split（无分割轴）：不写 NaN 到 end，直接放弃像素收敛', () => {
+		const page = document.createElement('div') as SizedElement;
+		page.className = 'page-frame';
+		setWidth(page, 1000);
+		const g1 = createGroup(1);
+		const g2 = createGroup(1);
+		page.append(g1, g2);
+		document.body.append(page);
+
+		// forward 且有后继：旧实现在这里把 NaN 写进 g1.end
+		Layout.setGroupSize!(g1 as never, { width: 200, height: 200 }, 'forward');
+		expect(Number.isFinite(sizedData(g1).end)).toBe(true);
+		expect(sizedData(g1).end).toBe(1);
+
+		// backward 且有前驱：旧实现在这里把 NaN 写进 g2.end（prev）
+		Layout.setGroupSize!(g2 as never, { width: 200, height: 200 }, 'backward');
+		expect(Number.isFinite(sizedData(g2).end)).toBe(true);
+		expect(sizedData(g2).end).toBe(1);
+		expect(Number.isFinite(sizedData(g1).end)).toBe(true);
+	});
 });

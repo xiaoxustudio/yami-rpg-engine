@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	activateLayoutTab,
+	clampEnds,
 	collapseRedundantSplits,
 	findGroup,
 	groupActiveTab,
@@ -518,5 +519,44 @@ describe('splitGroupWithTab 容器落点（region 给的 root/父容器/外层�
 			'layout-4',
 			'layout-5'
 		]);
+	});
+});
+
+describe('clampEnds 跨度收口（写像素前的单调/有限性保证）', () => {
+	it('已单调且不超 1 时原样返回', () => {
+		expect(clampEnds([0.2, 0.5, 1], 1000)).toEqual([0.2, 0.5, 1]);
+	});
+
+	it('非单调（后一个更小）会被抬到「前一个 + 1px」，不再写出负宽', () => {
+		// 这是实机压盖的直接来源：end 倒退 ⇒ width = pw*(end - prev) < 0 ⇒ 浏览器拒收
+		expect(clampEnds([0.5, 0.3], 1000)).toEqual([0.5, 0.501]);
+		expect(clampEnds([0.28, 0.07, 0.5], 100)).toEqual([0.28, 0.29, 0.5]);
+	});
+
+	it('超过 1 会被截到 1（窄容器里 min 间距硬撑出来的越界）', () => {
+		expect(clampEnds([0.9, 1.4, 1.8], 1000)).toEqual([0.9, 1, 1]);
+	});
+
+	it('非有限值（NaN/undefined，`undefined / undefined` 那条旧路径）按「贴住前一个」处理', () => {
+		expect(clampEnds([Number.NaN, 0.5], 1000)).toEqual([0, 0.5]);
+		expect(clampEnds([0.4, Number.NaN, 0.9], 1000)).toEqual([0.4, 0.401, 0.9]);
+		expect(
+			clampEnds([undefined as unknown as number, 1], 1000).every((end) =>
+				Number.isFinite(end)
+			)
+		).toBe(true);
+	});
+
+	it('空间极度不足（1px 间隔都塞不下）时全部贴到 1，仍然单调、仍然有限', () => {
+		const ends = clampEnds([0.5, 0.6, 0.7, 0.8], 2);
+		expect(ends).toEqual([0.5, 1, 1, 1]);
+		for (let index = 1; index < ends.length; index++) {
+			expect(ends[index]).toBeGreaterThanOrEqual(ends[index - 1]);
+		}
+	});
+
+	it('空数组与单元素是自己的边界', () => {
+		expect(clampEnds([], 1000)).toEqual([]);
+		expect(clampEnds([2], 1000)).toEqual([1]);
 	});
 });

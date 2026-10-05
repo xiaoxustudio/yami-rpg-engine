@@ -258,6 +258,37 @@ export function moveTabWithin(
 
 /* ------------------------------ 结构性 drop（region 边缘） ------------------------------ */
 
+/**
+ * 收敛一组兄弟跨度（`end` = 相对父容器的累计结束比例）。
+ *
+ * 为什么必须有这一步：`Layout.updateGroups` 用 `left = pw*start`、`width = pw*(end-start)`
+ * 写内联像素。一旦 `end` 非单调（后一个比前一个小）或不是有限数，写出的就是**负宽 / `NaNpx`**
+ * —— 浏览器直接拒收非法内联值，元素于是保留上一次的 `left/width` 或退回静态位置（≈ 左缘 0），
+ * 实机表现就是「同层两个组互相压住」。像素口径的间距收敛（`computeSizesBefore/After` 用
+ * `min = min(0.1, 32/space)`）在窄容器里正是非单调的一个来源。
+ *
+ * 规则：严格单调、首个不早于 0、末个不超过 1；间隔取 1px 对应比例（空间不足时不再硬撑，
+ * 宁可贴住也不越过后一个兄弟）。非有限值按「贴住前一个」处理。
+ *
+ * @param ends 各兄弟当前的 end（按 DOM 序）
+ * @param space 父容器在分割轴上的像素尺寸（用于把 1px 换算成比例）
+ */
+export function clampEnds(ends: readonly number[], space: number): number[] {
+	const epsilon = space > 0 ? 1 / space : 0;
+	const out: number[] = [];
+	let prev = 0;
+	for (let index = 0; index < ends.length; index++) {
+		const raw = ends[index];
+		const floor = index === 0 ? 0 : prev + epsilon;
+		const value = Number.isFinite(raw) ? raw : floor;
+		// 与引擎其余收敛点同口径（`roundTo(x, 6)`）：避免 0.28 + 0.01 = 0.29000000000000004 这种尾巴
+		const end = Math.round(Math.min(Math.max(value, floor), 1) * 1e6) / 1e6;
+		out.push(end);
+		prev = end;
+	}
+	return out;
+}
+
 export type LayoutDropDirection = 'left' | 'right' | 'top' | 'bottom';
 
 const dropBefore = (direction: LayoutDropDirection): boolean =>
