@@ -1099,8 +1099,8 @@ Animation.timeline.updateHead = function (this: typeof Animation) {
 	// 版式口径：`[页签条][播放栏][内容列：刻度尺 / 帧网格]`。播放栏宽度由内容撑开（6 个按钮），
 	// 页签条 + 按钮经常超过图层列的 18% —— 那时刻度尺（左缘 = 内容列左缘）就会被按钮挡住。
 	// 所以内容列取「18% 与播放栏右缘之后」的较大者，并**同时**写给图层列宽 / 帧网格左缘 /
-	// 指针区左缘：刻度尺不再被挡，且仍与帧格严格对齐（对齐靠 `outerRuler.scrollLeft` 镜像滚动，
-	// 所以内容列一动就必须三个一起动 —— 只动刻度尺会让整条刻度与帧格错开）。
+	// 指针区左缘 / 刻度尺左缘这四处。刻度对齐靠 `outerRuler.scrollLeft` 镜像帧网格滚动，
+	// 所以内容列一动必须四处一起动：只动刻度尺会让整条刻度与帧格错开，只动网格会让刻度被挡。
 	const { head } = elementDataOf<{ head?: HTMLElement }>(this);
 	// ⚠️ 元素数据是 `Animation.initialize` 期写死的：那一刻面板若还没登记（注册表为空）它就是
 	// undefined，而下面每一行都要碰 `head`。旧实现是靠 `if (!nav || !item) return` 顺带兜住的
