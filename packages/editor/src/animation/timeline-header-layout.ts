@@ -1,12 +1,43 @@
 /**
- * 时间轴头部（`#animation-timeline-head`）的布局：head 自己的横向位置，以及刻度尺相对 head 的左偏移。
+ * 时间轴头部（`#animation-timeline-head`）与「内容列」的版式口径。
  *
- * 播放栏（`#animation-timeline-toolbar`）**不在此列** —— 它已由 `AnimationTimelinePanel.vue`
- * 用 `<Teleport>` 送进分组页签条（`.nav-bar`，本身是 flex 行）并贴最右侧，见
- * `Project/css/animation.css` 里的 `#animation-timeline-toolbar`。
- * 留在 head 里时它与页签条同处那条 24px 带子，页签条叠放更高就会整条盖住它
- * （实机「动画底部看不到播放栏」）。
+ * 三个量必须自洽，否则实机上会出现「刻度尺被播放栏挡住」或「刻度和帧格对不齐」：
+ *
+ * 1. **内容列左缘**（`timelineContentLeft`）：帧网格 / 指针区 / 刻度尺共用的起点；
+ * 2. head 左缘（`timelineHeadLeft`）：贴着分组最后一个页签的右缘；
+ * 3. 刻度尺相对 head 的偏移（`timelineRulerLeft`）：把 1 与 2 相减。
+ *
+ * 刻度尺的刻度对齐**不是**按左缘定的，而是靠 `outerRuler.scrollLeft` 镜像帧网格的滚动
+ * （见 `Animation.outerTimelineListScroll`），所以刻度尺盒子的左缘必须**精确等于**内容列左缘
+ * ——既不右移（会与帧格整条错开），也不左移（会伸到页签条底下）。
  */
+
+/** 内容列默认占比（= `#animation-layer-list` 的图层列宽，CSS 里的 18% 兜底） */
+export const TIMELINE_CONTENT_RATIO = 0.18;
+
+/**
+ * 内容列左缘（视口坐标，绝对值）：默认取 `naturalLeft`（页面 18% 处），但**不允许落在播放栏
+ * 下面** —— 播放栏在 head 左缘起、宽度由内容撑开，页签条 + 6 个按钮经常超过 18%，此时帧网格
+ * 与刻度尺整体右移到「播放栏右缘之后」，这样刻度尺既不被挡住、又仍与帧格严格对齐。
+ *
+ * 面板窄到连播放栏都放不下时退到 `frameRight - 1`（内容列贴住页面右缘）：这时只能让播放栏
+ * （被 head 的 `overflow: hidden` 裁切）压住刻度尺，但绝不把内容列推出页面。
+ *
+ * @param naturalLeft 默认内容列左缘（视口坐标）
+ * @param toolbarRight 播放栏右缘（视口坐标）；**null = 拿不到播放栏**（不施加约束）
+ * @param frameRight 页面框右缘（视口坐标）
+ */
+export const timelineContentLeft = (
+	naturalLeft: number,
+	toolbarRight: number | null,
+	frameRight: number
+): number => {
+	// 期望值：不低于默认列；有播放栏时还要越过它 1px
+	const wanted = toolbarRight === null ? naturalLeft : Math.max(naturalLeft, toolbarRight + 1);
+	// 上限：贴住页面右缘，但绝不低于默认列（面板极窄时宁可让播放栏压住刻度尺）
+	const limit = Math.max(naturalLeft, frameRight - 1);
+	return Math.min(wanted, limit);
+};
 
 /**
  * head 相对**页面框**（`#animation-timeline`）的左偏移。
@@ -24,14 +55,7 @@ export const timelineHeadLeft = (navItemRight: number | null, frameLeft: number)
 
 /**
  * 刻度尺（`#animation-timeline-ruler-outer`）相对 head 左缘的偏移
- * = 「head 左缘 → 时间轴内容列」的空隙。
- *
- * ⚠️ 这里**只按空隙**算，绝不能把播放栏宽度也减掉：刻度尺的刻度是靠
- * `outerRuler.scrollLeft` 镜像帧网格的滚动来对齐的（见 `outerTimelineListScroll`），
- * 所以刻度尺**盒子的左缘必须精确落在内容列左缘**（帧网格起点）。把盒子右移 = 整条刻度
- * 偏移相同的像素、和下面的帧格再也对不上（实机反馈）。播放栏与它的关系是「压在它上面」：
- * 播放栏底板不透明（见 `animation.css`），因此落在按钮下面的那一段刻度不可见，
- * 但露出来的部分仍然与帧网格严格对齐。
+ * = 内容列左缘 − head 左缘。
  *
  * 空隙为负时（页签条压过内容列）归零：负值会让刻度尺向左伸到页签条上，配合 head 的
  * `z-index` 就会反过来盖住页签，所以宁可让刻度尺从 head 左缘起画。

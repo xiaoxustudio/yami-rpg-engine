@@ -29,9 +29,14 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { getAnimationStore } from '@app/stores/animation';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import { elementDataOf, getElementData } from '@app/utils/element-data';
-import { clamp } from '@app/utils/math';
+import { clamp, roundTo } from '@app/utils/math';
 import { empty as fnEmpty } from '@app/utils/function';
-import { timelineRulerLeft, timelineHeadLeft } from './timeline-header-layout.ts';
+import {
+	timelineRulerLeft,
+	timelineHeadLeft,
+	timelineContentLeft,
+	TIMELINE_CONTENT_RATIO
+} from './timeline-header-layout.ts';
 
 const Clipboard = GlobalClipboard;
 
@@ -1087,14 +1092,15 @@ getListConfig(Animation.layerList).onDelete = function (
 	}
 } as (item: unknown) => void;
 
-// 时间轴 - 更新头部位置
+// 时间轴 - 更新头部位置 + 内容列（图层列宽 / 帧网格左缘 / 刻度尺）
 Animation.timeline.updateHead = function (this: typeof Animation) {
 	// 同 `Animation.list.updateHead`——`head` 在元素数据里，不再走原型访问器。
 	//
-	// head 里是「播放栏（绝对定位在 head 左缘）+ 刻度尺（绝对定位在内容列左缘）」，
-	// 两者由 CSS 的层级与**播放栏的不透明底板**决定观感（见 animation.css）：
-	// 窄面板里播放栏会盖住刻度尺的左边一段，但不会露出刻度（不透明），露出来的部分仍与帧格对齐。
-	// 这里只负责：① head 的横向位置（= 分组最后一个页签的右缘）② 刻度尺相对 head 的左偏移。
+	// 版式口径：`[页签条][播放栏][内容列：刻度尺 / 帧网格]`。播放栏宽度由内容撑开（6 个按钮），
+	// 页签条 + 按钮经常超过图层列的 18% —— 那时刻度尺（左缘 = 内容列左缘）就会被按钮挡住。
+	// 所以内容列取「18% 与播放栏右缘之后」的较大者，并**同时**写给图层列宽 / 帧网格左缘 /
+	// 指针区左缘：刻度尺不再被挡，且仍与帧格严格对齐（对齐靠 `outerRuler.scrollLeft` 镜像滚动，
+	// 所以内容列一动就必须三个一起动 —— 只动刻度尺会让整条刻度与帧格错开）。
 	const { head } = elementDataOf<{ head?: HTMLElement }>(this);
 	// ⚠️ 元素数据是 `Animation.initialize` 期写死的：那一刻面板若还没登记（注册表为空）它就是
 	// undefined，而下面每一行都要碰 `head`。旧实现是靠 `if (!nav || !item) return` 顺带兜住的
@@ -1106,19 +1112,32 @@ Animation.timeline.updateHead = function (this: typeof Animation) {
 	// 这两个成员可能是模块加载期的 `{}` 占位（`if (x)` 拦不住，`x.style`/`rect()` 才是 undefined）
 	if (!(ruler instanceof HTMLElement) || !(list instanceof HTMLElement)) return;
 
+	const page = this as unknown as HTMLElement;
+	const frameRect = rect(page);
 	const nav = headNavOf(head);
 	const item = lastNavItemOf(nav);
 	// 分组没有页签时 `nav`/`item` 为 null（旧实现此处直接 return ⇒ head 因 CSS 无 left
 	// 收窄成 0 宽、子元素被挤出可视区），退回页面框左缘。
 	const navItemRight = item === null ? null : rect(item).right;
-	const frameRect = rect(this as unknown as HTMLElement);
 	head.style.left = `${timelineHeadLeft(navItemRight, frameRect.left)}px`;
-	// 用 head **实测**左缘算空隙（= 内容列左缘 − head 左缘），两种定位路径都成立。
-	// ⚠️ 只用空隙，不要减播放栏宽度：刻度尺盒子的左缘必须精确落在内容列左缘（帧网格起点），
-	// 否则整条刻度会跟着盒子一起偏移、与下面的帧格对不上（刻度对齐靠 `scrollLeft` 镜像滚动）。
-	// 播放栏压在刻度尺上面，靠它自己的不透明底板遮住重叠段（见 animation.css）。
+
+	// ① 内容列：默认 18%，但不允许落在播放栏下面（见 `timelineContentLeft`）
+	const toolbar = Animation.toolbar;
+	const toolbarRight =
+		toolbar instanceof HTMLElement && rect(toolbar).width !== 0 ? rect(toolbar).right : null;
+	const naturalLeft = frameRect.left + page.clientWidth * TIMELINE_CONTENT_RATIO;
+	const contentLeft = timelineContentLeft(naturalLeft, toolbarRight, frameRect.right);
+	const contentOffset = `${roundTo(contentLeft - frameRect.left, 3)}px`;
+	// 图层列宽 / 帧网格左缘 / 指针区左缘：与刻度尺同一口径（CSS 里的 18% 只是 JS 未跑时的兜底）
+	const layerList = Animation.layerList;
+	if (layerList instanceof HTMLElement) layerList.style.width = contentOffset;
+	list.style.left = contentOffset;
+	const pointerArea = Animation.outerPointerArea;
+	if (pointerArea instanceof HTMLElement) pointerArea.style.left = contentOffset;
+
+	// ② 刻度尺相对 head 的左偏移（= 内容列左缘 − head 左缘），清掉历史实现留下的 margin
 	ruler.style.marginLeft = '';
-	ruler.style.left = `${timelineRulerLeft(rect(list).left - rect(head).left)}px`;
+	ruler.style.left = `${timelineRulerLeft(contentLeft - rect(head).left)}px`;
 	Animation.updateRuler!();
 };
 

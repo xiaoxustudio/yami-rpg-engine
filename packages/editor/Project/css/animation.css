@@ -151,11 +151,11 @@
 #animation-timeline-toolbar {
 	display: flex;
 	align-items: center;
-	/* 版式：`[页签] → 播放栏(left:0) → 刻度尺(left = 内容列左缘)`。
-	   播放栏宽度由内容撑开（6×16px），不拉伸；刻度尺盒子的左缘必须落在内容列左缘（帧网格
-	   起点，对齐靠 `outerRuler.scrollLeft` 镜像滚动），所以窄面板里刻度尺的左边一段会落在
-	   播放栏下面 —— 靠这里**不透明的底板**遮住（旧实现没有背景色，刻度会从按钮盒子后面
-	   透出来，看起来就是「时间轴和播放按钮重叠」）。 */
+	/* 版式：`[页签] → 播放栏(left:0) → 刻度尺(left = 内容列左缘)`。播放栏宽度由内容撑开
+	   （6×16px），不拉伸；内容列由 `updateHead()` 自适应右移到播放栏之后（见
+	   `timelineContentLeft`），所以正常情况下刻度尺不会被它挡住。
+	   这里的不透明底板是兜底：`updateHead()` 还没跑（首帧）或面板极窄到内容列只能贴住右缘时，
+	   落在按钮下面的刻度不会从透明按钮盒子里透出来。 */
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -197,11 +197,10 @@
 #animation-timeline-ruler-outer {
 	position: absolute;
 	top: 0;
-	/* 兜底左缘：正常由 `updateHead()` 写成「head 左缘 → 时间轴内容列」的空隙（内联 left）。
-	   没跑到时用与 `#animation-timeline-list-outer` 同源的 `18%`：head 的兜底 left 是 0，
-	   于是 18%（head 宽 = 页面宽）= 内容列左缘 ⇒ 刻度尺仍与帧网格对齐，且不会盖住左侧按钮。
-	   ⚠️ 这个左缘就是帧网格的起点，**不能因为播放栏占位而右移**（刻度靠 scrollLeft 镜像滚动
-	   对齐），否则整条刻度和下面的帧格错开。 */
+	/* 刻度尺左缘 = 内容列左缘（与 `#animation-timeline-list-outer` 的 left、`#animation-layer-list`
+	   的宽度**同值**）：18% 是兜底，正常由 `updateHead()` 写内联 px（内容列会自适应右移到播放栏之后）。
+	   ⚠️ 这个左缘就是帧网格的起点，刻度对齐靠 `outerRuler.scrollLeft` 镜像网格滚动，因此它与网格
+	   必须同进同退：只动它会整条偏移，只动网格会让它被播放栏挡住。 */
 	left: 18%;
 	right: 0;
 	height: 24px;
@@ -247,6 +246,9 @@
 	left: 0;
 	top: 0;
 	bottom: 0;
+	/* 图层列宽 = 帧网格 / 指针区 / 刻度尺共用的「内容列」左缘。18% 只是 `updateHead()` 还没
+	   跑到时的兜底：页签条 + 播放栏经常超过 18%，那时刻度尺会被播放栏挡住 —— 所以由 JS 按
+	   `timelineContentLeft()` 写**内联 px 宽**（越过播放栏），下面三处的 left/width 一起动。 */
 	width: 18%;
 	border-right: var(--nav-bar-border);
 }
@@ -308,6 +310,9 @@
 
 #animation-timeline-list-outer {
 	position: absolute;
+	/* 内容列左缘（帧网格起点）：18% 是兜底，正常由 `updateHead()` 写内联 px（可能越过播放栏）。
+	   ⚠️ 必须与 `#animation-layer-list` 的宽度、`#animation-timeline-ruler-outer` 的左缘**同值**：
+	   刻度对齐靠 `outerRuler.scrollLeft` 镜像本容器的滚动，网格一动刻度必须一起动。 */
 	left: 18%;
 	top: 0;
 	right: 0;
@@ -427,6 +432,8 @@
 
 #animation-timeline-pointer-area-outer {
 	position: absolute;
+	/* 帧指针命中区：与内容列同值（18% 是兜底，正常由 `updateHead()` 写内联 px），
+	   否则帧格右移后指针区还留在旧位置，点击帧会偏。 */
 	left: 18%;
 	top: -25px;
 	right: 0;
