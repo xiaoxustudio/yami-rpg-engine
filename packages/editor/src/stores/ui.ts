@@ -60,6 +60,22 @@ export function registerUIEngine(engine: Record<string, unknown>): void {
 	uiEngineRef = engine;
 }
 
+/**
+ * UI 窗口 store 的状态键。
+ *
+ * 与 `engine/ui/ui-singleton.ts:339` 的 `uiBridgeKeys`（6 个：state / target / zoom / width /
+ * height / mode）**不是同一份**，且这是**有意**的：
+ *
+ * - 前 6 个被桥接到单例 `UI` 上（ui-kit 与遗留代码按 `UI.xxx` 取用）；
+ * - 其余 15 个（controlPointTexture / inspectorTypeMap / history / matrix / root / background /
+ *   meta / nodes / foreground / scrollLeft / scrollTop / scrollRight / scrollBottom / dragging /
+ *   hover）**只在 editor 内经 `getUIStore()` 使用** —— 实测 72 处，例如
+ *   `engine/ui/animation-element.ts:172-175` 的滚动偏移、`engine/animation/animation-window-engine.ts:767`
+ *   的控制点纹理、`composables/usePresetElementWindow.ts:87` 的 `meta.guid`；单例上不镜像。
+ *
+ * 换言之：桥接列表 = 「外部/遗留按 `UI.xxx` 取的字段」，本数组 = 「store 拥有的全部状态」，
+ * 两者职责不同，因此长度本来就可以不等（`autoTile` 的 `ruleBits` 是同一类情况）。
+ */
 export const uiStateKeys = [
 	'state',
 	'target',
