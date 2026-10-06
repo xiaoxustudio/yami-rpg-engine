@@ -217,7 +217,8 @@
 | 项 | 位置 | 状态 / 为什么 |
 |---|---|---|
 | 卫生项：`stores/data.ts` manifest 双 ref | `stores/data.ts:271/:275` | 去重要给 `data` 加**可枚举** getter，否则 `JSON.stringify(data)` 会漏字段 ⇒ **风险大于收益，判定不做**（保留现状） |
-| 卫生项：`Layout.layout/layouts/default` 字典 | `engine/layout/layout.ts` | 牵动 ~15 个 spec，收益（DevTools 可见）低于改动面 ⇒ 低优先级 |
+| 卫生项：`Layout` 残余字段 | `engine/layout/layout.ts` | **已核查，无需动作**：该域早已有 store（`stores/layout.ts`，`layoutStateKeys` 4 项，与 spec 期望一致）；单例上还剩的 `manager` / `items` / 页方案 `WeakMap` 等是**DOM 与 Vue 实例句柄 + 引擎内部缓存** ⇒ 属 B 类「不得进 store」。分析阶段记的 `layout/layouts/default` 字典在全仓搜不到该形态的读写点，按**过时条目**关闭 |
+| 规范项：`storeToRefs` | 组件层 | **规则入档**：在组件 `setup` / `<script setup>` 里**解构 store 必须用 `storeToRefs`**（否则丢失响应性）；`.ts` 里读取**快照**（一次性取值、不参与渲染）按现状直接解构即可。现状：0 处 `storeToRefs`、32 处解构**全在 `.ts` 且只解构 state** ⇒ 当前无 bug，属预防性规范 |
 | 卫生项：`storeToRefs` 规范文档化 | 组件层 | 当前 0 处使用、32 处解构**全在 .ts 且只解构 state**（快照读）⇒ 无 bug，属规范项，写进 README/文档即可 |
 | 白名单漂移：`window.stack` | `tools/window-object.ts` + `stores/window.ts:19` | 实为**有意保留的镜像**：store 里已是真源（`shallowReactive<string[]>` + `syncStack`），单例那份供外部（ui-kit/测试）读取；改成 store 直连需给 ui-kit 注入端口，属**可选重构**、非缺陷 |
 | 白名单漂移：`autoTile`（导出多 3 键）、`ui`（15 promoted 未桥） | — | **有意差异**，非缺陷，已在第 1.1 节说明 |
