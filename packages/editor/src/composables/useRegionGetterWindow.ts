@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { getWindowStore } from '@app/stores/window';
 import { requestFocus } from '@app/directives/focus';
 
@@ -21,10 +21,22 @@ interface RegionGetterWindow {
 	onWindowClosed: () => void;
 }
 
-const form = reactive<RegionGetterForm>({
-	type: 'trigger',
-	presetId: ''
-});
+// 表单真源在 `stores/getter-windows.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: RegionGetterForm = {
+	get type(): RegionGetterForm['type'] {
+		return getGetterWindowsStore().regionGetterForm.type;
+	},
+	set type(value: RegionGetterForm['type']) {
+		getGetterWindowsStore().regionGetterForm.type = value;
+	},
+	get presetId(): RegionGetterForm['presetId'] {
+		return getGetterWindowsStore().regionGetterForm.presetId;
+	},
+	set presetId(value: RegionGetterForm['presetId']) {
+		getGetterWindowsStore().regionGetterForm.presetId = value;
+	}
+};
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 
 const open = (target: RegionGetterTarget, defaults?: Partial<RegionGetterForm>): void => {

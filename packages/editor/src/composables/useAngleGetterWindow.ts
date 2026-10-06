@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { getWindowStore } from '@app/stores/window';
 import { requestFocus } from '@app/directives/focus';
 
@@ -22,11 +22,28 @@ interface AngleGetterWindow {
 	onWindowClosed: () => void;
 }
 
-const form = reactive<AngleGetterForm>({
-	type: 'position',
-	position: { type: 'actor', actor: { type: 'trigger' } },
-	degrees: 0
-});
+// 表单真源在 `stores/getter-windows.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: AngleGetterForm = {
+	get type(): AngleGetterForm['type'] {
+		return getGetterWindowsStore().angleGetterForm.type;
+	},
+	set type(value: AngleGetterForm['type']) {
+		getGetterWindowsStore().angleGetterForm.type = value;
+	},
+	get position(): AngleGetterForm['position'] {
+		return getGetterWindowsStore().angleGetterForm.position;
+	},
+	set position(value: AngleGetterForm['position']) {
+		getGetterWindowsStore().angleGetterForm.position = value;
+	},
+	get degrees(): AngleGetterForm['degrees'] {
+		return getGetterWindowsStore().angleGetterForm.degrees;
+	},
+	set degrees(value: AngleGetterForm['degrees']) {
+		getGetterWindowsStore().angleGetterForm.degrees = value;
+	}
+};
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 
 const open = (target: AngleGetterTarget): void => {

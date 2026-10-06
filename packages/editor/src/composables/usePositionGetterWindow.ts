@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { getWindowStore } from '@app/stores/window';
 import { requestFocus } from '@app/directives/focus';
 
@@ -28,17 +28,64 @@ interface PositionGetterWindow {
 	onWindowClosed: () => void;
 }
 
-const form = reactive<PositionGetterForm>({
-	type: 'absolute',
-	x: 0,
-	y: 0,
-	actor: { type: 'trigger' },
-	trigger: { type: 'trigger' },
-	light: { type: 'trigger' },
-	region: { type: 'trigger' },
-	mode: 'center',
-	objectId: ''
-});
+// 表单真源在 `stores/getter-windows.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: PositionGetterForm = {
+	get type(): PositionGetterForm['type'] {
+		return getGetterWindowsStore().positionGetterForm.type;
+	},
+	set type(value: PositionGetterForm['type']) {
+		getGetterWindowsStore().positionGetterForm.type = value;
+	},
+	get x(): PositionGetterForm['x'] {
+		return getGetterWindowsStore().positionGetterForm.x;
+	},
+	set x(value: PositionGetterForm['x']) {
+		getGetterWindowsStore().positionGetterForm.x = value;
+	},
+	get y(): PositionGetterForm['y'] {
+		return getGetterWindowsStore().positionGetterForm.y;
+	},
+	set y(value: PositionGetterForm['y']) {
+		getGetterWindowsStore().positionGetterForm.y = value;
+	},
+	get actor(): PositionGetterForm['actor'] {
+		return getGetterWindowsStore().positionGetterForm.actor;
+	},
+	set actor(value: PositionGetterForm['actor']) {
+		getGetterWindowsStore().positionGetterForm.actor = value;
+	},
+	get trigger(): PositionGetterForm['trigger'] {
+		return getGetterWindowsStore().positionGetterForm.trigger;
+	},
+	set trigger(value: PositionGetterForm['trigger']) {
+		getGetterWindowsStore().positionGetterForm.trigger = value;
+	},
+	get light(): PositionGetterForm['light'] {
+		return getGetterWindowsStore().positionGetterForm.light;
+	},
+	set light(value: PositionGetterForm['light']) {
+		getGetterWindowsStore().positionGetterForm.light = value;
+	},
+	get region(): PositionGetterForm['region'] {
+		return getGetterWindowsStore().positionGetterForm.region;
+	},
+	set region(value: PositionGetterForm['region']) {
+		getGetterWindowsStore().positionGetterForm.region = value;
+	},
+	get mode(): PositionGetterForm['mode'] {
+		return getGetterWindowsStore().positionGetterForm.mode;
+	},
+	set mode(value: PositionGetterForm['mode']) {
+		getGetterWindowsStore().positionGetterForm.mode = value;
+	},
+	get objectId(): PositionGetterForm['objectId'] {
+		return getGetterWindowsStore().positionGetterForm.objectId;
+	},
+	set objectId(value: PositionGetterForm['objectId']) {
+		getGetterWindowsStore().positionGetterForm.objectId = value;
+	}
+};
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 let pluginInput = false;
 

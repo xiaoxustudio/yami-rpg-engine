@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { getWindowStore } from '@app/stores/window';
 import { requestFocus } from '@app/directives/focus';
 
@@ -21,10 +21,22 @@ interface TriggerGetterWindow {
 	onWindowClosed: () => void;
 }
 
-const form = reactive<TriggerGetterForm>({
-	type: 'trigger',
-	variable: { type: 'local', key: '' }
-});
+// 表单真源在 `stores/getter-windows.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: TriggerGetterForm = {
+	get type(): TriggerGetterForm['type'] {
+		return getGetterWindowsStore().triggerGetterForm.type;
+	},
+	set type(value: TriggerGetterForm['type']) {
+		getGetterWindowsStore().triggerGetterForm.type = value;
+	},
+	get variable(): TriggerGetterForm['variable'] {
+		return getGetterWindowsStore().triggerGetterForm.variable;
+	},
+	set variable(value: TriggerGetterForm['variable']) {
+		getGetterWindowsStore().triggerGetterForm.variable = value;
+	}
+};
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 
 const open = (target: TriggerGetterTarget): void => {

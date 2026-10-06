@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { getWindowStore } from '@app/stores/window';
 import { requestFocus } from '@app/directives/focus';
 
@@ -22,11 +22,28 @@ interface AncestorGetterWindow {
 	onWindowClosed: () => void;
 }
 
-const form = reactive<AncestorGetterForm>({
-	type: 'trigger',
-	presetId: '',
-	variable: { type: 'local', key: '' }
-});
+// 表单真源在 `stores/getter-windows.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: AncestorGetterForm = {
+	get type(): AncestorGetterForm['type'] {
+		return getGetterWindowsStore().ancestorGetterForm.type;
+	},
+	set type(value: AncestorGetterForm['type']) {
+		getGetterWindowsStore().ancestorGetterForm.type = value;
+	},
+	get presetId(): AncestorGetterForm['presetId'] {
+		return getGetterWindowsStore().ancestorGetterForm.presetId;
+	},
+	set presetId(value: AncestorGetterForm['presetId']) {
+		getGetterWindowsStore().ancestorGetterForm.presetId = value;
+	},
+	get variable(): AncestorGetterForm['variable'] {
+		return getGetterWindowsStore().ancestorGetterForm.variable;
+	},
+	set variable(value: AncestorGetterForm['variable']) {
+		getGetterWindowsStore().ancestorGetterForm.variable = value;
+	}
+};
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 
 const open = (target: AncestorGetterTarget, defaults?: Partial<AncestorGetterForm>): void => {

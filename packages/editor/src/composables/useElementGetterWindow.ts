@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { getWindowStore } from '@app/stores/window';
 import { requestFocus } from '@app/directives/focus';
 
@@ -24,13 +24,40 @@ interface ElementGetterWindow {
 	onWindowClosed: () => void;
 }
 
-const form = reactive<ElementGetterForm>({
-	type: 'trigger',
-	presetId: '',
-	ancestor: { type: 'trigger' },
-	index: 0,
-	variable: { type: 'local', key: '' }
-});
+// 表单真源在 `stores/getter-windows.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: ElementGetterForm = {
+	get type(): ElementGetterForm['type'] {
+		return getGetterWindowsStore().elementGetterForm.type;
+	},
+	set type(value: ElementGetterForm['type']) {
+		getGetterWindowsStore().elementGetterForm.type = value;
+	},
+	get presetId(): ElementGetterForm['presetId'] {
+		return getGetterWindowsStore().elementGetterForm.presetId;
+	},
+	set presetId(value: ElementGetterForm['presetId']) {
+		getGetterWindowsStore().elementGetterForm.presetId = value;
+	},
+	get ancestor(): ElementGetterForm['ancestor'] {
+		return getGetterWindowsStore().elementGetterForm.ancestor;
+	},
+	set ancestor(value: ElementGetterForm['ancestor']) {
+		getGetterWindowsStore().elementGetterForm.ancestor = value;
+	},
+	get index(): ElementGetterForm['index'] {
+		return getGetterWindowsStore().elementGetterForm.index;
+	},
+	set index(value: ElementGetterForm['index']) {
+		getGetterWindowsStore().elementGetterForm.index = value;
+	},
+	get variable(): ElementGetterForm['variable'] {
+		return getGetterWindowsStore().elementGetterForm.variable;
+	},
+	set variable(value: ElementGetterForm['variable']) {
+		getGetterWindowsStore().elementGetterForm.variable = value;
+	}
+};
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 let pluginInput = false;
 

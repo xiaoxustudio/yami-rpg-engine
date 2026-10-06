@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { elementDataOf, type CustomBoxApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { getWindowStore } from '@app/stores/window';
@@ -81,18 +81,70 @@ interface VariableGetterState {
 	filter: string;
 }
 
-const form = reactive<VariableGetterForm>({
-	type: '',
-	actor: { type: 'trigger' },
-	skill: { type: 'trigger' },
-	state: { type: 'trigger' },
-	equipment: { type: 'trigger' },
-	item: { type: 'trigger' },
-	element: { type: 'trigger' },
-	commonKey: '',
-	presetKey: '',
-	globalKey: ''
-});
+// 表单真源在 `stores/getter-windows.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: VariableGetterForm = {
+	get type(): VariableGetterForm['type'] {
+		return getGetterWindowsStore().variableGetterForm.type;
+	},
+	set type(value: VariableGetterForm['type']) {
+		getGetterWindowsStore().variableGetterForm.type = value;
+	},
+	get actor(): VariableGetterForm['actor'] {
+		return getGetterWindowsStore().variableGetterForm.actor;
+	},
+	set actor(value: VariableGetterForm['actor']) {
+		getGetterWindowsStore().variableGetterForm.actor = value;
+	},
+	get skill(): VariableGetterForm['skill'] {
+		return getGetterWindowsStore().variableGetterForm.skill;
+	},
+	set skill(value: VariableGetterForm['skill']) {
+		getGetterWindowsStore().variableGetterForm.skill = value;
+	},
+	get state(): VariableGetterForm['state'] {
+		return getGetterWindowsStore().variableGetterForm.state;
+	},
+	set state(value: VariableGetterForm['state']) {
+		getGetterWindowsStore().variableGetterForm.state = value;
+	},
+	get equipment(): VariableGetterForm['equipment'] {
+		return getGetterWindowsStore().variableGetterForm.equipment;
+	},
+	set equipment(value: VariableGetterForm['equipment']) {
+		getGetterWindowsStore().variableGetterForm.equipment = value;
+	},
+	get item(): VariableGetterForm['item'] {
+		return getGetterWindowsStore().variableGetterForm.item;
+	},
+	set item(value: VariableGetterForm['item']) {
+		getGetterWindowsStore().variableGetterForm.item = value;
+	},
+	get element(): VariableGetterForm['element'] {
+		return getGetterWindowsStore().variableGetterForm.element;
+	},
+	set element(value: VariableGetterForm['element']) {
+		getGetterWindowsStore().variableGetterForm.element = value;
+	},
+	get commonKey(): VariableGetterForm['commonKey'] {
+		return getGetterWindowsStore().variableGetterForm.commonKey;
+	},
+	set commonKey(value: VariableGetterForm['commonKey']) {
+		getGetterWindowsStore().variableGetterForm.commonKey = value;
+	},
+	get presetKey(): VariableGetterForm['presetKey'] {
+		return getGetterWindowsStore().variableGetterForm.presetKey;
+	},
+	set presetKey(value: VariableGetterForm['presetKey']) {
+		getGetterWindowsStore().variableGetterForm.presetKey = value;
+	},
+	get globalKey(): VariableGetterForm['globalKey'] {
+		return getGetterWindowsStore().variableGetterForm.globalKey;
+	},
+	set globalKey(value: VariableGetterForm['globalKey']) {
+		getGetterWindowsStore().variableGetterForm.globalKey = value;
+	}
+};
 
 const states: Record<string, VariableGetterState | null> = {
 	variableGetter: null,

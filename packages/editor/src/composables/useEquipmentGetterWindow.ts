@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { getWindowStore } from '@app/stores/window';
 import { requestFocus } from '@app/directives/focus';
 
@@ -24,13 +24,40 @@ interface EquipmentGetterWindow {
 	onWindowClosed: () => void;
 }
 
-const form = reactive<EquipmentGetterForm>({
-	type: 'trigger',
-	actor: { type: 'trigger' },
-	slot: '',
-	equipmentId: '',
-	variable: { type: 'local', key: '' }
-});
+// 表单真源在 `stores/getter-windows.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: EquipmentGetterForm = {
+	get type(): EquipmentGetterForm['type'] {
+		return getGetterWindowsStore().equipmentGetterForm.type;
+	},
+	set type(value: EquipmentGetterForm['type']) {
+		getGetterWindowsStore().equipmentGetterForm.type = value;
+	},
+	get actor(): EquipmentGetterForm['actor'] {
+		return getGetterWindowsStore().equipmentGetterForm.actor;
+	},
+	set actor(value: EquipmentGetterForm['actor']) {
+		getGetterWindowsStore().equipmentGetterForm.actor = value;
+	},
+	get slot(): EquipmentGetterForm['slot'] {
+		return getGetterWindowsStore().equipmentGetterForm.slot;
+	},
+	set slot(value: EquipmentGetterForm['slot']) {
+		getGetterWindowsStore().equipmentGetterForm.slot = value;
+	},
+	get equipmentId(): EquipmentGetterForm['equipmentId'] {
+		return getGetterWindowsStore().equipmentGetterForm.equipmentId;
+	},
+	set equipmentId(value: EquipmentGetterForm['equipmentId']) {
+		getGetterWindowsStore().equipmentGetterForm.equipmentId = value;
+	},
+	get variable(): EquipmentGetterForm['variable'] {
+		return getGetterWindowsStore().equipmentGetterForm.variable;
+	},
+	set variable(value: EquipmentGetterForm['variable']) {
+		getGetterWindowsStore().equipmentGetterForm.variable = value;
+	}
+};
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 let pluginInput = false;
 

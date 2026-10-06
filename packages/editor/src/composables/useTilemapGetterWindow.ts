@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { getWindowStore } from '@app/stores/window';
 import { requestFocus } from '@app/directives/focus';
 
@@ -22,11 +22,28 @@ interface TilemapGetterWindow {
 	onWindowClosed: () => void;
 }
 
-const form = reactive<TilemapGetterForm>({
-	type: 'trigger',
-	presetId: '',
-	variable: { type: 'local', key: '' }
-});
+// 表单真源在 `stores/getter-windows.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: TilemapGetterForm = {
+	get type(): TilemapGetterForm['type'] {
+		return getGetterWindowsStore().tilemapGetterForm.type;
+	},
+	set type(value: TilemapGetterForm['type']) {
+		getGetterWindowsStore().tilemapGetterForm.type = value;
+	},
+	get presetId(): TilemapGetterForm['presetId'] {
+		return getGetterWindowsStore().tilemapGetterForm.presetId;
+	},
+	set presetId(value: TilemapGetterForm['presetId']) {
+		getGetterWindowsStore().tilemapGetterForm.presetId = value;
+	},
+	get variable(): TilemapGetterForm['variable'] {
+		return getGetterWindowsStore().tilemapGetterForm.variable;
+	},
+	set variable(value: TilemapGetterForm['variable']) {
+		getGetterWindowsStore().tilemapGetterForm.variable = value;
+	}
+};
 let callback: ((getter: Record<string, unknown>) => void) | null = null;
 
 const open = (target: TilemapGetterTarget, defaults?: Partial<TilemapGetterForm>): void => {
