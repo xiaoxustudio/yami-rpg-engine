@@ -9,6 +9,7 @@ import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import type { EventPayloadFields, YamiEvent } from '@app/types/editor-event';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
 import { registryElement } from '@app/utils/element-registry';
+import { getCurveStore } from '@app/stores/curve';
 
 export type CurveState = 'closed' | 'open' | 'suspended';
 
@@ -93,13 +94,37 @@ interface CurveWindow {
 	settingsPointerdown: (event: PointerEvent) => void;
 }
 
-let state: CurveState = 'closed';
+/**
+ * 三个窗口状态（`state`/`target`/`index`）的真源在 `stores/curve.ts`（原先是本文件的模块级
+ * `let`）。用一个访问器对象而不是裸变量：实现区里 `curve.state = 'open'`、
+ * `if (curve.state !== 'closed')`、`curve.target!.easingId = …` 的读写都直接落在 store 上，
+ * 38 处引用无需改写语义。下面的 `page/head/list/canvas/curveMap` 是 DOM/实例句柄，不入 store。
+ */
+const curve = {
+	get state(): CurveState {
+		return getCurveStore().state;
+	},
+	set state(value: CurveState) {
+		getCurveStore().state = value;
+	},
+	get target(): CurveFrame | null {
+		return getCurveStore().target;
+	},
+	set target(value: CurveFrame | null) {
+		getCurveStore().target = value;
+	},
+	get index(): string | null {
+		return getCurveStore().index;
+	},
+	set index(value: string | null) {
+		getCurveStore().index = value;
+	}
+};
+
 let page: HTMLElement | null = null;
 let head: HTMLElement | null = null;
 let list: CurveList | null = null;
 let canvas: CurveCanvas | null = null;
-let target: CurveFrame | null = null;
-let index: string | null = null;
 let curveMap: CurveMapInstance | null = null;
 
 const initialize = (): void => {
@@ -146,8 +171,8 @@ const initialize = (): void => {
 };
 
 const open = (): void => {
-	if (state === 'closed') {
-		state = 'open';
+	if (curve.state === 'closed') {
+		curve.state = 'open';
 		show(page!);
 		windowResize();
 		updateEasingOptions();
@@ -156,37 +181,37 @@ const open = (): void => {
 
 const load = (...args: unknown[]): void => {
 	const frame = args[0] as CurveFrame;
-	if (target !== frame) {
-		target = frame;
+	if (curve.target !== frame) {
+		curve.target = frame;
 		if (frame) {
 			show(list!);
 			write(list, frame.easingId);
 		} else {
 			hide(list!);
-			index = null;
+			curve.index = null;
 			requestRendering();
 		}
 	}
 };
 
 const close = (): void => {
-	if (state !== 'closed') {
-		state = 'closed';
+	if (curve.state !== 'closed') {
+		curve.state = 'closed';
 		hide(page!);
 		stopRendering();
 	}
 };
 
 const suspend = (): void => {
-	if (state === 'open') {
-		state = 'suspended';
+	if (curve.state === 'open') {
+		curve.state = 'suspended';
 		stopRendering();
 	}
 };
 
 const resume = (): void => {
-	if (state === 'suspended') {
-		state = 'open';
+	if (curve.state === 'suspended') {
+		curve.state = 'open';
 		resize();
 		requestRendering();
 	}
@@ -229,7 +254,7 @@ const updateTimeline = (frameTarget: CurveFrame): void => {
 };
 
 const resize = (): void => {
-	if (state === 'open') {
+	if (curve.state === 'open') {
 		const screenBox = getDevicePixelContentBoxSize(page!);
 		const screenWidth = screenBox.width;
 		const screenHeight = screenBox.height;
@@ -304,7 +329,7 @@ const drawCurve = (): void => {
 	ctx.fillText('PROGRESSION', 4, -12);
 	ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-	switch (index) {
+	switch (curve.index) {
 		case null:
 			break;
 		case '':
@@ -337,7 +362,7 @@ const drawCurve = (): void => {
 };
 
 const requestRendering = (): void => {
-	if (state === 'open') {
+	if (curve.state === 'open') {
 		Timer.appendUpdater!('sharedRendering2', renderingFunction as (deltaTime: number) => void);
 	}
 };
@@ -355,7 +380,7 @@ const windowResize = (_event?: Event): void => {
 		return suspend();
 	}
 	updateHead();
-	switch (state) {
+	switch (curve.state) {
 		case 'open':
 			resize();
 			requestRendering();
@@ -386,11 +411,11 @@ const themechange = (event: YamiEvent): void => {
 };
 
 const datachange = (event: YamiEvent): void => {
-	if (state === 'open' && event.key === 'easings') {
+	if (curve.state === 'open' && event.key === 'easings') {
 		updateEasingOptions();
-		const currentIndex = index;
+		const currentIndex = curve.index;
 		if (currentIndex !== null) {
-			index = null;
+			curve.index = null;
 			write(list, currentIndex);
 		}
 	}
@@ -398,8 +423,8 @@ const datachange = (event: YamiEvent): void => {
 
 const easingIdWrite = (event: EasingIdPayload): void => {
 	const id = event.value;
-	if (index !== id) {
-		index = id;
+	if (curve.index !== id) {
+		curve.index = id;
 		requestRendering();
 		if (id !== '') {
 			const easing = Data.easings.map[id];
@@ -423,11 +448,11 @@ const easingIdInput = (event: EasingIdPayload): void => {
 		type: 'animation-easing-change',
 		motion: Animation.motion,
 		direction: Animation.direction,
-		target: target!,
-		easingId: target!.easingId
+		target: curve.target!,
+		easingId: curve.target!.easingId
 	});
-	target!.easingId = event.value;
-	updateTimeline(target!);
+	curve.target!.easingId = event.value;
+	updateTimeline(curve.target!);
 };
 
 const settingsPointerdown = (_event: PointerEvent): void => {
@@ -437,7 +462,7 @@ const settingsPointerdown = (_event: PointerEvent): void => {
 export function useCurveWindow(): CurveWindow {
 	return {
 		get state() {
-			return state;
+			return curve.state;
 		},
 		get page() {
 			return page;
@@ -452,10 +477,10 @@ export function useCurveWindow(): CurveWindow {
 			return canvas;
 		},
 		get target() {
-			return target;
+			return curve.target;
 		},
 		get index() {
-			return index;
+			return curve.index;
 		},
 		get curveMap() {
 			return curveMap;
