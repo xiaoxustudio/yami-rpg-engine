@@ -15,7 +15,7 @@ import { commandSuggestionEls } from '@app/commands/command-tip';
 import { registryRef } from '@app/utils/element-registry';
 import TreeList from '@app/components/common/TreeList.vue';
 
-const local = useLocalStore();
+const local = getLocalStore();
 
 const nodeIconRenderer = (item: unknown): VNode[] => {
 	const node = item as { class?: string };

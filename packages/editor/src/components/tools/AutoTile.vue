@@ -180,7 +180,7 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
 
-const autoTileStore = useAutoTileStore();
+const autoTileStore = getAutoTileStore();
 
 const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	(container.parentNode as HTMLElement | null)?.classList.add('plain');

@@ -30,7 +30,7 @@ import FileBrowser from '../file-browser/FileBrowser.vue';
 
 // selector-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
-	useSelectorStore().confirm?.();
+	getSelectorStore().confirm?.();
 };
 
 const { t } = useI18n();

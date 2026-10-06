@@ -105,7 +105,7 @@ import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 
 const { t } = useI18n();
-const palette = usePaletteStore();
+const palette = getPaletteStore();
 
 const onHeadPointerdown = (event: PointerEvent) => {
 	if (!(event.target instanceof HTMLInputElement)) {

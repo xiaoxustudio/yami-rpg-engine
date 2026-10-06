@@ -16,7 +16,7 @@ import { measureText } from '@app/utils/dom';
 import { registerElement } from '@app/utils/element-registry';
 import { windowShellEls } from '@app/tools/window-object.ts';
 
-const store = useConfirmationStore();
+const store = getConfirmationStore();
 
 const ym = ref<{ focusFirstButton(): void; $el?: HTMLElement } | null>(null);
 

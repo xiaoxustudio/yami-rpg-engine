@@ -21,7 +21,6 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { YMWindowFrame } from '@ui-kit';
 import { Layout } from '@app/engine/layout/layout';
 import { useLocalStore } from '@app/stores/local';
-import { pinia } from '@app/stores/pinia';
 import { setLocalElement, type LocalComponentItem } from '@app/localize/dom-localizer';
 import { registerElement } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
@@ -46,7 +45,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const focusableSelector = computed<string>(() => Layout.focusableSelector as string);
 const localizeAdapter = computed(() => ({
-	components: useLocalStore(pinia).components,
+	components: getLocalStore().components,
 	setElement: (el: Element, item: unknown) =>
 		setLocalElement(el as HTMLElement, item as LocalComponentItem)
 }));
@@ -149,7 +148,7 @@ onMounted(() => {
 	}
 	// 切语言时重写窗口内元素（懒加载窗口挂载后语言已加载，靠此兜底）
 	const onLocalize = (): void => {
-		const store = useLocalStore(pinia);
+		const store = getLocalStore();
 		if (!store.components) return;
 		const components = store.components as Record<string, LocalComponentItem>;
 		const rootEl = root.value;

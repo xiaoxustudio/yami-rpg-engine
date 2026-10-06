@@ -213,7 +213,7 @@ import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { sceneTilemapContextKey } from './context.ts';
 
-const local = useLocalStore();
+const local = getLocalStore();
 const { t } = useI18n();
 const { form, onParamInput } = inject(sceneTilemapContextKey)!;
 

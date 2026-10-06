@@ -22,7 +22,6 @@ import { setTooltip as setTooltipElement, dispatchChangeEvent } from '@app/utils
 import { Select } from '@app/components/select-list.ts';
 import { parseLocalTip } from '@app/localize/dom-localizer';
 import { useLocalStore } from '@app/stores/local';
-import { pinia } from '@app/stores/pinia';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface SelectBoxElement extends HTMLElement {
@@ -121,7 +120,7 @@ const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
 /**
  * 选项名由本组件按语言文件**自己生成**（`t()` 响应式），本地化器不必再为这些键查 DOM。
- * 与 `useLocalStore().components[id].options` 等价（那份只在语言切换时重写一次），
+ * 与 `getLocalStore().components[id].options` 等价（那份只在语言切换时重写一次），
  * 这里按同一份 `components.<id>.options` 消息树生成，并由 `watchEffect` 在语言切换时重挂。
  * 未收录 `components.<id>.options` 的控件保持原样（不写名字，交给调用方的 loadItems）。
  */
@@ -131,7 +130,7 @@ const applyLocalizedOptions = (): void => {
 	if (!id) return;
 	const messageKey = `components.${id}.options`;
 	if (!te(messageKey)) {
-		const item = useLocalStore(pinia).components?.[id];
+		const item = getLocalStore().components?.[id];
 		if (item?.options) {
 			setItemNames(item.options as Record<string, string | { name?: string; tip?: string }>);
 		}
