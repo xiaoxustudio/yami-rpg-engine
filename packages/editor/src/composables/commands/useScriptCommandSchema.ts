@@ -9,7 +9,6 @@ import { Title } from '@app/title/title-bar.ts';
 import { getYamiI18n } from '@app/i18n';
 import { Path } from '@app/utils/config';
 import { getMonaco } from '@app/utils/monaco';
-import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { CommandSchema } from '@app/commands/schema.ts';
 import type { YamiElement } from '@app/types/element-api';
@@ -261,7 +260,16 @@ let changed = false;
 let bound = false;
 let typesDispose: unknown[] = [];
 
-const form = reactive<{ script: string }>({ script: '' });
+// 表单真源在 `stores/window-forms.ts`（原先是本文件的模块级 reactive）。
+const form: { script: string } = {
+	get script(): string {
+		return getWindowFormsStore().scriptForm.script;
+	},
+	set script(value: string) {
+		getWindowFormsStore().scriptForm.script = value;
+	}
+};
+import { getWindowFormsStore } from '@app/stores/window-forms';
 
 const setChangeState = (value: boolean): void => {
 	if (changed !== value) {

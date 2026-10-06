@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { reactive } from 'vue';
+import { reactive, shallowRef } from 'vue';
 import { pinia } from './pinia';
 import type { RenameForm } from '@app/composables/useRenameWindow';
 import type { SetKeyForm } from '@app/composables/useSetKeyWindow';
@@ -7,6 +7,7 @@ import type { ZoomForm } from '@app/composables/useZoomWindow';
 import type { ImageClipForm } from '@app/composables/useImageClipWindow';
 import type { SetQuantityForm } from '@app/composables/useSetQuantityWindow';
 import type { ColorForm } from '@app/composables/useColorWindow';
+import type { ArrayForm, ArrayNumberForm, ArrayStringForm } from '@app/composables/useArrayWindow';
 
 /**
  * 三个「单值表单」小窗口的状态真源（分析文档 P1 #11 的第一批）。
@@ -29,7 +30,25 @@ export const useWindowFormsStore = defineStore('windowForms', () => {
 
 	const colorForm = reactive<ColorForm>({ hex: '00000000', r: 0, g: 0, b: 0, a: 0, index: null });
 
-	return { renameForm, setKeyForm, zoomForm, imageClipForm, setQuantityForm, colorForm };
+	const arrayForm = reactive<ArrayForm>({ values: [] });
+	const arrayNumberForm = reactive<ArrayNumberForm>({ value: 0 });
+	const arrayStringForm = reactive<ArrayStringForm>({ value: '' });
+	const arrayChanged = shallowRef(false);
+	const scriptForm = reactive<{ script: string }>({ script: '' });
+
+	return {
+		renameForm,
+		setKeyForm,
+		zoomForm,
+		imageClipForm,
+		setQuantityForm,
+		colorForm,
+		arrayForm,
+		arrayNumberForm,
+		arrayStringForm,
+		arrayChanged,
+		scriptForm
+	};
 });
 
 export function getWindowFormsStore() {

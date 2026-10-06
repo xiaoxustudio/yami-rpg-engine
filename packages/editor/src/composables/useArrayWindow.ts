@@ -1,4 +1,5 @@
-import { reactive, ref } from 'vue';
+import { computed } from 'vue';
+import { getWindowFormsStore } from '@app/stores/window-forms';
 import { composableEls } from '@app/composables/element-registry';
 import { h } from 'vue';
 import { getWindowStore } from '@app/stores/window';
@@ -41,10 +42,38 @@ interface ArrayWindow {
 	confirmString: () => string;
 }
 
-const form = reactive<ArrayForm>({ values: [] });
-const numberForm = reactive<ArrayNumberForm>({ value: 0 });
-const stringForm = reactive<ArrayStringForm>({ value: '' });
-const changedState = ref(false);
+// 表单/脏标记真源在 `stores/window-forms.ts`（原先都是本文件的模块级 reactive/ref）。
+const form: ArrayForm = {
+	get values(): ArrayForm['values'] {
+		return getWindowFormsStore().arrayForm.values;
+	},
+	set values(value: ArrayForm['values']) {
+		getWindowFormsStore().arrayForm.values = value;
+	}
+};
+const numberForm: ArrayNumberForm = {
+	get value(): ArrayNumberForm['value'] {
+		return getWindowFormsStore().arrayNumberForm.value;
+	},
+	set value(value: ArrayNumberForm['value']) {
+		getWindowFormsStore().arrayNumberForm.value = value;
+	}
+};
+const stringForm: ArrayStringForm = {
+	get value(): ArrayStringForm['value'] {
+		return getWindowFormsStore().arrayStringForm.value;
+	},
+	set value(value: ArrayStringForm['value']) {
+		getWindowFormsStore().arrayStringForm.value = value;
+	}
+};
+// ref 形状保留（`changedState.value = …` 照旧），底层是可写 computed ⇒ 读写落在 store
+const changedState = computed<boolean>({
+	get: () => getWindowFormsStore().arrayChanged,
+	set: (value: boolean) => {
+		getWindowFormsStore().arrayChanged = value;
+	}
+});
 let callback: ((value: unknown) => void) | null = null;
 
 const openForm = (values: unknown[], cb: (value: unknown) => void): void => {
