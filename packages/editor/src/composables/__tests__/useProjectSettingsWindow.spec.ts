@@ -11,7 +11,8 @@ import { Log } from '@app/log/log-window.ts';
 import { Title } from '@app/title/title-bar.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('electron', () => ({

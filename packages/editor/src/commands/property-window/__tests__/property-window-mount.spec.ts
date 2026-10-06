@@ -28,7 +28,8 @@ import { TransformProperty } from '../move-element-property-window';
 import { LightProperty } from '../move-light-property-window';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
+	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
+	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
 /** 属性窗口工厂对外只暴露行为，这里按用到的成员做结构化声明。 */

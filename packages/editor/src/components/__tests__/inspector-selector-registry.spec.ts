@@ -14,7 +14,8 @@ import { registryElements, registerElement } from '@app/utils/element-registry';
  * （输入框失焦不提交历史、滑杆拖完不写回）。本文件锁"页面登记覆盖了它自己要绑的 id 列表"。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
+	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
+	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
 vi.mock('@app/i18n', () => ({

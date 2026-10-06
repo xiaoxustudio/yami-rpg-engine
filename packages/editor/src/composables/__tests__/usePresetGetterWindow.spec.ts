@@ -11,7 +11,8 @@ import { Window } from '@app/tools/window-object.ts';
 import { LightGetter, ObjectGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/composables/usePresetObjectWindow', () => ({

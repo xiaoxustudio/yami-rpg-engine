@@ -15,7 +15,8 @@ import { textCaptureEls } from '../text-capture.ts';
  * 其中 `font` 同时充当 `Selection.initialize()` 的"窗口已挂载"启动门（原先用 `$('#font-confirm')`）。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
+	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
+	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
 const BY_SFC: Array<[string, string[], unknown]> = [

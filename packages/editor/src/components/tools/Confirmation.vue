@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMConfirmation } from '@ui-kit';
-import { useConfirmationStore } from '@app/stores/confirmation';
+import { getConfirmationStore } from '@app/stores/confirmation';
 import { measureText } from '@app/utils/dom';
 import { registerElement } from '@app/utils/element-registry';
 import { windowShellEls } from '@app/tools/window-object.ts';

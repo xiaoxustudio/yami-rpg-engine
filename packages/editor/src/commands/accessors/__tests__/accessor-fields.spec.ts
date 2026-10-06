@@ -14,7 +14,8 @@ import type { AccessorFieldControl } from '@app/types/shapes.ts';
  * 本用例锁住「登记 → initialize 真正作用到控件」这条链路（此前无覆盖）。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 type RelateEntries = { case: string; targets: unknown[] }[];

@@ -100,7 +100,7 @@ import { paletteEls } from '@app/palette/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { focus } from '@app/utils/element-utils';
 import { Palette } from '@app/palette/palette.ts';
-import { usePaletteStore } from '@app/stores/palette';
+import { getPaletteStore } from '@app/stores/palette';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 

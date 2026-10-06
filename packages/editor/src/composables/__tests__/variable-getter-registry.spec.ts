@@ -19,7 +19,8 @@ import type { YamiElement } from '@app/types/element-api';
  * ——于是这里断言"注册键 ↔ 元素 id 一致"与"open/initialize 真的调到了注册表里的控件"。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 const VARIABLE_GETTER_IDS = [

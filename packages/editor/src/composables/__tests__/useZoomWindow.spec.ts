@@ -8,7 +8,8 @@ import { Editor } from '@app/services/project/editor.ts';
 import { webFrame } from 'electron';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('electron', () => ({

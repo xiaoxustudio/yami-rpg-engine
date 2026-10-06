@@ -10,7 +10,8 @@ import { ArrayList as ArrayListController } from '@app/composables/useArrayWindo
 import '@app/utils/number';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 interface FormFrame extends HTMLElement {

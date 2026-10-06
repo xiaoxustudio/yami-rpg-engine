@@ -17,7 +17,8 @@ import { composableEls } from '@app/composables/element-registry';
  * TileNode 的 `frame`）、以及 `team-confirm` 由 SFC `@confirm` 承接。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
+	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
+	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
 vi.mock('@app/i18n', () => ({

@@ -20,7 +20,8 @@ import { Window } from '@app/tools/window-object.ts';
  * 每次调用都会新建一份实例状态，直接调它的 `typeWrite` 会作用在空 `parameters` 上。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
+	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
+	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
 vi.mock('@app/i18n', () => ({

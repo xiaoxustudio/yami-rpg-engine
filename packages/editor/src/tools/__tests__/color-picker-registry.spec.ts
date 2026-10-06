@@ -13,7 +13,8 @@ import { Color, colorEls } from '../color-picker-window.ts';
  * 锁住「登记 → initialize 绑定」链路（此前无覆盖）。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
+	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
+	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
 const REGISTERED_IDS = [

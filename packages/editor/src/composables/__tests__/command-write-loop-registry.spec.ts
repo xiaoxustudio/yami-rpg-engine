@@ -18,7 +18,8 @@ import { Command } from '@app/commands/command-object.ts';
  * 这样新增字段/改 domId 时用例会立刻发现"注册表缺项"，而不是等到某个 DOM 断言偶发失败。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
+	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
+	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
 vi.mock('@app/i18n', () => ({

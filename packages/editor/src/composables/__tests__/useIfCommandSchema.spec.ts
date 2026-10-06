@@ -30,7 +30,8 @@ vi.mock('@app/composables/useCommandParse.ts', () => ({
 }));
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/i18n', () => ({

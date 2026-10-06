@@ -6,7 +6,8 @@ import UIButtonPage from '@app/components/inspector/UIButtonPage.vue';
 import { Inspector } from '@app/inspector/inspector.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/i18n', async (importOriginal) => {

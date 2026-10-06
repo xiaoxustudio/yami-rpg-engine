@@ -11,7 +11,8 @@ import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 const mountAll = async (): Promise<ReturnType<typeof mount>[]> => {

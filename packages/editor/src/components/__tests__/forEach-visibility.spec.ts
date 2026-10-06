@@ -4,7 +4,8 @@ import { mount } from '@vue/test-utils';
 import ForEach from '@app/components/commands/ForEach.vue';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/components/custom-box-opts', () => ({

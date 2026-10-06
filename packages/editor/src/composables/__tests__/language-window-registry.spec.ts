@@ -16,7 +16,8 @@ import { focusTarget } from '@app/directives/focus';
  * 才可复现——与生产一致（`initialize()` 只在启动时跑一次）。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('electron', () => ({

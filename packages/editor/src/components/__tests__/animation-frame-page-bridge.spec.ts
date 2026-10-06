@@ -50,11 +50,13 @@ vi.mock('@app/inspector/inspector.ts', () => ({
 }));
 
 vi.mock('@app/stores/animation', () => ({
-	useAnimationStore: () => ({ syncState: vi.fn() })
+	useAnimationStore: () => ({ syncState: vi.fn() }),
+	getAnimationStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 type SyncEl = HTMLElement & { sync?: () => void };

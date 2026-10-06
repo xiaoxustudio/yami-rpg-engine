@@ -41,11 +41,13 @@ vi.mock('@app/inspector/inspector.ts', () => ({
 }));
 
 vi.mock('@app/stores/scene', () => ({
-	useSceneStore: () => ({ syncState: vi.fn() })
+	useSceneStore: () => ({ syncState: vi.fn() }),
+	getSceneStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 type SyncEl = HTMLElement & { sync?: () => void };

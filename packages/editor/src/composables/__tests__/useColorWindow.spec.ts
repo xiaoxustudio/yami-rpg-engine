@@ -7,7 +7,8 @@ import { Window } from '@app/tools/window-object.ts';
 import { radioProxyMap } from '@ui-kit';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 describe('useColorWindow（颜色窗口 composable：form 状态 + open/confirm/closed）', () => {

@@ -14,7 +14,8 @@ import { elementDataOf } from '@ui-kit';
  * 这些断言会失败（而不是静默不加载）。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
+	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
+	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
 // `dataItems` 是控件元素上的**元素数据**（原型访问器退役后 `el.dataItems` 会读到 undefined）。

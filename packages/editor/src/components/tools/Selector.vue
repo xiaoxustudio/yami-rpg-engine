@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSelectorStore } from '@app/stores/selector.ts';
+import { getSelectorStore } from '@app/stores/selector.ts';
 import { onMounted } from 'vue';
 import { storesEls } from '@app/stores/element-registry';
 import { registryRef } from '@app/utils/element-registry';

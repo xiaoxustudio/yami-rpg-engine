@@ -6,7 +6,8 @@ import HttpRequest from '@app/components/commands/HttpRequest.vue';
 import RequestURL from '@app/components/commands/RequestURL.vue';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 describe('命令组件控件 DOM 完整性（initAll 依赖回归）', () => {

@@ -17,7 +17,8 @@ import { Data } from '@app/data/data-object.ts';
  * SFC 的 `@confirm` 驱动（按钮由 WindowFrame 生成、模板与注册表都取不到）。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('electron', () => ({

@@ -48,7 +48,8 @@ vi.mock('@app/stores/ui', () => ({
 }));
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 type SyncEl = HTMLElement & { sync?: () => void };

@@ -7,7 +7,8 @@ import { Window } from '@app/tools/window-object.ts';
 import { PositionGetter as PositionGetterController } from '@app/commands/accessors/position-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;

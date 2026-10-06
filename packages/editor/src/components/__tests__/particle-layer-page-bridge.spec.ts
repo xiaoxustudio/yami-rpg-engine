@@ -90,11 +90,13 @@ vi.mock('@app/inspector/inspector.ts', () => ({
 }));
 
 vi.mock('@app/stores/particle', () => ({
-	useParticleStore: () => ({ syncState: vi.fn() })
+	useParticleStore: () => ({ syncState: vi.fn() }),
+	getParticleStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 type SyncEl = HTMLElement & { sync?: () => void };

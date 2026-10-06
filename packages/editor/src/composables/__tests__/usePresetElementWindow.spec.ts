@@ -11,7 +11,8 @@ import { getUIStore } from '@app/stores/ui';
 import { Data } from '@app/data/data-object.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/data/data-object.ts', () => ({

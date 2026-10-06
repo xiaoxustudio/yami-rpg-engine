@@ -11,7 +11,8 @@ import { elementDataOf } from '@ui-kit';
 import '@app/utils/math';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/palette/palette.ts', () => ({

@@ -21,7 +21,8 @@ import { registryElement } from '@app/utils/element-registry';
  * ③ 窗口元素（`if-condition` / `setNumber-operand`）由具名 ref 命令式登记（模块读它取 setForm/getForm）。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/i18n', () => ({

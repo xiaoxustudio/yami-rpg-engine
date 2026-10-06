@@ -6,7 +6,8 @@ import { useImageClipWindow } from '@app/composables/useImageClipWindow';
 import { Window } from '@app/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 describe('useImageClipWindow（裁剪窗口 composable：form 状态 + open/confirm/closed）', () => {

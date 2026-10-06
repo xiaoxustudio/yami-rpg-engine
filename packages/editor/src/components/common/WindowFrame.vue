@@ -20,7 +20,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { YMWindowFrame } from '@ui-kit';
 import { Layout } from '@app/engine/layout/layout';
-import { useLocalStore } from '@app/stores/local';
+import { getLocalStore } from '@app/stores/local';
 import { setLocalElement, type LocalComponentItem } from '@app/localize/dom-localizer';
 import { registerElement } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';

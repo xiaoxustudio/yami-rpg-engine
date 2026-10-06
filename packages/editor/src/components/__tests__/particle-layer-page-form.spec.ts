@@ -75,11 +75,13 @@ vi.mock('@app/data/data-object.ts', () => ({
 }));
 
 vi.mock('@app/stores/particle', () => ({
-	useParticleStore: () => ({ syncState: vi.fn() })
+	useParticleStore: () => ({ syncState: vi.fn() }),
+	getParticleStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({})
+	useLocalStore: () => ({}),
+	getLocalStore: () => ({})
 }));
 
 vi.unmock('@app/inspector/particle-layer-page.ts');

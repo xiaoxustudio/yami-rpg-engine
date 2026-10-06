@@ -205,7 +205,7 @@ import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement, registryRef } from '@app/utils/element-registry';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { useLocalStore } from '@app/stores/local';
+import { getLocalStore } from '@app/stores/local';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';

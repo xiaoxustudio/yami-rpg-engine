@@ -13,7 +13,8 @@ import { Enum, enumEls } from '@app/enum/enum-window.ts';
  * 锁住「登记 → 绑定 panel/searcher/inputs/list」这条链路（此前无覆盖）。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
+	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
+	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
 describe('属性/枚举窗口元素注册表', () => {

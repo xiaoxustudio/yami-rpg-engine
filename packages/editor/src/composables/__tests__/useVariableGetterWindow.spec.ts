@@ -8,7 +8,8 @@ import { VariableGetter } from '@app/commands/accessors/variable-accessor-window
 import { Attribute } from '@app/attribute/attribute-window.ts';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 const getFrame = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;

@@ -12,7 +12,8 @@ import { eventEditorEls } from '@app/commands/event-editor-initialize.ts';
  * 本用例锁住「登记 → ensureDomBound 绑定」这条链路（此前无覆盖）。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
+	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
+	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
 const REGISTERED_IDS = [

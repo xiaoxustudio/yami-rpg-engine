@@ -21,7 +21,7 @@ import { YMSelectBox } from '@ui-kit';
 import { setTooltip as setTooltipElement, dispatchChangeEvent } from '@app/utils/element-utils';
 import { Select } from '@app/components/select-list.ts';
 import { parseLocalTip } from '@app/localize/dom-localizer';
-import { useLocalStore } from '@app/stores/local';
+import { getLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface SelectBoxElement extends HTMLElement {

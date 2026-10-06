@@ -11,7 +11,8 @@ import { ImageClip, imageClipEls } from '../image-crop-window.ts';
  * 用 `registerElement()` 命令式登记（否则 `ensureDomBound()` 会早退，整套绑定静默失效）。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
+	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
+	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
 describe('裁剪窗口注册表', () => {

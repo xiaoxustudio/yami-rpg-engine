@@ -21,7 +21,8 @@ import { Data } from '@app/data/data-object.ts';
  * 早于父组件，命令控件在自己的 onMounted 里 emit write 时镜像还没发生。
  */
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn(), components: {} })
+	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
+	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
 type LoadableEl = HTMLElement & { loadItems?: (items: unknown[]) => void };

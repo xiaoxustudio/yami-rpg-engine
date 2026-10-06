@@ -13,7 +13,8 @@ import { elementDataOf } from '@ui-kit';
 import type { TeamData } from '@app/composables/useTeamWindow';
 
 vi.mock('@app/stores/local', () => ({
-	useLocalStore: () => ({ syncState: vi.fn() })
+	useLocalStore: () => ({ syncState: vi.fn() }),
+	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
 vi.mock('@app/engine/webgl/webgl-init.ts', () => ({
