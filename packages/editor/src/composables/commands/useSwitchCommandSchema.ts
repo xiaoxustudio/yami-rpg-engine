@@ -10,7 +10,7 @@ import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { reactive } from 'vue';
+import { getCommandSchemaFormsStore } from '@app/stores/command-schema-forms';
 
 export interface SwitchForm {
 	variable: { type: string; key: string };
@@ -65,10 +65,22 @@ Command.cases.switch = new CommandSchema({
 	}
 });
 
-const form = reactive<SwitchForm>({
-	variable: { type: 'local', key: '' },
-	default: false
-});
+// 表单真源在 `stores/command-schema-forms.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: SwitchForm = {
+	get variable(): SwitchForm['variable'] {
+		return getCommandSchemaFormsStore().switchForm.variable;
+	},
+	set variable(value: SwitchForm['variable']) {
+		getCommandSchemaFormsStore().switchForm.variable = value;
+	},
+	get default(): SwitchForm['default'] {
+		return getCommandSchemaFormsStore().switchForm.default;
+	},
+	set default(value: SwitchForm['default']) {
+		getCommandSchemaFormsStore().switchForm.default = value;
+	}
+};
 let defaultCommands: unknown[] | null = null;
 
 const load = ({

@@ -8,7 +8,7 @@ import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { reactive } from 'vue';
+import { getCommandSchemaFormsStore } from '@app/stores/command-schema-forms';
 
 export interface ShowChoicesForm {
 	choices?: Array<{ content: string; commands: unknown }>;
@@ -79,9 +79,16 @@ const createDefaultChoices = (): unknown[] => {
 	];
 };
 
-const form = reactive<ShowChoicesForm>({
-	parameters: ''
-});
+// 表单真源在 `stores/command-schema-forms.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: ShowChoicesForm = {
+	get parameters(): ShowChoicesForm['parameters'] {
+		return getCommandSchemaFormsStore().showChoicesForm.parameters;
+	},
+	set parameters(value: ShowChoicesForm['parameters']) {
+		getCommandSchemaFormsStore().showChoicesForm.parameters = value;
+	}
+};
 
 const load = ({
 	choices: list = createDefaultChoices(),

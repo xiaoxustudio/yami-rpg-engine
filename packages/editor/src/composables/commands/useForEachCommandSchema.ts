@@ -1,4 +1,4 @@
-﻿import { reactive } from 'vue';
+import { getCommandSchemaFormsStore } from '@app/stores/command-schema-forms';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
@@ -119,17 +119,64 @@ Command.cases.forEach = new CommandSchema({
 
 let commands: unknown[] | null = null;
 
-const form = reactive<ForEachForm>({
-	data: 'list',
-	list: { type: 'local', key: '' },
-	actor: { type: 'trigger' },
-	element: { type: 'trigger' },
-	attributeGroupId: '',
-	enumGroupId: '',
-	variable: { type: 'local', key: '' },
-	saveIndex: { type: 'local', key: '' },
-	touchId: { type: 'local', key: '' }
-});
+// 表单真源在 `stores/command-schema-forms.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: ForEachForm = {
+	get data(): ForEachForm['data'] {
+		return getCommandSchemaFormsStore().forEachForm.data;
+	},
+	set data(value: ForEachForm['data']) {
+		getCommandSchemaFormsStore().forEachForm.data = value;
+	},
+	get list(): ForEachForm['list'] {
+		return getCommandSchemaFormsStore().forEachForm.list;
+	},
+	set list(value: ForEachForm['list']) {
+		getCommandSchemaFormsStore().forEachForm.list = value;
+	},
+	get actor(): ForEachForm['actor'] {
+		return getCommandSchemaFormsStore().forEachForm.actor;
+	},
+	set actor(value: ForEachForm['actor']) {
+		getCommandSchemaFormsStore().forEachForm.actor = value;
+	},
+	get element(): ForEachForm['element'] {
+		return getCommandSchemaFormsStore().forEachForm.element;
+	},
+	set element(value: ForEachForm['element']) {
+		getCommandSchemaFormsStore().forEachForm.element = value;
+	},
+	get attributeGroupId(): ForEachForm['attributeGroupId'] {
+		return getCommandSchemaFormsStore().forEachForm.attributeGroupId;
+	},
+	set attributeGroupId(value: ForEachForm['attributeGroupId']) {
+		getCommandSchemaFormsStore().forEachForm.attributeGroupId = value;
+	},
+	get enumGroupId(): ForEachForm['enumGroupId'] {
+		return getCommandSchemaFormsStore().forEachForm.enumGroupId;
+	},
+	set enumGroupId(value: ForEachForm['enumGroupId']) {
+		getCommandSchemaFormsStore().forEachForm.enumGroupId = value;
+	},
+	get variable(): ForEachForm['variable'] {
+		return getCommandSchemaFormsStore().forEachForm.variable;
+	},
+	set variable(value: ForEachForm['variable']) {
+		getCommandSchemaFormsStore().forEachForm.variable = value;
+	},
+	get saveIndex(): ForEachForm['saveIndex'] {
+		return getCommandSchemaFormsStore().forEachForm.saveIndex;
+	},
+	set saveIndex(value: ForEachForm['saveIndex']) {
+		getCommandSchemaFormsStore().forEachForm.saveIndex = value;
+	},
+	get touchId(): ForEachForm['touchId'] {
+		return getCommandSchemaFormsStore().forEachForm.touchId;
+	},
+	set touchId(value: ForEachForm['touchId']) {
+		getCommandSchemaFormsStore().forEachForm.touchId = value;
+	}
+};
 
 const load = ({
 	data = 'list',

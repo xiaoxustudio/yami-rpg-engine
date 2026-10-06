@@ -11,10 +11,10 @@ import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { reactive } from 'vue';
+import { getCommandSchemaFormsStore } from '@app/stores/command-schema-forms';
 import type { YamiElement } from '@app/types/element-api';
 
-type RegisterEventData = {
+export type RegisterEventData = {
 	target: string;
 	actor?: { type: string; [k: string]: unknown };
 	element?: { type: string; [k: string]: unknown };
@@ -130,16 +130,58 @@ Command.cases.registerEvent = new CommandSchema({
 let commands: unknown[] | null = null;
 let priorityEnabled = false;
 
-const form = reactive<RegisterEventData>({
-	target: 'global',
-	actor: { type: 'trigger' },
-	element: { type: 'trigger' },
-	operation: 'register',
-	type: 'autorun',
-	priority: false,
-	tag: '',
-	namespace: false
-});
+// 表单真源在 `stores/command-schema-forms.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: RegisterEventData = {
+	get target(): RegisterEventData['target'] {
+		return getCommandSchemaFormsStore().registerEventData.target;
+	},
+	set target(value: RegisterEventData['target']) {
+		getCommandSchemaFormsStore().registerEventData.target = value;
+	},
+	get actor(): RegisterEventData['actor'] {
+		return getCommandSchemaFormsStore().registerEventData.actor;
+	},
+	set actor(value: RegisterEventData['actor']) {
+		getCommandSchemaFormsStore().registerEventData.actor = value;
+	},
+	get element(): RegisterEventData['element'] {
+		return getCommandSchemaFormsStore().registerEventData.element;
+	},
+	set element(value: RegisterEventData['element']) {
+		getCommandSchemaFormsStore().registerEventData.element = value;
+	},
+	get operation(): RegisterEventData['operation'] {
+		return getCommandSchemaFormsStore().registerEventData.operation;
+	},
+	set operation(value: RegisterEventData['operation']) {
+		getCommandSchemaFormsStore().registerEventData.operation = value;
+	},
+	get type(): RegisterEventData['type'] {
+		return getCommandSchemaFormsStore().registerEventData.type;
+	},
+	set type(value: RegisterEventData['type']) {
+		getCommandSchemaFormsStore().registerEventData.type = value;
+	},
+	get priority(): RegisterEventData['priority'] {
+		return getCommandSchemaFormsStore().registerEventData.priority;
+	},
+	set priority(value: RegisterEventData['priority']) {
+		getCommandSchemaFormsStore().registerEventData.priority = value;
+	},
+	get tag(): RegisterEventData['tag'] {
+		return getCommandSchemaFormsStore().registerEventData.tag;
+	},
+	set tag(value: RegisterEventData['tag']) {
+		getCommandSchemaFormsStore().registerEventData.tag = value;
+	},
+	get namespace(): RegisterEventData['namespace'] {
+		return getCommandSchemaFormsStore().registerEventData.namespace;
+	},
+	set namespace(value: RegisterEventData['namespace']) {
+		getCommandSchemaFormsStore().registerEventData.namespace = value;
+	}
+};
 
 const switchTypeAndTagInput = (): void => {
 	const showElement = (input: HTMLElement) => {
