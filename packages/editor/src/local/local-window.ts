@@ -131,8 +131,8 @@ interface LocalizationShape {
 	 * `localizationStateKeys`，当前 7 键：state/strings/target/data/languages/history/changed），
 	 * 类型与 store 的 `shallowRef` 对齐。
 	 *
-	 * `data` / `languages` / `target` / `history` / `changed` 在本批从「只在单例上」升为
-	 * store 为源 —— 桥在下方 `localizationBridgeKeys` 上循环，两份数组必须同值。
+	 * `data` / `languages` / `target` / `history` / `changed` 由 store 持有 ——
+	 * 桥在下方 `localizationBridgeKeys` 上循环，两份数组必须同值。
 	 */
 	state: string;
 }
