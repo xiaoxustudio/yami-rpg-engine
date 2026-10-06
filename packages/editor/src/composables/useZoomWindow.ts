@@ -1,5 +1,5 @@
-﻿import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
+import { getWindowFormsStore } from '@app/stores/window-forms';
 import { requestFocus } from '@app/directives/focus';
 import { Editor } from '@app/services/project/editor.ts';
 import { webFrame } from 'electron';
@@ -15,7 +15,16 @@ interface ZoomWindow {
 	confirm: () => void;
 }
 
-const form = reactive<ZoomForm>({ factor: 1 });
+// 表单真源在 `stores/window-forms.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, { factor })`、`form.factor` 与模板 v-model 都不用改。
+const form: ZoomForm = {
+	get factor() {
+		return getWindowFormsStore().zoomForm.factor;
+	},
+	set factor(value: number) {
+		getWindowFormsStore().zoomForm.factor = value;
+	}
+};
 
 const getFactor = (): number => webFrame.getZoomFactor();
 

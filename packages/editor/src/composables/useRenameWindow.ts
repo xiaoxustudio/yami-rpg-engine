@@ -1,5 +1,5 @@
-import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
+import { getWindowFormsStore } from '@app/stores/window-forms';
 import { requestFocus } from '@app/directives/focus';
 
 export interface RenameForm {
@@ -13,7 +13,16 @@ interface RenameWindow {
 	onWindowClosed: () => void;
 }
 
-const form = reactive<RenameForm>({ name: '' });
+// 表单真源在 `stores/window-forms.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ 本文件 `Object.assign(form, { name })`、`form.name` 与模板 v-model 都不用改。
+const form: RenameForm = {
+	get name() {
+		return getWindowFormsStore().renameForm.name;
+	},
+	set name(value: string) {
+		getWindowFormsStore().renameForm.name = value;
+	}
+};
 let callback: ((value: string) => void) | null = null;
 
 const open = (name: string, cb: (value: string) => void): void => {

@@ -1,5 +1,5 @@
-import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
+import { getWindowFormsStore } from '@app/stores/window-forms';
 import { requestFocus } from '@app/directives/focus';
 
 export interface SetKeyForm {
@@ -13,7 +13,16 @@ interface SetKeyWindow {
 	onWindowClosed: () => void;
 }
 
-const form = reactive<SetKeyForm>({ key: '' });
+// 表单真源在 `stores/window-forms.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, { key })`、`form.key` 与模板 v-model 都不用改。
+const form: SetKeyForm = {
+	get key() {
+		return getWindowFormsStore().setKeyForm.key;
+	},
+	set key(value: string) {
+		getWindowFormsStore().setKeyForm.key = value;
+	}
+};
 let callback: ((key: string) => void) | null = null;
 
 const open = (key: string, cb: (key: string) => void): void => {
