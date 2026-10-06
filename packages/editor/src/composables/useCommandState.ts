@@ -1,57 +1,89 @@
-import { markRaw, reactive } from 'vue';
-import { WordList, type WordListShape } from './useWordList.ts';
+import { getCommandStore } from '@app/stores/command';
+import type { CommandParseState, CommandTargetShape } from '@app/stores/command';
 
-interface CommandTargetShape {
-	scrollAndResize?: () => void;
-	getSelectionPosition?: () => { x: number; y: number } | null;
-	save?: (data: { id: string; params: Record<string, unknown> }) => unknown;
-}
+/**
+ * 指令解析态。
+ *
+ * ⚠️ 真源在 `stores/command.ts` 的 `parse`（原先是本文件的模块级 `reactive`，见该 store 的注释）。
+ * 这里保留同名对象，但每个字段都是 store 的**访问器**：命令编辑器有 94 处 `commandState.x`，
+ * 换成访问器后一处调用点都不用改，而状态已经进 store（DevTools 可见、可按 pinia 实例隔离）。
+ *
+ * 用显式访问器而不是 `Object.defineProperty` 桥：字段少、类型能逐字检查，改错会直接编译报错。
+ */
+export const commandState: CommandParseState = {
+	get target() {
+		return getCommandStore().parse.target;
+	},
+	set target(value: CommandTargetShape | null) {
+		getCommandStore().parse.target = value;
+	},
+	get id() {
+		return getCommandStore().parse.id;
+	},
+	set id(value: string | null) {
+		getCommandStore().parse.id = value;
+	},
+	get words() {
+		return getCommandStore().parse.words;
+	},
+	set words(value: CommandParseState['words']) {
+		getCommandStore().parse.words = value;
+	},
+	get invalid() {
+		return getCommandStore().parse.invalid;
+	},
+	set invalid(value: boolean) {
+		getCommandStore().parse.invalid = value;
+	},
+	get saveVars() {
+		return getCommandStore().parse.saveVars;
+	},
+	set saveVars(value: boolean) {
+		getCommandStore().parse.saveVars = value;
+	},
+	get returnType() {
+		return getCommandStore().parse.returnType;
+	},
+	set returnType(value: string) {
+		getCommandStore().parse.returnType = value;
+	},
+	get eventName() {
+		return getCommandStore().parse.eventName;
+	},
+	set eventName(value: string) {
+		getCommandStore().parse.eventName = value;
+	},
+	get eventIndex() {
+		return getCommandStore().parse.eventIndex;
+	},
+	set eventIndex(value: number) {
+		getCommandStore().parse.eventIndex = value;
+	},
+	get variables() {
+		return getCommandStore().parse.variables;
+	},
+	set variables(value: CommandParseState['variables']) {
+		getCommandStore().parse.variables = value;
+	},
+	get varMap() {
+		return getCommandStore().parse.varMap;
+	},
+	set varMap(value: Record<string, unknown>) {
+		getCommandStore().parse.varMap = value;
+	},
+	get dependsOn() {
+		return getCommandStore().parse.dependsOn;
+	},
+	set dependsOn(value: string[]) {
+		getCommandStore().parse.dependsOn = value;
+	},
+	get currentCommand() {
+		return getCommandStore().parse.currentCommand;
+	},
+	set currentCommand(value: Record<string, unknown> | null) {
+		getCommandStore().parse.currentCommand = value;
+	}
+};
 
-interface CommandState {
-	target: CommandTargetShape | null;
-	/** 指令 id：解析阶段才写入，之前**确实是 null** */
-	id: string | null;
-	/**
-	 * 词表：默认是一个空 `WordList`；每次解析由
-	 * `Command.words = markRaw(new Command.WordList())` 换成**新实例**，schema 解析函数在开头
-	 * `const words = commandState.words` 抓住它、随后连续 `push`。
-	 *
-	 * `markRaw` 不能省：`WordList` 内部用私有字段 `#arr`，被 Vue 包成 Proxy 后一调用就抛
-	 * （`Cannot read private member #arr from an object whose class did not declare it`）。
-	 */
-	words: WordListShape;
-	invalid: boolean;
-	saveVars: boolean;
-	returnType: string;
-	eventName: string;
-	eventIndex: number;
-	variables: Array<{
-		name: string;
-		type: string;
-		comment: string;
-		evIndex: number;
-		isLeftValue: boolean;
-		refCount: number;
-		command?: unknown;
-	}>;
-	varMap: Record<string, unknown>;
-	dependsOn: string[];
-	currentCommand: Record<string, unknown> | null;
-}
-
-export const commandState = reactive<CommandState>({
-	target: null,
-	id: null,
-	words: markRaw(new WordList()),
-	invalid: false,
-	saveVars: false,
-	returnType: '',
-	eventName: '',
-	eventIndex: 0,
-	variables: [],
-	varMap: {},
-	dependsOn: ['Inspector'],
-	currentCommand: null
-});
-
-export type { CommandState, CommandTargetShape };
+// 对外类型名保持不变（`commands/command-object.ts:7` 仍在转出这两个名字）
+export type { CommandParseState as CommandState, CommandTargetShape };
