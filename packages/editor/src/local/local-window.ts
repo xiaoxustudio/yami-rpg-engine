@@ -48,7 +48,7 @@ export interface LocalizationItem {
 	element?: HTMLElement;
 }
 
-interface LocalizationTarget {
+export interface LocalizationTarget {
 	input?: (id: string) => void;
 }
 
@@ -127,8 +127,12 @@ interface LocalizationShape {
 	saveToProject: ((project: EditorProjectShape) => void) | null;
 	loadFromProject: ((project: EditorProjectShape) => void) | null;
 	/**
-	 * 与 Pinia store 双向桥接的窗口状态（`stores/localization.ts` 的
-	 * `localizationStateKeys = ['state', 'strings']` 之一），类型与 store 的 `shallowRef` 对齐。
+	 * 与 Pinia store 双向桥接的窗口状态之一（见 `stores/localization.ts` 的
+	 * `localizationStateKeys`，当前 7 键：state/strings/target/data/languages/history/changed），
+	 * 类型与 store 的 `shallowRef` 对齐。
+	 *
+	 * `data` / `languages` / `target` / `history` / `changed` 在本批从「只在单例上」升为
+	 * store 为源 —— 桥在下方 `localizationBridgeKeys` 上循环，两份数组必须同值。
 	 */
 	state: string;
 }
@@ -855,7 +859,15 @@ import type { YamiEvent, YamiMouseEvent } from '@app/types/editor-event';
 import { clamp } from '@app/utils/math';
 import { clone as deepClone } from '@app/utils/object';
 
-const localizationBridgeKeys = ['state', 'strings'] as const;
+const localizationBridgeKeys = [
+	'state',
+	'strings',
+	'target',
+	'data',
+	'languages',
+	'history',
+	'changed'
+] as const;
 
 for (const key of localizationBridgeKeys) {
 	Object.defineProperty(Localization, key, {
