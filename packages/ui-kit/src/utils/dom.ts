@@ -184,7 +184,26 @@ export const dispatchResizeEvent = (el: { dispatchEvent: (event: Event) => unkno
 	el.dispatchEvent(resizeEvent);
 };
 
+/**
+ * 窗口帧数量的**注入端口**。
+ *
+ * 历史写法是直接读全局 `window.Window.frames.length`（宿主 editor 在
+ * `tools/window-object.ts` 末尾把单例挂到 `window` 上）。那让 ui-kit 隐式依赖宿主的全局形状，
+ * 也把「窗口层级」这个宿主概念泄漏进了组件库。
+ *
+ * 现在宿主初始化时注册提供者即可；**未注册时回退到全局读取**，所以既有宿主与测试
+ * （只挂 `window.Window`、不注册端口）行为完全不变。
+ *
+ * 契约：提供者返回的值与旧实现**同口径**（已含末位的 +1）。
+ */
+let windowFramesLengthProvider: (() => number) | null = null;
+
+export const setWindowFramesLengthProvider = (provider: (() => number) | null): void => {
+	windowFramesLengthProvider = provider;
+};
+
 export const getWindowFramesLength = (): number => {
+	if (windowFramesLengthProvider) return windowFramesLengthProvider();
 	const win = (window as Window & { Window?: { frames?: { length: number } } }).Window;
 	return (win?.frames?.length ?? 0) + 1;
 };

@@ -518,3 +518,14 @@ Object.defineProperty(frames, 'remove', {
 // 挂到 `window` 上供调试/扩展使用：`window` 是 interface（无隐式索引签名），
 // `Reflect.set` 与 `window.Window = Window` 是同一个 `[[Set]]`，且不需要断言。
 Reflect.set(window, 'Window', Window);
+
+// 给 ui-kit 注册「窗口帧数量」端口：它原先只能读上面这个全局
+// （`ui-kit/src/utils/dom.ts` 的 `getWindowFramesLength`），属于隐式反向依赖。
+// 注册后走这里的 `frames`；ui-kit 侧在未注册时仍会回退到全局读取，故两包可独立升级。
+import { setWindowFramesLengthProvider } from '@ui-kit';
+setWindowFramesLengthProvider(() => Window.frames.length + 1);
+
+// 方向说明（避免后来者又把它当「双源」去改）：
+// 本文件末尾的 `frames`（DOM 元素顺序）是**真源**，store 的 `stack`（id 数组）是它的**派生投影**，
+// 由各处 `getWindowStore().syncStack(frames.map((f) => f.id))` 同步 —— DOM 顺序本来就不可能由
+// store 拥有（元素是 DOM 节点，属 B 类「不得进 store」）。所以这里没有镜像需要消除。

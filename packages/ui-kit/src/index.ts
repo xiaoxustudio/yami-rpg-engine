@@ -262,4 +262,4 @@ export { default as YMArrayListString } from './components/business/YMArrayListS
 export { default as YMRequestKeyValue } from './components/business/YMRequestKeyValue/YMRequestKeyValue.vue';
 
 // `CSS.rasterize` 的等价实现（原先由 editor 的 `utils/css.ts` 挂在宿主 `CSS` 上）
-export { rasterize } from './utils/dom';
+export { rasterize, setWindowFramesLengthProvider } from './utils/dom';
