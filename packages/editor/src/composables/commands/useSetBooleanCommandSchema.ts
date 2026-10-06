@@ -10,7 +10,6 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { commit } from '@app/composables/useCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { reactive } from 'vue';
 
 interface SetBooleanOperand {
 	type: string;
@@ -72,7 +71,11 @@ Command.cases.setBoolean = new CommandSchema({
 	}
 });
 
-const form = reactive<Record<string, unknown>>({});
+// 表单真源在 `stores/command-schema-forms.ts`（原先是本文件的模块级 reactive）。
+// 键是动态的 ⇒ 用 dynamicForm 访问器保留对象语义（见 composables/dynamic-form.ts）。
+const form = dynamicForm(() => getCommandSchemaFormsStore().setBooleanForm);
+import { dynamicForm } from '@app/composables/dynamic-form';
+import { getCommandSchemaFormsStore } from '@app/stores/command-schema-forms';
 
 const writeHandler = (event: { value: string }): void => {
 	let filter = 'all';

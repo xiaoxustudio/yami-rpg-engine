@@ -58,12 +58,27 @@ export const useCommandSchemaFormsStore = defineStore('commandSchemaForms', () =
 		default: false
 	});
 
+	const castSkillForm = reactive<Record<string, unknown>>({});
+	const changeActorEquipmentForm = reactive<Record<string, unknown>>({});
+	const getActorForm = reactive<Record<string, unknown>>({});
+	const getTargetForm = reactive<Record<string, unknown>>({});
+	const setBooleanForm = reactive<Record<string, unknown>>({});
+	const setInventoryForm = reactive<Record<string, unknown>>({});
+	const transitionForm = reactive<Record<string, unknown>>({});
+
 	return {
 		forEachForm,
 		ifForm,
 		registerEventData,
 		showChoicesForm,
-		switchForm
+		switchForm,
+		castSkillForm,
+		changeActorEquipmentForm,
+		getActorForm,
+		getTargetForm,
+		setBooleanForm,
+		setInventoryForm,
+		transitionForm
 	};
 });
 

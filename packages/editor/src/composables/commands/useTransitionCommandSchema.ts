@@ -11,7 +11,6 @@ import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { reactive } from 'vue';
 
 Command.cases.transition = new CommandSchema({
 	name: 'transition',
@@ -49,7 +48,11 @@ Command.cases.transition = new CommandSchema({
 	}
 });
 
-const form = reactive<Record<string, unknown>>({});
+// 表单真源在 `stores/command-schema-forms.ts`（原先是本文件的模块级 reactive）。
+// 键是动态的 ⇒ 用 dynamicForm 访问器保留对象语义（见 composables/dynamic-form.ts）。
+const form = dynamicForm(() => getCommandSchemaFormsStore().transitionForm);
+import { dynamicForm } from '@app/composables/dynamic-form';
+import { getCommandSchemaFormsStore } from '@app/stores/command-schema-forms';
 let commands: unknown[] | null = null;
 
 const load = ({
