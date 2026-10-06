@@ -627,22 +627,11 @@ Animation.timelineMarquee.length = -1;
 elementDataOf<{ origin: number }>(Animation.timelineMarquee).origin = -1;
 // timelineMarquee methods
 
-const animationBridgeKeys = [
-	'state',
-	'target',
-	'motion',
-	'direction',
-	'mode',
-	'speed',
-	'zoom',
-	'showMark',
-	'showOnionskin',
-	'mirror',
-	'loop',
-	'playing'
-] as const;
+// 键表与 `stores/animation.ts` 的导出白名单**共用同一份**（叶子模块，避免两边漂移；
+// 也不能直接 import store 的那份导出 —— 桥接循环在模块求值期读数组，会踩 TDZ）。
+import { ANIMATION_STATE_KEYS } from '@app/stores/animation-keys';
 
-for (const key of animationBridgeKeys) {
+for (const key of ANIMATION_STATE_KEYS) {
 	Object.defineProperty(Animation, key, {
 		get: () => getAnimationStore()[key],
 		set: (value: unknown) => {

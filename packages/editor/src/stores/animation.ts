@@ -12,22 +12,13 @@ const loadAnimation = () =>
 	});
 const Animation = getLazyWindow('animation', loadAnimation);
 
-export const animationStateKeys = [
-	'state',
-	'target',
-	'motion',
-	'direction',
-	'mode',
-	'speed',
-	'zoom',
-	// 下面 5 个早就被 `animation-window.ts` 的 `animationBridgeKeys` 桥接了，但这份**导出的**
-	// 白名单一直少写它们（两份数组漂移，见 pinia-migration-analysis.md 的漂移表）。补齐到与桥一致。
-	'showMark',
-	'showOnionskin',
-	'mirror',
-	'loop',
-	'playing'
-] as const;
+/**
+ * 白名单的**唯一来源**是 `./animation-keys.ts`（叶子模块，单例侧的桥接循环共用同一份）。
+ *
+ * 历史上这里手写了一份独立的数组，与 `animation/animation-window.ts` 的 `animationBridgeKeys`
+ * 漂移过（少了 5 个已桥接键）—— 现在两侧都 import 同一常量，结构上不可能再漂移。
+ */
+export { ANIMATION_STATE_KEYS as animationStateKeys } from './animation-keys';
 
 type AnimationFrameShape = {
 	start: number;
