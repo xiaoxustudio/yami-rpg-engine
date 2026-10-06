@@ -182,16 +182,46 @@
 3. `export type { X as Y } from …` 与同名 `export const Y` 会撞 `TS2323: Cannot redeclare exported variable` ⇒ 改用 `export type Y = X` 别名；
 4. `SwitchConditionType` 第一版只抄了 5 个值（真值 10 个）→ 被 `tsc` 的 `TS2678`（switch case 不可比）抓住。
 
-### 仍待做（阶段 1 剩余 / 阶段 2 未动）
+### 阶段 2（P1）完成情况
 
-| 项 | 位置 | 为什么没在本轮做 |
+| P1 项 | 提交 | 备注 |
 |---|---|---|
-| `useFileTilesetPage.ts:28` 的 `form` | `composables/useFileTilesetPage.ts:28` | 先要判定它是「跨实例共享」还是「每实例私有」：若多实例各自需要，则**不该**进 store（应改为 composable 内 `reactive`），是设计问题而非机械迁移 |
-| 阶段 2 · P1 #9/#10 | `scene-window.ts:324-325,317-318,355`、`particle-window.ts:316-319` | 往白名单**加**键（纯增量，无缺陷）；每域要 store 声明 + 两侧数组 + spec，独立一轮 |
-| 阶段 2 · tools（#12/#13） | `tools/text-capture.ts:131,172`、`tools/color-picker-window.ts:38-41` | 同上 |
-| 阶段 2 · 命令弹窗表单 40 处 | `composables/commands/*` 14 + `use*Window.ts` 26 | 量大，按域分批 |
-| 卫生项余项 | `stores/data.ts:271/:275`（manifest 双 ref）、`Layout.layout` 字典、`storeToRefs` 规范 | manifest 去重要给 `data` 加**可枚举** getter，否则 `JSON.stringify(data)` 会漏字段 ⇒ 风险大于收益，先记录；其余为规范/文档项 |
-| 白名单漂移余项 3 个 | `autoTile`（导出多 3 键）、`ui`（promoted 未桥 15 键，有意）、`window`（`stack` 仅镜像） | 前两者是**有意差异**（非缺陷），`window.stack` 见 P2 #18（需先给 ui-kit 注入端口） |
+| #8 白名单漂移 animation | `4d195c96` | 导出白名单 7 → 12，补 `animation-state-keys.spec.ts` 作漂移回归（修复前必红） |
+| #10 Particle 3 开关 | `96ac567f` | `restartKey`/`translationKey`/`showAxes` → `stores/particle.ts`（9 → 12 键） |
+| #9 Scene 5 标志 | `e1d3c4b4` | `brush`/`symbol`/`showLight`/`showAnimation`/`activeTilemapId` → `stores/scene.ts`（9 → 14 键）；类型按证据给，`symbol` 全仓无读写点 ⇒ `unknown` 而不猜 |
+| #12/#13 两个工具窗口 | `3e405a2a` | 原先**完全没有 store**：新增 `stores/selection.ts`、`stores/color.ts` + 各自模块里装桥；刻意不导出第二份白名单（从根上不新增漂移对） |
+| **#11 命令弹窗表单 37 处** | `577f4ec5`、`9e23ef0f`、`7b04ee55`、`0690a7c5`、`52f9d3ce`、`b08c9edd`、`c9a2a622` | 7 批迁移 34 处 + 3 处经判定**有意不迁**（见下） |
+| C 类卫生（服务统一 + 删死 store） | `f4148eee` | 17 处无参 `useXStore()` → `getXStore()`；删除 0 引用的 `stores/timer.ts` |
+
+**#11 的三批特殊形态与方案**（值得留档的判定与手法）：
+
+1. **逐字段访问器**（默认手法，适用于键已知的表单）：13 个 Getter 窗口（`9e23ef0f`，脚本化）、
+   5 个命令 schema 表单（`7b04ee55`）、小窗口若干 —— store 切片 + 同名访问器 ⇒ 调用点与模板零改动。
+2. **动态键表单**（`b08c9edd`）：7 份 `reactive<Record<string, unknown>>({})` 的键是运行时的，
+   逐字段访问器覆盖不全 ⇒ 新增 `composables/dynamic-form.ts`，用 **Proxy** 转发读写并保留对象语义
+   （`Object.assign` / 展开 / `keys` / `delete` / `in`），响应性来自切片本身；动手前先确认这些文件里
+   **没有** `watch(form)` / `isReactive` / `toRef` / `structuredClone` / `JSON.stringify(form)`。
+3. **ref 形态**（`52f9d3ce`）：`ref` 用**可写 computed** 承接，保持 `.value` 写法不变
+   （同 `newProjectConfirmDisabled` / `deploymentConfirmDisabled`）。
+
+**判定标准（本任务最重要的产出之一）**：
+
+> **模块级 = 单例，可迁 store；工厂函数 / 组件 / composable 函数体内 = 每实例私有，不可迁。**
+
+据此把 `usePresetGetterWindow.ts:44`（在 `createPresetGetterWindow()` 内）与
+`useFileTilesetPage.ts:28`（在 `useFileTilesetPage()` 内）判为**有意不迁** —— 迁进去反而会让多个调用者
+共享同一份表单。这两处已从待办中移除。
+
+### 仍待做
+
+| 项 | 位置 | 状态 / 为什么 |
+|---|---|---|
+| 卫生项：`stores/data.ts` manifest 双 ref | `stores/data.ts:271/:275` | 去重要给 `data` 加**可枚举** getter，否则 `JSON.stringify(data)` 会漏字段 ⇒ **风险大于收益，判定不做**（保留现状） |
+| 卫生项：`Layout.layout/layouts/default` 字典 | `engine/layout/layout.ts` | 牵动 ~15 个 spec，收益（DevTools 可见）低于改动面 ⇒ 低优先级 |
+| 卫生项：`storeToRefs` 规范文档化 | 组件层 | 当前 0 处使用、32 处解构**全在 .ts 且只解构 state**（快照读）⇒ 无 bug，属规范项，写进 README/文档即可 |
+| 白名单漂移：`window.stack` | `tools/window-object.ts` + `stores/window.ts:19` | 实为**有意保留的镜像**：store 里已是真源（`shallowReactive<string[]>` + `syncStack`），单例那份供外部（ui-kit/测试）读取；改成 store 直连需给 ui-kit 注入端口，属**可选重构**、非缺陷 |
+| 白名单漂移：`autoTile`（导出多 3 键）、`ui`（15 promoted 未桥） | — | **有意差异**，非缺陷，已在第 1.1 节说明 |
+| 阶段 3（P2） | 见第 3 节 | `createWindowStore` 工厂、`Layout.layout` 字典、`window.stack` 端口等长期项 |
 
 ### 阶段 1 的验收口径（每个提交都跑）
 
@@ -202,7 +232,13 @@
 
 ---
 
-## 附录 · 统计口径
+## 附录 · 统计口径（**立项时**的快照）
+
+> 下面是分析阶段（执行前）测得的数，用于确定优先级；执行后的现状见上文各「完成情况」节。
+> 主要变化：store 从 36 个变为 **47** 个（删 1 个死 store、新增 10 个：curve / new-project /
+> deployment / selection / color / command-forms / command-schema-forms / easing-form /
+> getter-windows / window-forms）；动画·粒子·场景·本地化四个域的白名单已补齐到与桥一致；
+> 模块级 `reactive`/`ref` 的表单已按三批手法迁完（含 Proxy 方案），仅剩**有意保留**的每实例私有项。
 
 ```
 非测试源文件                1131（.ts/.vue）
