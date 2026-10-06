@@ -5,9 +5,9 @@ import { Editor } from './editor.ts';
 import { getAnimationStore } from '@app/stores/animation.ts';
 import { getSceneStore } from '@app/stores/scene.ts';
 import { getTitleStore } from '@app/stores/title.ts';
-import { useLogStore } from '@app/stores/log.ts';
-import { useParticleStore } from '@app/stores/particle.ts';
-import { useUIStore } from '@app/stores/ui.ts';
+import { getLogStore } from '@app/stores/log.ts';
+import { getParticleStore } from '@app/stores/particle.ts';
+import { getUIStore } from '@app/stores/ui.ts';
 
 const Layout = getLazyWindow('layout', () =>
 	import('@app/tools/window-cluster').then((m) => m.Layout)
@@ -26,20 +26,20 @@ function saveConfig(this: typeof Editor) {
 		getSceneStore().saveToConfig(config);
 		// `colors` 已由本函数的 `config.colors ??= {}` 兜底成对象，但**值仍是不可信的 JSON**：
 		// UI 侧契约收 `Record<string, unknown>`（消费方 `safeHex` 自己判类型），所以这里只断言"在"。
-		useUIStore().saveToConfig(config as { colors: Record<string, unknown> });
+		getUIStore().saveToConfig(config as { colors: Record<string, unknown> });
 		getAnimationStore().saveToConfig(config);
-		useParticleStore().saveToConfig(config as { colors: Record<string, string> });
+		getParticleStore().saveToConfig(config as { colors: Record<string, string> });
 
 		const json = JSON.stringify(config, null, 2);
 		const last = config.code;
 		if (json && json !== last) {
 			const path = Path.resolve!(GlobalPath, 'config.json');
 			FSP.writeFile!(path, json).catch((error: unknown) => {
-				useLogStore().logThrow(error);
+				getLogStore().logThrow(error);
 			});
 		}
 	} catch (error: unknown) {
-		useLogStore().logThrow(error);
+		getLogStore().logThrow(error);
 	}
 }
 
@@ -88,9 +88,9 @@ function loadConfig(this: typeof Editor) {
 	getTitleStore().loadFromConfig(config!);
 	Layout.loadFromConfig!(config! as LayoutConfigShape);
 	getSceneStore().loadFromConfig(config!);
-	useUIStore().loadFromConfig(config! as { colors: Record<string, unknown> });
+	getUIStore().loadFromConfig(config! as { colors: Record<string, unknown> });
 	getAnimationStore().loadFromConfig(config!);
-	useParticleStore().loadFromConfig(config! as { colors: Record<string, string> });
+	getParticleStore().loadFromConfig(config! as { colors: Record<string, string> });
 }
 
 export function initProjectConfig(): void {

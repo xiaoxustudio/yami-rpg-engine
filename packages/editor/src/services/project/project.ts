@@ -6,12 +6,12 @@ import { getAnimationStore } from '@app/stores/animation.ts';
 import { getPaletteStore } from '@app/stores/palette.ts';
 import { getSceneStore } from '@app/stores/scene.ts';
 import { getTitleStore } from '@app/stores/title.ts';
-import { useBrowserStore } from '@app/stores/browser.ts';
-import { useLogStore } from '@app/stores/log.ts';
-import { useParticleStore } from '@app/stores/particle.ts';
-import { usePluginStore } from '@app/stores/plugin.ts';
-import { useSelectorStore } from '@app/stores/selector.ts';
-import { useUIStore } from '@app/stores/ui.ts';
+import { getBrowserStore } from '@app/stores/browser.ts';
+import { getLogStore } from '@app/stores/log.ts';
+import { getParticleStore } from '@app/stores/particle.ts';
+import { getPluginStore } from '@app/stores/plugin.ts';
+import { getSelectorStore } from '@app/stores/selector.ts';
+import { getUIStore } from '@app/stores/ui.ts';
 
 const Sprite = getLazyWindow('sprite', () =>
 	import('@app/tools/window-cluster').then((m) => m.Sprite)
@@ -24,16 +24,16 @@ function saveProject(this: typeof Editor) {
 	}
 	try {
 		getSceneStore().saveToProject(project);
-		useUIStore().saveToProject(project as { ui: { zoom?: number }; uiPrefabs?: string[] });
+		getUIStore().saveToProject(project as { ui: { zoom?: number }; uiPrefabs?: string[] });
 		getAnimationStore().saveToProject(project);
-		useParticleStore().saveToProject(project);
+		getParticleStore().saveToProject(project);
 		getPaletteStore().saveToProject(project);
 		Sprite.saveToProject(project);
-		useBrowserStore().saveToProject(
+		getBrowserStore().saveToProject(
 			project as { browser: { view?: number; folders?: string[] } }
 		);
-		useSelectorStore().saveToProject(project);
-		usePluginStore().saveToProject(project);
+		getSelectorStore().saveToProject(project);
+		getPluginStore().saveToProject(project);
 		getTitleStore().saveToProject(project);
 
 		const json = JSON.stringify(project, null, 2);
@@ -43,11 +43,11 @@ function saveProject(this: typeof Editor) {
 			// `!` 只是把这条既有不变式写明；`FSP.writeFile` 现在有签名，不能再靠 `any` 蒙过。
 			const path = this.config!.project!;
 			FSP.writeFile(path, json).catch((error: unknown) => {
-				useLogStore().logThrow(error);
+				getLogStore().logThrow(error);
 			});
 		}
 	} catch (error: unknown) {
-		useLogStore().logThrow(error);
+		getLogStore().logThrow(error);
 		return console.error(error);
 	}
 }
@@ -55,13 +55,13 @@ function saveProject(this: typeof Editor) {
 function loadProject(this: typeof Editor) {
 	const project = this.project!;
 	getSceneStore().loadFromProject(project);
-	useUIStore().loadFromProject(project as { ui: { zoom: number } });
+	getUIStore().loadFromProject(project as { ui: { zoom: number } });
 	getAnimationStore().loadFromProject(project);
-	useParticleStore().loadFromProject(project);
+	getParticleStore().loadFromProject(project);
 	getPaletteStore().loadFromProject(project);
 	Sprite.loadFromProject(project);
-	useBrowserStore().loadFromProject(project as { browser: { view: number; folders: string[] } });
-	useSelectorStore().loadFromProject(project);
+	getBrowserStore().loadFromProject(project as { browser: { view: number; folders: string[] } });
+	getSelectorStore().loadFromProject(project);
 	Editor.hooks.onPluginLoad(project);
 	getTitleStore().loadFromProject(project);
 }
