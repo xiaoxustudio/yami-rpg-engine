@@ -13,9 +13,13 @@ describe('useAnimationStore（Animation 窗口状态桥接）', () => {
 		expect(store.zoom).toBe(null);
 	});
 
-	it('状态键完整（7 项）', () => {
+	// 12 = 7（state/target/motion/direction/mode/speed/zoom）+ 5 个开关（showMark/showOnionskin/
+	// mirror/loop/playing）—— 后 5 个早就被 `animation-window.ts` 的 `animationBridgeKeys` 桥接了，
+	// 但导出白名单一直少写它们（本批补齐）。桥侧的「真装了 getter/setter + 双向读写」由
+	// `animation-state-keys.spec.ts` 单独钉住。
+	it('状态键完整（12 项）', () => {
 		const store = getAnimationStore();
-		expect(animationStateKeys).toHaveLength(7);
+		expect(animationStateKeys).toHaveLength(12);
 		for (const key of animationStateKeys) {
 			expect(key in store, String(key)).toBe(true);
 		}
