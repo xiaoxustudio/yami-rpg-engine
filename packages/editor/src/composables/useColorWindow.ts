@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { getWindowFormsStore } from '@app/stores/window-forms';
 import { getWindowStore } from '@app/stores/window';
 import { requestFocus } from '@app/directives/focus';
 
@@ -38,7 +38,46 @@ const getHexFromRGBA = ([r, g, b, a]: [number, number, number, number]): string 
 
 const simplifyHex = (hex: string): string => hex.replace(/^([0-9a-f]{6})ff$/i, '$1');
 
-const form = reactive<ColorForm>({ hex: '00000000', r: 0, g: 0, b: 0, a: 0, index: null });
+// 表单真源在 `stores/window-forms.ts`（原先是本文件的模块级 `reactive`）。
+// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
+const form: ColorForm = {
+	get hex(): ColorForm['hex'] {
+		return getWindowFormsStore().colorForm.hex;
+	},
+	set hex(value: ColorForm['hex']) {
+		getWindowFormsStore().colorForm.hex = value;
+	},
+	get r(): ColorForm['r'] {
+		return getWindowFormsStore().colorForm.r;
+	},
+	set r(value: ColorForm['r']) {
+		getWindowFormsStore().colorForm.r = value;
+	},
+	get g(): ColorForm['g'] {
+		return getWindowFormsStore().colorForm.g;
+	},
+	set g(value: ColorForm['g']) {
+		getWindowFormsStore().colorForm.g = value;
+	},
+	get b(): ColorForm['b'] {
+		return getWindowFormsStore().colorForm.b;
+	},
+	set b(value: ColorForm['b']) {
+		getWindowFormsStore().colorForm.b = value;
+	},
+	get a(): ColorForm['a'] {
+		return getWindowFormsStore().colorForm.a;
+	},
+	set a(value: ColorForm['a']) {
+		getWindowFormsStore().colorForm.a = value;
+	},
+	get index(): ColorForm['index'] {
+		return getWindowFormsStore().colorForm.index;
+	},
+	set index(value: ColorForm['index']) {
+		getWindowFormsStore().colorForm.index = value;
+	}
+};
 let callback: ((value: number | string) => void) | null = null;
 let indexEnabled = false;
 

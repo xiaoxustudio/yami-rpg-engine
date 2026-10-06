@@ -4,6 +4,9 @@ import { pinia } from './pinia';
 import type { RenameForm } from '@app/composables/useRenameWindow';
 import type { SetKeyForm } from '@app/composables/useSetKeyWindow';
 import type { ZoomForm } from '@app/composables/useZoomWindow';
+import type { ImageClipForm } from '@app/composables/useImageClipWindow';
+import type { SetQuantityForm } from '@app/composables/useSetQuantityWindow';
+import type { ColorForm } from '@app/composables/useColorWindow';
 
 /**
  * 三个「单值表单」小窗口的状态真源（分析文档 P1 #11 的第一批）。
@@ -20,7 +23,13 @@ export const useWindowFormsStore = defineStore('windowForms', () => {
 	const setKeyForm = reactive<SetKeyForm>({ key: '' });
 	const zoomForm = reactive<ZoomForm>({ factor: 1 });
 
-	return { renameForm, setKeyForm, zoomForm };
+	const imageClipForm = reactive<ImageClipForm>({ x: 0, y: 0, width: 0, height: 0 });
+
+	const setQuantityForm = reactive<SetQuantityForm>({ quantity: 1, max: 1 });
+
+	const colorForm = reactive<ColorForm>({ hex: '00000000', r: 0, g: 0, b: 0, a: 0, index: null });
+
+	return { renameForm, setKeyForm, zoomForm, imageClipForm, setQuantityForm, colorForm };
 });
 
 export function getWindowFormsStore() {
