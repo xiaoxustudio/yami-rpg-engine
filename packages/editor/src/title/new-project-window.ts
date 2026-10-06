@@ -1,4 +1,4 @@
-import { reactive, ref } from 'vue';
+import { computed } from 'vue';
 import { titleEls } from '@app/title/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { read } from '@app/utils/element-utils';
@@ -14,6 +14,8 @@ import { Editor } from '@app/services/project/editor.ts';
 import { TemplatesPath } from '@app/module/global.ts';
 import { isNoResource } from '@app/module/constants';
 import { getLocalStore } from '@app/stores/local';
+import { getNewProjectStore } from '@app/stores/new-project';
+import type { NewProjectForm } from '@app/stores/new-project';
 import { Title } from '@app/title/title-bar.ts';
 import { getYamiI18n } from '@app/i18n';
 
@@ -25,18 +27,46 @@ const t = (key: string, named?: Record<string, unknown>) =>
 
 type NewProjectState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
 
-export interface NewProjectForm {
-	template: string;
-	folder: string;
-	location: string;
-}
+// 类型与状态真源都在 `stores/new-project.ts`（本批从模块级 `reactive`/`ref` 升上去）；
+// `import type` + 原样转出 ⇒ 其它 import 这个名字的文件不用改。
+export type { NewProjectForm };
 
-const form = reactive<NewProjectForm>({ template: '', folder: '', location: '' });
+/**
+ * 表单：逐字段访问器，指向 store 里那个 reactive 对象。
+ * 保留同名可读写对象 ⇒ 本文件 10 处 `form.x` 与 `Object.assign(form, …)` 全不用改，
+ * `NewProject.form`（形状字段）暴露的也是它。
+ */
+const form: NewProjectForm = {
+	get template() {
+		return getNewProjectStore().form.template;
+	},
+	set template(value: string) {
+		getNewProjectStore().form.template = value;
+	},
+	get folder() {
+		return getNewProjectStore().form.folder;
+	},
+	set folder(value: string) {
+		getNewProjectStore().form.folder = value;
+	},
+	get location() {
+		return getNewProjectStore().form.location;
+	},
+	set location(value: string) {
+		getNewProjectStore().form.location = value;
+	}
+};
 
 // 确认按钮的启用态。原先由 `check()` 对 `#newProject-confirm` 调 disable/enable，
 // 而该按钮由 WindowFrame → YMFormButtons 生成（不在元素注册表里）⇒ 属性化后经
 // `WindowFrame` 的 `confirm-disabled` 透传到 `button[name="confirm"]` 的 `:disabled`。
-export const newProjectConfirmDisabled = ref(false);
+// 真源在 store：这里给可写 computed（形状仍是 ref ⇒ 模板自动解包、`.value = …` 也照旧）。
+export const newProjectConfirmDisabled = computed<boolean>({
+	get: () => getNewProjectStore().confirmDisabled,
+	set: (value: boolean) => {
+		getNewProjectStore().confirmDisabled = value;
+	}
+});
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 type NewProjectMethod = ((...args: unknown[]) => unknown) | null;

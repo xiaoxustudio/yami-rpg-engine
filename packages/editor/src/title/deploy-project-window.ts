@@ -15,7 +15,9 @@ import { getYamiI18n } from '@app/i18n';
 
 import { Path } from '@app/utils/config';
 import uglifyJs from 'uglify-js';
-import { reactive, ref } from 'vue';
+import { computed } from 'vue';
+import { getDeploymentStore } from '@app/stores/deployment';
+import type { DeploymentForm as DeploymentFormShape } from '@app/stores/deployment';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -38,22 +40,49 @@ type DeploymentState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
 
 type DeploymentPlatform = 'windows-x64' | 'mac-universal' | 'web';
 
-interface DeploymentForm {
-	platform: string;
-	folder: string;
-	location: string;
-}
+// 类型与状态真源都在 `stores/deployment.ts`（本批从模块级 `reactive`/`ref` 升上去）。
+// 用 type 别名而不是 `export type { … as … }` 重导出：后者与下面的同名 const 会撞
+// 「Cannot redeclare exported variable」。
+export type DeploymentForm = DeploymentFormShape;
 
-export const DeploymentForm = reactive<DeploymentForm>({
-	platform: 'windows-x64',
-	folder: '',
-	location: ''
-});
+/**
+ * 部署表单：逐字段访问器，指向 store 里那个 reactive 对象。
+ *
+ * 保留同名可导出对象 ⇒ 本文件 11 处 `DeploymentForm.x`、`Object.assign(DeploymentForm, …)`
+ * 以及外部就地改值（`services/ipc/webserver.ts:83`、`components/tools/Deployment.vue`、
+ * `components/__tests__/window-confirm-disabled.spec.ts`）全不用改。
+ */
+export const DeploymentForm: DeploymentFormShape = {
+	get platform() {
+		return getDeploymentStore().form.platform;
+	},
+	set platform(value: string) {
+		getDeploymentStore().form.platform = value;
+	},
+	get folder() {
+		return getDeploymentStore().form.folder;
+	},
+	set folder(value: string) {
+		getDeploymentStore().form.folder = value;
+	},
+	get location() {
+		return getDeploymentStore().form.location;
+	},
+	set location(value: string) {
+		getDeploymentStore().form.location = value;
+	}
+};
 
 // 确认按钮的启用态。原先由 `check()` 对 `#deployment-confirm` 调 disable/enable，
 // 而该按钮由 WindowFrame → YMFormButtons 生成（不在元素注册表里）⇒ 属性化后经
 // `WindowFrame` 的 `confirm-disabled` 透传到 `button[name="confirm"]` 的 `:disabled`。
-export const deploymentConfirmDisabled = ref(false);
+// 真源在 store：这里给可写 computed（形状仍是 ref ⇒ 模板自动解包、`.value = …` 也照旧）。
+export const deploymentConfirmDisabled = computed<boolean>({
+	get: () => getDeploymentStore().confirmDisabled,
+	set: (value: boolean) => {
+		getDeploymentStore().confirmDisabled = value;
+	}
+});
 
 type DeploymentFileItem = {
 	folder?: boolean;
