@@ -1,10 +1,8 @@
 import { defineStore } from 'pinia';
 import { EventEditor } from '@app/commands/event-editor.ts';
-import { markRaw, reactive, shallowRef } from 'vue';
+import { markRaw, reactive } from 'vue';
 import { WordList, type WordListShape } from '@ui-kit';
 import { pinia } from './pinia';
-
-export const commandStateKeys = ['state', 'target'] as const;
 
 /** 命令解析目标（原在 `composables/useCommandState.ts`） */
 export interface CommandTargetShape {
@@ -17,8 +15,11 @@ export interface CommandTargetShape {
  * 指令解析态（原 `composables/useCommandState.ts:42` 的模块级 `reactive`，现为 store 状态）。
  *
  * 为什么升进 store：它是命令编辑器最热的一份共享状态（94 处 `commandState.x` 引用），
- * 放在模块作用域既进不了 DevTools，也没法按 pinia 实例隔离；`stores/command.ts` 过去只有
- * `state`/`target` 两个**没有 writer** 的浅引用（`commandStateKeys`），真状态反而在 composable 里。
+ * 放在模块作用域既进不了 DevTools，也没法按 pinia 实例隔离。
+ *
+ * 注：本 store 过去还有 `state`/`target` 两个**没有 writer** 的浅引用（连同
+ * `commandStateKeys = ['state','target']`）。全仓核查后确认生产代码**零读取**（只有旧 spec 读），
+ * 已在 T2 清理删除 —— 解析态 `parse` 是这里唯一的真源。
  */
 export interface CommandParseState {
 	target: CommandTargetShape | null;
@@ -53,9 +54,6 @@ export interface CommandParseState {
 }
 
 export const useCommandStore = defineStore('command', () => {
-	const state = shallowRef<string>('closed');
-	const target = shallowRef<Record<string, unknown> | null>(null);
-
 	// ── 指令解析态（真源）────────────────────────────────────────────────
 	// 用 `reactive`（而不是逐字段 `shallowRef`）：解析期对 `variables`/`varMap` 做就地读写，
 	// 与原先模块级 `reactive` 的语义逐字对齐；`words` 走 `markRaw`（见类型注释）。
@@ -171,8 +169,6 @@ export const useCommandStore = defineStore('command', () => {
 	}
 
 	return {
-		state,
-		target,
 		parse,
 		initialize,
 		open,
