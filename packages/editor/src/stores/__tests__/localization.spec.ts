@@ -9,15 +9,29 @@ describe('useLocalizationStore（Localization 状态反转：store 为源）', (
 		expect(store.strings).toEqual({});
 	});
 
-	it('状态键完整（7 项：state/strings + 本批升上来的 5 个）', () => {
-		const store = getLocalizationStore();
+	it('状态键完整（7 项）且每个键真经单例读写 store', () => {
+		const store = getLocalizationStore() as unknown as Record<string, unknown>;
 		expect(localizationStateKeys).toHaveLength(7);
 		for (const key of localizationStateKeys) {
 			expect(key in store, String(key)).toBe(true);
-			// 每个键都必须在单例上装了桥（getter/setter），否则「store 为源」是假象
-			const descriptor = Object.getOwnPropertyDescriptor(Localization, key);
-			expect(typeof descriptor?.get, String(key)).toBe('function');
-			expect(typeof descriptor?.set, String(key)).toBe('function');
+		}
+
+		// 「白名单写了但没桥」是假象：逐个用单例写一次、再从 store 读回校验。
+		// 用功能性校验而不是 `Object.getOwnPropertyDescriptor(Localization, key)`：
+		// 后者断言的是全局单例的属性形状，在全量套件里与其它 spec 的加载顺序耦合（实测会偶发红）。
+		const probes: Record<string, unknown> = {
+			state: 'open',
+			strings: { k: 'v' },
+			target: { input: () => undefined },
+			data: [{ name: 'probe' }],
+			languages: ['en'],
+			history: { canUndo: () => false, canRedo: () => false },
+			changed: true
+		};
+		for (const key of localizationStateKeys) {
+			const probe = probes[key];
+			(Localization as unknown as Record<string, unknown>)[key] = probe;
+			expect(store[key], String(key)).toStrictEqual(probe);
 		}
 	});
 
