@@ -5,8 +5,6 @@ import { AutoTile } from '@app/palette/auto-tile.ts';
 describe('useAutoTileStore（AutoTile 窗口状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {
 		const store = getAutoTileStore();
-		expect(store.state).toBe('closed');
-		expect(store.target).toBe(null);
 		expect(store.templates).toBe(null);
 		expect(store.template).toBe(null);
 		expect(store.nodeIndex).toBe(null);
@@ -18,9 +16,11 @@ describe('useAutoTileStore（AutoTile 窗口状态反转：store 为源）', () 
 		expect(store.ruleBits).toEqual([0, 0, 0, 0, 0, 0, 0, 0]);
 	});
 
-	it('状态键完整（11 项）', () => {
+	// 9 = 8 个被桥接到单例 `AutoTile` 的键 + 纯 store 侧的 `ruleBits`。
+	// 原本还有 `state` / `target`（两端都无读写者）—— 已删除，故 11 → 9。
+	it('状态键完整（9 项）', () => {
 		const store = getAutoTileStore();
-		expect(autoTileStateKeys).toHaveLength(11);
+		expect(autoTileStateKeys).toHaveLength(9);
 		for (const key of autoTileStateKeys) {
 			expect(key in store, String(key)).toBe(true);
 		}
