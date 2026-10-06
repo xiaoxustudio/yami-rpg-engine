@@ -168,6 +168,11 @@
 | P0 #7 localization PARTIAL→HOLDS | `34bd6208` | `localizationStateKeys` 2 → 7（+target/data/languages/history/changed）；桥接数组同步；spec 增加「每个键在单例上真装了 getter/setter」断言 |
 | P0 #4 新建/部署项目窗口 → store | （见 git log） | 新增 `stores/new-project.ts`、`stores/deployment.ts`；表单走逐字段访问器、确认态走**可写 computed**（ref 形状）⇒ SFC 与既有 spec 零改动 |
 | 遗留 `setForm`（批次 B 发现） | `c1072ef5` | `useGetObjectPropertyCommandSchema.ts:97` → `command-forms.objectPropertyForm`（第 4 份切片） |
+| **P0 #3 曲线窗口 → store** | `10d18577` | `useCurveWindow.ts:96-102` 的裸 `let state/target/index` → `stores/curve.ts`；composable 用**访问器对象 `curve`** 承接 38 处引用（`curve.state = 'open'`），DOM/实例句柄仍留模块作用域；新增 `curve-state.spec.ts` |
+| **C 类：服务模块统一 + 删死 store** | `f4148eee` | `services/project/{config,project}.ts` 的 17 处无参 `useXStore()` → `getXStore()`（best practice HIGH 影响项）；删除全仓 0 引用的 `stores/timer.ts` |
+| **白名单漂移：animation** | `4d195c96` | 导出的 `animationStateKeys` 7 → 12（补齐 `showMark/showOnionskin/mirror/loop/playing`）；新增 `animation-state-keys.spec.ts` 把「真实被桥接的 12 键」写死作漂移回归（修复前必红） |
+| **阶段 2：Particle 3 个 UI 开关** | `96ac567f` | `restartKey`/`translationKey`/`showAxes` → `stores/particle.ts`（`particleStateKeys` 9 → 12）；桥接数组同步；既有 spec 的键数期望 9 → 12 并把桥接检查改成功能性校验 |
+| 测试稳健性（两处） | `59378877`、`86612bcd` | localization 键完整性改为功能性校验（全量里不再偶发红）；animation 既有 spec 键数期望 7 → 12 |
 
 **过程中被验证抓住的真问题（值得留档）**：
 1. 我第一版 spec 用 `new WordList()` 复位（漏 `markRaw`）→ 立刻红：正好把「WordList 不能被代理」钉进测试；
@@ -179,10 +184,12 @@
 
 | 项 | 位置 | 为什么没在本轮做 |
 |---|---|---|
-| P0 #3 曲线窗口 → store | `composables/useCurveWindow.ts:96-103`（`state` 16 处 / `target` 11 / `index` 11 引用） | `state`/`target`/`index` 是**裸 `let`**（`state = 'open'`、`if (state !== 'closed')`），改成 store 必须逐个重写 38 处引用 —— 需要独立一轮 + 回测 |
-| `useFileTilesetPage.ts:28` 的 `form` | 同上位置 | 先要判定它是「跨实例共享」还是「每实例私有」：若多实例各自需要，则**不该**进 store（应改为 composable 内 `reactive`），是设计问题而非机械迁移 |
-| 阶段 2（白名单扩容 / tools / 命令弹窗表单 40 处） | 见第 2 节 P1 | 按计划排在阶段 1 之后 |
-| 卫生项（删 `stores/timer.ts`、服务模块统一 `getXStore()`、`storeToRefs` 规范、`Layout.layout` 字典） | 见第 4 节 | 独立小批次，可随时插入 |
+| `useFileTilesetPage.ts:28` 的 `form` | `composables/useFileTilesetPage.ts:28` | 先要判定它是「跨实例共享」还是「每实例私有」：若多实例各自需要，则**不该**进 store（应改为 composable 内 `reactive`），是设计问题而非机械迁移 |
+| 阶段 2 · P1 #9/#10 | `scene-window.ts:324-325,317-318,355`、`particle-window.ts:316-319` | 往白名单**加**键（纯增量，无缺陷）；每域要 store 声明 + 两侧数组 + spec，独立一轮 |
+| 阶段 2 · tools（#12/#13） | `tools/text-capture.ts:131,172`、`tools/color-picker-window.ts:38-41` | 同上 |
+| 阶段 2 · 命令弹窗表单 40 处 | `composables/commands/*` 14 + `use*Window.ts` 26 | 量大，按域分批 |
+| 卫生项余项 | `stores/data.ts:271/:275`（manifest 双 ref）、`Layout.layout` 字典、`storeToRefs` 规范 | manifest 去重要给 `data` 加**可枚举** getter，否则 `JSON.stringify(data)` 会漏字段 ⇒ 风险大于收益，先记录；其余为规范/文档项 |
+| 白名单漂移余项 3 个 | `autoTile`（导出多 3 键）、`ui`（promoted 未桥 15 键，有意）、`window`（`stack` 仅镜像） | 前两者是**有意差异**（非缺陷），`window.stack` 见 P2 #18（需先给 ui-kit 注入端口） |
 
 ### 阶段 1 的验收口径（每个提交都跑）
 
