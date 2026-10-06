@@ -48,6 +48,8 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		formatTime: ((time: number) => string) | null;
 		requestAnimation: (() => void) | null;
 		updateAnimation: ((deltaTime: number) => void) | null;
+		/** 按需（幂等）建波形缓冲区；`analyser` 未就绪返回 false —— 见实现处的判决记录 */
+		ensureWaveformBuffers: (() => boolean) | null;
 		stopAnimation: (() => void) | null;
 		themechange: ((event: YamiEvent) => void) | null;
 		windowResize: ((event: YamiEvent) => void) | null;
@@ -92,6 +94,7 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		formatTime: null,
 		requestAnimation: null,
 		updateAnimation: null,
+		ensureWaveformBuffers: null,
 		stopAnimation: null,
 		themechange: null,
 		windowResize: null,
@@ -263,40 +266,85 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		}
 	};
 
+	/**
+	 * 波形缓冲区 + 分析器参数（`fftSize` / 平滑），**按需幂等**建。
+	 *
+	 * 为什么不能"只在页面的 `onMounted` 里建一次"：`AudioManager.analyser` 可能**晚于页面挂载**
+	 * 才就绪（`initialize()` 由启动期 `initSingleton` 调用，而它把异常吞进 try/catch；`AudioContext`
+	 * 在 Electron 里也可能先被挂起），而 `open()` 早就把 rAF 回调登记进了 `Timer`。那种时序下
+	 * `onMounted` 里的 `if (analyser)` 为假 ⇒ 缓冲区永远不建，`updateAnimation` 每帧在
+	 * `array.length` 上抛「Cannot read properties of null (reading 'length')」（2026-10-01 实机）。
+	 * 所以改成谁先到（挂载 / 每帧）都由这里建：`analyser` 一到，波形立刻能画，不必重开窗口。
+	 *
+	 * 返回 `analyser` 是否就绪（false ⇒ 这一帧没有波形可画，调用方跳过波形绘制）。
+	 */
+	FileAudio.ensureWaveformBuffers = function (this: typeof FileAudio): boolean {
+		const analyser = AudioManager.analyser;
+		if (!analyser) return false;
+		// `frequencyBinCount === fftSize / 2`，缓冲区大小跟着它走
+		analyser.fftSize = 512;
+		analyser.smoothingTimeConstant = 0;
+		const length = analyser.frequencyBinCount;
+		if (this.dataArray?.length === length && this.intervals && this.intensities) {
+			return true;
+		}
+		this.dataArray = new Uint8Array(length);
+		this.intervals = new Float64Array(64);
+		// `index` 是写指针（环形缓冲），挂在数组上而不是另开字段 —— 故类型是交集
+		const intensities = Object.assign(new Float64Array(64), { index: 0 });
+		this.intensities = intensities;
+		return true;
+	};
+
 	FileAudio.updateAnimation = function (this: typeof FileAudio, deltaTime: number) {
-		const audio = AudioManager.player!.audio;
+		// 计时器（rAF）与窗口装载是**两条独立时序**：`open()` 早已登记回调，而进度条元素 / 画布 /
+		// 分析器缓冲都由 SFC 的 `onMounted` 建（见 `ensureWaveformBuffers` 的判决记录）。
+		// **不能靠 `!` 蒙过去**（本仓反复记的静默失效来源，2026-10-01 的 `array.length` 崩溃即此）：
+		// 资源没齐就这一帧什么都不做。
+		const player = AudioManager.player;
+		const progress = FileAudio.progress;
+		const progressFiller = FileAudio.progressFiller;
+		const currentTimeInfo = FileAudio.currentTimeInfo;
+		if (!player || !progress || !progressFiller || !currentTimeInfo) return;
+
+		const audio = player.audio;
 		const currentTime = audio.currentTime;
 		const duration = audio.duration || Infinity;
 		const cw = Inspector.manager.clientWidth;
 		const pw = Math.round((cw * currentTime) / duration);
 		const pp = roundTo((pw / cw) * 100, 6);
-		const { progress, progressFiller } = FileAudio;
-		if (progress!.percent !== pp) {
-			progress!.percent = pp;
-			progressFiller!.style.width = `${pp}%`;
+		if (progress.percent !== pp) {
+			progress.percent = pp;
+			progressFiller.style.width = `${pp}%`;
 		}
 
 		const time = FileAudio.formatTime!(currentTime);
-		const currentTimeInfo = FileAudio.currentTimeInfo!;
 		if (currentTimeInfo.textContent !== time) {
 			currentTimeInfo.textContent = time;
 		}
 
-		const canvas = FileAudio.canvas!;
-		const context = FileAudio.context!;
+		const canvas = FileAudio.canvas;
+		const context = FileAudio.context;
+		// 波形这一半还要 analyser 与本函数刚确保过的缓冲区
+		if (!canvas || !context || !FileAudio.ensureWaveformBuffers!()) {
+			return;
+		}
+		const analyser = AudioManager.analyser;
+		const array = FileAudio.dataArray;
+		const intervals = FileAudio.intervals;
+		const intensities = FileAudio.intensities;
+		if (!analyser || !array || !intervals || !intensities) {
+			return;
+		}
 		const width = canvas.width;
 		const height = canvas.height;
 		if (width * height === 0) {
 			return;
 		}
-		const analyser = AudioManager.analyser!;
-		const array = FileAudio.dataArray!;
 		const aLength = array.length;
 		const start = Math.floor(aLength * 0.1);
 		const end = Math.floor(aLength * 0.85);
 		const step = (Math.PI * 2) / (end - start);
-		const intervals = FileAudio.intervals!;
-		const intensities = FileAudio.intensities!;
 		const length = intensities.length;
 		const index = intensities.index;
 		let intensity = 0;
@@ -339,7 +387,7 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		const lineWidth = size * 0.005;
 		const halfWidth = lineWidth / 2;
 		const fRadius = size / 2 - padding - amplitude;
-		const rotation = FileAudio.rotation! - start * step;
+		const rotation = (FileAudio.rotation ?? 0) - start * step;
 		const MathCos = Math.cos;
 		const MathSin = Math.sin;
 		context.clearRect(0, 0, width, height);
@@ -386,7 +434,7 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		context.globalAlpha = 0.25;
 		context.stroke();
 
-		FileAudio.rotation! -= (Math.PI * deltaTime) / 15000;
+		FileAudio.rotation = (FileAudio.rotation ?? 0) - (Math.PI * deltaTime) / 15000;
 	};
 
 	FileAudio.stopAnimation = function (this: typeof FileAudio) {

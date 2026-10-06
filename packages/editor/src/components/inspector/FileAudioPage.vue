@@ -126,7 +126,6 @@ import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileAudioPage } from '@app/composables/useFileAudioPage';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { AudioManager } from '@app/audio/audio-manager.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -167,16 +166,10 @@ onMounted(() => {
 		fileAudio.canvas = canvas;
 		fileAudio.context = canvas?.getContext('2d', { desynchronized: true });
 
-		const analyser = AudioManager.analyser;
-		if (analyser) {
-			analyser.fftSize = 512;
-			analyser.smoothingTimeConstant = 0;
-			fileAudio.dataArray = new Uint8Array(analyser.frequencyBinCount);
-			fileAudio.intervals = new Float64Array(64);
-			fileAudio.intensities = new Float64Array(64);
-			fileAudio.intensities.index = 0;
-		}
-
+		// 波形的 analyser 参数与缓冲区（dataArray/intervals/intensities）统一由模块侧按需建 ——
+		// `analyser` 可能晚于本次挂载就绪，那时在这里建不出来，而 rAF 回调已经开始每帧读它们
+		// （2026-10-01 的 `array.length` 崩溃）。见 `file-audio-page.ts` 的 `ensureWaveformBuffers`。
+		fileAudio.ensureWaveformBuffers?.();
 		// 监听器存变量再 add/remove，保证卸载时能摘掉（只 add 就摘不掉）
 		const onThemeChange = fileAudio.themechange;
 		themechangeHandler = onThemeChange;
