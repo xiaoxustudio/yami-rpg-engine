@@ -19,7 +19,14 @@ export const animationStateKeys = [
 	'direction',
 	'mode',
 	'speed',
-	'zoom'
+	'zoom',
+	// 下面 5 个早就被 `animation-window.ts` 的 `animationBridgeKeys` 桥接了，但这份**导出的**
+	// 白名单一直少写它们（两份数组漂移，见 pinia-migration-analysis.md 的漂移表）。补齐到与桥一致。
+	'showMark',
+	'showOnionskin',
+	'mirror',
+	'loop',
+	'playing'
 ] as const;
 
 type AnimationFrameShape = {
