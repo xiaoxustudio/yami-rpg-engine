@@ -2,7 +2,8 @@ import { getWindowStore } from '@app/stores/window';
 import { composableEls } from '@app/composables/element-registry';
 import { read, write } from '@app/utils/element-utils';
 import { requestFocus } from '@app/directives/focus';
-import { reactive } from 'vue';
+import { getCommandFormsStore } from '@app/stores/command-forms';
+import type { SwitchConditionType } from '@app/stores/command-forms';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
 import {
 	setBooleanColor,
@@ -48,7 +49,7 @@ export interface SwitchConditionData {
 }
 
 export interface SwitchConditionForm {
-	type: SwitchConditionData['type'];
+	type: SwitchConditionType;
 	booleanValue: boolean;
 	numberValue: number;
 	stringValue: string;
@@ -58,16 +59,62 @@ export interface SwitchConditionForm {
 	variable: { type: string; key: string };
 }
 
-export const form = reactive<SwitchConditionForm>({
-	type: 'number',
-	booleanValue: false,
-	numberValue: 0,
-	stringValue: '',
-	attributeId: '',
-	stringId: '',
-	mouseButton: 0,
-	variable: { type: 'local', key: '' }
-});
+/**
+ * 条件表单（`SwitchCondition.vue` 的 8 个 `v-model`）。
+ * 真源已升进 `stores/command-forms.ts`（原先是本文件的模块级 `reactive`）；
+ * 这里保留同名对象但改成 store 访问器 —— `v-model="form.type"` 这类写法不用改。
+ * `variable` 是嵌套对象：getter 直接返回 store 里那个对象，所以 `form.variable.key = …` 也生效。
+ */
+export const form: SwitchConditionForm = {
+	get type() {
+		return getCommandFormsStore().switchConditionForm.type;
+	},
+	set type(value: SwitchConditionType) {
+		getCommandFormsStore().switchConditionForm.type = value;
+	},
+	get booleanValue() {
+		return getCommandFormsStore().switchConditionForm.booleanValue;
+	},
+	set booleanValue(value: boolean) {
+		getCommandFormsStore().switchConditionForm.booleanValue = value;
+	},
+	get numberValue() {
+		return getCommandFormsStore().switchConditionForm.numberValue;
+	},
+	set numberValue(value: number) {
+		getCommandFormsStore().switchConditionForm.numberValue = value;
+	},
+	get stringValue() {
+		return getCommandFormsStore().switchConditionForm.stringValue;
+	},
+	set stringValue(value: string) {
+		getCommandFormsStore().switchConditionForm.stringValue = value;
+	},
+	get attributeId() {
+		return getCommandFormsStore().switchConditionForm.attributeId;
+	},
+	set attributeId(value: string) {
+		getCommandFormsStore().switchConditionForm.attributeId = value;
+	},
+	get stringId() {
+		return getCommandFormsStore().switchConditionForm.stringId;
+	},
+	set stringId(value: string) {
+		getCommandFormsStore().switchConditionForm.stringId = value;
+	},
+	get mouseButton() {
+		return getCommandFormsStore().switchConditionForm.mouseButton;
+	},
+	set mouseButton(value: number) {
+		getCommandFormsStore().switchConditionForm.mouseButton = value;
+	},
+	get variable() {
+		return getCommandFormsStore().switchConditionForm.variable;
+	},
+	set variable(value: { type: string; key: string }) {
+		getCommandFormsStore().switchConditionForm.variable = value;
+	}
+};
 
 interface SwitchConditionTarget {
 	/** 校验失败时返回 `undefined`（焦点回控件、窗口不关）—— 见 spec「save 校验失败返回控件焦点且不关闭窗口」 */

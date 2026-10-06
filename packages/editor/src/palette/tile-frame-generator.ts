@@ -1,17 +1,13 @@
 import { paletteEls } from '@app/palette/element-registry';
-import { reactive } from 'vue';
 import { Window } from '@app/tools/window-object.ts';
 import { on } from '@app/utils/element-utils.ts';
 import { requestFocus } from '@app/directives/focus';
+import { getPaletteStore } from '@app/stores/palette';
+import type { FrameGeneratorForm } from '@app/stores/palette';
 import type { YamiElement } from '@app/types/element-api';
 
-export interface FrameGeneratorForm {
-	strideX: number;
-	strideY: number;
-	count: number;
-}
-
-const form = reactive<FrameGeneratorForm>({ strideX: 0, strideY: 0, count: 1 });
+// 形状定义已移到 `stores/palette.ts`（那里的 `frameGeneratorForm` 就是真源），这里原样转出。
+export type { FrameGeneratorForm };
 
 /**
  * `FrameGenerator` 的成员契约（`any-hatches` 收口，2026-09-20）。
@@ -38,7 +34,14 @@ interface FrameGeneratorShape {
 }
 
 export const FrameGenerator: FrameGeneratorShape = {
-	form,
+	/**
+	 * 表单真源在 `stores/palette.ts` 的 `frameGeneratorForm`（原先这里是本模块的模块级 `reactive`）。
+	 * 用 getter 而不是快照：`AutoTileGenerateFrames.vue:62` 取到的是**同一个** reactive 对象，
+	 * `v-model="form.strideX"` 与下面对 `this.form` 的复位/读取都落在同一份状态上。
+	 */
+	get form() {
+		return getPaletteStore().frameGeneratorForm;
+	},
 	callback: null,
 	initialize: null,
 	open: null,
@@ -47,9 +50,9 @@ export const FrameGenerator: FrameGeneratorShape = {
 };
 
 FrameGenerator.initialize = function (this: typeof FrameGenerator) {
-	form.strideX = 0;
-	form.strideY = 0;
-	form.count = 1;
+	this.form.strideX = 0;
+	this.form.strideY = 0;
+	this.form.count = 1;
 
 	const frameWindow = paletteEls.get('autoTile-generateFrames') as YamiElement;
 	if (frameWindow) on(frameWindow, 'closed', this.windowClosed!);
@@ -70,9 +73,9 @@ FrameGenerator.windowClosed = function (this: typeof FrameGenerator, _event: Eve
 }.bind(FrameGenerator);
 
 FrameGenerator.confirm = function (this: typeof FrameGenerator, _event: Event) {
-	const strideX = form.strideX;
-	const strideY = form.strideY;
-	const count = form.count;
+	const strideX = this.form.strideX;
+	const strideY = this.form.strideY;
+	const count = this.form.count;
 	if (strideX === 0 && strideY === 0) {
 		return requestFocus('autoTile-generateFrames-strideX');
 	}

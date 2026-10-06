@@ -1,10 +1,11 @@
-﻿import { Command } from '@app/commands/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Window } from '@app/tools/window-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
 import { requestFocus } from '@app/directives/focus';
+import { getCommandFormsStore } from '@app/stores/command-forms';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -13,7 +14,19 @@ import type { YamiElement } from '@app/types/element-api';
 
 export type ObjectPropertyItem = { text: string };
 
-export const indexForm = reactive<{ name: string }>({ name: '' });
+/**
+ * 索引名表单（`ObjectPropertyIndex.vue:16` 的 `v-model`）。
+ * 真源已升进 `stores/command-forms.ts`（原先是本文件的模块级 `reactive`）；
+ * 这里保留同名对象但改成 store 访问器，调用点（含 v-model）写法不变。
+ */
+export const indexForm: { name: string } = {
+	get name() {
+		return getCommandFormsStore().indexForm.name;
+	},
+	set name(value: string) {
+		getCommandFormsStore().indexForm.name = value;
+	}
+};
 
 export const IndexBind = {
 	target: null as YamiElement | null,

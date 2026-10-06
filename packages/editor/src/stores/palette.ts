@@ -1,11 +1,18 @@
 import { defineStore } from 'pinia';
-import { shallowRef } from 'vue';
+import { reactive, shallowRef } from 'vue';
 import { pinia } from './pinia';
 import { Palette } from '@app/palette/palette.ts';
 import type { EditorProjectShape } from './editor';
 
 export type PaletteMode = 'normal' | 'priority' | 'tag' | 'terrain' | 'edit';
 export type PaletteState = 'closed' | 'loading' | 'open' | 'suspended';
+
+/** 「按步长生成帧」窗口的表单形状（原在 `palette/tile-frame-generator.ts`） */
+export interface FrameGeneratorForm {
+	strideX: number;
+	strideY: number;
+	count: number;
+}
 
 /**
  * 图块组数据的**窄视图**（检查器/调色板读取用的那几个字段）。
@@ -59,6 +66,16 @@ export const usePaletteStore = defineStore('palette', () => {
 	// oxlint-disable-next-line no-explicit-any
 	const tileset = shallowRef<any>(null);
 
+	/**
+	 * 「按步长生成帧」窗口的表单（`palette/tile-frame-generator.ts` 的 `FrameGenerator.form`）。
+	 *
+	 * 原先是该模块内的模块级 `reactive`，被 `AutoTileGenerateFrames.vue:62` 取来直接做 `v-model`
+	 * 绑定、并被生成器自身在 `initialize`（复位）与 `confirm`（读取）里就地改值 —— 进 store 后
+	 * 这两条路径都指向同一份状态，且 DevTools 可见。
+	 * 注意：它**不进** `paletteStateKeys` 白名单 —— 它属于 `FrameGenerator` 而不是 `Palette` 单例。
+	 */
+	const frameGeneratorForm = reactive<FrameGeneratorForm>({ strideX: 0, strideY: 0, count: 1 });
+
 	const initialized = shallowRef(false);
 
 	function initialize() {
@@ -95,6 +112,7 @@ export const usePaletteStore = defineStore('palette', () => {
 		scrollable,
 		activeIndex,
 		tileset,
+		frameGeneratorForm,
 		initialized,
 		initialize,
 		setMode,

@@ -1,4 +1,4 @@
-﻿import { read } from '@app/utils/element-utils';
+import { read } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -9,20 +9,30 @@ import { requestFocus } from '@app/directives/focus';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { reactive } from 'vue';
+import { getCommandFormsStore } from '@app/stores/command-forms';
+import type { RequestKeyValueForm } from '@app/stores/command-forms';
 
-export type RequestKeyValue = {
-	key: string | { key: string };
-	value: string | { key: string };
+export type RequestKeyValue = RequestKeyValueForm;
+
+/**
+ * key/value 表单（`RequestKeyValue.vue:6-7` 的 `v-model:key`/`v-model:value`）。
+ * 真源已升进 `stores/command-forms.ts`（原先是本文件的模块级 `reactive`）；
+ * 这里保留同名对象但改成 store 访问器，调用点写法不变。
+ */
+export const requestKeyValueForm: RequestKeyValueForm = {
+	get key() {
+		return getCommandFormsStore().requestKeyValueForm.key;
+	},
+	set key(value: string | { key: string }) {
+		getCommandFormsStore().requestKeyValueForm.key = value;
+	},
+	get value() {
+		return getCommandFormsStore().requestKeyValueForm.value;
+	},
+	set value(value: string | { key: string }) {
+		getCommandFormsStore().requestKeyValueForm.value = value;
+	}
 };
-
-export const requestKeyValueForm = reactive<{
-	key: string | { key: string };
-	value: string | { key: string };
-}>({
-	key: '',
-	value: ''
-});
 
 export const RequestkeyValueBind = {
 	target: null as (string & { save?: () => unknown }) | null,
