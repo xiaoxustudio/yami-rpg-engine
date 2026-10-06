@@ -4,7 +4,7 @@ import { Animation } from '@app/animation/animation-window.ts';
 
 // 漂移回归（pinia-migration-analysis.md 第 1.1 节）：白名单在仓库里有**两份** ——
 // `stores/animation.ts` 导出的 `animationStateKeys`（文档化契约）与
-// `animation/animation-window.ts:630` 的本地 `animationBridgeKeys`（真正被桥接循环迭代）。
+// `animation/animation-window.ts:630` （叶子模块 `stores/animation-keys.ts`）的 `ANIMATION_STATE_KEYS`（真正被桥接循环迭代）。
 // 两者曾经不一致：导出那份少写了 5 个已桥接键（showMark/showOnionskin/mirror/loop/playing）。
 // 这里把「真实被桥接的键」写死成期望值，从两侧钉住：缺一个都会红。
 
