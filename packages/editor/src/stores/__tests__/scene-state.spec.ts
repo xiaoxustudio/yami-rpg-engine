@@ -16,11 +16,35 @@ describe('useSceneStore（Scene 状态反转：store 为源）', () => {
 		expect(store.scaleY).toBe(null);
 	});
 
-	it('状态键完整（9 项）', () => {
+	it('状态键完整（14 项）且每个键真经单例读写 store', async () => {
 		const store = getSceneStore();
-		expect(sceneStateKeys).toHaveLength(9);
+		expect(sceneStateKeys).toHaveLength(14);
 		for (const key of sceneStateKeys) {
 			expect(key in store, String(key)).toBe(true);
+		}
+		// 「白名单写了但没桥」是假象：逐个键用单例写一次、再从 store 读回校验
+		const { Scene } = await import('@app/scene/scene-window.ts');
+		const probes: Record<string, unknown> = {
+			state: 'open',
+			target: { width: 16 },
+			mode: 'tile',
+			tilemap: { id: 't' },
+			layer: 'l1',
+			showGrid: true,
+			zoom: 2,
+			scaleX: 1,
+			scaleY: 1,
+			brush: 'eraser',
+			symbol: { id: 's' },
+			showLight: true,
+			showAnimation: true,
+			activeTilemapId: 3
+		};
+		for (const key of sceneStateKeys) {
+			(Scene as unknown as Record<string, unknown>)[key] = probes[key];
+			expect((store as unknown as Record<string, unknown>)[key], String(key)).toStrictEqual(
+				probes[key]
+			);
 		}
 	});
 
