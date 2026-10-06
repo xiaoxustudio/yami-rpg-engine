@@ -154,6 +154,45 @@
 
 ---
 
+## 7. 执行进度
+
+### 已完成（阶段 1，P0）
+
+| 项 | 提交 | 做法要点 |
+|---|---|---|
+| 分析文档落盘 | `379ded79` | 本文件（A/B/C 三类 + 落地顺序） |
+| P0 #1 指令解析态 → store | `82e00e56` | `useCommandState.ts:42` 的模块级 `reactive` → `stores/command.ts` 的 `parse`；composable 保留同名**逐字段访问器** ⇒ 94 处调用点零改动；`words` 继续 `markRaw` |
+| P0 #2 缓动表单 → store | `82e00e56` | `useEasingWindow.ts:31` → 新的 `stores/easing-form.ts`（单文件避开 `transition-window → useEasingWindow → store` 环）；门面返回同一 reactive 对象 |
+| P0 #5 生成帧表单 → store | `52702cdf` | `palette/tile-frame-generator.ts:14` → `stores/palette.ts` 的 `frameGeneratorForm`；`FrameGenerator.form` 改 getter，内部走 `this.form` |
+| P0 #6 三份命令工具表单 → store | `52702cdf` | 新的 `stores/command-forms.ts`（indexForm / requestKeyValueForm / switchConditionForm）；调用点（含 12 个 v-model）零改动 |
+| P0 #7 localization PARTIAL→HOLDS | `34bd6208` | `localizationStateKeys` 2 → 7（+target/data/languages/history/changed）；桥接数组同步；spec 增加「每个键在单例上真装了 getter/setter」断言 |
+| P0 #4 新建/部署项目窗口 → store | （见 git log） | 新增 `stores/new-project.ts`、`stores/deployment.ts`；表单走逐字段访问器、确认态走**可写 computed**（ref 形状）⇒ SFC 与既有 spec 零改动 |
+| 遗留 `setForm`（批次 B 发现） | `c1072ef5` | `useGetObjectPropertyCommandSchema.ts:97` → `command-forms.objectPropertyForm`（第 4 份切片） |
+
+**过程中被验证抓住的真问题（值得留档）**：
+1. 我第一版 spec 用 `new WordList()` 复位（漏 `markRaw`）→ 立刻红：正好把「WordList 不能被代理」钉进测试；
+2. `useGetObjectPropertyCommandSchema.ts` 里藏着**第二个**模块级表单 `setForm`（删 `reactive` 导入时编译期报出）；
+3. `export type { X as Y } from …` 与同名 `export const Y` 会撞 `TS2323: Cannot redeclare exported variable` ⇒ 改用 `export type Y = X` 别名；
+4. `SwitchConditionType` 第一版只抄了 5 个值（真值 10 个）→ 被 `tsc` 的 `TS2678`（switch case 不可比）抓住。
+
+### 仍待做（阶段 1 剩余 / 阶段 2 未动）
+
+| 项 | 位置 | 为什么没在本轮做 |
+|---|---|---|
+| P0 #3 曲线窗口 → store | `composables/useCurveWindow.ts:96-103`（`state` 16 处 / `target` 11 / `index` 11 引用） | `state`/`target`/`index` 是**裸 `let`**（`state = 'open'`、`if (state !== 'closed')`），改成 store 必须逐个重写 38 处引用 —— 需要独立一轮 + 回测 |
+| `useFileTilesetPage.ts:28` 的 `form` | 同上位置 | 先要判定它是「跨实例共享」还是「每实例私有」：若多实例各自需要，则**不该**进 store（应改为 composable 内 `reactive`），是设计问题而非机械迁移 |
+| 阶段 2（白名单扩容 / tools / 命令弹窗表单 40 处） | 见第 2 节 P1 | 按计划排在阶段 1 之后 |
+| 卫生项（删 `stores/timer.ts`、服务模块统一 `getXStore()`、`storeToRefs` 规范、`Layout.layout` 字典） | 见第 4 节 | 独立小批次，可随时插入 |
+
+### 阶段 1 的验收口径（每个提交都跑）
+
+`packages/editor` 的 `vitest run --project src`（或改动域的定向子集）、`packages/ui-kit` 套件、
+`tsc -p tsconfig.strict.json`、`oxlint`（含类型感知）、`oxfmt`。
+本轮 6 个提交全部满足；新增 spec：`command-parse-state`、`easing-form-state`、`command-forms-state`、
+`project-windows-state`（+ 扩充既有 `localization.spec.ts`）。
+
+---
+
 ## 附录 · 统计口径
 
 ```
