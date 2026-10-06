@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getParticleStore, particleStateKeys } from '@app/stores/particle';
+import { Particle } from '@app/particle/particle-window.ts';
 
 describe('useParticleStore（Particle 窗口状态桥接）', () => {
 	it('初始状态默认值', () => {
@@ -15,11 +16,20 @@ describe('useParticleStore（Particle 窗口状态桥接）', () => {
 		expect(store.scaleY).toBe(null);
 	});
 
-	it('状态键完整（9 项）', () => {
+	it('状态键完整（12 项 = 9 + restartKey/translationKey/showAxes）', () => {
 		const store = getParticleStore();
-		expect(particleStateKeys).toHaveLength(9);
+		expect(particleStateKeys).toHaveLength(12);
 		for (const key of particleStateKeys) {
 			expect(key in store, String(key)).toBe(true);
+		}
+		// 白名单写了但没桥 = 假象：逐个用单例写一次、从 store 读回校验
+		for (const key of particleStateKeys) {
+			const probe: unknown =
+				key === 'translationKey' ? 0b0101 : key === 'state' ? 'open' : true;
+			(Particle as unknown as Record<string, unknown>)[key] = probe;
+			expect((store as unknown as Record<string, unknown>)[key], String(key)).toStrictEqual(
+				probe
+			);
 		}
 	});
 

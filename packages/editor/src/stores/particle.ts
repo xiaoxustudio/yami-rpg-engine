@@ -1,4 +1,4 @@
-﻿import { defineStore } from 'pinia';
+import { defineStore } from 'pinia';
 import { getLazyWindow, loadWindow } from '@app/tools/window-registry';
 import { shallowRef } from 'vue';
 import type { EditorProjectShape } from './editor';
@@ -22,7 +22,11 @@ export const particleStateKeys = [
 	'speed',
 	'zoom',
 	'scaleX',
-	'scaleY'
+	'scaleY',
+	// 本批从单例升为 store 为源（纯 UI 开关，无每帧读写；分析文档 P1 #10）
+	'restartKey',
+	'translationKey',
+	'showAxes'
 ] as const;
 
 export type ParticleTargetShape = {
@@ -60,6 +64,10 @@ export const useParticleStore = defineStore('particle', () => {
 	const zoom = shallowRef<number | null>(null);
 	const scaleX = shallowRef<number | null>(null);
 	const scaleY = shallowRef<number | null>(null);
+	/** 重启键（UI 触发器）/ 平移修饰键位掩码 / 显示坐标轴开关 */
+	const restartKey = shallowRef<boolean>(false);
+	const translationKey = shallowRef<number>(0b0000);
+	const showAxes = shallowRef<boolean>(true);
 
 	const initialized = shallowRef(false);
 
@@ -159,6 +167,9 @@ export const useParticleStore = defineStore('particle', () => {
 		zoom,
 		scaleX,
 		scaleY,
+		restartKey,
+		translationKey,
+		showAxes,
 		initialized,
 		initialize,
 		open,
