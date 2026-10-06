@@ -1,4 +1,4 @@
-import { reactive } from 'vue';
+import { getWindowFormsStore } from '@app/stores/window-forms';
 import { composableEls } from '@app/composables/element-registry';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
@@ -52,7 +52,7 @@ type LanguagesInterface = {
 	target?: { save: () => void };
 };
 
-interface ProjectSettingsForm {
+export interface ProjectSettingsForm {
 	window: {
 		title: string;
 		width: number;
@@ -161,30 +161,118 @@ interface ProjectSettingsWindow {
 	confirm: (event?: Event) => void;
 }
 
-const form = reactive<ProjectSettingsForm>({
-	window: { title: '', width: 0, height: 0, display: '' },
-	resolution: { width: 0, height: 0, sceneScale: 1, uiScale: 1 },
-	scene: { padding: 0, animationInterval: 100 },
-	tileArea: { expansionTop: 0, expansionLeft: 0, expansionRight: 0, expansionBottom: 0 },
-	animationArea: { expansionTop: 0, expansionLeft: 0, expansionRight: 0, expansionBottom: 0 },
-	lightArea: { expansionTop: 0, expansionLeft: 0, expansionRight: 0, expansionBottom: 0 },
-	virtualAxis: { up: 0, down: 0, left: 0, right: 0 },
-	collision: {
-		actor: { enabled: true },
-		scene: { enabled: true, actorSize: 1 },
-		trigger: { collideWithActorShape: true }
+// 表单真源在 `stores/window-forms.ts`（原先是本模块的模块级 reactive）。
+// 每个键对应一个嵌套对象；就地改值（如 form.window.title）直接落在 store 上。
+const form: ProjectSettingsForm = {
+	get window(): ProjectSettingsForm['window'] {
+		return getWindowFormsStore().projectSettingsForm.window;
 	},
-	text: { importedFonts: [], fontFamily: '', highDefinition: true },
-	actor: { tempAttributes: [] },
-	animation: { frameRate: 30 },
-	soundAttenuation: { distance: 10, easingId: '' },
-	webgl: { desynchronized: true, textureMagFilter: 'nearest', textureMinFilter: 'linear' },
-	script: { autoCompile: true },
-	save: { location: 'app-data', subdir: '' },
-	localization: { languages: [], default: '' },
-	preload: 'never',
-	deadzone: 0
-});
+	set window(value: ProjectSettingsForm['window']) {
+		getWindowFormsStore().projectSettingsForm.window = value;
+	},
+	get resolution(): ProjectSettingsForm['resolution'] {
+		return getWindowFormsStore().projectSettingsForm.resolution;
+	},
+	set resolution(value: ProjectSettingsForm['resolution']) {
+		getWindowFormsStore().projectSettingsForm.resolution = value;
+	},
+	get scene(): ProjectSettingsForm['scene'] {
+		return getWindowFormsStore().projectSettingsForm.scene;
+	},
+	set scene(value: ProjectSettingsForm['scene']) {
+		getWindowFormsStore().projectSettingsForm.scene = value;
+	},
+	get tileArea(): ProjectSettingsForm['tileArea'] {
+		return getWindowFormsStore().projectSettingsForm.tileArea;
+	},
+	set tileArea(value: ProjectSettingsForm['tileArea']) {
+		getWindowFormsStore().projectSettingsForm.tileArea = value;
+	},
+	get animationArea(): ProjectSettingsForm['animationArea'] {
+		return getWindowFormsStore().projectSettingsForm.animationArea;
+	},
+	set animationArea(value: ProjectSettingsForm['animationArea']) {
+		getWindowFormsStore().projectSettingsForm.animationArea = value;
+	},
+	get lightArea(): ProjectSettingsForm['lightArea'] {
+		return getWindowFormsStore().projectSettingsForm.lightArea;
+	},
+	set lightArea(value: ProjectSettingsForm['lightArea']) {
+		getWindowFormsStore().projectSettingsForm.lightArea = value;
+	},
+	get virtualAxis(): ProjectSettingsForm['virtualAxis'] {
+		return getWindowFormsStore().projectSettingsForm.virtualAxis;
+	},
+	set virtualAxis(value: ProjectSettingsForm['virtualAxis']) {
+		getWindowFormsStore().projectSettingsForm.virtualAxis = value;
+	},
+	get collision(): ProjectSettingsForm['collision'] {
+		return getWindowFormsStore().projectSettingsForm.collision;
+	},
+	set collision(value: ProjectSettingsForm['collision']) {
+		getWindowFormsStore().projectSettingsForm.collision = value;
+	},
+	get text(): ProjectSettingsForm['text'] {
+		return getWindowFormsStore().projectSettingsForm.text;
+	},
+	set text(value: ProjectSettingsForm['text']) {
+		getWindowFormsStore().projectSettingsForm.text = value;
+	},
+	get actor(): ProjectSettingsForm['actor'] {
+		return getWindowFormsStore().projectSettingsForm.actor;
+	},
+	set actor(value: ProjectSettingsForm['actor']) {
+		getWindowFormsStore().projectSettingsForm.actor = value;
+	},
+	get animation(): ProjectSettingsForm['animation'] {
+		return getWindowFormsStore().projectSettingsForm.animation;
+	},
+	set animation(value: ProjectSettingsForm['animation']) {
+		getWindowFormsStore().projectSettingsForm.animation = value;
+	},
+	get soundAttenuation(): ProjectSettingsForm['soundAttenuation'] {
+		return getWindowFormsStore().projectSettingsForm.soundAttenuation;
+	},
+	set soundAttenuation(value: ProjectSettingsForm['soundAttenuation']) {
+		getWindowFormsStore().projectSettingsForm.soundAttenuation = value;
+	},
+	get webgl(): ProjectSettingsForm['webgl'] {
+		return getWindowFormsStore().projectSettingsForm.webgl;
+	},
+	set webgl(value: ProjectSettingsForm['webgl']) {
+		getWindowFormsStore().projectSettingsForm.webgl = value;
+	},
+	get script(): ProjectSettingsForm['script'] {
+		return getWindowFormsStore().projectSettingsForm.script;
+	},
+	set script(value: ProjectSettingsForm['script']) {
+		getWindowFormsStore().projectSettingsForm.script = value;
+	},
+	get save(): ProjectSettingsForm['save'] {
+		return getWindowFormsStore().projectSettingsForm.save;
+	},
+	set save(value: ProjectSettingsForm['save']) {
+		getWindowFormsStore().projectSettingsForm.save = value;
+	},
+	get localization(): ProjectSettingsForm['localization'] {
+		return getWindowFormsStore().projectSettingsForm.localization;
+	},
+	set localization(value: ProjectSettingsForm['localization']) {
+		getWindowFormsStore().projectSettingsForm.localization = value;
+	},
+	get preload(): ProjectSettingsForm['preload'] {
+		return getWindowFormsStore().projectSettingsForm.preload;
+	},
+	set preload(value: ProjectSettingsForm['preload']) {
+		getWindowFormsStore().projectSettingsForm.preload = value;
+	},
+	get deadzone(): ProjectSettingsForm['deadzone'] {
+		return getWindowFormsStore().projectSettingsForm.deadzone;
+	},
+	set deadzone(value: ProjectSettingsForm['deadzone']) {
+		getWindowFormsStore().projectSettingsForm.deadzone = value;
+	}
+};
 let changed = false;
 let tscStarted = false;
 /** 语言列表控件（`bind()` 时由 ParamList 传入），供语言窗口的确认动作读取 */
