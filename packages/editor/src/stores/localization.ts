@@ -20,7 +20,7 @@ type LocalizationItemShape = {
  *
  * ⚠️ 单例侧另有一份同名数组而不是 import 这一份：桥接循环在**模块求值期**读数组，而
  * `stores/localization.ts` 又要 import `Localization`（单例）⇒ 直接互相 import 会踩 TDZ。
- * 两份数组因此必须一起改（本仓 13 个域都是这个形态，见 pinia-migration-analysis.md 的漂移表）。
+ * 两份数组因此必须一起改（本仓多数域都是这个形态；「桥接列表 vs *StateKeys」的口径见 `stores/pinia.ts` 约定 §3）。
  */
 export const localizationStateKeys = [
 	'state',

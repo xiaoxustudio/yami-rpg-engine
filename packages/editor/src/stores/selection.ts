@@ -11,7 +11,7 @@ import { pinia } from './pinia';
  * 桥接循环装在单例模块里（`text-capture.ts` 的 `selectionBridgeKeys`），跟本仓其它 20 个域一致：
  * 单例模块 import 本 store ⇒ 谁加载单例谁就完成接线，不会出现「store 建好了但没人用」的孤儿 store。
  * 注意**不要**在这里导出一份 `selectionStateKeys` 白名单去给单例 import —— 单例侧那种数组是
- * 模块求值期读的，两边互相 import 会踩 TDZ（见 pinia-migration-analysis.md 第 1.1 节的漂移说明），
+ * 模块求值期读的，两边互相 import 会踩 TDZ（见 `stores/pinia.ts` 的 Pinia 约定 §3），
  * 所以这里索性只留单例侧那一份，从根上避免出现第二份。
  */
 export const useSelectionStore = defineStore('selection', () => {

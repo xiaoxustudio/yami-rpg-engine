@@ -11,7 +11,7 @@ import type { ArrayForm, ArrayNumberForm, ArrayStringForm } from '@app/composabl
 import type { ProjectSettingsForm } from '@app/composables/useProjectSettingsWindow';
 
 /**
- * 三个「单值表单」小窗口的状态真源（分析文档 P1 #11 的第一批）。
+ * 三个「单值表单」小窗口的状态真源（Pinia 迁移遗留项：三个单值表单小窗口）。
  *
  * 它们原先各自是所在 composable 的**模块级** `reactive`（`useRenameWindow.ts:16`、
  * `useSetKeyWindow.ts:16`、`useZoomWindow.ts:18`），只被对应窗口的模板 `v-model` 与

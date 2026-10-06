@@ -57,4 +57,14 @@ export const pinia = createPinia();
  * - 改了 `*StateKeys` 之类的常量，要跑整个 `src/stores`（既有 spec 里写死了键数期望）。
  * - `tsc -p tsconfig.strict.json` **不覆盖 `.vue`**：改 SFC 时以 vitest 的退出码为准。
  * - 判断测试是否通过要读**进程退出码**：`Select-Object -First N` 会提前掐断管道，让退出码失真。
+ *
+ * ## 7. 已评估但**不做**的 P2 项（结论留档，避免反复重审）
+ *
+ * - **`createWindowStore` 工厂**：20+ 个窗口 store 形状相近，但各自的**门面方法**（转发给遗留单例的
+ *   `xxx?.m?.()`）与桥接键都不同，工厂只能省掉 `defineStore` 那层样板；显式写法更利于跳转与检索。
+ *   若将来新增窗口 store 时样板明显变多，再回头看这条。
+ * - **`Layout` / ui-kit 的端口化**：`Layout` 域已有 store（键与 spec 一致），残余的
+ *   `manager` / `items` / 页方案 `WeakMap` 都是 DOM 与实例句柄、引擎内部缓存 ⇒ 属 B 类，
+ *   本来就**不该**进 store，没有端口可注入。真正需要端口的跨包读取已按第 4 条落地
+ *   （`setWindowFramesLengthProvider`）。
  */

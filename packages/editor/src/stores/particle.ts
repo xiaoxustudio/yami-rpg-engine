@@ -23,7 +23,7 @@ export const particleStateKeys = [
 	'zoom',
 	'scaleX',
 	'scaleY',
-	// 本批从单例升为 store 为源（纯 UI 开关，无每帧读写；分析文档 P1 #10）
+	// 本批从单例升为 store 为源（纯 UI 开关，无每帧读写）
 	'restartKey',
 	'translationKey',
 	'showAxes'
