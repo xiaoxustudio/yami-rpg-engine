@@ -173,6 +173,7 @@
 | **白名单漂移：animation** | `4d195c96` | 导出的 `animationStateKeys` 7 → 12（补齐 `showMark/showOnionskin/mirror/loop/playing`）；新增 `animation-state-keys.spec.ts` 把「真实被桥接的 12 键」写死作漂移回归（修复前必红） |
 | **阶段 2：Particle 3 个 UI 开关** | `96ac567f` | `restartKey`/`translationKey`/`showAxes` → `stores/particle.ts`（`particleStateKeys` 9 → 12）；桥接数组同步；既有 spec 的键数期望 9 → 12 并把桥接检查改成功能性校验 |
 | **阶段 2：Scene 5 个标志** | `e1d3c4b4` | `brush`/`symbol`/`showLight`/`showAnimation`/`activeTilemapId` → `stores/scene.ts`（`sceneStateKeys` 9 → 14）；`sceneBridgeKeys` 同步；类型按证据给（`brush: string | null` 有 `=== 'eraser'` 比较、`activeTilemapId: number | null` 赋的是 `backgrounds.indexOf(tilemap)`；`symbol` 全仓无读写点 ⇒ `unknown` 而不猜） |
+| **阶段 2：两个工具窗口（原先无 store）** | `3e405a2a` | 新增 `stores/selection.ts`（`inserting`/`context`）与 `stores/color.ts`（`paletteX`/`paletteY`/`pillarY`/`indexEnabled`）；桥接循环装在各自工具模块里（放在单例声明之后 ⇒ `initialize()` 及其后写入都直落 store）；**刻意不导出第二份白名单**，从根上不新增漂移对；新增 `tool-windows-state.spec.ts`（双向 + 不查属性描述符） |
 | 测试稳健性（两处） | `59378877`、`86612bcd` | localization 键完整性改为功能性校验（全量里不再偶发红）；animation 既有 spec 键数期望 7 → 12 |
 
 **过程中被验证抓住的真问题（值得留档）**：
