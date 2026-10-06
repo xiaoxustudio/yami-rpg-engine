@@ -41,6 +41,13 @@ export interface SwitchConditionForm {
 	variable: { type: string; key: string };
 }
 
+/** `set-object-property` 窗口的表单（原 `useGetObjectPropertyCommandSchema.ts:97` 的 `setForm`） */
+export interface SetObjectPropertyForm {
+	variable: { type: string; key: string };
+	valueVariable: { type: string; key: string };
+	list?: Array<{ text: string }>;
+}
+
 export const useCommandFormsStore = defineStore('commandForms', () => {
 	/** `ObjectPropertyIndex.vue` 的索引名（`get-object-index` 指令） */
 	const indexForm = reactive<{ name: string }>({ name: '' });
@@ -60,7 +67,13 @@ export const useCommandFormsStore = defineStore('commandForms', () => {
 		variable: { type: 'local', key: '' }
 	});
 
-	return { indexForm, requestKeyValueForm, switchConditionForm };
+	/** `set-object-property` 窗口表单（原 `useGetObjectPropertyCommandSchema.ts:97` 的 `setForm`） */
+	const objectPropertyForm = reactive<SetObjectPropertyForm>({
+		variable: { type: 'local', key: '' },
+		valueVariable: { type: 'local', key: '' }
+	});
+
+	return { indexForm, requestKeyValueForm, switchConditionForm, objectPropertyForm };
 });
 
 export function getCommandFormsStore() {

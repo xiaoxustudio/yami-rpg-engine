@@ -9,7 +9,6 @@ import { getCommandFormsStore } from '@app/stores/command-forms';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { reactive } from 'vue';
 import type { YamiElement } from '@app/types/element-api';
 
 export type ObjectPropertyItem = { text: string };
@@ -94,10 +93,32 @@ export interface SetObjectPropertyForm {
 	list?: ObjectPropertyItem[];
 }
 
-const setForm = reactive<SetObjectPropertyForm>({
-	variable: { type: 'local', key: '' },
-	valueVariable: { type: 'local', key: '' }
-});
+/**
+ * `set-object-property` 表单：逐字段访问器，指向 `stores/command-forms.ts` 的
+ * `objectPropertyForm`（原先是本文件的模块级 `reactive`）。
+ * 保留同名可读写对象 ⇒ 本文件 5 处用法（含 `Object.assign(setForm, …)`）与
+ * `new CommandSchema({ … form: setForm … })` 全不用改。
+ */
+const setForm: SetObjectPropertyForm = {
+	get variable() {
+		return getCommandFormsStore().objectPropertyForm.variable;
+	},
+	set variable(value: { type: string; key: string }) {
+		getCommandFormsStore().objectPropertyForm.variable = value;
+	},
+	get valueVariable() {
+		return getCommandFormsStore().objectPropertyForm.valueVariable;
+	},
+	set valueVariable(value: { type: string; key: string }) {
+		getCommandFormsStore().objectPropertyForm.valueVariable = value;
+	},
+	get list() {
+		return getCommandFormsStore().objectPropertyForm.list as ObjectPropertyItem[] | undefined;
+	},
+	set list(value: ObjectPropertyItem[] | undefined) {
+		getCommandFormsStore().objectPropertyForm.list = value;
+	}
+};
 
 Command.cases.setObjectProperty = new CommandSchema({
 	name: 'setObjectProperty',

@@ -49,11 +49,24 @@ describe('command-forms 三份表单 → stores/commandForms', () => {
 		expect(stored.variable.type).toBe('global');
 	});
 
-	it('三份切片都是 reactive（模板 v-model 依赖深层响应性）', () => {
+	it('objectPropertyForm（setForm 的真源）：字段与 list 都落在 store', () => {
+		const stored = getCommandFormsStore().objectPropertyForm;
+		stored.variable = { type: 'global', key: 'hp' };
+		stored.valueVariable = { type: 'local', key: 'x' };
+		stored.list = [{ text: 'a' }];
+		expect(stored.variable).toEqual({ type: 'global', key: 'hp' });
+		expect(stored.valueVariable).toEqual({ type: 'local', key: 'x' });
+		expect(stored.list).toEqual([{ text: 'a' }]);
+		// `useGetObjectPropertyCommandSchema.ts` 的 `setForm` 是它的访问器；
+		// 那条链路由既有 command-schemas 系列 spec（走 customLoad → Object.assign(setForm, …)）覆盖。
+	});
+
+	it('四份切片都是 reactive（模板 v-model 依赖深层响应性）', () => {
 		const s = getCommandFormsStore();
 		expect(isReactive(s.indexForm)).toBe(true);
 		expect(isReactive(s.requestKeyValueForm)).toBe(true);
 		expect(isReactive(s.switchConditionForm)).toBe(true);
+		expect(isReactive(s.objectPropertyForm)).toBe(true);
 	});
 });
 
