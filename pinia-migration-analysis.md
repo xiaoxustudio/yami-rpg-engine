@@ -172,6 +172,7 @@
 | **C 类：服务模块统一 + 删死 store** | `f4148eee` | `services/project/{config,project}.ts` 的 17 处无参 `useXStore()` → `getXStore()`（best practice HIGH 影响项）；删除全仓 0 引用的 `stores/timer.ts` |
 | **白名单漂移：animation** | `4d195c96` | 导出的 `animationStateKeys` 7 → 12（补齐 `showMark/showOnionskin/mirror/loop/playing`）；新增 `animation-state-keys.spec.ts` 把「真实被桥接的 12 键」写死作漂移回归（修复前必红） |
 | **阶段 2：Particle 3 个 UI 开关** | `96ac567f` | `restartKey`/`translationKey`/`showAxes` → `stores/particle.ts`（`particleStateKeys` 9 → 12）；桥接数组同步；既有 spec 的键数期望 9 → 12 并把桥接检查改成功能性校验 |
+| **阶段 2：Scene 5 个标志** | `e1d3c4b4` | `brush`/`symbol`/`showLight`/`showAnimation`/`activeTilemapId` → `stores/scene.ts`（`sceneStateKeys` 9 → 14）；`sceneBridgeKeys` 同步；类型按证据给（`brush: string | null` 有 `=== 'eraser'` 比较、`activeTilemapId: number | null` 赋的是 `backgrounds.indexOf(tilemap)`；`symbol` 全仓无读写点 ⇒ `unknown` 而不猜） |
 | 测试稳健性（两处） | `59378877`、`86612bcd` | localization 键完整性改为功能性校验（全量里不再偶发红）；animation 既有 spec 键数期望 7 → 12 |
 
 **过程中被验证抓住的真问题（值得留档）**：
