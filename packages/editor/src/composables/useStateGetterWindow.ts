@@ -23,8 +23,6 @@ interface StateGetterWindow {
 	onWindowClosed: () => void;
 }
 
-// 表单真源在 `stores/getter-windows.ts`（原先是本文件的模块级 `reactive`）。
-// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
 const form: StateGetterForm = {
 	get type(): StateGetterForm['type'] {
 		return getGetterWindowsStore().stateGetterForm.type;

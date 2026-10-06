@@ -1666,7 +1666,6 @@ const sceneBridgeKeys = [
 	'zoom',
 	'scaleX',
 	'scaleY',
-	// 本批从单例升为 store 为源：UI 标志 / 当前笔刷·符号 / 背景序号
 	'brush',
 	'symbol',
 	'showLight',

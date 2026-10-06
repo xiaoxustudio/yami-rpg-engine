@@ -38,8 +38,6 @@ const getHexFromRGBA = ([r, g, b, a]: [number, number, number, number]): string 
 
 const simplifyHex = (hex: string): string => hex.replace(/^([0-9a-f]{6})ff$/i, '$1');
 
-// 表单真源在 `stores/window-forms.ts`（原先是本文件的模块级 `reactive`）。
-// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
 const form: ColorForm = {
 	get hex(): ColorForm['hex'] {
 		return getWindowFormsStore().colorForm.hex;

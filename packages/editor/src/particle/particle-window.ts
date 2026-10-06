@@ -412,7 +412,6 @@ const particleBridgeKeys = [
 	'zoom',
 	'scaleX',
 	'scaleY',
-	// 本批从单例升为 store 为源（原先只在 Particle 对象上）：
 	// `restartKey`/`translationKey`/`showAxes` 都是纯 UI 开关，无每帧读写
 	'restartKey',
 	'translationKey',

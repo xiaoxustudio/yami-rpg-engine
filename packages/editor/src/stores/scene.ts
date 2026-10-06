@@ -22,7 +22,6 @@ export const sceneStateKeys = [
 	'zoom',
 	'scaleX',
 	'scaleY',
-	// 本批从单例升为 store 为源（Pinia 迁移遗留项）。都是 UI 标志/当前工具状态：
 	// 无每帧读写（`activeTilemapId` 由 computeActiveTilemapId 在目标/动画切换时才写）
 	'brush',
 	'symbol',

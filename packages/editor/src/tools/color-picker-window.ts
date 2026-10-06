@@ -30,7 +30,7 @@ type ColorDrag = PointerEvent & {
 export const Color = {} as ColorSlots;
 
 // `paletteX` / `paletteY` / `pillarY` / `indexEnabled` 的真源在 `stores/color.ts`
-// （本批从单例的「延迟绑定槽」升上去）。桥在 `initialize()` 之前就装好 ⇒ 后面
+// 桥在 `initialize()` 之前就装好 ⇒ 后面
 // `this.indexEnabled = …`(:91)、`this.paletteX = …`(:183) 等写入全部落在 store 上。
 // 数组只有这一份（store 侧不再导出白名单，避免两份漂移）。
 import { getColorStore } from '@app/stores/color';

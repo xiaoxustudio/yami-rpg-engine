@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { getSelectionStore } from '@app/stores/selection';
 import { getColorStore } from '@app/stores/color';
 
-// 回归：两个工具窗口单例上的「非 DOM」状态字段升进 Pinia（Pinia 迁移遗留项）。
 // 契约：① 单例读写落在 store；② store 读写经桥反向可读；③ 桥是 getter/setter（真接线）。
 // `Selection.regexps`、`Color` 的 DOM/方法槽位都不在这次迁移范围内。
 

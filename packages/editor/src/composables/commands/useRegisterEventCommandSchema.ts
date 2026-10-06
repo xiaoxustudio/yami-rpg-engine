@@ -130,8 +130,6 @@ Command.cases.registerEvent = new CommandSchema({
 let commands: unknown[] | null = null;
 let priorityEnabled = false;
 
-// 表单真源在 `stores/command-schema-forms.ts`（原先是本文件的模块级 `reactive`）。
-// 逐字段访问器 ⇒ `Object.assign(form, …)`、`const data = form` 与模板 v-model 都不用改。
 const form: RegisterEventData = {
 	get target(): RegisterEventData['target'] {
 		return getCommandSchemaFormsStore().registerEventData.target;

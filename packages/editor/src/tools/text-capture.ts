@@ -137,7 +137,7 @@ export const Selection = {
 	}
 } satisfies Partial<SelectionShape> as SelectionShape;
 
-// `inserting` / `context` 的真源在 `stores/selection.ts`（本批从单例升上去）。
+// `inserting` / `context` 的真源在 `stores/selection.ts`。
 // 循环放在单例模块里 ⇒ 加载本模块即完成接线；数组只有这一份（store 侧不再导出白名单）。
 import { getSelectionStore } from '@app/stores/selection';
 

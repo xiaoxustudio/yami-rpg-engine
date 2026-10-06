@@ -15,7 +15,7 @@ describe('useAnimationStore（Animation 窗口状态桥接）', () => {
 
 	// 12 = 7（state/target/motion/direction/mode/speed/zoom）+ 5 个开关（showMark/showOnionskin/
 	// mirror/loop/playing）—— 后 5 个早就被 `animation-window.ts` 的桥接循环（迭代 `ANIMATION_STATE_KEYS`）接上了，
-	// 但导出白名单一直少写它们（本批补齐）。桥侧的「真装了 getter/setter + 双向读写」由
+	// 但导出白名单一度少写它们。桥侧的「真装了 getter/setter + 双向读写」由
 	// `animation-state-keys.spec.ts` 单独钉住。
 	it('状态键完整（12 项）', () => {
 		const store = getAnimationStore();

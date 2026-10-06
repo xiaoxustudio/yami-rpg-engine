@@ -40,7 +40,7 @@ type DeploymentState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
 
 type DeploymentPlatform = 'windows-x64' | 'mac-universal' | 'web';
 
-// 类型与状态真源都在 `stores/deployment.ts`（本批从模块级 `reactive`/`ref` 升上去）。
+// 类型与状态真源都在 `stores/deployment.ts`。
 // 用 type 别名而不是 `export type { … as … }` 重导出：后者与下面的同名 const 会撞
 // 「Cannot redeclare exported variable」。
 export type DeploymentForm = DeploymentFormShape;

@@ -35,7 +35,6 @@ export const localizationStateKeys = [
 export const useLocalizationStore = defineStore('localization', () => {
 	const state = shallowRef<string>('closed');
 	const strings = shallowRef<Record<string, string>>({});
-	// ── 本批从单例侧「升」上来的 5 个键（原先只在 Localization 对象上）────────────
 	/** 打开窗口时带进来的回调宿主（`open(target)`），关闭时要按它判断是否残留在编辑态 */
 	const target = shallowRef<LocalizationTarget | null>(null);
 	/** 本地化词条树（当前编辑缓冲） */

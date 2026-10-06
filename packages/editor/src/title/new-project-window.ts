@@ -27,7 +27,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 
 type NewProjectState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
 
-// 类型与状态真源都在 `stores/new-project.ts`（本批从模块级 `reactive`/`ref` 升上去）；
+// 类型与状态真源都在 `stores/new-project.ts`；
 // `import type` + 原样转出 ⇒ 其它 import 这个名字的文件不用改。
 export type { NewProjectForm };
 

@@ -66,7 +66,6 @@ Command.cases.changeActorEquipment = new CommandSchema({
 	}
 });
 
-// 表单真源在 `stores/command-schema-forms.ts`（原先是本文件的模块级 reactive）。
 // 键是动态的 ⇒ 用 dynamicForm 访问器保留对象语义（见 composables/dynamic-form.ts）。
 const form = dynamicForm(() => getCommandSchemaFormsStore().changeActorEquipmentForm);
 import { dynamicForm } from '@app/composables/dynamic-form';

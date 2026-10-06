@@ -260,7 +260,6 @@ let changed = false;
 let bound = false;
 let typesDispose: unknown[] = [];
 
-// 表单真源在 `stores/window-forms.ts`（原先是本文件的模块级 reactive）。
 const form: { script: string } = {
 	get script(): string {
 		return getWindowFormsStore().scriptForm.script;

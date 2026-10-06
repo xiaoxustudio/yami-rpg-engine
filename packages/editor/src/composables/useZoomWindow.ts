@@ -15,8 +15,6 @@ interface ZoomWindow {
 	confirm: () => void;
 }
 
-// 表单真源在 `stores/window-forms.ts`（原先是本文件的模块级 `reactive`）。
-// 逐字段访问器 ⇒ `Object.assign(form, { factor })`、`form.factor` 与模板 v-model 都不用改。
 const form: ZoomForm = {
 	get factor() {
 		return getWindowFormsStore().zoomForm.factor;

@@ -161,7 +161,6 @@ interface ProjectSettingsWindow {
 	confirm: (event?: Event) => void;
 }
 
-// 表单真源在 `stores/window-forms.ts`（原先是本模块的模块级 reactive）。
 // 每个键对应一个嵌套对象；就地改值（如 form.window.title）直接落在 store 上。
 const form: ProjectSettingsForm = {
 	get window(): ProjectSettingsForm['window'] {
