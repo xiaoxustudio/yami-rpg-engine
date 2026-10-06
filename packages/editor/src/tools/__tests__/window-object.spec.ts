@@ -56,7 +56,7 @@ function makeFrame(id: string, closeResult = true): TestFrame {
 	frame.closeEventEnabled = true;
 	frame.enableAmbient = false;
 	document.body.appendChild(el);
-	// `Window.open(id)` 现在从 windowShellEls 取帧（原先 document.getElementById）
+	// `Window.open(id)` 现在从 windowShellEls 取帧
 	registerElement(windowShellEls, id, frame);
 	createdFrames.push(frame);
 	return frame;

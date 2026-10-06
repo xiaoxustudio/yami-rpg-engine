@@ -149,7 +149,7 @@ Timer.initialize = function (this: typeof Timer) {
 	const windowUnmaximize = () => {
 		this.animationWaiting--;
 	};
-	// 窗口帧从 windowShellEls 取（原先 document.querySelectorAll('#event, #selector, #imageClip')）
+	// 窗口帧从 windowShellEls 取
 	const windows = registryElements(windowShellEls, ['event', 'selector', 'imageClip']);
 	windows.forEach((el) => on(el, 'open', windowOpen));
 	windows.forEach((el) => on(el, 'closed', windowClosed));

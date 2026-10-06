@@ -287,7 +287,7 @@ export const useDataStore = defineStore('data', () => {
 	const manifest = shallowRef<ManifestShape | null>(null);
 
 	function setManifest(value: ManifestShape | null) {
-		// 只写一处：`data.manifest` 是访问器，指向同一个 ref（原先这里写两遍）。
+		// 只写一处：`data.manifest` 是访问器，指向同一个 ref。
 		manifest.value = value;
 	}
 

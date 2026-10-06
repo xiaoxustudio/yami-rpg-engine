@@ -453,7 +453,7 @@ export function isInContent(el: unknown, event: MouseEvent): boolean {
 	return x >= 0 && x < target.clientWidth && y >= 0 && y < target.clientHeight;
 }
 
-// 离屏节点统一走 utils/dom 的唯一创建缝隙（原先这里自带一份 createElement + render）
+// 离屏节点统一走 utils/dom 的唯一创建缝隙
 function renderElement(vnode: VNode): HTMLElement {
 	return renderDetached(vnode);
 }

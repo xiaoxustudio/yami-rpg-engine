@@ -48,7 +48,7 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 		// 目标页框（可能还没被 Teleport 搬进来 ⇒ null）
 		let target: HTMLElement | null = null;
 		if (value !== null) {
-			// 第 122 轮：原来写的是 `el.childNodes as unknown as PageFrameElement[]`。两处都换了：
+			// 原来写的是 `el.childNodes as unknown as PageFrameElement[]`。两处都换了：
 			//  · 遍历 `children`（元素集合）而不是 `childNodes`：**可证等价** —— 循环体只在
 			//    `hasClass(child, 'page-frame')` 为真时才继续，而 `hasClass` 对没有 `classList`
 			//    的节点（文本/注释节点）直接返回 false（见其实现）⇒ 那些节点原本就走不到里面。

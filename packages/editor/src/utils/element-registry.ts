@@ -111,7 +111,6 @@ export const registryElements = (registry: ElementRegistry, ids: string[]): Yami
  *
  * ## 返回值为什么是可空的
  *
- * 旧写法 `as unknown as T` 同时撒了两个谎：**类型不对** + **一定存在**。
  * 这里只保留「类型由调用方指定」这一个约定，**存在性交回类型系统**（返回 `T | null`）。
  * 因此调用方要写 `registryElement<HTMLCanvasElement>(colorEls, '…')!` 或自己判空 ——
  * 那个 `!` 是**可见**的，而 `as unknown as` 里的非空假设是**看不见**的。

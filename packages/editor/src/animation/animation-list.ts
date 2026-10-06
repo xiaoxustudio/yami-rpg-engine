@@ -299,7 +299,7 @@ Animation.timelineToolbarPointerdown = function (this: typeof Animation, event: 
 Animation.layerListScroll = function (this: typeof Animation & HTMLElement, _event: Event) {
 	const { outerTimelineList } = Animation;
 	const { scrollTop } = this;
-	// 改用显式元素数据（原先写的是原型访问器 `lastScrollTop`）
+	// 改用显式元素数据
 	getElementData(this).lastScrollTop = scrollTop;
 	if (getElementData(outerTimelineList as HTMLElement).lastScrollTop !== scrollTop) {
 		outerTimelineList.scrollTop = scrollTop;
@@ -610,7 +610,7 @@ Animation.outerTimelineListScroll = function (this: typeof Animation & HTMLEleme
 		outerRuler.scrollLeft = (scrollLeft + tolerance) % 80;
 		outerPointerArea.scrollLeft = scrollLeft;
 	}
-	// 改用显式元素数据（原先读写原型访问器 `lastScrollTop`）
+	// 改用显式元素数据
 	const selfData = getElementData(this);
 	if (selfData.lastScrollTop !== scrollTop) {
 		selfData.lastScrollTop = scrollTop;

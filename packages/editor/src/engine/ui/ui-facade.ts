@@ -8,7 +8,7 @@
  * `} satisfies Partial<UIShape> as Partial<UIShape> as UIShape;` 且 `UIShape` 带
  * `[k: string]: any` —— **任何成员读写都通过编译，拼错也一样**。
  *
- * 本文件把那份契约**抽出来、共享、命名**（原先它只是 `ui-engine.ts` 里的一个局部 interface），
+ * 本文件把那份契约**抽出来、共享、命名**，
  * 于是 ④ 的目标可以一个个数：见台账轴 `ui-facade-gaps`（首轮实测 **19**）。
  *
  * ## 两个「原来漏掉、靠 `any` 蒙过去」的成员

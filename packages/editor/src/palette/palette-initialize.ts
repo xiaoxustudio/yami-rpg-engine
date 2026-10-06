@@ -58,7 +58,7 @@ Palette.initialize = function (this: typeof Palette) {
 
 	const marquee = this.marquee;
 	const createSelection = (id: string) => {
-		// 离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		// 离屏节点统一走 utils/dom 的 renderDetached
 		const element = renderDetached(h('selection', { id })) as HTMLElement & {
 			x: number;
 			y: number;

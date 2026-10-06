@@ -608,7 +608,7 @@ elementDataOf<{ head: HTMLElement }>(Animation.timeline).head = animationEls.get
 ) as YamiElement;
 
 // outerTimelineList properties
-// `dragging` 是 outerTimelineList 元素上的元素数据（原先靠原型访问器透明落到 WeakMap）
+// `dragging` 是 outerTimelineList 元素上的元素数据
 elementDataOf<{ dragging: PointerEvent | null }>(Animation.outerTimelineList).dragging = null;
 // outerTimelineList methods
 
@@ -623,7 +623,7 @@ Animation.timelineMarquee.layer = null;
 Animation.timelineMarquee.x = -1;
 Animation.timelineMarquee.y = -1;
 Animation.timelineMarquee.length = -1;
-// `origin` 是 timelineMarquee 元素上的元素数据（原先靠原型访问器透明落到 WeakMap）
+// `origin` 是 timelineMarquee 元素上的元素数据
 elementDataOf<{ origin: number }>(Animation.timelineMarquee).origin = -1;
 // timelineMarquee methods
 

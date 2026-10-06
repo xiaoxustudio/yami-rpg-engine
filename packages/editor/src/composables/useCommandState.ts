@@ -4,7 +4,7 @@ import type { CommandParseState, CommandTargetShape } from '@app/stores/command'
 /**
  * 指令解析态。
  *
- * ⚠️ 真源在 `stores/command.ts` 的 `parse`（原先是本文件的模块级 `reactive`，见该 store 的注释）。
+ * ⚠️ 真源在 `stores/command.ts` 的 `parse`。
  * 这里保留同名对象，但每个字段都是 store 的**访问器**：命令编辑器有 94 处 `commandState.x`，
  * 换成访问器后一处调用点都不用改，而状态已经进 store（DevTools 可见、可按 pinia 实例隔离）。
  *

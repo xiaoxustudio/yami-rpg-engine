@@ -7,7 +7,7 @@
  * 运行时行为完全一致：仍是同一个 `Event` 加上若干自有字段。
  *
  * 注意：**没有**改用 `CustomEvent.detail`——那会改变事件对象的形状，监听方（含测试）都要跟着改，
- * 属于更大的改动；本次只消除"散落的断言"。
+ * 属于更大的改动。
  */
 
 /** 带载荷的事件类型：`Event` 加上若干自有字段 */
@@ -29,7 +29,7 @@ export function createPayloadEvent<T extends object>(
  * 返回 `PayloadEvent<T>`（= `Event & T`）而不是 `Partial<T>`：与旧的断言**类型完全一致**，
  * 因此赋值给 `Event & { … }` 的既有变量不会因为"变窄/变宽"报错。
  *
- * 第 149 轮：`T` 的约束从 `extends object` 放开。原来的约束只是**书写时的假设**（运行时
+ * `T` 的约束从 `extends object` 放开。原来的约束只是**书写时的假设**（运行时
  * 就是一次 `as`，什么都不检查），却挡住了两件真事：① 载荷表里的 `undefined`（无载荷事件）
  * 与 `string`（`'yami:error'` 是 `{…} | string`）；② 于是 `events/custom-events.ts` 的
  * `onCustom` 只能写 `readPayload<Record<string, unknown>>(event) as unknown as CustomEventPayloads[K]`

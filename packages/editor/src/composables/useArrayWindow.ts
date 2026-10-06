@@ -42,7 +42,7 @@ interface ArrayWindow {
 	confirmString: () => string;
 }
 
-// 表单/脏标记真源在 `stores/window-forms.ts`（原先都是本文件的模块级 reactive/ref）。
+// 表单/脏标记真源在 `stores/window-forms.ts`。
 const form: ArrayForm = {
 	get values(): ArrayForm['values'] {
 		return getWindowFormsStore().arrayForm.values;
@@ -222,7 +222,7 @@ const listInterface: ArrayListInterface = {
 	},
 	parse: function (value: unknown, data: unknown, index: number) {
 		const { filter } = targetState!;
-		// 离屏节点统一走 utils/dom 的 renderDetached（原先各自 document.createElement + render）
+		// 离屏节点统一走 utils/dom 的 renderDetached
 		const indexText = renderDetached(
 			h(
 				'div',

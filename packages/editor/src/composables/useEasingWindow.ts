@@ -21,7 +21,7 @@ export const clampEasingPointY = (value: number): number => clampNumberValue(val
 /**
  * 缓动编辑器表单。
  *
- * 表单本身已升进 `stores/easing-form.ts`（原先这里是模块级 `reactive`，见该 store 的注释）；
+ * 表单本身已升进 `stores/easing-form.ts`；
  * 这个 composable 现在只是「取 store 里那个 form 对象」的门面 —— 返回的仍是**同一个 reactive
  * 对象**，所以 `Easing.vue:103`、`EasingPointsSection.vue:238` 与单例的 6 处就地改值全部照旧，
  * 而这些改动从今往后直接反映在 store/DevTools 上。

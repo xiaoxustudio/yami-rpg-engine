@@ -891,7 +891,7 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 		lines.push(`active page-frame[value=${page.getAttribute('value')}]: ${describe(page)}`);
 		const root = layoutRootOf(page) as LayoutGroupElement | null;
 		if (root !== null && hasClass(root, 'group')) {
-			// 组几何探针：给 `findGroupOverlaps` 做「同层相互压盖」判定（原先完全没有这项检查）
+			// 组几何探针：给 `findGroupOverlaps` 做「同层相互压盖」判定
 			const probes: LayoutGeometryProbe[] = [];
 			const labelOf = (group: LayoutGroupElement): string => {
 				const tabs = group.tabs;
@@ -969,7 +969,7 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 			problems.push(...findGroupOverlaps(probes));
 		}
 	}
-	// 布局诊断里改读注册表（原先 document.getElementById）
+	// 布局诊断里改读注册表
 	const browser = storesEls.get('project-browser') as HTMLElement | null;
 	if (browser !== null) {
 		const br = browser.getBoundingClientRect();

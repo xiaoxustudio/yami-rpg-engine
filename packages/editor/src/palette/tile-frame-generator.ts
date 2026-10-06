@@ -35,7 +35,7 @@ interface FrameGeneratorShape {
 
 export const FrameGenerator: FrameGeneratorShape = {
 	/**
-	 * 表单真源在 `stores/palette.ts` 的 `frameGeneratorForm`（原先这里是本模块的模块级 `reactive`）。
+	 * 表单真源在 `stores/palette.ts` 的 `frameGeneratorForm`。
 	 * 用 getter 而不是快照：`AutoTileGenerateFrames.vue:62` 取到的是**同一个** reactive 对象，
 	 * `v-model="form.strideX"` 与下面对 `this.form` 的复位/读取都落在同一份状态上。
 	 */

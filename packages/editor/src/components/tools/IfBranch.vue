@@ -51,7 +51,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	// 该元素由本组件渲染：绑定放这里（原先由父 SFC 跨组件查 DOM）
+	// 该元素由本组件渲染：绑定放这里
 	fieldEls.get('if-branch-conditions')?.bind?.(IfCondition);
 	const modeEl = fieldEls.get('if-branch-mode') as YamiElement;
 	if (!modeEl) return;

@@ -200,7 +200,7 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 
 // —— 转发给单例的桥接层 ——
 //
-// 第 233 轮：`AutoTile` 从 `Record<string, any>` 收成了具名成员表（`palette/auto-tile.ts` 的
+// `AutoTile` 从 `Record<string, any>` 收成了具名成员表（`palette/auto-tile.ts` 的
 // `AutoTileShape`），于是这里**必须**按「组件真正 emit 出来的东西」转发，两类不能混：
 //
 // ① **模板列表**用的是 `TreeList`，它的 emit 是 `select/popup/change: [event: Event & { value?: unknown }]`

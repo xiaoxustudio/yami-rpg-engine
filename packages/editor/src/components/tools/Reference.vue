@@ -44,7 +44,7 @@ const updateItems = (items: ReferenceItem[]): void => {
 		if ('count' in item && item.count !== undefined && item.count > 1) {
 			nodes.push(h('div', { class: 'reference-count text' }, String(item.count)));
 		}
-		// 离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		// 离屏节点统一走 utils/dom 的 renderDetached
 		const element = renderDetached(
 			h(
 				'div',

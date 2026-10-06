@@ -46,7 +46,6 @@ export const EditDataInstance = new (class {
 	 * Monaco 的 model 在 `createEditor()`（L279 附近 `this.editor.getModel()`）之前**确实是 null**，
 	 * 原先写成 `null as unknown as ITextModel` 是在撒谎。改成真实的可空类型；
 	 * 下面各读取点用 `!` 表示「这里已经过了创建阶段」这一既有前置条件
-	 * （原先若在创建前调用，读到的是 null，同样会炸 —— 行为不变）。
 	 */
 	model: monacoNs.editor.ITextModel | null = null;
 	versionId: number | null = null;
@@ -231,7 +230,7 @@ export const EditDataInstance = new (class {
 	}
 	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
-		// 离屏文本节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		// 离屏文本节点统一走 utils/dom 的 renderDetached
 		const text = renderDetached(h('div', { class: 'text' }, code));
 		const options = this.colorOptions;
 		options.theme = Title.theme;

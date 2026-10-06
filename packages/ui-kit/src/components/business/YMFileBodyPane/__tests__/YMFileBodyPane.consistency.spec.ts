@@ -122,7 +122,7 @@ describe('YMFileBodyPane（模型 ↔ DOM ↔ 书 一致性）', () => {
 
 		el.clear();
 		await nextTick();
-		// 清空后三者都必须归零（曾经模型留着 5 行）
+		// 清空后三者都必须归零
 		expect(el.elements.count).toBe(0);
 		expect(el.getRowModel().rows).toEqual([]);
 		expect(domRows()).toEqual([]);

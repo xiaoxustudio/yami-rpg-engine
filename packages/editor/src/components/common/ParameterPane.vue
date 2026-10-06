@@ -63,7 +63,7 @@ const controls = {
 	textBox: () => textBoxFactory()
 };
 
-// 第 156 轮：形状与 ui-kit 的 `ManifestEntry` 同源（从 barrel 导入），
+// 形状与 ui-kit 的 `ManifestEntry` 同源（从 barrel 导入），
 // 否则 `:data-manifest` 的 prop 绑定会因两边形状不一致当场报 TS2322
 const dataManifest = (): { guidMap: Record<string, ManifestEntry> } | null => Data.manifest;
 const plugin = computed(

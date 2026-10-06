@@ -322,7 +322,7 @@ export function useCallEventCommandSchema() {
 	const createParameterElements = (parameter: CallEventArg): void => {
 		const { type, key, note } = parameter;
 		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
-		// 标签节点由 CallEvent.vue 的模板节点 clone 而来（原先 document.createElement + render）
+		// 标签节点由 CallEvent.vue 的模板节点 clone 而来
 		const labelEl = (composableEls.get('callEvent-label-template') as YamiElement).cloneNode(
 			true
 		) as HTMLElement;

@@ -205,7 +205,6 @@ const updateTransform = (): void => {
 };
 
 // `Palette.updateBackground` 的签名是**无参**（`palette-engine.ts:157`，读的都是单例上的字段）——
-// 原先这里把外部传来的实参透传过去，而那个实参从来用不到；收口后直接调用，行为一致。
 const updateBackground = (): unknown => {
 	return Palette.updateBackground();
 };

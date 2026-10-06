@@ -66,7 +66,7 @@ export function updateCommandElement(
 		e.remove();
 	});
 
-	// 离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+	// 离屏节点统一走 utils/dom 的 renderDetached
 	const pre = renderDetached(h('span', { class: 'command-mark-major' }));
 	element.insertBefore(pre, element.firstElementChild);
 	element.pre = pre;
@@ -196,7 +196,7 @@ function renderedRowsOf(list: {
 	const rendered = list.querySelectorAll?.('.command-item');
 	if (!rendered || rendered.length === 0) return null;
 	// `Array.from(rendered)` 是 `Element[]`；`CommandLineRow` 除 `classList` 外全可选 ⇒
-	// `Element` 结构性满足它，这里**不需要**任何断言（原先那处 `as unknown as` 已删）。
+	// `Element` 结构性满足它，这里**不需要**任何断言。
 	return Object.assign(Array.from(rendered), {
 		count: rendered.length,
 		lineClassEnabled: true

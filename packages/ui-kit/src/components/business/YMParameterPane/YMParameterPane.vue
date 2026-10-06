@@ -44,7 +44,7 @@ interface TypeRegistryConfig {
 /**
  * 文本框的选区适配器。
  *
- * 第 142 轮：四个形参从 `Event` 收窄成**注册点真实的 DOM 事件类型**（`createTextBox` 里就是
+ * 四个形参从 `Event` 收窄成**注册点真实的 DOM 事件类型**（`createTextBox` 里就是
  * `keydown` / `keyup` / `pointerdown` / `pointerup` 四条注册，见本文件 :607-618）。
  * 写宽成 `Event` 的代价是：宿主侧那些**按事件类型签名**的处理器（编辑器里 `Selection` 的
  * `inputKeydown(event: KeyboardEvent)` …）与它「互不重叠」，宿主只能写
@@ -353,7 +353,7 @@ const bind = (scriptList: ParamScriptListElement): void => {
 	const self = el!;
 	self.scriptList = scriptList;
 	if (scriptList.classList.contains('param-list')) {
-		// `!` 保持原来的空值语义（原先的断言也是「说它有」）
+		// `!` 保持原来的空值语义
 		const object = scriptList.object!;
 		const { update } = object;
 		self.getData = () => scriptList.data!;
@@ -774,7 +774,7 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 	addBtn.className = 'add-row-btn';
 	container.appendChild(rowsEl);
 	container.appendChild(addBtn);
-	// 第 147 轮：`RepeatableGroupInput` 已改成 `extends HTMLDivElement`（第 86 轮注释里指出的
+	// `RepeatableGroupInput` 已改成 `extends HTMLDivElement`（第 86 轮注释里指出的
 	// 拆法之一）⇒ 源与接口同族，断言从 `as unknown as` 降级为单次 `as`。
 	// 剩下这层单次 `as` 只主张「紧接着要在它上面挂那五个成员」（下面三行 + `read` / `write`），
 	// 属于本文件既有的「先建后补」写法；写法本身与 legacy 一致（legacy 也是元素先建、成员后挂）。

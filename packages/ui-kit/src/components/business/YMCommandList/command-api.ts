@@ -1429,7 +1429,6 @@ export const commandListPrototype: Record<
 		}
 		// `CommandItemElement.contents` 本来就声明成 `CommandContent[] | null`（readers 一律
 		// `?? []` 或 `!== null` 判空），这里直接写 null 即可 ——
-		// 原先那个 `{ text?… }[] & CommandContent[]` 的双重断言是纯多余的。
 		element.contents = null;
 
 		this.updateCommandElementFold(element);

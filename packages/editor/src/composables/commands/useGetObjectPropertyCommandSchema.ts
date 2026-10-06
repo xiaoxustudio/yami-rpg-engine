@@ -15,7 +15,7 @@ export type ObjectPropertyItem = { text: string };
 
 /**
  * 索引名表单（`ObjectPropertyIndex.vue:16` 的 `v-model`）。
- * 真源已升进 `stores/command-forms.ts`（原先是本文件的模块级 `reactive`）；
+ * 真源已升进 `stores/command-forms.ts`；
  * 这里保留同名对象但改成 store 访问器，调用点（含 v-model）写法不变。
  */
 export const indexForm: { name: string } = {
@@ -95,7 +95,7 @@ export interface SetObjectPropertyForm {
 
 /**
  * `set-object-property` 表单：逐字段访问器，指向 `stores/command-forms.ts` 的
- * `objectPropertyForm`（原先是本文件的模块级 `reactive`）。
+ * `objectPropertyForm`。
  * 保留同名可读写对象 ⇒ 本文件 5 处用法（含 `Object.assign(setForm, …)`）与
  * `new CommandSchema({ … form: setForm … })` 全不用改。
  */

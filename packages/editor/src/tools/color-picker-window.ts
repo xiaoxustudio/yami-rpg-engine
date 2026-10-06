@@ -270,7 +270,7 @@ Color.readRGBAFromInputs = function (this: typeof Color) {
 };
 
 Color.loadIndexedColors = function (this: typeof Color) {
-	// 组内成员改读 proxy.group（原先 document.getElementsByName('color-index')）
+	// 组内成员改读 proxy.group
 	const radios = (radioProxyMap['color-index'] as RadioProxyElement | undefined)?.group ?? [];
 	const colors = Data.config.indexedColors;
 	const length = colors.length;

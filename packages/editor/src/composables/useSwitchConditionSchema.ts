@@ -61,7 +61,7 @@ export interface SwitchConditionForm {
 
 /**
  * 条件表单（`SwitchCondition.vue` 的 8 个 `v-model`）。
- * 真源已升进 `stores/command-forms.ts`（原先是本文件的模块级 `reactive`）；
+ * 真源已升进 `stores/command-forms.ts`；
  * 这里保留同名对象但改成 store 访问器 —— `v-model="form.type"` 这类写法不用改。
  * `variable` 是嵌套对象：getter 直接返回 store 里那个对象，所以 `form.variable.key = …` 也生效。
  */

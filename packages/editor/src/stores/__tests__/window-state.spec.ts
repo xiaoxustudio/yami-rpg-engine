@@ -263,7 +263,7 @@ function makeStackFrame(id: string): StackTestFrame {
 	frame.closeEventEnabled = true;
 	frame.enableAmbient = false;
 	document.body.appendChild(el);
-	// `Window.open(id)` 现在从 windowShellEls 取帧（原先 document.getElementById）
+	// `Window.open(id)` 现在从 windowShellEls 取帧
 	registerElement(windowShellEls, id, frame);
 	stackFrames.push(frame);
 	return frame;

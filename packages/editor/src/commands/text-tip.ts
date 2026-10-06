@@ -111,7 +111,7 @@ function createEmptyList(): TextSuggestionList {
 		selectDefaultCommand: null,
 		updateNodeElement: null,
 		pressing: null,
-		// 空列表的样式宿主走 utils/dom 的唯一创建缝隙（原先 document.createElement('div').style）
+		// 空列表的样式宿主走 utils/dom 的唯一创建缝隙
 		style: createDetachedElement().style,
 		bind: noop,
 		addEventListener: noop,

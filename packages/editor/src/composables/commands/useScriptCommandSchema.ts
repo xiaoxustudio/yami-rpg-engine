@@ -33,7 +33,7 @@ Command.cases.script = new CommandSchema({
 	},
 	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
-		// 文本节点由 Script.vue 的模板节点 clone 而来（原先 document.createElement('div') + render）
+		// 文本节点由 Script.vue 的模板节点 clone 而来
 		const text = (composableEls.get('script-text-template') as YamiElement).cloneNode(
 			true
 		) as HTMLElement;

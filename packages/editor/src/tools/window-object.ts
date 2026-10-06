@@ -87,7 +87,7 @@ Window.initialize = function (this: typeof Window) {
 Window.open = function (this: typeof Window, id: string) {
 	const frames = this.frames;
 	purgeStaleFrames();
-	// 窗口壳元素由 `WindowFrame.vue` 挂载时登记到 windowShellEls（原先 document.getElementById）
+	// 窗口壳元素由 `WindowFrame.vue` 挂载时登记到 windowShellEls
 	const element = windowShellEls.get(id) as WindowFrame | undefined;
 	if (!element) {
 		console.warn('[window] open: element not found:', id);
@@ -295,7 +295,7 @@ Window.keydown = function (this: typeof Window, event: KeyboardEvent) {
 				}
 				const frames = Window.frames;
 				const frame = frames[frames.length - 1];
-				// 改为在**帧元素内**查找（原先 `document.querySelector('#id > …')` 全文档查）
+				// 改为在**帧元素内**查找
 				const button = frame?.querySelector('content-frame > button[name=confirm]');
 				if (button instanceof HTMLButtonElement) {
 					event.preventDefault();

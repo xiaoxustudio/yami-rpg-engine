@@ -73,7 +73,7 @@ type FileBodyApi = HTMLElement & {
 /**
  * 拖拽起点所在「页」的**读点面**。
  *
- * 第 147 轮：原先这四处成员是在调用点内联写成字面量再 `as unknown as`（`HTMLElement` 与它
+ * 原先这四处成员是在调用点内联写成字面量再 `as unknown as`（`HTMLElement` 与它
  * 「互不重叠」，只能靠 `unknown` 跨过去）。四个成员**全是运行期挂上的**（两个 pane 都用
  * `Object.defineProperty` 暴露 `pressing`，见 `YMFileNavPane.vue` / `YMFileBodyPane.vue`；
  * `selections` / `textBox` 由 body 侧提供），静态推导不出来 ⇒ 收成一处**具名**类型，
@@ -275,7 +275,7 @@ function update(): void {
 	const body = bodyEl.value?.el as FileBodyApi;
 	body?.updateFiles?.();
 	// 与 `:387` 同形（那里本来就是**单次** `as`）——同一个 `headEl.value`，两处不该写法不同。
-	// 第 122 轮：原来这里是 `as unknown as FileHeadApi`，而 `:387` 的 `as FileHeadApi | undefined`
+	// 原来这里是 `as unknown as FileHeadApi`，而 `:387` 的 `as FileHeadApi | undefined`
 	// 已经证明单次 `as` 就够（`HTMLElement` 与 `FileHeadApi` 可比）。
 	(headEl.value as FileHeadApi | undefined)?.updateAddress?.();
 }

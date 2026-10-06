@@ -10,7 +10,7 @@ import { UIOwner, type UIOwnerShape } from './ui-owner.ts';
 import type { UIElementTransform } from '@app/engine/ui/element-classes.ts';
 import type { YamiElement } from '@app/types/element-api';
 
-/** 尺寸/变换控件的 id 列表（原先用 `document.querySelectorAll` 批量取） */
+/** 尺寸/变换控件的 id 列表 */
 const SIZE_INPUT_IDS = [
 	'uiElement-transform-anchorX',
 	'uiElement-transform-anchorY',
@@ -127,7 +127,7 @@ const SIZE_INPUT_IDS = [
 		// 顺带：这里原来的 `(alignElements as unknown as HTMLElement[])` 是多余的 ——
 		// `.…`（非 `#` 选择器）返回 `NodeListOf<YamiElement>`，**NodeList 自带 `forEach`**，
 		// 而 `on` 的第一个形参本来就是 `any` ⇒ 直接调即可，**零断言**。
-		// 控件批量绑定焦点/失焦——改按 id 列表读 inspectorEls（原先 document.querySelectorAll）
+		// 控件批量绑定焦点/失焦——改按 id 列表读 inspectorEls
 		const otherElements = registryElements(inspectorEls, [
 			'uiElement-name',
 			'uiElement-pointerEvents',

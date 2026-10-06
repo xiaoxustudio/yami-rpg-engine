@@ -47,7 +47,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	// 该元素由本组件渲染：绑定放这里（原先由父 SFC 跨组件查 DOM）
+	// 该元素由本组件渲染：绑定放这里
 	fieldEls.get('switch-branch-conditions')?.bind?.(SwitchCondition);
 	on(fieldEls.get('switch-branch'), 'closed', () =>
 		SwitchBranch.windowClosed?.(new Event('closed'))

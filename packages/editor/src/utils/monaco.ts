@@ -42,7 +42,7 @@ export function getMonaco(): Promise<MonacoApi> {
 			await import('monaco-editor/esm/vs/language/json/monaco.contribution');
 		// editor.main 通过显式赋值注册语言贡献，按需导入需自行注册。
 		// （`monaco.languages` 的两个占位成员收窄掉再赋值：运行期仍是**同一个对象**、原地挂两个贡献，
-		//  只是让类型与 `MonacoApi['languages']` 对上 —— 原先这里靠 `as unknown as` 蒙过去。）
+		//  只是让类型与 `MonacoApi['languages']` 对上 ）
 		const languages = Object.assign(
 			monaco.languages as Omit<EditorApi['languages'], 'typescript' | 'json'>,
 			{

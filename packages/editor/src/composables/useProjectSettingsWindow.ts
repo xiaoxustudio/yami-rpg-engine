@@ -590,7 +590,7 @@ const languages: LanguagesInterface = {
 	},
 	/**
 	 * 语言窗口的确认：按钮由 WindowFrame → YMFormButtons 生成（模板里没有、注册表取不到），
-	 * 故由 `Language.vue` 的 `@confirm` 调用本方法（原先是在 `initialize` 里按 id 给按钮挂 click）。
+	 * 故由 `Language.vue` 的 `@confirm` 调用本方法。
 	 */
 	confirm: function (this: LanguagesInterface) {
 		if (languageList.inserting) {

@@ -39,7 +39,7 @@ function ensureDomBound() {
 	// 注册表在挂载后才填充，未挂载时为 undefined；沿用原先 `$()` 的非空断言语义
 	EventEditor.outerGutter = eventEditorEls.get('event-commands-gutter-outer') as YamiElement;
 	EventEditor.innerGutter = eventEditorEls.get('event-commands-gutter-inner') as YamiElement;
-	// 滚动位置改用显式元素数据（原先写的是原型访问器 `lastScrollTop`）
+	// 滚动位置改用显式元素数据
 	getElementData(list).lastScrollTop = 0;
 	EventEditor.list.close = null;
 	EventEditor.list.closeMultiple = null;
@@ -150,7 +150,7 @@ function bindListMethods() {
 	};
 
 	list.saveScroll = function (this: HTMLElement & EventEditorList) {
-		// 改用显式元素数据（原先读写原型访问器 `lastScrollTop`）
+		// 改用显式元素数据
 		getElementData(this).lastScrollTop = this.scrollTop;
 	};
 

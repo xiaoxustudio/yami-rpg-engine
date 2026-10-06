@@ -65,7 +65,7 @@ export function attachMenuListApi(el: HTMLElement): MenuListElement {
 }
 
 export function createMenuList(): MenuListElement {
-	// 离屏节点统一走 utils/dom 的唯一创建缝隙（原先 document.createElement）
+	// 离屏节点统一走 utils/dom 的唯一创建缝隙
 	const el = createDetachedElement();
 	el.classList.add('menu-list');
 	// 装配与收窄都在 `attachMenuListApi` 里完成 ⇒ 这里**零断言**。

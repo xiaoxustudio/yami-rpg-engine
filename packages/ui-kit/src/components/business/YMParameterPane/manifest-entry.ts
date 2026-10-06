@@ -3,7 +3,7 @@ import type { ParamDef } from './param-pane-core';
 /**
  * 数据清单里一个条目（`guid → 条目`）—— ui-kit 与宿主（编辑器）之间的**跨包契约**。
  *
- * 第 156 轮：`YMParameterPane` 原先把这个值写成 `Record<string, any>`。收成具名形状，
+ * `YMParameterPane` 原先把这个值写成 `Record<string, any>`。收成具名形状，
  * 字段全部来自**该组件自己的读点**（`YMParameterPane.vue` 的 `:349-356`）：
  * `parameters`（传给 `groupParameters`）、`langMap.update().get(key)`、`overview?.deprecated`。
  *

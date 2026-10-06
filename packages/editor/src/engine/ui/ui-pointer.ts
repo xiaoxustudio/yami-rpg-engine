@@ -53,7 +53,6 @@ const selectObject = (function IIFE() {
 		// 表现就是「**在画布上点选毫无反应**，但从左侧列表点选正常」
 		// （列表走 `UI.listSelect`，不经过这里）（2026-09-18 实测定位）。
 		// `root` 的类型本来就是 `UIElementInstance | null`（`stores/ui.ts` 的 `root`），
-		// 原先那处 `as { children: UINodeShape[] }` 是索引签名时代的断言，本轮去掉。
 		const root = getUIStore().root;
 		if (root === null) return null;
 		return find(root.children, x, y);

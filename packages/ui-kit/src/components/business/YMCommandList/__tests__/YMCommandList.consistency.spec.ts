@@ -94,7 +94,7 @@ describe('YMCommandList（模型 ↔ DOM 一致性）', () => {
 
 		el.clear();
 		await nextTick();
-		// 清空后两边都必须为空（曾经书里归零、DOM 仍留着旧行）
+		// 清空后两边都必须为空
 		expect(el.getRowModel().keys).toEqual([]);
 		expect(domKeys()).toEqual([]);
 	});

@@ -469,7 +469,7 @@ AutoTile.createNodeItems = function (this: typeof AutoTile, id = getAutoTileStor
 	const digits = computeIndexDigits(length);
 	for (let i = 0; i < length; i++) {
 		const index = i.toString().padStart(digits, '0');
-		// 离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		// 离屏节点统一走 utils/dom 的 renderDetached
 		const element = renderDetached(
 			h(
 				'div',
@@ -487,7 +487,6 @@ AutoTile.editFrame = function (this: typeof AutoTile) {
 	// 从 `!== null` 收紧成 `instanceof Image`：`image` 的三种状态里 `symbol` 是**载图中**的哨兵，
 	// 这时打开帧索引窗口只会在 `TileFrame.open` 里算出 `NaN` 尺寸（它要 `.naturalWidth`）。
 	// 菜单项自己的 `editable = selected && this.image instanceof Image`（`framesPopup`）用的就是这条口径，
-	// 本次只是让**动作本身**与菜单的启用条件一致。
 	if (this.image instanceof Image) {
 		TileFrame.open!();
 	}
@@ -581,7 +580,7 @@ AutoTile.updateFrameItem = function (this: typeof AutoTile) {
 	const x = frame & 0xff;
 	const y = frame >> 8;
 	// `selection`（列表选中行元素）走显式元素数据。注：YMCommonList（Vue）把选中行存在组件闭包里、
-	// 不再往元素数据上写 ⇒ 这里读到的是 `undefined`（迁移前同样如此），属既有行为，本次不改动。
+	// 不再往元素数据上写 ⇒ 这里读到的是 `undefined`，属既有行为，本次不改动。
 	elementDataOf<{ selection: HTMLElement }>(this.frameList!).selection.textContent =
 		`#${prefix}: ${x},${y}`;
 	this.drawFrame();

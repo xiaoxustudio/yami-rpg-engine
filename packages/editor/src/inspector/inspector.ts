@@ -16,7 +16,7 @@ import type { YamiMouseEvent } from '@app/types/editor-event';
 /**
  * 一次「输入 → 历史」的变更记录（`input` 是触发变更的元素）。
  *
- * `changes`（原先那里只有 `as unknown as HTMLElement` 一句断言，形状根本没写出来）。
+ * `changes`。
  */
 export interface InspectorChange {
 	input: YamiElement;
@@ -363,7 +363,7 @@ Inspector.getKey = function (
 	this: typeof Inspector,
 	element: { key?: string; id: string }
 ): string {
-	// `key` 是元素数据（原先靠原型访问器透明落到 WeakMap，本函数的 element 实参都是控件元素）
+	// `key` 是元素数据
 	const data = elementDataOf<{ key?: string }>(element);
 	let key = data.key;
 	if (key === undefined) {
@@ -522,7 +522,7 @@ Inspector.inputBlur = function (
 Inspector.sliderFocus = (function IIFE() {
 	const focus = new FocusEvent('focus');
 	return function (this: HTMLElement & { synchronizer: HTMLElement }, _event: Event) {
-		// `synchronizer` 走显式元素数据（原先靠原型访问器透明落到 WeakMap）
+		// `synchronizer` 走显式元素数据
 		elementDataOf<{ synchronizer: HTMLElement }>(this).synchronizer.dispatchEvent(focus);
 	};
 })();

@@ -98,7 +98,7 @@ export class ScriptListInterface implements IScriptListInterface {
 		Command.invalid = false;
 		const scriptName = Command.parseFileName(script.id);
 		const scriptClass = Command.invalid ? 'invalid' : script.enabled ? '' : 'weak';
-		// 离屏节点统一走 utils/dom 的 renderDetached（原先 document.createElement + render）
+		// 离屏节点统一走 utils/dom 的 renderDetached
 		const box = renderDetached(h('div', { class: 'box script-edit-button' }, '\uf044'));
 		return [{ content: Command.removeTextTags(scriptName), class: scriptClass }, box];
 	}
