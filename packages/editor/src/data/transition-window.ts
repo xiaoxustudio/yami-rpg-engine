@@ -1,7 +1,7 @@
 import { getListConfig, setTreeItemText, radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { dataEls } from '@app/data/element-registry';
 import { registryElements, registryElement } from '@app/utils/element-registry';
-import { getRelativeCoords } from '@app/utils/element-utils';
+import { getRelativeCoords, relate } from '@app/utils/element-utils';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
 import { getFocus, on, read, write } from '@app/utils/element-utils.ts';
@@ -1187,12 +1187,7 @@ Easing.curveBlur = function (this: typeof Easing, _event: YamiEvent) {
 	}
 }.bind(Easing);
 
-Easing.pointerup = function (
-	this: typeof Easing & {
-		relate: (start: EasingDrag, end: PointerEvent) => boolean;
-	},
-	event?: PointerEvent
-) {
+Easing.pointerup = function (this: typeof Easing, event?: PointerEvent) {
 	const { dragging } = this;
 	if (dragging === null) {
 		return;
@@ -1201,16 +1196,17 @@ Easing.pointerup = function (
 		// 交叉断言（同上面那处）：`dragging` 是拖拽起始事件，运行期就是一个 PointerEvent。
 		event = dragging as EasingDrag & PointerEvent;
 	}
-	if (this.relate(dragging, event)) {
+	// `relate` 是**模块级**工具（`@app/utils/element-utils`，同 `animation-pointer` / `animation-list`
+	// 的拖拽收尾同一手法）：判「这次 pointerup 是不是同一个指针」。
+	// ⚠️ 原先写的是 `this.relate(...)`，而 `Easing` 上从来没有这个成员（历史里也从没赋过）
+	// —— 那句靠 `this: typeof Easing & { relate: … }` 的断言蒙过去，运行期一拖拽完就抛
+	// `TypeError: this.relate is not a function`（2026-10-05 实机）。断言去掉，直接调真函数。
+	if (relate(dragging, event)) {
 		this.dragging = null;
 		window.removeEventListener('pointerup', this.pointerup);
 		window.removeEventListener('pointermove', this.pointermove);
 	}
-}.bind(
-	Easing as typeof Easing & {
-		relate: (start: EasingDrag, end: PointerEvent) => boolean;
-	}
-);
+}.bind(Easing);
 
 Easing.pointermove = function (this: typeof Easing, event: PointerEvent) {
 	if (this.activePoint !== null) {
