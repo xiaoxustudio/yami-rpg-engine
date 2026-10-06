@@ -241,7 +241,23 @@ export const dataKeys: (keyof DataShape)[] = [
 
 export const useDataStore = defineStore('data', () => {
 	const data = shallowReactive<DataShape>({
-		manifest: null,
+		/**
+		 * manifest 的**唯一存放处**是下面那个 `shallowRef`（见 `setManifest`）。
+		 *
+		 * 这里把 `data.manifest` 做成访问器，读写都落到 ref 上 —— 历史上它是独立字段、由
+		 * `setManifest` 同步写两处：两个存放点迟早会被新写入者写歪，且 `JSON.stringify(data)`
+		 * 只认 `data` 那份。用 `get/set` 定义（而不是 `Object.defineProperty` 打在 reactive 代理上）
+		 * 是为了让 Vue 在**构造时**就把它当访问器属性处理，属性访问照常参与依赖收集。
+		 *
+		 * 必须保持可枚举（对象字面量的 get/set 默认就是）—— 否则 `JSON.stringify(data)` /
+		 * `Object.keys(data)` 会看不到 manifest；`stores/__tests__/data.spec.ts` 有序列化回归钉住这点。
+		 */
+		get manifest(): ManifestShape | null {
+			return manifest.value;
+		},
+		set manifest(value: ManifestShape | null) {
+			manifest.value = value;
+		},
 		scenePresets: null,
 		uiPresets: null,
 		actors: null,
@@ -271,8 +287,8 @@ export const useDataStore = defineStore('data', () => {
 	const manifest = shallowRef<ManifestShape | null>(null);
 
 	function setManifest(value: ManifestShape | null) {
+		// 只写一处：`data.manifest` 是访问器，指向同一个 ref（原先这里写两遍）。
 		manifest.value = value;
-		data.manifest = value;
 	}
 
 	function setData(key: keyof DataShape, value: DataShape[keyof DataShape]) {
