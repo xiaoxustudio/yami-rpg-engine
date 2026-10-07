@@ -6,12 +6,6 @@ import { radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import ColorWindow from '@app/components/tools/Color.vue';
 import { Color, colorEls } from '../color-picker-window.ts';
 
-/**
- * 取色窗口不再用 `按 id` 查 DOM——元素由 `Color.vue` 登记进 `colorEls`，
- * 而 16 个 `name="color-index"` 单选组的元素 API 由 ui-kit 的 `radioProxyMap` 提供
- * （原先 `$('#color-index')` 命中的正是 RadioProxy 生成的代理 div）。
- * 锁住「登记 → initialize 绑定」链路（此前无覆盖）。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
@@ -47,7 +41,6 @@ describe('取色窗口注册表', () => {
 				missing.push(id);
 				continue;
 			}
-			// WindowFrame 的根元素 id 亦为 color；其余元素 id 必须与注册键一致
 			if (el.id !== id) mismatched.push(`${id} → ${el.id}`);
 		}
 		expect({ missing, mismatched }).toEqual({ missing: [], mismatched: [] });

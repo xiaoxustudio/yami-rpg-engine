@@ -28,8 +28,6 @@ function ensure(name: string, loader: () => Promise<unknown>): Promise<unknown> 
 			windows.set(name, instance);
 			return instance;
 		});
-		// 只挂「已处理」标记，不替换 pending 里的 promise ⇒ 调用方仍能照常拿到 rejection。
-		// 失败后**保留**在 pending 里（不清缓存）：与改动前一致，避免 loader 反复失败时无限重试。
 		void promise.catch(ignoreUnhandledRejection);
 		pending.set(name, promise);
 	}
@@ -53,8 +51,6 @@ export function getLazyWindow<T extends object>(name: string, loader: () => Prom
 				(instance as Record<string, unknown>)[prop as string] = value;
 				return true;
 			}
-			// 这条链会**派生第二个 promise**：`ensure()` 内部那层 catch 只标记了原 promise，
-			// 派生出来的这个若无人处理，照样会变成 `unhandledRejection`。所以这里必须再挂一次。
 			void ensure(name, loader as () => Promise<unknown>)
 				.then((inst) => {
 					(inst as Record<string, unknown>)[prop as string] = value;

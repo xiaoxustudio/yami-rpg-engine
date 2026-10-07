@@ -39,8 +39,6 @@ function saveProject(this: typeof Editor) {
 		const json = JSON.stringify(project, null, 2);
 		const last = project.code;
 		if (json && json !== last) {
-			// `config.project` 在「已打开工程」这条路径上必然有值（本函数开头已按 `this.project` 早退），
-			// `!` 只是把这条既有不变式写明；`FSP.writeFile` 现在有签名，不能再靠 `any` 蒙过。
 			const path = this.config!.project!;
 			FSP.writeFile(path, json).catch((error: unknown) => {
 				getLogStore().logThrow(error);

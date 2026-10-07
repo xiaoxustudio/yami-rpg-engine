@@ -1,24 +1,5 @@
 import { macRedoKey } from '@app/utils/event-accessors';
 
-/**
- * 快捷键**注册表**（`ShortcutRegistry` / `bindShortcutStore`）已于 2026-09-21 移除。
- *
- * 原来的形状是「`stores/tool.ts` 用 `bindShortcutStore()` 把 store 的方法绑进来，
- * `ShortcutRegistry.register/get` 转发过去」。实测全仓：
- *
- *   - `stores/tool.ts` 的**唯一** import 者是它自己的 spec（`stores/__tests__/tool-state.spec.ts`）
- *     ⇒ 生产代码里 `bindShortcutStore` 从未被调用 ⇒ `shortcutStore` 恒为 `null`
- *     ⇒ `register()` 是 **no-op**、`get()` 恒为 `undefined`；
- *   - `ShortcutRegistry.register/get` 的调用者也只有那个 spec。
- *
- * 也就是说这个「注册表」在生产里从来没有任何一次读写 —— 而它的 spec 之所以是绿的，
- * 正是因为**它 import 了 `stores/tool.ts`、自己触发了那次绑定**（自证循环）。
- * 属本仓「不要留成死状态」的典型：删掉比留着更诚实。需要时从 git 历史取回。
- *
- * 下面这些 `createXxx` 工厂**不是**注册表的一部分，它们被 `keyboard-events.ts` /
- * `attribute-window.ts` / `enum-window.ts` / `local-window.ts` 直接使用 —— 保留。
- */
-
 export const Shortcuts = {
 	createClipboard(target: {
 		copy?: () => void;

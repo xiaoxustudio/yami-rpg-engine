@@ -27,15 +27,8 @@ const t = (key: string, named?: Record<string, unknown>) =>
 
 type NewProjectState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
 
-// 类型与状态真源都在 `stores/new-project.ts`；
-// `import type` + 原样转出 ⇒ 其它 import 这个名字的文件不用改。
 export type { NewProjectForm };
 
-/**
- * 表单：逐字段访问器，指向 store 里那个 reactive 对象。
- * 保留同名可读写对象 ⇒ 本文件 10 处 `form.x` 与 `Object.assign(form, …)` 全不用改，
- * `NewProject.form`（形状字段）暴露的也是它。
- */
 const form: NewProjectForm = {
 	get template() {
 		return getNewProjectStore().form.template;
@@ -57,10 +50,6 @@ const form: NewProjectForm = {
 	}
 };
 
-// 确认按钮的启用态。原先由 `check()` 对 `#newProject-confirm` 调 disable/enable，
-// 而该按钮由 WindowFrame → YMFormButtons 生成（不在元素注册表里）⇒ 属性化后经
-// `WindowFrame` 的 `confirm-disabled` 透传到 `button[name="confirm"]` 的 `:disabled`。
-// 真源在 store：这里给可写 computed（形状仍是 ref ⇒ 模板自动解包、`.value = …` 也照旧）。
 export const newProjectConfirmDisabled = computed<boolean>({
 	get: () => getNewProjectStore().confirmDisabled,
 	set: (value: boolean) => {
@@ -68,7 +57,6 @@ export const newProjectConfirmDisabled = computed<boolean>({
 	}
 });
 
-// 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 type NewProjectMethod = ((...args: unknown[]) => unknown) | null;
 
 interface NewProjectShape {
@@ -122,8 +110,6 @@ NewProject.initialize = function (this: typeof NewProject) {
 		{ name: 'ARPG - 简体中文', value: 'arpg-ts-chinese' },
 		{ name: 'Minimized Current Project', value: 'minimized-project' }
 	]);
-
-	// template/folder/location/choose/confirm 事件经 Vue 模板转发（NewProject.vue @input/@beforeinput/@click/@confirm → NewProject.*）
 };
 
 NewProject.open = function (this: typeof NewProject) {
@@ -170,9 +156,6 @@ NewProject.check = function (this: typeof NewProject) {
 			this.state = 'passed';
 			(titleEls.get('newProject-warning') as YamiElement).textContent = '';
 		}
-		// 「最小化当前项目」模板要有可最小化的项目：编辑器已关闭（无项目可复制）时禁止确认。
-		// 原实现的 `if (template === 'minimized-project' && Editor.state === 'closed') disable`，
-		// 读法与上面两条同构：不满足则启用。
 		newProjectConfirmDisabled.value =
 			form.template === 'minimized-project' && Editor.state === 'closed';
 	}
@@ -201,7 +184,6 @@ NewProject.readFileList = (function IIFE() {
 						});
 						promises.push(read(dirname, idFilter, newPath, list));
 					} else {
-						// 如果存在ID过滤器，文件名中包括了ID 但是未在ID过滤器中找到，则判定为多余文件，跳过
 						if (idFilter) {
 							const guid = File.parseGUID!(file.name);
 							if (guid && !(idFilter as Record<string, unknown>)[guid]) continue;

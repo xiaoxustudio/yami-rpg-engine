@@ -2,7 +2,6 @@ import { Path } from '@app/utils/config';
 import { getDataStore } from '@app/stores/data';
 import { FS } from '@app/services/file-system/fs-bridge.ts';
 import { Updater } from './updater.ts';
-// ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
 import { fileURLToPath } from 'node:url';
 const _moduleURL = new URL(import.meta.url);
 const _modulePath =
@@ -28,14 +27,6 @@ function updateIncrementalChanges(version: string) {
 	let isBackupFolderCreated = false;
 
 	const updater = new (class VersionUpdater {
-		/**
-		 * 版本处理函数：按 `1.0.NNN` 命名（本类里共 19 个）。
-		 *
-		 * `1.0.138` 等是空档）⇒ 按版本号动态取值时**可能取到 `undefined`**（下方 `if (handler)`
-		 * 正为此存在）。写出来之后，原先那句
-		 * `(updater as unknown as Record<string, (update: boolean) => void>)[version]`
-		 * 就不需要了 —— 断言的目标本来就是「这张表」。
-		 */
 		[version: `1.0.${number}`]: ((update: boolean) => void) | undefined;
 
 		showMessage() {
@@ -370,9 +361,6 @@ function updateIncrementalChanges(version: string) {
 	const latestMinorVer = verLatest % 10000;
 	const initialMinorVer = 122;
 	for (let minorVer = latestMinorVer; minorVer >= initialMinorVer; minorVer--) {
-		// 标注成模板字面量类型（**不是断言**）：它让 `updater[version]` 落到上面那条
-		// `1.0.${number}` 索引签名上。TS 对模板字面量表达式会按**上下文类型**取型，
-		// 所以这里写标注即可（`minorVer: number` 正好匹配 `${number}`）。
 		const version: `1.0.${number}` = `1.0.${minorVer}`;
 		const handler = updater[version];
 		if (handler) {

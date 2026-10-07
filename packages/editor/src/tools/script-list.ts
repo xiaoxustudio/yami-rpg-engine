@@ -73,10 +73,6 @@ export class ScriptListInterface implements IScriptListInterface {
 
 		const { editor, owner } = this;
 		if (editor && owner) {
-			// 「`ParamHistory` 结构上不满足 `IEditableHistory`（缺 `stack`/`index`）」。
-			// 量到底的结论是**接口对这批消费方偏宽**：`ParamHistory` 是委托型适配器
-			// （栈在 `owner.history` 上），而消费方只调用方法、从不读 `stack`/`index`。
-			// 所以字段类型收窄成 `IUndoRedoHistory` 之后，单次赋值即可，断言彻底消失。
 			this.history = new ParamHistory(editor, owner, list);
 		}
 
@@ -98,7 +94,6 @@ export class ScriptListInterface implements IScriptListInterface {
 		Command.invalid = false;
 		const scriptName = Command.parseFileName(script.id);
 		const scriptClass = Command.invalid ? 'invalid' : script.enabled ? '' : 'weak';
-		// 离屏节点统一走 utils/dom 的 renderDetached
 		const box = renderDetached(h('div', { class: 'box script-edit-button' }, '\uf044'));
 		return [{ content: Command.removeTextTags(scriptName), class: scriptClass }, box];
 	}
@@ -140,8 +135,6 @@ export class ScriptListInterface implements IScriptListInterface {
 
 	input(scriptId: string) {
 		this.script!.id = scriptId;
-		// 单个断言（不再用 `unknown` 换掉整张类型表）：`target` 是**带 `save()` 的元素**或 null。
-		// 「不要为了好看把 `| null` 删掉」的规则在断言目标侧的同一件事；`!` 保持原来的空值语义。
 		(this.target as (HTMLElement & ScriptListTarget) | null)!.save();
 	}
 
@@ -152,10 +145,6 @@ export class ScriptListInterface implements IScriptListInterface {
 			if (element && element.contains(event.target as Node)) {
 				const el = element.parentNode as HTMLElement | null;
 				if (el !== null) {
-					// 兼容两种列表（legacy 注释："临时兼容ParamList和TreeList"）：
-					// ParamList 行把 `dataItem` 作为 own 属性挂在元素上；TreeList 行的 `item` 走
-					// **元素数据**（元素属性 `item` 已退役）——按属性读会拿到 undefined，
-					// 随后 `item.id` 直接抛错（点脚本行的编辑按钮时爆）。
 					const item =
 						(el as { dataItem?: ScriptListItem }).dataItem ??
 						elementDataOf<{ item?: ScriptListItem }>(el).item;
@@ -168,7 +157,6 @@ export class ScriptListInterface implements IScriptListInterface {
 		return function (event: PointerEvent) {
 			if (event.button === 0 && hasClass(event.target, 'box')) {
 				element = event.target as HTMLElement;
-				// 自动过滤重复侦听器，无需额外检查
 				window.addEventListener('pointerup', pointerup, once);
 			}
 		};

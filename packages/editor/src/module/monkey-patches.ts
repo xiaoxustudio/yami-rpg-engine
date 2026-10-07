@@ -36,7 +36,6 @@ EventBus.once('editor_loaded', () => {
 	};
 });
 
-// 列表 - 粘贴（延迟到应用加载完成，避免循环依赖 TDZ）
 EventBus.once('editor_loaded', () => {
 	if (Scene.list)
 		Scene.list.paste = function (
@@ -79,7 +78,6 @@ EventBus.once('editor_loaded', () => {
 			if (copy) {
 				if (Enum.idMap![copy.id]) {
 					copy.id = Enum.createId!();
-					//如果需要去掉后面的 -copy，把下面这行注释就好了
 					copy.name += ' - Copy';
 				}
 
@@ -99,7 +97,6 @@ EventBus.once('editor_loaded', () => {
 			if (copy) {
 				if (Variable.idMap[copy.id]) {
 					copy.id = Variable.createId();
-					//如果需要去掉后面的 -copy，把下面这行注释就好了
 					copy.name += ' - Copy';
 				}
 
@@ -119,7 +116,6 @@ EventBus.once('editor_loaded', () => {
 			if (copy) {
 				if (Attribute.idMap![copy.id]) {
 					copy.id = Attribute.createId!();
-					//如果需要去掉后面的 -copy，把下面这行注释就好了
 					copy.name += ' - Copy';
 				}
 
@@ -139,7 +135,6 @@ EventBus.once('editor_loaded', () => {
 			if (copy) {
 				if (Localization.idMap![copy.id]) {
 					copy.id = Localization.createId();
-					//如果需要去掉后面的 -copy，把下面这行注释就好了
 					copy.name += ' - Copy';
 				}
 				find_dItem.call(this, (a: unknown, b: boolean | undefined) => {
@@ -148,9 +143,6 @@ EventBus.once('editor_loaded', () => {
 			}
 		};
 
-	// 读 store 的 `elements` 访问器（每次求值）。这里在 `editor_loaded` 回调内执行，
-	// 而 `editor_loaded` 由 `main/initialize.ts:128` 发出、由 `main/startup.ts` 的
-	// `vue-app-mounted` 之后触发，故此刻元素注册表已登记好。
 	const uiList = getUIStore().elements.list;
 	if (uiList)
 		uiList.paste = function (
@@ -172,8 +164,6 @@ EventBus.once('editor_loaded', () => {
 
 EventBus.once('editor_loaded', () => {
 	if (!AutoTile.templateList) return;
-	// 取原方法的**函数值**存下来，第 194 行用 `.call(this)` 显式传接收者 —— 这是有意的，
-	// 不是「忘了绑定」（`unbound-method` 的告警在此为误报）。
 	// oxlint-disable-next-line unbound-method
 	const originAutoTileTemplateUpdate = AutoTile.templateList.update;
 	AutoTile.templateList.update = function (this: HTMLElement) {

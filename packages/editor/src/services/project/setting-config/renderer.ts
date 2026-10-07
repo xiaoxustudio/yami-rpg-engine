@@ -135,8 +135,6 @@ export class SettingRenderer {
 	}
 
 	private readValue(e: Event & { value?: unknown }): string | number | boolean {
-		// 用 `Reflect.has` 探到成员存在，就用同一个反射口把它取出来 —— 比
-		// 「断言成 `{ value: … }` 形状」更贴事实：`EventTarget` 上有没有 `value` 本来就是运行期事实。
 		if (e.target && Reflect.has(e.target, 'value'))
 			return Reflect.get(e.target, 'value') as string | number | boolean;
 		return e.value as string | number | boolean;

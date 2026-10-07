@@ -29,24 +29,10 @@ interface EditDataContentItem {
 	value: { id: string; params: unknown; commands: unknown };
 }
 
-/**
- * 事件列表 DOM（`event-commands` 那个 TreeList）的**读点契约**。
- *
- * `YamiElement` 是面向所有模板 ref 的公共窄契约（`update` / `select` 都在里面），但不含
- * TreeList 的选中游标 `start` / `end`。两个读点过去各写一遍
- * `as unknown as { start: unknown }` —— **同一个事实、两份各自为政的解释**；
- * 现在按**读点**声明一次（与 `scene-*-engine.ts` 的 `SceneXxxThis` 是同一手法）。
- * 注意 `select()` 的形参本来就是 `unknown[]`，所以 `start` / `end` 保持 `unknown` 即可。
- */
 type EventListCursorDom = YamiElement & { start: unknown; end: unknown };
 
 export const EditDataInstance = new (class {
 	editor: (monacoNs.editor.IStandaloneCodeEditor & { getFocus?: () => void }) | null = null;
-	/**
-	 * Monaco 的 model 在 `createEditor()`（L279 附近 `this.editor.getModel()`）之前**确实是 null**，
-	 * 原先写成 `null as unknown as ITextModel` 是在撒谎。改成真实的可空类型；
-	 * 下面各读取点用 `!` 表示「这里已经过了创建阶段」这一既有前置条件
-	 */
 	model: monacoNs.editor.ITextModel | null = null;
 	versionId: number | null = null;
 	commandList: unknown = null;
@@ -76,7 +62,6 @@ export const EditDataInstance = new (class {
 		on(moduleEls.get('edit-data') as YamiElement, 'resize', () => {
 			this.resize();
 		});
-		// confirm 由 EditData.vue 的 @confirm 驱动（按钮由 WindowFrame 生成，注册表取不到）
 
 		on(this.editorParent, 'close', (event: Event) => {
 			if (this.changed) {
@@ -129,15 +114,12 @@ export const EditDataInstance = new (class {
 			content.style.width = '';
 			content.style.height = '';
 			const boundingRect = content.getBoundingClientRect();
-			// `editor` 在 `createEditor()` 之前确实是 null；这里与相邻的 `this.model!` 同一约定：
-			// 用 `!` 声明「此处已过创建阶段」这一既有前提（编译期断言，不改运行期行为）。
 			this.editor!.layout({
 				width: boundingRect.width,
 				height: parent!.clientHeight - 60
 			});
 		} else {
 			const boundingRect = content!.getBoundingClientRect();
-			// 保持content左右间距相同
 			content!.style.width = parent!.clientWidth - boundingRect.left * 2 + 'px';
 			content!.style.height = parent!.clientHeight - 60 + 'px';
 			this.editor!.layout({
@@ -216,7 +198,6 @@ export const EditDataInstance = new (class {
 			hasChanges = true;
 		}
 
-		// 如果有修改，触发 change 事件以标记数据需要保存
 		if (hasChanges) {
 			this.eventListDom!.dispatchEvent(new Event('change', { bubbles: true }));
 		}
@@ -230,7 +211,6 @@ export const EditDataInstance = new (class {
 	}
 	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
-		// 离屏文本节点统一走 utils/dom 的 renderDetached
 		const text = renderDetached(h('div', { class: 'text' }, code));
 		const options = this.colorOptions;
 		options.theme = Title.theme;
@@ -296,7 +276,6 @@ export const EditDataInstance = new (class {
 
 			this.model = this.editor.getModel()!;
 
-			// 编辑器 - 获得焦点
 			this.editor.getFocus = function (this: { focus: () => void }) {
 				setTimeout(() => this.focus());
 			};
@@ -308,7 +287,6 @@ export const EditDataInstance = new (class {
 						case 'Enter':
 							browserEvent.preventDefault();
 							browserEvent.stopPropagation();
-							// this.save()
 							break;
 					}
 				}
@@ -372,7 +350,7 @@ export const EditDataInstance = new (class {
 							commands: eData.commands
 						}
 					});
-				if (elem.mark === 'header') includeArr.push(eData); // 将buffer也存储，这样能保证有唯一性
+				if (elem.mark === 'header') includeArr.push(eData);
 			}
 			this.currentContent = value;
 			this.model!.setValue(

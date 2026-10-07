@@ -61,16 +61,12 @@ import { GlobalClipboard } from '@app/utils/clipboard';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 
-// ******************************** 菜单栏对象 ********************************
-
-// 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 // oxlint-disable-next-line no-explicit-any
 type MenubarMethod = ((...args: any[]) => any) | null;
 
 interface MenubarShape {
 	popup: ((...args: unknown[]) => void) | null;
 
-	// methods
 	initialize: (() => void) | null;
 	toggleFullScreen: MenubarMethod;
 	popupFileMenu: MenubarMethod;
@@ -84,16 +80,11 @@ interface MenubarShape {
 	createColorIcon: MenubarMethod;
 	revealSaveDirectory: MenubarMethod;
 	sanitizeFolderName: MenubarMethod;
-	// events
 	keydown: MenubarMethod;
 	pointerdown: MenubarMethod;
 	pointerup: MenubarMethod;
 	pointerover: MenubarMethod;
 	hrefClick: MenubarMethod;
-	/**
-	 * 与 Pinia store 双向桥接的窗口状态（`stores/menubar.ts` 的
-	 * `menubarStateKeys = ['state']`），类型与 store 的 `shallowRef` 对齐。
-	 */
 	state: string;
 }
 
@@ -118,7 +109,6 @@ export const exportApkForm = reactive<ExportApkForm>({
 let stopExportApkFormWatch: (() => void) | null = null;
 
 export const Menubar: MenubarShape = {
-	// methods,
 	initialize: null,
 	state: 'closed',
 	toggleFullScreen: null,
@@ -133,7 +123,6 @@ export const Menubar: MenubarShape = {
 	createColorIcon: null,
 	revealSaveDirectory: null,
 	sanitizeFolderName: null,
-	// events,
 	keydown: null,
 	pointerdown: null,
 	pointerup: null,
@@ -142,21 +131,14 @@ export const Menubar: MenubarShape = {
 	popup: null as ((...args: unknown[]) => void) | null
 };
 
-// 初始化
 Menubar.initialize = function (this: typeof Menubar) {
-	// 侦听事件
 	window.addEventListener('keydown', this.keydown!);
-	// #menu pointerdown/pointerup/pointerover 经 Vue 模板转发（AppShell @pointerdown/@pointerup/@pointerover → Menubar.*）
-	// `.href` 链接的点击改由拥有它们的组件转发（About.vue / ExportApk.vue 的 @click → Menubar.hrefClick）——
-	// 原先这里的 `document.querySelectorAll('.href')` 在启动时执行，而这些链接在懒加载窗口里，本来就绑不上。
 };
 
-// 开关全屏模式
 Menubar.toggleFullScreen = function (this: typeof Menubar) {
 	YamiIpc.send.toggleFullScreen();
 };
 
-// 弹出文件菜单
 Menubar.popupFileMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
@@ -255,7 +237,6 @@ Menubar.popupFileMenu = function (this: typeof Menubar, target: HTMLElement) {
 	}
 };
 
-// 弹出编辑菜单
 Menubar.popupEditMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
@@ -299,7 +280,6 @@ Menubar.popupEditMenu = function (this: typeof Menubar, target: HTMLElement) {
 				click: null as (() => void) | null
 			}
 		};
-		// 提前触发检查器输入框的blur事件
 		(document.activeElement as HTMLElement | null)?.blur();
 		switch (Layout.manager.index) {
 			case 'scene':
@@ -391,7 +371,6 @@ Menubar.popupEditMenu = function (this: typeof Menubar, target: HTMLElement) {
 	}
 };
 
-// 弹出视图菜单
 Menubar.popupViewMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
@@ -547,7 +526,6 @@ Menubar.popupViewMenu = function (this: typeof Menubar, target: HTMLElement) {
 	}
 };
 
-// 弹出窗口菜单
 Menubar.popupWindowMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
@@ -646,7 +624,6 @@ Menubar.popupWindowMenu = function (this: typeof Menubar, target: HTMLElement) {
 	}
 };
 
-// 弹出帮助菜单
 Menubar.popupHelpMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
@@ -667,7 +644,7 @@ Menubar.popupHelpMenu = function (this: typeof Menubar, target: HTMLElement) {
 						File.openURL!(
 							getLocalStore().language.slice(0, 2) === 'zh'
 								? 'https://open-yami-community.github.io/open-yami-doc/'
-								: 'https://open-yami-community.github.io/open-yami-doc/' // 锁死中文
+								: 'https://open-yami-community.github.io/open-yami-doc/'
 						);
 					}
 				},
@@ -723,7 +700,6 @@ Menubar.popupHelpMenu = function (this: typeof Menubar, target: HTMLElement) {
 		);
 	}
 };
-// 弹出OpenYami菜单
 Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
@@ -777,42 +753,34 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 							},
 							{ once: true }
 						);
-						// 解析本地构建APK配置
 						const pConfig = Path.resolve!(
 							Path.dirname!(Editor.config!.project!),
 							'apk',
 							'./config.json'
 						);
 						let config = {
-							// 自定义选项
-							packageName: 'com.xuran.newapp', // 新包名
-							appName: 'New App Name', // 新应用名称
-							iconPath: '~/Icon/icon.png', // 新图标路径
-							versionName: '1.0.0', // 版本名称
-							versionCode: 1 // 版本号（整数）
+							packageName: 'com.xuran.newapp',
+							appName: 'New App Name',
+							iconPath: '~/Icon/icon.png',
+							versionName: '1.0.0',
+							versionCode: 1
 						};
 						const apkConfigSave = () => {
-							// 没有则创建父级文件夹
 							if (!FS.existsSync!(Path.dirname!(pConfig))) {
 								FS.mkdirSync!(Path.dirname!(pConfig));
 							}
-							// 第三参是**存在性预检**（`FSP.writeFile` 的签名如此）：原写法传 `{}`，
-							// 运行期同样按真值走 `if (check)`，改成 `true` 语义不变、类型也如实。
-							// `void`：原写法靠 `any` 躲过了「不许有游离 Promise」，这里显式忽略（仍不等待）。
 							void FSP.writeFile(pConfig, JSON.stringify(config), true);
 						};
 						await (async () => {
 							if (FS.existsSync!(pConfig)) {
 								config = JSON.parse((await FSP.readFile!(pConfig)).toString());
 							} else {
-								// 配置不存在
 								if (!FS.existsSync!(Path.dirname!(pConfig))) {
 									FS.mkdirSync!(Path.dirname!(pConfig));
 								}
 								await FSP.writeFile!(pConfig, JSON.stringify(config));
 							}
 						})().then(() => {
-							// 初始化
 							Object.assign(exportApkForm, {
 								apkName: config.appName,
 								apkIcon: config.iconPath,
@@ -846,7 +814,7 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 								(_e: Event) => {
 									disable(titleEls.get('export-apk-button') as YamiElement);
 									apkConfigSave();
-									SettingConfig.load(); // 更新配置
+									SettingConfig.load();
 									ApkBuilder.build!({
 										...config,
 										...SettingConfig.config.apkbuild,
@@ -854,7 +822,6 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 									});
 								}
 							);
-							// 加载状态
 							if (ApkBuilder.isBuilding!()) {
 								disable(titleEls.get('export-apk-button') as YamiElement);
 								ApkBuilder.logs.forEach((log) => {
@@ -872,7 +839,6 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 	}
 };
 
-// 创建最近的文件项目
 Menubar.createRecentItems = function (this: typeof Menubar) {
 	if (Editor.state === 'closed') {
 		return [];
@@ -888,7 +854,6 @@ Menubar.createRecentItems = function (this: typeof Menubar) {
 			Title.reopenClosedTab!();
 		}
 	});
-	// 添加最近的标签选项
 	if (recentTabs.length !== 0) {
 		const click = function (this: { meta: unknown }) {
 			Title.reopenClosedTab!(this.meta);
@@ -917,7 +882,6 @@ Menubar.createRecentItems = function (this: typeof Menubar) {
 	return items;
 };
 
-// 创建语言项目
 Menubar.createLanguageItems = function (this: typeof Menubar) {
 	const get = (key: string) => t('menuView.language.' + key);
 	const autoChecked = Editor.config!.language === '';
@@ -967,13 +931,11 @@ Menubar.createLanguageItems = function (this: typeof Menubar) {
 	return items;
 };
 
-// 创建颜色图标
 Menubar.createColorIcon = function (this: typeof Menubar, color: string) {
 	const r = parseInt(color.slice(0, 2), 16);
 	const g = parseInt(color.slice(2, 4), 16);
 	const b = parseInt(color.slice(4, 6), 16);
 	const a = parseInt(color.slice(6, 8), 16) / 255;
-	// 离屏节点统一走 utils/dom 的 renderDetached
 	const holder = createDetachedElement();
 	render(
 		h('menu-icon', {
@@ -985,7 +947,6 @@ Menubar.createColorIcon = function (this: typeof Menubar, color: string) {
 	return holder.firstElementChild as HTMLElement;
 };
 
-// 显示存档目录
 Menubar.revealSaveDirectory = async function (this: typeof Menubar) {
 	let saveDir;
 	const { location, subdir } = Data.config.save;
@@ -1000,25 +961,17 @@ Menubar.revealSaveDirectory = async function (this: typeof Menubar) {
 	File.openPath!(saveDir);
 };
 
-// 规范化文件夹名称
 Menubar.sanitizeFolderName = function (this: typeof Menubar, name: string) {
-	// 移除Windows/macOS/Linux不允许的字符
 	name = name.replace(/[/:*?"<>|]/g, '');
-	// 去掉开头和结尾的空格
 	name = name.replace(/^\s+|\s+$/g, '');
-	// Windows不能以"."结尾
 	name = name.replace(/\.$/, '');
-	// 避免Windows设备名（不区分大小写）
 	const reservedNames = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i;
 	if (reservedNames.test(name)) {
-		// 添加后缀以避免冲突
 		name += '_safe';
 	}
-	// 避免空字符串
 	return name || 'default_folder';
 };
 
-// 键盘按下事件
 Menubar.keydown = function (this: typeof Menubar, event: KeyboardEvent) {
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -1030,9 +983,6 @@ Menubar.keydown = function (this: typeof Menubar, event: KeyboardEvent) {
 				break;
 			case 'KeyS':
 				File.save!();
-				// `WebServer.update` 内部会返回 `FSP.writeFile(...)` 的 Promise —— `FSP` 有签名之后
-				// 这个「刻意不等待」的调用被 `no-floating-promises` 抓到（原先是 `any` 才漏过）。
-				// 快捷键保存不等它（语义不变），`void` 显式写明这一点。
 				void WebServer.update!(Editor.config!.project!);
 				break;
 			case 'KeyT':
@@ -1107,16 +1057,12 @@ Menubar.keydown = function (this: typeof Menubar, event: KeyboardEvent) {
 			case 'KeyF':
 				Palette.flipTiles!();
 				break;
-			// case 'Pause':
-			//   GL.WEBGL_lose_context.loseContext()
-			//   break
 		}
 	}
 };
 
 registerWindowKeydown('menubar', Menubar.keydown);
 
-// 指针按下事件
 Menubar.pointerdown = function (this: typeof Menubar, event: PointerEvent) {
 	switch (event.button) {
 		case 0:
@@ -1143,7 +1089,6 @@ Menubar.pointerdown = function (this: typeof Menubar, event: PointerEvent) {
 	}
 };
 
-// 指针弹起事件
 Menubar.pointerup = function (this: typeof Menubar, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
@@ -1156,7 +1101,6 @@ Menubar.pointerup = function (this: typeof Menubar, event: PointerEvent) {
 	}
 };
 
-// 指针进入事件
 Menubar.pointerover = function (this: typeof Menubar, event: PointerEvent) {
 	const element = event.target as HTMLElement;
 	if (hasClass(element, 'item')) {
@@ -1168,7 +1112,6 @@ Menubar.pointerover = function (this: typeof Menubar, event: PointerEvent) {
 	}
 };
 
-// 超链接 - 点击事件
 Menubar.hrefClick = function (this: typeof Menubar, event: MouseEvent) {
 	File.openURL!((event.target as HTMLElement | null)?.getAttribute?.('href'));
 };

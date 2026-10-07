@@ -37,7 +37,6 @@ describe('NewProject.confirm：资源缺失时是否拦下', () => {
 	});
 
 	it('非 ARPG 模板（「最小化当前项目」等）与空值 ⇒ 放行，且根本不去问资源', () => {
-		// 第三项的本职就是这个：它必须让「最小化当前项目」这种**没有对应资源包**的选项通过。
 		const asked: string[] = [];
 		const spy = (key: string) => {
 			asked.push(key);

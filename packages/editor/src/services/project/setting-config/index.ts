@@ -13,8 +13,6 @@ import type { YamiElement } from '@app/types/element-api';
 export const path = nodePath;
 
 export const SettingConfig = new (class {
-	// `{}` 只是占位：构造函数第一句就 `load()`，而下面的 `renderer` 字段只存引用、不读它
-	// ⇒ 初值不可观测。这里的断言表达的是与 `apply()` 相同的前提（加载后各分区都在）。
 	config: SettingConfigShape = {} as SettingConfigShape;
 	private _rendered = false;
 	private _localizeBound = false;
@@ -51,7 +49,6 @@ export const SettingConfig = new (class {
 		if (!settingEl) return;
 		this._buttonsBound = true;
 		on(settingEl, 'open', this.open.bind(this));
-		// confirm 由 Setting.vue 的 @confirm 驱动（按钮由 WindowFrame 生成，注册表取不到）
 	}
 
 	open() {
@@ -108,9 +105,6 @@ export const SettingConfig = new (class {
 			}
 			return _t_obj;
 		};
-		// `patch()` 的返回是 `Record<string, unknown>`（它按 `defaultConfig` 的键补齐目标），
-		// 而 `defaultConfig` 由 `settingSchema` 生成、7 个顶层分区必在 ⇒ 补齐后形状与
-		// `SettingConfigShape` 的前提一致，这次断言是**与事实相符**的，不是「可能说谎」。
 		this.config = patch(this.defaultConfig, this.config) as SettingConfigShape;
 		for (const key of Object.keys(this.defaultConfig)) {
 			this.config[key] ??= {};

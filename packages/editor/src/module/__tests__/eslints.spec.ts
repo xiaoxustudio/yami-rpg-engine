@@ -154,10 +154,8 @@ describe('eslints 折叠线显示（区块竖线收尾）', () => {
 		dispatchUpdate([header, wait, last]);
 		expect(header.lines[0].classList.contains('line-start')).toBe(true);
 		expect(header.lines[0].classList.contains('line-hide')).toBe(false);
-		// 顶层普通行（等待，非最后）→ 不显示折叠线
 		expect(wait.lines[0].classList.contains('line-hide')).toBe(true);
 		expect(wait.lines[0].classList.contains('line-end')).toBe(false);
-		// 顶层最后一行（不可折叠）→ 同样不显示折叠线
 		expect(last.lines[0].classList.contains('line-hide')).toBe(true);
 		expect(last.lines[0].classList.contains('line-end')).toBe(false);
 	});
@@ -167,12 +165,9 @@ describe('eslints 折叠线显示（区块竖线收尾）', () => {
 		const last = makeItem(2);
 		const top = makeItem(0);
 		dispatchUpdate([header, last, top]);
-		// last 为普通内容行 → 最深线隐藏（不绘制自身层级折叠线）
 		expect(last.lines[2].classList.contains('line-hide')).toBe(true);
 		expect(last.lines[2].classList.contains('line-end')).toBe(false);
-		// 父线（indent 1）在 last 行结束
 		expect(last.lines[1].classList.contains('line-end')).toBe(true);
-		// 顶层线（indent 0）延续至 top
 		expect(last.lines[0].classList.contains('line-end')).toBe(false);
 	});
 
@@ -182,14 +177,11 @@ describe('eslints 折叠线显示（区块竖线收尾）', () => {
 		const tail = makeItem(1);
 		const nextTop = makeItem(0);
 		dispatchUpdate([header, mid, tail, nextTop]);
-		// mid（数值）后面有同层 tail → 普通行最深线隐藏，父线竖线延续
 		expect(mid.lines[1].classList.contains('line-hide')).toBe(true);
 		expect(mid.lines[0].classList.contains('line-end')).toBe(false);
-		// tail 为普通内容行 → 最深线隐藏，顶层线保留（nextTop 仍存在）
 		expect(tail.lines[1].classList.contains('line-hide')).toBe(true);
 		expect(tail.lines[1].classList.contains('line-end')).toBe(false);
 		expect(tail.lines[0].classList.contains('line-end')).toBe(false);
-		// nextTop（顶层最后一行）→ 不显示折叠线
 		expect(nextTop.lines[0].classList.contains('line-hide')).toBe(true);
 		expect(nextTop.lines[0].classList.contains('line-end')).toBe(false);
 	});
@@ -266,7 +258,6 @@ describe('eslints getSelectionPosition（命令控件定位）', () => {
 			rects: { 0: { x: 4, y: 0 }, 1: { x: 4, y: 20 } }
 		});
 		applyCommandListInstanceOverride(list);
-		// 行距 20px：3 号行在窗口下方 → 20 + 2 * 20
 		expect(list.getSelectionPosition?.()).toMatchObject({ x: 4, y: 60 });
 	});
 
@@ -283,7 +274,6 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 			parse: (item: Record<string, unknown>) => {
 				const cmds = item.commands as unknown[] | undefined;
 				if (cmds && cmds.length) {
-					// 真实 Block 结构：children 后还有「区块结束」文本行
 					return [
 						{ fold: true },
 						{ color: 'normal' },
@@ -360,7 +350,6 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 				realRows.push({ dataIndent: row.dataIndent, lines: row.lines });
 			}
 		}
-		// 期望结构：loop(0 fold) / st1(1) / st2(1) / loop.end(0 footer) / wait(0) / repeat(0)
 		expect(realRows.length).toBe(6);
 		const loop = realRows[0];
 		const st1 = realRows[1];
@@ -368,24 +357,18 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 		const loopEnd = realRows[3];
 		const wait = realRows[4];
 		const repeat = realRows[5];
-		// 循环块 header → 短竖线
 		expect(loop.dataIndent).toBe(0);
 		expect(loop.lines[0].classList.contains('line-start')).toBe(true);
-		// 子块中间行（st1）→ 最深线隐藏，父线（循环线）竖线延续
 		expect(st1.dataIndent).toBe(1);
 		expect(st1.lines[1].classList.contains('line-hide')).toBe(true);
 		expect(st1.lines[0].classList.contains('line-end')).toBe(false);
 		expect(st1.lines[0].classList.contains('line-hide')).toBe(false);
-		// 子块普通行（st2）→ 最深线隐藏，循环父线竖线延续
 		expect(st2.lines[1].classList.contains('line-hide')).toBe(true);
 		expect(st2.lines[1].classList.contains('line-end')).toBe(false);
 		expect(st2.lines[0].classList.contains('line-end')).toBe(false);
-		// 循环「结束」标记行（footer）→ L 形收尾
 		expect(loopEnd.lines[0].classList.contains('line-end')).toBe(true);
 		expect(loopEnd.lines[0].classList.contains('line-hide')).toBe(false);
-		// 顶层等待（非最后）→ 不显示折叠线
 		expect(wait.lines[0].classList.contains('line-hide')).toBe(true);
-		// 顶层最后一行（repeat）→ 不显示折叠线
 		expect(repeat.lines[0].classList.contains('line-hide')).toBe(true);
 		expect(repeat.lines[0].classList.contains('line-end')).toBe(false);
 	});
@@ -415,7 +398,6 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 			{ id: 'wait', params: {} }
 		]);
 
-		// 换源后行由模板渲染：收集前先等两拍（渲染 + 跨行分类钩子）
 		await nextTick();
 		await nextTick();
 		const rows: Array<{ dataIndent: number; lines: HTMLElement[] }> = [];
@@ -425,24 +407,13 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 				rows.push({ dataIndent: row.dataIndent, lines: row.lines });
 			}
 		}
-		expect(rows.length).toBe(4); // loop / st1 / loop.end / wait
-		// 折叠块 header 折叠线生效
+		expect(rows.length).toBe(4);
 		expect(rows[0].lines[0].classList.contains('line-start')).toBe(true);
-		// 块结束行 footer L 形收尾
 		expect(rows[2].lines[0].classList.contains('line-end')).toBe(true);
-		// 顶层普通行不显示折叠线
 		expect(rows[3].lines[0].classList.contains('line-hide')).toBe(true);
 		expect(rows[3].lines[0].classList.contains('line-end')).toBe(false);
 	});
 
-	/**
-	 * 回归（实机：打开含 `if` 的事件即报 `Duplicate keys found during update: "blank-c6-2-1"`，
-	 * 随后 Vue 崩在 `insertBefore of null`）。
-	 *
-	 * `if` 的真实 `parse` 会为**同一条命令**产出**多个 `children`**（每个分支一个子列表，
-	 * 见 `useIfCommandSchema`）。两个**等长**的分支（各 1 条命令）曾经让两条空白行拿到
-	 * 同一个 key —— 这里按编辑器真实的行结构走完整条链路（CommandList 组件 + eslints 覆写）。
-	 */
 	it('同一命令多个 children（if 的多分支）：行 key 全唯一，模型与渲染行数一致', async () => {
 		ensureUpdateCommandElementOverride();
 		const options = makeOptions();
@@ -470,11 +441,9 @@ describe('eslints + CommandList 集成（Block 块最后一行折叠线）', () 
 		await nextTick();
 
 		const keys = el.getRowModel().keys;
-		// if 主行 + 两个分支各 1 行 + 两条续行 + 两条**分支空白行** + 顶层空白行
 		expect(keys.length).toBeGreaterThanOrEqual(7);
 		expect(keys.filter((key) => key.length === 0)).toEqual([]);
 		expect(new Set(keys).size).toBe(keys.length);
-		// 全部行都在虚拟窗口内：渲染出的行数应与行模型一致（重复 key 会把 DOM 行吃掉）
 		expect(renderedRows(el).length).toBe(keys.length);
 	});
 });

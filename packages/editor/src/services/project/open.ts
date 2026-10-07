@@ -66,7 +66,6 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 				]
 			);
 		}
-		// 升级到1.0.122：破坏性更新
 		if (verNum < Updater.getVersionNumber!('1.0.122')) {
 			if (!agreed) {
 				const warning = Updater.getTSVersionWarning!();
@@ -183,18 +182,14 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 
 	this.switchHotkey!(true);
 
-	// 启动TS编译
 	if (Data.config.script.autoCompile) {
 		Project.startTSC();
 	}
 
 	Editor.hooks.onTitleChanged();
 
-	// 初始化游戏本地化语言 因为是追加的内容 必须置于检查更新之后
 	GameLocal.initialize();
 
-	// 打开开发服务器 SettingConfig.config 在 SettingConfig 实例化期 load() 从 yami-config.json 载入；但若 load() 抛错或文件缺失未兜底，config.server 可能是 undefined，裸取 .auto 会炸
-	// 行为一字未改：仍然是「取不到就当作没开自动启动」。
 	const serverConfig: { auto?: boolean } = SettingConfig.config?.server ?? {};
 	if (serverConfig.auto) WebServer.start(path);
 }

@@ -9,11 +9,6 @@ import InsertImageWindow from '@app/components/tools/InsertImage.vue';
 import LocalVariableWindow from '@app/components/tools/LocalVariable.vue';
 import { textCaptureEls } from '../text-capture.ts';
 
-/**
- * 文本捕获族不再用 `按 id` 查 DOM——14 个控件由五个 SFC（Font /
- * TextPosition / TextEffect / InsertImage / LocalVariable）共同登记进 `textCaptureEls`，
- * 其中 `font` 同时充当 `Selection.initialize()` 的"窗口已挂载"启动门。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
@@ -80,7 +75,6 @@ describe('文本捕获族注册表', () => {
 		expect(allIds).toHaveLength(14);
 		const missing = allIds.filter((id) => !(textCaptureEls.get(id) instanceof HTMLElement));
 		expect(missing).toEqual([]);
-		// 启动门依赖的 font 元素
 		expect(textCaptureEls.get('font')).toBeInstanceOf(HTMLElement);
 
 		for (const w of wrappers) w.unmount();

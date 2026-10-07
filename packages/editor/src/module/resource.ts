@@ -22,15 +22,8 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 
-/**
- * 资源包管理模块（不直接操作 DOM）：
- * 列表数据在 `stores/resource.ts`，视图是 `components/tools/resource/ResourceList.vue` +
- * `components/tools/Resource.vue`；本模块只负责取数、下载/解压/删除与节点信息。
- */
 export const Resources = new (class {
-	/** key -> 下载取消函数（暂停用） */
 	private _cancels = new Map<string, () => void>();
-	/** key -> 上次速度采样的字节数与时间戳 */
 	private _speedMarks = new Map<string, { loaded: number; time: number }>();
 
 	_fastGithubArray = [];
@@ -87,8 +80,6 @@ export const Resources = new (class {
 	}
 
 	async initialize() {
-		// 不再在这里查 DOM / 注册按钮点击（视图组件自己 @click 调 checkVersion/openDir），
-		// 只保留「刷新节点信息」这一件事；状态写进 store，窗口未打开时也不会有副作用。
 		void this.updateNodeInfo();
 	}
 
@@ -250,7 +241,6 @@ export const Resources = new (class {
 			this._fastGithubArray = data;
 		});
 		const json = `${this.fastGithubPrefix}Open-Yami-Community/yami-rpg-editor/refs/heads/main/pack.json`;
-		// .catch 返 { data: [] } 避 GitHub raw 偶发 502 时裸取 .data 炸
 		return await Net.get(json, {
 			headers: {
 				type: 'application/json'
@@ -357,7 +347,6 @@ export const Resources = new (class {
 	async checkVersion() {
 		let isReOpen = false;
 		setPackMeta(this.readTemplate());
-		// downloadNetMeta 失败兜底空响应
 		const netMeta = await this.downloadNetMeta();
 		const jsonParse = netMeta?.data ?? [];
 		const list = Object.keys(NoResourceObj);
@@ -420,11 +409,9 @@ export const Resources = new (class {
 			hasTemp: fs.existsSync(tempPath),
 			version: installed ? `v${PackMeta[row.key]}` : ''
 		});
-		// 判断目录下是否有zip文件，有则删除它节省空间
 		if (fs.existsSync(targetPath)) void fs.unlink(targetPath);
 	}
 
-	/** 异步取远端包大小并写回行（旧实现里在行元素上直接改 sizeText.textContent） */
 	private async fillSize(row: ResourceRow): Promise<void> {
 		const get = (key: string) => t('confirmation.' + key);
 		const sizeLabel = get('resource-size-label') || '大小';

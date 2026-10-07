@@ -38,7 +38,6 @@ import { registryElement } from '@app/utils/element-registry';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 
-// 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 // oxlint-disable-next-line no-explicit-any
 type TitleMethod = ((...args: any[]) => any) | null;
 
@@ -65,7 +64,6 @@ interface TitleTargetShape extends HTMLElement {
 	active?: boolean;
 }
 
-/** title 元素上的元素数据（`active` 原先靠原型访问器透明落到 WeakMap） */
 interface TitleTargetData {
 	active: boolean;
 }
@@ -194,7 +192,6 @@ Title.initialize = function (this: TitleShape) {
 
 	this.pointerenter!();
 
-	// 标签栏扩展方法 - 解析图标
 	this.tabBar.parseIcon = function (type: string) {
 		switch (type) {
 			case 'scene':
@@ -208,7 +205,6 @@ Title.initialize = function (this: TitleShape) {
 		}
 	};
 
-	// 标签栏扩展方法 - 解析名称
 	this.tabBar.parseName = function (meta: TitleMeta) {
 		return File.parseMetaName!(meta);
 	};
@@ -217,7 +213,6 @@ Title.initialize = function (this: TitleShape) {
 	window.addEventListener('dirchange', this.windowDirchange!);
 	window.addEventListener('localize', this.windowLocalize!);
 	on(this.tabBar, 'pointerdown', this.tabBarPointerdown!);
-	// select/closed/popup 事件经 Vue 模板转发（AppShell @select/@closed/@popup → Title.tabBar*）
 
 	YamiIpc.events.on(CHANNELS.send.beforeCloseWindow, this.windowBeforeClose!);
 	YamiIpc.events.on(CHANNELS.send.maximize, this.windowMaximize!);
@@ -372,11 +367,9 @@ Title.updateBodyClass = function (this: TitleShape) {
 	}
 };
 
-// 应用拖拽区域无法自动更新 需要通过开关元素的显示来手动刷新
 Title.updateAppRegion = function (this: TitleShape) {
 	const { target } = this;
 	show(target.element);
-	// 强制刷新样式 target.element.css().display
 	setTimeout(() => hide(target.element));
 };
 
@@ -432,7 +425,6 @@ Title.saveToConfig = function (this: TitleShape, config: EditorConfigShape) {
 };
 
 Title.loadFromConfig = function (this: TitleShape, config: EditorConfigShape) {
-	// theme 兜底：缺失或非法值时按当前 DOM 状态推断（html.dark 类 ⇒ dark，否则 light） 避免向下游派发 undefined 主题导致 webgl background[undefined] 解构炸
 	let { theme } = config;
 	if (theme !== 'light' && theme !== 'dark') {
 		theme = hasClass(document.documentElement, 'dark') ? 'dark' : 'light';
@@ -652,14 +644,6 @@ Title.tabBarSelect = function (this: TitleShape, event: YamiEvent) {
 		case 'ui':
 			Layout.manager.switch('ui');
 			getUIStore().open(context);
-			// 读元素注册表而不是 store：当时 `getUIStore().screen` 要等 `UI.initialize()` 才赋值，
-			// 而这里是「切到 ui 标签页」的路径，若 UI 窗口尚未打开过它就是 null
-			// ⇒ `Cannot read properties of null (reading 'focus')`（2026-09-18 实测）。
-			// 注册表里的 `ui-screen` 与 `UI.initialize` 读的是同一个元素
-			//（`ui-initialize.ts:23` 就是 `uiEls.get('ui-screen')`），语义完全一致。
-			//
-			// 注：store 的 `screen` 后来也改成从同一张注册表 `computed` 求值，两者现已同源；
-			// 这里保持直读注册表——少一层 store 间接，且 `?.` 的判空语义最直白。
 			uiEls.get('ui-screen')?.focus();
 			break;
 		case 'animation':

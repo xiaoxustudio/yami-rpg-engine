@@ -3,7 +3,6 @@ import { getEditorStore } from '@app/stores/editor';
 
 type EditorState = 'closed' | 'open';
 
-// 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 // oxlint-disable-next-line no-explicit-any
 type EditorMethod = ((...args: any[]) => any) | null;
 

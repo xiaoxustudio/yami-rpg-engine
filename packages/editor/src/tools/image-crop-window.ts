@@ -14,7 +14,6 @@ import { Path } from '@app/utils/config';
 import type { YamiElement } from '@app/types/element-api';
 import { clamp } from '@app/utils/math';
 
-/** 元素注册表——由对应窗口 SFC 在模板里登记 */
 export const imageClipEls = createElementRegistry();
 
 type CropTarget = {
@@ -40,9 +39,6 @@ interface CropMarquee extends HTMLElement {
 
 export const ImageClip = {} as ImageClipSlots;
 
-/**
- * 延迟绑定槽：由 `initialize()` 填充（此前读到的是 undefined）。
- */
 interface ImageClipSlots {
 	window: YamiElement;
 	screen: YamiElement;
@@ -110,7 +106,6 @@ ImageClip.loadImage = function (this: typeof ImageClip) {
 	this.window.setTitle('');
 
 	const id = this.target?.getAttribute?.('image');
-	// 动态 id（取值来自 target 的 image 属性），不是静态控件查找，故保留 $()
 	const guid = read($('#' + id));
 	const path = File.getPath!(guid);
 	if (path) {
@@ -118,10 +113,6 @@ ImageClip.loadImage = function (this: typeof ImageClip) {
 		image.src = File.route!(path);
 
 		const symbol = (this.symbol = Symbol());
-		// Promise 的元素类型写成 `HTMLImageElement | null`：图片加载失败（`image.complete` 但宽度为 0）
-		// 时**确实**会 resolve null，下面 `.then` 的回调本来也是按可空声明的。
-		// 原先把 resolve 标注成 `(img: HTMLImageElement) => void`，于是那处 `resolve(null)` 只能
-		// `null as unknown as HTMLImageElement` 圆谎。
 		void new Promise<HTMLImageElement | null>((resolve) => {
 			const intervalIndex = setInterval(() => {
 				if (image.naturalWidth !== 0) {
@@ -140,7 +131,6 @@ ImageClip.loadImage = function (this: typeof ImageClip) {
 		}).then((image) => {
 			if (this.symbol === symbol) {
 				this.symbol = null;
-				// `updateTitle` 的参数是 `(...args: unknown[])`，直接传可空值即可
 				this.updateTitle!(path, image);
 			}
 		});

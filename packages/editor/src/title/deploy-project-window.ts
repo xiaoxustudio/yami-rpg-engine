@@ -21,7 +21,6 @@ import type { DeploymentForm as DeploymentFormShape } from '@app/stores/deployme
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-// ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
 import { fileURLToPath } from 'node:url';
 import type { YamiElement } from '@app/types/element-api';
 import { clone as deepClone } from '@app/utils/object';
@@ -40,18 +39,8 @@ type DeploymentState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
 
 type DeploymentPlatform = 'windows-x64' | 'mac-universal' | 'web';
 
-// 类型与状态真源都在 `stores/deployment.ts`。
-// 用 type 别名而不是 `export type { … as … }` 重导出：后者与下面的同名 const 会撞
-// 「Cannot redeclare exported variable」。
 export type DeploymentForm = DeploymentFormShape;
 
-/**
- * 部署表单：逐字段访问器，指向 store 里那个 reactive 对象。
- *
- * 保留同名可导出对象 ⇒ 本文件 11 处 `DeploymentForm.x`、`Object.assign(DeploymentForm, …)`
- * 以及外部就地改值（`services/ipc/webserver.ts:83`、`components/tools/Deployment.vue`、
- * `components/__tests__/window-confirm-disabled.spec.ts`）全不用改。
- */
 export const DeploymentForm: DeploymentFormShape = {
 	get platform() {
 		return getDeploymentStore().form.platform;
@@ -73,10 +62,6 @@ export const DeploymentForm: DeploymentFormShape = {
 	}
 };
 
-// 确认按钮的启用态。原先由 `check()` 对 `#deployment-confirm` 调 disable/enable，
-// 而该按钮由 WindowFrame → YMFormButtons 生成（不在元素注册表里）⇒ 属性化后经
-// `WindowFrame` 的 `confirm-disabled` 透传到 `button[name="confirm"]` 的 `:disabled`。
-// 真源在 store：这里给可写 computed（形状仍是 ref ⇒ 模板自动解包、`.value = …` 也照旧）。
 export const deploymentConfirmDisabled = computed<boolean>({
 	get: () => getDeploymentStore().confirmDisabled,
 	set: (value: boolean) => {
@@ -95,11 +80,9 @@ type DeploymentFileItem = {
 	parameters?: unknown;
 };
 
-// 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 // oxlint-disable-next-line no-explicit-any
 type DeploymentMethod = ((...args: any[]) => any) | null;
 
-/** `manifest` 里**按 guid 分组**的键（值是 `Record<string, unknown>`） */
 type DeploymentGroupKey =
 	| 'ui'
 	| 'scenes'
@@ -113,7 +96,6 @@ type DeploymentGroupKey =
 	| 'skills'
 	| 'items'
 	| 'equipments';
-/** `manifest` 里**以数组**保存文件元数据的键 */
 type DeploymentListKey = 'images' | 'audio' | 'videos' | 'fonts' | 'others';
 
 interface DeploymentManifest {
@@ -189,8 +171,6 @@ Deployment.initialize = function (this: typeof Deployment) {
 		{ name: 'MacOS Universal', value: 'mac-universal' },
 		{ name: 'Web / Android / iOS', value: 'web' }
 	]);
-
-	// platform/folder/location/choose/compress/confirm 事件经 Vue 模板转发（Deployment.vue @input/@beforeinput/@click/@change/@confirm → Deployment.*）
 };
 
 Deployment.open = function (this: typeof Deployment) {
@@ -220,8 +200,6 @@ Deployment.check = function (this: typeof Deployment) {
 				'confirmation.enterFolderName'
 			);
 		}
-		// 原先这三处是 disable/enable 的成对调用，且只在状态**变化**时执行；
-		// 改成「赋一次标志」后无条件写更安全（状态机只在本函数里流转，结果等价）。
 		deploymentConfirmDisabled.value = true;
 	} else if (FS.existsSync!(Path.resolve!(location, folder))) {
 		if (this.state !== 'existing') {
@@ -468,7 +446,6 @@ Deployment.readFileList = async function (this: typeof Deployment, platform: Dep
 	const tsExtname = /\.ts$/;
 	for (let { guid, path, parameters } of Data.manifest.script) {
 		if (!fileIdMap[guid]) continue;
-		// 重新映射TS脚本到输出目录的JS脚本
 		if (tsExtname.test(path)) {
 			path = tsOutDir + path.replace(tsExtname, '.js');
 		}
@@ -569,7 +546,6 @@ Deployment.copyFilesTo = function (this: typeof Deployment, dirPath: string) {
 							]
 						) {
 							case 'image':
-								// 避免加密应用图标文件
 								if (item.encrypt === false) {
 									break;
 								}
@@ -637,7 +613,6 @@ Deployment.compressJavaScript = function (
 
 	return new Promise((resolve: (value: unknown) => void, reject: (reason?: unknown) => void) => {
 		if (!uglifyJS) {
-			// If uglify-js is not available, just copy the file
 			FSP.copyFile!(srcPath, dstPath).then(resolve, reject);
 			return;
 		}
@@ -648,13 +623,13 @@ Deployment.compressJavaScript = function (
 						mangle: {
 							toplevel: false,
 							eval: true,
-							keep_fnames: false // 不保留函数名
+							keep_fnames: false
 						},
 						compress: {
 							sequences: true,
-							properties: true, // 优化属性访问
-							booleans: true, // 优化布尔表达式
-							if_return: true, // 优化if/return
+							properties: true,
+							booleans: true,
+							if_return: true,
 							join_vars: true
 						},
 						output: {
@@ -668,7 +643,6 @@ Deployment.compressJavaScript = function (
 					}
 					return resolve(FSP.writeFile!(dstPath, result.code));
 				} catch {
-					// If minification fails, fall back to copying the original file
 					FSP.copyFile!(srcPath, dstPath).then(resolve, reject);
 				}
 			})

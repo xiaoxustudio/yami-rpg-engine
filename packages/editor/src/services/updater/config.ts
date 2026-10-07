@@ -3,15 +3,12 @@ import { append } from '@app/utils/array';
 import { Updater } from './updater.ts';
 
 function updateConfig(verNum: number) {
-	// 修改font属性为text属性
 	if (verNum < Updater.getVersionNumber!('1.0.54')) {
 		const sConfig = getDataStore().data.config!;
 		const dConfig: Record<string, unknown> = {};
 		for (const key of Object.keys(sConfig)) {
 			if (key === 'font') {
 				dConfig.text = {
-					// `font` 是 1.0.54 之前的旧字段（`GameConfigShape` 里声明为可选）：
-					// 这里正处在「它就是 font 那一轮」的分支里，缺失即旧配置损坏 —— `!` 保持原先的抛错语义
 					importedFonts: sConfig.font!.imports,
 					fontFamily: sConfig.font!.default,
 					wordWrap: 'break'
@@ -19,7 +16,6 @@ function updateConfig(verNum: number) {
 			} else {
 				switch (key) {
 					case 'collision':
-						// 键就是 'collision'，用具名字段与原动态写法 `sConfig[key]` 等价（同样在缺失时抛）
 						if (!sConfig.collision!.trigger) {
 							sConfig.collision!.trigger = {
 								collideWithActorShape: false
@@ -30,7 +26,6 @@ function updateConfig(verNum: number) {
 				dConfig[key] = sConfig[key];
 				switch (key) {
 					case 'script':
-						// 在script属性后添加localization属性
 						if (!sConfig.localization) {
 							dConfig.localization = {
 								languages: ['en', 'zh-CN'],
@@ -74,15 +69,11 @@ function updateConfig(verNum: number) {
 			getDataStore().data.manifest!.project.config
 		);
 	}
-	// 修改localization.languages属性为对象
 	if (verNum < Updater.getVersionNumber!('1.0.115')) {
 		const config = getDataStore().data.config!;
 		delete config.text.wordWrap;
 		const { languages } = config.localization!;
 		for (let i = 0; i < languages.length; i++) {
-			// 先取到局部量再判型：`typeof languages[i] === 'string'` 会把**下标表达式**
-			// 收窄成 `string`，赋值目标也跟着变窄 ⇒ 写入对象会报「不能把对象赋给 string」。
-			// 语义与原先逐字相同（字符串形态升级成 `LanguageSettingsShape`）。
 			const entry = languages[i];
 			if (typeof entry === 'string') {
 				languages[i] = {
@@ -97,7 +88,6 @@ function updateConfig(verNum: number) {
 			getDataStore().data.manifest!.project.config
 		);
 	}
-	// 修改window.display的值: 'window'->'windowed'
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const { config, events } = getDataStore().data;
 		if (config!.deployed === undefined) {

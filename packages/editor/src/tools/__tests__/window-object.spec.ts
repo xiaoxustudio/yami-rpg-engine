@@ -56,7 +56,6 @@ function makeFrame(id: string, closeResult = true): TestFrame {
 	frame.closeEventEnabled = true;
 	frame.enableAmbient = false;
 	document.body.appendChild(el);
-	// `Window.open(id)` 现在从 windowShellEls 取帧
 	registerElement(windowShellEls, id, frame);
 	createdFrames.push(frame);
 	return frame;
@@ -76,7 +75,6 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 			title.id = 'title';
 			document.body.appendChild(title);
 		}
-		// 外壳元素 #title 由 AppShell.vue 登记进 windowShellEls（Window.open 不再查 DOM）
 		titleMock.target = null;
 		registerElement(windowShellEls, 'title', document.getElementById('title'));
 	});
@@ -345,11 +343,9 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 	});
 
 	it('隐藏残留帧压在栈底：关闭可见顶层后应清空帧栈并恢复模态', () => {
-		// 模拟一个曾打开但随后被外部逻辑直接隐藏、残留于帧栈的幽灵窗口
 		const ghost = makeFrame('ghost-hidden');
 		const live = makeFrame('ghost-live');
 		Window.frames.push(ghost);
-		// 幽灵帧把模态挂在打开状态，界面已被锁死
 		document.body.style.pointerEvents = 'none';
 		live.open();
 		expect(Window.frames).toEqual([ghost, live]);
@@ -365,7 +361,6 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		const ghost = makeFrame('hidden-top');
 		const live = makeFrame('hidden-top-live');
 		Window.frames.push(ghost);
-		// 模拟残留帧把界面锁死
 		document.body.style.pointerEvents = 'none';
 
 		Window.open!('hidden-top-live');
@@ -378,7 +373,6 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		const b = makeFrame('reopen-b');
 		a.open();
 		b.open();
-		// 模拟 b 被外部直接隐藏但仍留在帧栈
 		b.classList.remove('open');
 		b.close = vi.fn(() => {
 			if (Window.frames.remove(b)) {

@@ -16,7 +16,6 @@ import { Rename } from '@app/composables/useRenameWindow';
 import type { YamiElement } from '@app/types/element-api';
 import { clamp } from '@app/utils/math';
 
-/** 元素注册表——由 Color.vue 在模板里登记 */
 export const colorEls = createElementRegistry();
 
 type ColorTarget = {
@@ -29,10 +28,6 @@ type ColorDrag = PointerEvent & {
 
 export const Color = {} as ColorSlots;
 
-// `paletteX` / `paletteY` / `pillarY` / `indexEnabled` 的真源在 `stores/color.ts`
-// 桥在 `initialize()` 之前就装好 ⇒ 后面
-// `this.indexEnabled = …`(:91)、`this.paletteX = …`(:183) 等写入全部落在 store 上。
-// 数组只有这一份（store 侧不再导出白名单，避免两份漂移）。
 import { getColorStore } from '@app/stores/color';
 
 const colorBridgeKeys = ['paletteX', 'paletteY', 'pillarY', 'indexEnabled'] as const;
@@ -47,9 +42,6 @@ for (const key of colorBridgeKeys) {
 	});
 }
 
-/**
- * 延迟绑定槽：由 `initialize()` 填充（此前读到的是 undefined）。
- */
 interface ColorSlots {
 	target: ColorTarget | null;
 	dragging: ColorDrag | null;
@@ -90,7 +82,6 @@ Color.initialize = function (this: typeof Color) {
 	if (!colorEls.get('color-hex')) return;
 	colorEls.get('color-hex')?.setMaxLength?.(8);
 
-	// radio 组用 ui-kit 的 radioProxyMap（RadioProxyElement 类型化接口），不再查 DOM
 	const colorIndex = radioProxyMap['color-index'] as RadioProxyElement | undefined;
 	if (colorIndex) colorIndex.cancelable = true;
 
@@ -131,7 +122,6 @@ Color.open = function (this: typeof Color, ...args: unknown[]) {
 
 Color.drawPalette = function (this: typeof Color) {
 	const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-palette-canvas')!;
-	// initialized now lives in element data (field removed from DATA_FIELDS)
 	if (!elementDataOf<{ initialized?: boolean }>(canvas).initialized) {
 		elementDataOf<{ initialized?: boolean }>(canvas).initialized = true;
 
@@ -270,7 +260,6 @@ Color.readRGBAFromInputs = function (this: typeof Color) {
 };
 
 Color.loadIndexedColors = function (this: typeof Color) {
-	// 组内成员改读 proxy.group
 	const radios = (radioProxyMap['color-index'] as RadioProxyElement | undefined)?.group ?? [];
 	const colors = Data.config.indexedColors;
 	const length = colors.length;
@@ -371,10 +360,6 @@ Color.indexedColorInput = function (this: typeof Color, event: Event & { value?:
 Color.indexedColorPointerdown = function (this: typeof Color, event: PointerEvent) {
 	switch (event.button) {
 		case 2: {
-			// `dataValue` 由 RadioBox 归一化：数字串（模板里的 `value="0"`）会落成 **number**
-			// （RadioBox.vue 的 onMounted 用 numberPattern + parseFloat）。这里就是拿它当数组下标，
-			// 同族的 `eslints.ts:256` / `auto-tile.ts:352` 也都按 number 声明
-			// ⇒ 原先写的 `dataValue?: string` 是错的那一侧。
 			const element = event.target as YamiElement & { dataValue: number };
 			const index = element.dataValue;
 			const indexedColor = Data.config.indexedColors[index];

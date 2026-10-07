@@ -20,9 +20,6 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { Variable } from '@app/variable/variable.ts';
 import type { YamiElement, YamiElementApi } from '@app/types/element-api';
 
-/** 元素注册表——由 Font/TextPosition/TextEffect/InsertImage/LocalVariable 五个 SFC 共同登记。
- *  同时镜像进 `composableEls`——`useTextCaptureWindow` 的焦点目标 id 是运行时传入的
- *  （`focusId`），模块侧只能按 id 从共享注册表取元素。 */
 export const textCaptureEls = createElementRegistry(composableEls);
 
 export type {
@@ -77,7 +74,6 @@ interface ColorController {
 interface VariableProxy {
 	key: string;
 	filter: string;
-	/** `open()` 里由 `this.proxy.element = Selection.target` 写入；`getFocus()` 本来就是真值判断读取 */
 	element: EventTargetElement | null;
 	read(): string;
 	input(key: string): void;
@@ -137,8 +133,6 @@ export const Selection = {
 	}
 } satisfies Partial<SelectionShape> as SelectionShape;
 
-// `inserting` / `context` 的真源在 `stores/selection.ts`。
-// 循环放在单例模块里 ⇒ 加载本模块即完成接线；数组只有这一份（store 侧不再导出白名单）。
 import { getSelectionStore } from '@app/stores/selection';
 
 const selectionBridgeKeys = ['inserting', 'context'] as const;
@@ -170,7 +164,6 @@ Selection.initialize = function (this: SelectionShape) {
 	}
 
 	for (const textbox of $('text-area-var')) {
-		// strBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 		this.addEventListeners!(elementDataOf<{ strBox?: HTMLElement }>(textbox).strBox!);
 	}
 
@@ -646,8 +639,6 @@ Selection.color = {
 		Color.open(this.proxy, true);
 	},
 	proxy: {
-		// `open()` 会先 `this.proxy.color = color`（默认 `'000000ff'`）再交给 `Color.open`，
-		// 所以这个 null 只在「从未打开过」时存在 ⇒ 类型如实写成可空即可。
 		color: null,
 		read: function (this: ColorProxy) {
 			return this.color;

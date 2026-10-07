@@ -12,7 +12,6 @@ import { GameLocal } from '@app/local/local-object.ts';
 import { IListInterface } from '@app/types/list-interface.ts';
 import { IUndoRedoHistory } from '@app/types/history.ts';
 
-/** 元素注册表——由对应窗口 SFC 在模板里登记 */
 export const objectAttributeEls = createElementRegistry();
 
 interface AttributeItemShape {
@@ -220,8 +219,6 @@ export class AttributeListInterface implements IListInterface {
 			{ name: 'False', value: false },
 			{ name: 'True', value: true }
 		]);
-
-		// key write 经 Vue 模板转发（ObjectAttribute.vue @write → AttributeListInterface.keyWrite）
 	}
 
 	static keyWrite(event: { value: string }) {

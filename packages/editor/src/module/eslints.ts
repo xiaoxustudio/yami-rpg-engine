@@ -12,12 +12,9 @@ let _origUpdateCommandElement:
 	| undefined;
 let _origResize: ((...args: unknown[]) => unknown) | undefined;
 let _origUpdateLineClasses: (() => void) | undefined;
-// 缩进线生成后（updateCommandElement 内）批量重算显示状态，避免滚动新渲染行没有样式
 const lineClassesScheduled = new WeakSet<object>();
-// command-list 内 command-item 元素运行时挂载的扩展字段
 interface CommandItemElement extends YamiElement {
 	pre: HTMLElement;
-	/** 每级缩进一个节点；`mark` 由 `applyLineClasses` 在渲染行上写回（见文件下半部）。 */
 	lines: (HTMLElement & { mark?: string })[];
 	dataIndent: number;
 	eventBinding?: boolean;
@@ -29,14 +26,6 @@ interface CommandListShape {
 	[i: number]: CommandItemElement & { fold?: boolean; mark?: string; buffer?: unknown };
 }
 
-/**
- * `applyLineClasses` 真正用到的**行面**：除 `classList` 外全部可选。
- *
- * 这样 `Array.from(querySelectorAll('.command-item'))`（`Element[]`）能**直接**赋入 ——
- * 原先复用 `CommandListShape` 时，它的数值索引签名要求完整的 `CommandItemElement`，
- * 而查询回来的只是 `Element`，于是不得不写一次 `as unknown as` 跳板。
- * 现在离屏元素（`CommandListShape`）与渲染行（`Element[]`）都结构满足本接口，两处都不再需要断言。
- */
 interface CommandLineRow {
 	classList: DOMTokenList;
 	lines?: (HTMLElement & { mark?: string })[];
@@ -46,7 +35,6 @@ interface CommandLineRow {
 	mark?: string;
 }
 
-/** 行集合：`count` 之外还有数值索引（离屏数组与 `Element[]` 都满足） */
 interface CommandLineRows {
 	count: number;
 	lineClassEnabled?: boolean;
@@ -66,7 +54,6 @@ export function updateCommandElement(
 		e.remove();
 	});
 
-	// 离屏节点统一走 utils/dom 的 renderDetached
 	const pre = renderDetached(h('span', { class: 'command-mark-major' }));
 	element.insertBefore(pre, element.firstElementChild);
 	element.pre = pre;
@@ -83,11 +70,6 @@ export function updateCommandElement(
 		element.lines[i] = line;
 	}
 
-	// `commandListPrototype` 上**没有** `elements` 成员 —— 它只在实例上由 `createCommandListApi`
-	// 赋值（ui-kit `command-api.ts` 的 `list.elements = Object.assign([], …)`），原型链上读到的是
-	// `undefined`。原先 `this.elements ?? CommandList.prototype.elements` 里的兜底分支因此恒为
-	// `undefined`（与「`this.elements` 不存在」同值），是死分支；删掉后这处只剩一次 `as`
-	// （`CommandListShape | undefined` → `CommandListShape`），运行期取值与原先逐字相同。
 	const list = (this as { elements?: CommandListShape }).elements as CommandListShape;
 	if (!element?.eventBinding) {
 		on(element, 'mouseenter', function () {
@@ -136,21 +118,14 @@ export function updateCommandElement(
 	return ret;
 }
 
-// 计算每条缩进线的显示状态：折叠块 header 短竖线、块结束标记（footer）L 形收尾、其余内容行隐藏
 function applyLineClasses(list: CommandLineRows): void {
 	if (!(list as { lineClassEnabled?: boolean }).lineClassEnabled) return;
-	// 反向遍历：每条竖线「延续 / 收尾」取决于其后是否还有同层/更深内容；
-	// 块结束标记（footer）做 L 形收尾；顶层不可折叠指令与普通内容行不显示折叠线
 	let nextIndent = Infinity;
 	for (let i = list.count - 1; i >= 0; i--) {
 		const e = list[i];
 		if (!e?.lines) continue;
-		// `dataIndent` 在行面里是可选的（渲染行是 `Element`），取不到时用 -1：
-		// 原先 `e.lines[undefined]` 与 `e.lines[-1]` 同样读到 `undefined`，
-		// `for (indent = 0; indent < undefined)` 与 `< -1` 亦同样零次 —— 取值逐字相同。
 		const d = e.dataIndent ?? -1;
 		const isReal = e.dataItem != null;
-		// 最深线（行自身的折叠线）
 		const deepest = e.lines[d];
 		if (deepest) {
 			deepest.classList.remove('line-start', 'line-end', 'line-hide');
@@ -162,12 +137,10 @@ function applyLineClasses(list: CommandLineRows): void {
 				} else if (e.mark !== 'option') {
 					deepest.classList.add('line-hide');
 				}
-				// mark === 'option'：折叠区块内部行（如 else），保留竖线（不添加任何类）
 			} else {
 				deepest.classList.add('line-hide');
 			}
 		}
-		// 父级线（i < d）：表示第 i 层块的存续线
 		for (let indent = 0; indent < d; indent++) {
 			const line = e.lines[indent];
 			if (!line) continue;
@@ -195,8 +168,6 @@ function renderedRowsOf(list: {
 }): CommandLineRows | null {
 	const rendered = list.querySelectorAll?.('.command-item');
 	if (!rendered || rendered.length === 0) return null;
-	// `Array.from(rendered)` 是 `Element[]`；`CommandLineRow` 除 `classList` 外全可选 ⇒
-	// `Element` 结构性满足它，这里**不需要**任何断言。
 	return Object.assign(Array.from(rendered), {
 		count: rendered.length,
 		lineClassEnabled: true
@@ -205,7 +176,6 @@ function renderedRowsOf(list: {
 
 function resize(this: { elements: CommandListShape } & HTMLElement, ...args: unknown[]): unknown {
 	const ret = _origResize?.apply(this, args);
-	// 折叠线要同时作用在**渲染出来的行**上（用户看到的是它们）
 	const rendered = renderedRowsOf(this);
 	if (rendered) applyLineClasses(rendered);
 	else applyLineClasses(this.elements);
@@ -225,12 +195,9 @@ function updateLineClasses(this: HTMLElement & { elements: CommandListShape }): 
 		const row = rendered[i];
 		const source = list[i];
 		if (!source?.mark) continue;
-		// `mark` 既是类名也是**属性**：`applyLineClasses` 里按 footer/header 分支时读的是属性
 		row.mark = source.mark;
 		row.classList.add(source.mark);
 	}
-	// 真正要分类的是**渲染出来的行**（只有它们有 `updateCommandElement` 生成的 `lines`）：
-	// api 侧的 `elements` 是离屏元素，换源后不再走行内渲染，`lines` 为空。
 	applyLineClasses(rendered);
 }
 
@@ -296,20 +263,10 @@ const selectionPointOf = (list: HTMLElement, index: number): { x: number; y: num
 
 export function initEslints(): void {
 	EventBus.once('editor_loaded', () => {
-		// 必须在覆盖之前捕获原方法，否则新方法首次调用时取到的 prototype.updateCommandElement 已是新方法自己，_origUpdateCommandElement.call(this, ...) 会无限递归调自己
 		ensureUpdateCommandElementOverride();
 	});
 }
 
-/**
- * `getSelectionPosition` 的**宿主形状**。
- *
- * 原先这里写的是 `prototype as HTMLElement & Record<string, any>` —— 为了给一个
- * `HTMLElement` 挂新方法而临时造一个索引签名。代价是那次断言之后**任何**成员名都不再受检。
- * 真实契约只有一个方法：消费方早已各自声明了它（`commands/schema.ts:45`、
- * `composables/useCommandState.ts:6`、`commands/command-tip.ts:61` 的
- * `getSelectionPosition?: () => { x; y } | null`），这里只是把它命名下来。
- */
 type SelectionPositionHost = HTMLElement & {
 	getSelectionPosition: (this: HTMLElement) => { x: number; y: number } | null;
 };
@@ -348,7 +305,6 @@ export function applyCommandListInstanceOverride(
 			e.classList.add(e.mark!);
 		}
 		applyLineClasses(list);
-		// 把同一套结果同步到**渲染出来的行**（模板行才是用户看到的那些）
 		const rendered = renderedRowsOf(this);
 		if (rendered) {
 			for (let i = 0; i < rendered.count; i++) {

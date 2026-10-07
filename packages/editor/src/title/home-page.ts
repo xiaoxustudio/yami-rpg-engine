@@ -57,10 +57,6 @@ interface HomeShape {
 	openProject: ((path?: string) => void) | null;
 	createProject: ((path?: string) => void) | null;
 	recentCards: HomeRecentCard[] | null;
-	/**
-	 * 与 Pinia store 双向桥接的窗口状态（`stores/home.ts` 的 `homeStateKeys` 就是它），
-	 * 类型与 store 的 `shallowRef<string>('closed')` 对齐。
-	 */
 	state: string;
 
 	initialize: ((this: typeof Home) => void) | null;
@@ -104,7 +100,6 @@ Home.initialize = function (this: typeof Home) {
 	});
 	window.addEventListener('resize', this.windowResize! as EventListener);
 	window.addEventListener('localize', this.windowLocalize! as EventListener);
-	// start/recent 事件经 Vue 模板转发（LayoutPanel @click/@pointerup → Home.startClick/recentClick/recentPointerup）
 };
 
 Home.updateCenterPosition = function (this: typeof Home) {
@@ -121,7 +116,6 @@ Home.updateCenterPosition = function (this: typeof Home) {
 };
 
 Home.windowResize = function (this: typeof Home, _event: YamiMouseEvent) {
-	// 不支持page(home):resize事件 先用window:resize代替
 	Home.updateCenterPosition!();
 };
 
@@ -178,7 +172,6 @@ Home.parseRecentProjects = function (this: typeof Home) {
 				const { window } = JSON.parse(data);
 				card.title = window.title;
 
-				// 根据配置选择使用readFileList或countFileList
 				if (statsMode === 'size') {
 					return this.readFileList!(dirname);
 				} else {
@@ -226,7 +219,6 @@ Home.parseRecentProjects = function (this: typeof Home) {
 					const count = counts[type];
 					const size = File.parseFileSize!(sizes[type]);
 
-					// 根据统计模式显示不同的信息
 					if (statsMode === 'size') {
 						texts.push(`${name}: ${size}`);
 					} else {

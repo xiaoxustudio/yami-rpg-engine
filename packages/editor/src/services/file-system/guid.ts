@@ -1,4 +1,3 @@
-// GUID含有字母或首位是零可以大幅提升查询效率 因此需要避免纯数字的GUID出现
 export class GUID {
 	static regExpForChecking = /[a-f]/;
 

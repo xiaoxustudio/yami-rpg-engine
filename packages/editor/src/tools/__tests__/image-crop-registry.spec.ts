@@ -5,11 +5,6 @@ import { mount } from '@vue/test-utils';
 import ImageClipWindow from '@app/components/tools/ImageClip.vue';
 import { ImageClip, imageClipEls } from '../image-crop-window.ts';
 
-/**
- * 裁剪窗口不再用 `按 id` 查 DOM——控件由 `ImageClip.vue` 登记进
- * `imageClipEls`；窗口自身因 `:ref` 槽位被 `ref="frame"` 占用，改在 onMounted 里
- * 用 `registerElement()` 命令式登记（否则 `ensureDomBound()` 会早退，整套绑定静默失效）。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
@@ -46,7 +41,6 @@ describe('裁剪窗口注册表', () => {
 		const wrapper = mount(ImageClipWindow, { attachTo: document.body });
 		await nextTick();
 
-		// initialize 会挂这些处理器（正常启动时由别处赋值），用例里补桩以走到绑定段
 		for (const name of [
 			'dprchange',
 			'windowClosed',

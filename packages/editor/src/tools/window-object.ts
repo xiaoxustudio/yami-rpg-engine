@@ -22,11 +22,6 @@ type WindowFrame = HTMLElement & {
 
 interface WindowShape extends DynamicShape {
 	readonly ambient: YamiElement;
-	/**
-	 * 窗口栈。`append` / `remove` 是**装在该数组实例上**的方法
-	 * （见下方 `Object.defineProperty(frames, 'append' | 'remove', …)`），
-	 * 也是窗口 store 的唯一同步点——**不是** `Array.prototype` 补丁。
-	 */
 	frames: HTMLElement[] & {
 		append(element: HTMLElement): boolean;
 		remove(element: HTMLElement): boolean;
@@ -53,12 +48,8 @@ interface WindowShape extends DynamicShape {
 
 export const Window: WindowShape = {
 	get ambient() {
-		// #window-ambient 是 index.html 里的静态外壳元素（非组件控件），故保留 $()
 		return $('#window-ambient');
 	},
-	// 第一级如实说明「空数组本来就是 `HTMLElement[]`」（这一步是真的，可验证），
-	// 第二级只主张「`append` / `remove` 会由下面的 `Object.defineProperty`（`:461` / `:487`）装上」。
-	// 之所以还要第二级：接口里这两个成员是**必需**的（20+ 个调用点直接用），而赋值点先于挂载点。
 	frames: [] as HTMLElement[] as HTMLElement[] & {
 		append(element: HTMLElement): boolean;
 		remove(element: HTMLElement): boolean;
@@ -78,8 +69,6 @@ export const Window: WindowShape = {
 	cancel: null
 };
 
-// 取消按钮的 click 绑定已下沉到 `WindowFrame.vue`（它只在自己子树里找 `[name="cancel"]`，
-// 点击时关掉本帧）。这里保留空实现仅为兼容既有调用点。
 Window.initialize = function (this: typeof Window) {
 	void this;
 };
@@ -87,7 +76,6 @@ Window.initialize = function (this: typeof Window) {
 Window.open = function (this: typeof Window, id: string) {
 	const frames = this.frames;
 	purgeStaleFrames();
-	// 窗口壳元素由 `WindowFrame.vue` 挂载时登记到 windowShellEls
 	const element = windowShellEls.get(id) as WindowFrame | undefined;
 	if (!element) {
 		console.warn('[window] open: element not found:', id);
@@ -98,7 +86,6 @@ Window.open = function (this: typeof Window, id: string) {
 	}
 
 	if (frames.includes(element) && !element.classList.contains('open')) {
-		// 目标已在栈中但失去 open 状态（隐藏残留）：退栈后重新打开，保证可见与焦点/模态一致
 		const hiddenIndex = frames.indexOf(element);
 		frames.splice(hiddenIndex, 1);
 		getWindowStore().syncStack(frames.map((f) => f.id));
@@ -114,7 +101,6 @@ Window.open = function (this: typeof Window, id: string) {
 		frames[frames.length - 1] instanceof HTMLElement &&
 		!frames[frames.length - 1].classList.contains('open')
 	) {
-		// 栈顶是失去 open 状态的隐藏帧且目标未入栈：先驱逐隐藏帧再打开，避免界面被锁死
 		const ghost = frames.pop();
 		getWindowStore().syncStack(frames.map((f) => f.id));
 		console.warn('[window] purged hidden top frame:', ghost?.id);
@@ -126,9 +112,7 @@ Window.open = function (this: typeof Window, id: string) {
 	const { activeElement } = document;
 	if (!frames.includes(element)) {
 		(element as WindowFrame).open();
-		// 解决失去焦点后还能使用键盘滚动的问题 延时获得焦点是为了解决鼠标按下瞬间焦点切换被阻止的问题
 		if (!Title.target) {
-			// 沿用原先 $() 的非空类型语义（运行时窗口可能尚未挂载）
 			Title.target = windowShellEls.get('title') as typeof Title.target;
 		}
 		if (Title.target) {
@@ -146,7 +130,6 @@ Window.open = function (this: typeof Window, id: string) {
 			});
 		}
 	} else if (element.classList.contains('open')) {
-		// 已在栈中且可见：静默 no-op 会掩盖焦点/层级异常，这里补齐置顶与焦点
 		console.warn('[window] open no-op (already stacked & open):', id);
 		const index = frames.indexOf(element);
 		if (index !== frames.length - 1) {
@@ -179,7 +162,6 @@ Window.close = function (this: typeof Window, id: string | null = null) {
 		if (element.id === 'confirmation') {
 			getConfirmationStore().clear();
 		}
-		// 窗口关闭可能触发 focus 滚动/布局变化导致页面 scrollY 偏移（顶栏滚出视口），强制归零
 		window.scrollTo(0, 0);
 		window.scrollTo(0, 0);
 		if (getWindowStore().overlapRoot === element) {
@@ -252,7 +234,6 @@ Window.saveActiveElement = function (this: typeof Window) {
 Window.restoreActiveElement = function (this: typeof Window) {
 	const store = getWindowStore();
 	if (store.activeElement) {
-		// preventScroll 防止 focus 触发浏览器滚动（body overflow hidden 下 scrollY 变化会把顶栏滚出视口）
 		(store.activeElement as HTMLElement & { focus(options?: FocusOptions): void }).focus({
 			preventScroll: true
 		});
@@ -295,7 +276,6 @@ Window.keydown = function (this: typeof Window, event: KeyboardEvent) {
 				}
 				const frames = Window.frames;
 				const frame = frames[frames.length - 1];
-				// 改为在**帧元素内**查找
 				const button = frame?.querySelector('content-frame > button[name=confirm]');
 				if (button instanceof HTMLButtonElement) {
 					event.preventDefault();
@@ -310,12 +290,10 @@ Window.keydown = function (this: typeof Window, event: KeyboardEvent) {
 				if (!(event.ctrlKey || event.metaKey)) return;
 				const frames = Window.frames;
 				const frame = frames[frames.length - 1];
-				// 同上，改为帧内查找
 				const button = frame?.querySelector('content-frame > button[name=apply]');
 				if (button instanceof HTMLButtonElement) {
 					const active = document.activeElement;
 					if (active !== document.body) {
-						// 调用blur来触发change事件
 						(active as HTMLElement | null)?.blur();
 						(active as HTMLElement | null)?.focus();
 					}
@@ -361,7 +339,6 @@ const windowBridgeKeys = ['positionMode', 'absolutePos', 'overlapRoot', 'activeE
 import { getWindowStore } from '@app/stores/window';
 import type { YamiElement } from '@app/types/element-api';
 
-/** 应用外壳元素注册表——由 AppShell.vue 登记（如 `title`） */
 export const windowShellEls = createElementRegistry();
 
 for (const key of windowBridgeKeys) {
@@ -376,8 +353,6 @@ for (const key of windowBridgeKeys) {
 
 const activateModalMode = (): void => {
 	document.body.style.pointerEvents = 'none';
-	// 模态激活必须异常安全：body 已锁死后若中途抛错（懒加载代理未就绪等），
-	// 键盘接管不会执行，ESC 将失效导致界面永久锁死。逐段兜底，保证关键步骤必达。
 	try {
 		Title.pointermove!({ target: null });
 	} catch (e: unknown) {
@@ -432,9 +407,6 @@ const frames = Window.frames;
 
 const modalActive = (): boolean => document.body.style.pointerEvents === 'none';
 
-// 帧栈一致性：清除游离在栈内但已不在文档中的幽灵帧（DOM 被重建/卸载）；
-// 当刚关闭的是一个真实可见窗口（allowHidden）时，也把下方已丢失 open 状态的
-// 隐藏帧一并驱逐，避免不可见帧残留在栈中把界面锁死。
 const purgeStaleFrames = (allowHidden = false): void => {
 	const stale: string[] = [];
 	for (let i = frames.length - 1; i >= 0; i--) {
@@ -515,17 +487,7 @@ Object.defineProperty(frames, 'remove', {
 	}
 });
 
-// 挂到 `window` 上供调试/扩展使用：`window` 是 interface（无隐式索引签名），
-// `Reflect.set` 与 `window.Window = Window` 是同一个 `[[Set]]`，且不需要断言。
 Reflect.set(window, 'Window', Window);
 
-// 给 ui-kit 注册「窗口帧数量」端口：它原先只能读上面这个全局
-// （`ui-kit/src/utils/dom.ts` 的 `getWindowFramesLength`），属于隐式反向依赖。
-// 注册后走这里的 `frames`；ui-kit 侧在未注册时仍会回退到全局读取，故两包可独立升级。
 import { setWindowFramesLengthProvider } from '@ui-kit';
 setWindowFramesLengthProvider(() => Window.frames.length + 1);
-
-// 方向说明（避免后来者又把它当「双源」去改）：
-// 本文件末尾的 `frames`（DOM 元素顺序）是**真源**，store 的 `stack`（id 数组）是它的**派生投影**，
-// 由各处 `getWindowStore().syncStack(frames.map((f) => f.id))` 同步 —— DOM 顺序本来就不可能由
-// store 拥有（元素是 DOM 节点，属 B 类「不得进 store」）。所以这里没有镜像需要消除。

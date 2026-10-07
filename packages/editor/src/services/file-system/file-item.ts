@@ -7,7 +7,6 @@ export interface FileMetaLike {
 	guid: string;
 	path: string;
 	versionId: number;
-	/** `bigint: true` 的 stat 下 `fs.Stats.mtimeMs` 是 `bigint`（与 `FileItemStats` 同一口径） */
 	mtimeMs: number | bigint | null;
 	dataMap: Record<string, unknown> | null;
 	redirect(file: FileItem): boolean;
@@ -34,40 +33,8 @@ export interface FileItemDisplayHooks {
 	maxTexSize: () => number;
 }
 
-/**
- * 文件/目录的 `fs.Stats` 形状（只声明本仓真正读取的字段）。
- *
- *
- * 这段形状原先在**三处**逐字重复（`FileItem` 字段 / `FileItem` 构造参数 / `FolderItem` 字段），
- * 且三份里**都漏了 `size`** —— 而 `size` 在运行期一直存在：它来自
- * `fs.promises.stat()`（`FSP.stat`），返回的 `Stats` 本来就带 `size`。
- *
- * 漏声明的代价不是「读不到」，而是**每个读点各自撒谎**：
- * `Number((file.stats as unknown as { size: number }).size)` 这一形态**在 5 个文件里各重复一遍**
- * （`data/metadata.ts` + 4 个 `inspector/file-*-page.ts`），把 1 处声明缺口放大成 5 处 `unknown-casts`。
- * 补上 `size` 后 5 处断言全部消失 —— 这是本仓反复验证过的「修声明，而不是修 N 个读点」。
- *
- * 同时删掉了 `FileItem.update` 里一处**收窄型**的 `as { isDirectory; ino?; mtimeMs? }`：
- * 它把 `fs.Stats` 上真实存在的字段在类型上抹掉，正是下游不得不各自断言的源头。
- *
- * ## ⚠️ 两个如实记录的限制（别把 `size: number | bigint` 读成「一定是 number」）
- *
- * 1. **本仓读到的 `size` 实际是 `bigint`**：`FolderItem.bigint = { bigint: true }`，
- *    而目录树里的 `FileItem` **全部**由 `FolderItem.readdir` 创建 —— 那里唯一的
- *    `FSP.stat(path, bigint)` 就是 `bigint: true`，于是 `.size` 运行期是 `bigint`。
- *    （`directory-tree.ts` 那两处 `FSP.stat(path)` 不带 bigint，但它们的返回值只用来调
- *    `isDirectory()`，**不构造** `FileItem`。）
- *    ⇒ 所以类型如实写成 **`number | bigint`**；6 个读点一律用 `Number(...)` 归一化，
- *    对两种形态都成立 —— 这也解释了为什么这些读点**本来**就都包着 `Number()`。
- * 2. **`FSP` 本身是 `Record<string, any>`**（见 `fs-bridge.ts` 的承重说明），
- *    所以这个类型在当前链路上**不受检**。它表达的是「本仓依赖的契约」，不是编译器保证。
- *
- * ⚠️ `size` 声明为**必需**：所依赖的 `fs.Stats` 一定带它。若将来出现非 `fs` 来源的 stats 实现，
- *    应在**构造处**补齐该字段，而不要改成可选 —— 可选会让 6 个读点重新需要断言。
- */
 export interface FileItemStats {
 	isDirectory(): boolean;
-	/** `fs.Stats.size`：`bigint: true` 的 stat 下是 `bigint`，否则是 `number`（见上方说明 1） */
 	size: number | bigint;
 	ino?: string | number | bigint;
 	mtimeMs?: number | bigint;
@@ -141,7 +108,6 @@ export class FileItem {
 
 	createMeta(guid: string | undefined) {
 		const stats = this.stats!;
-		// 如果GUID不存在或冲突则新建GUID 如果GUID重复则不要修改避免丢失
 		if (guid === undefined) {
 			do {
 				guid = GUID.generate64bit();
@@ -149,7 +115,6 @@ export class FileItem {
 			this.updateFileName(guid);
 		} else {
 			const meta = this.hooks.getMetaByGuid(guid);
-			// 如果存在元数据并且并未被使用，则重定向或删除该元数据 如果存在元数据并且已经被使用，则文件GUID冲突
 			if (meta && meta.versionId !== this.hooks.getVersionId()) {
 				if (this.hooks.redirectMeta(meta, this)) {
 					this.meta = meta;
@@ -171,7 +136,6 @@ export class FileItem {
 	updateFileName(guid: string) {
 		const basename = this.basename;
 		const extname = this.extname;
-		// 如果代码被修改可能导致批量的错误命名结果 因此进行文件名组成部分类型检查
 		if (
 			typeof guid !== 'string' ||
 			typeof basename !== 'string' ||
@@ -392,12 +356,9 @@ export class FolderItem {
 				children.push(item);
 				subfolders.push(item);
 			} else {
-				// 跳过MacOS隐藏文件
 				if (name === '.DS_Store') {
 					continue;
 				}
-				// `stat` 的返回值被挂了个 expando（`promise.path`）—— 原先是 `any` 才允许；
-				// 这里显式声明「Promise + 可选 path」，不改变任何运行期行为。
 				const promise = FSP.stat(
 					this.hooks.path(path),
 					bigint
@@ -416,9 +377,6 @@ export class FolderItem {
 				continue;
 			}
 			const path = promise.path;
-			// 不再把 `response` **收窄**成一个缺字段的匿名形状：那会把真实存在的
-			// `size`/`birthtimeMs` 等字段在类型上抹掉（`fs.Stats` 本来就有），
-			// 于是下游想读 `size` 只能各自 `as unknown as`。改成直接采用本文件声明的形状。
 			const stats = response as FileItemStats;
 			let item = map[path];
 			if (item === undefined || item.stats?.mtimeMs !== stats.mtimeMs) {

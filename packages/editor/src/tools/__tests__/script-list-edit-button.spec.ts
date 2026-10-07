@@ -3,14 +3,6 @@ import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { elementDataOf } from '@app/utils/element-data';
 
-/**
- * 脚本行的编辑按钮：命中行元素后取脚本项。
- *
- * 这段代码是 legacy 的"临时兼容 ParamList 和 TreeList"（`el.dataItem ?? el.item`）：
- * ParamList 行把 `dataItem` 作为 own 属性挂在元素上，而 TreeList 行的 `item` 走
- * **元素数据**——按元素属性读会拿到 `undefined`，随后 `item.id` 抛
- * `Cannot read properties of undefined (reading 'id')`（点脚本行的编辑按钮即爆）。
- */
 describe('ScriptList 编辑按钮（行元素数据回归）', () => {
 	let list: HTMLElement;
 	let row: HTMLElement;
@@ -52,7 +44,6 @@ describe('ScriptList 编辑按钮（行元素数据回归）', () => {
 		const getPath = stubGetPath();
 
 		new ScriptListInterface().initialize(list as never);
-		// 列表作用域里的 pointerdown → window 上的一次性 pointerup
 		fire(box, 'pointerdown');
 		fire(box, 'pointerup');
 
