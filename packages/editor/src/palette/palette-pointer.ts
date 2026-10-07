@@ -45,6 +45,7 @@ Palette.marqueePointerdown = function (
 				event.scrollTop = this.screen.scrollTop;
 				Cursor.open('cursor-grab');
 				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointercancel', this.pointercancel);
 				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
@@ -61,6 +62,7 @@ Palette.marqueePointerdown = function (
 					this.marqueePointerleave(event);
 					this.marquee.customSelect('source', x, y);
 					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointercancel', this.pointercancel);
 					window.addEventListener('pointermove', this.pointermove);
 					return;
 				}
@@ -88,6 +90,7 @@ Palette.marqueePointerdown = function (
 					this.dragging = event as PaletteDragEvent;
 					event.mode = 'select';
 					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointercancel', this.pointercancel);
 					window.addEventListener('pointermove', this.pointermove);
 					addScrollListener(this.screen, 'both', this.scaleX / 4, false, () => {
 						this.screen.beginScrolling();
@@ -117,6 +120,7 @@ Palette.marqueePointerdown = function (
 					event.startIndex = i;
 					this.requestRendering();
 					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointercancel', this.pointercancel);
 					window.addEventListener('pointermove', this.pointermove);
 					break;
 				}
@@ -132,12 +136,12 @@ Palette.marqueePointerdown = function (
 					event.startIndex = i;
 					this.requestRendering();
 					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointercancel', this.pointercancel);
 					window.addEventListener('pointermove', this.pointermove);
 					break;
 				}
 				case 'terrain':
 					this.setTerrain(x, y, -1);
-					// window.addEventListener('pointerup', this.pointerup) window.addEventListener('pointermove', this.pointermove)
 					break;
 				case 'edit': {
 					const tileset = getPaletteStore().tileset;
@@ -158,6 +162,7 @@ Palette.marqueePointerdown = function (
 								this.requestRendering();
 								marquee.customSelect('source', x, y);
 								window.addEventListener('pointerup', this.pointerup);
+								window.addEventListener('pointercancel', this.pointercancel);
 								window.addEventListener('pointermove', this.pointermove);
 							} else {
 								event.preventDefault();
@@ -180,6 +185,7 @@ Palette.marqueePointerdown = function (
 					event.scrollTop = this.screen.scrollTop;
 					Cursor.open('cursor-grab');
 					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointercancel', this.pointercancel);
 					window.addEventListener('pointermove', this.pointermove);
 					break;
 				case 'priority': {
@@ -196,6 +202,7 @@ Palette.marqueePointerdown = function (
 					event.scrollTop = this.screen.scrollTop;
 					this.requestRendering();
 					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointercancel', this.pointercancel);
 					window.addEventListener('pointermove', this.pointermove);
 					break;
 				}
@@ -213,6 +220,7 @@ Palette.marqueePointerdown = function (
 					event.scrollTop = this.screen.scrollTop;
 					this.requestRendering();
 					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointercancel', this.pointercancel);
 					window.addEventListener('pointermove', this.pointermove);
 					break;
 				}
@@ -225,6 +233,7 @@ Palette.marqueePointerdown = function (
 					event.scrollLeft = this.screen.scrollLeft;
 					event.scrollTop = this.screen.scrollTop;
 					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointercancel', this.pointercancel);
 					window.addEventListener('pointermove', this.pointermove);
 					break;
 				case 'edit':
@@ -233,6 +242,7 @@ Palette.marqueePointerdown = function (
 					event.scrollLeft = this.screen.scrollLeft;
 					event.scrollTop = this.screen.scrollTop;
 					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointercancel', this.pointercancel);
 					window.addEventListener('pointermove', this.pointermove);
 					break;
 			}
@@ -394,10 +404,18 @@ Palette.pointerup = function (this: typeof Palette, event: PointerEvent) {
 			}
 		} finally {
 			// 无论拖拽处理是否抛错都必须移除全局监听，否则残留监听会在后续任意点击中再次触发
+			window.removeEventListener('pointercancel', this.pointercancel);
 			window.removeEventListener('pointerup', this.pointerup);
 			window.removeEventListener('pointermove', this.pointermove);
 		}
 	}
+}.bind(Palette);
+
+Palette.pointercancel = function (this: typeof Palette, _event: PointerEvent) {
+	this.dragging = null;
+	window.removeEventListener('pointercancel', this.pointercancel);
+	window.removeEventListener('pointerup', this.pointerup);
+	window.removeEventListener('pointermove', this.pointermove);
 }.bind(Palette);
 
 Palette.pointermove = function (this: typeof Palette, event: PointerEvent) {

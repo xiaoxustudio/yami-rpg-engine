@@ -196,6 +196,7 @@ export interface PaletteShape {
 	marqueeDoubleclick: (event: PointerEvent) => void;
 	marqueePopup: (event: PointerEvent) => void;
 	pointerup: (event: PointerEvent) => void;
+	pointercancel: (event: PointerEvent) => void;
 	pointermove: (event: PointerEvent) => void;
 	// —— 4. 引擎镜像（本文件下方 20 行 `Palette.x = PaletteEngine.x`） ——
 	getTileCoords: (event: PointerEvent, clamp?: boolean) => { x: number; y: number };
