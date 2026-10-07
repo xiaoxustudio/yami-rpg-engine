@@ -39,7 +39,6 @@ interface GLShape {
 
 export class BatchRenderer {
 	response: Uint32Array;
-	// 以下字段在 constructor 内由词法 const 挂载（箭头函数闭包），统一用函数类型契约
 	setAttrSize: (size: number) => void;
 	getEndIndex: () => number;
 	setBlendMode: (blend: string) => void;

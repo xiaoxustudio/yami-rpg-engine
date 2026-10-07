@@ -1,7 +1,3 @@
-// 布局树数据模型与不可变变换
-// 纯数据、无 DOM：把 docking scheme 解析为带稳定 id 的树；激活/移动页签走不可变更新，
-// 源组清空时按现状 DOM 折叠语义（空 split 删除、单子组提升并继承父 end）收敛结构。
-
 export type LayoutSplitDirection = 'horizontal' | 'vertical';
 
 export interface LayoutSplitNode {
@@ -150,8 +146,6 @@ export function groupActiveTab(group: LayoutGroupNode): string | null {
 	return group.active;
 }
 
-// 移除一个叶子组；空 split 删除、单子组提升并继承父 end，与现状 navDrop 折叠语义对齐。
-// 整棵树被清空时返回 null。
 function removeGroupNode(root: LayoutTreeNode, groupId: string): LayoutTreeNode | null {
 	const walk = (node: LayoutTreeNode): { root: LayoutTreeNode | null; removed: boolean } => {
 		if (node.kind === 'group') {
@@ -224,9 +218,6 @@ export function moveLayoutTab(
 	}));
 }
 
-// 规整冗余容器。
-// Teleport 组树不渲染容器 border，源组被搬空折叠后容器可能只剩单个子组
-// （按 border 子节点计数推导的那套在这里不适用），此处按收敛语义提升单子组并继承父 end。
 export function collapseRedundantSplits(root: LayoutTreeNode): LayoutTreeNode {
 	const walk = (node: LayoutTreeNode): LayoutTreeNode => {
 		if (node.kind === 'group') return node;
@@ -237,10 +228,6 @@ export function collapseRedundantSplits(root: LayoutTreeNode): LayoutTreeNode {
 	return walk(root);
 }
 
-// 同组内页签顺序移动（数据先行）。
-// 与现状 navDrop 的 DOM 语义等价：先移除该页签，anchor=null 视为 append 到末尾，
-// 否则插到 anchor 页签（移除后）所在位置之前；anchor 不存在时回退 append。
-// 纯函数、无 DOM，供引擎层以 tabs 数据驱动 DOM 收敛（取代命令式 insertBefore 差量）。
 export function moveTabWithin(
 	tabs: readonly string[],
 	tab: string,
@@ -255,8 +242,6 @@ export function moveTabWithin(
 	out.splice(index, 0, tab);
 	return out;
 }
-
-/* ------------------------------ 结构性 drop（region 边缘） ------------------------------ */
 
 /**
  * 收敛一组兄弟跨度（`end` = 相对父容器的累计结束比例）。
@@ -281,7 +266,6 @@ export function clampEnds(ends: readonly number[], space: number): number[] {
 		const raw = ends[index];
 		const floor = index === 0 ? 0 : prev + epsilon;
 		const value = Number.isFinite(raw) ? raw : floor;
-		// 与引擎其余收敛点同口径（`roundTo(x, 6)`）：避免 0.28 + 0.01 = 0.29000000000000004 这种尾巴
 		const end = Math.round(Math.min(Math.max(value, floor), 1) * 1e6) / 1e6;
 		out.push(end);
 		prev = end;
@@ -297,7 +281,6 @@ const dropBefore = (direction: LayoutDropDirection): boolean =>
 const dropAxis = (direction: LayoutDropDirection): LayoutSplitDirection =>
 	direction === 'left' || direction === 'right' ? 'horizontal' : 'vertical';
 
-/** 新节点的 id 只在本函数内用于「找自己刚插入的那个叶子」，不落到 scheme 数据里 */
 let dropSeq = 0;
 
 /** 往 `children` 里替换/插入，返回新数组（不可变） */
@@ -339,8 +322,6 @@ const insertLeafBeside = (
 		active: null
 	});
 
-	// 落点就是当前节点（**叶子或容器**）：包一层同轴容器承接新叶子。
-	// 容器沿用旧命令式语义：容器继承目标的 end、目标 end 置 1，新叶子取容器跨度的一半。
 	if (node.id === targetNodeId) {
 		const wrapped: LayoutSplitNode = {
 			kind: 'split',
@@ -351,7 +332,6 @@ const insertLeafBeside = (
 		};
 		return { node: wrapped, leaf: leaf(0.5) };
 	}
-	// 叶子不是落点：不再往下找（叶子的子节点不属于组树）
 	if (node.kind === 'group') return null;
 
 	const index = node.children.findIndex(
@@ -381,7 +361,6 @@ const insertLeafBeside = (
 			children.splice(index + 1, 0, leaf(spanEnd));
 			return { node: { ...node, children }, leaf: leaf(spanEnd) };
 		}
-		// 轴不同：把目标包进同轴容器（容器顶替目标的位置），新叶子放进容器
 		const wrapped: LayoutSplitNode = {
 			kind: 'split',
 			id: `drop-wrap-${dropSeq}`,
@@ -469,7 +448,6 @@ export function splitGroupWithTab(
 	tab: string,
 	direction: LayoutDropDirection
 ): LayoutTreeNode | null {
-	// 先校验落点：源叶子必须真的有这个页签（否则原样返回，绝不留下一片空叶子）
 	const source = findGroup(root, fromGroupId);
 	if (source === null || source.tabs.indexOf(tab) === -1) return root;
 	const stepped = insertLeafBeside(root, targetNodeId, direction);

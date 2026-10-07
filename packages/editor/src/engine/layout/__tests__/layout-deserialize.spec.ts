@@ -14,10 +14,6 @@ import {
 	switchWorkspace
 } from './layout-spec-utils';
 
-// DOM→数据树反序列化契约
-// saveLayoutScheme 走 toLayoutScheme(deserializeGroupElement(root))，
-// 本文件独立锁定反序列化字段契约与 active 跟踪。
-
 const loadDirectory = async (): Promise<ReturnType<typeof buildLayoutFixture>> => {
 	const fixture = buildLayoutFixture();
 	registerLayout(fixture);
@@ -114,10 +110,6 @@ describe('deserialize 与布局结构同步', () => {
 	});
 });
 
-// 结构性 drop 的落点映射依赖这条不变量：`groupTreeElements(root)` 的第 k 个元素
-// ↔ 反序列化（进而 `parseLayoutScheme` 的 `layout-(k+1)`）的第 k 个节点。
-// 两边判据不同（元素表按 `split` expando 判容器；叶子宿主按 nav/manager 判定），
-// 一旦错位，drop 会把页签搬进错误的组（甚至只删不插）。
 describe('groupTreeElements 与反序列化节点先序同序', () => {
 	it('嵌套容器 + 叶子：元素表与 nodesOf 序一一对应（容器/叶子判定一致）', async () => {
 		const fixture = buildLayoutFixture();

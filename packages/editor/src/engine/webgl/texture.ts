@@ -70,7 +70,6 @@ export class Texture {
 	}
 
 	fromImage(image: HTMLImageElement | HTMLCanvasElement | null) {
-		// 上传空图像会被Chromium警告
 		if (!image) return this.resize(0, 0);
 		if (image.width === 0 && image.height === 0) {
 			return this.resize(0, 0);
@@ -118,8 +117,6 @@ export class Texture {
 		}
 		return null;
 	}
-
-	// 查看纹理 - 调试用 view() { if (!this.viewer) { this.viewer = new Image() this.viewer.style.position = 'fixed' this.viewer.style.background = 'var(--grid-background)' document.body.appendChild(this.viewer) } const {x, y, width, height} = this if (width > 0 && height > 0) { const imageData = this.getImageData(x, y, width, height) const canvas = document.createElement('canvas') canvas.width = width canvas.height = height const context = canvas.getContext('2d') context.putImageData(imageData, 0, 0) this.viewer.src = canvas.toDataURL() } else { this.viewer.src = '' } }
 
 	destroy() {
 		if (this.base) {

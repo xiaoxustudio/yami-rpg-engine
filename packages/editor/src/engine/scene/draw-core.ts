@@ -136,7 +136,6 @@ export const updateAnimations = function (this: typeof Scene, deltaTime: number)
 					}
 				} else {
 					player.visible = false;
-					// 粒子发射器的更新可以独立出来运行来减少这种计算
 					if (
 						showAnimation &&
 						player.emitters.length !== 0 &&
@@ -170,7 +169,6 @@ export const updateParticles = function (this: typeof Scene, deltaTime: number) 
 			const emitter = particle.emitter;
 			if (emitter === undefined) continue;
 			const { x, y } = this.getConvertedCoords!(particle);
-			// 如果粒子发射器在屏幕中可见，或始终发射
 			if ((x >= al && x < ar && y >= at && y < ab) || emitter.alwaysEmit) {
 				const priority = particle.priority * pFactor;
 				emitter.anchorY = (y - lt) / lh + priority;

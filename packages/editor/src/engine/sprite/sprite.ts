@@ -17,7 +17,6 @@ import { isDragKey } from '@app/utils/event-accessors';
 import { clamp, roundTo } from '@app/utils/math';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
-/** inspector 页管理器元素上的 `focusing`（当前聚焦的输入框元素）走显式元素数据 */
 interface InspectorManagerData {
 	focusing: YamiElement | null;
 }
@@ -249,7 +248,6 @@ Sprite.setZoom = (function IIFE() {
 
 Sprite.loadImage = async function (this: typeof Sprite) {
 	const symbol = (this.symbol = Symbol());
-	// sprite 在 AnimationLayer 上声明为 unknown（那份类型是给图层数据用的）；选框所在图层必然有精灵名 ⇒ 收窄一次
 	const name = Animation.timelineMarquee.layer!.sprite as string;
 	let texture = Animation.player.textures[name];
 	if (texture instanceof Promise) {
@@ -659,7 +657,6 @@ Sprite.marqueePointerdown = function (
 	this: typeof Sprite,
 	event: YamiMouseEvent & { dragKey?: boolean }
 ) {
-	// 优先触发检查器输入框的blur事件
 	if (managerData(Inspector.manager).focusing) {
 		(document.activeElement as HTMLElement | null)?.blur();
 	}

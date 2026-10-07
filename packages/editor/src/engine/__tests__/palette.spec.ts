@@ -175,8 +175,6 @@ function createMockPalette(overrides: Record<string, any> = {}) {
 		selectTiles: PaletteEngine.selectTiles,
 		...overrides
 	};
-	// screen 上的滚动缓存（rawScroll*）已经是元素数据——覆盖项里若给了这两个值，
-	// 必须写进 WeakMap，否则引擎读不到（夹具直接写在对象字面量里的话不会生效）。
 	const rawOverride = overrides.screen as
 		| { rawScrollLeft?: number; rawScrollTop?: number }
 		| undefined;

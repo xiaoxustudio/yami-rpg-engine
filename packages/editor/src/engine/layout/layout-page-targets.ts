@@ -1,8 +1,3 @@
-// 运行时页面归属收集
-// 遍历 group DOM 树，收集每个 page-frame 当前归属的 manager 元素：
-// map[value] = 包含该 page-frame 的叶子 group-manager。收敛点（loadLayoutScheme/navDrop）
-// 后由 layout.ts 同步进 store，供页面 Teleport 作 :to 输入。
-
 type GroupShape = HTMLElement & { manager?: HTMLElement };
 
 const isGroup = (el: Element): boolean => el.classList.contains('group');

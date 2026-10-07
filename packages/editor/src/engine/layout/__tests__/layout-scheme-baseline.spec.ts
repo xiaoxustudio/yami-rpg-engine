@@ -15,11 +15,6 @@ import {
 } from './layout-spec-utils';
 import '@app/utils/css';
 
-// layout 行为金标准（唯一装载路径 = Vue 组树 + 整壳 Teleport）
-// 锁定：palette 支架常驻 body 隐藏容器（不再被 clear 摧毁）、首载 group 结构、
-// 首 tab 激活、页签点击切换、跨工作区搬移（节点对象不变、parent 迁移）、
-// 二次加载会话值恢复、scheme 往返保真。
-
 const directoryScheme: SchemeNode = {
 	end: 1,
 	split: 'horizontal',

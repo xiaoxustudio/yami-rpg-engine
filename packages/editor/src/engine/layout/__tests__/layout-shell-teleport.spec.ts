@@ -6,13 +6,8 @@ import { getLayoutStore } from '@app/stores/layout';
 import { collectPageTargets } from '../layout-page-targets';
 import LayoutPalettePage from '../../../components/layout/LayoutPalettePage.vue';
 
-// Teleport 机制验证：
-// 「整壳 .page-frame Teleport」与「引擎后置 nav 排序 pass」两种机制必须在 jsdom 成立——
-// 这是 LayoutPanel 页面接入与 clear 语义的前提。
-
 const store = getLayoutStore();
 
-// 该文件内所有用例共享的“内容组件挂载计数”（Teleport 只搬家不重建的判据）
 const probeMounts = { value: 0 };
 
 const ProbeCounter = defineComponent({
@@ -26,7 +21,6 @@ const ProbeCounter = defineComponent({
 
 const mountCount = (): number => probeMounts.value;
 
-/** 模拟 LayoutPanel palette：每 value 一个 LayoutPalettePage，slot 内容为整壳节点（nav-item 或 page-frame）。 */
 const PaletteShells = defineComponent({
 	props: {
 		values: { type: Array as PropType<string[]>, required: true },
@@ -120,7 +114,6 @@ describe('M3b-2b 探针 A：整壳 .page-frame Teleport 进 group-manager', () =
 	it('整壳帧进入 manager 后可由 manager.switch 驱动；换归属只搬家不重建；DOM walk 仍可发现归属', async () => {
 		const managerA = await mountManager('manager-a');
 		const managerB = await mountManager('manager-b');
-		// 模拟组结构：group expando.manager 指向 Vue manager root（collectPageTargets 的输入形态）
 		const groupA = document.createElement('div');
 		groupA.className = 'group';
 		(groupA as HTMLElement & { manager?: HTMLElement }).manager = managerA;
@@ -140,7 +133,6 @@ describe('M3b-2b 探针 A：整壳 .page-frame Teleport 进 group-manager', () =
 		const frame = (): HTMLElement => frameOf('scene');
 
 		try {
-			// 无归属：帧留在 palette 宿主
 			expect(
 				(frame().parentNode as HTMLElement | null)?.classList.contains('palette-host')
 			).toBe(true);
@@ -149,15 +141,13 @@ describe('M3b-2b 探针 A：整壳 .page-frame Teleport 进 group-manager', () =
 			await nextTick();
 			expect(frame().parentNode).toBe(managerA);
 			expect(collectPageTargets(root)).toEqual({ scene: managerA });
-			expect(mountCount()).toBe(2); // project + scene 帧各一次
+			expect(mountCount()).toBe(2);
 
-			// manager.switch 语义：以整壳帧为子节点正常工作
 			managerA.switch('scene');
 			expect(frame().classList.contains('visible')).toBe(true);
 			expect(managerA.index).toBe('scene');
 			expect(managerA.active).toBe(frame());
 
-			// 换归属：同一节点搬去 managerB，不重建
 			store.setPageTargets({ scene: managerB });
 			await nextTick();
 			expect(frame()).toBe(frameOf('scene'));
@@ -187,8 +177,6 @@ describe('M3b-2b 探针 A：整壳 .page-frame Teleport 进 group-manager', () =
 			expect(managerA.active).toBe(frameOf('project'));
 			expect(frameOf('project').classList.contains('visible')).toBe(true);
 
-			// 离开工作区前引擎经 saveNavStates → write(nav,null) → switch(null) 清掉 visible，
-			// 帧再整壳搬到 B；B 内首激活只应剩唯一 visible
 			managerA.switch(null);
 			expect(frameOf('project').classList.contains('visible')).toBe(false);
 			expect(frameOf('scene').classList.contains('visible')).toBe(false);
@@ -218,29 +206,25 @@ describe('M3b-2b 探针 B：nav 内容 Teleport + 引擎后置排序 pass', () =
 		});
 
 		try {
-			// palette 声明序 project → scene：Teleport 后也是该序（与 leaf tabs 序可不同）
 			store.setPageTargets({ project: nav, scene: nav });
 			await nextTick();
 			expect(navItemsOf(nav)).toEqual(['project', 'scene']);
 
-			// 引擎 pass：收敛到 tabs 序 [scene, project]
 			reorderPass(nav, ['scene', 'project']);
 			expect(navItemsOf(nav)).toEqual(['scene', 'project']);
 
-			// 第三方加入（如拖入/工作区变更）→ append 在尾；再 pass 一次即可收敛
 			store.setPageTargets({ project: nav, scene: nav, inspector: nav });
 			await nextTick();
 			expect(navItemsOf(nav)).toEqual(['scene', 'project', 'inspector']);
 			reorderPass(nav, ['inspector', 'scene', 'project']);
 			expect(navItemsOf(nav)).toEqual(['inspector', 'scene', 'project']);
 
-			// 移出后其余顺序不受影响，pass 幂等
 			store.setPageTargets({ scene: nav, inspector: nav });
 			await nextTick();
 			expect(navItemsOf(nav)).toEqual(['inspector', 'scene']);
 			reorderPass(nav, ['scene', 'inspector']);
 			expect(navItemsOf(nav)).toEqual(['scene', 'inspector']);
-			expect(mountCount()).toBe(3); // 三个 nav-item 全程无重建
+			expect(mountCount()).toBe(3);
 		} finally {
 			palette.unmount();
 		}

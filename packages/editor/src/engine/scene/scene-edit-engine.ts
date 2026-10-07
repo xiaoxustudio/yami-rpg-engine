@@ -1,16 +1,8 @@
 import { Data } from '@app/data/data-object.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Palette } from '@app/palette/palette.ts';
-// 只留**类型**导入：本文件此前 `import { Scene }` 唯一的用途就是写 `this: typeof Scene`，
-// 改成本地 `SceneEditThis` 之后运行时依赖随之消失（`import type` 会被完全擦除）。
 import type { SceneShape } from '@app/scene/scene-window.ts';
 
-/**
- * 图块缓冲（`Uint32Array` + 三个排版字段 + 一个**缓存槽**）。
- *
- * （`Scene.marquee.tiles = this.createTiles!(1, 1)`，而 `createTiles` 的实现就在这里）；
- * `standard` 是自动图块展开后的副本（`scene-marquee-engine.ts:229` 写入、`:247` 读、`palette-engine.ts:728` 也写）。
- */
 export type TileBuffer = Uint32Array & {
 	width: number;
 	height: number;
@@ -19,23 +11,6 @@ export type TileBuffer = Uint32Array & {
 };
 type TerrainBuffer = Uint8Array & { width: number; height: number; rowOffset: number };
 
-/**
- * `SceneEditEngine` 各成员**实际读到**的 `this` 面。
- *
- * **口径收紧（2026-09-20，`any-hatches` 收口）**：此前是 `Record<string, any>`，
- * 于是 `scene-edit.ts` 里那 12 行**逐条镜像**（`Scene.edit = SceneEditEngine.edit;`）
- * **拼错也不报错** —— 会静默给 `Scene` 挂个 `undefined`，直到运行时点画笔才炸。
- *
- * 做法：`Pick<SceneShape, …>` **直接复用 `SceneShape` 上已有的声明**，只列出本文件真正
- * 读到的成员，不手抄签名。与同目录 `SceneSelectionThis` / 已落地的 `SceneAnimateThis`
- * 同一手法；那两处是手写窄类型，这里因为字段**基本都已在 `SceneShape` 声明**（21/22）
- * 才可以直接 Pick。
- *
- * ⚠️ 两个字段必须就地补：
- * - `layer`：`SceneShape` 上**没有**声明（一直靠 `[k: string]: any` 兜着）；
- * - `tilemap`：`SceneShape` 声明为 `unknown`（它是「场景或瓦片地图」的联合，故意没收）。
- *   本文件只把它当 `context` 读 `width` / `height`，故就地收窄到这两个成员。
- */
 type SceneEditThis = Pick<
 	SceneShape,
 	| 'brush'
@@ -60,9 +35,7 @@ type SceneEditThis = Pick<
 	| 'tilemap'
 	| 'width'
 > & {
-	/** `SceneShape` 未声明（见上） */
 	layer: string;
-	/** 就地收窄 `unknown`（见上） */
 	tilemap: { width: number; height: number } | null;
 };
 

@@ -2,8 +2,6 @@ import { Scene } from '@app/scene/scene-window.ts';
 import { GL } from '../webgl/webgl-init.ts';
 import { CODEC_GROUP_BITS, CODEC_PRINT_OFFSET } from '@app/constants/editor.ts';
 
-// undefined按位运算等价于0，因此不会产生NaN
-
 interface TilemapData {
 	changed?: boolean;
 	code?: string;
@@ -78,9 +76,6 @@ Codec.encodeScene = function (scene: SceneData) {
 
 Codec.decodeScene = function (scene: SceneData) {
 	if (scene.terrainArray === undefined) {
-		// （:74 由 `encodeTerrains` 赋值，它的返回类型就是 string）；而 `decodeTerrains` 本就收
-		// `Uint8Array | string`（:44）⇒ 原先那层 `as unknown as Uint8Array` 没有运行时作用，
-		// 唯一效果是把「值是 string」说成 `Uint8Array`。按 string 传即可，两侧都自洽。
 		const terrainArray = this.decodeTerrains!(scene.terrains!, scene.width, scene.height);
 		Object.defineProperty(scene, 'terrainArray', {
 			writable: true,
@@ -130,7 +125,6 @@ Codec.encodeTilemap = function (tilemap: TilemapData) {
 };
 
 Codec.decodeTilemap = function (tilemap: TilemapData) {
-	// 同 :81 的理由：`TilemapData.code` 是 `string`（:9），`decodeTiles` 收 `Uint8Array | string`（:40）。
 	const tiles = Codec.decodeTiles!(tilemap.code!, tilemap.width!, tilemap.height!);
 	Object.defineProperty(tilemap, 'tiles', { writable: true, value: tiles });
 	Object.defineProperty(tilemap, 'changed', { writable: true, value: false });
@@ -446,5 +440,3 @@ Codec.getTilemaps = (function IIFE() {
 		return getTilemaps(scene.objects, []) as TilemapData[];
 	};
 })();
-
-// 文件解密函数 btoa(`new Function(\` window.decrypt = buffer => { const array = new Uint8Array(buffer) for (let i = 0; i < 0x10; i++) { array[i] -= 0x80 } return buffer } \`)() new Function(\` const {decrypt} = window window.decrypt = buffer => decrypt(buffer) \`)()`)

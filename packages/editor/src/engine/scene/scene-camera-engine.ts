@@ -5,32 +5,13 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { clamp, roundTo } from '@app/utils/math';
 
-/** 共享的点对象（三个 IIFE 复用同一个 `point` 以省分配） */
 type ScenePoint = { x: number; y: number };
 
-/**
- *
- * 声明整只 `Scene` 会两处受损：测试夹具（局部 mock）被迫补齐 22 个无关字段，而实现体的
- * `this` 也得跟着声明成整只（`this` 参数的检查是逆变的，两边必须一致）。
- * 声明贴事实 —— 这个函数从头到尾只用这 6 个字段。
- */
 type RasterizeScrollThis = Pick<
 	typeof Scene,
 	'scaleX' | 'scaleY' | 'scrollLeft' | 'scrollTop' | 'scrollRight' | 'scrollBottom'
 >;
 
-/**
- *
- * 这是「**先声明空对象、再在模块顶层逐条挂载**」的遗留单例写法，8 条成员全部在本文件内、
- * 每条只挂一次，消费方只有 `scene-camera.ts`（把 8 条整体拷到 `Scene` 上）与 `scene.spec.ts`
- * ⇒ 形状可以完全从本文件逆推，没有跨文件的形状分歧。
- *
- * 断言 `{} as SceneCameraEngineShape` 是**与事实相符**的：8 条成员在模块求值结束时必然都已挂上
- * （全部是无条件赋值）。`this` 一律是 `typeof Scene` —— 这些函数本来就是挂到 `Scene` 上调用的。
- *
- * 写成**函数属性**而不是方法简写：它们是赋值上去、被逐条搬运到 `Scene` 上的函数值，
- * 同一个目录的 `scene-marquee-engine.ts` 已是同一手法）。
- */
 type SceneCameraEngineShape = {
 	getTileCoords: (this: typeof Scene, event: WheelEvent, integer?: boolean) => ScenePoint;
 	getConvertedCoords: (tile: ScenePoint) => ScenePoint;
@@ -45,8 +26,6 @@ type SceneCameraEngineShape = {
 		offsetX: number;
 		offsetY: number;
 	};
-	// `this` 只声明它**真正读**的 6 个字段（见 `RasterizeScrollThis`）：测试夹具是局部 mock，
-	// 声明整只 `Scene` 会逼着夹具补齐 22 个与本事无关的字段。
 	rasterizeScrollPosition: (
 		this: RasterizeScrollThis,
 		ox: number,
@@ -149,7 +128,6 @@ SceneCameraEngine.getGridContext = (function IIFE() {
 	};
 })();
 
-// 光栅化滚动位置 - 对齐到像素 避免瓦片地图视差模式下图块|网格|选框位置不同步的现象
 SceneCameraEngine.rasterizeScrollPosition = (function IIFE() {
 	const scroll = { left: 0, top: 0, right: 0, bottom: 0 };
 	return function (this: RasterizeScrollThis, ox: number, oy: number) {

@@ -114,7 +114,6 @@ export const drawLightTextures = function (this: typeof Scene) {
 		const directRed = ambientRed * ambientDirect;
 		const directGreen = ambientGreen * ambientDirect;
 		const directBlue = ambientBlue * ambientDirect;
-		// 避免使用直射光纹理
 		gl.bindTexture(gl.TEXTURE_2D, null);
 		gl.bindFBO(gl.directLightMap.fbo);
 		gl.clearColor(directRed, directGreen, directBlue, 0);

@@ -108,8 +108,6 @@ vi.mock('@app/engine/webgl/webgl-init.ts', () => {
 	const mockGL = {
 		width: 800,
 		height: 600,
-		// 真画布（`webgl-init.ts` 里 `document.createElement('canvas')`）：
-		// `hasRenderableCanvas` 读的就是它的 width/height。
 		canvas: { width: 800, height: 600 },
 		flip: -1,
 		maxTexSize: 4096,
@@ -370,8 +368,6 @@ import { SceneMarqueeEngine } from '@app/engine/scene/scene-marquee-engine.ts';
 import { SceneAnimateEngine } from '@app/engine/scene/scene-animate-engine.ts';
 import { elementDataOf } from '@ui-kit';
 
-// 选框元素的 `key` 是元素数据（WeakMap）——夹具里的 plain marquee 也按同一份存储读写，
-// 否则 `switch` 写进去的 key 在这里读不到（`visible` 等是组件实例属性，不走元素数据）。
 const marqueeData = (el: unknown): { key: string | null } =>
 	elementDataOf<{ key: string | null }>(el);
 
@@ -567,15 +563,10 @@ describe('SceneAnimateEngine', () => {
 		expect(mockTimer.appendUpdater).not.toHaveBeenCalled();
 	});
 
-	/**
-	 * `#scene-screen` 是 `<div class="box">`（`LayoutPanel.vue`），div 没有 `width`/`height`
-	 * 属性；本文件 mock 的 `Scene.screen` 正是这个形态（只有 clientWidth/clientHeight）。
-	 * 旧实现读 `Scene.screen.width/height` ⇒ `undefined !== 0` 恒真 ⇒ 守卫失效、0×0 照画。
-	 */
 	it('updateAnimation 在真画布 0×0 时跳过绘制', () => {
 		const drawScene = Scene.drawScene;
 		drawScene.mockClear();
-		mockTimer.updaters.stageRendering = null; // ≠ Scene.renderingFunction，走绘制分支
+		mockTimer.updaters.stageRendering = null;
 
 		GL.canvas.width = 0;
 		GL.canvas.height = 0;

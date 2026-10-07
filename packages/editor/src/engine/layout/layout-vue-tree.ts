@@ -1,9 +1,3 @@
-// Vue group 树挂载/水合层
-// 把数据树经 LayoutTreeView 渲染进宿主 page，
-// 再把布局引擎所需的 expando（end/split/tabs/nav/manager/border）与事件接线
-// 绑到 Vue 渲染出的 DOM 上——叶子 nav/manager 由 YMNavBar/YMPageManager .vue 在
-// onMounted 时把元素 API 挂到 root 元素，因此引擎侧可零改动继续按元素 API 驱动。
-
 import { h, nextTick, render, type VNode } from 'vue';
 import { elementDataOf, type PageManagerApi } from '@ui-kit';
 import LayoutTreeView from '@app/components/layout/LayoutTreeView.vue';
@@ -25,7 +19,6 @@ type LayoutGroupHost = HTMLElement & {
 	border?: HTMLElement;
 };
 
-// `end` 是元素数据（原型访问器已退役），不再是元素自身属性
 interface LayoutGroupData {
 	end: number;
 }
@@ -33,21 +26,16 @@ interface LayoutGroupData {
 const groupData = (el: unknown): LayoutGroupData => elementDataOf<LayoutGroupData>(el);
 
 export interface VueLeafHost {
-	/** 叶子 .group 元素（引擎侧 expando 载体，parentNode 即该 group） */
 	element: HTMLElement;
-	/** YMNavBar root：read/write/unselect/on 已挂载 */
 	nav: HTMLElement;
-	/** YMPageManager root：switch/on/index/active 已挂载 */
 	manager: PageManagerApi;
 	border: HTMLElement;
 	tabs: string[];
 }
 
 export interface VueGroupTreeHandle {
-	/** 根 .group 元素（宿主 page 的 firstElementChild） */
 	root: HTMLElement;
 	leaves: VueLeafHost[];
-	/** 卸载整棵 Vue 渲染树（只移除组树，不动宿主页内其它内容） */
 	unmount: () => void;
 }
 
@@ -98,9 +86,6 @@ export async function mountVueGroupTree(
 	render(vnode, host);
 	await nextTick();
 
-	// 宿主页可能残留 palette 空壳（#layout-content 盒子等，整壳 Teleport 下
-	// LayoutPaletteHost 只搬 NavBar/PageManager），因此以本次渲染产物 vnode.el 为根，
-	// 而不是假定 host.firstElementChild 就是组根。
 	const rendered = (vnode.el as HTMLElement | null) ?? null;
 	const root =
 		rendered !== null && isGroup(rendered)
@@ -110,7 +95,6 @@ export async function mountVueGroupTree(
 		throw new Error('[mountVueGroupTree] LayoutTreeView 未在宿主内渲染出 group 根');
 	}
 
-	// DOM 组元素先序序与数据树先序一一对应（每个树节点恰渲染一个 .group）。
 	const domGroups = collectDomGroups(root);
 	const treeNodes = collectTreeNodes(tree);
 	if (domGroups.length !== treeNodes.length) {
@@ -153,7 +137,6 @@ export async function mountVueGroupTree(
 		el.manager = manager;
 		el.border = border;
 
-		// 叶子宿主的事件接线（引擎 `on()` 会走 nav 元素自带的 `.on` 路由，从而启用 YMNavBar 的 write 派发）
 		if (handlers.navWrite !== undefined) on(nav, 'write', handlers.navWrite);
 		if (handlers.navPointerdown !== undefined) on(nav, 'pointerdown', handlers.navPointerdown);
 		if (handlers.navDragstart !== undefined) on(nav, 'dragstart', handlers.navDragstart);

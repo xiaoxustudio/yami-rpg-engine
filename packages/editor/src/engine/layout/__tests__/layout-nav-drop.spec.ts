@@ -15,10 +15,6 @@ import {
 } from './layout-spec-utils';
 import type { LayoutLeaf, SchemeNode } from './layout-spec-utils';
 
-// navDrop 生效动作金标准。
-// 锁定 nav 拖拽 drop 的 DOM/数据语义（同组重排/插前、跨组搬入）。
-// 几何依赖（region 落点方向/缩放）jsdom 无 clientWidth，另留真机冒烟。
-
 type DragEventLike = {
 	dataTransfer: { setDragImage: () => void };
 	preventDefault: () => void;
@@ -144,7 +140,6 @@ describe('navDrop 跨组搬入', () => {
 			target: dGroup,
 			direction: 'inside'
 		});
-		// 跨组 drop 触发重挂载（Vue 树与 DOM 重新一致），再模拟整壳落位
 		await awaitVueLayoutLoad();
 		placePaletteIntoLeaves(fixture);
 		const root = fixture.directory.firstElementChild as HTMLElement;
@@ -166,8 +161,8 @@ describe('navDrop 跨组搬入', () => {
 
 	it('源组被搬空：页签/页迁入目标组后源组折叠，根收敛为单组', async () => {
 		const { fixture, leaves } = await mountDirectory();
-		const sLeaf = leaves[1]; // [scene] 单页签组
-		const dLeaf = leaves[0]; // [project, inspector]
+		const sLeaf = leaves[1];
+		const dLeaf = leaves[0];
 		const dGroup = dLeaf.nav.parentNode as HTMLElement & { tabs?: string[] };
 
 		dragDrop(sLeaf, {
@@ -179,7 +174,6 @@ describe('navDrop 跨组搬入', () => {
 		await awaitVueLayoutLoad();
 		placePaletteIntoLeaves(fixture);
 
-		// 源组已折叠，根收敛为单组（根自身即叶子）
 		const root = fixture.directory.firstElementChild as HTMLElement;
 		expect(root.classList.contains('group')).toBe(true);
 		expect((root as HTMLElement & { split?: string }).split).toBeUndefined();
@@ -224,8 +218,8 @@ describe('组内合并（动作 → 时间轴）：每个叶子只允许一个�
 	const mergeMotionIntoTimeline = async () => {
 		const fixture = await mountAnimation();
 		let leaves = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
-		const timelineLeaf = leaves[2]; // [animation-timeline]
-		const motionLeaf = leaves[0]; // [animation-motion]
+		const timelineLeaf = leaves[2];
+		const motionLeaf = leaves[0];
 		dragDrop(motionLeaf, {
 			dragItem: 'animation-motion',
 			trigger: timelineLeaf.nav,
@@ -234,7 +228,6 @@ describe('组内合并（动作 → 时间轴）：每个叶子只允许一个�
 		});
 		await awaitVueLayoutLoad();
 		placePaletteIntoLeaves(fixture);
-		// Teleport 落位（以及两个组件的 MutationObserver）在微任务里，等一拍再断言
 		await nextTick();
 		leaves = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
 		const merged = leaves.find((leaf) =>
@@ -251,10 +244,8 @@ describe('组内合并（动作 → 时间轴）：每个叶子只允许一个�
 
 		expect(navValues(merged.nav)).toEqual(['animation-timeline', 'animation-motion']);
 		expect(managerValues(merged.manager)).toEqual(['animation-timeline', 'animation-motion']);
-		// 旧实现这里分别是 ['animation-timeline','animation-motion']（两个都亮 / 两个都可见）
 		expect(selectedValues(merged.nav)).toHaveLength(1);
 		expect(visibleValues(merged.manager)).toHaveLength(1);
-		// 「亮着的页签」与「显示的页」必须是同一个
 		expect(selectedValues(merged.nav)).toEqual(visibleValues(merged.manager));
 	});
 
@@ -263,7 +254,6 @@ describe('组内合并（动作 → 时间轴）：每个叶子只允许一个�
 		const before = selectedValues(merged.nav)[0];
 		const target = before === 'animation-motion' ? 'animation-timeline' : 'animation-motion';
 
-		// 真机点击路径：nav 的 pointerdown（旧实现里若点的是残留的「活动」页签会直接跳过写入）
 		itemOf(merged, target).dispatchEvent(
 			new MouseEvent('pointerdown', { bubbles: true, button: 0 })
 		);
@@ -277,7 +267,7 @@ describe('组内合并（动作 → 时间轴）：每个叶子只允许一个�
 describe('navDrop region 边缘（结构性分割，几何用例的 jsdom 侧）', () => {
 	it('drop 到目标组右缘：右侧新建叶子承接页签，源组保留其余页签', async () => {
 		const { fixture, leaves } = await mountDirectory();
-		const leaf = leaves[0]; // [project, inspector]
+		const leaf = leaves[0];
 		expect(navValues(leaf.nav)).toEqual(['project', 'inspector']);
 
 		const event = createDragEvent();
@@ -295,8 +285,6 @@ describe('navDrop region 边缘（结构性分割，几何用例的 jsdom 侧）
 			if (getLayoutStore().dragging) Layout.navDragend!(event as never);
 		}
 
-		// 数据先行：drop 的**同步**生效结果是 `layout` 里的新树（DOM 由随后的整树重挂载落地，
-		// 因此这一层断言读数据、不读 DOM）——目标叶子 [0, 0.5] 收缩到 0.25，新叶子承接原右边界 0.5。
 		expect(Layout.layout!.directory).toEqual({
 			end: 1,
 			split: 'horizontal',
@@ -307,8 +295,6 @@ describe('navDrop region 边缘（结构性分割，几何用例的 jsdom 侧）
 			]
 		});
 
-		// 随后完成 Vue 组树重挂载，DOM 与数据一致（一致性另由 teleport 端到端 spec 覆盖）。
-		// ⚠️ 整树重挂载会**新建**根元素：必须重新取一次，旧引用已脱离文档。
 		await awaitVueLayoutLoad();
 		await nextTick();
 		placePaletteIntoLeaves(fixture);
@@ -331,14 +317,12 @@ describe('navDrop region 边缘（结构性分割，几何用例的 jsdom 侧）
 			['inspector'],
 			['scene']
 		]);
-		// 落位分割点 = 目标跨度中点（与拖拽 hint 的「一半」语义一致）；
-		// 若两叶 end 都留在 1 会互相重叠 → 边界线不可命中、无法拖拽缩放。
 		expect(scheme.children?.map((child) => child.end)).toEqual([0.25, 0.5, 1]);
 	});
 
 	it('drop 到目标组左缘：左侧新建叶子承接页签，目标页签保留且 end 对分', async () => {
 		const { fixture, leaves } = await mountDirectory();
-		const leaf = leaves[0]; // [project, inspector]
+		const leaf = leaves[0];
 
 		const event = createDragEvent();
 		try {
@@ -355,7 +339,6 @@ describe('navDrop region 边缘（结构性分割，几何用例的 jsdom 侧）
 			if (getLayoutStore().dragging) Layout.navDragend!(event as never);
 		}
 
-		// 数据先行（同上一例）：左缘 ⇒ 新叶子取 [0, 0.25]，目标叶子保持原 end 0.5
 		expect(Layout.layout!.directory).toEqual({
 			end: 1,
 			split: 'horizontal',
@@ -369,7 +352,6 @@ describe('navDrop region 边缘（结构性分割，几何用例的 jsdom 侧）
 		await awaitVueLayoutLoad();
 		await nextTick();
 		placePaletteIntoLeaves(fixture);
-		// 整树重挂载会新建根元素：重新取一次（旧引用已脱离文档）
 		const remounted = fixture.directory.firstElementChild as HTMLElement;
 
 		const scheme = Layout.saveLayoutScheme!(remounted as never) as {
@@ -384,13 +366,6 @@ describe('navDrop region 边缘（结构性分割，几何用例的 jsdom 侧）
 	});
 });
 
-/* ---------------- region 落点是**容器**（回归：hint 出现但松手没效果） ----------------
- *
- * 复现路径（动画工作区）：把底部时间轴页签拖到别处，再拖回原来的底部位置。
- * 指针压到「底部一条」时 `regionDragover` 会把 target 指到**容器**（父容器 / root / 外层容器），
- * hint 画的正是「该容器的一半」；此前结构性 drop 只认叶子落点 → `applyStructuralDrop` 返回 null，
- * 占位框照旧出现、松手毫无效果（页签既没回去也没报错）。 */
-
 const ANIMATION_VALUES = [
 	'animation-motion',
 	'animation',
@@ -399,7 +374,6 @@ const ANIMATION_VALUES = [
 	'animation-easing'
 ] as const;
 
-/** 与 Project/default.json 的 animation 页同形：左列 = motion|animation + 底部时间轴，右列 = inspector + easing */
 const ANIMATION_SCHEME: SchemeNode = {
 	end: 1,
 	split: 'horizontal',
@@ -462,7 +436,6 @@ const regionDrop = (
 		dragItem: string;
 		target: HTMLElement;
 		direction: string;
-		/** 指针所在叶子（其 region 元素派发事件）；缺省用源叶子 */
 		regionOf?: LayoutLeaf;
 	}
 ): void => {
@@ -481,7 +454,6 @@ const regionDrop = (
 	}
 };
 
-/** 把时间轴搬进 easing 组后的树：左列塌成单个横向容器，时间轴挂在右下角 */
 const MOVED_AWAY_SCHEME = {
 	end: 1,
 	split: 'horizontal',
@@ -511,18 +483,17 @@ describe('navDrop region 容器落点（页签拖回原底部位置）', () => {
 		const leaves = await moveTimelineIntoEasing(fixture);
 		expect(Layout.layout!.directory).toEqual(MOVED_AWAY_SCHEME);
 
-		const easeLeaf = leaves[3]; // [animation-easing, animation-timeline]
+		const easeLeaf = leaves[3];
 		const animationLeaf = leaves[1];
 		const leftColumn = animationLeaf.nav.parentNode?.parentNode as HTMLElement;
 
 		regionDrop(easeLeaf, {
 			dragItem: 'animation-timeline',
-			target: leftColumn, // ← region 的容器落点（原来这里是叶子落点）
+			target: leftColumn,
 			direction: 'bottom',
 			regionOf: animationLeaf
 		});
 
-		// 数据先行：drop 同步生效 —— 左侧栏被包进竖向容器，容器上半留给 motion|animation，下半承接时间轴
 		expect(Layout.layout!.directory).toEqual({
 			end: 1,
 			split: 'horizontal',
@@ -553,7 +524,6 @@ describe('navDrop region 容器落点（页签拖回原底部位置）', () => {
 			]
 		});
 
-		// 重挂载后 DOM 与数据一致：时间轴回到左列底部，且是独立一组
 		await awaitVueLayoutLoad();
 		placePaletteIntoLeaves(fixture);
 		const next = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
@@ -582,7 +552,7 @@ describe('navDrop region 容器落点（页签拖回原底部位置）', () => {
 
 		regionDrop(easeLeaf, {
 			dragItem: 'animation-timeline',
-			target: root, // ← region 的 root 落点（y > 高度 - 8）
+			target: root,
 			direction: 'bottom',
 			regionOf: leaves[1]
 		});
@@ -634,7 +604,6 @@ describe('navDrop region 容器落点（页签拖回原底部位置）', () => {
 		await awaitVueLayoutLoad();
 		placePaletteIntoLeaves(fixture);
 		const next = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
-		// 源组（easing）还剩 animation-easing —— 既没被搬空折叠，也没丢页签
 		expect(next.map((leaf) => navValues(leaf.nav))).toEqual([
 			['animation-motion'],
 			['animation'],

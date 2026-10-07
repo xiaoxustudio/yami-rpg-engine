@@ -24,8 +24,6 @@ interface AnimationData {
 }
 
 const debouncedSceneRender = debounce(() => Scene.requestRendering!(), 60);
-// `requestRendering` 经 store 的 action 走（内部是 `UI?.requestRendering?.()`，带可选链，
-// 比直接调用更安全），且这里本来就在 debounce 回调里执行 ⇒ 不在模块加载期触发，无循环依赖风险。
 const debouncedUiRender = debounce(() => getUIStore().requestRendering(), 60);
 
 export class AnimationPlayer {
@@ -168,7 +166,6 @@ export class AnimationPlayer {
 
 	goto(index: number) {
 		index = clamp(index, 0, this.length - 1);
-		// 跳转到前面的动画帧时增加循环计数
 		if (index < this.index) {
 			this.cycleIndex++;
 		}
@@ -263,17 +260,14 @@ export class AnimationPlayer {
 	update(deltaTime: number) {
 		if (this.length !== 0) {
 			this.index += (deltaTime * this.speed) / AnimationPlayer.step;
-			// 如果动画播放结束
 			if (this.index >= this.end) {
 				if (this.motion!.loop) {
 					this.index = (this.index % this.end) + this.loopStart;
 				} else {
-					// 否则设为尾帧索引，执行结束回调
 					this.index = this.end - 1;
 				}
 			}
 		}
-		// if (this.emitterCount !== 0) { this.emitParticles(deltaTime) }
 	}
 
 	computeLength() {
@@ -650,7 +644,6 @@ export class AnimationPlayer {
 	) {
 		contexts.count = 0;
 		if (animation.layers !== null) {
-			// 如果动画已设置动作，加载所有图层上下文
 			this.#loadContext(animation, animation.layers, null, contexts);
 		}
 	}
@@ -667,9 +660,6 @@ export class AnimationPlayer {
 				context = contexts[contexts.count!] = {
 					animation: animation,
 					parent: null,
-					// 循环变量 `layer` 此刻就在作用域里 ⇒ 直接用它，
-					// 不必先写 `null as unknown as PlayerLayer` 占位（下面 688 行的
-					// `context.layer = layer` 仍要保留：它服务"复用已存在的 context"那条路径）。
 					layer,
 					frame: null,
 					matrix: new Matrix(),
@@ -850,24 +840,16 @@ interface PlayerFrame {
 }
 
 interface PlayerLayer {
-	/** 图层开关：动画时间轴的判定与渲染都会读（animation-timeline.ts / animation-window-engine.ts）。 */
 	hidden?: boolean;
 	locked?: boolean;
 	class: string;
 	children: PlayerLayer[];
 	frames: PlayerFrame[];
-	// 运行时挂上的渲染字段（读点见下方渲染循环）
 	angle: string;
 	sprite: string;
 	blend: string;
 	light: string;
 	particleId: string;
-	/**
-	 * 粒子图层相对精灵的前后顺序 —— 字段一直存在（运行期契约 `AnimationParticleOrder`，
-	 * 见 `template-arpg` 的 `yami.animation.d.ts`），读点在本文件 :348/:371 与
-	 * `animation-window-engine.ts:291/:302`。此前漏在声明外，靠 `ParticleEmitterShape` 的
-	 * 索引签名兜着 —— 摘掉那处 `any` 之后才露出来。
-	 */
 	order?: 'before' | 'after';
 }
 
@@ -879,7 +861,6 @@ interface PlayerAnimation {
 }
 
 interface PlayerContext {
-	/** 上下文版本号：animation-motion.ts 用它判断本帧要不要重放声音（运行期必带）。 */
 	version?: number;
 	animation: PlayerAnimation;
 	parent: PlayerContext | null;
@@ -894,6 +875,5 @@ interface PlayerContext {
 	update: ((frame: PlayerFrame, time?: number, next?: PlayerFrame) => void) | null;
 	reset: () => void;
 	emitter?: ParticleEmitterShape;
-	/** 染色数组：this.tint = new Int16Array(4) */
 	tint?: Int16Array;
 }

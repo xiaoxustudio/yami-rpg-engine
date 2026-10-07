@@ -9,10 +9,6 @@ import { engineEls } from '@app/engine/element-registry';
 import { registerElement } from '@app/utils/element-registry';
 import { registerLayout } from './layout-spec-utils';
 
-// palette 显式登记（LayoutPanel 拥有 palette 节点）后，
-// 引擎装载不依赖「palette 容器子节点 / 全文档扫描」的形态猜测：
-// 登记项优先，DOM 发现仅补登记缺失项。
-
 const DIRECTORY = {
 	end: 1,
 	split: 'horizontal',
@@ -41,8 +37,6 @@ const makeFixture = () => {
 	paletteManager.id = 'layout-page-manager';
 	paletteManager.className = 'page-manager';
 	directory.append(paletteNav, paletteManager);
-	// palette 容器按生产路径登记（LayoutPanel 就是这么做的）——「登记缺失项」的兜底
-	// 现在只在**容器子树内**查找，故容器本身必须在注册表里。
 	registerElement(engineEls, 'layout-nav', paletteNav);
 	registerElement(engineEls, 'layout-page-manager', paletteManager);
 
@@ -74,7 +68,6 @@ afterEach(() => {
 describe('palette 显式登记', () => {
 	it('登记优先：palette 容器被搬空后装载仍解析出全部 items', () => {
 		const fixture = makeFixture();
-		// 模拟整壳 Teleport：palette 容器内节点全部搬走（真机形态）
 		const navItems = Array.from(fixture.paletteNav.children) as HTMLElement[];
 		registerLayoutItems(navItems.map((nav) => ({ value: nav.getAttribute('value')!, nav })));
 		fixture.paletteNav.innerHTML = '';
@@ -92,7 +85,6 @@ describe('palette 显式登记', () => {
 	it('兜底合并：登记缺失的 DOM 页签仍被发现（不因登记不完整而丢项）', () => {
 		const fixture = makeFixture();
 		const navItems = Array.from(fixture.paletteNav.children) as HTMLElement[];
-		// 只登记第一项，其余留给 DOM 发现
 		registerLayoutItems([{ value: 'project', nav: navItems[0] }]);
 		Layout.manager = fixture.workspace as never;
 		Layout.layout = null;

@@ -3,16 +3,10 @@ import { elementDataOf } from '@ui-kit';
 import { Layout } from '@app/engine/layout/layout.ts';
 import '@app/utils/math';
 
-// 回归：组容器的兄弟遍历必须按「组元素」——Vue 组树在容器内留注释/文本锚点，
-// 旧实现用 previousSibling/childNodes 取兄弟会拿到锚点（end undefined）
-// → setGroupSize/computeSizes* 的比例算成 NaN → 序列化兜底成 1
-// → 兄弟叶子重叠（新叶占满、目标被压到 0）→ 边界线不可命中、无法拖拽缩放。
-
 interface SizedElement extends HTMLElement {
 	split?: string;
 }
 
-// `end` 是元素数据（原型访问器已退役），规格改走显式视图
 interface SizedElementData {
 	end: number;
 }
@@ -55,7 +49,6 @@ describe('Layout.setGroupSize / computeSizes（锚点安全）', () => {
 		);
 		document.body.append(parent);
 		const g2 = createGroup(undefined);
-		// 插到 g1 与 g3 之间（前后都是注释锚点）：previousElementSibling=g1、nextElementSibling=g3
 		parent.insertBefore(g2, g3);
 
 		Layout.setGroupSize!(g2 as never, { width: 200, height: 200 }, 'forward');
@@ -63,7 +56,6 @@ describe('Layout.setGroupSize / computeSizes（锚点安全）', () => {
 		expect(Number.isFinite(sizedData(g2).end)).toBe(true);
 		expect(Number.isFinite(sizedData(g1).end)).toBe(true);
 		expect(Number.isFinite(sizedData(g3).end)).toBe(true);
-		// 新组 = 前一组 end + 自身宽度比例；后继组存在时 size 额外 +1px（边框留白）
 		expect(sizedData(g2).end).toBeCloseTo(0.701, 5);
 	});
 
@@ -88,11 +80,6 @@ describe('Layout.setGroupSize / computeSizes（锚点安全）', () => {
 		expect(sizedData(g2).end).toBe(1);
 	});
 
-	// 回归（实机「两个面板互相压住」）：新叶子被提升成组根 / 父节点不是 split 时，
-	// 旧实现只判 `space !== 0`，而 `undefined !== 0` 成立 ⇒ 一路带着 undefined 算出
-	// `end = undefined / undefined = NaN` 写进元素数据；`updateGroups` 随后写
-	// `left/width = NaNpx`，浏览器拒收非法内联值 ⇒ 该组与它后面那个兄弟都保留旧几何
-	// （left 退回 0）⇒ 同层压盖，而且每次重算都再写一次 NaN，属永久性错位。
 	it('父节点不是 split（无分割轴）：不写 NaN 到 end，直接放弃像素收敛', () => {
 		const page = document.createElement('div') as SizedElement;
 		page.className = 'page-frame';
@@ -102,12 +89,10 @@ describe('Layout.setGroupSize / computeSizes（锚点安全）', () => {
 		page.append(g1, g2);
 		document.body.append(page);
 
-		// forward 且有后继：旧实现在这里把 NaN 写进 g1.end
 		Layout.setGroupSize!(g1 as never, { width: 200, height: 200 }, 'forward');
 		expect(Number.isFinite(sizedData(g1).end)).toBe(true);
 		expect(sizedData(g1).end).toBe(1);
 
-		// backward 且有前驱：旧实现在这里把 NaN 写进 g2.end（prev）
 		Layout.setGroupSize!(g2 as never, { width: 200, height: 200 }, 'backward');
 		expect(Number.isFinite(sizedData(g2).end)).toBe(true);
 		expect(sizedData(g2).end).toBe(1);

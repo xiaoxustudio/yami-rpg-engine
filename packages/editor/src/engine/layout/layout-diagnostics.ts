@@ -1,16 +1,3 @@
-/**
- * 布局几何自检（纯数据、无 DOM）。
- *
- * 背景：`Layout.logDiagnostics` 原先只查「页框高度超出 group-manager / 底部超出窗口」这类
- * 单元素溢出，**组与组之间的压盖是盲区** —— 实机「两个面板内容叠在一起」时它照样报
- * 「发现 0 个问题」，等于没诊断到点上（组元素是 `position: absolute` + 引擎写死的内联
- * `left/width`，一旦某个 `end` 缺失/非单调，宽度会退化成 `NaNpx` 被浏览器忽略而保留旧值，
- * 于是同层两个组互相压住）。
- *
- * 这里只做一件事：把每个组元素的「唯一路径 + 标签 + 矩形」交给 `findGroupOverlaps`，
- * 报出**非祖先关系**的相互压盖。祖先-后代天然包含（容器的矩形必然压住自己的子组），不算问题。
- */
-
 export interface LayoutRect {
 	left: number;
 	top: number;
@@ -19,14 +6,11 @@ export interface LayoutRect {
 }
 
 export interface LayoutGeometryProbe {
-	/** 唯一路径（如 `0/1/0`，按组元素在父内的下标拼接），用于判定祖先关系 */
 	path: string;
-	/** 人类可读标签（叶组给页签列表，容器给轴） */
 	label: string;
 	rect: LayoutRect;
 }
 
-/** 亚像素容差：相邻组的浏览器取整常有 ±1px 交叠，不算压盖 */
 const TOLERANCE = 1;
 
 const overlapOf = (a: LayoutRect, b: LayoutRect): boolean =>

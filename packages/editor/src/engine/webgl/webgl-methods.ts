@@ -33,7 +33,6 @@ GL.initialize = function () {
 
 	this.textureManager = this.textureManager ?? new TextureManager();
 
-	// 最大纹理尺寸(PC: 16384, Mobile: 4096，超过会出错) 如果需要兼容移动设备，使用4096x4096分辨率以内的图像文件
 	this.maxTexSize = this.getParameter(this.MAX_TEXTURE_SIZE);
 
 	this.maxTexUnits = this.getParameter(this.MAX_TEXTURE_IMAGE_UNITS);
@@ -974,7 +973,6 @@ GL.createGraphicProgram = function () {
 	this.vertexAttribPointer(a_Color, 4, this.UNSIGNED_BYTE, true, 12, 8);
 	this.bindBuffer(this.ELEMENT_ARRAY_BUFFER, this.elementBuffer);
 
-	// 注意：未启用的属性不能初始化赋值一次 因为：gl.vertexAttrib1f方法会影响到其他program
 	vao.a10 = this.createVertexArray();
 	this.bindVertexArray(vao.a10);
 	this.enableVertexAttribArray(a_Position);
@@ -1178,7 +1176,6 @@ GL.resizeLightMap = function () {
 		texture.innerHeight = height;
 		if (texture.paddingLeft === undefined) {
 			const { lightArea } = Data.config;
-			// 避免频繁调整纹理尺寸
 			texture.paddingLeft = Math.min(lightArea.expansionLeft * 4, 1024);
 			texture.paddingTop = Math.min(lightArea.expansionTop * 4, 1024);
 			texture.paddingRight = Math.min(lightArea.expansionRight * 4, 1024);
@@ -1220,7 +1217,6 @@ GL.updateLightTexSize = function () {
 	this.useProgram(program);
 };
 
-// WebGL上下文方法 - 更新采样器数量 避免chrome 69未绑定纹理警告
 GL.updateSamplerNum = function (samplerNum: number) {
 	const program = this.program;
 	const lastNum = program.samplerNum;
@@ -1733,9 +1729,7 @@ GL.createTextureFBO = function (texture: TextureFBOShape) {
 		this.renderbufferStorage(this.RENDERBUFFER, this.DEPTH_STENCIL, width, height);
 		this.bindRenderbuffer(this.RENDERBUFFER, null);
 	}) as Texture['resize'];
-	// 还需要一个方法来恢复
 	return fbo;
 };
 
-// 初始化WebGL上下文 必须立即调用（不能延到 requestAnimationFrame）：Printer.initialize 等启动期同步代码 会裸取 GL.arrays[1].uint32 / GL.textureManager.images，若 initialize 没跑过会炸 undefined。webgl-init.js 的 IIFE 已在模块求值期就绪 GL 上下文，此处立即初始化属性安全
 GL.initialize();

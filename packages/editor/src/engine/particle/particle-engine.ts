@@ -8,11 +8,6 @@ import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { randomBetween, radians } from '@app/utils/math';
 import { empty as fnEmpty } from '@app/utils/function';
 
-/**
- * 粒子引擎的**类注册表**：三个类在本文件末尾（各自的 class 声明之后）装配，
- * 唯一消费方 `particle-initialize.ts` 在初始化期取用 —— 那时三者都已就位。
- * 成员因此声明为**可选**（装配前确实缺席），读点用 `!` 把这个不变式写明。
- */
 interface ParticleEngineShape {
 	Emitter?: typeof ParticleEmitter;
 	Layer?: typeof ParticleLayer;
@@ -28,32 +23,6 @@ interface ParticleEmitterData {
 	[k: string]: unknown;
 }
 
-/**
- * 粒子图层数据（`layer.data`）。
- *
- * `interval` / `delay` / `area`，而 `ParticleElementLayerData`（原 `:95`）写元素读到的
- * `lifetime` / `anchor` / `rotation` / … —— 于是 `new ParticleElement(this)` 处
- * `this` 不满足 `ParticleElementLayer`（`TS2345`：`ParticleLayerData` 缺 `lifetime`、
- * `lifetimeDev`、`fadeout`、`anchor` 等 9 个成员），只能写 `this as unknown as ParticleElementLayer`
- * 从半边跳到另半边（与第 118/144 轮同一病症）。合并成一份之后两处共用它，断言消失。
- *
- * 字段类型取原 `ParticleElementLayerData` 的写法：随机参数字段是 `[standard, deviation]` 元组，
- * 纯值字段是 `number`。
- *
- * **导出**：窗口侧 `particle-window.ts` 的 `ParticleLayerDataShape` 现在直接引用它
- * （此前那两份同名声明各自漂移 —— 合并之后由本文件一处定义）。
- */
-/**
- * 「当前舞台」（`ParticleElement.stage` / `Particle.Element.stage`）的面。
- *
- * `ParticleComponentShape.Element.stage` 此前是 `Record<string, any>`（`any-hatches` 的一个站点），
- * 现在两边引用同一个类型，写入点也就有了检查。
- *
- * ⚠️ 这里**不收 `requestRendering`**：`ParticleElement.stage` 的读点只有 `matrix` 与四处 `scroll*`
- * （`particle-engine.ts:629/1225-1228/1271-1274`），全仓没有一处读 `stage.requestRendering`
- * ⇒ 舞台面只描述**真正被读的面**（原先内联声明里那个 `requestRendering` 是多余的，
- * 而它正是三个写入点里两个报「缺成员」的原因）。
- */
 export interface ParticleStageShape {
 	matrix: Matrix;
 	scrollLeft: number;
@@ -63,9 +32,7 @@ export interface ParticleStageShape {
 }
 
 export interface ParticleLayerData {
-	/** 图层名（`particle-motion.ts` 的信息栏、图层列表读） */
 	name?: string;
-	/** 隐藏标记（`particle-motion.ts` 的绘制循环 `if (layer.data.hidden) continue`） */
 	hidden?: boolean;
 	interval: number;
 	delay: number;
@@ -106,7 +73,6 @@ export interface ParticleLayerData {
 		speed: [number, number];
 		accelAngle: [number, number];
 		accel: [number, number];
-		// 兼容旧调用路径
 		speedX?: number;
 		speedY?: number;
 		accelX?: number;
@@ -123,26 +89,11 @@ export interface ParticleLayerData {
 		vframes: number;
 		interval: number;
 	};
-	//    摘掉那行索引签名后 tsc 只报了 12 条 TS2339、全在本文件，正好给出候选清单 ——
-	/** 排序模式：`draw` 里 `switch (data.sort)` 的三个 case（值来自工程数据，故不收成联合类型） */
 	sort: string;
-	/** 混合模式：直接赋给 `gl.blend` */
 	blend: string;
-	/** 光照模式键：`ParticleLayer.lightSamplingModes` 的下标 */
 	light: string;
-	/** 贴图 guid：`loadTexture` 里与 `texture.base.guid` 比对 */
 	image: string;
-	/** 元素数量：`updateCount` 里 `0` 表示不限（改成 `1e16`） */
 	count: number;
-	/**
-	 * 颜色分组：`mode` 决定用哪一组（`fixed`→`rgba`、`random`→`min`/`max`、
-	 * `easing`→`easingId`+`start*`/`end*`、`texture`→`tint`）。
-	 *
-	 * ⚠️ 四组在运行期**互斥存在**（inspector 切模式时会删掉不用的组，见
-	 * `inspector/particle-layer-page.ts:285`），但引擎只在**对应 mode 的分支**里读对应那组
-	 * （`updateMethods` 按 mode 装载 `setStartColor*`）⇒ 这里按「全组可读」声明，
-	 * 以免给十来个字段各加一次非空断言；这条取舍是明写的，不是默认。
-	 */
 	color: {
 		mode: string;
 		tint: number[];
@@ -176,8 +127,6 @@ interface ParticleElementRef {
 	scaleFactor: number;
 	spriteX: number;
 	spriteY: number;
-	// 渲染读点（`animation-motion.ts` / `particle-motion.ts` 的 wireframe 绘制）——
-	// 此前只在窗口侧那份 `ParticleElementShape` 里写着，两份声明各自漂移；本轮合并到这一处。
 	x: number;
 	y: number;
 	anchorX: number;
@@ -211,15 +160,12 @@ export interface ParticleLayerShape {
 	stocks: number;
 	elements: ParticleElementRef[] & { count: number };
 	reserves: ParticleElementRef[] & { count: number };
-	/** 引擎装配时把 `ParticleEngine.*` 的实现挂到图层对象上（读点见 render/update 循环） */
 	emitParticles: (deltaTime: number) => void;
 	updateParticles: (deltaTime: number) => number;
-	/** `opacity` 可省：类的实现就是 `draw(opacity = 1)`（编辑器预览走 `layer.draw()`） */
 	draw: (opacity?: number) => void;
 	updateEasing: () => void;
 	clear: () => void;
 	destroy: () => void;
-	/** —— inspector 改参数后逐个调用（`particle-layer-page.ts`；实现都在 `ParticleLayer` 上）—— */
 	updateElementMethods: () => void;
 	updateCount: () => void;
 	loadTexture: () => void;
@@ -238,18 +184,10 @@ interface ParticleEmitterRef {
 export interface ParticleElementLayer {
 	emitter: ParticleEmitterRef;
 	data: ParticleLayerData;
-	/** 渲染尺寸：由精灵帧尺寸算出（读点见 render 循环，赋点见 unitWidth/unitHeight） */
 	unitWidth: number;
 	unitHeight: number;
 	textureWidth: number;
 	textureHeight: number;
-	/**
-	 * 缓动器：只用到 `ease(0..1)`（`Easing` 是值不是类型，故按结构写）。
-	 *
-	 * 而元素侧 `updateColor` 也只在同一模式下被装成 `updateColorEasing`（`:1057`）
-	 * ⇒ 读点（`:1281`）带 `!` 表达这条不变式；这样「类可空、元素要求非空」不再互斥，
-	 * `new ParticleElement(this)` 的断言得以删除，且不变式一旦被破坏仍是**当场抛错**（与改动前一致）。
-	 */
 	easing: { ease(t: number): number } | null;
 }
 
@@ -267,8 +205,6 @@ class ParticleEmitter {
 	matrix: Matrix | null;
 	layers: ParticleLayerShape[];
 
-	// —— 编辑器侧在这些实例上挂的运行期状态（`declare` 不产生运行期代码；装配点见各条注释）——
-	/** 包围盒快照：`scene-context.ts` 用 `calculateOuterRect()` 的结果写，`animation-motion.ts` 逐个回写 */
 	declare bounding: OuterRect;
 	declare hasArea: boolean;
 	declare outerLeft: number;
@@ -277,12 +213,9 @@ class ParticleEmitter {
 	declare outerBottom: number;
 	declare outerWidth: number;
 	declare outerHeight: number;
-	/** 编辑器选中态（粒子列表 / 指针用它高亮当前发射器） */
 	declare active: boolean;
 	declare selected: boolean;
-	/** 元素清空后由调用方置位（`animation-player.ts`） */
 	declare disabled: boolean;
-	/** 来源图层（动画播放器装配时挂上；唯一读点 `emitter.layer.order`） */
 	declare layer: { order?: 'before' | 'after' };
 
 	constructor(data: ParticleEmitterData) {
@@ -292,7 +225,6 @@ class ParticleEmitter {
 		const dLayers = Array.from<ParticleLayerShape>({ length: sLength });
 		for (let i = 0; i < sLength; i++) {
 			const sLayer = sLayers[i];
-			// 如果有一个粒子层的发射区域是屏幕边缘，设为总是发射和绘制
 			if (sLayer.area.type === 'edge') {
 				alwaysEmit = true;
 			}
@@ -341,7 +273,6 @@ class ParticleEmitter {
 					continue;
 			}
 		}
-		// 最小外部矩形宽度32
 		if (L > R) {
 			L = R = 0;
 		} else if (R - L < 32) {
@@ -349,7 +280,6 @@ class ParticleEmitter {
 			L += -padding >> 1;
 			R += +padding >> 1;
 		}
-		// 最小外部矩形高度32
 		if (T > B) {
 			T = B = 0;
 		} else if (B - T < 32) {
@@ -468,11 +398,6 @@ class ParticleLayer {
 	unitWidth: number;
 	unitHeight: number;
 	elapsed: number;
-	/**
-	 * `Easing.get(color.easingId)`（`transition-window.ts:121` 的 `EasingMapInstance`，
-	 * 有 `ease(time): number`）；`:1268` 的读点也确实是 `easing.ease(...)`。
-	 * 声明成 `Float32Array` 之所以一直没报错，是因为赋值右侧是 `any` 面 —— 又一次
-	 */
 	easing!: { ease(t: number): number } | null;
 	capacity: number;
 	count: number;
@@ -492,7 +417,6 @@ class ParticleLayer {
 		this.capacity = 0;
 		this.count = 0;
 		this.stocks = 0;
-		// 断言之后紧跟着把断言里声称的字段写上去 ⇒ `Object.assign` 一次写完，零断言（第 82/84 轮规则）。
 		this.elements = Object.assign([], { count: 0 });
 		this.reserves = Object.assign([], { count: 0 });
 
@@ -511,7 +435,6 @@ class ParticleLayer {
 		const dInterval = data.interval;
 		let count = Math.floor(this.elapsed / dInterval);
 		if (count > 0) {
-			// 0 * Infinity returns NaN
 			this.elapsed -= dInterval * count || 0;
 			const elements = this.elements;
 			const maximum = ParticleLayer.maximum;
@@ -526,7 +449,6 @@ class ParticleLayer {
 					element.initialize();
 					count--;
 					stocks--;
-					// 由于Infinity * 0返回NaN，这里分开判断
 					if (count === 0 || stocks === 0) {
 						break spawn;
 					}
@@ -570,7 +492,6 @@ class ParticleLayer {
 			}
 		}
 		if (offset !== 0) {
-			// 为了通知动画舞台继续更新画面 这里不对返回的粒子数量做更新(零粒子数停止播放)
 			elements.count = eCount - offset;
 			reserves.count = rCount + offset;
 		}
@@ -779,7 +700,6 @@ class ParticleLayer {
 
 	static layers = new Uint32Array(0x40000);
 
-	// 静态 - 零值数组(用完后要确保所有值归零)
 	static zeros = new Uint32Array(0x40000);
 
 	static get sharedUint32A() {
@@ -850,13 +770,11 @@ class ParticleElement {
 	spriteX!: number;
 	spriteY!: number;
 	opacity!: number;
-	// color 是 Uint32Array(5)，但运行时额外挂载 .start/.end/.changed 字段（setStartColor/updateColor 用） 注：.start/.end 运行时挂的是 Uint8Array(4)（非 number[]）
 	color!: Uint32Array & {
 		start?: Uint8Array | number[];
 		end?: Uint8Array | number[];
 		changed?: boolean;
 	};
-	// 运行时挂载的方法（updateMethods 内赋值）
 	setStartPosition!: ((movementAngle: number) => void) | null;
 	postProcessing!: (() => void) | null;
 	setStartColor!: (() => void) | null;
@@ -1115,7 +1033,6 @@ class ParticleElement {
 
 	updateMethods() {
 		const { area, color } = this.data;
-		// 给不同的发射区域设置特有的方法
 		switch (area.type) {
 			case 'point':
 				// oxlint-disable-next-line unbound-method
@@ -1142,7 +1059,6 @@ class ParticleElement {
 				this.postProcessing = this.postProcessingEdge;
 				break;
 		}
-		// 给不同的颜色模式设置特有的方法
 		switch (color.mode) {
 			case 'fixed':
 				// oxlint-disable-next-line unbound-method
@@ -1263,7 +1179,6 @@ class ParticleElement {
 		}
 	}
 
-	// 后期处理 - 通用
 	postProcessingCommon() {
 		if (this.elapsed >= this.lifetime) {
 			return false;
@@ -1277,7 +1192,6 @@ class ParticleElement {
 		}
 	}
 
-	// 后期处理 - 屏幕边缘
 	postProcessingEdge() {
 		const stage = ParticleElement.stage;
 		const vertices = this.computeBoundingRectangle!();
@@ -1385,9 +1299,6 @@ class ParticleElement {
 		const start = color.start!;
 		const end = color.end!;
 		const clamp = ParticleElement.sharedClampedArray;
-		// 不变式：本方法只在 `color.mode === 'easing'` 时被装成 `updateColor`（`:1057`），
-		// 而该模式下图层的 `easing` 必然已赋值（`:632`）—— 故此处 `!` 不是「圆过去」，
-		// 而是把「谁保证了它非空」写在了读点上；若不变式被破坏，行为与改动前完全相同（抛错）。
 		const time = Math.min(easing!.ease(this.elapsed / this.lifetime), 1);
 		color.changed = true;
 		clamp[0] = start[0] * (1 - time) + end[0] * time;

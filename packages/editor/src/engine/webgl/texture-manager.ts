@@ -64,11 +64,9 @@ export class TextureManager {
 		const i = texture.index as number;
 		const { gl, map } = this;
 		gl.deleteTexture(texture.glTexture);
-		// 通过ID删除图像映射表中的纹理
 		if (texture.refCount === 0) {
 			delete this.images[texture.guid as string];
 		}
-		// 通过索引删除映射表中的纹理
 		if (map[i] === texture) {
 			delete map[i];
 			this.count--;

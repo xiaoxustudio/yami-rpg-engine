@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { findGroupOverlaps, type LayoutGeometryProbe } from '../layout-diagnostics';
 
-// 组几何压盖自检（`__yamiLayoutDebug()` 的判定核心）。
-// 锁定三件事：同层压盖要报、祖先-后代（包含关系）不报、退化/相邻矩形不报。
-
 const probe = (
 	path: string,
 	label: string,

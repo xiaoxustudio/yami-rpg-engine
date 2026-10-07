@@ -52,24 +52,20 @@ export class BaseTexture {
 		);
 	}
 
-	// 基础纹理方法 - 设置加载回调 @param {string} type 回调事件类型 @param {function} callback 回调函数
 	on(type: string, callback: (base: BaseTexture) => void) {
 		let cache = this[BaseTexture.CALLBACK];
 		if (cache === type) {
 			callback(this);
 			return;
 		}
-		// 首次调用，创建加载回调缓存
 		if (cache === undefined) {
 			cache = this[BaseTexture.CALLBACK] = { load: [], error: [] };
 		}
-		// 如果未加载完成，添加回调到缓存中
 		if (typeof cache === 'object') {
 			cache[type].push(callback);
 		}
 	}
 
-	// 基础纹理方法 - 执行加载回调 @param {string} type 回调事件类型
 	reply(type: string) {
 		const cache = this[BaseTexture.CALLBACK];
 		if (typeof cache === 'object') {
@@ -77,7 +73,6 @@ export class BaseTexture {
 				callback(this);
 			}
 		}
-		// 将缓存替换为类型名称
 		this[BaseTexture.CALLBACK] = type;
 	}
 

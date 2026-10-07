@@ -3,21 +3,6 @@ import { Vector } from '@app/engine/webgl/vector2.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { dist, radians } from '@app/utils/math';
 
-/**
- * `SceneSelectionEngine` 的成员契约（`any-hatches` 收口，2026-09-20）。
- *
- * 此前这里是 `Record<string, any>`，于是唯一的消费方 `scene-selection.ts` 里那 10 行
- * **逐条镜像**（`Scene.selectObject = SceneSelectionEngine.selectObject;`）**拼错也不报错** ——
- * 会静默把 `undefined` 挂到 `Scene` 上，直到运行时点选才炸。
- *
- * 接收者用本文件既有的 `SceneSelectionThis`（它已经是按实际读点枚举的精确形状），
- * 所以这里**不需要**把 `SceneShape` 拉进来 —— 与 `SceneAnimateEngine` 那处
- * （成员写 `this: typeof Scene`）情形不同。
- *
- * `Partial<>` 是**如实描述**：对象在下面按域逐个挂载，`{}` 时确实一个成员都没有。
- * 因此读侧（`scene-selection.ts` 的镜像、spec 的 `.call`）需要 `!` —— 那是真实情况，
- * 不用 `{} as Shape` 把它盖掉。
- */
 type SceneSelectionEngineShape = {
 	selectObject: (this: SceneSelectionThis, x: number, y: number) => SceneObjectShape | null;
 	selectRegion: (this: SceneSelectionThis, x: number, y: number) => SceneObjectShape | null;
@@ -75,15 +60,6 @@ type SceneSelectionEngineShape = {
 
 export const SceneSelectionEngine: Partial<SceneSelectionEngineShape> = {};
 
-/**
- * 场景选择引擎读到的对象形状（角色 / 动画 / 区域 / 光照 / 粒子 / 视差 / 瓦片地图共用）。
- *
- * 成员按**实际读点**枚举，不用 `[k: string]: any` 兜底 —— 否则读错成员名也能编译。
- *
- * 约定与读侧一致：面板几何量（x/y/width/height/scale/…）在读取处**从不判空**
- * （缺失时得到 NaN，不是崩溃），因此声明为必需；只有真正可缺的子对象才标 `?`——
- * `data`（`object.data?.size ?? 1`）与 `emitter`（`emitter?.bounding`）读侧本来就写了 `?.`。
- */
 type SceneObjectShape = {
 	hidden?: boolean;
 	locked?: boolean;
@@ -101,17 +77,11 @@ type SceneObjectShape = {
 	offsetY: number;
 	anchorX: number;
 	anchorY: number;
-	/** 图层类别（`parallax` / `tilemap` …），`selectSortedLayer` 按它分派 */
 	class: string;
-	/** 光照类型（`point` / `area`），`selectLight` 按它分派 */
 	type: string;
-	/** 点光源半径 */
 	range: number;
-	/** 视差图层上的播放器（取贴图尺寸用） */
 	player: { texture: { width: number; height: number } | null };
-	/** 区域光的实例（锚点偏移 + 角度） */
 	instance: { anchorOffsetX: number; anchorOffsetY: number; angle: number };
-	/** 粒子发射器（只有粒子有；读侧已 `?.`） */
 	emitter?: {
 		bounding: {
 			hasArea: boolean;
@@ -123,7 +93,6 @@ type SceneObjectShape = {
 			height: number;
 		};
 	};
-	/** 角色 / 动画的碰撞尺寸（读侧 `?.size ?? 1`） */
 	data?: { size?: number };
 };
 type SceneSelectionThis = {
@@ -339,7 +308,6 @@ SceneSelectionEngine.selectParticleEmitter = function (
 				}
 			}
 		} else {
-			// 否则默认设置一个图块的区域
 			const rl = particle.x - 0.5;
 			const rt = particle.y - 0.5;
 			const rr = particle.x + 0.5;

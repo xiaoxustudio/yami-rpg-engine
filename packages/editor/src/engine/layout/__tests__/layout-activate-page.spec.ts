@@ -9,9 +9,6 @@ import {
 	switchWorkspace
 } from './layout-spec-utils';
 
-// 打开窗口时把其页面切到前台：同叶子若激活了其它页签，目标页是 display:none
-// → 画布/内容尺寸为 0（真机表现为场景预览空白 + WebGL 零尺寸帧缓冲刷屏）。
-
 const SCHEME = {
 	end: 1,
 	split: 'horizontal',
@@ -35,7 +32,6 @@ describe('Layout.activateLayoutPage（窗口页面置前）', () => {
 		const leaves = collectLeaves(fixture.directory.firstElementChild as HTMLElement);
 		const leaf = leaves[1];
 		const scenePage = fixture.items.scene.page;
-		// 初始激活的是叶子首页签 inspector
 		expect(leaf.manager.index).toBe('inspector');
 		expect(scenePage.isConnected).toBe(true);
 

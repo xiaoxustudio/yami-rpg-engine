@@ -1,8 +1,3 @@
-// DOM group 树 → 数据树反序列化
-// 从宿主 page-frame 内的 group DOM 读回 layout-scheme 数据模型：
-// kind/split 以 group 元素 expando `split` 为准；叶子 tabs 读 expando `tabs`，
-// active 读 `manager.index`（无/undefined 归一为 null）；id 按先序分配。
-
 import { elementDataOf } from '@ui-kit';
 import type { LayoutGroupNode, LayoutSplitDirection, LayoutTreeNode } from './layout-scheme';
 
@@ -16,7 +11,6 @@ type GroupShape = HTMLElement & {
 	manager?: ManagerShape;
 };
 
-// `end` 是元素数据（原型访问器已退役），不再是元素自身属性
 interface GroupElementData {
 	end?: number;
 }
@@ -97,8 +91,6 @@ export function groupTreeElements(group: Element): Element[] {
 	return elements;
 }
 
-// 宿主 page-frame 的第一个子节点若是 group 树则反序列化，否则返回 null。
-// 对应 home / 未物化工作区 / 无 scheme 页。
 export function deserializePage(page: Element): LayoutTreeNode | null {
 	const root = Array.from(page.children).find((child) => isGroup(child));
 	return root === undefined ? null : deserializeGroupElement(root);

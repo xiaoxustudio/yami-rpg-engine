@@ -13,10 +13,6 @@ import { getLayoutStore } from '@app/stores/layout';
 import LayoutPalettePage from '../../../components/layout/LayoutPalettePage.vue';
 import type { LayoutSchemeData } from '../layout-scheme';
 
-// Teleport 装载端到端：
-// 引擎只渲染/挂载 Vue 组树并按叶子发布归属（页→manager、页签→nav），
-// palette 的整壳 .page-frame / nav-item 经 LayoutPalettePage 落位——无命令式搬移。
-
 const DIRECTORY_SCHEME: LayoutSchemeData = {
 	end: 1,
 	split: 'horizontal',
@@ -48,7 +44,6 @@ const Marker = defineComponent({
 	}
 });
 
-// LayoutPanel palette 复刻：每 value 一组「整壳页 + 整壳页签」Teleport 包装
 const Palette = defineComponent({
 	props: {
 		values: { type: Array as PropType<readonly string[]>, required: true }
@@ -135,7 +130,6 @@ const clickTab = (nav: HTMLElement, value: string): void => {
 	item.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
 };
 
-// 引擎 navPointerdown/拖拽假设「页签 ↔ 页」已登记（生产路径由 Layout.initialize 完成）
 const pairItems = (values: readonly string[]): void => {
 	for (const value of values) {
 		setItemPage(tabOf(value), frameOf(value));
@@ -182,7 +176,6 @@ describe('Teleport 装载端到端（唯一装载路径）', () => {
 		const leaves = leavesOf(root);
 		expect(leaves).toHaveLength(2);
 
-		// 帧物理位于叶子 manager、页签位于叶子 nav（整壳 Teleport 落位，无命令式 appendChild）
 		expect(frameOf('project').parentNode).toBe(leaves[0].manager);
 		expect(frameOf('inspector').parentNode).toBe(leaves[0].manager);
 		expect(frameOf('scene').parentNode).toBe(leaves[1].manager);
@@ -190,12 +183,10 @@ describe('Teleport 装载端到端（唯一装载路径）', () => {
 		expect(tabOf('inspector').parentNode).toBe(leaves[0].nav);
 		expect(tabOf('scene').parentNode).toBe(leaves[1].nav);
 
-		// 收敛后的组内顺序 = tabs 顺序
 		expect(valuesOf(leaves[0].manager, 'page-frame')).toEqual(['project', 'inspector']);
 		expect(valuesOf(leaves[0].nav, 'nav-item')).toEqual(['project', 'inspector']);
 		expect(valuesOf(leaves[1].nav, 'nav-item')).toEqual(['scene']);
 
-		// 首 tab 激活
 		expect(selectedOf(leaves[0].nav)).toBe('project');
 		expect(visibleOf(leaves[0].manager)).toEqual(['project']);
 		expect(leaves[0].manager.index).toBe('project');
@@ -203,7 +194,6 @@ describe('Teleport 装载端到端（唯一装载路径）', () => {
 		expect(selectedOf(leaves[1].nav)).toBe('scene');
 		expect(visibleOf(leaves[1].manager)).toEqual(['scene']);
 
-		// 归属表与 DOM 一致
 		expect(getLayoutStore().pageTargets.project).toBe(leaves[0].manager);
 		expect(getLayoutStore().tabTargets.scene).toBe(leaves[1].nav);
 		expect(mounts.value).toBe(VALUES.length);
@@ -230,10 +220,8 @@ describe('Teleport 装载端到端（唯一装载路径）', () => {
 		const sceneTab = tabOf('scene');
 		clickTab(directoryLeaves[0].nav, 'inspector');
 		expect(visibleOf(directoryLeaves[0].manager)).toEqual(['inspector']);
-		// 模拟 saveNavStates 记录的会话恢复值（引擎内部状态）
 		setNavLastValue(directoryLeaves[0].nav, 'inspector');
 
-		// 进入 scene 工作区：帧/页签搬进 B 的组
 		await runLoad(workspaceB, 'scene', SCENE_SCHEME);
 		const sceneRoot = workspaceB.firstElementChild as HTMLElement;
 		const sceneLeaves = leavesOf(sceneRoot);
@@ -245,14 +233,12 @@ describe('Teleport 装载端到端（唯一装载路径）', () => {
 		expect(tabOf('scene')).toBe(sceneTab);
 		expect(valuesOf(sceneLeaves[0].nav, 'nav-item')).toEqual(['scene', 'project']);
 		expect(valuesOf(sceneLeaves[0].manager, 'page-frame')).toEqual(['scene', 'project']);
-		// A 的组树保留但被搬空；B 激活首 tab
 		expect(directoryRoot.isConnected).toBe(true);
 		expect(valuesOf(directoryLeaves[0].manager, 'page-frame')).toEqual([]);
 		expect(visibleOf(sceneLeaves[0].manager)).toEqual(['scene']);
 		expect(visibleOf(sceneLeaves[1].manager)).toEqual(['inspector']);
 		expect(mounts.value).toBe(VALUES.length);
 
-		// 返回 directory：else 恢复分支不重建组树，页签回 A，lastValue 恢复
 		await runLoad(workspaceA, 'directory', DIRECTORY_SCHEME);
 		expect(workspaceA.firstElementChild).toBe(directoryRoot);
 		expect(frameOf('project')).toBe(projectFrame);
@@ -314,7 +300,6 @@ describe('Teleport 装载端到端（唯一装载路径）', () => {
 		const leaves = leavesOf(root);
 		expect(leaves).toHaveLength(2);
 
-		// 伪造跨组搬空 drop：leaf1（仅 scene）的页签 append 到 leaf0
 		const store = getLayoutStore();
 		const sceneFrame = frameOf('scene');
 		store.dragging = {
@@ -327,8 +312,6 @@ describe('Teleport 装载端到端（唯一装载路径）', () => {
 		} as never;
 		Layout.navDrop!({ stopPropagation: () => {}, target: leaves[0].nav } as never);
 		store.dragging = null;
-		// drop 的命令式效果为同步（组树折叠）；scheme 回写 + Vue 重挂载在
-		// rebuildVueLayoutFromDom（已登记到 awaitVueLayoutLoad）中异步完成。
 		expect(
 			Array.from(workspaceA.children).filter((child) => child.classList.contains('group'))
 		).toHaveLength(1);
@@ -336,7 +319,6 @@ describe('Teleport 装载端到端（唯一装载路径）', () => {
 		await awaitVueLayoutLoad();
 		await nextTick();
 
-		// 组树按 DOM 重挂载：收敛为单叶，页/页签身份不变
 		expect(
 			Array.from(workspaceA.children).filter((child) => child.classList.contains('group'))
 		).toHaveLength(1);
@@ -353,14 +335,12 @@ describe('Teleport 装载端到端（唯一装载路径）', () => {
 		expect(frameOf('scene').parentNode).toBe(nextLeaves[0].manager);
 		expect(tabOf('scene').parentNode).toBe(nextLeaves[0].nav);
 
-		// scheme 回写：折叠为单叶（end=1）且与宿主 page 绑定（引擎内部状态）
 		expect(Layout.layout!.directory).toEqual({
 			end: 1,
 			tabs: ['project', 'inspector', 'scene']
 		});
 		expect(getPageScheme(workspaceA)).toBe(Layout.layout!.directory);
 
-		// 归属重发布 + 被拖页签激活
 		expect(getLayoutStore().tabTargets.scene).toBe(nextLeaves[0].nav);
 		expect(getLayoutStore().pageTargets.scene).toBe(nextLeaves[0].manager);
 		expect(selectedOf(nextLeaves[0].nav)).toBe('scene');
@@ -378,7 +358,6 @@ describe('Teleport 装载端到端（唯一装载路径）', () => {
 		workspaceA.className = 'page-frame';
 		workspaceA.id = 'workspace-a';
 		workspaceA.setAttribute('value', 'directory');
-		// 真机实况：LayoutPaletteHost 只搬 NavBar/PageManager，盒子残留在宿主页首位
 		const residual = document.createElement('div');
 		residual.className = 'box';
 		residual.id = 'layout-content';
@@ -396,10 +375,8 @@ describe('Teleport 装载端到端（唯一装载路径）', () => {
 		expect(frameOf('project').parentNode).toBe(leaves[0].manager);
 		expect(valuesOf(leaves[0].nav, 'nav-item')).toEqual(['project', 'inspector']);
 
-		// 组发现：不因空壳占首子而丢失叶子（拖拽 drop 落点依赖）
 		expect(Layout.getKeyGroups!()).toHaveLength(2);
 
-		// 拖拽可用性：navDragstart 为每个组注册 region，dragend 清理
 		const head = document.createElement('div');
 		document.body.append(head);
 		Layout.heads = [head];

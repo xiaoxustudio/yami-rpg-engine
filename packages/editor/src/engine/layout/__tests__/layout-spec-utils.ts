@@ -9,10 +9,6 @@ import {
 } from '@app/engine/layout/layout.ts';
 import * as elementUtils from '@app/utils/element-utils';
 
-// layout 行为金标准共享 fixture
-// 所有用例在 jsdom 中重建「palette + 宿主页 + items」，再走真实的 Layout 装载路径，
-// 断言最终 DOM 形态（现状语义）。
-
 export type SchemeNode = {
 	end: number;
 	split?: string;
@@ -107,14 +103,11 @@ export function buildLayoutFixture(values: readonly string[] = [...TAB_VALUES]):
 		const page = createPageFrame(value);
 		paletteManager.append(page);
 		navItem.page = page;
-		// 同时登记到引擎内部配对（生产路径由 Layout.initialize 登记）
 		setItemPage(navItem, page);
 		items[value] = navItem;
 		list.push(navItem);
 	}
 	items.list = list;
-	// fixture 走生产路径的 **palette 显式登记**（`registerLayoutItems`）：
-	// 登记项优先，缺项才由**容器子树内**的 DOM 发现兜底。
 	registerLayoutItems(
 		list.map((navItem) => ({
 			value: navItem.getAttribute('value') ?? '',
@@ -167,8 +160,6 @@ export function placePaletteIntoLeaves(fixture: LayoutFixture | null = currentFi
 			leaf.nav!.appendChild(item);
 			if (item.page) leaf.manager!.appendChild(item.page);
 		}
-		// 与 teleport 装载一致：激活「既有选中 ?? 会话恢复值 ?? 首 tab」，并驱动 manager.switch
-		// （YMNavBar.write 在 dataValue 相同——装载期已写过——时不再派发 write 事件）
 		if (leaf.nav && (leaf.tabs ?? []).length !== 0) {
 			const selectedEl = leaf.nav.querySelector('.nav-item.selected') as HTMLElement | null;
 			const target =

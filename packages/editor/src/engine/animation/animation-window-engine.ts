@@ -8,17 +8,6 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
 import { clamp, roundTo, dist, radians } from '@app/utils/math';
 
-/**
- *
- * 与隔壁 `scene-camera-engine.ts` / `scene-marquee-engine.ts` **同一手法**（第 159 / 131 轮的结论）：
- * 27 条成员**全部在本文件内各挂一次**，消费方只有 `animation-window.ts`
- * （27 行逐条镜像到 `Animation` 上）⇒ 形状可以完全从这里逆推，没有跨文件的形状分歧。
- *
- * 写成**函数属性**而不是方法简写：它们是被逐条搬运的函数值，
- * 方法简写会让 `typescript(unbound-method)` 在那 27 个镜像点报警。
- *
- * 断言 `{} as AnimationWindowEngineShape` 与事实相符：27 条在模块求值结束时必然都已挂上。
- */
 type AnimationWindowEngineShape = {
 	updateCamera: (this: typeof Animation, x?: number, y?: number) => void;
 	updateTransform: (this: typeof Animation) => void;
@@ -84,11 +73,6 @@ type AnimationContext = {
 	[k: string]: unknown;
 };
 
-/**
- * `player.contexts`：按索引取帧上下文，另有 `count`。
- * 只声明**用到的那两件事**（索引 + `count`），不假装它是 `Array` ——
- * 全仓的用法就只有 `contexts[i]` 与 `contexts.count`（见 animation-timeline / animation-motion）。
- */
 type AnimationContextList = { count: number; [index: number]: AnimationContext };
 
 AnimationWindowEngine.updateCamera = function (
@@ -309,7 +293,6 @@ AnimationWindowEngine.drawCoordinateAxes = function (this: typeof Animation) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const matrix = gl.matrix.set(animationWindow!.matrix);
-	// 避免缩放时虚线抖动
 	const L = -10000 / this.scaleX;
 	const T = -10000 / this.scaleY;
 	const R = 10000 / this.scaleX;
@@ -765,9 +748,6 @@ AnimationWindowEngine.drawSpriteControlPoints = function (this: typeof Animation
 	const context = this.targetContext;
 	const target = getAnimationStore().target;
 	const texture = getUIStore().controlPointTexture;
-	// `texture.base` 是可空的（ImageTexture 继承自 Texture，`base` 在贴图真正就绪前为 null）。
-	// 老路径走的是 `UIShape` 的 `[k: string]: any` 索引签名，这个空值被 any 吞掉了；
-	// 换成有类型的 store 字段后 tsc 把它暴露出来——这里按贴图尚未就绪处理，直接跳过绘制。
 	if (!context || !target || !texture?.base) return;
 	if (this.updateControlPoints!(context)) {
 		const POINT_RADIUS = 4 / this.scale;
@@ -846,7 +826,6 @@ AnimationWindowEngine.updateAnimation = function (this: typeof Animation, deltaT
 		animationWindow!.updateSoundContexts!(index);
 	}
 	animationWindow!.updateParticles!(deltaTime);
-	// 不能保证加载帧的时候一定会请求渲染(尾帧截止) 所以在播放状态时再次请求渲染
 	if (getAnimationStore().playing || animationWindow!.particleUpdating) {
 		animationWindow!.requestRendering!();
 	} else {

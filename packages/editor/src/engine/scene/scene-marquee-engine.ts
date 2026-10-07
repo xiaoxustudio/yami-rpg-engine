@@ -4,30 +4,11 @@ import type { SceneMarqueeSaveData } from '@app/scene/scene-window.ts';
 import type { TileBuffer } from '@app/engine/scene/scene-edit-engine.ts';
 import { elementDataOf } from '@ui-kit';
 
-/**
- * 选框元素上的 `key`（当前选框状态名：tile / terrain / object…）走显式元素数据。
- * 同一元素上的 `visible` / `x` / `y` 等不是元素数据——它们由 `YMMarqueeArea.vue` 定义成
- * **组件自己的实例属性**（实例属性优先于原型访问器）。
- */
 interface SceneMarqueeData {
 	key: string | null;
 }
 const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
-/**
- *
- * 此前是 `export const SceneMarqueeEngine: Record<string, any> = {}` 后面跟 10 行赋值。
- * `any` 的代价与 `auto-tile-engine` 同：唯一的消费方 `scene-marquee.ts` 是**逐条镜像**
- * 到 `Scene.marquee` 上（10 条 `Scene.marquee.x = SceneMarqueeEngine.x;`）——
- * 拼错一条就静默挂个 `undefined`。
- *
- * 10 个成员各自独立（不互相引用、也不引用文件下方的声明），所以按「个位数/十位数就走本地窄类型」
- * 写成**函数属性**而不是方法简写：它们是赋值上去、被逐条搬运的函数值，方法简写会让
- *
- * 形参给 `number`/`string`：实现里的默认值取自 `this.x` 等（走 `Scene.marquee` 的索引签名
- * ⇒ 推断为 `any`），因此实现侧照样可赋；这等于把**调用点**的契约收紧（`scene.spec.ts` 里那 4 处
- * `.call(Scene.marquee, 5, 10, 20, 30)` 本来就传数字）。
- */
 interface SceneMarqueeEngineShape {
 	save: (this: typeof Scene.marquee, key?: string | null) => void;
 	switch: (this: typeof Scene.marquee, key: string) => void;
@@ -40,7 +21,6 @@ interface SceneMarqueeEngineShape {
 		width?: number,
 		height?: number
 	) => void;
-	/** 三个 `selectIn*Mode` 的形参在实现里直接透传给 `select`（后者自带默认值）⇒ 声明成可选。 */
 	selectInPencilMode: (
 		this: typeof Scene.marquee,
 		x?: number,
@@ -63,17 +43,14 @@ interface SceneMarqueeEngineShape {
 		height?: number
 	) => void;
 	selectInObjectMode: (this: typeof Scene.marquee, x: number, y: number) => void;
-	/** 返回图块数据；真正的形状还没收窄（`this.tiles` 仍走索引签名）⇒ 声明为 `unknown`。 */
 	getTiles: (this: typeof Scene.marquee, raw: boolean) => unknown;
 }
 
 export const SceneMarqueeEngine = {} as SceneMarqueeEngineShape;
-// 选框 - 保存状态
 SceneMarqueeEngine.save = function (this: typeof Scene.marquee, key: string | null = 'default') {
 	let data: SceneMarqueeSaveData;
 	switch (key) {
 		case 'object':
-			// `object` 槽**故意**是空对象（它的用途只是「占一个 key」，清位靠组件的 `restore` 置 null）——
 			data = {} as SceneMarqueeSaveData;
 			break;
 		case 'tile':
@@ -124,7 +101,6 @@ SceneMarqueeEngine.save = function (this: typeof Scene.marquee, key: string | nu
 	this.saveData[key as string] = data;
 };
 
-// 选框 - 切换状态
 SceneMarqueeEngine.switch = function (this: typeof Scene.marquee, key: string) {
 	const data = marqueeData(this);
 	if (data.key !== key) {
@@ -133,14 +109,12 @@ SceneMarqueeEngine.switch = function (this: typeof Scene.marquee, key: string) {
 	}
 };
 
-// 选框 - 调整位置
 SceneMarqueeEngine.resize = function (this: typeof Scene.marquee) {
 	if (this.pointerevent !== null) {
 		Scene.marqueePointermove!(this.pointerevent);
 	}
 };
 
-// 选框 - 擦除矩形
 SceneMarqueeEngine.clear = function (this: typeof Scene.marquee) {
 	if (this.visible) {
 		this.visible = false;
@@ -151,7 +125,6 @@ SceneMarqueeEngine.clear = function (this: typeof Scene.marquee) {
 	}
 };
 
-// 选框 - 选取矩形
 SceneMarqueeEngine.select = function (
 	this: typeof Scene.marquee,
 	x = this.x,
@@ -167,7 +140,6 @@ SceneMarqueeEngine.select = function (
 	Scene.requestRendering!();
 };
 
-// 选框 - 选取矩形: 橡皮, 铅笔, 填充模式
 SceneMarqueeEngine.selectInPencilMode = function (
 	this: typeof Scene.marquee,
 	x?: number,
@@ -184,7 +156,6 @@ SceneMarqueeEngine.selectInPencilMode = function (
 	Scene.info.textContent = `${left},${top}`;
 };
 
-// 选框 - 选取矩形: 矩形, 椭圆模式
 SceneMarqueeEngine.selectInRectMode = function (
 	this: typeof Scene.marquee,
 	x?: number,
@@ -199,7 +170,6 @@ SceneMarqueeEngine.selectInRectMode = function (
 	Scene.info.textContent = `${this.width} x ${this.height}`;
 };
 
-// 选框 - 选取矩形: 复制模式
 SceneMarqueeEngine.selectInCopyMode = function (
 	this: typeof Scene.marquee,
 	x?: number,
@@ -214,7 +184,6 @@ SceneMarqueeEngine.selectInCopyMode = function (
 	Scene.info.textContent = `${this.width} x ${this.height}`;
 };
 
-// 选框 - 选取矩形: 对象模式
 SceneMarqueeEngine.selectInObjectMode = function (
 	this: typeof Scene.marquee,
 	x: number,
@@ -223,7 +192,6 @@ SceneMarqueeEngine.selectInObjectMode = function (
 	Scene.info.textContent = `${x},${y}`;
 };
 
-// 选框 - 获取图块数据
 SceneMarqueeEngine.getTiles = function (this: typeof Scene.marquee, raw: boolean) {
 	const sTiles = this.tiles;
 	if (raw) return sTiles;
@@ -240,9 +208,6 @@ SceneMarqueeEngine.getTiles = function (this: typeof Scene.marquee, raw: boolean
 			const tileset = tilesets[guid];
 			if (tileset?.type === 'auto') {
 				if (dTiles === sTiles) {
-					// `Scene.cloneTiles` 目前仍是 `SceneShape` 索引签名上的 `any`（收口它是另一轮的事），
-					// 这里按 `scene-edit-engine.ts:93` 的成员表收窄一次 —— 好让 `dTiles` 就此**确定**为
-					// `TileBuffer`（不这样做，`let dTiles = sTiles.standard` 的 `| undefined` 会一路带到循环里）。
 					dTiles = (Scene.cloneTiles as (sTiles: TileBuffer) => TileBuffer)(sTiles);
 				}
 				dTiles[i] = tile & 0xffffffc0;

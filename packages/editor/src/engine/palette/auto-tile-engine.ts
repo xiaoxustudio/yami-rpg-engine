@@ -17,25 +17,7 @@ type AutoTileTemplateData = {
 	nodes: AutoTileNodeData[];
 };
 
-/**
- * `AutoTileEngine` 的成员表 —— 口径收紧（2026-09-22，`any-hatches` 收口）。
- *
- * 此前是 `export const AutoTileEngine: Record<string, any> = {}` 后面跟 5 行赋值。
- * `any` 的代价：这个名字面上**任何**成员名都能编译通过，而唯一的消费方
- * `palette/auto-tile.ts` 是**逐条镜像**到 `AutoTile` 上
- * （`AutoTile.updateCanvas = AutoTileEngine.updateCanvas;` …共 5 条）——
- * 一旦某条拼错，镜像就静默挂了个 `undefined`，要到运行时才发现（本仓反复吃过的「静默失效」）。
- *
- * 5 个成员各自独立（不互相引用、也不引用文件下方的声明），所以走**本地窄类型**这条办法：
- * **声明本地成员表**，5 个实现一行不动。类型由这里给出，消费方与镜像点从此受检查。
- * （另有一条路线是整体改成对象字面量、让类型全部由实现推断——那是 `scene-draw-engine.ts`
- */
 interface AutoTileEngineShape {
-	// ⚠️ 写成**函数属性**（`x: (this: T, …) => R`）而不是方法简写（`x(this: T, …): R`）：
-	// 5 个成员都是**赋值上去的函数表达式**，且被逐条搬运（`AutoTile.x = AutoTileEngine.x`），
-	// 它们不是「方法」。方法简写会让 `typescript(unbound-method)` 在那 5 个搬运点报
-	// 「引用了未绑定的方法」—— 而 `any` 时代这个信号被一起吞掉了（本仓 lint 视为错误）。
-	// 属性写法同样保留 `this` 约束与参数检查，且如实描述「函数值被搬运」这件事。
 	shiftTemplateFrames: (
 		this: typeof AutoTile,
 		template: AutoTileTemplateData,
@@ -51,11 +33,6 @@ interface AutoTileEngineShape {
 	) => void;
 	createFrameData: (this: typeof AutoTile) => number;
 	updateCanvas: (this: typeof AutoTile) => void;
-	/**
-	 * 实现里有一条 `return File.get!(…).then(…)` 的路径（贴图异步加载后重画），
-	 * 但**返回值历来无人消费**（调用点全是语句式调用）⇒ 按 `void` 声明，
-	 * 调用方不应依赖这个 Promise（要依赖就显式改成 `void | Promise<void>`）。
-	 */
 	drawFrame: (this: typeof AutoTile) => void;
 }
 
@@ -110,9 +87,6 @@ AutoTileEngine.generateFrames = function (
 	const vframes = Math.floor(sprite.naturalHeight / tileHeight);
 	const ox = ((strideX % hframes) + hframes) % hframes;
 	const oy = ((strideY % vframes) + vframes) % vframes;
-	// `frameMaximum` / `frames` 的可空是**数据形状**上的（`windowClosed` 会置 null、初值是 null），
-	// 而本函数只会在「窗口已打开、模板/节点已选中、帧列表已挂上」之后被调
-	// （菜单项 `generate` 的 `enabled: editable && insertable`）⇒ 这里用 `!` 表达该不变式。
 	const maximum = this.frameMaximum!;
 	const frames = this.frames!;
 	const frame = frames[id];
@@ -133,7 +107,6 @@ AutoTileEngine.createFrameData = function (this: typeof AutoTile) {
 };
 
 AutoTileEngine.updateCanvas = function (this: typeof AutoTile) {
-	// 同上：`canvas` 在 `ensureDomBound()` 成功后就一直挂着，重算尺寸的调用点都在那之后。
 	const canvas = this.canvas!;
 	const { width, height } = getDevicePixelContentBoxSize(canvas);
 	if (canvas.width !== width) {
@@ -146,7 +119,6 @@ AutoTileEngine.updateCanvas = function (this: typeof AutoTile) {
 
 AutoTileEngine.drawFrame = function (this: typeof AutoTile) {
 	const canvas = this.canvas!;
-	// 画布是 2d canvas（模板里就是 `<canvas>`），拿不到上下文说明浏览器侧不可能发生 ⇒ `!`
 	const context = canvas.getContext('2d')!;
 	const width = canvas.width;
 	const height = canvas.height;
@@ -163,10 +135,6 @@ AutoTileEngine.drawFrame = function (this: typeof AutoTile) {
 		return File.get!({
 			guid: guid,
 			type: 'image'
-			// 回调参数的注解从 `CanvasImageSource` 改成 `HTMLImageElement`：`File.get`（`FileMethod`）返回 `any`，
-			// 这个注解**只由本行决定**；而真源在 `file-system-core.ts:25` 的 `File.promises: Record<string, Promise<HTMLImageElement>>`
-			// —— 图片就是 HTMLImageElement。用更宽的类型会让下面那句 `this.image = image` 与
-			// `AutoTile.image` 的声明（读点要 `.src`/`.naturalWidth`）对不上。
 		}).then((image: HTMLImageElement | null) => {
 			if (this.image === symbol) {
 				if (image) {

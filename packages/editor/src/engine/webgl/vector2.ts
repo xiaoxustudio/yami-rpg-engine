@@ -32,8 +32,6 @@ export class Vector {
 		return this;
 	}
 
-	// 叉乘 cross(vector) { return this.x * vector.y - this.y * vector.x }
-
 	cos(vector: Vector) {
 		const a = this.x * vector.x + this.y * vector.y;
 		const b = Math.sqrt(this.x ** 2 + this.y ** 2);

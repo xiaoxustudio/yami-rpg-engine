@@ -10,37 +10,20 @@ import type { Palette } from '@app/palette/palette.ts';
 import { elementDataOf } from '@ui-kit';
 import { clamp as mathClamp, roundTo } from '@app/utils/math';
 
-/** 场景选框元素上的 `key`（当前选框状态名：tile / terrain / object / eraser…）走显式元素数据 */
 interface SceneMarqueeData {
 	key: string | null;
 }
 const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
-/**
- *
- * 此前是 `export const PaletteEngine: Record<string, any> = {}` 后面跟 20 行赋值。
- * `any` 的代价与已收口的 `AutoTileEngine` / `SceneMarqueeEngine` 同一个：**成员名与形参表都不受检查**
- * （拼错一个名字，调用点静默拿到 `undefined`）。
- *
- * 20 个成员各自独立（不互相引用、也不引用文件下方的声明）；`this` 一律 `typeof Palette`
- * —— 注意 `Palette` 自己仍是 `Record<string, any>`（`palette.ts:4`），本轮不动它，
- * 所以这里的 `this: typeof Palette` 就是 `Record<string, any>`，与各实现的标注逐字一致。
- * 写法沿用前两轮的结论：**函数属性**（不是方法简写），避免 `typescript(unbound-method)`
- * ⚠️ 本文件的 spec（`palette.spec.ts:133`）把 mock 声明成 `const palette: any`，
- * camera 那种「部分 mock 不满足窗口形状」的级联（判据见 `xr.md` 第 132/133 轮）。
- */
 interface PaletteEngineShape {
-	/** 事件坐标 → 图块坐标；返回**复用的缓存对象**（IIFE 闭包里的 `point`）。 */
 	getTileCoords: (
 		this: typeof Palette,
 		event: PointerEvent,
 		clamp?: boolean
 	) => { x: number; y: number };
-	/** `x`/`y` 缺省时取 `this.meta.x` / `this.meta.y`。 */
 	updateCamera: (this: typeof Palette, x?: number, y?: number) => void;
 	updateTransform: (this: typeof Palette) => void;
 	updateBackground: (this: typeof Palette) => void;
-	/** 首次调用时**建**画布并挂上 `fontSize` / `entries` / `positions` 等（见 `MarkCanvasShape`）。 */
 	createMarkCanvas: (this: typeof Palette) => MarkCanvasShape;
 	rebuildMarkCanvas: (this: typeof Palette, canvas: MarkCanvasShape) => void;
 	ensureMarkPosition: (
@@ -72,7 +55,6 @@ interface PaletteEngineShape {
 	flipTiles: (this: typeof Palette) => void;
 	scrollToSelection: (this: typeof Palette, shiftKey: boolean) => void;
 	requestRendering: (this: typeof Palette) => void;
-	/** 作为 `Timer` 的 updater 使用（本文件内先 `.bind(this)` 再挂）。 */
 	renderingFunction: (this: typeof Palette) => void;
 	stopRendering: (this: typeof Palette) => void;
 }
@@ -86,7 +68,6 @@ export interface MarkPosition {
 	aspectRatio: number;
 }
 
-// 标记画布（运行时挂载 fontSize/font/totalWidth/entries/positions）
 export interface MarkCanvasShape extends HTMLCanvasElement {
 	fontSize: number;
 	font: string;
@@ -118,9 +99,6 @@ PaletteEngine.getTileCoords = (function IIFE() {
 
 PaletteEngine.updateCamera = function (
 	this: typeof Palette,
-	// `!`：本引擎的任何一次调用都发生在「图块组已打开」之后（`Palette.meta` 由 `open()` 赋上）。
-	// `?? 0`：`FileMeta.x/y` 类型上是 `number | null`，而这两个值只参与下面的算术 ——
-	// 原来的 `null * n` 与 `0 * n` 逐字等价（都是 0），所以这里只是把类型写实。
 	x = this.meta!.x ?? 0,
 	y = this.meta!.y ?? 0
 ) {
@@ -152,16 +130,12 @@ PaletteEngine.updateTransform = function (this: typeof Palette) {
 	this.context.setTransform(1, 0, 0, 1, -left, -top);
 	const scrollX = screenScrollData(screen).rawScrollLeft * dpr + this.centerOffsetX;
 	const scrollY = screenScrollData(screen).rawScrollTop * dpr + this.centerOffsetY;
-	// `!`：`updateTransform` 只在图块组打开后调用（`Palette.meta` 此刻非空）
 	this.meta!.x = roundTo((scrollX - this.paddingLeft) / this.scaledTileWidth, 4);
 	this.meta!.y = roundTo((scrollY - this.paddingTop) / this.scaledTileHeight, 4);
 	Data.manifest.changed = true;
 };
 
-// 保持图像与网格背景的相对位置 避免视觉干扰并且可以测量位置
 PaletteEngine.updateBackground = function (this: typeof Palette) {
-	// `backgroundX` / `backgroundY` 是就地挂在 `CSSStyleDeclaration` 上的**临时字段**
-	// （记住上次写过的位置，避免每帧都写 `backgroundPosition`）⇒ 需要具名扩展类型。
 	const style = this.canvas.style as CSSStyleDeclarationWithBackground;
 	const x = -this.screen.scrollLeft;
 	const y = -this.screen.scrollTop;
@@ -172,7 +146,6 @@ PaletteEngine.updateBackground = function (this: typeof Palette) {
 	}
 };
 
-/** `updateBackground` 在 `canvas.style` 上记住的两个临时字段（DOM 扩展，不是标准属性）。 */
 interface CSSStyleDeclarationWithBackground extends CSSStyleDeclaration {
 	backgroundX?: number;
 	backgroundY?: number;
@@ -182,7 +155,6 @@ PaletteEngine.createMarkCanvas = function (this: typeof Palette) {
 	let canvas = this.markCanvas;
 	if (canvas === null) {
 		const size = 128;
-		// 紧接着的 4 行就挂上了 `MarkCanvasShape` 的字段（fontSize / font / entries / positions）⇒ 收窄一次
 		canvas = document.createElement('canvas') as MarkCanvasShape;
 		canvas.width = 0;
 		canvas.height = size * 3;
@@ -193,7 +165,6 @@ PaletteEngine.createMarkCanvas = function (this: typeof Palette) {
 			string,
 			MarkPosition
 		>);
-		// 与 `palette-initialize.ts:32` 同理：刚建出来的离屏画布必然拿得到 2D 上下文
 		const context = canvas.getContext('2d')!;
 		const font = `${size}px sans-serif`;
 		canvas.font = font;
@@ -223,7 +194,6 @@ PaletteEngine.createMarkCanvas = function (this: typeof Palette) {
 
 		this.rebuildMarkCanvas(canvas);
 		this.markCanvas = canvas;
-		// canvas.style.display = 'block' canvas.style.position = 'fixed' document.body.appendChild(canvas)
 	}
 	return canvas;
 };
@@ -430,14 +400,6 @@ PaletteEngine.drawPriorities = function (this: typeof Palette) {
 		const height = mark.fontSize;
 		const fs = ts / 2;
 		const oy = fs / 2;
-		/**
-		 * `activeIndex` / `activeOffset` 只在某些 mode 分支里成对赋值（`increase-priority` 那一组
-		 * 还要求 `dragging.active`）⇒ 类型上必须是 `| undefined`。
-		 *
-		 * 下面 4 处 `activeOffset!` 的理由是一条**可证的前提**：`sy = i === activeIndex ? activeOffset : 0`
-		 * 里 `i` 是数字，所以走真分支就说明 `activeIndex` 已被赋值；而两个变量在三个分支里都是**成对**
-		 * 赋值的（`:434/435` 或 `:439/440`）⇒ 真分支上 `activeOffset` 必然也已赋值。运行期一行未改。
-		 */
 		let activeIndex: number | null | undefined;
 		let activeOffset: number | undefined;
 		switch (dragging?.mode) {
@@ -461,9 +423,6 @@ PaletteEngine.drawPriorities = function (this: typeof Palette) {
 						const i = x + y * tro;
 						const priority = priorities[i];
 						if (priority === 0) continue;
-						// `!`（本文件两处同形）：`positions` 在 `createMarkCanvas` 里为 0-9 与 `add`
-						// 全部建好了（`palette-engine.ts:196` 起），而 `priority` 取自图块数据、必在其中。
-						// 严格模式下的索引访问是 `| undefined`，这里点明前提（运行期一行未改）。
 						const position = positions[priority]!;
 						const { start, width, aspectRatio } = position;
 						const dw = fs * aspectRatio;
@@ -482,7 +441,6 @@ PaletteEngine.drawPriorities = function (this: typeof Palette) {
 						const tile = tiles[i];
 						const priority = priorities[i];
 						if (tile === 0 || priority === 0) continue;
-						// 与 `:450` 那处同形（`positions` 全部建好、值必在表中）⇒ 同一条 `!` 的理由。
 						const position = positions[priority]!;
 						const { start, width, aspectRatio } = position;
 						const dw = fs * aspectRatio;
@@ -522,14 +480,6 @@ PaletteEngine.drawTags = function (this: typeof Palette) {
 		const height = mark.fontSize;
 		const fs = ts / 2;
 		const oy = fs / 2;
-		/**
-		 * `activeIndex` / `activeOffset` 只在某些 mode 分支里成对赋值（`increase-priority` 那一组
-		 * 还要求 `dragging.active`）⇒ 类型上必须是 `| undefined`。
-		 *
-		 * 下面 4 处 `activeOffset!` 的理由是一条**可证的前提**：`sy = i === activeIndex ? activeOffset : 0`
-		 * 里 `i` 是数字，所以走真分支就说明 `activeIndex` 已被赋值；而两个变量在三个分支里都是**成对**
-		 * 赋值的（`:434/435` 或 `:439/440`）⇒ 真分支上 `activeOffset` 必然也已赋值。运行期一行未改。
-		 */
 		let activeIndex: number | null | undefined;
 		let activeOffset: number | undefined;
 		switch (dragging?.mode) {
@@ -676,9 +626,6 @@ PaletteEngine.selectTiles = function (
 	Scene.marquee.tilesetMap[1] = this.meta!.guid;
 
 	const sceneMarquee = Scene.marquee;
-	// `!`（本文件两处同形）：`saveData.tile` 类型上可空（组件 `restore` 会把它置 null），
-	// 但这里已由 `key === 'tile'` 判定走到 tile 槽 —— 它由 `save('tile')` 写入、
-	// 一定带 `tiles`/`width`/`height`（见 `scene-marquee-engine.ts:78`）。运行期一行未改。
 	const marquee =
 		marqueeData(sceneMarquee).key === 'tile' ? sceneMarquee : sceneMarquee.saveData.tile!;
 	marquee.tiles = dTiles;
@@ -762,7 +709,6 @@ PaletteEngine.flipTiles = function (this: typeof Palette) {
 		}
 	}
 	marquee.tiles = dTiles;
-	// 如果图块已经是标准化的 则引用自身作为标准图块
 	if (sTiles === sTiles.standard) {
 		const { tiles } = marquee;
 		tiles.standard = tiles;
@@ -790,8 +736,6 @@ PaletteEngine.scrollToSelection = function (this: typeof Palette, shiftKey: bool
 		const x2 = mx + wh - toleranceX;
 		const y1 = mb - hh + toleranceY;
 		const y2 = my + hh - toleranceY;
-		// `!`：本读取点在图块组打开之后；`x/y` 的 `?? 0` 与 `updateCamera` 那条同理
-		// （`Math.min(null, n)` 在 JS 里就是 `Math.min(0, n)`）。
 		const meta = this.meta!;
 		const x =
 			shiftKey && mx === ox && mw > 1
@@ -810,7 +754,6 @@ PaletteEngine.scrollToSelection = function (this: typeof Palette, shiftKey: bool
 	}
 };
 
-// 稳定的 bound 渲染函数（Timer 调用无 this——预绑定 Palette，removeUpdater 引用匹配）
 let boundRenderingFunction: ((deltaTime: number) => void) | null = null;
 
 PaletteEngine.requestRendering = function (this: typeof Palette) {

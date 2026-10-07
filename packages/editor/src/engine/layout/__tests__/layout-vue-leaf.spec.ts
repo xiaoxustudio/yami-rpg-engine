@@ -18,10 +18,6 @@ import {
 import { mountVueGroupTree, type VueLeafHost } from '../layout-vue-tree';
 import type { LayoutSchemeData } from '../layout-scheme';
 
-// 金标准：叶子宿主 Vue 化后，引擎侧的元素 API 与 expando 零改动。
-// 两条入口对照：`Layout.loadLayoutScheme` 装载出的 group DOM ↔ 直接
-// `mountVueGroupTree` 水合出的 DOM——结构、expando、页签激活与点击切换必须等价。
-
 const SCHEMES: { name: string; scheme: LayoutSchemeData }[] = [
 	{ name: 'directory', scheme: DIRECTORY_SCHEME as LayoutSchemeData },
 	{
@@ -149,7 +145,6 @@ describe('两条入口等价：Vue 叶子宿主 vs Layout.loadLayoutScheme 装�
 			expect(typeof (left.manager as PageManagerApi).switch).toBe('function');
 			expect(left.manager.index).toBeNull();
 
-			// 页/页签搬入后首 tab 激活（nav selected + page visible + manager 状态）
 			for (const tab of left.tabs) {
 				left.nav.appendChild(fixture.items[tab]);
 				left.manager.appendChild(fixture.items[tab].page);
@@ -165,7 +160,6 @@ describe('两条入口等价：Vue 叶子宿主 vs Layout.loadLayoutScheme 装�
 	});
 
 	it('两条入口行为等价：首载激活与页签点击切换（目录 scheme）', async () => {
-		// 基线（引擎装载路径）
 		const cmd = await commandState(DIRECTORY_SCHEME as LayoutSchemeData);
 		const cmdRoot = cmd.directory.firstElementChild as HTMLElement;
 		const cmdLeaves = [] as { nav: HTMLElement; manager: PageManagerApi }[];
@@ -196,19 +190,16 @@ describe('两条入口等价：Vue 叶子宿主 vs Layout.loadLayoutScheme 装�
 				expect(vueLeaves[i].manager.index).toBe(cmdLeaves[i].manager.index);
 			}
 
-			// 点击页签：nav pointerdown → YMNavBar write → Layout.navWrite → manager.switch
 			clickNavItem(vueLeaves[0].nav, 'inspector');
 			expect(selectedOf(vueLeaves[0].nav)).toBe('inspector');
 			expect(visibleOf(vueLeaves[0].manager)).toEqual(['inspector']);
 			expect(vueLeaves[0].manager.active).toBe(vueFixture.items.inspector.page);
 			expect(vueLeaves[0].manager.index).toBe('inspector');
 
-			// 基线路径同点击对照
 			clickNavItem(cmdLeaves[0].nav, 'inspector');
 			expect(selectedOf(cmdLeaves[0].nav)).toBe('inspector');
 			expect(visibleOf(cmdLeaves[0].manager)).toEqual(['inspector']);
 		} finally {
-			// vueState 无 unmount 引用暴露时，宿主编排由各用例管理；此处只需保证下例干净
 			document.body.innerHTML = '';
 		}
 	});
@@ -222,9 +213,8 @@ describe('两条入口等价：Vue 叶子宿主 vs Layout.loadLayoutScheme 装�
 		expect(host.firstElementChild).toBe(first.root);
 		first.unmount();
 		expect(host.firstElementChild).toBeNull();
-		// palette 归属宿主不受影响
 		expect(fixture.paletteManager.parentNode).not.toBeNull();
-		first.unmount(); // 幂等
+		first.unmount();
 
 		const second = await mountVueGroupTree(host, DIRECTORY_SCHEME as LayoutSchemeData, {});
 		try {

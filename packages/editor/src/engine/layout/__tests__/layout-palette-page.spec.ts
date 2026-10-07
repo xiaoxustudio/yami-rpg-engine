@@ -11,9 +11,6 @@ import {
 	switchWorkspace
 } from './layout-spec-utils';
 
-// LayoutPalettePage：页面内容经 Teleport 挂到 store.pageTargets[value]。
-// 覆盖：无归属 disabled 留在宿主 → 归属更新搬进 group-manager → 换归属搬家不重建 → 清归属回宿主。
-
 const createManager = (name: string): HTMLElement => {
 	const el = document.createElement('div');
 	el.className = 'page-manager group-manager';
@@ -98,7 +95,7 @@ describe('LayoutPalettePage 陈旧/分离目标（Teleport 安全）', () => {
 				return () => h('span', { class: 'palette-marker' }, 'page');
 			}
 		});
-		const detached = createManager('manager-detached'); // 未 append：不在文档中
+		const detached = createManager('manager-detached');
 		const host = document.createElement('div');
 		document.body.append(host);
 
@@ -112,11 +109,9 @@ describe('LayoutPalettePage 陈旧/分离目标（Teleport 安全）', () => {
 		try {
 			store.setPageTargets({ scene: detached });
 			await nextTick();
-			// 目标未连文档 → 不 Teleport，内容留在宿主
 			expect(host.contains(content())).toBe(true);
 			expect(content().parentNode).not.toBe(detached);
 
-			// 目标接入文档后（按生产路径：先收回归属再重新发布）正常搬家，且不重建
 			document.body.append(detached);
 			store.removePageTargets(['scene']);
 			await nextTick();
@@ -319,13 +314,11 @@ describe('LayoutPalettePage source="tab"（tabTargets 页签归属）', () => {
 		const tabContent = (): HTMLElement => document.querySelector('.tab-marker') as HTMLElement;
 
 		try {
-			// 只设 page 归属：page 搬走、tab 留宿主
 			store.setPageTargets({ scene: manager as HTMLElement });
 			await nextTick();
 			expect(pageContent().parentNode).toBe(manager);
 			expect(host.contains(tabContent())).toBe(true);
 
-			// 只设 tab 归属：tab 搬走、page 不动
 			store.setTabTargets({ scene: nav });
 			await nextTick();
 			expect(tabContent().parentNode).toBe(nav);

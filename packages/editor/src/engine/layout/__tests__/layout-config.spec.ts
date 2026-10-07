@@ -21,9 +21,6 @@ import {
 	type SchemeNode
 } from './layout-spec-utils';
 
-// 布局字典（Layout.layout / Layout.default / config.layout）生命周期金标准。
-// 覆盖 saveToConfig 回写、switchLayout 缓存失效重建、loadFromConfig 接管、default 兜底。
-
 type ConfigShape = { layout?: Record<string, SchemeNode> | null };
 
 const load = async (
@@ -78,19 +75,16 @@ describe('saveToConfig 回写 DOM 变更', () => {
 		switchWorkspace(fixture, 'directory');
 		await mountScheme('directory', DIRECTORY_SCHEME);
 
-		// 模拟半挂载/空树：宿主只剩一个空 group（无 nav/manager 页签）
 		const host = fixture.directory;
 		host.innerHTML = '';
 		const empty = document.createElement('div');
 		empty.className = 'group';
 		host.append(empty);
 
-		// 镜像仍在 → saveToConfig 读镜像，不受退化 DOM 影响
 		const config: ConfigShape = {};
 		Layout.saveToConfig!(config);
 		expect(config.layout?.directory).toEqual(DIRECTORY_SCHEME);
 
-		// 镜像缺失（异常态）→ 回退 DOM 快照，hasAnyTabs 守卫拦住退化 scheme
 		clearLayoutMirror(fixture.directory);
 		const config2: ConfigShape = {};
 		Layout.saveToConfig!(config2);
