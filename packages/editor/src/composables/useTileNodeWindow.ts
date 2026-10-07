@@ -123,8 +123,6 @@ const open = (
 	const MIN_CONTENT_HEIGHT = 100;
 	const windowFrame = composableEls.get('autoTile-selectNode') as YamiElement;
 	const screen = getScreen();
-	// `!`：这两个读点都发生在调色板已打开、`setTileSize` 之后（数值由那边的 `meta` 提供）；
-	// 桥键 `Palette.tileset` 类型上可空，而 `tileWidth` / `tileHeight` 在 `PaletteTilesetShape` 里是必填。
 	const tileWidth = Palette.tileset!.tileWidth;
 	const tileHeight = Palette.tileset!.tileHeight;
 	const nodesArr = sourceNodes as ArrayLike<unknown>;
@@ -204,7 +202,6 @@ const updateTransform = (): void => {
 	context!.setTransform(1, 0, 0, 1, -scrollLeft, -scrollTop);
 };
 
-// `Palette.updateBackground` 的签名是**无参**（`palette-engine.ts:157`，读的都是单例上的字段）——
 const updateBackground = (): unknown => {
 	return Palette.updateBackground();
 };
@@ -212,7 +209,6 @@ const updateBackground = (): unknown => {
 const drawNodes = (): void => {
 	if (!nodes) return;
 	const drawContext = context!;
-	// `!`：绘制只发生在调色板打开之后（与上面 `tileWidth` 那两个读点同理）
 	const tileset = Palette.tileset!;
 	const drawImage = image!;
 	const drawNodesSource = nodes;
@@ -334,9 +330,6 @@ const keydown = (event: KeyboardEvent): void => {
 		case 'Enter':
 		case 'NumpadEnter': {
 			const { x, y } = getMarquee();
-			// 两个 `!`：`saveData.tile` 的类型是「保存槽或 null」（组件的 `restore` 会把它置 null），
-			// 而这里已由 `key === 'tile'` 走到 tile 槽 —— 它由 `save('tile')` 写入、一定带 `tiles`
-			// （见 `scene-marquee-engine.ts:78`）。运行期一行未改。
 			const tiles =
 				sceneMarqueeData(Scene.marquee).key === 'tile'
 					? Scene.marquee.tiles

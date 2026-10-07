@@ -191,7 +191,6 @@ describe('useScriptCommandSchema（script 命令 Monaco 编辑器 composable：i
 
 		CommandSchema.insert(target, 'script');
 		await flush();
-		// monaco 宿主取自注册表（传进去的就是模板里的 #script-script）
 		const createCalls = vi.mocked(monacoMock.editor.create).mock.calls as unknown as Array<
 			[unknown, unknown]
 		>;

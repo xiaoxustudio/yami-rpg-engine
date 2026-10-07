@@ -1,15 +1,6 @@
 import { getCommandStore } from '@app/stores/command';
 import type { CommandParseState, CommandTargetShape } from '@app/stores/command';
 
-/**
- * 指令解析态。
- *
- * ⚠️ 真源在 `stores/command.ts` 的 `parse`。
- * 这里保留同名对象，但每个字段都是 store 的**访问器**：命令编辑器有 94 处 `commandState.x`，
- * 换成访问器后一处调用点都不用改，而状态已经进 store（DevTools 可见、可按 pinia 实例隔离）。
- *
- * 用显式访问器而不是 `Object.defineProperty` 桥：字段少、类型能逐字检查，改错会直接编译报错。
- */
 export const commandState: CommandParseState = {
 	get target() {
 		return getCommandStore().parse.target;
@@ -85,5 +76,4 @@ export const commandState: CommandParseState = {
 	}
 };
 
-// 对外类型名保持不变（`commands/command-object.ts:7` 仍在转出这两个名字）
 export type { CommandParseState as CommandState, CommandTargetShape };

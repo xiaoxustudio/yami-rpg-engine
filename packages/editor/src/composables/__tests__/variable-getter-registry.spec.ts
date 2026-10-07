@@ -11,13 +11,6 @@ import { EventEditor } from '@app/commands/event-editor.ts';
 import { elementDataOf } from '@app/utils/element-data';
 import type { YamiElement } from '@app/types/element-api';
 
-/**
- * 窗口注册表回归（`document.getElementById('variableGetter-*')` → `composableEls`）。
- *
- * `useVariableGetterWindow` 原先按 id 直接查 DOM（34 处），现在改读**渲染方登记的**分组注册表。
- * 这条链路一旦断（例如模板漏挂 `:ref="registryRef(composableEls, id)"`），模块侧会静默 no-op
- * ——于是这里断言"注册键 ↔ 元素 id 一致"与"open/initialize 真的调到了注册表里的控件"。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
 	getLocalStore: () => ({ syncState: vi.fn() })
@@ -159,7 +152,6 @@ describe('变量访问器窗口注册表', () => {
 		commandList.read = () => true;
 		commandList.varList = [globalEntry, namespaceEntry, otherEntry];
 		Object.assign(commandList, { elements: rows });
-		// 选区活动行在元素数据里（元素属性 `active` 已退役）
 		elementDataOf<{ active?: number | null }>(commandList).active = 1;
 		EventEditor.commandList = commandList as never;
 
@@ -172,7 +164,6 @@ describe('变量访问器窗口注册表', () => {
 		};
 		const items = commonKey.generator?.() ?? [];
 
-		// 活动行属于 `ns` 命名空间 → 只保留同命名空间的变量
 		expect(items.map((item) => item.name)).toEqual(['n1']);
 
 		wrapper.unmount();
@@ -192,7 +183,6 @@ describe('变量访问器窗口注册表', () => {
 		});
 
 		expect(loadItems2).toHaveBeenCalledTimes(1);
-		// 窗口 1 未挂载 → 它的注册项不存在；前缀查找不会退回窗口 1 的控件
 		expect(composableEls.get('variableGetter-type') ?? null).toBe(null);
 
 		wrapper.unmount();

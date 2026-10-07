@@ -71,7 +71,6 @@ Command.cases.setBoolean = new CommandSchema({
 	}
 });
 
-// 键是动态的 ⇒ 用 dynamicForm 访问器保留对象语义（见 composables/dynamic-form.ts）。
 const form = dynamicForm(() => getCommandSchemaFormsStore().setBooleanForm);
 import { dynamicForm } from '@app/composables/dynamic-form';
 import { getCommandSchemaFormsStore } from '@app/stores/command-schema-forms';
@@ -88,8 +87,6 @@ const writeHandler = (event: { value: string }): void => {
 	}
 	const element = registryElement<CustomBoxApi>(composableEls, 'setBoolean-common-variable');
 	if (element) {
-		// `filter` 是 CustomBox 组件自己的实例属性（`custom-box-api.ts` 里代理到 `filter` 属性），
-		// 不再由全局 `interface HTMLElement` 声明兜底——类型来自 `CustomBoxApi`
 		element.filter = filter;
 	}
 };

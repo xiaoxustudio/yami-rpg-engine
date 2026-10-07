@@ -80,12 +80,10 @@ import { UIOwner } from './ui-owner.ts';
 		value: unknown
 	) {
 		getUIStore().planToSave();
-		// const element = node.instance
 		switch (key) {
 			case 'prefabId':
 				if (node[key] !== value) {
 					node[key] = value;
-					// element[key] = value
 					node.instance.historyEnabled = true;
 					node.instances.setProperty(key, value);
 					node.instance.historyEnabled = false;

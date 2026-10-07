@@ -9,13 +9,6 @@ import LightGetter from '@app/components/tools/LightGetter.vue';
 import ObjectGetter from '@app/components/tools/ObjectGetter.vue';
 import { composableEls } from '@app/composables/element-registry';
 
-/**
- * 5 个窗口 composable（Team / PresetElement / PresetObject / TileNode / PresetGetter 工厂）
- * 过去按 id 直查元素，现在读共享注册表 `composableEls`。
- *
- * 覆盖三类登记手法：窗口框架的 `:ref`（Team/Preset*）、具名 ref 的 `registerElement`（Getter 的 `frame`、
- * TileNode 的 `frame`）、以及 `team-confirm` 由 SFC `@confirm` 承接。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
@@ -25,7 +18,6 @@ vi.mock('@app/i18n', () => ({
 	getYamiI18n: () => ({ global: { t: () => '' } })
 }));
 
-// Team.vue 走 legacy 门面 `@app/data/team-window.ts`：mock 它才能观察"@confirm 是否真的接到 composable"
 vi.mock('@app/data/team-window.ts', () => ({
 	Team: {
 		confirm: vi.fn(),
@@ -61,7 +53,6 @@ describe('窗口 composable 读注册表', () => {
 		const wrapper = await mountSettle(Team);
 		expectRegistered(['team', 'team-list']);
 
-		// `team-confirm` 由 WindowFrame 生成、注册表取不到 → SFC 的 @confirm 驱动 legacy 门面
 		const { Team: TeamController } = await import('@app/data/team-window.ts');
 		const button = document.getElementById('team-confirm');
 		expect(button).toBeTruthy();
@@ -124,7 +115,6 @@ describe('窗口 composable 读注册表', () => {
 
 	it('注册表为空时模块侧安全 no-op（不再按 id 回退）', () => {
 		composableEls.clear();
-		// getFrame() 取不到 → open 里的 setForm/getForm 链路整体 no-op，不抛错
 		expect(composableEls.get('lightGetter')).toBeUndefined();
 		expect(composableEls.get('team-list')).toBeUndefined();
 	});

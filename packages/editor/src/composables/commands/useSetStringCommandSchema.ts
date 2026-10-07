@@ -11,33 +11,10 @@ import { VariableGetter } from '@app/commands/accessors/variable-accessor-window
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { registryElement } from '@app/utils/element-registry';
 
-/**
- * （台账轴 `any-hatches` 该处归零；那行 `no-explicit-any` 豁免同时删除）。
- *
- * ## 为什么可以就地枚举
- *
- * 它的用法面**只在本文件内**：`parseOperand` 一族的 5 个方法 + `customParse` 的形参 +
- * `onLoad`/`onSave` 两个方向。实测 `operand.<key>` 的键**共 29 个**，且没有一处动态键访问
- * （`operand[…]` / `...operand` / `Object.keys(operand)` 命中 **0**）—— 也就是"枚举真成员"可行。
- *
- * ## 字段为什么一律可选、值为什么是 `unknown`
- *
- * 同一个操作数只带它那一类 `type` 分支需要的键：`type: 'string'` 带 `method`/`begin`/…，
- * `type: 'object'` 带 `property`/`actor`/…。⇒ 除判别键 `type` 外全部可选。
- * 而消费它们的 `Command.parseXxx` 全是 `CommandMethod = (...args: any[]) => any`
- * （它们自己判形状、自己取默认值），所以这里**不该新增保证**：写 `unknown` 是如实；
- *
- * ⚠️ 少数几个必须是 `string`：它们参与字符串运算（`operand.data.slice(-1)`）
- * 或被**原样当返回值**（`case 'script': return operand.script;`）—— `unknown` 进模板字面量会报错。
- */
 export type SetStringOperand = {
-	/** 判别键：`'constant' | 'template' | 'variable' | 'string' | 'attribute' | 'enum' | 'object' | 'element' | 'list' | 'parameter' | 'script' | 'other'`。 */
 	type: string;
-	/** 常量/模板的字面内容（`'string'` 分支的变量引用走 `variable`）。 */
 	value?: unknown;
-	/** 变量引用（`{ type: 'local' | 'global' | 'trigger', key }`）——由 `parseVariable` 自己判形状。 */
 	variable?: unknown;
-	/** `'string'` 分支：字符串方法名（`char` / `slice` / `pad-start` / `replace` / `replace-all`）。 */
 	method?: string;
 	index?: unknown;
 	begin?: unknown;
@@ -48,7 +25,6 @@ export type SetStringOperand = {
 	replacement?: unknown;
 	attributeId?: unknown;
 	stringId?: unknown;
-	/** `'object'` / `'element'` 分支：属性名（参与 `t(…)` 拼接与 `.replace`）。 */
 	property?: string;
 	actor?: unknown;
 	skill?: unknown;
@@ -58,11 +34,8 @@ export type SetStringOperand = {
 	item?: unknown;
 	fileId?: unknown;
 	element?: unknown;
-	/** `'parameter'` 分支：参数名。 */
 	key?: unknown;
-	/** `'script'` 分支：直接作为结果返回（故必须 `string`）。 */
 	script?: string;
-	/** `'other'` 分支：数据类型名（参与 `t(…)` 拼接与 `slice(-1)`）。 */
 	data?: string;
 	choiceIndex?: unknown;
 	format?: unknown;

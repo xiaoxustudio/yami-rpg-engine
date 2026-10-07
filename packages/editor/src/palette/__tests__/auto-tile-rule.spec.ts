@@ -14,7 +14,6 @@ describe('AutoTile 规则位 store 化（rule grid v-model 迁移回归保护）
 	it('nodesWrite 将 node.rule 拆为 ruleBits 写入 store', () => {
 		AutoTile.createFrameItems = vi.fn();
 		AutoTile.nodes = [{ rule: 0b11100100, frames: [0] }];
-		// `nodesWrite` 的载荷就是「列表写回的行下标」这一个字段（`{ value }`，不是 DOM 事件）
 		AutoTile.nodesWrite({ value: 0 });
 		const store = getAutoTileStore();
 		expect(store.nodeIndex).toBe(0);
@@ -28,7 +27,6 @@ describe('AutoTile 规则位 store 化（rule grid v-model 迁移回归保护）
 		const store = getAutoTileStore();
 		AutoTile.node = { rule: 0, frames: [0] };
 		store.ruleBits = [1, 2, 3, 0, 1, 2, 3, 0];
-		// 该处理器在 `AutoTile.vue` 里就是**无参**转发的（它只读 store 的 `ruleBits`）
 		AutoTile.ruleNeighborInput();
 		const expected = 1 | (2 << 2) | (3 << 4) | (0 << 6) | (1 << 8) | (2 << 10) | (3 << 12);
 		expect(AutoTile.node.rule).toBe(expected);

@@ -4,28 +4,6 @@ interface InputEditor {
 	target: unknown;
 }
 
-/**
- * 历史所有者（Owner）：调用方传的是遗留单例（Animation / Scene / UI）。
- *
- *
- * 这里的 receiver **只用于透传**（真正的读取发生在 inspector.ts 的 owner.history!.save(data)），
- * 所以本接口**不需要**声明 history。而一旦声明，就会踩到 TS 的 **weak type 检测**：
- * { history: unknown } 是「全是可选属性」的弱类型，Animation / Scene 虽然在运行期有 history，
- * 但它们的**形状是索引签名**（[k: string]: any）⇒ 与弱类型**没有已知公共属性** ⇒ TS2559。
- *
- * 于是这些调用点当时只能各写一遍 as unknown as { history: unknown }。
- * 声明成 object（不假设任何键）后，这些断言**本该全部消失** —— 这是「修声明，而不是修 N 个读点」。
- *
- * `Animation / Scene as unknown as { history: unknown }`（7 个 Anim*Frame/LayerPage + 7 个
- * Scene*Page），而 `tsc` 全程没报错 —— 因为**多余的断言不是错误**，只是噪声。
- * 已在本轮清除。**「修完声明还要回头清调用点」在这一处被漏了整整 17 轮。**
- * （同一轮还顺手把 `components/common/{NumberBox,TextBox,TextArea}.vue` 的同类断言
- * 换成 ui-kit 本就导出的 `HistoryInputElement` / `HistoryTextAreaElement` 单次断言。）
- *
- * 代价如实记录：bindInput 的 owner 形参**不再静态约束**「必须有 history」，
- * 而 editor / owner 的实参顺序转置正是 inspector-input-owner.spec.ts 在守的那类缺陷。
- * 该 spec 仍然必需 —— 它挡的是类型系统本来就挡不住的东西（两个形参都是结构类型）。
- */
 export type InputOwner = object;
 
 export function useInspectorInput() {

@@ -89,13 +89,11 @@ import { UIOwner } from './ui-owner.ts';
 		value: unknown
 	) {
 		getUIStore().planToSave();
-		// const element = node.instance
 		switch (key) {
 			case 'layout':
 			case 'overflow':
 				if (node[key] !== value) {
 					(node as Record<string, unknown>)[key] = value;
-					// element[key] = value
 					node.instances.setProperty(key, value);
 				}
 				break;
@@ -109,7 +107,6 @@ import { UIOwner } from './ui-owner.ts';
 			case 'paddingY':
 				if (node[key] !== value) {
 					node[key] = value;
-					// element[key] = value element.resize()
 					node.instances.setProperty(key, value);
 					node.instances.resize();
 				}

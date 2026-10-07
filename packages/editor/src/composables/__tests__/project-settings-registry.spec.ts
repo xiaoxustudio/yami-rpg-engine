@@ -9,13 +9,6 @@ import { Window } from '@app/tools/window-object.ts';
 import { focusTarget } from '@app/directives/focus';
 import { Data } from '@app/data/data-object.ts';
 
-/**
- * 窗口注册表回归（`document.getElementById('config-*')` → `composableEls`）。
- *
- * 覆盖三条链路：① 渲染方登记（注册键 ↔ 元素 id）；② 模块侧读注册表（`initialize()` 的
- * `loadItems` / `relate` 目标确实是注册表里的控件，不是静默 no-op）；③ `*-confirm` 按钮改由
- * SFC 的 `@confirm` 驱动（按钮由 WindowFrame 生成、模板与注册表都取不到）。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
 	getLocalStore: () => ({ syncState: vi.fn() })

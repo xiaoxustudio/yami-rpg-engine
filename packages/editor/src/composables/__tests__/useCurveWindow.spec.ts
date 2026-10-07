@@ -14,7 +14,6 @@ vi.mock('@app/utils/css', async (importOriginal) => ({
 	getDevicePixelContentBoxSize: () => ({ width: 100, height: 50 })
 }));
 
-/** `useCurveWindow` 改读 `animationEls`→ 用例自建的 DOM 需登记进注册表 */
 const CURVE_IDS = [
 	'animation-easing',
 	'animation-easing-head',
@@ -60,7 +59,6 @@ vi.mock('@app/data/transition-window.ts', () => {
 });
 
 vi.mock('@app/engine/layout/layout.ts', () => {
-	// 与新 API 对齐：head → nav（headNavOf）、nav → 最后一个元素子节点（lastNavItemOf）
 	const nav = {
 		getBoundingClientRect: () => ({ left: 10, right: 50 }),
 		lastElementChild: { getBoundingClientRect: () => ({ right: 90 }) }
@@ -134,7 +132,6 @@ describe('useCurveWindow（动画过渡曲线窗口 composable：渲染状态机
 			registerElement(animationEls, id, document.getElementById(id));
 		}
 		vi.mocked(Data).easings = { map: {} };
-		// 该模块被 vi.mock 整体替换成 mock：成员已是真实类型，不能再走 vi.mocked(Animation) 的深 mock
 		(Animation.history.save as Mock).mockClear();
 		(Animation.planToSave as Mock).mockClear();
 		vi.mocked(Timer.appendUpdater)!.mockClear();

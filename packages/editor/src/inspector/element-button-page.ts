@@ -13,7 +13,6 @@ import { registryElement } from '@app/utils/element-registry';
 		owner: UIOwnerShape;
 		target: UIButtonData | null;
 		initialize: (() => void) | null;
-		/** `create()` 返回的是「实例还没挂上」的数据（`instances` 由运行时补），故 Omit 掉它 */
 		create: (() => Omit<UIButtonData, 'instances'>) | null;
 		open: ((node: UIButtonData) => void) | null;
 		close: (() => void) | null;
@@ -133,7 +132,6 @@ import { registryElement } from '@app/utils/element-registry';
 		value: unknown
 	) {
 		getUIStore().planToSave();
-		// const element = node.instance
 		switch (key) {
 			case 'horizontalAlign':
 				if (node.horizontalAlign !== value) {
@@ -157,7 +155,6 @@ import { registryElement } from '@app/utils/element-registry';
 						});
 					}
 					node.horizontalAlign = value;
-					// element.horizontalAlign = value
 					node.instances.setProperty(key, value);
 				}
 				break;
@@ -183,7 +180,6 @@ import { registryElement } from '@app/utils/element-registry';
 						});
 					}
 					node.verticalAlign = value;
-					// element.verticalAlign = value
 					node.instances.setProperty(key, value);
 				}
 				break;
@@ -198,15 +194,12 @@ import { registryElement } from '@app/utils/element-registry';
 			case 'activeColor':
 				if (node[key] !== value) {
 					node[key] = value;
-					// element[key] = value element.state = 'changed'
 					node.instances.setProperty(key, value);
 					node.instances.setProperty('state', 'changed');
 				}
 				break;
 			case 'content':
-				// 直接复制，更新语言包中的内容
 				node[key] = value;
-				// element[key] = value
 				node.instances.setProperty(key, value);
 				break;
 			case 'display':
@@ -226,7 +219,6 @@ import { registryElement } from '@app/utils/element-registry';
 			case 'clickSound':
 				if (node[key] !== value) {
 					node[key] = value;
-					// element[key] = value
 					node.instances.setProperty(key, value);
 				}
 				break;
@@ -245,7 +237,6 @@ import { registryElement } from '@app/utils/element-registry';
 				const [property, index] = key.split('-');
 				if ((node[property] as unknown[])[Number(index)] !== value) {
 					(node[property] as unknown[])[Number(index)] = value;
-					// element[property][index] = value element.state = 'changed'
 					node.instances.setProperty(key, value);
 					node.instances.setProperty('state', 'changed');
 				}
@@ -275,7 +266,6 @@ import { registryElement } from '@app/utils/element-registry';
 							break;
 					}
 					node.textEffect = textEffect;
-					// element.textEffect = textEffect
 					node.instances.setProperty('textEffect', textEffect);
 				}
 				break;
@@ -287,7 +277,6 @@ import { registryElement } from '@app/utils/element-registry';
 				const property = key.slice(index);
 				if (node.textEffect[property] !== value) {
 					node.textEffect[property] = value;
-					// element.textEffect = node.textEffect
 					node.instances.setProperty('textEffect', node.textEffect);
 				}
 				break;

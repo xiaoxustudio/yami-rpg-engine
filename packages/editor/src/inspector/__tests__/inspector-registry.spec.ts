@@ -6,12 +6,6 @@ import UIImagePage from '@app/components/inspector/UIImagePage.vue';
 import FileActorPage from '@app/components/inspector/FileActorPage.vue';
 import { inspectorEls } from '../element-registry.ts';
 
-/**
- * inspector 的 37 个页面模块不再用 `按 id` 查 DOM，
- * 控件由 LayoutPanel 与各 `*Page.vue` 登记进共享的 `inspectorEls`。
- * 两种登记机制都要锁住：① 模板 `:ref="registryRef(...)"`（UIImagePage 等）；
- * ② 已有具名 ref 的控件在 onMounted 里 `registerElement(...)`（FileActorPage 等）。
- */
 vi.mock('@app/inspector/inspector.ts', () => ({
 	Inspector: {
 		uiElement: { target: null, update: vi.fn() },

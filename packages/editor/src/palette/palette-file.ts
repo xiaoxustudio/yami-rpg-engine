@@ -7,23 +7,7 @@ import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getPaletteStore } from '@app/stores/palette';
 
-Palette.open = function (
-	this: typeof Palette,
-	/**
-	 * 图块组元数据。
-	 *
-	 * **口径收紧（2026-09-20，`any-hatches` 收口）**：此前是
-	 * `{ guid: string; path?: string } & Record<string, any>` —— 末尾那个索引签名
-	 * 让 `meta.` 后面接**任何**名字都能编译。
-	 *
-	 * 改成已有的具名类型 `FileMeta`（`data/metadata.ts` 的 `Meta` 类实例）：
-	 * - 唯一调用方 `inspector/file-tileset-page.ts:73` 传的本来就是 `FileMeta | null`，
-	 *   所以这是**把形参对齐到调用方已有的口径**；
-	 * - 而且 `FileMeta` 连 `x` / `y`（`number | null`）都有 —— `palette-engine.ts`
-	 *   正是往 `Palette.meta.x` / `.y` 写值，两边因此对上了。
-	 */
-	meta: FileMeta | null
-) {
+Palette.open = function (this: typeof Palette, meta: FileMeta | null) {
 	if (!meta || meta === this.meta) {
 		return;
 	}
@@ -34,7 +18,6 @@ Palette.open = function (
 		this.meta = meta;
 		getPaletteStore().tileset = data;
 		void this.loadImages();
-		// 如果在编辑模式中打开普通图块组，则关闭编辑模式
 		if (getPaletteStore().mode === 'edit' && data.type === 'normal') {
 			this.switchEdit();
 		}

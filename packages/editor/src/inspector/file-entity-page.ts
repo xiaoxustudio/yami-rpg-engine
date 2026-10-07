@@ -27,8 +27,6 @@ interface FileEntityPage {
 
 function createFileEntityPage(name: string, inspectorKey: string): FileEntityPage {
 	const domKey = 'file' + name;
-	// 原来是先写一张 8 键的 `null` 占位表、再逐个填 —— 那张表的 `null` 与接口要求的函数不兼容，
-	// 于是只能 `as unknown as FileEntityPage`：**断言在替「表里先写 null」这一步背书**。
 	const initialize = function () {};
 
 	const create = function (this: FileEntityPage) {
@@ -94,10 +92,6 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		File.planToSave!(entity.meta);
 	};
 
-	// ⚠️ 上面 `listChange` 读的是闭包里的 `entity`（下面几行才声明）。**安全**：方法体只在
-	// **调用时**求值，那时 `entity` 早已就绪（TDZ 只作用于求值那一刻）。
-	// 保留原写法是为了**逐字等价** —— 改成 `this.meta` 虽然更合本文件的惯例（`update` 就是），
-	// 但那是**行为变化**：脱离接收者调用时会从「读闭包变量」变成「抛 TypeError」。
 	const entity: FileEntityPage = {
 		target: null,
 		meta: null,

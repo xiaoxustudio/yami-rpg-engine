@@ -42,7 +42,6 @@ interface ArrayWindow {
 	confirmString: () => string;
 }
 
-// 表单/脏标记真源在 `stores/window-forms.ts`。
 const form: ArrayForm = {
 	get values(): ArrayForm['values'] {
 		return getWindowFormsStore().arrayForm.values;
@@ -67,7 +66,6 @@ const stringForm: ArrayStringForm = {
 		getWindowFormsStore().arrayStringForm.value = value;
 	}
 };
-// ref 形状保留（`changedState.value = …` 照旧），底层是可写 computed ⇒ 读写落在 store
 const changedState = computed<boolean>({
 	get: () => getWindowFormsStore().arrayChanged,
 	set: (value: boolean) => {
@@ -222,7 +220,6 @@ const listInterface: ArrayListInterface = {
 	},
 	parse: function (value: unknown, data: unknown, index: number) {
 		const { filter } = targetState!;
-		// 离屏节点统一走 utils/dom 的 renderDetached
 		const indexText = renderDetached(
 			h(
 				'div',
@@ -262,7 +259,6 @@ const initialize = (): void => {
 
 	composableEls.get('arrayList')?.addEventListener?.('close', windowClose);
 	composableEls.get('arrayList')?.addEventListener?.('closed', windowClosed);
-	// confirm 由 ArrayList.vue 的 @confirm 驱动（按钮由 WindowFrame 生成，注册表取不到）
 };
 
 const open = (target: ArrayListTarget): void => {

@@ -299,7 +299,6 @@ const open = (
 	composableEls.get(`${prefix}-type`)?.loadItems(getTypeItems(filter, prefix));
 	const globalKeyEl = registryElement<CustomBoxApi>(composableEls, `${prefix}-global-key`);
 	if (globalKeyEl) {
-		// `filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
 		globalKeyEl.filter = filter.startsWith('writable-') ? filter.slice(9) : filter;
 	}
 	if (prefix === 'variableGetter') filterState.filter = filter;
@@ -484,9 +483,6 @@ const createVarListGenerator = (filterObject: {
 			}
 			return null;
 		};
-		// 选区「活动行」在**元素数据**里（`command-api` 的 `CommandListData.active`），
-		// 元素上不再有 `active` 访问器——按元素属性读会永远拿到 `undefined`，
-		// 于是 `activeNamespace` 恒为 null，命名空间内的变量全被过滤掉（只剩全局项）。
 		const activeIndex = elementDataOf<{ active?: number | null }>(
 			EventEditor.commandList
 		).active;
@@ -545,7 +541,6 @@ const typeInput = (event: Event & { value: string }): void => {
 			if (!selectBox) break;
 			const attrName = selectBox.textContent;
 			selectBox.write(selectBox.read());
-			// `invalid` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 			if (elementDataOf<{ invalid?: boolean }>(selectBox).invalid) {
 				const items = selectBox.dataItems;
 				let defValue = items[0]?.value;

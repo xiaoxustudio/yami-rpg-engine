@@ -14,11 +14,8 @@ import { roundTo } from '@app/utils/math';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 {
-	/** 波形 Promise：运行时会被挂上 `canceled` 标记（close 时用来作废回调）；url 可能缺（见 getWaveform 声明） */
 	type AudioWaveformPromise = Promise<string | undefined> & { canceled?: boolean };
-	/** 进度条元素：运行时被挂上 `percent` */
 	type AudioProgressElement = HTMLElement & { percent?: number };
-	/** 指针元素：运行时被挂上 `time` */
 	type AudioPointerElement = HTMLElement & { time?: number };
 	interface FileAudioShape {
 		target: FileItem | null;
@@ -48,7 +45,6 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		formatTime: ((time: number) => string) | null;
 		requestAnimation: (() => void) | null;
 		updateAnimation: ((deltaTime: number) => void) | null;
-		/** 按需（幂等）建波形缓冲区；`analyser` 未就绪返回 false —— 见实现处的判决记录 */
 		ensureWaveformBuffers: (() => boolean) | null;
 		stopAnimation: (() => void) | null;
 		themechange: ((event: YamiEvent) => void) | null;
@@ -131,12 +127,10 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 				audio.src = File.route!(path);
 
 				removeClass(this.progress, 'visible');
-				// 保留对返回的原始promise的引用 以便可以取消解码音频数据的操作
 				const promise = (this.promise = AudioManager.getWaveform!(meta!.guid));
 				void promise.then((url) => {
 					if (this.promise === promise) {
 						this.promise = null;
-						// url 可能是 undefined（getWaveform 的声明如此）：塞给 CSSOM 会被当无效值忽略 —— 断言只为过类型
 						this.progress!.style.webkitMaskImage = url as string;
 						addClass(this.progress, 'visible');
 					}
@@ -266,22 +260,9 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		}
 	};
 
-	/**
-	 * 波形缓冲区 + 分析器参数（`fftSize` / 平滑），**按需幂等**建。
-	 *
-	 * 为什么不能"只在页面的 `onMounted` 里建一次"：`AudioManager.analyser` 可能**晚于页面挂载**
-	 * 才就绪（`initialize()` 由启动期 `initSingleton` 调用，而它把异常吞进 try/catch；`AudioContext`
-	 * 在 Electron 里也可能先被挂起），而 `open()` 早就把 rAF 回调登记进了 `Timer`。那种时序下
-	 * `onMounted` 里的 `if (analyser)` 为假 ⇒ 缓冲区永远不建，`updateAnimation` 每帧在
-	 * `array.length` 上抛「Cannot read properties of null (reading 'length')」（2026-10-01 实机）。
-	 * 所以改成谁先到（挂载 / 每帧）都由这里建：`analyser` 一到，波形立刻能画，不必重开窗口。
-	 *
-	 * 返回 `analyser` 是否就绪（false ⇒ 这一帧没有波形可画，调用方跳过波形绘制）。
-	 */
 	FileAudio.ensureWaveformBuffers = function (this: typeof FileAudio): boolean {
 		const analyser = AudioManager.analyser;
 		if (!analyser) return false;
-		// `frequencyBinCount === fftSize / 2`，缓冲区大小跟着它走
 		analyser.fftSize = 512;
 		analyser.smoothingTimeConstant = 0;
 		const length = analyser.frequencyBinCount;
@@ -290,17 +271,12 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		}
 		this.dataArray = new Uint8Array(length);
 		this.intervals = new Float64Array(64);
-		// `index` 是写指针（环形缓冲），挂在数组上而不是另开字段 —— 故类型是交集
 		const intensities = Object.assign(new Float64Array(64), { index: 0 });
 		this.intensities = intensities;
 		return true;
 	};
 
 	FileAudio.updateAnimation = function (this: typeof FileAudio, deltaTime: number) {
-		// 计时器（rAF）与窗口装载是**两条独立时序**：`open()` 早已登记回调，而进度条元素 / 画布 /
-		// 分析器缓冲都由 SFC 的 `onMounted` 建（见 `ensureWaveformBuffers` 的判决记录）。
-		// **不能靠 `!` 蒙过去**（本仓反复记的静默失效来源，2026-10-01 的 `array.length` 崩溃即此）：
-		// 资源没齐就这一帧什么都不做。
 		const player = AudioManager.player;
 		const progress = FileAudio.progress;
 		const progressFiller = FileAudio.progressFiller;
@@ -325,7 +301,6 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 		const canvas = FileAudio.canvas;
 		const context = FileAudio.context;
-		// 波形这一半还要 analyser 与本函数刚确保过的缓冲区
 		if (!canvas || !context || !FileAudio.ensureWaveformBuffers!()) {
 			return;
 		}
@@ -372,7 +347,6 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 			intervalSum += intervals[j];
 			intensityAverage += intensities[j];
 			intensityCount++;
-			// 取最近150ms的强度平均值(平滑过渡)
 			if (intervalSum >= 150) {
 				break;
 			}
@@ -463,9 +437,6 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 			case 0: {
 				const { audio } = AudioManager.player!;
 				const { time } = FileAudio.pointer!;
-				// 不设 `time`），而 `undefined !== -1` 为真 ⇒ 旧写法会把 `undefined` 交给 `audio.currentTime`
-				// （按 NaN 处理，等于把播放头拉到开头却没给任何提示）。`-1` 是 pointerleave 的哨兵值，
-				// 两者都应视为「此刻没有有效位置」，什么都不做。收窄后断言也自然消失。
 				if (time !== undefined && time !== -1) {
 					audio.currentTime = time;
 				}

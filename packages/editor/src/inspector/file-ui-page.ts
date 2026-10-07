@@ -50,7 +50,6 @@ import type { YamiElement } from '@app/types/element-api';
 			}
 		};
 
-		// 宽高输入框的焦点/失焦批量绑定——改按 id 列表读 inspectorEls
 		const elements = registryElements(inspectorEls, ['fileUI-width', 'fileUI-height']);
 		elements.forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
 		elements.forEach((el) =>

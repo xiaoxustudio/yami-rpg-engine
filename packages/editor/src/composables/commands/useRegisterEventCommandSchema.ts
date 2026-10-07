@@ -285,7 +285,6 @@ const createEventTypeItems = (target: string): Array<{ name: string; value: stri
 	return items.length > 0 ? items : null;
 };
 
-// 依据 target 加载 Type 下拉选项；用户主动切换 target 时强制回到该组首个事件类型
 const syncEventTypes = (target: string): void => {
 	const elEventType = composableEls.get('registerEvent-type');
 	if (!elEventType) {
@@ -295,7 +294,6 @@ const syncEventTypes = (target: string): void => {
 	if (!eventTypes) {
 		return;
 	}
-	// 窗口挂载早期元素可能尚未挂载控件 API，需保持可选调用
 	elEventType.loadItems?.(eventTypes);
 	elEventType.createTooltip?.();
 };
@@ -353,8 +351,6 @@ const load = ({
 		tag
 	});
 	commands = children as unknown[];
-	// 打开/编辑窗口时按已载入的 target/operation/type 同步联动：
-	// Type 下拉必须先加载选项，否则选项为空（默认显示红色无效 autorun、无法展开下拉）
 	switchTypeAndTagInput();
 	syncEventTypes(form.target);
 	switchPriority();

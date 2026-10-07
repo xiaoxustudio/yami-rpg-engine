@@ -13,11 +13,6 @@ import type { YamiElement } from '@app/types/element-api';
 
 export type ObjectPropertyItem = { text: string };
 
-/**
- * 索引名表单（`ObjectPropertyIndex.vue:16` 的 `v-model`）。
- * 真源已升进 `stores/command-forms.ts`；
- * 这里保留同名对象但改成 store 访问器，调用点（含 v-model）写法不变。
- */
 export const indexForm: { name: string } = {
 	get name() {
 		return getCommandFormsStore().indexForm.name;
@@ -93,12 +88,6 @@ export interface SetObjectPropertyForm {
 	list?: ObjectPropertyItem[];
 }
 
-/**
- * `set-object-property` 表单：逐字段访问器，指向 `stores/command-forms.ts` 的
- * `objectPropertyForm`。
- * 保留同名可读写对象 ⇒ 本文件 5 处用法（含 `Object.assign(setForm, …)`）与
- * `new CommandSchema({ … form: setForm … })` 全不用改。
- */
 const setForm: SetObjectPropertyForm = {
 	get variable() {
 		return getCommandFormsStore().objectPropertyForm.variable;

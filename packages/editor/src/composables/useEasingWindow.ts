@@ -1,7 +1,6 @@
 import { getEasingFormStore } from '@app/stores/easing-form';
 import type { EasingForm, EasingPointForm } from '@app/stores/easing-form';
 
-// 类型定义已移到 `stores/easing-form.ts`（那里的状态就是真源），这里原样转出，调用方 import 不变。
 export type { EasingForm, EasingPointForm };
 
 interface EasingWindow {

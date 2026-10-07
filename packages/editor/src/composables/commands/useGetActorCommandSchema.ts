@@ -157,7 +157,6 @@ Command.cases.getActor = new CommandSchema({
 	}
 });
 
-// 键是动态的 ⇒ 用 dynamicForm 访问器保留对象语义（见 composables/dynamic-form.ts）。
 const form = dynamicForm(() => getCommandSchemaFormsStore().getActorForm);
 import { dynamicForm } from '@app/composables/dynamic-form';
 import { getCommandSchemaFormsStore } from '@app/stores/command-schema-forms';

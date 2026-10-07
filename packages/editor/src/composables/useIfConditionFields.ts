@@ -2,11 +2,6 @@ import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { Data } from '@app/data/data-object.ts';
 import type { YamiElement } from '@app/types/element-api';
 
-/**
- * 控件实例的最小接口（模板里用 `:ref="fieldRef(id)"` 登记）。
- * 不再按 id 查 DOM，改为从注册表取组件实例直调其 expose 方法；
- * `root` 供仍需元素的地方使用（如 relate 的 targets）。
- */
 export interface FieldControl {
 	read?: () => unknown;
 	write?: (value: unknown) => void;

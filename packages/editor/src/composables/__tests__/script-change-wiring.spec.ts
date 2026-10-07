@@ -7,16 +7,6 @@ import { Window } from '@app/tools/window-object.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { composableEls } from '@app/composables/element-registry';
 
-/**
- * Script 的模块级 `editor`/`bound` 状态跨用例保留，
- * 只有在本文件的首个用例里 `createEditor` 才会真正执行一次）。
- *
- * 锁住两件事：
- * ① `#script-change` 是**裸 button**，`document.getElementById('script-change')?.on?.('click', …)`
- *    这种"元素方法"写法在它上面恒为 no-op（`el.on` 不存在）——语言切换按钮从来没接上；
- *    改走全局 `on(el, 'click', …)` 后走 `addEventListener` 回退分支，监听真的挂上；
- * ② monaco 宿主取自注册表（传进去的就是模板里的 `#script-script`）。
- */
 const { modelMock, monacoMock } = vi.hoisted(() => {
 	const modelMock = {
 		value: '',

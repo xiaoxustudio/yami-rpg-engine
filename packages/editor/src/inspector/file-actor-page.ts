@@ -41,7 +41,6 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		save(): unknown;
 		on(event: string, listener: (event: Event) => void): void;
 	};
-	/** 四个列表编辑器描述符（sprites/skills/equipments/inventory）在读侧只用这些成员 */
 	interface ActorListDescriptor {
 		initialize(list: ListShape): void;
 		parse(item: never): unknown;

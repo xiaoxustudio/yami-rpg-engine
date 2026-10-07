@@ -413,11 +413,8 @@ vi.mock('@app/stores/local', () => ({
 				read(): unknown;
 			};
 			const text = document.querySelector('#changeActorTeam-teamId .select-box-text');
-			// 修复前：下拉只靠窗口 'open' 事件加载选项，open 未触发时选项为空、无默认文本
 			expect(dataItemsOf(team)?.map((item) => item.value)).toEqual(['team0']);
 			expect(team.read()).toBe('team0');
-			// `invalid` 不再是元素上的原型访问器（改走元素数据），
-			// 这里改为断言**可见状态**——无效值会让文本节点挂上 `invalid` class（core 的 write 分支）
 			expect(text?.classList.contains('invalid')).toBe(false);
 			expect(text?.textContent).toBe('Team 0');
 			wrapper.unmount();
@@ -431,9 +428,7 @@ vi.mock('@app/stores/local', () => ({
 			const frame = document.getElementById('changeActorTeam');
 			frame?.dispatchEvent(new Event('closed'));
 			await wrapper.vm.$nextTick();
-			// 修复前：closed 用 textContent 清空把 .select-box-text 一起删掉，之后再打开下拉永远空白
 			expect(select.querySelector('.select-box-text')).toBeTruthy();
-			// 关闭后再打开（open 事件重新 loadItems + load 相同默认值）：默认文本仍应显示
 			frame?.dispatchEvent(new Event('open'));
 			Command.cases.changeActorTeam.customLoad!({
 				actor: { type: 'trigger' },

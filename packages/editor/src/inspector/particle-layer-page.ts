@@ -151,7 +151,6 @@ import { registryElement } from '@app/utils/element-registry';
 		key: string,
 		value: unknown
 	) {
-		// `layer` 就是当前发射器的图层数据 ⇒ `getLayer` 按同一性必然命中（`!` 写明这条不变式）
 		const layerInstance = Particle.emitter!.getLayer(layer)!;
 		Particle.planToSave!();
 		switch (key) {

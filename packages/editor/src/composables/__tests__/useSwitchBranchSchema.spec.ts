@@ -59,12 +59,6 @@ const words: string[] = [];
 const makeCondition = (value: number) => ({ type: 'number', value });
 const makeBranch = (value: number) => ({ conditions: [makeCondition(value)], commands: [] });
 
-/**
- * 本文件挂载的真实窗口：用例只 unmount 了 commandWrapper，其余会在 beforeEach 里被
- * `document.body.innerHTML = ''` 摘掉但**组件仍处于挂载态**——它们随后任何一次重渲染都会
- * 重新登记自己的元素，把共享注册表覆盖成已脱离文档的旧节点（模块改读 `composableEls`，
- * 这条泄漏会直接表现为"读到旧数据"）。故统一在 afterEach 里卸载。
- */
 const mountedWrappers: Array<{ unmount(): void }> = [];
 
 describe('useSwitchBranchSchema（switch 分支列表动态行：add/remove/swap + insert/edit/save 路径）', () => {

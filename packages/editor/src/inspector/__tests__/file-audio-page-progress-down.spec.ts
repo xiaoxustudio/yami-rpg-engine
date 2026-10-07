@@ -1,7 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
 
-// `vitest.setup.ts` 把所有 legacy inspector 页面统一 mock 成空模块；本用例要测的**正是**
-// file-audio-page 的真实行为，所以先解除 mock（`vi.unmock` 会被提升到 import 之前）。
 vi.unmock('@app/inspector/file-audio-page.ts');
 
 import { AudioManager } from '@app/audio/audio-manager.ts';

@@ -33,7 +33,6 @@ Command.cases.script = new CommandSchema({
 	},
 	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
-		// 文本节点由 Script.vue 的模板节点 clone 而来
 		const text = (composableEls.get('script-text-template') as YamiElement).cloneNode(
 			true
 		) as HTMLElement;
@@ -238,14 +237,6 @@ interface ScriptEditor {
 	): void;
 }
 
-/**
- * monaco `ITextModel` 里**本模块用到的那几个成员**。
- *
- * `ScriptEditor.getModel()` 的返回类型只写 `{ getLanguageId(): string }` —— **同一个运行期对象
- * （monaco 的 `ITextModel`）被拆成两个互不相交的子集**，于是 `:333` 只能写
- * `ImageElementShape` / `EmbeddedImageShape` 是同一病症）。合并成一份之后两处读点共用它：
- * `model.getValue()`（`save`）与 `editor.getModel()!.getLanguageId()`（语言判定）。
- */
 interface ScriptModel {
 	getLanguageId(): string;
 	setValue(value: string): void;

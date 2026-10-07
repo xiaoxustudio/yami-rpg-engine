@@ -23,25 +23,10 @@ import {
 } from './useCommandColor.ts';
 import { append } from '@app/utils/array';
 
-/**
- * 命令对象（`CommandNode.params` 以及各选择器 / 位置 / 角度对象的**读侧**形状）。
- *
- * 这里原先是一行 `[k: string]: any`：读什么都行、拼错键也不报错。摘掉它之后 tsc 报出的
- * 69 条错误**全在本文件**，正好给出「到底被读了哪些键」的清单 —— 于是逐键写出类型
- *
- * 该接口只做**读侧**参数类型（全仓没有构造点：值来自工程 JSON），因此互斥出现的分支字段
- * 按「全组可读」声明为必填 —— 与 `particle-engine.ts` 的 `ParticleLayerData` 同一取舍：
- * 免得给每个分支字段各补一次非空断言。这条取舍是明写的，不是默认。
- *
- * 用 `type` 而不是 `interface`：对象字面量类型能**隐式**满足 `Record<string, unknown>`
- * （interface 不行），于是 `handler.parse(params ?? {})` 那些把命令对象交给注册解析器的调用点
- * 无需再为「索引签名缺失」写一次断言。
- */
 type CommandObjectShape = {
 	type: string;
 	key: string;
 	eventId: string;
-	/** 嵌套选择器（`case 'actor'` 等分支各自读自己那一支） */
 	actor: CommandObjectShape;
 	skill: CommandObjectShape;
 	state: CommandObjectShape;
@@ -56,7 +41,6 @@ type CommandObjectShape = {
 	ancestor: CommandObjectShape;
 	parent: CommandObjectShape;
 	focus: CommandObjectShape;
-	/** 数值位：可以是常量，也可以是取值变量对象（`parseVariableNumber` 两种都收） */
 	memberId: CommandObjectShape | number;
 	index: CommandObjectShape | number;
 	degrees: CommandObjectShape | number;
@@ -73,13 +57,6 @@ type CommandObjectShape = {
 	mode: string;
 };
 
-/**
- * 命令**选择器**：`parseActor` / `parseVariable` / … 的入参类型。
- *
- * 调用方给的往往是**最小对象** —— 只带自己那一支用到的字段（见 `useIfConditionSchema.ts`
- * 的 `IfConditionOperandShape`，以及本文件的 `_localVarCtx`），而 `parse*` 一律**先按 `type` 分派**
- * 再读分支字段。所以入参类型写成「`type` 必填 + 其余可选」：完整命令对象与最小对象都收得住。
- */
 export type CommandSelectorShape = Partial<CommandObjectShape> & { type: string };
 
 /**
@@ -96,10 +73,6 @@ interface CommandNode {
 	id: string;
 	params?: CommandObjectShape;
 	children?: CommandNode[];
-	/**
-	 * 命令节点还会带若干动态成员（脚本侧写入），故保留索引签名 —— 但**用 `unknown` 而不是 `any`**
-	 * （本仓既有写法，见 `element-classes.ts` 的 `UINodeShape`）：拼错键不会静默变成 `any`，
-	 */
 	[k: string]: unknown;
 }
 
@@ -109,10 +82,6 @@ interface TextContent {
 	tooltip?: string;
 	class?: string;
 	color?: string;
-	/**
-	 * 嵌套的子命令（`fetchVariables` 会递归进去 —— 分支/条件块就是这样放进子命令的）。
-	 * 它被当成 `CommandNode[]` 使用（`:140` 传给 `fetchVariables(commands: CommandNode[])`）。
-	 */
 	children?: CommandNode[];
 }
 
@@ -356,11 +325,6 @@ export function parseAttributeTag(id: string, valueType?: string): string {
 
 const _localVarRegex = /(?<=<)local:([\s\S]+?)(?=>)/g;
 const _globalVarRegex = /(?<=<)global(::?)([0-9a-f]{16})(?=>)/g;
-/**
- * 变量上下文：`parseVariable` 只在 `case 'local'` / `case 'global'` 两支读 `type` / `key`，
- * 所以这两个对象**就是**最小的 `{ type, key }`（运行期确实没有其余字段）——
- * 正是 `CommandSelectorShape` 描述的形态，无需任何断言。
- */
 const _localVarCtx = { type: 'local', key: '' };
 const _globalVarCtx = { type: 'global', key: '' };
 

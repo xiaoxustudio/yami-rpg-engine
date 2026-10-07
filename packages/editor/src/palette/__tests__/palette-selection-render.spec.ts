@@ -21,7 +21,6 @@ describe('Palette selection 元素 Vue 渲染（拖拽选区覆盖层）', () =>
 		const el = document.createElement('div');
 		el.id = id;
 		document.body.appendChild(el);
-		// 模块改从注册表取元素（不再查 DOM），测试需按新契约登记
 		registerElement(paletteEls, id, el);
 	};
 
@@ -89,8 +88,6 @@ describe('Palette selection 元素 Vue 渲染（拖拽选区覆盖层）', () =>
 	it('customShiftAutoTile 移除双选区并交换图块', () => {
 		marquee.customSelect('source', 1, 1);
 		marquee.customSelect('destination', 2, 1);
-		// 夹具按 `PaletteTilesetShape` 的真实字段给全（`tileWidth` / `tileHeight` / `height` / `tags`
-		// 在本用例里用不到，但它们是那个接口的必填项 —— 真源 `Data.tilesets[guid]` 一定有）
 		Palette.tileset = {
 			width: 4,
 			height: 2,

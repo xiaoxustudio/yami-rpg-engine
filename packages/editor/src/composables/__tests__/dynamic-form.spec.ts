@@ -2,10 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { reactive } from 'vue';
 import { dynamicForm } from '@app/composables/dynamic-form';
 
-// 7 份「动态键」命令表单用它替代模块级 `reactive<Record<string, unknown>>({})`。
-// 契约：对象语义与响应性都不能丢 —— 调用点有 `form.x` / `form.x = v` / `Object.assign(form, …)` /
-// `const data = form`；模板 v-model 依赖 get/set 落在 store 的 reactive 切片上。
-
 describe('dynamicForm（动态键表单访问器）', () => {
 	it('读写转发到切片，且保留 Object.assign / 展开 / in / delete', () => {
 		const slice = reactive<Record<string, unknown>>({ a: 1 });

@@ -10,7 +10,6 @@ import { UIOwner, type UIOwnerShape } from './ui-owner.ts';
 import type { UIElementTransform } from '@app/engine/ui/element-classes.ts';
 import type { YamiElement } from '@app/types/element-api';
 
-/** 尺寸/变换控件的 id 列表 */
 const SIZE_INPUT_IDS = [
 	'uiElement-transform-anchorX',
 	'uiElement-transform-anchorY',
@@ -47,12 +46,9 @@ const SIZE_INPUT_IDS = [
 		update: ((node: UIElementData, key: string, value: unknown) => void) | null;
 		pageSwitch: ((event: Event & { value?: string }) => void) | null;
 		alignmentClick: ((event: Event) => void) | null;
-		/** 不在字面量初值里（首值为 `undefined`）⇒ 声明为可选，免得为了类型去改运行时 */
 		_elementInitialized?: boolean;
 		_openRetry?: number;
 	}
-	// （`engine/ui/element-classes.ts`，见该处注释）：`stores/ui.ts` 的 `UINodeShape.transform`
-	// 与引擎读点指向同一个对象，局部类型别处拿不到，只能退回索引签名。
 	interface UIElementData {
 		id: string;
 		name: unknown;
@@ -85,14 +81,6 @@ const SIZE_INPUT_IDS = [
 		alignmentClick: null
 	};
 
-	/**
-	 * 初始化：**幂等**，且允许在「控件还没登记」时被调用（早退时不置位，之后可重试）。
-	 *
-	 * 因为 inspector 的控件由 SFC **挂载时**登记（见 `element-registry.ts`），而页面是**按需渲染**的
-	 * —— 首次 `open()` 往往早于该页挂载。若把初始化当作一次性的，早退后就再也不补，
-	 * 之后每次 `open()` 都会在 `this.pointerEvents.previousElementSibling` 上抛
-	 * `Cannot read properties of null`。补初始化/重试的责任在 `open()`。
-	 */
 	UIElement.initialize = function (this: typeof UIElement) {
 		if (this._elementInitialized) return;
 		if (!inspectorEls.get('uiElement-name')) return;
@@ -116,18 +104,9 @@ const SIZE_INPUT_IDS = [
 
 		this.parameterPane.bind(inspectorEls.get('uiElement-scripts'));
 
-		// this.generalGroup.remove() this.transformGroup.remove() this.eventsGroup.remove() this.scriptsGroup.remove()
-
 		on(Inspector.manager, 'switch', this.pageSwitch!);
 		const alignElements = $('.uiElement-transform-align');
 		alignElements.forEach((el) => on(el, 'click', this.alignmentClick!));
-		// 18 控件 input 经 Vue 模板转发（UIImagePage.vue @input → UIElement.paramInput）
-		// 之后 `3f259bc9` 又在乱码上再毁一次；文本门禁当时看不见它（7 条规则都不管乱码）。
-		// 已按 `54a7d809^` 的历史版本**逐字恢复**。
-		// 顺带：这里原来的 `(alignElements as unknown as HTMLElement[])` 是多余的 ——
-		// `.…`（非 `#` 选择器）返回 `NodeListOf<YamiElement>`，**NodeList 自带 `forEach`**，
-		// 而 `on` 的第一个形参本来就是 `any` ⇒ 直接调即可，**零断言**。
-		// 控件批量绑定焦点/失焦——改按 id 列表读 inspectorEls
 		const otherElements = registryElements(inspectorEls, [
 			'uiElement-name',
 			'uiElement-pointerEvents',
@@ -193,14 +172,8 @@ const SIZE_INPUT_IDS = [
 	};
 
 	UIElement.open = function (this: typeof UIElement, node: UIElementData) {
-		// 控件由 SFC 挂载时才登记，而 inspector 页面按需渲染 ⇒ 首次 open 可能早于挂载。
-		// 先在「打开时」补一次初始化（幂等）；若仍未就绪，下一个宏任务（Vue 的挂载刷新之后）
-		// 再试一次 —— 绝不在元素为 null 的情况下继续往下读。
 		this.initialize!();
 		if (!this.pointerEvents) {
-			// ⇒ **首次 `open()`（控件尚未登记）根本不重试**，重试路径实际是死的；
-			// 可下一行偏偏写 `(this._openRetry ?? 0) + 1`，可见本意就允许 `undefined`。
-			// 改用 `?? 0`：首次 open 也进入重试（上限 10 次），与下一行的意图一致。
 			if ((this._openRetry ?? 0) < 10) {
 				this._openRetry = (this._openRetry ?? 0) + 1;
 				setTimeout(() => this.open!(node), 0);
@@ -212,8 +185,6 @@ const SIZE_INPUT_IDS = [
 			this.target = node;
 
 			const write = getElementWriter('uiElement', node);
-			// `previousElementSibling` 的读取对 null 不安全（`show`/`hide` 本身对 null 是安全的），
-			// 这里再兜一层：即使 pointerEvents 真的缺失也只是不显示行，不会抛错。
 			if (node.pointerEvents) {
 				show(this.pointerEvents);
 				show(this.pointerEvents?.previousElementSibling);
@@ -285,7 +256,6 @@ const SIZE_INPUT_IDS = [
 				const index = key.indexOf('-') + 1;
 				const property = key.slice(index);
 				if (transform[property] !== value) {
-					// transform[property] = value element.resize()
 					node.instances.setProperty(key, value);
 					node.instances.resize();
 				}
@@ -354,7 +324,6 @@ const SIZE_INPUT_IDS = [
 					oldValue: transform.anchorX,
 					newValue: x
 				});
-				// transform.anchorX = x
 				elements.setProperty('transform-anchorX', x);
 			}
 			if (transform.x !== 0) {
@@ -364,7 +333,6 @@ const SIZE_INPUT_IDS = [
 					oldValue: transform.x,
 					newValue: 0
 				});
-				// transform.x = 0
 				elements.setProperty('transform-x', 0);
 			}
 			if (transform.x2 !== x) {
@@ -374,7 +342,6 @@ const SIZE_INPUT_IDS = [
 					oldValue: transform.x2,
 					newValue: x
 				});
-				// transform.x2 = x
 				elements.setProperty('transform-x2', x);
 			}
 		}
@@ -386,7 +353,6 @@ const SIZE_INPUT_IDS = [
 					oldValue: transform.anchorY,
 					newValue: y
 				});
-				// transform.anchorY = y
 				elements.setProperty('transform-anchorY', y);
 			}
 			if (transform.y !== 0) {
@@ -396,7 +362,6 @@ const SIZE_INPUT_IDS = [
 					oldValue: transform.y,
 					newValue: 0
 				});
-				// transform.y = 0
 				elements.setProperty('transform-y', 0);
 			}
 			if (transform.y2 !== y) {
@@ -406,7 +371,6 @@ const SIZE_INPUT_IDS = [
 					oldValue: transform.y2,
 					newValue: y
 				});
-				// transform.y2 = y
 				elements.setProperty('transform-y2', y);
 			}
 		}

@@ -86,12 +86,9 @@ import { UIOwner } from './ui-owner.ts';
 		value: unknown
 	) {
 		getUIStore().planToSave();
-		// const element = node.instance
 		switch (key) {
 			case 'content':
-				// 直接复制，更新语言包中的内容
 				node[key] = value;
-				// element[key] = value
 				node.instances.setProperty(key, value);
 				break;
 			case 'interval':
@@ -103,7 +100,6 @@ import { UIOwner } from './ui-owner.ts';
 			case 'blend':
 				if (node[key] !== value) {
 					node[key] = value;
-					// element[key] = value
 					node.instances.setProperty(key, value);
 				}
 				break;
@@ -111,7 +107,6 @@ import { UIOwner } from './ui-owner.ts';
 				const font = (value as string).trim();
 				if (node.font !== font) {
 					node.font = font;
-					// element.font = font
 					node.instances.setProperty(key, font);
 				}
 				break;
@@ -137,7 +132,6 @@ import { UIOwner } from './ui-owner.ts';
 							break;
 					}
 					node.effect = effect;
-					// element.effect = effect
 					node.instances.setProperty('effect', effect);
 				}
 				break;
@@ -149,7 +143,6 @@ import { UIOwner } from './ui-owner.ts';
 				const property = key.slice(index);
 				if (node.effect[property] !== value) {
 					node.effect[property] = value;
-					// element.effect = node.effect
 					node.instances.setProperty('effect', node.effect);
 				}
 				break;

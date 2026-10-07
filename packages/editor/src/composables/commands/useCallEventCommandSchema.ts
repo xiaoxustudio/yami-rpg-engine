@@ -85,7 +85,6 @@ Command.cases.callEvent = new CommandSchema({
 	parseEventArgInput(arg: CallEventArg) {
 		switch (arg.type) {
 			case 'boolean':
-				// 该分支的 value 就是布尔值：显式收窄类型，避免类型感知规则按 object 报 no-base-to-string
 				return Command.setBooleanColor!((arg.value as boolean).toString());
 			case 'number':
 				return Command.parseVariableNumber!(arg.value);
@@ -322,7 +321,6 @@ export function useCallEventCommandSchema() {
 	const createParameterElements = (parameter: CallEventArg): void => {
 		const { type, key, note } = parameter;
 		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
-		// 标签节点由 CallEvent.vue 的模板节点 clone 而来
 		const labelEl = (composableEls.get('callEvent-label-template') as YamiElement).cloneNode(
 			true
 		) as HTMLElement;
@@ -330,10 +328,6 @@ export function useCallEventCommandSchema() {
 		let input: HTMLElement & CallEventInputApi;
 		switch (type) {
 			case 'boolean':
-				// （`HTMLElement & { loadItems(...args: unknown[]): unknown; on(...): unknown; … }`），
-				// 它**本来就满足** `HTMLElement & CallEventInputApi` —— 原先那句
-				// `as unknown as YamiElement & CallEventInputApi` 多带了一个 `YamiElement`
-				// （要求整套 `YamiElementApi`，选择框根本没有），反而让两侧无法比较，只好走 `unknown`。
 				input = createSelectBox();
 				input.loadItems?.([
 					{ name: 'False', value: false },
@@ -344,7 +338,6 @@ export function useCallEventCommandSchema() {
 				input = createNumberVar();
 				numBoxOf(input).input!.min = '-1000000000';
 				numBoxOf(input).input!.max = '1000000000';
-				// `decimals` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 				elementDataOf<{ decimals?: number }>(numBoxOf(input)).decimals = 10;
 				break;
 			case 'string':
@@ -395,10 +388,6 @@ export function useCallEventCommandSchema() {
 				input.type = 'element';
 				break;
 			default:
-				// 未知参数类型。原先写成 `let input = null as unknown as …` 把类型糊过去，
-				// 实际后果是在下面的 setTooltip/appendChild 处以「null 上取属性」的形式炸，
-				// 报错点离真正原因很远。这里显式抛错：既让 tsc 的「使用前赋值」分析通过，
-				// 也把原因说清楚（`CallEventArg.type` 是普通 string，switch 本来就无法穷尽）。
 				throw new Error(`[CallEvent] 未支持的参数类型: ${type}`);
 		}
 		if (note) {
@@ -449,7 +438,6 @@ export function useCallEventCommandSchema() {
 				input.filter = 'object';
 				break;
 			default:
-				// 同上：未支持的返回值类型显式抛错，而不是让 input 保持 null 然后在下面炸。
 				throw new Error(`[CallEvent] 未支持的返回值类型: ${type}`);
 		}
 		write(input, { type: 'local', key: '' });
@@ -524,8 +512,6 @@ export function useCallEventCommandSchema() {
 			elEventType.createTooltip();
 			write(elEventType, eventTypes[0].value);
 		}
-		// 原先按类名 `document.querySelectorAll('.call-event-component')` 反查——这些元素
-		// 全部由本模块创建并登记在 `parameters` / `eventResult` 里，直接从数据面取即可
 		for (const element of [
 			...parameters.flatMap(({ label, input }) => [label, input]),
 			...(eventResult ? [eventResult.label, eventResult.input] : [])

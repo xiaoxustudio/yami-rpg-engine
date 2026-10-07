@@ -36,7 +36,6 @@ Palette.marqueePointerdown = function (
 	const { x, y } = this.getTileCoords(event, true);
 	switch (event.button) {
 		case 0: {
-			// 如果正在修改图块组宽高，让它立即生效
 			(document.activeElement as HTMLElement | null)?.blur();
 			if (isDragKey(event)) {
 				this.dragging = event as PaletteDragEvent;
@@ -97,12 +96,6 @@ Palette.marqueePointerdown = function (
 						this.updateTransform();
 						this.requestRendering();
 						this.screen.updateScrollbars();
-						// `latest` 是 `Palette.pointermove` 装在**这个事件对象**上的「最新一次指针事件」
-						// （`dragging.latest = event`，见 :400 / :483），而 `this.dragging` 就是它（:87）。
-						// 原先写成 `{ latest: never }`：`never` 是谎话（真实类型是 `PointerEvent`），
-						// 而且把「第一次 pointermove 之前还没装上」这件事一起藏了 —— 那种情况下
-						// `pointermove(undefined)` 会走到 `relate(dragging, undefined)` 直接返回 false
-						// （`relate` 里是 `b?.pointerId`）⇒ 本来就是个空操作，所以这里显式跳过，行为不变。
 						const latest = (event as PointerEvent & { latest?: PointerEvent }).latest;
 						if (latest) this.pointermove(latest);
 					});
@@ -343,7 +336,6 @@ Palette.marqueePopup = function (this: typeof Palette, event: PointerEvent) {
 Palette.pointerup = function (this: typeof Palette, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
-		// 打开窗口时触发的blur事件会导致再次执行pointerup 因此提前重置dragging来避免重复执行
 		this.dragging = null;
 		try {
 			switch (dragging.mode) {
@@ -403,7 +395,6 @@ Palette.pointerup = function (this: typeof Palette, event: PointerEvent) {
 					break;
 			}
 		} finally {
-			// 无论拖拽处理是否抛错都必须移除全局监听，否则残留监听会在后续任意点击中再次触发
 			window.removeEventListener('pointercancel', this.pointercancel);
 			window.removeEventListener('pointerup', this.pointerup);
 			window.removeEventListener('pointermove', this.pointermove);

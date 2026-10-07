@@ -103,8 +103,6 @@ import { Scene } from '@app/scene/scene-window.ts';
 		key: string,
 		value: unknown
 	) {
-		// 每个 case 的 `value` 类型由 `key` 决定（调用方是该字段对应的输入控件）：`image` 是字符串、
-		// 其余是数值 ⇒ 在各调用点按 case 收窄一次（`value: unknown` 是控件回调的统一口径）。
 		File.planToSave!(this.meta);
 		switch (key) {
 			case 'image':

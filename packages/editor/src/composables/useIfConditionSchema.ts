@@ -45,11 +45,8 @@ export interface IfConditionTarget {
 export interface IfConditionOperandShape {
 	type: string;
 	stringId?: string;
-	/** 常量值：boolean / number / string 三种 type 共用这一个字段（见下方 save()） */
 	value?: boolean | number | string;
-	/** 变量操作数 */
 	variable?: { type: string; key: string };
-	/** 对象类操作数：各自只用到 type（见 parseObjectOperand） */
 	actor?: { type: string };
 	skill?: { type: string };
 	state?: { type: string };
@@ -75,7 +72,6 @@ export interface IfConditionData {
 	quantity?: number;
 	shortcutKey?: string;
 	teamId?: string;
-	/** 按 type 分派时才出现的字段（见 parseTypeHandlers 与 save()）：变量 / 对象 / 列表 / 目标 */
 	variable?: { type: string; key: string };
 	actor?: { type: string };
 	element?: { type: string };
@@ -178,7 +174,6 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter2 = 'all';
 			break;
 	}
-	// `filter` 是 CustomBox 的实例属性（见 `custom-box-api.ts`），类型来自 `CustomBoxApi`
 	registryElement<CustomBoxApi>(composableEls, 'if-condition-common-variable')!.filter = filter1;
 	registryElement<CustomBoxApi>(composableEls, 'if-condition-operand-variable')!.filter = filter2;
 };

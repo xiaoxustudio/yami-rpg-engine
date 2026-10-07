@@ -25,10 +25,6 @@ vi.mock('@app/data/data-object.ts', () => ({
 	}
 }));
 
-// `usePresetElementWindow` 读的是 `getUIStore()`。
-// 本 spec 已经在 beforeEach 里 `setActivePinia(createPinia())`（见下方），所以直接用真 store ——
-// 这比 mock 更接近真实行为：测试不绑定遗留层的形状。
-
 type PresetElementListEl = HTMLElement & {
 	read(): PresetElementNode | null;
 	update(): void;

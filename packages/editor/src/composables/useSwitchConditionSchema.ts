@@ -59,12 +59,6 @@ export interface SwitchConditionForm {
 	variable: { type: string; key: string };
 }
 
-/**
- * 条件表单（`SwitchCondition.vue` 的 8 个 `v-model`）。
- * 真源已升进 `stores/command-forms.ts`；
- * 这里保留同名对象但改成 store 访问器 —— `v-model="form.type"` 这类写法不用改。
- * `variable` 是嵌套对象：getter 直接返回 store 里那个对象，所以 `form.variable.key = …` 也生效。
- */
 export const form: SwitchConditionForm = {
 	get type() {
 		return getCommandFormsStore().switchConditionForm.type;
@@ -117,7 +111,6 @@ export const form: SwitchConditionForm = {
 };
 
 interface SwitchConditionTarget {
-	/** 校验失败时返回 `undefined`（焦点回控件、窗口不关）—— 见 spec「save 校验失败返回控件焦点且不关闭窗口」 */
 	save: () => SwitchConditionData | undefined;
 }
 
@@ -264,9 +257,6 @@ const save = (): SwitchConditionData | undefined => {
 		case 'attribute': {
 			const attributeId = form.attributeId;
 			if (attributeId === '') {
-				// 校验失败：焦点回控件、窗口不关。返回 `undefined` 是**既有契约**
-				// （spec：「save 校验失败返回控件焦点且不关闭窗口」断言 `toBeUndefined()`），
-				// 之前只是靠 `as unknown as SwitchConditionData` 把谎话盖住。
 				requestFocus('switch-condition-attribute-attributeId');
 				return undefined;
 			}

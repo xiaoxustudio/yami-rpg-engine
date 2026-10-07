@@ -7,16 +7,6 @@ import SetVideo from '@app/components/commands/SetVideo.vue';
 import { composableEls } from '@app/composables/element-registry';
 import { Command } from '@app/commands/command-object.ts';
 
-/**
- * 通用 `useCommandSchema` 的 **write 循环**（`load()` 里按
- * `<name>-<field.domId ?? field.key>` 逐个 `write(...)`）过去直查 DOM，现在读 `composableEls`。
- * 这条链路要成立，命令表单 SFC 必须把**所有带 id 的控件**都登记进局部 `fieldEls` 并镜像到
- * `composableEls`——只登记用到的少数控件会让其余写入静默 no-op（SetVolume 的 volume/duration
- * 就曾如此）。
- *
- * 断言方式刻意做成**数据驱动**：直接遍历 schema 的 fields 反推控件 id，逐个查注册表——
- * 这样新增字段/改 domId 时用例会立刻发现"注册表缺项"，而不是等到某个 DOM 断言偶发失败。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
@@ -74,7 +64,6 @@ describe('命令表单 write 循环读注册表', () => {
 	it('SetVideo：镜像同样覆盖（本刀统一给所有命令表单补登记）', async () => {
 		const wrapper = await mountSettle(SetVideo);
 
-		// SetVideo 走 v-model + 自建 registry；只要求"带 id 的控件都已登记"
 		const headers = composableEls.get('setVideo-path');
 		expect(headers === undefined || headers?.id === 'setVideo-path').toBe(true);
 

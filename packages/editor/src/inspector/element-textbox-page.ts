@@ -10,11 +10,6 @@ import { registryElement } from '@app/utils/element-registry';
 		update: ((node: UITextBoxData, key: string, value: unknown) => void) | null;
 		[k: string]: unknown;
 	}
-	/**
-	 * `uiTextBox-number` 登记的是 `YMNumberBox` 的根元素：`decimals` 由该 SFC 自己
-	 * `defineProperty(el, 'decimals', …)` 定义（组件内部状态），**不是** 元素数据
-	 * ——所以这里给局部形状，而不是继续靠 `global.d.ts` 的 `interface HTMLElement` 兜底。
-	 */
 	interface NumberBoxHostElement extends HTMLElement {
 		input?: HTMLElement;
 		decimals?: number;
@@ -118,7 +113,6 @@ import { registryElement } from '@app/utils/element-registry';
 		value: unknown
 	) {
 		getUIStore().planToSave();
-		// const element = node.instance
 		switch (key) {
 			case 'type':
 			case 'align':
@@ -131,7 +125,6 @@ import { registryElement } from '@app/utils/element-registry';
 			case 'selectionBgColor':
 				if (node[key] !== value) {
 					(node as Record<string, unknown>)[key] = value;
-					// element[key] = value
 					node.instances.setProperty(key, value);
 				}
 				break;
@@ -139,7 +132,6 @@ import { registryElement } from '@app/utils/element-registry';
 			case 'number':
 				if (node[key] !== value) {
 					(node as Record<string, unknown>)[key] = value;
-					// element.content = value.toString()
 					node.instances.setProperty(
 						'content',
 						(value as { toString(): string }).toString()
@@ -150,7 +142,6 @@ import { registryElement } from '@app/utils/element-registry';
 			case 'max':
 				if (node[key] !== value) {
 					(node as Record<string, unknown>)[key] = value;
-					// element[key] = value
 					node.instances.setProperty(key, value);
 					const numberEl = registryElement<
 						NumberBoxHostElement & { input?: Record<string, unknown> }
@@ -161,7 +152,6 @@ import { registryElement } from '@app/utils/element-registry';
 			case 'decimals':
 				if (node.decimals !== value) {
 					node.decimals = value as number;
-					// element.decimals = value
 					node.instances.setProperty(key, value);
 					(inspectorEls.get('uiTextBox-number') as NumberBoxHostElement).decimals =
 						value as number;

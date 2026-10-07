@@ -31,11 +31,6 @@ import { registryElement } from '@app/utils/element-registry';
 			radius?: unknown;
 			centralAngle?: unknown;
 		};
-		/**
-		 * `update()` 是**按 key 分派**的（`switch (key)` 里直接 `trigger[key] = value`），
-		 * 键来自属性面板而不只是这里的已知字段 ⇒ 需要索引签名。
-		 * 用 `unknown` 而不是 `any`：读出来必须先收窄，拼错键也不会静默变成 any。
-		 */
 		[k: string]: unknown;
 	}
 	const FileTrigger: FileTriggerShape = {
@@ -131,7 +126,6 @@ import { registryElement } from '@app/utils/element-registry';
 			case 'effectiveTime':
 			case 'duration':
 			case 'inherit':
-				/* 联合键含静态 `string` 成员（selector），动态写入显式走索引签名视图。 */
 				if ((trigger as Record<string, unknown>)[key] !== value) {
 					(trigger as Record<string, unknown>)[key] = value;
 				}

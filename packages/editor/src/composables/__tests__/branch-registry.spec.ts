@@ -8,18 +8,6 @@ import SetNumberOperand from '@app/components/tools/SetNumberOperand.vue';
 import { composableEls } from '@app/composables/element-registry';
 import { registryElement } from '@app/utils/element-registry';
 
-/**
- * `components/tools` 的分支/条件表单。
- *
- * 覆盖三件事：
- * ① 两种注册表形态的镜像都成立——`IfBranch`/`SwitchBranch` 用元素注册表
- *    （`createElementRegistry(composableEls)`），`IfCondition`/`SetNumberOperand` 用
- *    **控件实例**注册表（`fieldRef` 里把实例的 `$el`/`root` 镜像进 `composableEls`）；
- * ② **顺带修掉的一处静默失效**：`if-branch-conditions` / `switch-branch-conditions` 这行
- *    `fieldEls.get(...)?.bind?.(X)` 一直是 no-op（标签上从没登记过 `:ref`）——
- *    现在断言 ParamList 的 `object` 真的被绑上了（缺 `:ref` 时该断言失败）；
- * ③ 窗口元素（`if-condition` / `setNumber-operand`）由具名 ref 命令式登记（模块读它取 setForm/getForm）。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
 	getLocalStore: () => ({ syncState: vi.fn() })
@@ -51,7 +39,6 @@ describe('分支/条件表单注册表', () => {
 		const conditions = composableEls.get('if-branch-conditions') as unknown as BoundList | null;
 		expect(conditions?.id).toBe('if-branch-conditions');
 		expect(conditions).toBe(document.getElementById('if-branch-conditions'));
-		// 这里恒为 undefined（`:ref` 没登记 → bind 被 `?.` 静默跳过）
 		expect(conditions?.object, 'if-branch-conditions 未被 bind').toBeTruthy();
 		expect(typeof conditions?.object?.parse).toBe('function');
 
@@ -82,7 +69,6 @@ describe('分支/条件表单注册表', () => {
 			expect(el?.id).toBe(id);
 			expect(el).toBe(document.getElementById(id));
 		}
-		// 窗口元素：`:ref` 槽位被具名 ref 占用 → onMounted 命令式登记（模块读它取 setForm/getForm）
 		const frame = composableEls.get('if-condition') as unknown as unknown as
 			| (HTMLElement & { setForm?: unknown; getForm?: unknown })
 			| null;

@@ -81,7 +81,6 @@ import { read } from '@app/utils/element-utils.ts';
 		value: unknown
 	) {
 		getUIStore().planToSave();
-		// const element = node.instance
 		switch (key) {
 			case 'image':
 			case 'display':
@@ -93,7 +92,6 @@ import { read } from '@app/utils/element-utils.ts';
 			case 'border':
 				if (node[key] !== value) {
 					node[key] = value;
-					// element[key] = value
 					node.instances.setProperty(key, value);
 				}
 				break;
@@ -105,7 +103,6 @@ import { read } from '@app/utils/element-utils.ts';
 				const color = key.slice(index);
 				if (node.tint[color] !== value) {
 					node.tint[color] = value;
-					// element.tint[color] = value
 					node.instances.setProperty(key, value);
 				}
 				break;

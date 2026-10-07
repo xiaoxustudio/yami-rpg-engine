@@ -273,7 +273,6 @@ Palette.resize = function (this: typeof Palette) {
 			this.canvas.height = canvasHeight;
 			this.canvas.style.width = `${canvasWidth / dpr}px`;
 			this.canvas.style.height = `${canvasHeight / dpr}px`;
-			// this.context.imageSmoothingEnabled = scale < 1
 			this.context.textAlign = 'center';
 			this.context.textBaseline = 'middle';
 		}

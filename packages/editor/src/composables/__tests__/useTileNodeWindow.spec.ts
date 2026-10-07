@@ -86,8 +86,6 @@ describe('useTileNodeWindow（自动图块节点选择窗口 composable：open/�
 		Window.open = vi.fn();
 		Window.close = vi.fn();
 		vi.mocked(Palette).explicit = false;
-		// 「调色板尚未初始化」，所以在测试里显式置 null —— 与 `palette-selection-render.spec.ts:48`
-		// 同一手法（测试夹具用的收窄断言）。
 		vi.mocked(Palette).marquee = null as unknown as typeof Palette.marquee;
 		vi.mocked(Scene).marquee = sceneMarquee([1]);
 		Timer.appendUpdater = vi.fn();

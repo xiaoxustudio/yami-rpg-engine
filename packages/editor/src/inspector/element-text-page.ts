@@ -98,7 +98,6 @@ import { registryElement } from '@app/utils/element-registry';
 
 	UIText.update = function (this: typeof UIText, node: UITextData, key: string, value: unknown) {
 		getUIStore().planToSave();
-		// const element = node.instance
 		switch (key) {
 			case 'horizontalAlign':
 				if (node.horizontalAlign !== value) {
@@ -122,7 +121,6 @@ import { registryElement } from '@app/utils/element-registry';
 						});
 					}
 					node.horizontalAlign = value;
-					// element.horizontalAlign = value
 					node.instances.setProperty(key, value);
 				}
 				break;
@@ -148,14 +146,11 @@ import { registryElement } from '@app/utils/element-registry';
 						});
 					}
 					node.verticalAlign = value;
-					// element.verticalAlign = value
 					node.instances.setProperty(key, value);
 				}
 				break;
 			case 'content':
-				// 直接复制，更新语言包中的内容
 				node[key] = value;
-				// element[key] = value
 				node.instances.setProperty(key, value);
 				break;
 			case 'direction':
@@ -168,7 +163,6 @@ import { registryElement } from '@app/utils/element-registry';
 			case 'blend':
 				if (node[key] !== value) {
 					node[key] = value;
-					// element[key] = value
 					node.instances.setProperty(key, value);
 				}
 				break;
@@ -176,7 +170,6 @@ import { registryElement } from '@app/utils/element-registry';
 				const font = (value as string).trim();
 				if (node.font !== font) {
 					node.font = font;
-					// element.font = font
 					node.instances.setProperty(key, font);
 				}
 				break;
@@ -205,7 +198,6 @@ import { registryElement } from '@app/utils/element-registry';
 							break;
 					}
 					node.effect = effect;
-					// element.effect = effect
 					node.instances.setProperty('effect', effect);
 				}
 				break;
@@ -217,7 +209,6 @@ import { registryElement } from '@app/utils/element-registry';
 				const property = key.slice(index);
 				if (node.effect[property] !== value) {
 					node.effect[property] = value;
-					// element.effect = node.effect
 					node.instances.setProperty('effect', node.effect);
 				}
 				break;

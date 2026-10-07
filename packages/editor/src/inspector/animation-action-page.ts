@@ -57,7 +57,6 @@ import { write } from '@app/utils/element-utils.ts';
 
 	AnimMotion.close = function (this: typeof AnimMotion) {
 		if (this.target) {
-			// 此处不能unselect并update Animation.list.unselect(this.target) Animation.updateTarget!()
 			this.target = null;
 		}
 	};

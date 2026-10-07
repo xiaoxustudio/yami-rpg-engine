@@ -205,7 +205,6 @@ describe('useTeamWindow（队伍窗口 composable：数据加载 + 列表编辑 
 		vi.spyOn(listEl, 'read').mockReturnValue(teamA);
 		const nodeItem = document.createElement('div');
 		nodeItem.classList.add('node-item');
-		// 行 item 存**元素数据**（`nodeItem.item` 这个 expando 已退役）
 		elementDataOf<{ item?: TeamData }>(nodeItem).item = teamB;
 		const mark = document.createElement('div');
 		mark.className = 'team-relation-mark';

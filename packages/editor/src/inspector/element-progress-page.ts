@@ -90,7 +90,6 @@ import { UIOwner } from './ui-owner.ts';
 		value: unknown
 	) {
 		getUIStore().planToSave();
-		// const element = node.instance
 		switch (key) {
 			case 'image':
 			case 'display':
@@ -106,7 +105,6 @@ import { UIOwner } from './ui-owner.ts';
 			case 'colorMode':
 				if (node[key] !== value) {
 					node[key] = value;
-					// element[key] = value
 					node.instances.setProperty(key, value);
 				}
 				break;
@@ -118,7 +116,6 @@ import { UIOwner } from './ui-owner.ts';
 				const color = key.slice(index);
 				if (node.color[color] !== value) {
 					node.color[color] = value;
-					// element.color[color] = value
 					node.instances.setProperty(key, value);
 				}
 				break;

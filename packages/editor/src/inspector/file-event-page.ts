@@ -39,15 +39,6 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	interface FileEventPage {
 		target: FileEventData | null;
 		meta: { file: unknown } | null;
-		/**
-		 * 参数列表。**可空**：字面量里先占 `null`，真实实现在 `FileEvent.parameters = {…}`
-		 * 那一句才装上（本文件第 194 行起）。
-		 *
-		 * 之所以要如实写 `| null`：写成非空的 `FileEventList` 时，下面那个对象字面量就
-		 * 对不上类型，只能整块 `as unknown as FileEventPage` —— **一处双重断言，
-		 * 换来整个单例 9 个成员一起不受检**。改成可空后断言消失，缺口只剩「谁忘了赋值」，
-		 * 而那由 `?.` 显式表达。
-		 */
 		parameters: FileEventList | null;
 		update: ((event: FileEventData, key: string, value: unknown) => void) | null;
 		listChange: ((event: Event) => void) | null;

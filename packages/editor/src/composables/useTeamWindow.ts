@@ -31,11 +31,6 @@ export type TeamData = {
 	color: string;
 	relations: Record<string, number>;
 	collisions: Record<string, number>;
-	/**
-	 * 树列表挂上的父节点（`list_updateTextNode` 用它算同级序号）。
-	 * **可选**：新建队伍时这个字段还不存在（`createData` 只造 id/name/…，父节点由树列表稍后挂上），
-	 * 所以只在「已挂进树」的回调里读取，那里补一个 `!`。
-	 */
 	parent?: { children: TeamData[] };
 };
 
@@ -80,9 +75,6 @@ let changed = false;
 let initializedElement: TeamListElement | null = null;
 
 function mountListMethods(listElement: TeamListElement): void {
-	// 注：这里原本先把下面 6 个成员写成 `null as unknown as (...args) => void`，
-	// 紧接着（本函数末尾）又全部赋上真实现 —— 那 6 行是**纯死写**（中间没有任何读取），
-	// 却各贡献一个 `null as unknown as`。删掉后语义等价、棘轮下降（2026-09-18）。
 	listElement.updateItemName = list_updateItemName as (item: unknown) => unknown;
 	listElement.updateTextNode = list_updateTextNode;
 	listElement.insert = list_insert;
@@ -115,7 +107,6 @@ function initialize(): void {
 	on(composableEls.get('team'), 'closed', windowClosed);
 	on(listElement, 'keydown', listKeydown);
 	on(listElement, 'pointerdown', listPointerdown);
-	// `team-confirm` 由 WindowFrame → YMFormButtons 生成（模板与注册表都取不到）→ 由 Team.vue 的 @confirm 驱动
 }
 
 function open(_data?: unknown): void {
@@ -311,7 +302,6 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 	switch (event.button) {
 		case 0:
 			if (hasClass(event.target, 'team-icon')) {
-				// 行 → item 经行 API 取（`element.item` expando 已退役）
 				const team = teamOfTarget(event.target);
 				if (team === undefined) return;
 				return Color.open({
@@ -353,7 +343,6 @@ function listPointerdown(this: TeamListElement, event: PointerEvent): void {
 
 function listSelect(_event: YamiEvent): void {
 	const listElement = list!;
-	// `update()` 自己会重建行，不再需要逐行标 changed
 	if (listElement.data.some((team: TeamData) => isTreeItemRendered(team))) {
 		listElement.update();
 	}
@@ -538,7 +527,6 @@ function list_updateItemName(this: TeamListElement, item: TeamData): void {
 }
 
 function list_updateTextNode(this: TeamListElement, item: TeamData): void {
-	// 这是树列表「更新节点文本」的回调：能走到这里说明 item 已经挂进树，父节点必定存在
 	const items = item.parent!.children;
 	const index = items.indexOf(item);
 	const length = items.length;

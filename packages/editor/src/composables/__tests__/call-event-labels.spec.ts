@@ -9,16 +9,6 @@ import { Enum } from '@app/enum/enum-window.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Window } from '@app/tools/window-object.ts';
 
-/**
- * CallEvent 的参数标签与返回值标签
- * ① 过去是 `document.createElement('div')` + `render()` 造节点 → 现在 clone 模板节点
- *    （`callEvent-label-template`），文本用 textContent 写；
- * ② 显隐过去按类名 `document.querySelectorAll('.call-event-component')` 反查 → 现在直接从
- *    `parameters` / `eventResult` 数据面取（这些元素本来就是本模块创建的）。
- *
- * 驱动方式刻意走 **SFC 自己的实例**（`@write` → composable）：`useCallEventCommandSchema()`
- * 每次调用都会新建一份实例状态，直接调它的 `typeWrite` 会作用在空 `parameters` 上。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
@@ -71,11 +61,10 @@ describe('CallEvent 参数标签与显隐', () => {
 		loadGlobalEvent();
 
 		const labels = labelsInGrid();
-		expect(labels.length).toBeGreaterThanOrEqual(3); // 两个参数 + 返回值
+		expect(labels.length).toBeGreaterThanOrEqual(3);
 		const texts = labels.map((el) => el.textContent?.trim());
 		expect(texts).toContain('Msg');
 		expect(texts).toContain('Obj');
-		// 标签是模板节点的克隆（带 text/call-event-component 类），参数标签文本非空
 		for (const label of labels) {
 			expect(label.classList.contains('call-event-component')).toBe(true);
 			expect(label.classList.contains('text')).toBe(true);
@@ -91,8 +80,6 @@ describe('CallEvent 参数标签与显隐', () => {
 
 		loadGlobalEvent();
 
-		// 2 个参数各 1 标签 + 1 输入，返回值 1 标签 + 1 输入 —— 正是旧代码
-		// `querySelectorAll('.call-event-component')` 会找到的那批（显隐循环现在直接遍历这份数据）
 		const all = Array.from(
 			gridBox().querySelectorAll('.call-event-component')
 		) as HTMLElement[];

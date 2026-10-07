@@ -11,15 +11,6 @@ import { Enum } from '@app/enum/enum-window.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Data } from '@app/data/data-object.ts';
 
-/**
- * 命令 schema composable 原先按 id 直接查 DOM（`document.getElementById('setShortcut-key')`），
- * 现在读共享注册表 `composableEls`；渲染方命令 SFC 的局部 `fieldEls` 改成**创建时镜像**
- * （`createElementRegistry(composableEls)`）。
- *
- * 这里锁两件事：① 挂载 SFC 后注册表里的键与元素 id 一致（镜像链路成立）；② 模块侧真的调到了
- * 注册表里的控件（不是静默 no-op）。若退回 onMounted 循环拷贝会在这里失败——子组件 onMounted
- * 早于父组件，命令控件在自己的 onMounted 里 emit write 时镜像还没发生。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })

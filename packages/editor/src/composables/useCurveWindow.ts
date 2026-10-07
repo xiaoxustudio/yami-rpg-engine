@@ -13,18 +13,6 @@ import { getCurveStore } from '@app/stores/curve';
 
 export type CurveState = 'closed' | 'open' | 'suspended';
 
-/**
- *
- * 调用方是模板里的 `@write="onEasingIdWrite"` / `@input="onEasingIdInput"`（`SelectBox` 的 emit 载荷，
- * 见 `components/layout/LayoutPanel.vue`），运行期传进来的就是 `{ value }` 这个普通对象。
- * 原先两处声明写的是 `YamiEvent`（`Event & 载荷字段`），于是调用点被迫写
- * `{ value } as unknown as Event` —— 断言的来源与目标根本不是同一类东西（一个是普通对象，
- * 一个是 DOM 事件），只是为了骗过形参。
- *
- * 形状直接取 `EventPayloadFields.value`（`editor-event.ts` 的单点宽松别名），与事件载荷的读法一致；
- * 这里**刻意不收紧成 `string`**：`easingIdWrite` 会把值存进 `index`，而 `index` 的声明是
- * `number | null | ''`（`curve-window.ts:20`）—— 收紧 `value` 会当场暴露那个声明问题，
- */
 export type EasingIdPayload = Pick<EventPayloadFields, 'value'>;
 
 export interface CurveFrame {
@@ -62,14 +50,6 @@ interface CurveWindow {
 	list: CurveList | null;
 	canvas: CurveCanvas | null;
 	target: CurveFrame | null;
-	/**
-	 * 当前选中的缓动 **id**（`Data.easings.map` 的键），不是帧下标。
-	 *
-	 * `easingIdWrite` 把 `event.value`（缓动 id）写进来（`:396`）、当字符串键用
-	 * （`Data.easings.map[id]`）、并与 `''` 比较；`__tests__/useCurveWindow.spec.ts:200`
-	 * 也断言 `toBe('easing-1')`。之所以一直没报错，是因为 `event.value` 走
-	 * `EventPayloadFields.value?: Loose`（`any`），赋值方向被 `any` 吞掉了。
-	 */
 	index: string | null;
 	curveMap: CurveMapInstance | null;
 	initialize: () => void;
@@ -94,12 +74,6 @@ interface CurveWindow {
 	settingsPointerdown: (event: PointerEvent) => void;
 }
 
-/**
- * 三个窗口状态（`state`/`target`/`index`）的真源在 `stores/curve.ts`（原先是本文件的模块级
- * `let`）。用一个访问器对象而不是裸变量：实现区里 `curve.state = 'open'`、
- * `if (curve.state !== 'closed')`、`curve.target!.easingId = …` 的读写都直接落在 store 上，
- * 38 处引用无需改写语义。下面的 `page/head/list/canvas/curveMap` 是 DOM/实例句柄，不入 store。
- */
 const curve = {
 	get state(): CurveState {
 		return getCurveStore().state;
@@ -153,8 +127,6 @@ const initialize = (): void => {
 		if (name !== undefined) {
 			item.name = name;
 		}
-		// `dataValue` 的两种承载者（列表项的 own 访问器 / 元素数据）统一走 elementDataValueOf，
-		// 访问器退役后这一读仍然成立。
 		if (elementDataValueOf(this) !== null) {
 			this.update?.();
 		}

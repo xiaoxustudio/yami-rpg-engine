@@ -91,7 +91,6 @@ import type { YamiEvent } from '@app/types/editor-event';
 		value: unknown
 	) {
 		getUIStore().planToSave();
-		// const element = node.instance
 		switch (key) {
 			case 'animation':
 			case 'motion':
@@ -103,7 +102,6 @@ import type { YamiEvent } from '@app/types/editor-event';
 			case 'offsetY':
 				if (node[key] !== value) {
 					node[key] = value;
-					// element[key] = value
 					node.instances.setProperty(key, value);
 				}
 				break;

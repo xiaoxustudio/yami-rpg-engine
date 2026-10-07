@@ -13,11 +13,6 @@ import { DynamicShape } from '@app/types/shapes.ts';
 import type { YamiElement } from '@app/types/element-api';
 import type { YamiMouseEvent } from '@app/types/editor-event';
 
-/**
- * 一次「输入 → 历史」的变更记录（`input` 是触发变更的元素）。
- *
- * `changes`。
- */
 export interface InspectorChange {
 	input: YamiElement;
 	oldValue: unknown;
@@ -84,17 +79,11 @@ const writeFormValue = (form: Record<string, unknown>, key: string, value: unkno
 	return true;
 };
 
-/**
- * inspector 页管理器元素上的元素数据（`focusing` 原先靠原型访问器透明落到 WeakMap）。
- * 注意 manager 上的 `active` **不走元素数据**：Vue 版 YMPageManager 在元素上
- * `Object.defineProperty(el, 'active', …)` 自建访问器（遮蔽原型），故保持原样。
- */
 interface InspectorManagerData {
 	focusing: YamiElement | null;
 }
 const managerData = (el: unknown): InspectorManagerData => elementDataOf<InspectorManagerData>(el);
 
-/** 滚动拖拽状态（`dragging`）走显式元素数据 */
 interface InspectorScrollData {
 	dragging: PointerEvent | null;
 }
@@ -179,8 +168,6 @@ Inspector.initialize = function (this: typeof Inspector) {
 
 	registerParamHistoryProcessors();
 
-	// this.manager.switch('fileTrigger')
-
 	// oxlint-disable-next-line no-explicit-any
 	const processors = History.processors as Record<string, (operation: string, data: any) => void>;
 	processors['inspector-change'] = (operation: string, data: InspectorChangeData) => {
@@ -205,14 +192,14 @@ Inspector.initialize = function (this: typeof Inspector) {
 	processors['inspector-layer-change'] = (operation: string, data: InspectorLayerChangeData) => {
 		const { target, motion, direction } = data;
 		processors['inspector-change'](operation, data);
-		Animation.setMotion(motion as AnimationMotionData | null); // 面板载荷是动态类型：这里按运行期形状收窄一次
+		Animation.setMotion(motion as AnimationMotionData | null);
 		Animation.setDirection(direction as number);
 		Animation.openLayer(target);
 	};
 	processors['inspector-frame-change'] = (operation: string, data: InspectorLayerChangeData) => {
 		const { target, motion, direction } = data;
 		processors['inspector-change'](operation, data);
-		Animation.setMotion(motion as AnimationMotionData | null); // 面板载荷是动态类型：这里按运行期形状收窄一次
+		Animation.setMotion(motion as AnimationMotionData | null);
 		Animation.setDirection(direction as number);
 		Animation.selectFrame(target);
 	};
@@ -363,7 +350,6 @@ Inspector.getKey = function (
 	this: typeof Inspector,
 	element: { key?: string; id: string }
 ): string {
-	// `key` 是元素数据
 	const data = elementDataOf<{ key?: string }>(element);
 	let key = data.key;
 	if (key === undefined) {
@@ -389,7 +375,6 @@ Inspector.managerKeydown = function (this: typeof Inspector, event: KeyboardEven
 	switch (element.tagName) {
 		case 'INPUT':
 		case 'TEXTAREA':
-			// 如果是滑动框类型则跳到default
 			if (element.type !== 'range') {
 				if (event.ctrlKey || event.metaKey) {
 					switch (event.code) {
@@ -478,7 +463,6 @@ Inspector.inputBlur = function (
 ) {
 	return function (this: YamiElement & { changes?: InspectorChange[] }, _event: Event) {
 		if (Window.activeElement === null) {
-			// 因此需要判断manager.focusing
 			const { manager } = Inspector;
 			const managerView = managerData(manager);
 			if (managerView.focusing === null) {
@@ -522,7 +506,6 @@ Inspector.inputBlur = function (
 Inspector.sliderFocus = (function IIFE() {
 	const focus = new FocusEvent('focus');
 	return function (this: HTMLElement & { synchronizer: HTMLElement }, _event: Event) {
-		// `synchronizer` 走显式元素数据
 		elementDataOf<{ synchronizer: HTMLElement }>(this).synchronizer.dispatchEvent(focus);
 	};
 })();

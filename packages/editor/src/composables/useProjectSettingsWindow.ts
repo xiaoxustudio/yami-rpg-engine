@@ -161,7 +161,6 @@ interface ProjectSettingsWindow {
 	confirm: (event?: Event) => void;
 }
 
-// 每个键对应一个嵌套对象；就地改值（如 form.window.title）直接落在 store 上。
 const form: ProjectSettingsForm = {
 	get window(): ProjectSettingsForm['window'] {
 		return getWindowFormsStore().projectSettingsForm.window;
@@ -280,7 +279,6 @@ let languageList: { inserting?: boolean } = {};
 /** 取注册表里的控件元素（沿用原先 `document.getElementById(id)!` 的非空断言语义） */
 const el = (id: string): YamiElement => composableEls.get(id) as YamiElement;
 
-/** 参数控件 id：`initialize()` 给它们统一挂 `input` 监听（渲染方 ProjectSettings.vue 逐个 `:ref` 登记） */
 const PARAM_IDS = [
 	'config-window-title',
 	'config-window-width',
@@ -407,7 +405,6 @@ function initialize(): void {
 	on(composableEls.get('project-settings'), 'close', windowClose);
 	on(composableEls.get('project-settings'), 'closed', windowClosed);
 	on(composableEls.get('project-settings'), 'change', dataChange);
-	// 确认按钮由 WindowFrame → YMFormButtons 生成（模板里没有、注册表取不到）→ 走 SFC 的 @confirm
 	for (const id of PARAM_IDS) {
 		const control = composableEls.get(id);
 		if (control) on(control, 'input', paramInput);
@@ -588,10 +585,6 @@ const languages: LanguagesInterface = {
 		requestFocus('language-name');
 		getWindowStore().open('language');
 	},
-	/**
-	 * 语言窗口的确认：按钮由 WindowFrame → YMFormButtons 生成（模板里没有、注册表取不到），
-	 * 故由 `Language.vue` 的 `@confirm` 调用本方法。
-	 */
 	confirm: function (this: LanguagesInterface) {
 		if (languageList.inserting) {
 			const langList = getProjectStore().data!.localization.languages;

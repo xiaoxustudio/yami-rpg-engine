@@ -14,11 +14,6 @@ import type { RequestKeyValueForm } from '@app/stores/command-forms';
 
 export type RequestKeyValue = RequestKeyValueForm;
 
-/**
- * key/value 表单（`RequestKeyValue.vue:6-7` 的 `v-model:key`/`v-model:value`）。
- * 真源已升进 `stores/command-forms.ts`；
- * 这里保留同名对象但改成 store 访问器，调用点写法不变。
- */
 export const requestKeyValueForm: RequestKeyValueForm = {
 	get key() {
 		return getCommandFormsStore().requestKeyValueForm.key;

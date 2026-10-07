@@ -6,8 +6,6 @@ import type { YamiElement } from '@app/types/element-api';
 import '@app/utils/number';
 
 describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
-	// 返回 `YamiElement` 而不是 `HTMLElement`：`AutoTile.nodeList` / `frameList` 的口径就是它
-	// `mount(YMCommonList)` 装出来的元素正是生产路径那种带列表 API 的元素 ⇒ 这个类型是如实的。
 	const createList = async (id: string): Promise<YamiElement> => {
 		const wrapper = mount(YMCommonList, { props: { id }, attachTo: document.body });
 		await wrapper.vm.$nextTick();
@@ -23,8 +21,6 @@ describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
 	it('createNodeItems 经 Vue 渲染 common-item 与 dataValue', async () => {
 		const list = await createList('autoTile-nodes');
 		AutoTile.nodeList = list;
-		// 本用例只用到 `cover`，但样本按**完整契约**造（`AutoTileTemplateData` 有 4 个必填字段，
-		// 原先那个 `{ cover: 1 }` 能编译只是 `Record<string, any>` 时代的事）。
 		AutoTile.template = { id: 't', name: '', cover: 1, nodes: [] };
 		AutoTile.nodes = [
 			{ rule: 0, frames: [0] },
@@ -38,9 +34,6 @@ describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
 		expect(items[0].textContent).toBe('#0');
 		expect(items[1].textContent).toBe('#1 !');
 		expect(items[2].textContent).toBe('#2');
-		// 行元素上的 `.dataValue` 由 Vue 的 `patchDOMProp` 写成**元素自己的属性**
-		// （消费方 `common-list-core` 经 `elementDataValueOf` 读取，own 优先、否则元素数据）。
-		// 断言一律走同一个门，而不是假定它具体存在哪一侧存储。
 		expect(elementDataValueOf(items[1])).toBe(1);
 	});
 
