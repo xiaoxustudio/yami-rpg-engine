@@ -20,10 +20,7 @@ function stripComments(code: string): string {
 
 describe('全局挂载审计（window/globalThis 挂载点清除固化）', () => {
 	it('浏览器 window 挂载仅保留 window.Window（ui-kit 消费）', () => {
-		const files = walk(SRC).filter(
-			// 仅审计生产代码：测试文件内的 window 桩（如自动图块用例的 window.CSS）不计入
-			(p) => !/__tests__[\\/]|\.spec\.ts$/.test(p)
-		);
+		const files = walk(SRC).filter((p) => !/__tests__[\\/]|\.spec\.ts$/.test(p));
 		const violations: string[] = [];
 		const windowWrite = /(^|[^\w.\]])(window)\s*\.\s*[A-Za-z_$][\w$]*\s*=/;
 		for (const p of files) {
@@ -31,7 +28,6 @@ describe('全局挂载审计（window/globalThis 挂载点清除固化）', () =
 			for (const line of code.split('\n')) {
 				if (!windowWrite.test(line)) continue;
 				if (line.includes('window.Window =') || line.includes('window.Window =')) continue;
-				// 布局调试钩子 __yamiLayoutDebug：layout.ts 有意保留，供控制台手动输出布局诊断
 				if (line.includes('__yamiLayoutDebug')) continue;
 				violations.push(relative(ROOT, p) + ': ' + line.trim());
 			}
@@ -47,9 +43,6 @@ describe('全局挂载审计（window/globalThis 挂载点清除固化）', () =
 		for (const p of files) {
 			const code = stripComments(readFileSync(p, 'utf8'));
 			for (const line of code.split('\n')) {
-				// `preload-env.d.ts` 里给 `Window` 补声明，两条豁免随之删除；
-				// 原 `Window: typeof Window` 一条实测**匹配不到任何行**（陈旧豁免），一并删掉。
-				// 布局调试钩子 __yamiLayoutDebug：layout.ts 有意保留，供控制台手动输出布局诊断
 				if (line.includes('__yamiLayoutDebug')) continue;
 				if (line.includes('window as unknown as') || line.includes('(window as any)')) {
 					violations.push(relative(ROOT, p) + ': ' + line.trim());

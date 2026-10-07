@@ -54,7 +54,6 @@ onMounted(() => {
 		fileImage.image = elImage.value;
 	}
 
-	// 具名 ref 占用了 `:ref` 槽位 → 命令式登记（模块侧读注册表取图元素）
 	registerElement(inspectorEls, 'fileImage-image', elImage.value);
 
 	const el = inspectorEls.get('fileImage');

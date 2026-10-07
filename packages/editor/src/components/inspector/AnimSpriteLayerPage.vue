@@ -66,10 +66,6 @@ const elSprite = ref<InstanceType<typeof SelectBox> | null>(null);
 const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
 const elLight = ref<InstanceType<typeof SelectBox> | null>(null);
 
-// 选项名跟随语言。放在 setup 顶层即可——`useLocalizedOptions` 内部用**全局 Composer** +
-// `watchEffect`：既跟踪语言切换，也跟踪 `:ref` 挂载后 ref 的赋值（挂载完成时 effect 因读到新 ref
-// 重跑，那时才真正 `loadItems`）。**事件回调**里不能调用本组合式函数：会抛 vue-i18n 的
-// `Must be called at the top of a setup function`（页面自己的选项也由本函数承担，见下）。
 useLocalizedOptions('animSpriteLayer-blend', ['normal', 'additive', 'subtract'], (items) =>
 	elBlend.value?.loadItems?.(items)
 );

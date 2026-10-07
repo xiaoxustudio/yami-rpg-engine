@@ -32,7 +32,6 @@ interface Props {
 	showApply?: boolean;
 	buttonsIdPrefix?: string;
 	noButtons?: boolean;
-	/** 表单无效时禁用确认按钮（取代原先对 `#<id>-confirm` 的 disable/enable） */
 	confirmDisabled?: boolean;
 }
 
@@ -138,15 +137,12 @@ onMounted(() => {
 			(emit as (evt: 'confirm' | 'apply' | 'cancel') => void)(type)
 		);
 	}
-	// 窗口壳元素登记进 windowShellEls（`Window.open(id)` 据此取帧，原先 document.getElementById）。
-	// 取消按钮的接线也从模块的 `document.getElementsByName('cancel')` 下沉到这里——只查自己的子树。
 	if (el.id !== '') registerElement(windowShellEls, el.id, el);
 	for (const button of el.querySelectorAll<HTMLElement>('[name="cancel"]')) {
 		button.addEventListener('click', () => {
 			if (el.id !== '') Window.close!(el.id);
 		});
 	}
-	// 切语言时重写窗口内元素（懒加载窗口挂载后语言已加载，靠此兜底）
 	const onLocalize = (): void => {
 		const store = getLocalStore();
 		if (!store.components) return;
@@ -165,7 +161,6 @@ onMounted(() => {
 				if (element) setLocalElement(element, item);
 			}
 		}
-		// 通用按钮（[confirm]/[cancel]/[apply] 按 name 匹配），懒加载窗口挂载时兜底本地化
 		for (const buttonName of ['confirm', 'cancel', 'apply'] as const) {
 			const item = components[`[${buttonName}]`];
 			if (!item) continue;
@@ -174,7 +169,6 @@ onMounted(() => {
 			});
 		}
 	};
-	// 懒加载窗口可能在语言加载后才挂载（错过 localize 事件），挂载时主动本地化兜底
 	onLocalize();
 	window.addEventListener('localize', onLocalize);
 	onBeforeUnmount(() => window.removeEventListener('localize', onLocalize));

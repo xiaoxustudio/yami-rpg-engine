@@ -166,11 +166,7 @@ onMounted(() => {
 		fileAudio.canvas = canvas;
 		fileAudio.context = canvas?.getContext('2d', { desynchronized: true });
 
-		// 波形的 analyser 参数与缓冲区（dataArray/intervals/intensities）统一由模块侧按需建 ——
-		// `analyser` 可能晚于本次挂载就绪，那时在这里建不出来，而 rAF 回调已经开始每帧读它们
-		// （2026-10-01 的 `array.length` 崩溃）。见 `file-audio-page.ts` 的 `ensureWaveformBuffers`。
 		fileAudio.ensureWaveformBuffers?.();
-		// 监听器存变量再 add/remove，保证卸载时能摘掉（只 add 就摘不掉）
 		const onThemeChange = fileAudio.themechange;
 		themechangeHandler = onThemeChange;
 		window.addEventListener('themechange', onThemeChange);

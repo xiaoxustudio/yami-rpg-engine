@@ -36,7 +36,6 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Home, type HomeRecentCard } from '@app/title/home-page.ts';
 
-// 标签文案由模板 t() 承担
 const { t } = useI18n();
 
 const cards = ref<HomeRecentCard[]>([]);

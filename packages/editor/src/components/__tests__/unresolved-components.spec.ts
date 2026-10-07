@@ -16,7 +16,6 @@ function walk(dir: string, out: string[] = []): string[] {
 	return out;
 }
 
-/** Vue 内建组件（无需导入，由编译器/运行时提供）。 */
 const BUILTIN = new Set([
 	'template',
 	'slot',
@@ -71,18 +70,6 @@ function hasBinding(script: string, name: string): boolean {
 	);
 }
 
-/**
- * 模板里用了 PascalCase 组件、`<script setup>` 里却没有同名绑定 —— 这类漏导入**不会报错**，
- * 只会打印 `[Vue warn]: Failed to resolve component: Xxx`，模板退化成同名原生元素
- * （折叠面板/摘要框静默失效，功能没了还不易发现）。
- *
- * 本仓没有全局组件注册（`src/main.ts` 只注册 `v-focus` / `v-tip`），因此每个 SFC 都必须自己导入。
- * 2026-09-25 的实测：`components/inspector/**` 的 9 个 `*Section.vue` / `SceneRegionPage.vue`
- * 用了 `<DetailBox>` / `<DetailSummary>` 却没导入（控制台 18 条同名警告），本用例即其固化。
- *
- * 唯一合法的「无导入同名」是 **SFC 文件名自引用**（Vue 支持组件在自身模板里以文件名递归引用自己，
- * 如 `LayoutTreeView.vue` 里的 `<LayoutTreeView>`），已按文件名放行。
- */
 describe('模板组件解析完整性（防漏导入组件）', () => {
 	it('所有模板里用到的 PascalCase 组件在 <script> 中都有绑定（或为文件名自引用）', () => {
 		const files = walk(join(ROOT, 'src'));
@@ -111,10 +98,6 @@ describe('模板组件解析完整性（防漏导入组件）', () => {
 		expect(missing, '这些 SFC 用了组件但没导入，模板会退化成同名原生元素').toEqual([]);
 	});
 
-	/**
-	 * 运行时伴随用例：静态检查只保证「有 import 语句」，这里证明那条 import 真的解析成了组件
-	 * ——`SceneRegionPage.vue` 是 2026-09-25 那批漏导入里结构最简单的一个（只用 DetailBox/DetailSummary）。
-	 */
 	it('运行时：代表性页面把 DetailBox / DetailSummary 解析成真实组件（无 Failed to resolve 警告）', async () => {
 		setActivePinia(createPinia());
 		const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);

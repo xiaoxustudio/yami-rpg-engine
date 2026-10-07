@@ -6,13 +6,6 @@ import UIImagePage from '@app/components/inspector/UIImagePage.vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registryElements, registerElement } from '@app/utils/element-registry';
 
-/**
- * inspector 页里「一次批量取多个控件再挂焦点/滑杆监听」的写法，过去是
- * `document.querySelectorAll('#a, #b, …')`，现在读 `inspectorEls`（`registryElements`）。
- *
- * 这条链路要求页面把这些控件**全部登记**——少登记一个，`bindInput`/`bindSliders` 就静默少绑一个控件
- * （输入框失焦不提交历史、滑杆拖完不写回）。本文件锁"页面登记覆盖了它自己要绑的 id 列表"。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
@@ -66,7 +59,6 @@ describe('inspector 页批量取控件走注册表', () => {
 			expect(inspectorEls.get(id), `${id} 未登记（会静默少绑监听）`).toBeTruthy();
 			expect(inspectorEls.get(id)?.id).toBe(id);
 		}
-		// registryElements 保持顺序、不缺项
 		expect(registryElements(inspectorEls, ids).map((el) => el.id)).toEqual(ids);
 		expect(registryElements(inspectorEls, ids).length).toBe(ids.length);
 

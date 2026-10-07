@@ -28,7 +28,6 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import FileBrowser from '../file-browser/FileBrowser.vue';
 
-// selector-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	getSelectorStore().confirm?.();
 };

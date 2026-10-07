@@ -33,10 +33,6 @@ vi.mock('@app/inspector/inspector.ts', () => ({
 
 vi.mock('@app/stores/ui', () => ({
 	useUIStore: () => ({ syncState: vi.fn() }),
-	// 这些页面从 store 取（页面 onMounted 里调
-	// `bindInput(elements, getUIStore(), editor)`）。这个 mock 必须一并提供 getUIStore，
-	// 否则 'getUIStore' 会是 undefined（ESM 具名导入在 mock 模块上缺失即报错）。
-	// 这里只补页面实际用到的成员，保持最小面。
 	getUIStore: () => ({
 		history: null,
 		target: null,
@@ -66,7 +62,6 @@ describe('UIImagePage（uiElement inspector 响应式双向绑定桥接）', () 
 		const host = document.createElement('div');
 		host.id = 'uiImage-vue-mount';
 		document.body.appendChild(host);
-		// 页面 SFC 改从 inspectorEls 取宿主容器 → 用例自建的宿主也要登记
 		registerElement(inspectorEls, host.id, host);
 		const wrapper = mount(UIImagePage, {
 			attachTo: document.body,

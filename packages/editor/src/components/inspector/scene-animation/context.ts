@@ -3,7 +3,6 @@ import type { useSceneAnimationPage } from '@app/composables/useSceneAnimationPa
 
 type SceneAnimationForm = ReturnType<typeof useSceneAnimationPage>['form'];
 
-/** sceneAnimation 表单拆段后，容器向 Properties 段注入的共享上下文。 */
 export interface SceneAnimationContext {
 	form: SceneAnimationForm;
 	onParamInput: (value: unknown) => void;

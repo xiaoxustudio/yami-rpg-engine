@@ -30,7 +30,6 @@ const toast = useToastService();
 const items = ref<{ type: string; message: string; duration: number }[]>([]);
 const rootEl = ref<HTMLElement | null>(null);
 
-// 日志消息允许的样式 span（供点击跳转 VSCode 使用），其余 HTML 一律转义防注入
 const escapeHtml = (value: unknown): string =>
 	String(value ?? '').replace(/[&<>"']/g, (c) =>
 		c === '&'

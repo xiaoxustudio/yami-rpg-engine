@@ -198,22 +198,10 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	];
 };
 
-// —— 转发给单例的桥接层 ——
-//
-// `AutoTile` 从 `Record<string, any>` 收成了具名成员表（`palette/auto-tile.ts` 的
-// `AutoTileShape`），于是这里**必须**按「组件真正 emit 出来的东西」转发，两类不能混：
-//
-// ① **模板列表**用的是 `TreeList`，它的 emit 是 `select/popup/change: [event: Event & { value?: unknown }]`
-//    ⇒ 桥接层收到的是**事件对象**，`value` 是 `unknown`（组件层口径）—— 值的收窄只能发生在这一层
-//    （它知道这是自动图块窗口：`value` 是模板对象）。
-// ② **节点/帧列表**用的是 `CommonList`，它的 emit 是 `write: [value: unknown]` /
-//    `popup: [value: unknown, clientX, clientY]` ⇒ 收到的是**散开的参数**，桥接层再打包成载荷。
 const onTemplatesSelect = (event: Event & { value?: unknown }) => {
 	AutoTile?.templatesSelect?.({ value: event.value as AutoTileTemplateData | undefined });
 };
 const onTemplatesPopup = (event: Event & { value?: unknown }) => {
-	// `TreeList` 的 popup 事件就是 DOM 的鼠标事件（组件只额外挂了 `value`），
-	// 所以这里收窄到 `MouseEvent` 取坐标 —— 与本次改动前那一行的写法一致（`as MouseEvent & …`）。
 	const mouse = event as MouseEvent & { value?: unknown };
 	AutoTile?.templatesPopup?.({
 		value: mouse.value as AutoTileTemplateData | null | undefined,

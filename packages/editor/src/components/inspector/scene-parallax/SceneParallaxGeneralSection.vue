@@ -129,10 +129,6 @@ const elLayer = ref<InstanceType<typeof SelectBox> | null>(null);
 const elLight = ref<InstanceType<typeof SelectBox> | null>(null);
 const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
 
-// 三个下拉的选项名跟随语言。放在 setup 顶层即可——`useLocalizedOptions` 内部用
-// **全局 Composer** + `watchEffect`：既跟踪语言切换，也跟踪 `:ref` 挂载后 ref 的赋值（挂载完成时
-// effect 因读到新 ref 重跑，那时才真正 `loadItems`）。在**事件回调**里调用本组合式函数，
-// 运行期会抛 vue-i18n 的 `Must be called at the top of a setup function`。
 useLocalizedOptions('sceneParallax-layer', ['background', 'foreground'], (items) =>
 	elLayer.value?.loadItems?.(items)
 );

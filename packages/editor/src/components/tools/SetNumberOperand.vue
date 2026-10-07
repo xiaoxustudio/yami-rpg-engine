@@ -410,9 +410,6 @@ const elementOf = (control: FieldControl | null): HTMLElement | null => {
 const fieldRef = (id: string) => (el: unknown) => {
 	const control = el as FieldControl | null;
 	fieldEls.set(id, control);
-	// 同时把控件元素镜像进 composableEls（模块侧改读注册表，不再按 id 查 DOM）。
-	// 必须在 **ref 回调**里镜像而不是只靠 onMounted：子组件 onMounted 早于父组件，命令控件会在自己的
-	// onMounted 里 emit write/input 触发模块侧代码，那时注册表必须已经有值。
 	registerElement(composableEls, id, elementOf(control));
 };
 
@@ -430,7 +427,6 @@ onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
 		attachElementApi(el, { setForm, getForm });
-		// 窗口元素 `:ref` 槽位被具名 ref 占用 → 在这里命令式登记（模块侧读它取 setForm/getForm）
 		registerElement(composableEls, 'setNumber-operand', el);
 	}
 	setupSetNumberOperandFields(fieldEls, el);

@@ -58,7 +58,6 @@ interface Props {
 	modelValue?: unknown;
 	items?: unknown[];
 	disabled?: boolean;
-	/** 可访问名（透传给 ui-kit 的 aria-label），不渲染可见文本 */
 	label?: string;
 }
 
@@ -118,12 +117,6 @@ const save = (): void => ym.value?.save();
 const restore = (): void => ym.value?.restore();
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
-/**
- * 选项名由本组件按语言文件**自己生成**（`t()` 响应式），本地化器不必再为这些键查 DOM。
- * 与 `getLocalStore().components[id].options` 等价（那份只在语言切换时重写一次），
- * 这里按同一份 `components.<id>.options` 消息树生成，并由 `watchEffect` 在语言切换时重挂。
- * 未收录 `components.<id>.options` 的控件保持原样（不写名字，交给调用方的 loadItems）。
- */
 const { t, te, tm } = useI18n();
 const applyLocalizedOptions = (): void => {
 	const id = props.id;
@@ -216,7 +209,6 @@ const createTooltip = (): void => {
 
 const openSelect = (): void => {
 	const el = root.value;
-	// 读 props 而不是本地 ref：本地那份是挂载时的快照，运行期改 disabled 后守卫会失效
 	if (!el || props.disabled) return;
 	Select.open(el);
 };
@@ -260,7 +252,6 @@ defineExpose({
 	root
 });
 
-// 语言切换时重挂选项名（`applyLocalizedOptions` 内部调 `t`，故本 effect 会随语言变化重跑）
 watchEffect(() => {
 	applyLocalizedOptions();
 });

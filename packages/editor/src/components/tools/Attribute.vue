@@ -260,7 +260,6 @@ const onApply = () => {
 	Attribute?.apply?.();
 };
 
-// `attribute-confirm` 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	Attribute?.confirm?.(new Event('click'));
 };

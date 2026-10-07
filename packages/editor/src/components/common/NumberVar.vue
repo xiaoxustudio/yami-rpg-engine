@@ -115,7 +115,6 @@ defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, r
 
 const api = {
 	mode: 'constant',
-	// numBox 改为元素数据（WeakMap），不再放进 api 对象（否则会以同名自有属性遮蔽）
 	read,
 	write,
 	switch: switchMode,
@@ -157,7 +156,6 @@ onMounted(() => {
 			api.mode = cls.includes('variable') ? 'variable' : 'constant';
 			elementDataOf<{ numBox: HTMLElement | null }>(el).numBox =
 				(ym.value?.root?.querySelector('.number-box') as HTMLElement) ?? null;
-			// varBox now lives in element data (field removed from DATA_FIELDS)
 			const varBoxData = elementDataOf<{
 				varBox: (HTMLElement & { isPluginInput?: boolean }) | null;
 			}>(el);

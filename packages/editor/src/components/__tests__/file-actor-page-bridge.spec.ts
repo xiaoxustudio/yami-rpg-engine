@@ -60,7 +60,6 @@ describe('FileActorPage（fileActor inspector 响应式双向绑定桥接）', (
 		const host = document.createElement('div');
 		host.id = 'fileActor-vue-mount';
 		document.body.appendChild(host);
-		// 页面 SFC 改从 inspectorEls 取宿主容器 → 用例自建的宿主也要登记
 		registerElement(inspectorEls, host.id, host);
 		const wrapper = mount(FileActorPage, {
 			attachTo: document.body,

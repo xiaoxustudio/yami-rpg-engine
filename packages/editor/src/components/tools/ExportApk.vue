@@ -93,7 +93,6 @@ import { exportApkForm, Menubar } from '@app/title/menu-bar';
 
 const items = ref<{ done: boolean; msg: string }[]>([]);
 
-// 超链接点击转交 Menubar（模块侧不再按类名全文档反查 `.href`）
 const onHrefClick = (event: MouseEvent): void => {
 	Menubar.hrefClick!(event);
 };

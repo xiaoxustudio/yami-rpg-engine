@@ -106,7 +106,6 @@ const show = (target: HTMLInputElement): void => {
 	}
 	setTimeout(() => {
 		outsideHandler = (event: Event) => {
-			// 原先 `document.querySelector('.browser-search-history-dropdown')` 反查自身 → 改用模板 ref
 			const el = root.value;
 			if (el && !el.contains(event.target as Node) && event.target !== input) {
 				hide();

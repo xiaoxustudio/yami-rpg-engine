@@ -37,7 +37,6 @@ interface Props {
 	id?: string;
 	modelValue?: string;
 	disabled?: boolean;
-	/** 可访问名（透传给 ui-kit 的 aria-label），不渲染可见文本 */
 	label?: string;
 }
 
@@ -101,7 +100,6 @@ onMounted(() => {
 	const el = root.value as TextAreaElement | null;
 	const input = ym.value?.input ?? null;
 	if (!el || !input) return;
-	// `HistoryTextAreaElement` 是 `HistoryInputElement` 的 textarea 版（同源导出）。
 	(input as HistoryTextAreaElement).history = new TextHistory(input);
 	listenDraggingScrollbarEvent(input);
 	attachElementApi(el, { input, read, write, insert, enable, disable, getFocus, on });

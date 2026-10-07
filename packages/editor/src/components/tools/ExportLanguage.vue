@@ -31,7 +31,6 @@
 import { ExportLanguage } from '@app/local/export-language-window.ts';
 import { getFormFields, setFormFields } from '@app/composables/form-fields';
 
-// exportLanguage-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	ExportLanguage?.confirm?.(new Event('click'));
 };

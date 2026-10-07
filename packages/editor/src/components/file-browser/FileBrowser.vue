@@ -98,19 +98,6 @@ const directoryApi = {
 			.then(() => FSP.rename(oldPath, newPath))
 			.catch((e) => toast.show(String(e), 'error'));
 	},
-	/**
-	 * ⚠️ 必须是 `FS.existsSync`（`node:fs` 上的**同步**方法），**不是** `FSP.existsSync`。
-	 *
-	 * `FSP` 就是 `fs.promises` 本体，而 `fs.promises` **没有** `existsSync`
-	 * （实测 `node -e "typeof require('fs').promises.existsSync"` → `undefined`；
-	 *  它只有异步的 `access`）。原先写的 `FSP.existsSync(p)` 因此是
-	 * `undefined(p)` ⇒ 调用即 `TypeError: FSP.existsSync is not a function`。
-	 *
-	 * 它一路被 `YMFileBrowser.vue:211` 转发到 `YMFileNavPane.vue:719` 的**重命名失焦**
-	 * 分支（`if (!props.fileSystem!.existsSync(path)) return …rename…`）——
-	 * 也就是说**在文件浏览器里重命名文件会直接抛错、改名不生效**。
-	 * 它能编译（且一直没人发现）纯粹是因为 `FSP` 当时的类型是 `Record<string, any>`。
-	 */
 	existsSync: (p: string) => FS.existsSync(p),
 	get assets() {
 		return Directory.assets;
@@ -131,7 +118,6 @@ const fileSystemApi = {
 	mkdir: (p: string, options?: { recursive?: boolean; mode?: number }) => FSP.mkdir(p, options),
 	rename: (src: string, dst: string) => FSP.rename(src, dst),
 	copyFile: (src: string, dst: string) => FSP.copyFile(src, dst),
-	// ui-kit 侧契约的第二参是 node 的 `StatOptions` 对象（`{ bigint: true }`），照原样透传
 	stat: (p: string, options?: { bigint?: boolean }) => FSP.stat(p, options),
 	addOversizeImagePaths: (p: string) => FileItem.addOversizeImagePaths?.(p)
 };

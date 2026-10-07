@@ -58,7 +58,6 @@ const { t } = useI18n();
 const tilemapGetter = useTilemapGetterWindow();
 const form = tilemapGetter.form;
 
-// 把控件实例登记给访问器模块的 initialize()（替代按 id 查 DOM）
 const { fields, fieldRef } = createAccessorFields();
 TilemapGetter.fields = fields;
 

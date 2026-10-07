@@ -111,7 +111,6 @@ import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registerElement, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
-// 本组件的控件元素注册表（替代按 id 查 DOM）
 const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -136,7 +135,6 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	// 模块（useSwitchConditionSchema）从 composableEls 读这两个控件 → 由本组件镜像登记
 	for (const id of ['switch-condition-keyboard-keycode', 'switch-condition-gamepad-button']) {
 		registerElement(composableEls, id, fieldEls.get(id));
 	}

@@ -99,10 +99,8 @@ import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef, registerElement } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
-// 本组件的控件元素注册表
 const fieldEls = createElementRegistry(composableEls);
 
-// 模板里 WindowFrame 用 ref="frame"（已占用 :ref 槽位），故在 onMounted 里命令式登记
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -155,7 +153,6 @@ onMounted(() => {
 			'changed-touch': 'command.forEach.changed-touch'
 		}
 	);
-	// `enableHiddenMode`/`relate` 不挂在 `loadItems` 的**调用链**上（独立语句，语义不变）
 	fieldEls
 		.get('forEach-data')
 		?.enableHiddenMode?.()

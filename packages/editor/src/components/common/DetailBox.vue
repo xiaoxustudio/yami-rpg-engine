@@ -81,9 +81,6 @@ onMounted(() => {
 			enumerable: false
 		});
 	};
-	// note: do not expose `open` on the element because it collides with the
-	// boolean `open` DOM attribute/HTML attribute and breaks Vue's patcher
-	// (element would receive both attribute and property updates incorrectly).
 	define('toggle', toggle);
 	define('close', close);
 	define('on', on);

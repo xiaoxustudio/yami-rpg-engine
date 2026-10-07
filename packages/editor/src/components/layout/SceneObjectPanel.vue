@@ -60,11 +60,8 @@ interface SceneExtrasNode {
 }
 
 type ExtrasListElement = HTMLElement & {
-	/** 该节点（文件夹则递归看子节点）的状态是否允许开关 */
 	canSwitchState: (item: unknown) => boolean;
-	/** 递归设置状态并返回被改写的原值备份（用于历史记录）；`value` 允许 `undefined`（`UiExtrasNode.hidden` 是可选的） */
 	setRecursiveStates: (item: unknown, key: string, value: boolean | undefined) => unknown[];
-	/** 依据子节点状态回推所在文件夹的状态 */
 	updateFolderState: (item: unknown, key: string) => void;
 	update: () => void;
 };

@@ -64,7 +64,6 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	attachElementApi(el, { getMenuState: () => menuService.getState() });
-	// 经 on() 注册（YMTreeList 的 on() 启用 select/record/popup/open 派发开关）
 	on(el, 'select', (event: Event & { value?: unknown }) => emit('select', event));
 	on(el, 'record', (event: Event & { value?: unknown }) => emit('record', event));
 	on(el, 'popup', (event: Event & { value?: unknown }) => emit('popup', event));

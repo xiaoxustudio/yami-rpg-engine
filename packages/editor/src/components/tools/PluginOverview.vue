@@ -103,7 +103,6 @@ const requireText = computed(
 	() => get('requireMissing') + missing.value.map((req) => req.plugin).join(', ')
 );
 
-// 参数类型分段为纯函数，预计算避免模板 v-for 内每次重渲染都重复执行
 const parameterSegments = computed(() => {
 	const map = new Map<string, { separator: boolean; text: string }[]>();
 	for (const parameter of props.meta?.parameters ?? []) {

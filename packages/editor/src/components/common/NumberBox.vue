@@ -47,7 +47,6 @@ interface Props {
 	decimals?: number | string;
 	unit?: string;
 	disabled?: boolean;
-	/** 可访问名（透传给 ui-kit 的 aria-label），不渲染可见文本 */
 	label?: string;
 }
 
@@ -114,8 +113,6 @@ onMounted(() => {
 	const el = root.value as NumberBoxElement | null;
 	const input = ym.value?.input ?? null;
 	if (!el || !input) return;
-	// `HistoryInputElement` 就是为这个用途导出的（见其注释）：单次断言即可，
-	// 不必再写 `as unknown as { history: unknown }`。
 	(input as HistoryInputElement).history = new NumberHistory(input);
 	attachElementApi(el, { input, read, write, enable, disable, getFocus, on });
 });

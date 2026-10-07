@@ -4,12 +4,6 @@ import Resource from '@app/components/tools/Resource.vue';
 import { getResourceStore, type ResourceRow } from '@app/stores/resource';
 import { initYamiI18n } from '@app/i18n';
 
-/**
- * 资源列表数据化后的契约：
- * - 行由 `stores/resource.ts` 驱动、`resource/ResourceList.vue` v-for 渲染（不再有 update 桥接）；
- * - 行内交互以事件上抛到 `Resources.download/pause/remove`；
- * - 按钮文案来自 i18n（不再是模块上的 checkVersionText/openDirText 字段）。
- */
 const resources = vi.hoisted(() => ({
 	download: vi.fn(),
 	pause: vi.fn(),
@@ -72,13 +66,11 @@ describe('Resource（资源窗口：列表数据化 + 按钮交互）', () => {
 			'12.3 MB'
 		);
 
-		// 已安装：下载按钮带 disabled 类、删除按钮可用
 		const download = document.getElementById('resource-item-arpg-ts-english-download');
 		expect(download?.classList.contains('disabled')).toBe(true);
 		const del = document.getElementById('resource-item-arpg-ts-english-delete');
 		expect(del?.classList.contains('disabled')).toBe(false);
 
-		// 未安装且无模板目录：删除按钮禁用
 		const del2 = document.getElementById('resource-item-arpg-ts-chinese-delete');
 		expect(del2?.classList.contains('disabled')).toBe(true);
 
@@ -114,7 +106,6 @@ describe('Resource（资源窗口：列表数据化 + 按钮交互）', () => {
 		expect(resources.pause).toHaveBeenCalledWith('arpg-ts-english');
 		expect(resources.remove).toHaveBeenCalledWith('arpg-ts-english');
 
-		// 解压态：下载按钮文案切换、进度条仍在
 		store.patchRow('arpg-ts-english', { phase: 'decompressing', progress: 80 });
 		await wrapper.vm.$nextTick();
 		expect(
@@ -152,7 +143,6 @@ describe('Resource（资源窗口：列表数据化 + 按钮交互）', () => {
 		await wrapper.find('#resource-open-dir').trigger('click');
 		expect(resources.checkVersion).toHaveBeenCalledTimes(1);
 		expect(resources.openDir).toHaveBeenCalledTimes(1);
-		// 文案来自 i18n：非空即说明有翻译键命中
 		expect(
 			document.getElementById('resource-check-version')?.textContent?.trim().length
 		).toBeGreaterThan(0);

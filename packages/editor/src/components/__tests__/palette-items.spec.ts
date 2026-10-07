@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { collectPaletteItems, elementOfRef } from '../layout/palette-items';
 
-// 回归：palette 容器 ref 打在组件（NavBar/PageManager）上时拿到的是组件实例，
-// 其根元素在 $el —— 直接读实例的 children 会 `Array.from(undefined)` 抛
-// "undefined is not iterable"（真机上报的 LayoutPanel 错误）。
-
 const makeRoot = (className: string, values: string[]): HTMLElement => {
 	const root = document.createElement('div');
 	for (const value of values) {
@@ -39,7 +35,6 @@ describe('palette-items（登记辅助）', () => {
 	it('组件 ref：经 $el 取根元素后收集（回归：不读实例自身的 children）', () => {
 		const nav = makeRoot('nav-item', ['project']);
 		const manager = makeRoot('page-frame', ['project']);
-		// 组件实例形状：只有 $el，没有 children
 		const entries = collectPaletteItems({ $el: nav }, { $el: manager });
 		expect(entries.map((entry) => entry.value)).toEqual(['project', 'project']);
 		expect(entries[0].nav).toBe(nav.children[0]);

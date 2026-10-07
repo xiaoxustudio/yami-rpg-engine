@@ -37,7 +37,6 @@ interface Props {
 	id?: string;
 	modelValue?: string;
 	disabled?: boolean;
-	/** 可访问名（透传给 ui-kit 的 aria-label），不渲染可见文本 */
 	label?: string;
 }
 
@@ -90,7 +89,6 @@ const on = (
 
 const openColor = (): void => {
 	const el = root.value;
-	// 读 props 而不是本地 ref：本地那份是挂载时的快照，运行期改 disabled 后守卫会失效
 	if (!el || props.disabled) return;
 	Color.open(el);
 };

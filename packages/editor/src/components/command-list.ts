@@ -48,9 +48,6 @@ const options = {
 		read: (type: string) => Clipboard?.read?.(type),
 		has: (type: string) => Clipboard?.has?.(type)
 	},
-	// `copyAsTextKeepEmptyLine: boolean`，所以 `SettingConfig` 直接满足 ui-kit 的
-	// `settingConfig` 契约（`command-api.ts:231`），原来的 `as unknown as` **整段去掉**。
-	// （手法库第 148/155 条：登记为「保留」的断言要随上游变化重审，不是永久豁免。）
 	settingConfig: SettingConfig,
 	localize: {
 		language: () => getLocalStore().language,
@@ -65,11 +62,6 @@ const options = {
 	},
 	searchString: {
 		open: (list: HTMLElement) =>
-			// 交叉断言（手法库第 6 条）：保留对象类型、只补缺口那一支。契约（ui-kit
-			// `command-api.ts:237`）只承诺 `HTMLElement`，而 `SearchString.open` 要的是
-			// `SearchableList` —— 运行期那个对象两样都是（它正是命令列表元素：`elements` /
-			// `findString` / `scrollToRow` 都在 `command-api.ts` 上）。用 `unknown` 跳板会让
-			// **任何**目标类型都能通过；交叉断言则要求目标确实是源类型的扩展。
 			SearchString.open(list as HTMLElement & Parameters<typeof SearchString.open>[0])
 	},
 	menuPopup: (popupOptions: MenuOptions, items: MenuItem[]) => Menu.popup(popupOptions, items),
@@ -104,7 +96,3 @@ export const CommandList: CommandListStaticsType = {
 };
 
 export const commandListOptions = options as CommandListApiOptions;
-
-// 列表一律经 `<CommandList>` 组件 / `YMCommandList` 装载：元素 API 由 `YMCommandList.vue` 自己经
-// `createCommandListApi` 装载，模块侧不导出 `attachCommandListApi` / `createCommandList` 这类转发入口
-// （它们没有消费者，只会给出第二条装载路径）。

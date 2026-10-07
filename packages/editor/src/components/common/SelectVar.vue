@@ -165,7 +165,6 @@ onMounted(() => {
 	};
 	if (!el) return;
 	api.selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
-	// varBox now lives in element data (field removed from DATA_FIELDS)
 	elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(varBoxRef.value);
 	api.mode = el.classList.contains('variable') ? 'variable' : 'constant';
 	attachElementApi(el, api);

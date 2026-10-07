@@ -123,9 +123,6 @@ import { uiEls } from '@app/engine/ui/element-registry';
 import { engineEls } from '@app/engine/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry';
 import { registryRef } from '@app/utils/element-registry';
-// `UI.requestRendering?.()` 改为直连引擎。原 `?.` 守的是「UI 窗口还没加载」，
-// 而 `requestRendering` 内部第一行就是 `getUIStore().state === 'open'`，该状态只在 UI 窗口的
-// 方法体里（`ui-file.ts:29`）被置为 open ⇒ 窗口没加载时 state 必不为 open，内部同样直接返回。
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
@@ -145,10 +142,6 @@ const onUiShortcutPointerdown = (event: PointerEvent) => {
 	UI?.shortcutPointerdown?.(event);
 };
 const onUiZoomInput = (value: number) => {
-	// 这里原先写 `UI?.setZoom?.(value)`，而 `UI.setZoom` **运行期不存在**
-	// （`ui-window.ts` 的 21 行镜像在第 114 轮退役）⇒ 缩放框的输入其实是个**静默 no-op**。
-	// 改成直连引擎（本文件 `:1624` 的 `UIEngine.requestRendering!.call(UI)` 就是同一写法，
-	// `engine/ui/ui-events.ts:174` 的 `zoomInput` 也是这么调的），接收者仍是 `UI`。
 	UIEngine.setZoom!.call(UI, value);
 };
 const onUiZoomFocus = () => {

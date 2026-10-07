@@ -66,7 +66,6 @@ const { t } = useI18n();
 const stateGetter = useStateGetterWindow();
 const form = stateGetter.form;
 
-// 把控件实例登记给访问器模块的 initialize()（替代按 id 查 DOM）
 const { fields, fieldRef } = createAccessorFields();
 StateGetter.fields = fields;
 

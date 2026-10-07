@@ -104,7 +104,6 @@ const onApply = () => {
 	EventEditor?.apply?.();
 };
 
-// `event-confirm` 按钮由 WindowFrame 生成，改由 @confirm 事件驱动
 const onConfirm = () => {
 	EventEditor?.confirm?.(new Event('click'));
 };

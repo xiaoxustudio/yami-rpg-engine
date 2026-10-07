@@ -111,10 +111,6 @@ const elSort = ref<InstanceType<typeof SelectBox> | null>(null);
 const elSpriteMode = ref<InstanceType<typeof SelectBox> | null>(null);
 const elSpriteInterval = ref<InstanceType<typeof NumberBox> | null>(null);
 
-// 选项名跟随语言。放在 setup 顶层即可——`useLocalizedOptions` 内部用**全局 Composer** +
-// `watchEffect`：既跟踪语言切换，也跟踪 `:ref` 挂载后 ref 的赋值（挂载完成时 effect 因读到新 ref
-// 重跑，那时才真正 `loadItems`）。在**事件回调**里调用它会抛 vue-i18n 的
-// `Must be called at the top of a setup function`。
 useLocalizedOptions('particleLayer-blend', ['normal', 'additive', 'subtract'], (items) =>
 	elBlend.value?.loadItems?.(items)
 );

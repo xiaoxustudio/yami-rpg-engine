@@ -31,7 +31,6 @@ import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 
-// edit-data-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	EditDataInstance?.save?.();
 };

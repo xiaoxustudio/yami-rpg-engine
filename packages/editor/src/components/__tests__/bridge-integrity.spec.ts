@@ -15,15 +15,6 @@ function walk(dir: string, out: string[] = []): string[] {
 
 describe('迁移桥接目标完整性（防迁移遗漏/拼写错误——9.101 审计固化）', () => {
 	it('所有 (window as any).Xxx?.method 桥接目标在迁移后源码中存在', () => {
-		// ⚠️ 这份根目录清单**必须跟着目录结构调整**。
-		// 2026-09-20 纯移动把 `src/ui/` 整个搬到 `src/engine/ui/legacy/`：
-		// 当时 `src/ui` 只剩一个空目录，`walk()` 返回 []，用例**照样绿**（覆盖悄悄变小）；
-		// 空目录一被删掉，`readdirSync` 直接 ENOENT ⇒ 用例红。
-		// 两种表现都不对，所以下面加了「根目录必须存在」的显式断言：
-		// **宁可红在「清单过期」，也不要绿在「覆盖变小」。**
-		//
-		// `legacy/` 整个删除 ⇒ 本清单把 `'engine/ui/legacy'` 换成 **`'engine/ui'`**
-		// （覆盖面**变大**了：域模块也进了审计面。这正是那条断言的用意 —— 它红了，我就得更新清单）。
 		const legacyRoots = [
 			'animation',
 			'attribute',

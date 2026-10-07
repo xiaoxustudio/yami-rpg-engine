@@ -138,7 +138,6 @@ onMounted(() => {
 		on
 	});
 
-	// 经 on() 注册（YMTabBar 的 on() 会启用 selectEventEnabled/closedEventEnabled/popupEventEnabled 派发开关）
 	onElement(el, 'select', (event: Event & { value?: TabItemData }) => emit('select', event));
 	onElement(el, 'closed', (event: Event & { value?: TabItemData }) => emit('closed', event));
 	onElement(el, 'popup', (event: Event & { value?: TabItemData }) => emit('popup', event));

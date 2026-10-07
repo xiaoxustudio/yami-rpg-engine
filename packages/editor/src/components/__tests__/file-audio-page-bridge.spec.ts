@@ -52,7 +52,6 @@ describe('FileAudioPage（文件音频信息响应式渲染桥接）', () => {
 		const host = document.createElement('div');
 		host.id = 'fileAudio';
 		document.body.appendChild(host);
-		// 页面 SFC 改从 inspectorEls 取宿主容器 → 用例自建的宿主也要登记
 		registerElement(inspectorEls, host.id, host);
 		const wrapper = mount(FileAudioPage, {
 			attachTo: document.body

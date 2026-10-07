@@ -70,8 +70,6 @@ import { getResourceStore } from '@app/stores/resource';
 const { t } = useI18n();
 const resource = getResourceStore();
 
-// 行与节点信息都走 store，按钮标签走 i18n，故不再需要
-// 旧的 `attachElementApi(root, { update })` + initI18n 时给 #menu/#resource 打补丁那套。
 const onDownload = (key: string): void => Resources.download(key);
 const onPause = (key: string): void => Resources.pause(key);
 const onRemove = (key: string): void => Resources.remove(key);

@@ -143,7 +143,6 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-// setting-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	Window.close?.('setting');
 };

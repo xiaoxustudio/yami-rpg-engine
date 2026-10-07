@@ -12,8 +12,6 @@ import {
 import { Editor } from '@app/services/project/editor.ts';
 import { vTip } from '@app/directives/tip';
 
-// 模板里的 v-tip 不在 vitest.setup 里注册（setup 期 import 会让 tip.spec 的模块 mock 失效），
-// 需要它的用例自带指令。
 const mountOptions = { attachTo: document.body, global: { directives: { tip: vTip } } };
 
 /**
@@ -53,7 +51,6 @@ describe('窗口确认按钮的禁用态', () => {
 		expect(newProjectConfirmDisabled.value).toBe(false);
 		expect(confirmButton('newProject-confirm').disabled).toBe(false);
 
-		// 已存在的目录（用仓库根 package.json 的上级目录 + 该文件名凑出一个必然存在的路径）
 		NewProject.form.location = process.cwd();
 		NewProject.form.folder = 'package.json';
 		NewProject.check!();
@@ -82,7 +79,6 @@ describe('窗口确认按钮的禁用态', () => {
 		await wrapper.vm.$nextTick();
 		expect(confirmButton('newProject-confirm').disabled).toBe(false);
 
-		// 换成模板项目后与编辑器状态无关
 		Editor.state = 'closed';
 		NewProject.form.template = 'arpg-ts-english';
 		NewProject.check!();

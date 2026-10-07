@@ -64,7 +64,6 @@
 import { useI18n } from 'vue-i18n';
 import { ObjectFolder } from '@app/scene/default-object-folder.ts';
 
-// object-folder-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	ObjectFolder?.confirm?.(new Event('click'));
 };

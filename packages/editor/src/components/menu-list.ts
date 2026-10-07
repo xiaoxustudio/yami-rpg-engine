@@ -55,20 +55,12 @@ export function attachMenuListApi(el: HTMLElement): MenuListElement {
 	box.closeSubmenu = menu.closeSubmenu;
 	// oxlint-disable-next-line unbound-method
 	box.pointerenter = menu.pointerenter;
-	// 在此之前调用方 `createMenuList` 还要自己再断言一次，而且那次**必须**用 `as unknown as`：
-	// 它手上的 `el` 是 `createDetachedElement(): HTMLDivElement`，与 `MenuListElement`
-	// **两个方向都不可比**（前者缺后者的必填成员，后者又 extends `HTMLElement` 而非 `HTMLDivElement`）
-	// ⇒ TS2352。而这里 `el` 是形参 `HTMLElement`，`MenuListElement` 可赋给 `HTMLElement`
-	// ⇒ **单次 `as` 就够**（tsc 会真的检查这次收窄）。所以那次 `unknown` 跳板不是必需，
-	// 只是把同一个收窄写了两遍。
 	return box;
 }
 
 export function createMenuList(): MenuListElement {
-	// 离屏节点统一走 utils/dom 的唯一创建缝隙
 	const el = createDetachedElement();
 	el.classList.add('menu-list');
-	// 装配与收窄都在 `attachMenuListApi` 里完成 ⇒ 这里**零断言**。
 	return attachMenuListApi(el);
 }
 

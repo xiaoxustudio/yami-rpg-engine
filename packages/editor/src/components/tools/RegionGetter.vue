@@ -47,7 +47,6 @@ const { t } = useI18n();
 const regionGetter = useRegionGetterWindow();
 const form = regionGetter.form;
 
-// 把控件实例登记给访问器模块的 initialize()（替代按 id 查 DOM）
 const { fields, fieldRef } = createAccessorFields();
 RegionGetter.fields = fields;
 

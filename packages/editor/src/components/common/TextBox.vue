@@ -44,9 +44,7 @@ interface Props {
 	id?: string;
 	modelValue?: string;
 	disabled?: boolean;
-	/** 占位文案也可由模板 `t()` 承担 */
 	placeholder?: string;
-	/** 可访问名（透传给 ui-kit 的 aria-label），不渲染可见文本 */
 	label?: string;
 }
 
@@ -112,7 +110,6 @@ const on = (
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
-// `placeholder` 属性随语言切换重挂（`t()` 响应式 ⇒ 切换语言后这里自动重跑）
 watch(
 	() => props.placeholder,
 	(value) => {
@@ -154,7 +151,6 @@ onMounted(() => {
 	const el = root.value as TextBoxElement | null;
 	const input = ym.value?.input ?? null;
 	if (!el || !input) return;
-	// 与 `NumberBox.vue` 同形：用 ui-kit 导出的 `HistoryInputElement` 做单次断言。
 	(input as HistoryInputElement).history = new TextHistory(input);
 	attachElementApi(el, {
 		input,

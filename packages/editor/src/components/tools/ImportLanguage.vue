@@ -29,7 +29,6 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-// importLanguage-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	ImportLanguage?.confirm?.(new Event('click'));
 };

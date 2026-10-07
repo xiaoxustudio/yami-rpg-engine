@@ -20,8 +20,6 @@ const store = getConfirmationStore();
 
 const ym = ref<{ focusFirstButton(): void; $el?: HTMLElement } | null>(null);
 
-// 本窗口直接用 ui-kit 的 YMWindowFrame（id="confirmation"），不经过 WindowFrame.vue，
-// 因此要自己登记——`Window.open('confirmation')` 现在从 windowShellEls 取帧。
 onMounted(() => {
 	const root = ym.value?.$el;
 	if (root) registerElement(windowShellEls, 'confirmation', root);

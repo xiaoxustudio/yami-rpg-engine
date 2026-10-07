@@ -7,19 +7,11 @@ import JumpTo from '@app/components/commands/JumpTo.vue';
 import { initYamiI18n } from '@app/i18n';
 import { elementDataOf } from '@ui-kit';
 
-/**
- * 命令表单 SFC 的 `onMounted` 过去用 `按 id` 找控件再 loadItems，
- * 现在改为读**组件局部**注册表 `fieldEls`（模板 `:ref="registryRef(fieldEls, id)"`）。
- * 这里断言"挂载后控件确实拿到了选项"——若注册表链路断了（例如 ref 没登记），
- * 这些断言会失败（而不是静默不加载）。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
-// `dataItems` 是控件元素上的**元素数据**（原型访问器退役后 `el.dataItems` 会读到 undefined）。
-// 注意 `elementDataOf(null)` 会抛（WeakMap 键），故先取元素再判空。
 const itemsOf = (id: string): unknown[] => {
 	const el = document.getElementById(id);
 	if (el === null) return [];

@@ -75,7 +75,6 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 
 const { t } = useI18n();
 
-// 链接点击转交 Menubar（模块侧不再按类名全文档反查）
 const onHrefClick = (event: MouseEvent): void => {
 	Menubar.hrefClick!(event);
 };

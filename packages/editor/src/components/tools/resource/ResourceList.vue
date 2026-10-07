@@ -2,14 +2,6 @@
 import { useI18n } from 'vue-i18n';
 import type { ResourceRow } from '@app/stores/resource';
 
-/**
- * 资源包行列表：纯展示 + 事件上抛，状态全部来自 `stores/resource.ts`。
- * 标记沿用原来的类名与内联样式（`.resource-item` 等由 Project/css/ui.css 提供），
- * DOM id 也保持一致，便于与旧结构对照排查。
- *
- * 注意：本文件位于 `components/tools/resource/` 子目录——AppShell 用
- * `import.meta.glob('./components/tools/*.vue')` 挂载窗口组件，放同级会被误当成窗口。
- */
 interface Props {
 	rows: ResourceRow[];
 }

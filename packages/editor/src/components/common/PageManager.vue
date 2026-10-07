@@ -53,8 +53,6 @@ onMounted(() => {
 	const el = root.value as PageManagerElement | null;
 	if (!el) return;
 	attachElementApi(el, { switch: switchover, on });
-	// YMPageManager dispatches a native `switch` event on the root; relay it
-	// to the Vue `switch` emit so parent components can listen via @switch.
 	el.addEventListener('switch', (e: Event & { last?: unknown; value?: unknown }) =>
 		emit('switch', e.last, e.value)
 	);

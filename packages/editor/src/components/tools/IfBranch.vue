@@ -28,7 +28,6 @@
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
-// 本组件的控件元素注册表（替代按 id 查 DOM）
 const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -51,7 +50,6 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	// 该元素由本组件渲染：绑定放这里
 	fieldEls.get('if-branch-conditions')?.bind?.(IfCondition);
 	const modeEl = fieldEls.get('if-branch-mode') as YamiElement;
 	if (!modeEl) return;

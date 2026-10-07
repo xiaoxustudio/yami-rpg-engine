@@ -63,7 +63,6 @@ onMounted(() => {
 	if (fileVideo) {
 		fileVideo.video = elVideo.value;
 	}
-	// 监听器存变量再 add/remove，保证卸载时能摘掉（只 add 就摘不掉）
 	windowErrorHandler = windowError;
 	window.addEventListener('error', windowErrorHandler);
 	const el = inspectorEls.get('fileVideo');

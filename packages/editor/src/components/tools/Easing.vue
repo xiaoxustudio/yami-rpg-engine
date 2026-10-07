@@ -93,7 +93,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import EasingPointsSection from './easing/EasingPointsSection.vue';
 
-// easing-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	Easing?.confirm?.(new Event('click'));
 };

@@ -65,7 +65,6 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
-// localization-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	Localization?.confirm?.(new Event('click'));
 };

@@ -49,7 +49,6 @@ import { paletteEls } from '@app/palette/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { FrameGenerator } from '@app/palette/tile-frame-generator.ts';
 
-// autoTile-generateFrames-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	FrameGenerator?.confirm?.(new Event('click'));
 };

@@ -35,25 +35,17 @@ import { getAnimationStore } from '@app/stores/animation';
 import { registerLayoutItems } from '@app/engine/layout/layout.ts';
 import { collectPaletteItems } from '@app/components/layout/palette-items';
 
-// palette 容器 ref（显式登记 items 用）
 const paletteNavEl = ref<InstanceType<typeof WorkspaceNav> | null>(null);
 const paletteManagerEl = ref<InstanceType<typeof WorkspacePages> | null>(null);
 
 onMounted(() => {
 	registerElement(engineEls, 'layout-nav', paletteNavEl.value);
 	registerElement(engineEls, 'layout-page-manager', paletteManagerEl.value);
-	// ⚠️ 四个 store 的 initialize() 只依赖「Vue 已挂载」，与任何单个元素是否存在无关，
-	// 因此**不能**挂在某个元素的早退判断之下 —— 否则该元素为 null 时
-	// UI/Scene/Animation/Particle 四套引擎全都不初始化，表现为「画面能出来、
-	// 列表能点，但画布交互全死」这种极难定位的半死状态。
 	nextTick(() => {
 		getUIStore().initialize();
 		getParticleStore().initialize();
 		getSceneStore().initialize();
 		getAnimationStore().initialize();
-		// palette 显式登记（此时 palette 节点仍在 palette 宿主内，
-		// 引擎装载前即可拿到权威 items 列表，无需按 DOM 形态猜测）。
-		// 容器 ref 指向组件（NavBar/PageManager）→ 经 $el 取根元素后遍历子节点。
 		registerLayoutItems(collectPaletteItems(paletteNavEl.value, paletteManagerEl.value));
 	});
 });

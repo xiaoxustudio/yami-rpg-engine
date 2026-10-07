@@ -98,7 +98,6 @@ import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
-// 本组件的控件元素注册表（替代按 id 查 DOM）
 const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';

@@ -84,7 +84,6 @@ onMounted(() => {
 	if (!animMotion) return;
 
 	animMotion.owner = {
-		// 面板回调实参就是运行期的 motion（store 里那一份），按共享模型收窄，而不是 Record
 		setTarget: (motion: AnimationMotionData) => {
 			Animation.setMotion!(motion);
 			Inspector.open!('animMotion', motion);

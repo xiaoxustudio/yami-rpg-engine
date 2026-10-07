@@ -71,7 +71,6 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	// WindowFrame 的 :ref 槽位被 ref="frame" 占用：在挂载后命令式登记窗口元素
 	registerElement(imageClipEls, 'imageClip', frame.value?.root ?? null);
 	const el = frame.value?.root;
 	if (el) {

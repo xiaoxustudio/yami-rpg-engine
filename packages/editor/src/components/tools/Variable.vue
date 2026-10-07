@@ -52,7 +52,6 @@ import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import VariablePropertiesSection from './variable/VariablePropertiesSection.vue';
 
-// variable-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	Variable?.confirm?.(new Event('click'));
 };

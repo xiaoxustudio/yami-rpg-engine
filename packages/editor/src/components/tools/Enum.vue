@@ -148,7 +148,6 @@ const onApply = () => {
 	Enum?.apply?.();
 };
 
-// `enum-confirm` 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	Enum?.confirm?.(new Event('click'));
 };

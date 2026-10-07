@@ -4,8 +4,6 @@ export function createToastManager(): ToastManagerApi {
 	return createToastManagerElement();
 }
 
-// 管理器单例放在模块里（原先用 `document.querySelector('.toast-manager')` 反查自己创建的元素；
-// 该 id/类在编辑器的模板里没有渲染者，故模块内持有引用等价且更可靠）
 let manager: HTMLElement | null = null;
 
 export const Toast = {

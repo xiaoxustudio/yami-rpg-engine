@@ -63,8 +63,6 @@ const controls = {
 	textBox: () => textBoxFactory()
 };
 
-// 形状与 ui-kit 的 `ManifestEntry` 同源（从 barrel 导入），
-// 否则 `:data-manifest` 的 prop 绑定会因两边形状不一致当场报 TS2322
 const dataManifest = (): { guidMap: Record<string, ManifestEntry> } | null => Data.manifest;
 const plugin = computed(
 	() =>
@@ -74,12 +72,6 @@ const plugin = computed(
 		}
 );
 const localize = (key: string): string => t(key);
-/**
- * 第 142 轮去掉断言：`Selection` 的静态类型就是 `SelectionShape`（`text-capture.ts:138`
- * 的 `satisfies Partial<SelectionShape> as SelectionShape`），四个处理器本来就按
- * `KeyboardEvent` / `PointerEvent` 签名；ui-kit 侧的 `SelectionAdapter` 现已按同样的
- * 事件类型声明（原先写 `Event`，与该形状互不重叠，才逼出这里那句 `as unknown as`）。
- */
 const selection = computed(() => Selection);
 const selectList = computed(() => Select);
 const measureText = (text: string, font: string): { width: number } => measureTextUtil(text, font);

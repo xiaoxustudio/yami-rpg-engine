@@ -54,7 +54,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-// 本组件的控件元素注册表
 const fieldEls = createElementRegistry(composableEls);
 
 const { form, save, writeHandler } = useRemoveAnimationComponentCommandSchema();

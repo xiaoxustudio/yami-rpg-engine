@@ -21,7 +21,6 @@ describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）'
 			{ name: 'A', value: 'a' },
 			{ name: 'B', value: 'b' }
 		]);
-		// 模拟 scene-tilemap 的重写模式（重写 setItemNames 并调用 selectBoxSetItemNames）
 		el.lightItems = {
 			all: [
 				{ name: 'Raw', value: 'raw' },
@@ -32,7 +31,6 @@ describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）'
 			this: typeof el,
 			options: Record<string, string | { name?: string; tip?: string }>
 		) {
-			// `dataItems` 是控件元素上的元素数据（原型访问器退役后 `this.dataItems` 会读到 undefined）。
 			const data = elementDataOf<{ dataItems?: unknown[] }>(this);
 			const backup = data.dataItems;
 			data.dataItems = this.lightItems.all;

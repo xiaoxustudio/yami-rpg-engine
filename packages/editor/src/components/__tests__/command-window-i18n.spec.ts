@@ -11,15 +11,6 @@ import WebSocketConnect from '@app/components/commands/WebSocketConnect.vue';
 import { applyLocaleData, getYamiI18n, initYamiI18n } from '@app/i18n';
 import type { LocaleData } from '@app/i18n/convert';
 
-/**
- * 语言加载后命令窗口仍能渲染（回归：`t()` 编译报错炸掉 render）。
- *
- * 现象：窗口先挂载、语言后加载（`applyLocaleData` 切 locale → 全量重渲染），
- * 此时文案里的 `@`（`@code` / `@event`）与字面量花括号被 vue-i18n 当语法，
- * `t()` 直接抛 Message compilation error，Vue 报
- * `Unhandled error during execution of render function`，downloadFile / uploadFile /
- * requestURL / httpRequest / webSocketConnect 这些窗口全灭。
- */
 const LOCALE_DIR = resolve(process.cwd(), 'Project/Locales');
 
 const loadLocale = (file: string): LocaleData =>

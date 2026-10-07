@@ -30,7 +30,6 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
-// setTileTag-confirm 由 WindowFrame 生成，改由 @confirm 驱动
 const onConfirm = () => {
 	SetTileTag?.confirm?.();
 };

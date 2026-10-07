@@ -154,12 +154,10 @@ const onConfirm = () => {
 	LightProperty.confirm?.(new Event('click'));
 };
 
-// 把控件实例登记给属性窗口工厂（替代按 id 查 DOM）
 const { fields, fieldRef } = createAccessorFields();
 LightProperty.fields = fields;
 
 onMounted(() => {
-	// 懒挂载窗口：ParamList.bind 时的 initialize 可能早退，挂载后补齐 key 选项与字段联动
 	LightProperty.ensureSetup?.();
 });
 </script>

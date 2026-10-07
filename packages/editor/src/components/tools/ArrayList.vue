@@ -22,7 +22,6 @@ import ParamList from '@app/components/common/ParamList.vue';
 
 const arrayWindow = useArrayWindow();
 
-// arrayList-confirm 由 WindowFrame 生成 → 改由 @confirm 调 composable 的 confirm
 const onConfirm = () => {
 	arrayWindow.confirm?.();
 };

@@ -163,7 +163,6 @@ const onApply = () => {
 	(CustomCommand?.apply as ((event?: Event) => void) | null)?.();
 };
 
-// `command-confirm` 按钮由 WindowFrame 生成，改由 @confirm 事件驱动
 const onConfirm = () => {
 	CustomCommand?.confirm?.(new Event('click'));
 };

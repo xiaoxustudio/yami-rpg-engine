@@ -59,7 +59,6 @@ interface Props {
 	hotkey?: string;
 	activeWheel?: boolean;
 	disabled?: boolean;
-	/** 可访问名（透传给 ui-kit 的 aria-label），不渲染可见文本 */
 	label?: string;
 }
 
@@ -133,8 +132,6 @@ const synchronize = (
 	if (!el) return;
 	const slider = el as SliderBoxElement;
 	const number = target;
-	// `synchronizer` 走显式元素数据（已从 DATA_FIELDS 摘除）——原先它既被
-	// `attachElementApi` 以 `null` 写成元素自有属性、又被这里赋成目标元素，两处不是同一个槽位。
 	const sliderData = elementDataOf<SliderBoxElement>(slider);
 	if (sliderData.synchronizer) {
 		return;

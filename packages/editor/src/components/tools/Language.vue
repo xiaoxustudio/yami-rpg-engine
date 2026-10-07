@@ -53,7 +53,6 @@ const { t } = useI18n();
 
 const settings = useProjectSettingsWindow();
 
-// 确认按钮由 WindowFrame → YMFormButtons 生成（模板里没有、注册表取不到）→ 由 SFC 的 @confirm 驱动
 const onConfirm = () => {
 	settings.languages.confirm();
 };

@@ -286,9 +286,7 @@ onMounted(() => {
 				{ name: readOption('sceneTilemap-blend', 'additive'), value: 'additive' },
 				{ name: readOption('sceneTilemap-blend', 'subtract'), value: 'subtract' }
 			]);
-		} catch {
-			// 语言切换中间态：t()/DOM 访问可能失败，跳过本次刷新
-		}
+		} catch {}
 	};
 	if (elLight.value) {
 		editor.lightBox = elLight.value.root;

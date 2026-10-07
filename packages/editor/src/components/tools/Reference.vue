@@ -20,7 +20,6 @@ import {
 import { composableEls } from '@app/composables/element-registry';
 import { logEls } from '@app/log/element-registry';
 
-// 本组件的控件元素注册表（替代按 id 查 DOM）
 const fieldEls = createElementRegistry(composableEls);
 import { h, onMounted, type VNode } from 'vue';
 import { renderDetached } from '@app/utils/dom';
@@ -44,7 +43,6 @@ const updateItems = (items: ReferenceItem[]): void => {
 		if ('count' in item && item.count !== undefined && item.count > 1) {
 			nodes.push(h('div', { class: 'reference-count text' }, String(item.count)));
 		}
-		// 离屏节点统一走 utils/dom 的 renderDetached
 		const element = renderDetached(
 			h(
 				'div',
@@ -61,7 +59,6 @@ const updateItems = (items: ReferenceItem[]): void => {
 };
 
 onMounted(() => {
-	// 模块（related-references.ts）从 logEls 读 #reference-list → 由本组件镜像登记
 	registerElement(logEls, 'reference-list', fieldEls.get('reference-list'));
 	registerReferenceUpdate(updateItems);
 });
