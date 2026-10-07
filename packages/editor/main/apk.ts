@@ -1,13 +1,15 @@
 import fs from 'fs';
 import { promises as fsp } from 'fs';
 import path from 'path';
-import { parseString, Builder } from 'xml2js';
 import { spawn, type ChildProcess } from 'child_process';
-import sharp from 'sharp';
 import type { ApkConfig, ApkOptions, ApkResult } from './types/apk.ts';
 import { CHANNELS } from '../src/services/ipc/channels.ts';
 import { getEditorWindow } from './window-registry.ts';
 import { debugLog } from './log.ts';
+import { lazyCjs } from './services/lazy-cjs.ts';
+
+const loadSharp = lazyCjs<typeof import('sharp')>(() => import('sharp'));
+const loadXml2js = lazyCjs<typeof import('xml2js')>(() => import('xml2js'));
 
 // 参数数组式执行外部命令，避免 shell 字符串拼接的注入面
 function runProcess(command: string, args: string[]): Promise<{ stdout: string; stderr: string }> {
@@ -383,6 +385,7 @@ async function modifyManifest(config: ApkConfig): Promise<{ success: boolean; er
 			}
 		}
 
+		const { Builder } = await loadXml2js();
 		const builder = new Builder({ headless: true });
 		const newXml = builder.buildObject(result);
 		await fs.promises.writeFile(manifestPath, newXml);
@@ -453,6 +456,7 @@ async function updateStringsFile(stringsPath: string, config: ApkConfig): Promis
 		});
 	}
 
+	const { Builder } = await loadXml2js();
 	const builder = new Builder();
 	const newXml = builder.buildObject(result);
 	await fs.promises.writeFile(stringsPath, newXml);
@@ -464,6 +468,7 @@ async function replaceIconsWithSharp(
 	debugLog('使用sharp处理并替换应用图标...');
 
 	try {
+		const sharp = await loadSharp();
 		const resDir = path.join(config.outputDir, 'res');
 		if (!fs.existsSync(resDir)) {
 			throw new Error('资源目录res不存在，可能反编译失败');
@@ -631,6 +636,7 @@ async function cleanStylesXml(stylesPath: string): Promise<void> {
 		);
 	}
 
+	const { Builder } = await loadXml2js();
 	const builder = new Builder();
 	const newXml = builder.buildObject(result);
 	await fs.promises.writeFile(stylesPath, newXml);
@@ -653,6 +659,7 @@ async function cleanPublicXml(publicXmlPath: string): Promise<void> {
 		});
 	}
 
+	const { Builder } = await loadXml2js();
 	const builder = new Builder();
 	const newXml = builder.buildObject(result);
 	await fs.promises.writeFile(publicXmlPath, newXml);
@@ -830,7 +837,8 @@ interface XmlRoot extends XmlElement {
 	resources: XmlElement;
 }
 
-function parseXml(xml: string): Promise<XmlRoot> {
+async function parseXml(xml: string): Promise<XmlRoot> {
+	const { parseString } = await loadXml2js();
 	return new Promise((resolve, reject) => {
 		parseString(xml, (err: Error | null, result: unknown) => {
 			if (err) reject(err);

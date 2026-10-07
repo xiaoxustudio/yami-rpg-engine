@@ -11,7 +11,10 @@ const electronMocks = vi.hoisted(() => {
 			setZoomFactor: vi.fn(),
 			on: vi.fn((event: string, fn: (...args: unknown[]) => void) => {
 				listeners.set(`wc:${event}`, fn);
-			})
+			}),
+			// window-manager 会用 once('did-finish-load') 打启动耗时点；
+			// 这个 fake 是按真实 API 面补的，不需要它注册进 listeners
+			once: vi.fn()
 		};
 		setMenuBarVisibility = vi.fn();
 		loadURL = vi.fn(() => Promise.resolve());

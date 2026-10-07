@@ -1,6 +1,4 @@
-import Koa from 'koa';
 import Mime from 'mime-types';
-import QRCode from 'qrcode';
 import { ipcMain } from 'electron';
 import { CHANNELS } from '../../src/services/ipc/channels.ts';
 import type { ServerConfig } from '../../src/services/ipc/channels.ts';
@@ -10,6 +8,10 @@ import path from 'path';
 import os from 'os';
 import type { Server } from 'http';
 import type { IpcMainInvokeEvent } from '../types/main.ts';
+import { lazyCjs } from './lazy-cjs.ts';
+
+const loadKoa = lazyCjs<typeof import('koa')>(() => import('koa'));
+const loadQRCode = lazyCjs<typeof import('qrcode')>(() => import('qrcode'));
 
 const FSP = fs.promises;
 
@@ -60,8 +62,12 @@ ipcMain.handle(CHANNELS.invoke.stopServer, () => {
 	stopServer();
 });
 
-export const startServer = (_event: IpcMainInvokeEvent, config: ServerConfig): Promise<boolean> => {
-	if (isServerState) return Promise.resolve(false);
+export const startServer = async (
+	_event: IpcMainInvokeEvent,
+	config: ServerConfig
+): Promise<boolean> => {
+	if (isServerState) return false;
+	const Koa = await loadKoa();
 	const previewRoot = path.resolve(path.dirname(config.path), '.preview');
 	instanceServer = new Koa();
 	instanceServer!.use(async (ctx: PreviewContext) => {
@@ -133,7 +139,8 @@ export const startServer = (_event: IpcMainInvokeEvent, config: ServerConfig): P
 	});
 };
 
-export const toQrcode = (url: string) => {
+export const toQrcode = async (url: string) => {
+	const QRCode = await loadQRCode();
 	return QRCode.toDataURL(url, { errorCorrectionLevel: 'H' })
 		.then((url: string) => {
 			return url;

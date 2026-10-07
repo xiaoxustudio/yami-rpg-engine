@@ -3,10 +3,82 @@
 	<head>
 		<script>
 			window.__nodeRequire = window.require;
+			// 启动阶段耗时时间线（见 src/utils/boot-timeline.ts）。
+			// 必须内联：外链模块要先下载+解析才能求值，量不到「模块图之前」的耗时。
+			window.__BOOT_MARKS__ = [{ name: 'html-head', ms: performance.now() }];
+			requestAnimationFrame(function () {
+				requestAnimationFrame(function () {
+					window.__BOOT_MARKS__.push({ name: 'first-frame', ms: performance.now() });
+				});
+			});
 		</script>
 		<title>Yami RPG Editor</title>
 		<meta charset="utf-8" content="text/html" />
 		<meta name="viewport" content="width=device-width" />
+
+		<!-- 启动加载层。必须内联，且不能依赖 Project/index.css：外链样式表是**阻塞渲染**的，
+		     等它解析完才可能画出第一帧，而这一层存在的意义正是抢在那之前先有画面。
+		     底色写死 #181818 —— 与暗色主题的 --workspace-background（Project/css/foundation.css）
+		     同值。这里刻意不用 design token：token 恰恰就在那份还没解析完的 CSS 里。
+		     移除时机见 src/main.ts 的 dismissBootSplash。 -->
+		<style>
+			html {
+				background-color: #181818;
+			}
+
+			#yami-boot {
+				position: fixed;
+				inset: 0;
+				z-index: 9999;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 18px;
+				background-color: #181818;
+				color: #b0b0b0;
+				font-family: Inter, 'Segoe UI', sans-serif;
+				/* 无边框窗口在加载期仍要能拖动（覆盖层盖住了 #title-app-region） */
+				-webkit-app-region: drag;
+			}
+
+			#yami-boot-title {
+				font-size: 20px;
+				letter-spacing: 1px;
+				color: #e0e0e0;
+			}
+
+			#yami-boot-bar {
+				width: 180px;
+				height: 2px;
+				overflow: hidden;
+				background-color: #303030;
+			}
+
+			#yami-boot-bar::after {
+				content: '';
+				display: block;
+				width: 40%;
+				height: 100%;
+				background-color: #e8a33d;
+				animation: yami-boot-slide 1.1s ease-in-out infinite;
+			}
+
+			#yami-boot-hint {
+				font-size: 12px;
+				opacity: 0.6;
+			}
+
+			@keyframes yami-boot-slide {
+				from {
+					transform: translateX(-100%);
+				}
+				to {
+					transform: translateX(250%);
+				}
+			}
+		</style>
+
 		<link rel="stylesheet" href="Project/index.css" />
 
 		<!-- 社区- start -->
@@ -19,7 +91,13 @@
   <script type="importmap">{"imports":{"electron":"data:text/javascript;base64,Y29uc3QgZT13aW5kb3cuX19ub2RlUmVxdWlyZSgnZWxlY3Ryb24nKTtleHBvcnQgZGVmYXVsdCBlO2V4cG9ydCBjb25zdHtjbGlwYm9hcmQsaXBjUmVuZGVyZXIsc2hlbGwsd2ViRnJhbWV9PWU=","node:electron":"data:text/javascript;base64,Y29uc3QgZT13aW5kb3cuX19ub2RlUmVxdWlyZSgnZWxlY3Ryb24nKTtleHBvcnQgZGVmYXVsdCBlO2V4cG9ydCBjb25zdHtjbGlwYm9hcmQsaXBjUmVuZGVyZXIsc2hlbGwsd2ViRnJhbWV9PWU=","node:url":"data:text/javascript;base64,Y29uc3QgdT13aW5kb3cuX19ub2RlUmVxdWlyZSgndXJsJyk7ZXhwb3J0IGRlZmF1bHQgdTtleHBvcnQgY29uc3R7ZmlsZVVSTFRvUGF0aCxVUkx9PXU=","monaco-editor":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ21vbmFjby1lZGl0b3InKQ==","axios":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ2F4aW9zJykuZGVmYXVsdA==","fs-extra":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ2ZzLWV4dHJhJyk=","yauzl":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ3lhdXpsJyk=","markdown-it":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ21hcmtkb3duLWl0Jyk=","uglify-js":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ3VnbGlmeS1qcycp","fs":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ2ZzJyk=","path":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ3BhdGgnKQ==","os":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ29zJyk=","url":"data:text/javascript;base64,Y29uc3QgdT13aW5kb3cuX19ub2RlUmVxdWlyZSgndXJsJyk7ZXhwb3J0IGRlZmF1bHQgdTtleHBvcnQgY29uc3R7ZmlsZVVSTFRvUGF0aCxVUkx9PXU=","child_process":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ2NoaWxkX3Byb2Nlc3MnKQ==","node:fs":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ2ZzJyk=","node:path":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ3BhdGgnKQ==","node:os":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ29zJyk=","node:child_process":"data:text/javascript;base64,ZXhwb3J0IGRlZmF1bHQgd2luZG93Ll9fbm9kZVJlcXVpcmUoJ2NoaWxkX3Byb2Nlc3MnKQ=="}}</script>
 <body>
 	<script>window.__SKIP_AUTO_INIT__ = true;</script>
-	<div id="app"></div>
+	<div id="app">
+		<div id="yami-boot">
+			<div id="yami-boot-title">YAMI RPG EDITOR</div>
+			<div id="yami-boot-bar"></div>
+			<div id="yami-boot-hint">正在启动…</div>
+		</div>
+	</div>
 	<script type="module" src="/src/main.ts"></script>
 	<div id="window-ambient"></div>
 <div id="tooltip"></div>

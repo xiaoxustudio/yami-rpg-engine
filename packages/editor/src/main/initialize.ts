@@ -8,6 +8,8 @@ import '@app/variable/initialize.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
 import { initI18n, loadI18n } from '@app/i18n';
+import { markBoot, reportBootTimeline } from '@app/utils/boot-timeline';
+import { emitCustom } from '@app/events/custom-events';
 
 type ClusterShape = typeof import('@app/tools/window-cluster');
 
@@ -77,16 +79,21 @@ function initTools(cluster: ClusterShape): void {
 
 Editor.initialize = async function (this: typeof Editor) {
 	this.switchHotkey!(false);
+	markBoot('editor-init');
 
 	try {
 		const data = await loadConfigPromise;
 		const code = JSON.stringify(data);
 		this.config = data ?? {};
 		Object.defineProperty(this.config, 'code', { value: code });
+		markBoot('config-loaded');
 		await initI18n().catch(() => undefined);
+		markBoot('i18n-ready');
 
 		clusterRef = await import('@app/tools/window-cluster');
+		markBoot('cluster-imported');
 		await clusterRef.clusterReady;
+		markBoot('cluster-ready');
 		primeWindows(clusterRef as Record<string, unknown>);
 		const cluster = clusterRef;
 		const { Layout } = cluster;
@@ -95,6 +102,9 @@ Editor.initialize = async function (this: typeof Editor) {
 		initCore(cluster);
 		this.loadConfig!();
 		Layout.manager.switch('home');
+		markBoot('home-visible');
+		reportBootTimeline();
+		emitCustom('boot-ready', { ok: true });
 
 		void Promise.resolve()
 			.then(() =>
@@ -115,6 +125,8 @@ Editor.initialize = async function (this: typeof Editor) {
 				console.error('[init] editor initialize failed:', error);
 			});
 	} catch (error: unknown) {
+		reportBootTimeline();
+		emitCustom('boot-ready', { ok: false });
 		clusterRef?.Log?.throw?.(error);
 		Window.confirm!(
 			{

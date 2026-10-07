@@ -7,7 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { createEditorWindow } from './window-manager.ts';
 import { promises } from './ipc-handlers.ts';
-import { setDebugMode } from './log.ts';
+import { logBoot, setDebugMode } from './log.ts';
 
 // 含 --dirname 参数时表示 Node.js 调试模式，重定向根目录并开启调试
 let debug = false;
@@ -28,8 +28,8 @@ const VITE_DEV_URL = devServerUrl || 'http://localhost:5173';
 const useViteDev = !!devServerUrl;
 setDebugMode(debug);
 
-// 扩展目录挂在 app 根（dirname）下，不能相对 cwd：打包后从任意目录启动时，
-// 相对路径会在启动目录里凭空建一个 extension/，并且一个扩展都读不到。
+logBoot('main-modules-loaded');
+
 const extensionPath = path.resolve(dirname, 'extension');
 
 /**
@@ -55,6 +55,7 @@ async function loadExtensions(root: string): Promise<void> {
 }
 
 app.on('ready', () => {
+	logBoot('app-ready');
 	// 拒绝一切权限请求（摄像头/麦克风/地理位置等）
 	session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => {
 		callback(false);
@@ -72,6 +73,7 @@ app.on('ready', () => {
 
 	createEditorMenu();
 	createEditorWindow(debug, dirname, useViteDev, VITE_DEV_URL);
+	logBoot('window-created');
 	void loadExtensions(extensionPath).catch((error: unknown) => {
 		console.error(`[extension] 扫描扩展目录失败: ${(error as Error).message}`);
 	});

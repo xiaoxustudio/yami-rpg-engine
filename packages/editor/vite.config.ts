@@ -170,6 +170,17 @@ export default defineConfig({
 		port: devServerPort,
 		strictPort: true,
 		cors: true,
+		warmup: {
+			clientFiles: [
+				'index.html',
+				'src/main.ts',
+				'src/App.vue',
+				'src/AppShell.vue',
+				'src/components/layout/LayoutPanel.vue',
+				'src/engine/layout/layout.ts',
+				'src/tools/window-cluster.ts'
+			]
+		},
 		proxy: {
 			// dev 模式走 Vite 代理避 CORS（prod 模式 file:// 协议无 CORS 限制）
 			'^/github-raw/': {

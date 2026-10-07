@@ -15,6 +15,7 @@ export interface CustomEventPayloads {
 	'os-dragstart': undefined;
 	'os-dragend': undefined;
 	'vue-app-mounted': undefined;
+	'boot-ready': { ok: boolean };
 	'yami:error': { detail?: { message?: string } | string };
 }
 

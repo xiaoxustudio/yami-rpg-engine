@@ -1,8 +1,10 @@
-import ExcelJS from 'exceljs';
 import { dialog } from 'electron';
 import type { ToExcelBody } from '../../src/services/ipc/channels.ts';
 import { getWindowFromEvent } from '../window-manager.ts';
 import type { IpcMainInvokeEvent } from '../types/main.ts';
+import { lazyCjs } from './lazy-cjs.ts';
+
+const loadExcelJS = lazyCjs<typeof import('exceljs')>(() => import('exceljs'));
 
 const generate32bit = (): string => {
 	const n = Math.random() * 0x100000000;
@@ -19,6 +21,7 @@ function generate64bit(): string {
 }
 
 export const toExcel = async (event: IpcMainInvokeEvent, { langs, list }: ToExcelBody) => {
+	const ExcelJS = await loadExcelJS();
 	const workbook = new ExcelJS.Workbook();
 	const worksheet = workbook.addWorksheet('open-yami');
 	worksheet.columns = [
@@ -85,6 +88,7 @@ export const fromExcel = async (event: IpcMainInvokeEvent) => {
 		if (canceled || !filePaths || filePaths.length === 0) return [];
 
 		const filePath = filePaths[0];
+		const ExcelJS = await loadExcelJS();
 		const workbook = new ExcelJS.Workbook();
 		await workbook.xlsx.readFile(filePath);
 

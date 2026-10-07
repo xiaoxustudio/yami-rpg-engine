@@ -12,3 +12,8 @@ export const isDebugMode = function (): boolean {
 export const debugLog = function (...args: unknown[]) {
 	if (debugMode) console.log(...args);
 };
+
+export const logBoot = function (name: string): void {
+	if (!debugMode) return;
+	console.log(`[boot:main] ${name} +${(process.uptime() * 1000).toFixed(1)}ms`);
+};

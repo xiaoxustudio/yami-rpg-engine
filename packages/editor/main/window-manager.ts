@@ -3,7 +3,7 @@ import type { IpcMainEvent, IpcMainInvokeEvent, BrowserWindowExtension } from '.
 import { CHANNELS } from '../src/services/ipc/channels.ts';
 import * as apkProcessor from './apk.ts';
 import { setEditorWindow } from './window-registry.ts';
-import { isDebugMode } from './log.ts';
+import { isDebugMode, logBoot } from './log.ts';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -20,7 +20,7 @@ export const createEditorWindow = function (
 		width: 1600,
 		height: 900,
 		useContentSize: true,
-		backgroundColor: 'white',
+		backgroundColor: '#181818',
 		frame: process.platform === 'darwin',
 		show: false,
 		webPreferences: {
@@ -69,6 +69,8 @@ export const createEditorWindow = function (
 		const indexPath = path.resolve(dirname, 'dist/index.html');
 		void editor.loadFile(indexPath);
 	}
+	logBoot('load-started');
+	editor.webContents.once('did-finish-load', () => logBoot('did-finish-load'));
 
 	editor.on('maximize', () => editor.send(CHANNELS.send.maximize));
 	editor.on('unmaximize', () => editor.send(CHANNELS.send.unmaximize));
@@ -79,6 +81,7 @@ export const createEditorWindow = function (
 	const configPath = path.resolve(path.join(os.homedir(), '.openyami'), 'config.json');
 	const promise = FSP.readFile(configPath);
 	editor.once('ready-to-show', () => {
+		logBoot('ready-to-show');
 		editor.show();
 		editor.maximize();
 		promise
