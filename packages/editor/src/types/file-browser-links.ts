@@ -1,4 +1,3 @@
-// FileBrowser / FileNavPane / FileHeadPane / FileBodyPane 4 类共享的反向链接对象。 替代 components/file-browser.ts:42 / file-nav-pane.ts:28 / file-body-pane.ts:52 的 `links: Record<string, any>` 残留，收敛为精确接口。
 import type { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
 
 export interface FileBrowserLinks {

@@ -1,29 +1,19 @@
-// 编辑器列表接口共用类型。 condition-list / event-list / property-list / script-list 4 个 *ListInterface 类重复实现同一组字段契约： target / type / editor / owner / history / initialize(list) 此处提取为 IListInterface 基础接口，供各 ListInterface 类 implements 复用， 消除散落的 `editor: any | null` / `owner: any | null` / `history: any | null` 耦合断言。
 import { IUndoRedoHistory } from './history.ts';
 
-// 列表接口基础契约（4 个 *ListInterface 类共用）
 export interface IListInterface {
 	target: HTMLElement | null;
-	// 接口类型标识（'condition'/'event'/'property'/'script'）
 	type: string;
-	// 所属编辑器（反向引用，多数为 Editor/Window 子类）
 	editor: { target?: unknown } | null;
-	// 所属对象（反向引用，多数为 Window/Inspector 子类）
 	owner: { history?: unknown } | null;
-	// 操作历史（运行时由 initialize 创建，故初始 null）。
-	// 用**窄契约** `IUndoRedoHistory`：这批消费方只调用方法，从不读 `stack` / `index` ——
-	// 而运行时放进来的 `ParamHistory` 是委托型适配器、本就没有那两个字段。见 types/history.ts。
 	history: IUndoRedoHistory | null;
 
 	initialize(list: HTMLElement): void;
 }
 
-// 带 filter 字段的列表接口契约（script-list/property-list 共用）
 export interface IFilteredListInterface extends IListInterface {
 	filter: string;
 }
 
-// 带 script 字段的列表接口契约（script-list 专用）
 export interface IScriptListInterface extends IFilteredListInterface {
 	script: { id: string; enabled?: boolean; parameters?: Record<string, unknown> } | null;
 }

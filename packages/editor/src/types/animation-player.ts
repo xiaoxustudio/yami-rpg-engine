@@ -1,5 +1,3 @@
-// AnimationPlayer 的 motions / sprites / images / textures 字段契约。 替代 animation/animation-player.ts:40-43 的 `Record<string, any>` 残留， 收敛为精确接口。
-
 import type { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 
 export interface AnimationMotion {
