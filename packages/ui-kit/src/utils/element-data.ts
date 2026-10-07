@@ -1,18 +1,3 @@
-/**
- * 元素数据的存储层：数据挂进 WeakMap，不污染 DOM 元素自身。
- *
- * **不安装原型访问器**：`HTMLElement.prototype` 上没有任何本仓库安装的访问器，因此
- * "`el.start` / `el.item` / …"这类隐式读写**不可用**（`DATA_FIELDS` 与 `defineDataAccessors()`
- * 已退役），所有元素数据都必须经本模块的显式入口读写：
- *
- * - `getElementData(el)`：拿到该元素的原始记录（`Record<string, unknown>`）；
- * - `elementDataOf<T>(el)`：把记录**当成给定形状**读（各 `*-api.ts` 的本地视图都靠它）；
- * - `elementDataValueOf(el)`：`dataValue` 专用——该字段在仓库里有两种承载者（组件 own 访问器 / 元素数据）。
- *
- * **为什么在 ui-kit**：ui-kit 的巨石元素工厂（`YMCommandList/command-api.ts`、`YMTreeList/tree-api.ts`）
- * 也大量使用元素数据（两个文件合计 300+ 处），而 ui-kit **不能依赖 editor**——于是存储层放在 ui-kit，
- * editor 侧保留同路径的**再导出**（`@app/utils/element-data` 继续可用）。
- */
 const elementDataMap = new WeakMap<HTMLElement, Record<string, unknown>>();
 
 function getElementDataStore(el: HTMLElement): Record<string, unknown> {

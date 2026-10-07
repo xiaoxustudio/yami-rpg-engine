@@ -9,7 +9,6 @@ export const roundTo = (value: number, decimals: number): number => {
 	return Math.round(value * factor) / factor;
 };
 
-/** 数字字面量正则：`value` 属性能否解析为数字的判定（与 editor `utils/regexp.ts` 同口径） */
 export const numberPattern = /^-?\d+(?:\.\d+)?$/;
 
 /** 把 `value` 属性文本解析成 number（数字字面量）或原字符串 */
@@ -17,9 +16,6 @@ export const parseNumberOrString = (string: string): unknown =>
 	numberPattern.test(string) ? parseFloat(string) : string;
 
 export const focusWithOptions = (el: Element | null | undefined, options?: FocusOptions): void => {
-	// `unknown` 跳板换成**交叉断言**（手法库第 6 条：保留对象类型、只补缺口那一支）——
-	// `Element & { focus(…) }` 与 `Element` 可比，所以 `tsc` 会**真的检查**这次收窄；
-	// `as unknown as` 则把这条检查一并绕掉。行为不变（断言只影响类型）。
 	(el as Element & { focus(options?: FocusOptions): void }).focus(options);
 };
 
@@ -255,7 +251,6 @@ export const attachDoubleclick = (
 	element.addEventListener('doubleclick', listener as EventListener, options);
 };
 
-/** 运行期是否 macOS/iOS（沿用各处 `navigator.platform` 的宽口径 regex） */
 export const isMac =
 	typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 

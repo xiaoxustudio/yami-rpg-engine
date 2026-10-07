@@ -168,7 +168,6 @@ const toolModules = import.meta.glob([
 ]);
 const commandModules = import.meta.glob('./components/commands/*.vue');
 
-// PluginOverview 为窗口内子组件（Plugin/Command/FileScriptPage 使用），不作为独立窗口挂载
 const toolWindowEntries = Object.entries(toolModules).filter(
 	([path]) =>
 		!path.endsWith('PluginOverview.vue') &&
@@ -177,8 +176,6 @@ const toolWindowEntries = Object.entries(toolModules).filter(
 		!path.endsWith('TextSuggestions.vue')
 );
 
-// 业务初始化（CommandSchema.initAll 等）需要所有弹窗组件的 DOM 已挂载，
-// 懒加载组件就绪前先阻塞 Editor.initialize，避免读取到 null DOM
 const lazyTotal =
 	toolWindowEntries.length + Object.keys(commandModules).length + inspectorPageCount;
 let lazyMounted = 0;
@@ -224,7 +221,6 @@ const immediateToolComponents = Object.fromEntries(
 const idleToolComponents = Object.fromEntries(
 	idleToolEntries.map(([path, loader]) => [path, asyncComp(loader as () => Promise<Component>)])
 );
-// 非关键弹窗（其余工具/命令/检查器）延后到浏览器空闲时挂载，避免首屏并行拉取全部异步组件
 const idleReady = ref(false);
 onMounted(() => {
 	const activateIdle = () => {

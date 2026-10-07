@@ -4,12 +4,6 @@ import { elementDataOf } from './element-data';
 export interface CommonListLike {
 	scrollTop: number;
 	clientHeight: number;
-	/**
-	 * 助手**只写不读**它（`commonListResize` 里 `el.textContent = ''` 清空用）。
-	 * 所以这里必须用 DOM 的原生类型 `string | null`：写成 `string` 会让所有
-	 * `HTMLElement` 系的调用方与这个契约「不可比」，于是每个调用点都被迫绕道
-	 * `as unknown as CommonListLike`（多一层毫无信息量的逃逸）。
-	 */
 	textContent: string | null;
 	childNodes: NodeListOf<ChildNode>;
 	updateOnResize(element: HTMLElement): void;
@@ -31,7 +25,6 @@ const versionOf = (el: unknown): { versionId?: number } =>
 
 export const ROW_HEIGHT = 20;
 
-/** 虚拟滚动窗口 */
 export interface VisibleRange {
 	start: number;
 	end: number;
@@ -74,12 +67,6 @@ export const computeRowMargins = (
 	};
 };
 
-/**
- * 把 `start` 起的连续槽位清空（稀疏游标数组的收尾动作）—— **唯一一份实现**。
- *
- * `commonListClearElements` 是它的「列表形态」包装；`param-list-core` / `common-list-core`
- * 各自的 `clearElements(element[], start)` 直接就是它本身（此前三处逐字重复）。
- */
 export const clearElementSlots = <T>(elements: T[], start: number): void => {
 	let i = start;
 	while (elements[i] !== undefined) {
@@ -90,14 +77,6 @@ export const clearElementSlots = <T>(elements: T[], start: number): void => {
 export const commonListClearElements = (list: CommonListLike, start: number): void =>
 	clearElementSlots(list.elements, start);
 
-/**
- * `commonListUpdateHeadAndFoot` 真正需要的东西只有 `elements` 上的窗口游标 ——
- * 它不碰 DOM，也不调 `updateOnResize`。
- *
- * 所以参数用这个**窄契约**，而不是整个 `CommonListLike`：树列表的宿主（`TreeListHost`）
- * 就没有 `updateOnResize`，用宽契约会把「宿主没有的能力」写进契约，
- * 逼着每个调用方绕道 `as unknown as CommonListLike`。
- */
 export type HeadAndFootListLike = Pick<CommonListLike, 'elements'>;
 
 export const commonListUpdateHeadAndFoot = (list: HeadAndFootListLike): void => {
@@ -111,7 +90,6 @@ export const commonListUpdateHeadAndFoot = (list: HeadAndFootListLike): void => 
 	}
 	const { count, start, end } = list.elements;
 	if (count !== 0) {
-		// `padded` 不再是元素上的 expando，统一从列表配置读
 		const { marginTop, marginBottom } = computeRowMargins(
 			count,
 			start,

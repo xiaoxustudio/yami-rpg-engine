@@ -1,4 +1,3 @@
-// 宿主全局声明（`window.Window`）：必须**被 import** 才进程序，见该文件头部说明。
 import './types/host-globals';
 
 export { default as YMButton } from './components/basic/YMButton/YMButton.vue';
@@ -42,12 +41,10 @@ export {
 	createTreeListElement,
 	treeListPrototype,
 	treeListStatics,
-	// 步骤 4 消费方 API：按 item 操作行状态，不再触碰 DOM
 	setTreeItemClass,
 	setTreeItemText,
 	isTreeItemRendered,
 	treeRowElement,
-	// 步骤 5b 反向入口：事件目标/行内后代 → 行 item（取代 `element.item` expando）
 	treeItemOf,
 	treeListOfItem,
 	treeRowCount,
@@ -81,7 +78,6 @@ export { default as YMTabBar } from './components/business/YMTabBar/YMTabBar.vue
 export { default as YMParamList } from './components/business/YMParamList/YMParamList.vue';
 export { ParamListHistory } from './components/business/YMParamList/param-history';
 export { default as YMParameterPane } from './components/business/YMParameterPane/YMParameterPane.vue';
-// 参数定义形状 + 清单条目形状：宿主（编辑器）声明清单条目时要用同一份（第 156 轮）
 export type { ParamDef } from './components/business/YMParameterPane/param-pane-core';
 export type { ManifestEntry } from './components/business/YMParameterPane/manifest-entry';
 export { default as YMCommandList } from './components/business/YMCommandList/YMCommandList.vue';
@@ -204,7 +200,6 @@ export {
 export { WordList, type WordListShape } from './composables/useWordList';
 
 export { HistoryTimer, NumberHistory, TextHistory, CommandHistory } from './utils/history';
-// 元素数据的存储层（WeakMap + 原型访问器）放在 ui-kit，editor 侧同路径再导出
 export {
 	elementDataOf,
 	elementDataValueOf,
@@ -226,7 +221,6 @@ export {
 } from './utils/tree-data-context';
 export { createScrollListener, type ScrollListenerApi } from './utils/scroll-listener';
 export { attachApi } from './utils/attach-api';
-// 元素 API 契约——把过去挂在**全局** `HTMLElement` 上的成员面改成显式命名类型
 export type { YamiElement, YamiElementApi, YamiListElement } from './utils/element-contract';
 export { getListConfig, type ListConfig } from './utils/list-config';
 export {
@@ -261,5 +255,4 @@ export { default as YMArrayListNumber } from './components/business/YMArrayListN
 export { default as YMArrayListString } from './components/business/YMArrayListString/YMArrayListString.vue';
 export { default as YMRequestKeyValue } from './components/business/YMRequestKeyValue/YMRequestKeyValue.vue';
 
-// `CSS.rasterize` 的等价实现
 export { rasterize, setWindowFramesLengthProvider } from './utils/dom';

@@ -26,10 +26,6 @@ export type RadioProxyElement = HTMLElement & {
 	relate(...args: unknown[]): void;
 	toggleRelatedElements(): void;
 	on(...args: unknown[]): void;
-	/**
-	 * 组内成员（按 `name` 查询）。原先调用方各自 `document.getElementsByName('组名')`
-	 * 反查 DOM，现在把这条查询收进 proxy 自身，编辑器侧改读 `proxy.group`。
-	 */
 	readonly group: RadioProxyElement[];
 };
 
@@ -66,7 +62,6 @@ const subtract = <T>(a: T[], b: T[]): T[] => {
 
 export function attachRadioProxyApi(el: HTMLElement): void {
 	const proxy = el as RadioProxyElement;
-	// relations now lives in element data (field removed from DATA_FIELDS)
 	const data = elementDataOf<RadioProxyElement>(proxy);
 	data.dataValue = null;
 	data.relations = [];
@@ -78,8 +73,6 @@ export function attachRadioProxyApi(el: HTMLElement): void {
 		return data.dataValue;
 	};
 
-	// 组内成员访问器——组名即 proxy.id（`write` 原本就是这么查的），
-	// 把 `document.getElementsByName` 这条查询收敛到 ui-kit 一处。
 	Object.defineProperty(proxy, 'group', {
 		configurable: true,
 		get: (): RadioProxyElement[] =>
@@ -91,10 +84,6 @@ export function attachRadioProxyApi(el: HTMLElement): void {
 		for (const element of elements) {
 			if (memberDataValue(element) === value) {
 				addClass(element as HTMLElement, 'selected');
-				// 无需断言：`dataValue` 本来就声明为 `unknown`（见 RadioProxyElement），
-				// 而 `value` 也是 `unknown` —— 原先那串
-				// `as string | number | boolean | Record<string, any> | null` 既没约束力
-				// （`unknown` 直接可赋），又白白贡献了一个 `any` 逃生口。
 				data.dataValue = value;
 			} else {
 				removeClass(element as HTMLElement, 'selected');

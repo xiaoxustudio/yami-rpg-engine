@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createPayloadEvent, readPayload } from '../payload-event';
 
-/**
- * 载荷事件的**类型**入口。运行时语义与旧的
- * `new Event(type) as Event & { … }` + 逐字段赋值完全一致，这几条把它钉住。
- */
 describe('payload-event（载荷事件）', () => {
 	it('createPayloadEvent：事件类型正确，载荷字段可读', () => {
 		const event = createPayloadEvent('write', { value: 42 });

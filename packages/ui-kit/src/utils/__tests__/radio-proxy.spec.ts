@@ -82,8 +82,6 @@ describe('radio-proxy', () => {
 		a.remove();
 	});
 
-	// 编辑器侧原先各自 `document.getElementsByName('组名')` 反查组内成员，
-	// 现在统一读 `proxy.group`——这里锁住它的顺序与内容。
 	it('group 返回同 name 的组内成员（按文档顺序）', () => {
 		const proxy = makeProxy('group5', null);
 		const a = makeProxy('group5', 'a');
@@ -98,7 +96,6 @@ describe('radio-proxy', () => {
 		]);
 		expect(proxy.group).not.toContain(other);
 
-		// 成员变更后访问器要跟着变（每次读都重查，不做缓存）
 		b.remove();
 		expect(proxy.group).toEqual([proxy, a]);
 

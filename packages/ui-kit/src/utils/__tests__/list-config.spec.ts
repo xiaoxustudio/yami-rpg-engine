@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getListConfig } from '../list-config';
 
-/**
- * 契约：配置存在元素数据（WeakMap）里，**两个方向都必须经过 `getListConfig`**，
- * 元素本身不留下任何 expando。
- */
 describe('getListConfig 注册表', () => {
 	it('首次调用创建配置并共享 creators 数组', () => {
 		const el = document.createElement('div');
@@ -43,7 +39,6 @@ describe('getListConfig 注册表', () => {
 		expect((el as HTMLElement & { foldable?: boolean }).foldable).toBeUndefined();
 		expect((el as HTMLElement & { padded?: boolean }).padded).toBeUndefined();
 		expect((el as HTMLElement & { lockDirectory?: boolean }).lockDirectory).toBeUndefined();
-		// 反向：直接写元素也不再影响配置
 		(el as HTMLElement & { togglable?: boolean }).togglable = true;
 		expect(getListConfig(el).togglable).toBeUndefined();
 	});

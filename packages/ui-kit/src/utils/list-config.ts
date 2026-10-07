@@ -25,7 +25,6 @@ const read = <T>(data: Record<string, unknown>, key: string): T | undefined =>
 const write = (data: Record<string, unknown>, key: string, value: unknown): void => {
 	data[key] = value;
 };
-/** 数组字段（creators/updaters）：首次读时补一个空数组，之后 `.push()` 就是原地改同一个数组 */
 const readList = <T>(data: Record<string, unknown>, key: string): T[] => {
 	let list = read<T[]>(data, key);
 	if (list === undefined) {
@@ -48,8 +47,6 @@ export function getListConfig(el: object): ListConfig {
 	if (existing) return existing;
 	const data = getElementData(el as HTMLElement);
 	const config: ListConfig = {
-		// creators/updaters 用 getter/setter：重置时单点写 data 即可
-		// （不必像"构造时抓一次数组引用"那样两边都写，pusher 仍然 push 进同一个数组）
 		get creators() {
 			return readList<(item: unknown) => void>(data, 'creators');
 		},

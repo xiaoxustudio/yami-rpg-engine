@@ -10,7 +10,6 @@ describe('escapeHtml', () => {
 
 	it('`&` 最先替换，已生成的实体不会被二次转义', () => {
 		expect(escapeHtml('a & b')).toBe('a &amp; b');
-		// 用户文本本身就是 "&lt;" 时必须**原样显示**，而不是变成 "<"
 		expect(escapeHtml('&lt;')).toBe('&amp;lt;');
 	});
 
