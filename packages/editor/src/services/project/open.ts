@@ -13,6 +13,7 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { Updater } from '@app/services/updater/updater.ts';
+import { getLogStore } from '@app/stores/log';
 
 const loadCluster = () => import('@app/tools/window-cluster');
 const Animation = getLazyWindow('animation', () => loadCluster().then((m) => m.Animation));
@@ -149,7 +150,9 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 		await this.checkForProjectUpdates!();
 
 		void Printer.loadDefault();
-		void loadCustomCommandList();
+		void loadCustomCommandList().catch((error: unknown) => {
+			getLogStore().logThrow(error);
+		});
 		Animation.Player.updateStep();
 		this.loadProject!();
 	} catch (error: unknown) {

@@ -13,6 +13,7 @@ import { getYamiI18n } from '@app/i18n';
 import type { YamiElement } from '@app/types/element-api';
 import { compress } from '@app/utils/string';
 import { clone as deepClone } from '@app/utils/object';
+import { getLogStore } from '@app/stores/log';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -322,7 +323,9 @@ Command.custom = {
 
 	windowLocalize: function (_event: Event): void {
 		if (Command.custom.commandNameMap) {
-			void loadCustomCommandList();
+			void loadCustomCommandList().catch((error: unknown) => {
+				getLogStore().logThrow(error);
+			});
 		}
 	}
 };
