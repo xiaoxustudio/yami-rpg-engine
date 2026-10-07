@@ -55,19 +55,15 @@ describe('YMPageManager', () => {
 		expect(el.active).toBeNull();
 	});
 
-	// 回归（实机「内容永远是另一个面板」）：页框由整壳 Teleport 在分组间搬运，搬进来时带着
-	// 旧组的 `visible`；旧实现只清自己记着的 `active` ⇒ 第二个 `.visible` 永远留着，两个
-	// `inset:0` 的页完全叠在一起、DOM 序靠后的盖在上面。
 	it('switch 清掉全部残留 visible（含 index 未变的早退路径）', async () => {
 		const wrapper = mountWithPages();
 		const vm = wrapper.vm as unknown as PageManagerApi;
 		const frames = wrapper.findAll('.page-frame');
 		vm.switch('home');
 		await wrapper.vm.$nextTick();
-		// 模拟搬运残留：另一个页框也带着 visible
 		frames[1].element.classList.add('visible');
 
-		vm.switch('home'); // index 未变（旧实现整段被 `last !== value` 挡住）
+		vm.switch('home');
 		await wrapper.vm.$nextTick();
 
 		expect(wrapper.element.querySelectorAll('.page-frame.visible')).toHaveLength(1);
@@ -77,12 +73,12 @@ describe('YMPageManager', () => {
 	it('页框晚于激活写入到达（Teleport）：按当前 index 重新解析并归一化', async () => {
 		const wrapper = mountWithPages();
 		const vm = wrapper.vm as unknown as PageManagerApi;
-		vm.switch('late'); // 目标页还没搬进来
+		vm.switch('late');
 		const arrived = document.createElement('div');
 		arrived.className = 'page-frame visible';
 		arrived.setAttribute('value', 'late');
 		wrapper.element.appendChild(arrived);
-		await Promise.resolve(); // MutationObserver 走微任务
+		await Promise.resolve();
 
 		expect(wrapper.element.querySelectorAll('.page-frame.visible')).toHaveLength(1);
 		expect(arrived.classList.contains('visible')).toBe(true);

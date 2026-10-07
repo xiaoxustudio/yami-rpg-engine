@@ -2,16 +2,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane.vue';
 
-/**
- * 卸载清理：临时挂在 `window` 上的监听必须在组件卸载时被摘掉。
- *
- * 这些监听都有收尾分支会自行摘除，但**收尾分支不保证跑到** —— 手势/按键序列进行到一半
- * 就卸载时，`{ once: true }` 还没触发，监听连闭包（引用着已卸载的 DOM）会永久留在
- * window 上。这类泄漏在测试里不会报错、只在长会话里慢慢累积，所以要显式钉住。
- *
- * 这里挑 **Alt 序列** 作为触发路径：它是唯一一条不需要先渲染出文件行就能走到的登记分支
- * （`windowKeydown` 的 `AltLeft`），因此不依赖任何布局度量桩。
- */
 class FileItem {
 	path: string;
 	name: string;
@@ -69,7 +59,6 @@ const trackRemovals = (): { removed: string[]; restore: () => void } => {
 describe('YMFileBodyPane 的卸载清理', () => {
 	it('Alt 序列登记了 keyup / pointermove，卸载时全部摘掉', () => {
 		const wrapper = mountBody();
-		// 走 `windowKeydown` 的 AltLeft 分支：登记 keyup + pointermove
 		window.dispatchEvent(new KeyboardEvent('keydown', { code: 'AltLeft', altKey: true }));
 
 		const { removed, restore } = trackRemovals();

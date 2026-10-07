@@ -9,18 +9,6 @@ import YMGamepadBox from '../YMGamepadBox/YMGamepadBox.vue';
 import YMSelectBox from '../YMSelectBox/YMSelectBox.vue';
 import YMColorBox from '../YMColorBox/YMColorBox.vue';
 
-/**
- * 可访问名（`aria-label`）与自绘控件的 ARIA 语义。
- *
- * 背景：本仓的可见标签是控件**前面**的 `<div class="text">`（例如
- * `<div class="text">应用名称</div>` + `<TextBox id="..."/>`），控件与标签在 DOM 上并无关联，
- * 读屏聚焦时只会念「编辑框」。`label` 让调用方把这个可见标签同时作为可访问名交给控件。
- *
- * 分两类：
- *   - 6 个「原生控件」型（input / textarea / range）：`aria-label` 落在原生控件上；
- *   - `YMSelectBox` / `YMColorBox`：交互元素是自绘 div，只挂 `aria-label` 会被 AT 忽略，
- *     所以先定 role（select-only combobox / button）再挂名字。
- */
 const cases = [
 	{ name: 'YMTextBox', component: YMTextBox, control: 'input' },
 	{ name: 'YMTextArea', component: YMTextArea, control: 'textarea' },
@@ -70,8 +58,6 @@ describe('自绘控件的 ARIA 语义', () => {
 				modelValue: 'b'
 			}
 		});
-		// 用真实 PointerEvent 直发：`wrapper.trigger` 造的是 MouseEvent，而 `button` 在
-		// MouseEvent 上只有 getter，VTU 赋值会抛 TypeError（实测）。
 		wrapper.element.dispatchEvent(
 			new PointerEvent('pointerdown', { button: 0, bubbles: true })
 		);

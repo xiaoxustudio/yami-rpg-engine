@@ -41,7 +41,6 @@ interface Api extends HTMLElement {
 
 const cmd = (id: string, params: Record<string, unknown> = {}) => ({ id, params, commands: [] });
 
-// jsdom 里 `PointerEvent` 可能缺席，而生产代码（`doubleclick.ts`）会构造它
 if (typeof globalThis.PointerEvent === 'undefined') {
 	class PointerEventShim extends MouseEvent {}
 	(globalThis as unknown as { PointerEvent: unknown }).PointerEvent = PointerEventShim;
@@ -58,7 +57,6 @@ async function setup() {
 		attachTo: document.body
 	});
 	const el = wrapper.element as unknown as Api;
-	// `isInContent` 要读尺寸（jsdom 默认全 0）与 `scrollTop`
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
 	Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
 	Object.defineProperty(el, 'clientWidth', { value: 400, configurable: true });
@@ -85,7 +83,6 @@ describe('YMCommandList 双击行内文本', () => {
 
 		press(row.querySelector('.command-text') as HTMLElement);
 		await nextTick();
-		// 实机的第二下按在"现在这个位置上的节点"上
 		press((row.querySelector('.command-text') as HTMLElement | null) ?? row);
 		await nextTick();
 
@@ -111,11 +108,9 @@ describe('YMCommandList 双击行内文本', () => {
 		const row = el.querySelector('.command-item') as HTMLElement;
 		const text = row.querySelector('.command-text') as HTMLElement;
 
-		// 一次按下会走 `select → update → 回写桥`
 		press(text);
 		await nextTick();
 
-		// 内容没变 ⇒ 行内 DOM 不该被重建（这正是双击能连按两次命中的前提）
 		expect(row.querySelector('.command-text')).toBe(text);
 		expect(text.isConnected).toBe(true);
 		wrapper.unmount();

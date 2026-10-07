@@ -20,11 +20,6 @@ interface Props {
 	renderNodeIcon?: (item: unknown, container: HTMLElement) => void;
 }
 
-/**
- * 原先这里是 `interface TreeListRootElement extends HTMLElement { … [k: string]: any }`——
- * 一个"任何成员都能过"的逃生口。收掉后直接复用 `tree-api.ts` 的宿主契约 `TreeListHost`
- * （成员拼错、签名用错都会被 vue-tsc 当场报出），列元素上的方法只此一处定义。
- */
 type TreeListRootElement = TreeListHost;
 
 const props = withDefaults(defineProps<Props>(), {
@@ -33,7 +28,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const root = ref<HTMLElement | null>(null);
 const state = shallowRef<TreeRenderState | null>(null);
-// 合成单行的注册表覆盖（文本/class）；无覆盖时直接复用派生行对象
 const withRegistryOverrides = (current: TreeRenderState, row: TreeRenderRow): TreeRenderRow => {
 	const override = current.textOverrides.get(row.item);
 	const classes = current.itemClasses.get(row.item);
@@ -44,8 +38,6 @@ const withRegistryOverrides = (current: TreeRenderState, row: TreeRenderRow): Tr
 	return next;
 };
 
-// 窗口行：以 version 为依赖合成「显示文本覆盖 + 业务注册 class」，
-// 使 setItemText/setItemClass 这类只 bump 版本的变更即时反映（避免整体重派生 O(n²)）。
 const windowRows = computed<TreeRenderRow[]>(() => {
 	const current = state.value;
 	if (current === null) return [];
@@ -57,7 +49,6 @@ const windowRows = computed<TreeRenderRow[]>(() => {
 
 const listOf = (): TreeListRootElement | null => (root.value as TreeListRootElement | null) ?? null;
 
-// 行 class：受控状态（选中/展开/拖拽提示）+ 业务注册 class（itemClasses）
 const rowClasses = (row: TreeRenderRow): unknown[] => [
 	row.selected ? 'selected' : '',
 	row.expanded ? 'expanded' : '',
@@ -88,7 +79,6 @@ onMounted(() => {
 	const list = el as TreeListRootElement;
 	state.value = (list.renderState as TreeRenderState | undefined) ?? null;
 	if (state.value !== null) {
-		// 行集合变化后刷新派生内容（updaters / extras / icon 回调）
 		watch(windowRows, () => {
 			void nextTick(() => list.applyRowUpdaters?.());
 		});
@@ -96,7 +86,6 @@ onMounted(() => {
 	}
 });
 
-// patch 之后：同步虚拟窗口，并刷新派生内容（updaters/extras/icon）
 onUpdated(() => {
 	const list = listOf();
 	if (list?.renderState === undefined) return;

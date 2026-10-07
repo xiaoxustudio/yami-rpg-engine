@@ -21,11 +21,6 @@ const props = withDefaults(defineProps<Props>(), { id: '' });
 const root = ref<DetailSummaryElement | null>(null);
 const box = inject<DetailBoxContext | null>(DetailBoxKey, null);
 
-/**
- * 折叠状态的真源在 `YMDetailBox`，这里只做派生——原先模板上既没有 `tabindex` 也没有
- * `aria-expanded`，于是本文件注册的 Enter 处理器**永远无法触发**（根 div 拿不到焦点），
- * 读屏也不知道这块是收起的还是展开的。
- */
 const expanded = computed(() => box?.isOpen() ?? false);
 
 const toggle = (): void => {
@@ -48,7 +43,6 @@ const keydown = (event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void => {
 			}
 			break;
 		case 'Space':
-			// 空格是按钮语义的预期键：先拦掉默认滚动，再走与 Enter 相同的命中条件
 			event.preventDefault();
 			if (!event.cmdOrCtrlKey && !event.altKey) {
 				toggle();

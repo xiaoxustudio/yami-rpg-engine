@@ -100,7 +100,6 @@ describe('YMMarqueeArea', () => {
 		expect(typeof el.resize).toBe('function');
 		expect(typeof el.clear).toBe('function');
 		expect(typeof el.select).toBe('function');
-		// `selection` 是元素数据（WeakMap），不是组件实例属性
 		expect(elementDataOf<{ selection: HTMLElement | null }>(el).selection).toBe(
 			wrapper.element.querySelector('.selection')
 		);

@@ -13,7 +13,6 @@ interface MockInputElement extends HTMLElement {
 	clear: () => void;
 }
 
-/** `dataValue` / `parameters` / `key` 是元素数据（WeakMap），不是 mock 元素上的属性 */
 interface MockInputData {
 	dataValue: unknown;
 	parameters?: Record<string, unknown> | null;

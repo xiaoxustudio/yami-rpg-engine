@@ -134,7 +134,6 @@ export function createParamListCore(): ParamListCore {
 
 	return {
 		resolveSelectionRange,
-		// 窗口/边距/清空槽位统一走 `utils/common-list.ts` 的唯一一份（本地那三份是逐字重复）
 		computeVisibleRange,
 		computeHeadAndFootMargins: computeRowMargins,
 		computeFlexibleHeight,

@@ -3,14 +3,6 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMFileBrowser from '../YMFileBrowser/YMFileBrowser.vue';
 
-/**
- * 项目切换回归：`Editor.close()` → `editor.getBrowserInstance().close()` 必须清掉上一个项目
- * 在文件浏览器里留下的行（nav 文件夹列表 + body 文件列表），否则打开新项目时旧行还在 DOM 里，
- * 与新行重叠（"上一次的项目在背景"）。
- *
- * 这里用的假目录/假文件类与真实类的契约相同：`getContext(node)` 按节点缓存上下文（含 `element`）。
- */
-
 let inoSeq = 0;
 
 interface FakeContext {
@@ -78,7 +70,6 @@ const makeProject = (
 ): { assets: FakeFolder; folder: FakeFolder } => {
 	const assets = new FakeFolder('Assets', '');
 	const folder = new FakeFolder(folderName, folderName);
-	// 真实 FolderItem 由 create() 建立 parent 链（头部地址栏沿 parent 拼面包屑）
 	folder.parent = assets;
 	folder.children = fileNames.map((name) => new FakeFile(name, folderName));
 	assets.subfolders = [folder];
@@ -219,7 +210,6 @@ describe('YMFileBrowser 项目切换', () => {
 		assets = projectA.assets;
 		await boot();
 
-		// 模拟 store 的 `Browser.directory = Directory.assets` + loadFromProject 的 nav.load
 		setDirectory(assets);
 		nav.load?.(projectA.folder);
 		await nextTick();
@@ -269,7 +259,6 @@ describe('YMFileBrowser 项目切换', () => {
 		await nextTick();
 		expect(bodyNames()).toEqual(['A1', 'A2']);
 
-		// Editor.close() → browser.close()
 		(host as HTMLElement & { close?: () => void }).close?.();
 		await nextTick();
 
@@ -283,12 +272,6 @@ describe('YMFileBrowser 项目切换', () => {
 		expect(navNames()).toEqual(['FolderB']);
 	});
 
-	/**
-	 * Editor.open 的真实顺序：`close()`（`Layout.manager.switch(null)` 之后页面不可见）→
-	 * `File.updateRoot` + `loadProject()`（此时 pane 还是隐藏的，`resize()` 会因 `clientHeight === 0`
-	 * 提前返回）→ `Layout.manager.switch('directory')`（面板可见，ResizeObserver / pageResize 补一次
-	 * resize）。这条路径必须保证"可见后只渲染新项目"，既不能留旧行，也不能空着不出行。
-	 */
 	it('页面隐藏期间切换项目，重新可见后只渲染新项目', async () => {
 		const projectA = makeProject('FolderA', ['A1', 'A2']);
 		assets = projectA.assets;
@@ -299,20 +282,17 @@ describe('YMFileBrowser 项目切换', () => {
 		await nextTick();
 		expect(bodyNames()).toEqual(['A1', 'A2']);
 
-		// 页面切走：两个 pane 都变成 0 高
 		mockBox(nav, 160, 0);
 		mockBox(body, 400, 0);
 		(host as HTMLElement & { close?: () => void }).close?.();
 		await nextTick();
 
-		// 隐藏期间载入新项目
 		const projectB = makeProject('FolderB', ['B1']);
 		assets = projectB.assets;
 		setDirectory(assets);
 		nav.load?.(projectB.folder);
 		await nextTick();
 
-		// 页面切回：ResizeObserver / pageResize 的等价动作
 		mockBox(nav, 160, 300);
 		mockBox(body, 400, 300);
 		body.computeGridProperties?.();

@@ -1,21 +1,5 @@
-/**
- * 把「命令树 → 可见行」这一步抽成**纯数据**推导。
- *
- * 为什么要有它：这段逻辑原先长在 `command-api.ts` 的 `createCommandBuffer` / `createItems` /
- * `computeStartAndEnd` 里，和**直接建 DOM 节点**、`li.contents`、`dataIndent` 存取器缠在一起，
- * 所以既没法单独验证，也没法换渲染方式。抽成派生层之后，这里只产出**行数据**、不碰 DOM：
- * 渲染怎么变，派生结果都不许变。
- *
- * 与 tree 改造对齐的三点（见 `YMTreeList/tree-render.ts`）：
- *   ①行 key 用 **WeakMap 发号**——不能直接用 `command.id`（脚本/事件列表允许重复 id），
- *     同一 command 多次派生 key 稳定 ⇒ Vue 只移动/复用行；
- *   ②折叠态决定子行是否进入可见集（折叠时子命令不出现，只是"收起"）；
- *   ③缩进层级（`dataIndent`）由深度决定，与语言无关（缩进**宽度**另由 `computeTextIndent` 给）。
- */
-
 import { ROW_HEIGHT } from '../../../utils/common-list';
 
-/** 派生层看到的命令形状：只需要树结构 + 折叠态 + 禁用态 */
 export interface CommandRenderCommand {
 	id?: string;
 	params?: Record<string, unknown>;
@@ -26,29 +10,20 @@ export interface CommandRenderCommand {
 }
 
 export interface CommandRowDescriptor {
-	/** 稳定行 key（同 tree 的 `rowKeyOf`：WeakMap 发号，跨多次派生不变） */
 	key: string;
-	/** 该行对应的命令；**列表末尾的空白行为 `null`** */
 	command: CommandRenderCommand | null;
-	/** 所属列表（子命令所属的是父命令的 `commands`） */
 	list: CommandRenderCommand[];
-	/** 在其所属列表中的下标 */
 	index: number;
-	/** 缩进层级（顶层 0） */
 	indent: number;
-	/** 有子命令且已折叠 */
 	folded: boolean;
 	selected: boolean;
 	disabled: boolean;
 	hit: boolean;
-	/** 是否为列表末尾的**空白行**（无命令、点击即在该层级插入） */
 	blank: boolean;
 }
 
 export interface DeriveCommandRowsOptions {
-	/** 选中区间（行下标，含首尾；`null` 表示无选中） */
 	selection?: readonly [number, number] | null;
-	/** 搜索命中的行下标集合 */
 	hits?: ReadonlySet<number> | readonly number[];
 }
 
@@ -137,7 +112,6 @@ export function deriveCommandRows(
 				walk(command.commands as CommandRenderCommand[], indent + 1);
 			}
 		}
-		// 列表末尾的空白行（无命令、点击即插入）
 		const blankIndex = rows.length;
 		rows.push({
 			key: blankRowKeyOf(list, indent, list.length),
@@ -161,7 +135,6 @@ export function deriveCommandRows(
 /** 可见行的缩进层级序列（给缩进线扩展点/调试用） */
 export const rowIndents = (rows: CommandRowDescriptor[]): number[] => rows.map((row) => row.indent);
 
-/** 命令列表行高（px）：与 CSS 一致；翻页/滚动/命中定位都用它（统一出处 utils/common-list） */
 export { ROW_HEIGHT };
 
 /** 一次翻页滚动的行数（`innerHeight / 20 - 1`，下限 0） */
@@ -169,13 +142,9 @@ export const pageScrollLines = (viewportHeight: number): number =>
 	Math.max(Math.floor(viewportHeight / ROW_HEIGHT) - 1, 0);
 
 export interface PageContext {
-	/** 当前滚动位置 */
 	scrollTop: number;
-	/** 视口高度（= `innerHeight`） */
 	viewportHeight: number;
-	/** 可见行总数（= `elements.count`） */
 	rowCount: number;
-	/** 翻页锚点行 */
 	anchor: number;
 }
 
@@ -218,15 +187,10 @@ export const computePageDownTargetIndex = (context: PageContext): number => {
 export type ScrollToSelectionMode = 'active' | 'alter' | 'restore';
 
 export interface ScrollToSelectionContext extends PageContext {
-	/** 当前活动行 */
 	active: number;
-	/** 选区原点行 */
 	origin: number;
-	/** 选中区间首行 */
 	start: number;
-	/** 选中区间末行 */
 	end: number;
-	/** `active` 行所属命令的可见区间（折叠命令可能占多行） */
 	activeRange: readonly [number, number];
 }
 
@@ -238,8 +202,6 @@ export interface ScrollToSelectionContext extends PageContext {
  *   - `restore`：按整个选中区间夹取（从头对齐）。
  */
 export const computeScrollToSelection = (
-	// 实参来自组件元素 API（运行期字符串）；`'active' | 'alter' | 'restore'` 是已知取值，
-	// 未知取值按原实现"直接返回、不滚动"处理，故形参不窄化。
 	mode: string,
 	context: ScrollToSelectionContext
 ): number | null => {
@@ -285,7 +247,6 @@ export const computeScrollToRowScrollTop = (
 	targetIndex: number,
 	rowCount: number,
 	viewportHeight: number,
-	// 实参来自组件元素 API（运行期字符串）；`'top' | 'bottom' | 'center'` 是已知取值，未知取值按居中处理
 	position: string = 'center'
 ): number => {
 	const index = clampRowIndex(targetIndex, rowCount);

@@ -41,15 +41,6 @@ interface TypeRegistryConfig {
 	create(pane: HTMLElement, parameter: ParamDef): ParamWrap | null;
 }
 
-/**
- * 文本框的选区适配器。
- *
- * 四个形参从 `Event` 收窄成**注册点真实的 DOM 事件类型**（`createTextBox` 里就是
- * `keydown` / `keyup` / `pointerdown` / `pointerup` 四条注册，见本文件 :607-618）。
- * 写宽成 `Event` 的代价是：宿主侧那些**按事件类型签名**的处理器（编辑器里 `Selection` 的
- * `inputKeydown(event: KeyboardEvent)` …）与它「互不重叠」，宿主只能写
- * `Selection as unknown as { inputKeydown?: (event: Event) => void; … }` 把值谎报一遍。
- */
 interface SelectionAdapter {
 	inputKeydown?: (event: KeyboardEvent) => void;
 	inputKeyup?: (event: KeyboardEvent) => void;
@@ -81,12 +72,6 @@ type DetailBoxElement = HTMLElement & {
 	wrap?: DetailWrap;
 };
 
-/*
- * `DetailMeta` 已删除：`box.meta` 运行期就是**清单条目本身**（宿主挂上 `manager` / `langMap` 的
- * `Meta` 实例，见 `editor/src/data/metadata.ts` 与 `plugin-parse-meta.ts` 的 `Object.defineProperties`），
- * 原先这里另写一个 `{ manager, parameters }` 只是把同一个对象描述了两遍。
- */
-
 type ParamInput = HTMLElement & {
 	parameters?: Record<string, unknown> | null;
 	key?: string | null;
@@ -100,7 +85,6 @@ type ParamInput = HTMLElement & {
 	numBox?: { input: HTMLElement & { value?: string } };
 };
 
-/** 控件元素上的元素数据（`parameters` / `key` 仍在 DATA_FIELDS 内） */
 interface ParamInputData {
 	parameters?: Record<string, unknown> | null;
 	key?: string | null;
@@ -108,10 +92,6 @@ interface ParamInputData {
 
 const inputData = (el: unknown): ParamInputData => elementDataOf<ParamInputData>(el);
 
-/**
- * 控件包装的 tag：`createXxxBox` 各自的那个字面量（`repeatable-group` 同样是 `{ label, input }` 形态）。
- * 写成字面量联合是为了让 `RecycleWrap` 能按 `tag` 判别（见下）。
- */
 type ParamWrapTag =
 	| 'check-box'
 	| 'number-box'
@@ -136,22 +116,8 @@ interface RepeatableRowWrap {
 	input: ParamInput;
 }
 
-/**
- * 回收池里的一件「包装」：**按 `tag` 判别**的两种形态 —— 明细块（`{ box, children }`）
- * 或控件（`{ label, input }`）。两者成员互斥，`recycle()` 与各回收池都要能收下它们，
- * 所以这里写成判别联合：`switch (wrap.tag)` 之后字段是确定的，不需要到处 `!`。
- */
 type RecycleWrap = DetailWrap | ParamWrap;
 
-/**
- * 可重复参数组（元素是 `div.repeatable-group`）。
- *
- * 第 147 轮改 `extends HTMLElement` → `extends HTMLDivElement`：这正是第 86 轮注释里
- * 指出的两条拆法之一（当时实测「写成 `HTMLElement & RepeatableGroupInput` 也不行」——
- * 因为源是 `HTMLDivElement`，交叉要求源对整体可比）。源与接口同族之后，构造点那句
- * `container as unknown as RepeatableGroupInput` 降级为单次 `as`（断言只剩「补上运行期
- * 接着就挂上的那五个成员」，见 `createRepeatableGroup` 里紧跟着的赋值）。
- */
 interface RepeatableGroupInput extends HTMLDivElement {
 	setTooltip: () => void;
 	parameters: Record<string, unknown> | null;
@@ -194,12 +160,7 @@ const emit = defineEmits<{
 const root = ref<HTMLElement | null>(null);
 const headPadRef = ref<HTMLElement | null>(null);
 
-/**
- * pane 的状态面 —— **唯一真源就是本对象**：`attachStateAccessors` 把它的每个字段以 get/set 装到
- * 元素上（`PaneStateAccessors` 由它推导），所以字段类型写在这里一处就够。
- */
 const paneState = {
-	/** `bind()` 收到的列表元素（参数列表挂 `object`、树列表挂 `data`） */
 	scriptList: null as ParamScriptListElement | null,
 	headPad: null as HTMLElement | null,
 	metas: [] as ManifestEntry[],
@@ -233,15 +194,8 @@ const paneStateFields = [
 	'updateEventEnabled'
 ] as const;
 
-/** 元素上的状态访问器：与 `paneState` 的字段一一对应（映射类型 ⇒ 以后加字段不会漏） */
 type PaneStateAccessors = { [K in keyof typeof paneState]: (typeof paneState)[K] };
 
-/**
- * 元素 API（`attachApi` 的键集合契约 —— 见 `utils/attach-api.ts` 的「新调用点必须写出类型参数」）。
- *
- * 原先元素类型写作 `HTMLElement & { [k: string]: any }`：挂什么都行、读什么都行，
- * 键拼错也只会在运行期安静地失效。这里把实际装配的那一套名字下来。
- */
 interface ParameterPaneApi {
 	getData: () => ScriptDef[];
 	windowLocalize: typeof windowLocalize;
@@ -268,11 +222,9 @@ interface ParameterPaneApi {
 	on: typeof on;
 	componentChange: typeof componentChange;
 	applyAffix: typeof applyAffix;
-	/** 由宿主（编辑器侧的包装组件）补挂 —— 故可选 */
 	onResize?: () => void;
 }
 
-/** pane 元素 = `HTMLElement` + 状态访问器 + 元素 API（`onMounted` 里按这个类型装配） */
 type ParameterPaneElement = HTMLElement & PaneStateAccessors & ParameterPaneApi;
 
 let el: ParameterPaneElement | null = null;
@@ -320,7 +272,6 @@ const createControl = (kind: keyof PaneControlFactory): HTMLElement | null => {
 const getTypeConfig = (type: string): TypeRegistryConfig | undefined =>
 	props.typeRegistry?.get(type);
 
-// 值的形状见 `ManifestEntry`（第 156 轮：从 `Record<string, any>` 收成具名条目）
 const getManifest = (): { guidMap: Record<string, ManifestEntry> } | null =>
 	props.dataManifest ? props.dataManifest() : null;
 
@@ -335,14 +286,9 @@ const getMeasureText = (text: string, font: string): { width: number } =>
 
 const getSetTooltip = (): ((el: HTMLElement, tip: string) => void) | null => props.setTooltip;
 
-/**
- * `bind()` 收到的列表元素：运行期还挂着父组件的数据面（参数列表挂 `object`，树列表挂 `data`）。
- * 声明出来之后，两个读点就不必各写一次 `as unknown as { … }` —— 病灶一直在「参数声明写窄了」。
- */
 interface ParamScriptListElement extends HTMLElement {
 	object?: { update: (...args: unknown[]) => unknown };
 	data?: ScriptDef[];
-	/** 参数列表同时挂着历史记录器（`command-custom.ts` 侧的实现）；`componentChange` 用它存参数改动 */
 	history: {
 		editor: { target: unknown; meta: unknown } | null;
 		save(data: Record<string, unknown>): void;
@@ -353,7 +299,6 @@ const bind = (scriptList: ParamScriptListElement): void => {
 	const self = el!;
 	self.scriptList = scriptList;
 	if (scriptList.classList.contains('param-list')) {
-		// `!` 保持原来的空值语义
 		const object = scriptList.object!;
 		const { update } = object;
 		self.getData = () => scriptList.data!;
@@ -364,7 +309,6 @@ const bind = (scriptList: ParamScriptListElement): void => {
 	}
 	if (scriptList.classList.contains('tree-list')) {
 		self.getData = () => {
-			// 树列表 `read()` 出来的是当前选中项，就是一个脚本条目（`utils/dom` 的 read 只给 `object`）
 			const item = read(scriptList as HTMLElement) as ScriptDef | null;
 			return item ? [item] : [];
 		};
@@ -374,7 +318,6 @@ const bind = (scriptList: ParamScriptListElement): void => {
 const rewrite = (parameters: Record<string, unknown>, key: string): void => {
 	const self = el!;
 	for (const wrap of self.wraps) {
-		// `wraps` 里的明细块都在 `update()` 里配过 `box.data`（`box.data = script`）⇒ 这里必然有值
 		const script = wrap.box.data!;
 		const map = script.parameters;
 		if (map !== parameters) continue;
@@ -409,8 +352,6 @@ const update = (): void => {
 			changed = true;
 		}
 		const paramList = meta.parameters;
-		// `?.`：`parameters` 在非 script 条目上是 `null`（见 `Meta` 的声明）；旧写法直接
-		// `.length` 会抛 —— 这是「不可能路径上由抛错改成跳过」的那类等价改动（第 143 轮同款）。
 		if (!paramList?.length) continue;
 		const langMap = meta.langMap.update();
 		const parameters = script.parameters;
@@ -451,7 +392,6 @@ const update = (): void => {
 			if (parameter.validate) {
 				const validateInput = () => {
 					const data = inputData(input);
-					// `key!`：与同文件 `states[key!]` / `paramMap[key!]` 一致——只有 createParamRow 配过的控件才会注册本回调
 					const val = data.parameters?.[data.key!];
 					const ok = core.isParamValueValid(parameter, val, getPlugin());
 					if (ok) {
@@ -572,7 +512,6 @@ const updateParamInput = (wrap: ParamWrap, value: unknown): void => {
 			if (read(wrap.input) !== value) {
 				write(wrap.input, value);
 			} else if (typeof value === 'number') {
-				// numBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 				elementDataOf<{ numBox?: { input: { value: string } } }>(
 					wrap.input
 				).numBox!.input.value = value.toString();
@@ -774,10 +713,6 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 	addBtn.className = 'add-row-btn';
 	container.appendChild(rowsEl);
 	container.appendChild(addBtn);
-	// `RepeatableGroupInput` 已改成 `extends HTMLDivElement`（第 86 轮注释里指出的
-	// 拆法之一）⇒ 源与接口同族，断言从 `as unknown as` 降级为单次 `as`。
-	// 剩下这层单次 `as` 只主张「紧接着要在它上面挂那五个成员」（下面三行 + `read` / `write`），
-	// 属于本文件既有的「先建后补」写法；写法本身与 legacy 一致（legacy 也是元素先建、成员后挂）。
 	const input = container as RepeatableGroupInput;
 	input.setTooltip = () => {};
 	const data = inputData(input);
@@ -1066,7 +1001,6 @@ defineExpose({
 });
 
 onMounted(() => {
-	// `root.value` 是模板 ref 的元素本身 ⇒ 单次断言到「元素 + 状态访问器 + API」这一个具名形状
 	const self = root.value as ParameterPaneElement;
 	if (!self) return;
 	el = self;

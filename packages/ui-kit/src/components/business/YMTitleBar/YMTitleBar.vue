@@ -4,15 +4,6 @@ import { clamp, hasClass, rect, rasterize, relate } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
 
 function getWindow(): { close(id?: string): void } | undefined {
-	// `window.Window` 是宿主（编辑器）用 `Reflect.set(window, 'Window', …)` 挂上去的窗口 API
-	// （见 editor 的 `tools/window-object.ts:517`），可能不存在 ⇒ 声明为可选；
-	// 该成员已在 `src/types/host-globals.d.ts` 里补了声明（第 149 轮）。
-	//
-	// ⚠️ 为什么还要这一行**赋值**（不是断言）：`window` 的静态类型是 `Window & typeof globalThis`，
-	// 而 `typeof globalThis` 上还有一个**同名构造器** `Window`（`{ new(): Window; prototype: Window }`）
-	// ⇒ 两者相交后 `window.Window` 的类型是「构造器 ∩ 我们声明的可选成员」，直接读会报 TS2741
-	// （既取不到可选性，也不能 `delete`）。赋给一个**只按 `Window` 接口看**的变量即可 ——
-	// 这是窄化赋值（`Window & typeof globalThis` 可赋给 `Window`），不是断言。
 	const host: Window = window;
 	return host.Window;
 }
@@ -41,7 +32,6 @@ const pointerdown = (event: PointerEvent): void => {
 		return;
 	}
 	if (dragging) {
-		// 防模块级 dragging 残留（拖拽中 pointerup 丢失时阻断后续所有窗口拖拽）
 		(dragging as PointerEvent & { cancel?(event?: Event): void }).cancel?.();
 		dragging = null;
 	}

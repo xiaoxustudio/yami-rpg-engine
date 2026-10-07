@@ -159,8 +159,6 @@ describe('YMParamList', () => {
 		mockHeight(el);
 		el.bind(makeObject());
 		el.focus();
-		// 走元素访问器设置（playground / 宿主的老写法）。修复前它只写进 `state.togglable`，
-		// 而 toggle() 读的是 getListConfig —— 写了等于没写。
 		el.togglable = true;
 		expect(getListConfig(el).togglable).toBe(true);
 		expect(el.togglable).toBe(true);

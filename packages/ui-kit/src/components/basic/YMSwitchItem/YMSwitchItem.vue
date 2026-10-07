@@ -67,7 +67,6 @@ const onKeydown = (event: KeyboardEvent): void => {
 			step(1);
 			break;
 		case 'Space':
-			// 空格是激活键的通用约定；必须拦默认滚动
 			event.preventDefault();
 			event.stopPropagation();
 			step(1);

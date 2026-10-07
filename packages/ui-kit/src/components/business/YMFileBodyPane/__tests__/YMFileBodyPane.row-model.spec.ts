@@ -4,12 +4,6 @@ import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane.vue';
 import { deriveFileRows } from '../file-body-render';
 
-/**
- * **可见行数据模型**与渲染出的 DOM 必须等价。
- *
- * 行由模板按本模型产生，因此必须证明"派生层算出来的行序列"与"真正渲染出来的行序列"**逐项一致**
- * （顺序、key、窗口边界）。不一致就先修模型，而不是先动渲染。
- */
 class FileItem {
 	path: string;
 	name: string;
@@ -169,10 +163,6 @@ describe('YMFileBodyPane（可见行模型 ↔ DOM 等价）', () => {
 	});
 });
 
-/**
- * 模板渲染一行需要的**全部数据**必须与命令式渲染结果一致
- * （名称、文件夹标记、选中态、定位样式）——换源时模板只吃这份数据，不再读 DOM。
- */
 describe('YMFileBodyPane（行描述 ↔ DOM 双写一致）', () => {
 	it('行描述与 DOM 逐项一致：名称、文件夹标记、定位样式', async () => {
 		const { el } = mountBody();

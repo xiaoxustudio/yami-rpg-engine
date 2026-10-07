@@ -64,7 +64,6 @@ export function attachSelectBoxApi(
 	const text = document.createElement('div');
 	text.className = 'select-box-text';
 	box.appendChild(text);
-	// info now lives in element data (field removed from DATA_FIELDS)
 	const infoData = elementDataOf<{ info: HTMLElement }>(box);
 	infoData.info = text;
 	box.tabIndex = 0;
@@ -213,11 +212,8 @@ export function attachSelectBoxApi(
 			state.dataValue = value;
 		}
 	});
-	// `invalid` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<{ invalid?: boolean }>(box).invalid = state.invalid;
 	box.hideUnrelated = state.hideUnrelated;
-	// 删掉 `box.savedValue = state.savedValue` 的镜像（全仓无人读取元素上的 savedValue；
-	// 真正的 saved/restore 状态在 core 的 `state` 里）
 	box.writeEventEnabled = state.writeEventEnabled;
 	box.inputEventEnabled = state.inputEventEnabled;
 	markApiAttached(box);

@@ -36,10 +36,6 @@ type SelectItemElement = HTMLElement & {
 	dataValue?: unknown;
 };
 
-/**
- * 下拉列表元素（`box`）自身的元素数据——`target` 是宿主 select-box 元素，
- * `selection` 是当前选中项元素。
- */
 interface SelectListElementData {
 	target: SelectTarget | null;
 	selection: HTMLElement | null;
@@ -102,7 +98,6 @@ export function createSelectListApi(
 	options?: SelectListApiOptions
 ): SelectListApi {
 	const box = el as SelectListApi;
-	// `target` / `selection` 走显式元素数据
 	const data = listData(box);
 	const setTooltip =
 		options?.setTooltip ??
@@ -112,7 +107,6 @@ export function createSelectListApi(
 
 	box.state = 'closed';
 	data.target = null;
-	// 手法库第 4 条（「断言完紧接着写字段」）：`Object.assign([], {…})` 一次成型 ⇒ **零断言**。
 	box.elements = Object.assign([], {
 		versionId: 0,
 		count: 0,
@@ -178,10 +172,6 @@ export function createSelectListApi(
 
 		resize();
 
-		// `dataItems` 是宿主的元素数据；`dataValue` 则是**两种承载者**——`select-box-api` /
-		// `YMSelectBox.vue` 等宿主给 `dataValue` 装了 own 访问器（own 覆盖原型），而独立使用的选择列表
-		// 元素上没有 own 访问器（走元素数据）。故这一读统一走 `elementDataValueOf`（own 优先、否则元素数据），
-		// 两种宿主都对——原型访问器退役后仍然成立。
 		write(elementDataValueOf(target));
 		scrollToSelection();
 

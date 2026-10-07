@@ -29,10 +29,6 @@ interface CommandListElement extends HTMLElement {
 	history: { canUndo: () => boolean; canRedo: () => boolean };
 }
 
-/**
- * 命令列表自己的状态（选区窗口 / 聚焦）走**显式元素数据**——原实现读 `HTMLElement.prototype`
- * 上的访问器；字段从 `DATA_FIELDS` 摘除后，`el.start` 这类读法会静默变成 `undefined`。
- */
 interface CommandListState {
 	start: number | null;
 	focusing?: boolean;
@@ -102,7 +98,6 @@ const makeOptions = (overrides: Partial<CommandListApiOptions> = {}): CommandLis
 	...overrides
 });
 
-/** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
 const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandListElementApi>(
 	options: CommandListApiOptions
 ): Promise<T> => {
@@ -288,11 +283,6 @@ describe('YMCommandList', () => {
 		expect(!!li?.dataItem?.folded).toBe(!foldedBefore);
 	});
 
-	/**
-	 * 插入路径（`command.insert`）此前没有用例覆盖。这里走**键盘**触发（输入字母即插入），
-	 * 它在 jsdom 里可靠；"点击末尾空白行插入"那条指针路径留给真机冒烟（空白行本身已由
-	 * 行模型/用例覆盖在案，这里只补"插入真的被调用"这一环）。
-	 */
 	it('输入字母 → 走 command.insert（插入路径覆盖率补齐）', async () => {
 		const insert = vi.fn();
 		const options = makeOptions();
@@ -301,7 +291,6 @@ describe('YMCommandList', () => {
 		mockHeight(el);
 		el.write([makeCommand('a')]);
 		await nextTick();
-		// keydown 分支要求列表处于聚焦态（`focusing`）且有选区
 		listState(el).focusing = true;
 		el.focus();
 		el.select(0);
@@ -312,10 +301,6 @@ describe('YMCommandList', () => {
 		expect(insert).toHaveBeenCalled();
 	});
 
-	/**
-	 * 回归：`updateCommandElement` 是"追加"语义，而回写桥会在挂载/刷新/`:ref` 多处被调用——
-	 * 曾经因此把行内文本叠成**两份**（实测）。桥现在会先清空行内（保留 fold 把手）再重建。
-	 */
 	it('行内文本不重复：每个内容片段只出现一次', async () => {
 		const options = makeOptions();
 		options.command!.parse = (() => [

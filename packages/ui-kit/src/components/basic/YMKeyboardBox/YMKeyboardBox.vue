@@ -4,7 +4,6 @@ import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
-	/** 可访问名（aria-label），不渲染可见文本 */
 	label?: string;
 }
 

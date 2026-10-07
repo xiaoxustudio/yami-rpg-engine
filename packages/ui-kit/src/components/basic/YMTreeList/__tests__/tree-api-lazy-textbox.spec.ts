@@ -1,15 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
 
-/**
- * `treeListStatics.textBox` 的惰性契约。
- *
- * 它原先是对象字面量里的一个立即执行 IIFE：**模块加载期**就 `document.createElement`
- * （无 DOM 时返回 `null as unknown as TextBox`，谎报一个非空 host）。现在改为
- * 首次访问时才创建 —— 这两条断言就是这个意图的守门：
- *
- * 1. `import` 之后还不应该有任何 `.node-list-text-box` 被创建；
- * 2. 首次访问创建出来，且再访问拿到的是**同一个**实例（缓存语义与改动前一致）。
- */
 describe('treeListStatics.textBox 惰性创建', () => {
 	const boxesIn = (spy: { mock: { results: { value: unknown }[] } }): HTMLElement[] =>
 		spy.mock.results

@@ -73,7 +73,6 @@ describe('YMCheckBox', () => {
 		const wrapper = mount(YMCheckBox, { props: { standard: true, modelValue: true } });
 		expect(wrapper.attributes('role')).toBe('checkbox');
 		expect(wrapper.attributes('aria-checked')).toBe('true');
-		// 未禁用时不写 aria-disabled，避免噪音属性
 		expect(wrapper.attributes('aria-disabled')).toBeUndefined();
 		await wrapper.setProps({ modelValue: false });
 		expect(wrapper.attributes('aria-checked')).toBe('false');

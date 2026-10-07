@@ -17,10 +17,6 @@ import {
 	VIEW_MODE_BY_INDEX
 } from '../file-body-render';
 
-/**
- * 只验证「视图模式 → 度量」映射与「文件列表 → 行数据」的纯推导。
- * 渲染怎么变都行，派生结果不许变。
- */
 const core = createFileBodyCore();
 
 class FolderItem {

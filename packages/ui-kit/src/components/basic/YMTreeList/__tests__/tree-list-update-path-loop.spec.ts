@@ -5,21 +5,6 @@ import YMTreeList from '../YMTreeList.vue';
 import { setTreeItemClass } from '../tree-api';
 import { getListConfig } from '../../../../utils/list-config';
 
-/**
- * 「更新路径里写行状态」不得触发自我递归更新。
- *
- * 复现路径（与实机一致）：`list.update()` → 派生行 → Vue patch → `onUpdated` →
- * `applyRowUpdaters()` → 消费方 updater / updateNodeElement 写行状态（class / 文本 / 重派生）。
- * 只要该写入**无条件**让组件渲染 effect 失效，就会在同一个 flush 里反复排队自己，
- * Vue 随即报 `Maximum recursive updates exceeded in component <YMTreeList>`
- * （实测 101 次后中止该组件的渲染）。
- *
- * 两个已修的历史现场：
- * - `setItemClass`：无条件 `bump()`（`tree-render.ts`）；
- * - `updateItemName`：无条件 `syncRenderRows()`（`tree-api.ts`）——实机触发点是
- *   `animation-initialize.ts` 把 `list.updateItemName(item)` 直接挂进 `updaters`。
- */
-
 interface TreeData {
 	id: string;
 	name: string;
@@ -83,7 +68,6 @@ describe('YMTreeList 更新路径幂等性', () => {
 		const data = makeData();
 		const { el, unmount } = await mountList(data);
 
-		// 消费方 updater：与 text-tip / command-tip 一致——在更新路径里注册行 class
 		getListConfig(el).updaters.push((item) => setTreeItemClass(item, 'marked', true));
 
 		el.update();
@@ -99,7 +83,6 @@ describe('YMTreeList 更新路径幂等性', () => {
 		const data = makeData();
 		const { el, unmount } = await mountList(data);
 
-		// 实机写法：`getListConfig(list).updaters.push((item) => list.updateItemName(item))`
 		getListConfig(el).updaters.push((item) => el.updateItemName(item));
 
 		el.update();
@@ -107,7 +90,6 @@ describe('YMTreeList 更新路径幂等性', () => {
 		await nextTick();
 
 		expect(recursionWarnings()).toEqual([]);
-		// 文本仍然是派生出来的（幂等 ≠ 不刷新）
 		expect(Array.from(el.querySelectorAll('.node-text')).map((n) => n.textContent)).toEqual([
 			'Node 0',
 			'Node 1',
@@ -136,7 +118,6 @@ describe('YMTreeList 更新路径幂等性', () => {
 		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		el.bind(() => data);
-		// 与 command-tip（`creators.push(list.createCommandTip)`）一致：绑定期注册行 class
 		getListConfig(el).creators.push((item) => {
 			creatorCalls += 1;
 			setTreeItemClass(item, 'command-suggestion-item', true);
@@ -158,7 +139,6 @@ describe('YMTreeList 更新路径幂等性', () => {
 
 		for (let i = 0; i < 5; i++) {
 			el.update();
-			// 必须逐轮串行：每轮都要等上一轮的 flush 结算完，才能判断是否自激
 			// oxlint-disable-next-line no-await-in-loop
 			await nextTick();
 		}

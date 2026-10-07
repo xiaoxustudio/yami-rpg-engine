@@ -123,7 +123,6 @@ describe('YMWindowFrame', () => {
 		expect(confirm.disabled).toBe(false);
 		await wrapper.setProps({ confirmDisabled: true });
 		expect(confirm.disabled).toBe(true);
-		// 只作用于确认按钮：应用/取消保持可点
 		expect(
 			(wrapper.element.querySelector('button[name="cancel"]') as HTMLButtonElement).disabled
 		).toBe(false);

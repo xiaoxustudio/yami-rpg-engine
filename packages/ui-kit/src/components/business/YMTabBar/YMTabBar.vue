@@ -16,15 +16,10 @@ interface TabHint extends HTMLElement {
 }
 
 interface TabDraggingEvent {
-	// close / popup 两条路径没有拖拽提示元素（只有 HTML5 dragstart 会创建），读取前必须判空
 	hint: TabHint | null;
 	target: HTMLElement;
 	offsetX: number;
 	mode?: 'close' | 'popup';
-	/**
-	 * 「pointerup 落点是否算命中」的判据。**可选**：只有 close 手势需要它（拖离关闭键就不算命中），
-	 * popup 的命中由自己比较 `target` 完成，缺省即不限制落点。
-	 */
 	relate?(event: PointerEvent): boolean;
 }
 
@@ -72,16 +67,11 @@ interface Props {
 	updateAppRegion?: () => void;
 }
 
-/**
- * 标签栏元素自身的元素数据。`dragging` 是拖拽/长按中的拖拽态对象——tab-bar 元素没有装 own
- * 访问器，所以它一直是原型访问器落进 WeakMap 的元素数据。
- */
 interface TabBarElementData {
 	dragging: TabDraggingEvent | null;
 }
 const tabBarData = (el: unknown): TabBarElementData => elementDataOf<TabBarElementData>(el);
 
-/** 标签元素（`TabElement`）自身的元素数据——`item` 是这一行代表的标签数据 */
 interface TabElementData {
 	item: TabItem;
 }
@@ -91,9 +81,6 @@ const tabData = (el: unknown): TabElementData => elementDataOf<TabElementData>(e
 const hintData = (el: unknown): { target: HTMLElement | null } =>
 	elementDataOf<{ target: HTMLElement | null }>(el);
 
-// `updateAppRegion` 是可选 prop：不传时本来就是 undefined（读侧已经是 `props.updateAppRegion?.()`）。
-// 原先用 `withDefaults(..., { updateAppRegion: null as unknown as () => void })` 塞一个 null 默认值，
-// 纯属谎报类型 —— 可选 prop 不需要默认值。
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
@@ -535,14 +522,8 @@ const windowPointerup = (event: PointerEvent): void => {
 	if (!el) return;
 	const dragging = tabBarData(el).dragging;
 	if (!dragging) return;
-	// pointerup 一律结束这次手势：先把 `dragging` 与 window 监听收干净，再判断落点是否命中。
-	// 反过来（先判 relate 再清理）会让「按下后把指针移开再松开」永久留下手势态，
-	// 之后 `dragstart` 的 `if (!data.dragging)` 会把整条拖拽路径挡死。
 	clearGesture(el);
 	if (dragging.mode !== 'close' && dragging.mode !== 'popup') return;
-	// 只有 close / popup 会注册本监听，且 `relate` 是可选字段：缺省视为「不限制落点」，
-	// popup 的命中判断由下面各分支自己比较目标完成。
-	// （修复前这里是 `dragging.relate!(event)`：popup 分支没有 relate，右键松开时当场 TypeError。）
 	if (dragging.relate && !dragging.relate(event)) return;
 	switch (dragging.mode) {
 		case 'close': {
@@ -624,8 +605,6 @@ onMounted(() => {
 	el.addEventListener('dragend', dragend);
 });
 
-// 拖拽/长按途中被卸载：window 上的 pointerup 监听与插到组件子树之外的 hint 都不归 Vue 管，
-// 必须在卸载前显式回收（挂在 el 自身的三个监听随元素一起销毁，不需要处理）。
 onBeforeUnmount(() => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return;

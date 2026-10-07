@@ -5,7 +5,6 @@ interface Props {
 	cancelLabel?: string;
 	applyLabel?: string;
 	showApply?: boolean;
-	/** 表单无效时禁用确认按钮 */
 	confirmDisabled?: boolean;
 }
 

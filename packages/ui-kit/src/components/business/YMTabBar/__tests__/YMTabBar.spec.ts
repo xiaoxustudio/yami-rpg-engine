@@ -195,10 +195,8 @@ describe('YMTabBar', () => {
 		el.update();
 		const tab = el.querySelectorAll('.tab-item')[0] as HTMLElement;
 		const closeMark = tab.querySelector('.tab-close') as HTMLElement;
-		// close / popup 两条路径构造出的 dragging 没有拖拽提示元素（hint === null）
 		closeMark.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
 		expect(listData(el).dragging).toBeTruthy();
-		// 第二次 pointerdown 会先跑 dragend()：修复前 hint.remove() 抛错并使 dragend 中断 ⇒ dragging 残留
 		tab.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 2 }));
 		expect(listData(el).dragging).toBe(null);
 	});
@@ -210,12 +208,10 @@ describe('YMTabBar', () => {
 		el.data = data;
 		el.update();
 		let popped: unknown = 'unset';
-		// popup 分支只在宿主注册过 popup 监听后才会构造 dragging（这也是本缺陷此前未被发现的原因）
 		el.on('popup', (e: Event & { value: unknown }) => (popped = e.value));
 		const tab = el.querySelectorAll('.tab-item')[0] as HTMLElement;
 		tab.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 2 }));
 		expect(listData(el).dragging).toBeTruthy();
-		// 修复前：popup 分支没给 relate，而 windowPointerup 里写的是 dragging.relate!(event) ⇒ TypeError
 		expect(() =>
 			tab.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 2 }))
 		).not.toThrow();
@@ -233,8 +229,6 @@ describe('YMTabBar', () => {
 		const closeMark = tab.querySelector('.tab-close') as HTMLElement;
 		closeMark.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
 		expect(listData(el).dragging).toBeTruthy();
-		// 松手落在标签之外：relate 判为不命中 ⇒ 不关标签，但 dragging 不能残留，
-		// 否则 dragstart 的 `if (!data.dragging)` 会把后续整条拖拽路径挡死
 		document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0 }));
 		expect(el.querySelectorAll('.tab-item').length).toBe(3);
 		expect(listData(el).dragging).toBe(null);
@@ -247,12 +241,10 @@ describe('YMTabBar', () => {
 		el.data = data;
 		el.update();
 		const tab = el.querySelectorAll('.tab-item')[0] as HTMLElement;
-		// dragstart 会把 hint 插到 el.parentNode（组件子树之外，Vue 不负责回收）
 		tab.dispatchEvent(new Event('dragstart', { bubbles: true }));
 		expect(listData(el).dragging).toBeTruthy();
 		const hint = document.querySelector('.drag-and-drop-hint') as HTMLElement;
 		expect(hint).not.toBe(null);
-		// 断言「显式回收」这一契约本身：挂载容器的清空会掩盖 DOM 残留，所以直接看调用
 		const hintRemove = vi.spyOn(hint, 'remove');
 		const removeListener = vi.spyOn(window, 'removeEventListener');
 		wrapper.unmount();

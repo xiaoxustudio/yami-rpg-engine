@@ -71,7 +71,6 @@ const displayString = (value: unknown): string => {
 		case 'symbol':
 			return String(value);
 		default:
-			// 对象与函数：显式调用 `toString()`（语义同 `String(value)`）
 			return (value as { toString(): string }).toString();
 	}
 };
@@ -104,7 +103,6 @@ export function attachCustomBoxApi(
 	const text = document.createElement('div');
 	text.className = 'custom-box-text text';
 	box.appendChild(text);
-	// info now lives in element data (field removed from DATA_FIELDS)
 	elementDataOf<{ info: HTMLElement }>(box).info = text;
 	box.tabIndex = 0;
 

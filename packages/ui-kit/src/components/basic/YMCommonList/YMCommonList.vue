@@ -36,15 +36,12 @@ type ListItem = HTMLElement & {
 	versionId?: number;
 };
 
-// common-item 元素上的 `dataValue`（该项承载的值）走显式元素数据
 interface ListItemData {
 	dataValue?: unknown;
 }
 
 const itemData = (el: unknown): ListItemData => elementDataOf<ListItemData>(el);
 
-// 手法库第 4 条（「断言完紧接着写字段」）：改用 `Object.assign([], {…})` 一次成型 ⇒ **零断言**。
-// 原来是 `[] as unknown as ListItem[] & ListData`，紧接着 6 行逐字段赋值。
 const elements: ListItem[] & ListData = Object.assign([], {
 	versionId: 0,
 	count: 0,

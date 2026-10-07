@@ -14,8 +14,6 @@ const root = ref<HTMLElement | null>(null);
 let writeEventEnabled = false;
 let selectEventEnabled = false;
 
-// 最近一次写入的值：页签是**整壳 Teleport**搬进 nav 的，搬运会连 `selected` 残留一起带过来
-// （每个面板的壳在自己的组里都是选中态）。子节点一变就按这个值重放一次选中（幂等）。
 let current: unknown;
 
 const parseValue = (el: HTMLElement): unknown =>
@@ -126,8 +124,6 @@ onMounted(() => {
 	(element as NavBarHost).unselect = unselect;
 	(element as NavBarHost).on = on;
 	element.addEventListener('pointerdown', pointerdown);
-	// Teleport 把页签搬进来的**那一刻**带着旧组的 `selected`，而调用方的 `write()` 早就发生了
-	// （搬入通常晚于激活写入）—— 只靠 write 时清残留会漏掉这一批。子节点一变就重放当前值。
 	new MutationObserver(() => {
 		if (current !== undefined) write(current);
 	}).observe(element, { childList: true });

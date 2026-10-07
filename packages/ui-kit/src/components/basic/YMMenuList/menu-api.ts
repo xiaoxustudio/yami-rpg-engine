@@ -60,7 +60,6 @@ type MenuItemElement = HTMLElement & {
 	accelerator?: HTMLElement;
 };
 
-// menu-item 上挂的 `MenuItem` 走显式元素数据（`label`/`accelerator` 是普通 own 属性，保持原样）
 interface MenuItemData {
 	dataValue?: MenuItem;
 }
@@ -489,7 +488,6 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		}
 	}
 
-	// `menu` 是菜单的**状态对象**（上面的对象字面量），不是元素 —— `attachApi` 现在接受任意对象。
 	attachApi<MenuApi>(menu, {
 		windowBlur,
 		windowKeydown,

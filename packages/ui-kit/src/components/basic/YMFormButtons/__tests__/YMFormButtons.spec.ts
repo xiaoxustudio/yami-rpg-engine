@@ -32,12 +32,10 @@ describe('YMFormButtons', () => {
 		});
 		const confirm = wrapper.get('button[name="confirm"]');
 		expect((confirm.element as HTMLButtonElement).disabled).toBe(true);
-		// 元素上的 hotkey 提示不受影响（attribute 只被 tooltip 读取）
 		expect(confirm.attributes('hotkey')).toBe('Ctrl+Enter');
 		(confirm.element as HTMLButtonElement).click();
 		await wrapper.vm.$nextTick();
 		expect(events).toEqual([]);
-		// 取消按钮不受影响
 		const cancel = wrapper.get('button[name="cancel"]');
 		expect((cancel.element as HTMLButtonElement).disabled).toBe(false);
 		(cancel.element as HTMLButtonElement).click();

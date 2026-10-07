@@ -94,16 +94,10 @@ describe('YMCommandList（模型 ↔ DOM 一致性）', () => {
 
 		el.clear();
 		await nextTick();
-		// 清空后两边都必须为空
 		expect(el.getRowModel().keys).toEqual([]);
 		expect(domKeys()).toEqual([]);
 	});
 
-	/**
-	 * 长序列：把**跨行操作**都串一遍（选择导航、滚动定位、折叠、全选、删除、撤销、resize），
-	 * 每一步都要求模型与 DOM 的 key 序列一致。探针实测这 15 步全部一致（折叠 7→4、删除 4→1），
-	 * 这条把它固定下来——它是"模型驱动渲染"最直接的守门用例。
-	 */
 	it('长序列（导航/滚动/折叠/全选/删除/撤销）每一步都保持模型与 DOM 一致', async () => {
 		const wrapper = mount(YMCommandList, { props: { options: makeOptions() } });
 		const el = wrapper.element as unknown as ConsistencyApi & {
@@ -143,7 +137,6 @@ describe('YMCommandList（模型 ↔ DOM 一致性）', () => {
 			{ id: 'd', params: {}, commands: [] }
 		]);
 		await nextTick();
-		// `focusing` 是元素数据（原走 `HTMLElement.prototype` 上的访问器）
 		elementDataOf<{ focusing?: boolean }>(el).focusing = true;
 		expect(domKeys()).toEqual(nonEmpty(el.getRowModel().keys));
 
@@ -155,7 +148,6 @@ describe('YMCommandList（模型 ↔ DOM 一致性）', () => {
 		await step(() => el.selectMultipleUp());
 		await step(() => el.scrollToSelection('active'));
 		await step(() => el.scrollToRow(0, 'top'));
-		// 折叠会把子行移出可见集
 		const beforeFold = el.getRowModel().keys.length;
 		await step(() => el.fold());
 		expect(el.getRowModel().keys.length).toBeLessThan(beforeFold);

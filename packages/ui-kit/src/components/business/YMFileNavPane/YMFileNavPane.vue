@@ -25,13 +25,6 @@ import { createPayloadEvent } from '../../../utils/payload-event';
 
 const core = createFileNavCore();
 
-/**
- * 组件生命周期内挂在 `window` 上的临时监听，卸载时兜底摘除。
- *
- * 多选/框选按下后注册的 `pointerup` 带 `{ once: true }`，正常会被下一次 pointerup 消费；
- * 但**按下与抬起之间组件被卸载**时它还没触发，监听连同闭包（引用着那个行元素）会留在
- * window 上。重复摘除是 no-op，正常路径不受影响。
- */
 const windowListeners: { type: string; fn: EventListener }[] = [];
 
 function listenWindow<K extends keyof WindowEventMap>(
@@ -68,14 +61,6 @@ interface FileItemContext {
 type FolderElement = HTMLElement & {
 	file: FileItem;
 	context: FileItemContext;
-	// ⚠️ 2026-09-22 第 121 轮：这里原来还有 `indent: number`（**必填**）——
-	// 它是「字段搬进元素数据（WeakMap）」之后**没跟着删掉的残留**：
-	// 全文件对 `indent` 的访问只有 `data.indent`（写于 `:297`、读于 `:345`），
-	// 元素上的 `el.indent` **从来没有被写过**。于是类型在说谎（说元素有 `indent: number`，
-	// 实际读出来是 `undefined`），而且它逼着 `createFolderElement` 只能
-	// `document.createElement('div') as unknown as FolderElement` —— 断言替这个谎言背书。
-	// 删掉它之后那处断言**整条消失**（见 `:285`）。`changed` / `expanded` 等可选字段同理住在
-	// 元素数据里，但它们**不必填**，不挡构造，本轮不动。
 	changed?: boolean;
 	fileIcon?: HTMLElement;
 	folderMark?: HTMLElement;
@@ -85,12 +70,10 @@ type FolderElement = HTMLElement & {
 	expanded?: boolean;
 };
 
-/** 这些字段走元素数据（WeakMap），不再是元素上的隐式属性 */
 interface FolderElementData {
 	folderMark?: HTMLElement;
 	markVisible?: boolean;
 	textNode?: Text;
-	/** `expanded` / `changed` / `indent` 同样住在元素数据里（仍在 DATA_FIELDS 内） */
 	expanded?: boolean;
 	changed?: boolean;
 	indent: number;
@@ -268,13 +251,10 @@ function update(): void {
 }
 
 function resize(): void {
-	// 单次断言：`FileNavPaneElement` 本身就 `extends HTMLElement`（见类型定义），
-	// 交叉一支与源类型一致 ⇒ 不需要 `unknown` 中转。
 	commonListResize(el.value! as FileNavPaneElement & CommonListLike);
 }
 
 function updateHeadAndFoot(): void {
-	// 助手只要窗口游标（第 77 轮已收窄成 `HeadAndFootListLike`），同样单次断言即可。
 	commonListUpdateHeadAndFoot(el.value! as FileNavPaneElement & HeadAndFootListLike);
 }
 
@@ -307,9 +287,6 @@ function createFolderElement(file: FileItem, indent: number): FolderElement {
 	const context = file.getContext(el.value!);
 	let element = context.element;
 	if (element === undefined) {
-		// 手法库第 4 条：`file` / `context` 本来就在下一行紧接着写 ⇒ 一次成型，**零断言**。
-		// （原来写的是 `document.createElement('div') as unknown as FolderElement`，
-		// 那个断言之所以需要，正是因为类型里有个**从不存在的**必填字段 `indent` —— 已删。）
 		element = Object.assign(document.createElement('div'), { file, context });
 		addClass(element, 'file-nav-item');
 		context.element = element;
@@ -327,7 +304,6 @@ function createFolderElement(file: FileItem, indent: number): FolderElement {
 
 function updateFolderElement(element: FolderElement): void {
 	const { file, context } = element;
-	// `folderMark`/`markVisible` 不再是元素上的隐式属性，改成显式元素数据
 	const data = elementDataOf<FolderElementData>(element);
 	if (!data.textNode) {
 		const folderMark = renderElement(h('span', { class: 'folder-mark' }));
@@ -783,7 +759,6 @@ onMounted(() => {
 		timer.running = false;
 	};
 
-	// 手法库第 4 条（「断言完紧接着写字段」）：`Object.assign([], {…})` 一次成型 ⇒ **零断言**。
 	elements = Object.assign([], {
 		versionId: 0,
 		count: 0,
@@ -837,8 +812,6 @@ onMounted(() => {
 		get: () => selections,
 		configurable: true
 	});
-	// 拖拽流程（`YMFileBrowser.dragstart`）会把待定的按下回调置空以取消这次点击选中的副作用；
-	// legacy 里 `pressing` 是元素属性，换源后成了闭包变量 —— 不暴露就没有接收方。
 	Object.defineProperty(node, 'pressing', {
 		get: () => pressing,
 		set: (value: ((event: PointerEvent) => void) | null) => {

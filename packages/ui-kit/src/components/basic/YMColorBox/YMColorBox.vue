@@ -8,7 +8,6 @@ interface Props {
 	modelValue?: string;
 	disabled?: boolean;
 	popup?: boolean;
-	/** 可访问名（aria-label），不渲染可见文本 */
 	label?: string;
 }
 
@@ -24,20 +23,6 @@ const emit = defineEmits<{
 	input: [value: string];
 	open: [];
 }>();
-
-/*
- * 模板根节点标 `role="button"` + `label`（可访问名）/ `aria-disabled`：这个控件是
- * 「点开调色盘」的按钮。根节点在配套的 `color-box-api` 里被设为 `tabIndex = 0`，
- * 语义会被读到。
- *
- * **已知缺口**：当前颜色值只体现为两层 div 的背景色，按钮角色没有承载「值」的属性
- * （`aria-valuetext` 在 role=button 上无效），所以读屏只播报字段名、不播报色值 ——
- * 值只能从编辑器并排的 hex/RGBA 输入框读到。要真正暴露它需要一个能把值当值传达的
- * 角色（例如把色块做成 `role="spinbutton"` 或补一个可聚焦的文本回退），属于设计决策，
- * 不在本次「接线可访问名」范围内。
- *
- * ⚠️ 说明文字别写进 `<template>`：模板里出现 HTML 注释会让组件变成多根。
- */
 
 type ColorBoxApi = HTMLElement & {
 	dataValue?: string;

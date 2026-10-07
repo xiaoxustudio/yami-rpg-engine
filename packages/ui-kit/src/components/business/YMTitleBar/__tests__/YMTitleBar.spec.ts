@@ -97,8 +97,6 @@ describe('YMTitleBar', () => {
 		closeBtn.classList.add('close');
 		el.appendChild(closeBtn);
 		let closed = null;
-		// 与 `getWindow()` 同一手法：`window` 的实际类型是 `Window & typeof globalThis`，
-		// 而其中同名构造器会把 `Window` 成员相交掉 ⇒ 先窄化到 `Window` 接口再读写。
 		const host: Window = window;
 		host.Window = {
 			close: (id: string) => (closed = id)

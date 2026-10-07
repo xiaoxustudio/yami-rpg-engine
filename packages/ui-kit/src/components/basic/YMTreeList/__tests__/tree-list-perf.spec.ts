@@ -3,14 +3,6 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMTreeList from '../YMTreeList.vue';
 
-/**
- * **大数据（1000+ 节点）性能基准**。
- *
- * 口径：不劣于现状 10%。本文件给出可复现的绝对耗时快照，
- * 而不是精确阈值——阈值取观测值的 5~10 倍，只用于拦住"数量级回退"（例如每次 bump 都全树重派生）。
- * 运行：pnpm -F @yami/ui-kit exec vitest run src/components/basic/YMTreeList/__tests__/tree-list-perf.spec.ts
- */
-
 interface PerfItem {
 	id: string;
 	name: string;
@@ -93,8 +85,6 @@ describe('YMTreeList 大数据性能基准（1000 节点）', () => {
 		el.update();
 		await nextTick();
 		const start = performance.now();
-		// 循环内不 await：Vue 的调度器会把 patch 合并到一次 flush，
-		// 这里要量的是 20 次「bump + 重派生」的同步开销，patch 只算一次。
 		for (let i = 0; i < 20; i++) el.update();
 		const elapsed = ms(start);
 		await nextTick();

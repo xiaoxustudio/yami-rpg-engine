@@ -3,20 +3,6 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane.vue';
 
-/**
- * 行为金标准（文件 body 组）：锁住**行渲染 / 选区 / 网格度量 / 内容尺寸**行为，
- * 这些用例只允许改断言方式，不允许改语义。
- *
- * 编辑器形态 fixture 的五个要点（逐条踩出来的）：
- *   ①元素 API 挂在**面板元素**上（`attachApi(el.value, …)`），度量字段写在 `.file-body-content` 上；
- *   ②jsdom 必须给 `getBoundingClientRect` 打尺寸桩，否则 `computeGridProperties()` 开头的
- *     `if (rect(node).width <= 0) return;` 直接返回；
- *   ③`viewMode` 由 **`setViewIndex(0..4)`** 决定（0=list、1=small、2=medium…）：不设序号，
- *     后面 `switch (viewMode)` 落空，度量字段一个都不会写；
- *   ④`setViewIndex` 会写 **`props.links.head.view`**——缺这个桩会直接抛错（本文件曾因此 9 例全红）；
- *   ⑤渲染链：`setViewIndex → updateViewMode → createFlatItems → computeGridProperties →
- *     updateContentSize → resize`。
- */
 class FileItem {
 	path: string;
 	name: string;
@@ -58,7 +44,6 @@ interface BodyContent extends HTMLElement {
 	itemSize?: number;
 	itemWidth?: number;
 	visibleLines?: number;
-	/** 可见窗口 [start, end]（由内部 `computeStartAndEnd` 写入） */
 	range?: Uint32Array;
 }
 
@@ -81,7 +66,6 @@ interface BodyElement extends HTMLElement {
 const makeLinks = (display = 'normal') => ({
 	browser: { display, filters: null, searchResults: null, backToParentFolder: vi.fn() },
 	nav: { selections: [], load: vi.fn(), scrollToSelection: vi.fn() },
-	// `setViewIndex` 会写 `head.view`：少了这个桩会抛错
 	head: { view: { write: vi.fn() } },
 	body: null
 });
@@ -219,18 +203,17 @@ describe('YMFileBodyPane（行为金标准：行渲染/选区/度量/尺寸）',
 
 	it('selectAll 覆盖**全部**行（含窗口外未渲染的那些）——数据化的直接收益', async () => {
 		const { el } = mountBody();
-		const list = items(400); // 足够多，窗口只渲染其中一段
+		const list = items(400);
 		await renderItems(el, list, 0);
-		expect(rows(el).length).toBeLessThan(list.length); // 只渲染了窗口内的一段
+		expect(rows(el).length).toBeLessThan(list.length);
 		el.selectAll();
 		await nextTick();
-		// 选区按数据算：400 个文件全部进入 selections（原先按元素槽位取，只能选到渲染出的那段）
 		expect((el.selections ?? []).length).toBe(list.length);
 	});
 
 	it('窗口迁移：列表视图滚动后可见区（content.range）随之右移', async () => {
 		const { el, content } = mountBody();
-		await renderItems(el, items(80), 0); // viewIndex=0 ⇒ 列表视图按 scrollLeft 计算窗口
+		await renderItems(el, items(80), 0);
 		const before = Array.from(content.range ?? []);
 		Object.defineProperty(el, 'scrollLeft', { value: 600, configurable: true, writable: true });
 		el.scrollTop = 0;
@@ -261,7 +244,7 @@ describe('YMFileBodyPane（行为金标准：行渲染/选区/度量/尺寸）',
 
 	it('网格视图：窗口迁移按 scrollTop 计算（与列表视图的轴不同）', async () => {
 		const { el, content } = mountBody();
-		await renderItems(el, items(80), 2); // viewIndex=2 ⇒ 网格视图
+		await renderItems(el, items(80), 2);
 		const before = Array.from(content.range ?? []);
 		Object.defineProperty(el, 'scrollTop', { value: 400, configurable: true, writable: true });
 		Object.defineProperty(el, 'scrollLeft', { value: 0, configurable: true, writable: true });
@@ -271,11 +254,6 @@ describe('YMFileBodyPane（行为金标准：行渲染/选区/度量/尺寸）',
 		expect(after[0]).toBeGreaterThanOrEqual(before[0]);
 	});
 
-	/**
-	 * 文件名由**模板**渲染（`{{ row.name }}`），因此改名必须经"模型 → 模板"反映出来。
-	 * 这条用例正是为此加的：改名后 `resize()` 会重建行描述，名字随之更新
-	 * （直接写 DOM 的实现才不需要这一步）。
-	 */
 	it('改名：改 basename 后 resize 会让模板显示新名字', async () => {
 		const { el } = mountBody();
 		const list = items(3);
@@ -291,12 +269,6 @@ describe('YMFileBodyPane（行为金标准：行渲染/选区/度量/尺寸）',
 		expect(names()[0]).toBe('renamed');
 	});
 
-	/**
-	 * 行内**不重复**：回写桥会在挂载与多次 `resize` 时重复绑定，而内容构建是"追加"语义
-	 * （命令列表那边就曾因此把行内文本叠成两份）。文件 body 这里是"有则跳过"的写法，
-	 * 这条用例把该不变量钉住：反复 resize 后每行仍只有 1 个图标 + 1 个名字。
-	 * **文件与文件夹都要覆盖**——文件夹那条曾经绕过"有则跳过"，额外 append 了第二个名字。
-	 */
 	it('行内不重复：反复 resize 后每行仍只有 1 个图标 + 1 个名字（含文件夹行）', async () => {
 		const { el } = mountBody();
 		await renderItems(el, [...items(3), new FolderItem('/a/sub', 'sub')]);
@@ -309,7 +281,7 @@ describe('YMFileBodyPane（行为金标准：行渲染/选区/度量/尺寸）',
 		expect(rows.length).toBeGreaterThanOrEqual(4);
 		for (const row of rows) {
 			expect(row.querySelectorAll('.file-body-name').length).toBe(1);
-			expect(row.children.length).toBe(2); // 图标 + 名字
+			expect(row.children.length).toBe(2);
 		}
 	});
 
@@ -320,10 +292,8 @@ describe('YMFileBodyPane（行为金标准：行渲染/选区/度量/尺寸）',
 		await nextTick();
 
 		const row = rows(el)[0];
-		// 模板已经渲染了 `.file-body-name`：api 只能复用它，不能再造一个（实机表现为"两个名字"）
 		expect(row.querySelectorAll('.file-body-name').length).toBe(1);
 		expect(row.querySelector('.file-body-name')?.textContent).toBe('sub');
-		// 顺序与命令式实现一致：图标在前、名字在后
 		expect(Array.from(row.children).map((child) => child.className)).toEqual([
 			'file-body-icon icon-folder',
 			'file-body-name'

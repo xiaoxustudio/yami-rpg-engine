@@ -59,7 +59,6 @@ import {
 
 const core = createFileBodyCore();
 
-// 离屏建元素统一走 ui-kit 的 detached 接缝（本文件不直接调用受限的 document.*）
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => renderDetached(vnode);
 
 interface FileBodyContext {
@@ -134,11 +133,6 @@ interface FileBrowserLinks {
 		scrollToSelection(mode: string): void;
 	};
 	body?: HTMLElement | null;
-	/**
-	 * 视图切换器：`setViewIndex()` 写 `head.view.write(idx)`。
-	 * 由 `YMFileBrowser.setupLinks()` 在初始化时挂上，**在那之前可能为 null**
-	 *（元素还没渲染出来），所以标 `?` 并在唯一读点补 `!`。
-	 */
 	head?: { view: { write(index: number): void } } | null;
 }
 
@@ -147,7 +141,6 @@ type FileBodyIconApi = HTMLElement & {
 };
 
 interface FileBodyItemApi extends HTMLElement {
-	/** 派生层给的稳定行 key（模板直接当 `:key`） */
 	rowKey?: string;
 	file: FileBodyFile;
 	context?: FileBodyContext;
@@ -246,15 +239,6 @@ interface Props {
 		saveFiles(files: FileBodyFile[]): Promise<void>;
 		readdir(paths: string[]): Promise<FileBodyFile[]>;
 		assets: FileBodyFile | null;
-		/**
-		 * inode → 文件引用 的映射。
-		 *
-		 * **口径收紧（2026-09-20）**：全仓**其余** 5 处 `inoMap` 声明（`YMFileNavPane.vue:143`、
-		 * `file-nav-pane-core.ts:43/138`、`YMFileBrowser.vue:347`、`directory-tree.ts:30`、
-		 * `directory-object.ts:17`）**全都是 `Record<string, unknown>`**，只有这一处还写着 `any`。
-		 * 而真正的提供方是 `Directory.inoMap`（`directory-object.ts:17`，即 `Record<string, unknown>`）
-		 * ⇒ 原先的 `any` 比它的实际来源还宽，属纯粹的孤例，直接对齐。
-		 */
 		inoMap: Record<string, unknown>;
 	};
 	fileSystemApi?: {
@@ -273,10 +257,6 @@ interface Props {
 		mkdir(p: string, options?: { recursive?: boolean }): Promise<void>;
 		// oxlint-disable-next-line no-explicit-any
 		copyFile(src: string, dst: string): Promise<any>;
-		/**
-		 * 第二参是 node 的 `StatOptions` **对象**（宿主传的是 `FolderItem.bigint = { bigint: true }`，
-		 * 见 `:1928`）。
-		 */
 		// oxlint-disable-next-line no-explicit-any
 		stat(p: string, options?: { bigint?: boolean }): Promise<any>;
 		// oxlint-disable-next-line no-explicit-any
@@ -413,13 +393,6 @@ const timer: {
 	}
 };
 
-/**
- * 组件生命周期内挂在 `window` 上的临时监听（一次性 `pointerup`、Alt 拖拽序列）。
- *
- * 它们各自都有收尾分支会自行摘除，但**收尾分支不保证跑到**：手势进行到一半就卸载时，
- * `{ once: true }` 还没触发，监听就连着闭包（引用着已卸载的 DOM）永久留在 window 上。
- * 统一登记后由 `onBeforeUnmount` 兜底摘除；自清路径先摘过一遍也无妨（重复摘除是 no-op）。
- */
 const windowListeners: { type: string; fn: EventListener }[] = [];
 
 function listenWindow<K extends keyof WindowEventMap>(
@@ -437,11 +410,6 @@ let elements: (FileBodyItemApi | undefined)[] & {
 	cpl: number;
 };
 let activeFile: FileBodyFile | null = null;
-/**
- * 扁平化后的**文件数据**（排序后，与 `elements` 同序）。
- * 选区/导航/默认选中一律读它——窗口外的行在 `elements[]` 里是空槽，读元素会让这些方法
- * 只对"当前渲染出的一段"生效；数据层没有这个问题，也正好是后续模板换源的前提。
- */
 let flatFiles: FileBodyFile[] = [];
 let selections: FileBodyFile[] = [];
 let pressing: ((event: PointerEvent) => void) | null = null;
@@ -459,7 +427,6 @@ function setViewIndex(idx: number): void {
 	if (viewIndex !== idx) {
 		const { head } = props.links;
 		viewIndex = idx;
-		// 能改视图下标说明浏览器的 setupLinks() 早已跑过（head 已挂上）
 		head!.view.write(idx);
 		updateViewMode();
 	}
@@ -539,7 +506,6 @@ const rowModel = shallowRef<FileBodyRowModel>({
 	rows: []
 });
 
-/** 模板渲染的可见行（= 行描述，由 `resize()` 更新） */
 const visibleRows = computed<FileBodyRowDescriptor[]>(() => rowModel.value.rows);
 
 /**
@@ -551,8 +517,6 @@ function bindRowElement(
 	row: FileBodyRowDescriptor,
 	target: Element | ComponentPublicInstance | null
 ): void {
-	// 注意：`ComponentPublicInstance` 是**类型**，运行时不存在，不能 `instanceof`；
-	// 行元素一定是 `HTMLElement`，据此判别即可。
 	if (!(target instanceof HTMLElement)) return;
 	const node = target as FileBodyItemApi;
 	const file = flatFiles[row.index];
@@ -584,7 +548,6 @@ function rebuildRowDescriptors(start: number, end: number, cpl: number): void {
 		countPerLine: countPerLine!,
 		itemWidth: itemWidth!,
 		itemSize: itemSize!,
-		// 命名与命令式实现一致：文件用 `basename`（`updateFileElement`），文件夹用 `name`（`updateFolderElement`）
 		nameOf: (file) =>
 			file instanceof FileItem ? ((file as { basename?: string }).basename ?? '') : file.name,
 		isFolderOf: (file) => !(file instanceof FileItem),
@@ -614,9 +577,6 @@ function resize(): void {
 		els.cpl = cpl;
 		updateContentOffset();
 	}
-	// 行描述**只从数据算**（不反读 DOM）——模板照它渲染行，
-	// api 不建/挂/摘元素（Vue 负责生命周期，元素经 `bindRowElement` 回写）。
-	// **每次 resize 都重建**（不再只在窗口变化时），这样改名等数据变化能经模型反映到模板。
 	rebuildRowDescriptors(start, end, cpl);
 }
 
@@ -660,8 +620,6 @@ function computeGridProperties(): void {
 	contentData(content).count = -1;
 	elements.start = -1;
 	elements.end = -1;
-	// 模式 → 度量 的映射改由派生层给（`list`/`small`/`medium`/`large`/`huge` 与原先同一张表；
-	// 未知/未定的 viewMode 与原 `switch` 一样"什么都不设"）
 	if (!VIEW_MODE_BY_INDEX.includes(viewMode as FileBodyViewMode)) return;
 	applyGridMetrics(
 		computeViewMetrics(viewMode as FileBodyViewMode, core, {
@@ -768,9 +726,6 @@ function createFlatItems(dir: FileBodyFile[]): void {
 
 function updateFolderElement(element: FileBodyItemApi): void {
 	if (!element.nameBox) {
-		// 名字同样由**模板**渲染（`{{ row.name }}`）⇒ 只能复用模板那一个，不能再 append
-		// 第二个（否则一行里出现两个 `.file-body-name`，改名时还会 hide 错节点）；
-		// 图标插到名字**之前**，保持"图标 + 名字"的顺序。
 		const nameBox = element.querySelector('.file-body-name') as HTMLElement | null;
 		const fileIcon = renderElement(h('span', { class: ['file-body-icon', 'icon-folder'] }));
 		if (nameBox) {
@@ -792,8 +747,6 @@ function updateFolderElement(element: FileBodyItemApi): void {
 
 function updateFileElement(element: FileBodyItemApi): void {
 	const { file } = element;
-	// 名字那一段由**模板**渲染（`{{ row.name }}`）⇒ 这里只补图标，并把它插到名字之前；
-	// 名字本身不再由 api 写（改名走模型 → 模板重渲染）。
 	const nameBox =
 		element.nameBox ?? (element.querySelector('.file-body-name') as HTMLElement | null);
 	if (!element.nameBox && nameBox) element.nameBox = nameBox;
@@ -1023,7 +976,6 @@ function select(...files: FileBodyFile[]): void {
 		const context = file.getContext(node);
 		if (context.element) addClass(context.element, 'selected');
 	}
-	// 选中态也要进入行描述（选中不触发 resize，模板换源后需要这里补一次）
 	refreshRowSelection();
 	if (selectEventEnabled) {
 		const select = new Event('select') as FileBodyEvent;
@@ -1055,7 +1007,6 @@ function unselect(): void {
 			}
 		}
 		selections = [];
-		// 取消选中同样要回写行描述
 		refreshRowSelection();
 		if (unselectEventEnabled) {
 			const unselect = new Event('unselect') as FileBodyEvent;
@@ -1066,7 +1017,6 @@ function unselect(): void {
 }
 
 function selectByPath(path: string): void {
-	// 按路径查找走数据层（窗口外的行同样能被选中）
 	for (const file of flatFiles) {
 		if (file.path === path) {
 			return select(file);
@@ -1076,14 +1026,12 @@ function selectByPath(path: string): void {
 }
 
 function selectDefault(): void {
-	// 默认选中第一行，同样取数据（`els[i]` 在窗口外是空槽）
 	if (flatFiles.length !== 0) {
 		select(flatFiles[0]);
 	}
 }
 
 function selectRelativeInGridMode(direction: 'prev' | 'next' | 'prev-line' | 'next-line'): void {
-	// 网格导航全部走数据层（下标即数据下标，不再依赖"元素是否已渲染"）
 	const count = flatFiles.length;
 	if (count > 0) {
 		let start = Infinity;
@@ -1489,14 +1437,11 @@ function clearElements(start: number): void {
 function clear(): HTMLElement {
 	const node = el.value as FileBodyPaneApi;
 	unselect();
-	// **不再 `content.textContent = ''`**——行归模板（Vue）管，直接清空会把 Vue 的节点表打乱；
-	// 行数只经 `elements.count` / 行模型反映。
 	clearElements(0);
 	elements.count = 0;
 	elements.start = -1;
 	elements.end = -1;
 	resetContentStyle();
-	// 清空后必须把行模型也归零（否则模型留着旧行、与 DOM 不一致——探针实测 count=0/dom=0 但 modelRows=5）
 	rebuildRowDescriptors(0, 0, 0);
 	return node;
 }
@@ -1941,8 +1886,6 @@ onMounted(() => {
 		timer.running = false;
 	};
 
-	// 手法库第 4 条（「断言完紧接着写字段」）：`Object.assign([], {…})` 一次成型 ⇒ **零断言**。
-	// 原来是 `[] as unknown as typeof elements` 再逐字段赋值。
 	elements = Object.assign([], {
 		count: 0,
 		start: -1,
@@ -2013,7 +1956,6 @@ onMounted(() => {
 		updateViewMode,
 		updateFiles,
 		resize,
-		// 可见行模型（数据化渲染的前置）
 		getRowModel,
 		computeGridProperties,
 		updateContentSize,
@@ -2049,8 +1991,6 @@ onMounted(() => {
 		get: () => selections,
 		configurable: true
 	});
-	// 拖拽流程（`YMFileBrowser`）用的四个成员：legacy 里它们是元素成员，
-	// 换源后成了闭包变量 —— 不暴露出去，宿主侧的读/写/调用全部落空。
 	Object.defineProperty(node, 'activeFile', {
 		get: () => activeFile,
 		configurable: true
@@ -2080,8 +2020,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
 	window.removeEventListener('keydown', windowKeydownHandler);
 	window.removeEventListener('resize', windowResizeHandler);
-	// 手势 / Alt 按键序列中途卸载：把登记在案的临时 window 监听摘干净，并清掉待触发的
-	// 「改名」定时器（否则 500ms 后回调会打向已卸载的 DOM）。
 	for (const { type, fn } of windowListeners) window.removeEventListener(type, fn);
 	windowListeners.length = 0;
 	timer.remove();

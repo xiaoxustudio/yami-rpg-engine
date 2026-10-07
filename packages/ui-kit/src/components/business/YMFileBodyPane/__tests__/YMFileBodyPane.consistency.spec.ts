@@ -3,14 +3,6 @@ import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import YMFileBodyPane from '../YMFileBodyPane.vue';
 
-/**
- * 一致性回归（文件 body）：换源后"模型驱动渲染"，因此每一步之后
- * **行模型 / DOM / 书（`elements.count`）三者都要对得上**。
- *
- * 这条来自一次探针：它当场抓出 `clear()` 之后 `count=0, dom=0` 但 **`modelRows=5`**（模型留着旧行），
- * 而 `clear()` 还在直接 `content.textContent = ''`——那是把 Vue 的节点表打乱（同一类问题在命令列表
- * 已经踩过一次）。单点断言（只查 `count`）看不到这些，所以这里比对三者。
- */
 class FileItem {
 	path: string;
 	name: string;
@@ -85,14 +77,11 @@ describe('YMFileBodyPane（模型 ↔ DOM ↔ 书 一致性）', () => {
 		const expectConsistent = (): void => {
 			const model = el.getRowModel();
 			const dom = domRows();
-			// 书、模型、DOM 三者的行数一致
 			expect(model.rows.length).toBe(el.elements.count);
 			expect(dom.length).toBe(el.elements.count);
-			// key 序列一致
 			expect(nonEmpty(model.keys)).toEqual(
 				nonEmpty(dom.map((r) => (r as unknown as { rowKey?: string }).rowKey ?? ''))
 			);
-			// 选中态在两边一致
 			expect(model.rows.filter((r) => r.selected).length).toBe(
 				dom.filter((r) => r.classList.contains('selected')).length
 			);
@@ -122,19 +111,11 @@ describe('YMFileBodyPane（模型 ↔ DOM ↔ 书 一致性）', () => {
 
 		el.clear();
 		await nextTick();
-		// 清空后三者都必须归零
 		expect(el.elements.count).toBe(0);
 		expect(el.getRowModel().rows).toEqual([]);
 		expect(domRows()).toEqual([]);
 	});
 
-	/**
-	 * 长序列：切视图（列表 → 小/中/大/图标 → 回列表）、滚动迁移、多选、取消、清空、重渲染，
-	 * 每一步都要求"书 / 模型 / DOM"三者一致。探针实测 11 步全部一致（行数随视图变化 60 → 35 → 16 → 6）。
-	 *
-	 * 注意：**只断言一致性、不断言具体行数**——本用例的 `getBoundingClientRect` 是粗粒度 mock（一律 600×400），
-	 * 窗口大小的绝对值没有参考意义；窗口数学本身由 m1 的"窗口迁移"用例覆盖。
-	 */
 	it('长序列（切视图/滚动/多选/清空/重渲染）每一步都保持三者一致', async () => {
 		vi.spyOn(Element.prototype, 'getBoundingClientRect').mockReturnValue({
 			width: 600,
@@ -201,7 +182,6 @@ describe('YMFileBodyPane（模型 ↔ DOM ↔ 书 一致性）', () => {
 			el.setViewIndex(view);
 			el.updateViewMode();
 			render();
-			// 逐步推进是有意的：每一步都要在下一拍之后才断言
 			// oxlint-disable-next-line no-await-in-loop
 			await nextTick();
 			expectConsistent();

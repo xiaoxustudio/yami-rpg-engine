@@ -14,10 +14,6 @@ type PageFrameElement = HTMLElement & {
 	dataValue?: string | null;
 };
 
-// page-frame 的 `dataValue`（`value` 属性的缓存）走显式元素数据。
-// 注意 `manager.active` **不在此列**：Vue 版 YMPageManager 在元素上自建 `active` 访问器
-// （遮蔽原型），命令式 createPageManagerElement 走原型访问器——两种实现并存，读取方
-// （editor 的 layout.ts 等）按属性读，故这里保持原样。
 const frameData = (el: unknown): PageFrameElement => elementDataOf<PageFrameElement>(el);
 
 export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
@@ -45,15 +41,8 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 	};
 
 	manager.switch = function (value: string | null): void {
-		// 目标页框（可能还没被 Teleport 搬进来 ⇒ null）
 		let target: HTMLElement | null = null;
 		if (value !== null) {
-			// 原来写的是 `el.childNodes as unknown as PageFrameElement[]`。两处都换了：
-			//  · 遍历 `children`（元素集合）而不是 `childNodes`：**可证等价** —— 循环体只在
-			//    `hasClass(child, 'page-frame')` 为真时才继续，而 `hasClass` 对没有 `classList`
-			//    的节点（文本/注释节点）直接返回 false（见其实现）⇒ 那些节点原本就走不到里面。
-			//  · 断言压到真正需要它的那一处（`target` 声明为 `HTMLElement`），并降为**单次**
-			//    `as`：`Element` 与 `HTMLElement` 可比，tsc 会真的检查这次收窄。
 			for (const child of el.children) {
 				if (hasClass(child, 'page-frame')) {
 					const data = frameData(child);
@@ -67,8 +56,6 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 				}
 			}
 		}
-		// 幂等归一化（**无条件**执行）：页框可能带着旧组的 `.visible` 被 Teleport 搬进来，
-		// 而那时 index/active 早已就位 ⇒ 只清 `active` 会漏掉第二个可见页框。
 		normalizePages(target);
 		const last = manager.index;
 		const active = manager.active;
@@ -117,9 +104,6 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 		}
 	}
 
-	// Teleport 搬入页框的时刻晚于「激活写入」，那时 index 早已就位但 active 还是 null ——
-	// 只归一化一次会漏掉它。子节点一变就按当前 index 重放一次 `switch`（幂等，只动 class 不会自激）：
-	// 它会把「刚到达的目标页」重新解析成 active 并置为唯一可见，同时清掉搬进来的旧 `visible`。
 	new MutationObserver(() => {
 		if (manager.index !== null) manager.switch(manager.index);
 	}).observe(el, { childList: true });

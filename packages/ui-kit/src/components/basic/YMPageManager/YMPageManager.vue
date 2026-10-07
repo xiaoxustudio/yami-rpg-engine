@@ -56,8 +56,6 @@ const switchover = (value: unknown): void => {
 			}
 		}
 	}
-	// 归一化**无条件**执行（幂等）：搬入的页框可能带着旧组的 `visible`，而那时 index/active
-	// 都已经就位 ⇒ 下面那两个提前 return 会把它漏掉。
 	normalizePages(element, target);
 	const last = state.index;
 	const active = state.active;
@@ -118,9 +116,6 @@ onMounted(() => {
 		emit('switch', e.last, e.value)
 	);
 	state.switchEventEnabled = true;
-	// Teleport 搬入页框的时刻晚于「激活写入」，那时 index 早已就位但 active 还是 null ——
-	// 只归一化一次会漏掉它。子节点一变就按当前 index 重放一次 `switchover`（幂等，只动 class
-	// 不会自激）：它会把「刚到达的目标页」重新解析成 active 并置为唯一可见。
 	new MutationObserver(() => {
 		if (state.index !== null) switchover(state.index);
 	}).observe(element, { childList: true });

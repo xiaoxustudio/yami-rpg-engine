@@ -110,11 +110,9 @@ describe('command-render（派生层：可见行推导）', () => {
 		const list = [parent];
 		const rows = deriveCommandRows(list);
 		const blanks = rows.filter((row) => row.blank);
-		// 两层列表 ⇒ 两条空白行；子层那条在前（深度优先，父层空白行最后补）
 		expect(blanks.length).toBe(2);
 		expect(blanks.map((row) => row.indent)).toEqual([1, 0]);
 		expect(blanks.every((row) => row.command === null)).toBe(true);
-		// 空白行的身份是**所属列表**（同一父命令可以有多个子列表，见 `if` 的分支）
 		expect(blanks[0].key).toBe(blankRowKeyOf(parent.commands!, 1, 1));
 		expect(blanks[1].key).toBe(blankRowKeyOf(list, 0, 1));
 	});
@@ -150,10 +148,6 @@ describe('command-render（派生层：可见行推导）', () => {
 	});
 });
 
-/**
- * 翻页数学从 `pageUp`/`pageDown` 抽出来的纯函数。
- * 这几条是**逐字对照原实现**写的（原实现散在 api 里，`content-api.ts` 改调这些函数后行为不许变）。
- */
 describe('command-render（翻页数学）', () => {
 	const context = (over: Partial<Parameters<typeof computePageUpScrollTop>[0]> = {}) => ({
 		scrollTop: 0,
@@ -176,9 +170,7 @@ describe('command-render（翻页数学）', () => {
 	});
 
 	it('pageUp：目标行 = min(anchor, 底行) - 一页行数', () => {
-		// scrollTop 400 / innerHeight 400 ⇒ bottomIndex = floor(800/20) - 1 = 39；anchor 100 ⇒ min = 39
 		expect(computePageUpTargetIndex(context({ scrollTop: 400, anchor: 100 }))).toBe(39 - 19);
-		// anchor 更小则取 anchor
 		expect(computePageUpTargetIndex(context({ scrollTop: 400, anchor: 5 }))).toBe(5 - 19);
 	});
 
@@ -187,7 +179,7 @@ describe('command-render（翻页数学）', () => {
 	});
 
 	it('pageDown：夹取时不超过 rowCount*20 - viewportHeight', () => {
-		const ctx = context({ scrollTop: 0, rowCount: 5, viewportHeight: 400 }); // 内容 100px < 视口
+		const ctx = context({ scrollTop: 0, rowCount: 5, viewportHeight: 400 });
 		expect(computePageDownScrollTop(ctx, true)).toBe(0);
 		const ctx2 = context({ scrollTop: 0, rowCount: 100, viewportHeight: 400 });
 		expect(computePageDownScrollTop(ctx2, true)).toBe(19 * 20);
@@ -203,7 +195,6 @@ describe('command-render（翻页数学）', () => {
 	});
 });
 
-/** `scrollToSelection` / `scrollToRow` 的定位数学 */
 describe('command-render（定位数学）', () => {
 	const selectionContext = (
 		over: Partial<ScrollToSelectionContext> = {}
@@ -225,7 +216,6 @@ describe('command-render（定位数学）', () => {
 	});
 
 	it('scrollToSelection active（向上选）：先取 min 侧夹取', () => {
-		// active <= origin ⇒ min(max(top, min), max)；min = 10*20 + 20 - 400 = -180，max = 200
 		expect(
 			computeScrollToSelection(
 				'active',
@@ -242,7 +232,6 @@ describe('command-render（定位数学）', () => {
 					scrollTop: 500,
 					active: 20,
 					origin: 3,
-					// active 行所属命令的区间随 active 一起给（折叠命令可能占多行）
 					activeRange: [20, 20]
 				})
 			)
@@ -272,13 +261,9 @@ describe('command-render（定位数学）', () => {
 	});
 
 	it('scrollToRow：top/bottom/center 三种定位，并夹到 [0, count*20 - viewport]', () => {
-		// top：行顶
 		expect(computeScrollToRowScrollTop(10, 100, 400, 'top')).toBe(200);
-		// bottom：行底 − 视口 ⇒ 200 + 20 - 400 < 0 ⇒ 夹到 0
 		expect(computeScrollToRowScrollTop(10, 100, 400, 'bottom')).toBe(0);
-		// center：行顶 − 视口/2 + 行高/2 ⇒ 200 - 200 + 10 = 10
 		expect(computeScrollToRowScrollTop(10, 100, 400, 'center')).toBe(10);
-		// 越界：贴末行后再夹到最大滚动位置（100*20 - 400 = 1600）
 		expect(computeScrollToRowScrollTop(999, 100, 400, 'top')).toBe(1600);
 	});
 

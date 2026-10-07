@@ -65,7 +65,6 @@ interface WindowListElement extends HTMLElement {
 	};
 }
 
-/** 400px 视口 ⇒ 窗口 = ceil(400/20)+1 = 21 行 */
 const VIEWPORT = 400;
 const WINDOW = Math.ceil(VIEWPORT / 20) + 1;
 
@@ -87,14 +86,14 @@ describe('YMCommandList 虚拟滚动窗口（只渲染可见行）', () => {
 	it('模型与 DOM 都只有窗口那么多行，而不是全部', async () => {
 		const el = await mountList(100);
 		const model = el.getRowModel();
-		expect(el.elements.count).toBe(101); // 100 条命令 + 末尾空白行
+		expect(el.elements.count).toBe(101);
 		expect(model.rows.length).toBe(WINDOW);
 		expect(el.querySelectorAll('.command-item').length).toBe(WINDOW);
 	});
 
 	it('模型从窗口起点开始（行下标是**全局**下标），首/末行 margin 顶出窗口外的行', async () => {
 		const el = await mountList(100);
-		el.scrollTop = 40 * 20; // 第 40 行对齐到视口顶
+		el.scrollTop = 40 * 20;
 		el.resize();
 		await nextTick();
 		const count = el.elements.count;
@@ -103,8 +102,6 @@ describe('YMCommandList 虚拟滚动窗口（只渲染可见行）', () => {
 		expect(model.start).toBe(40);
 		expect(model.rows[0].index).toBe(40);
 		expect(model.end).toBe(61);
-		// 窗口外的行靠 margin 顶出来：顶部 40 行、底部 (count - end) 行
-		// （`padded` 未配置：命令列表不像树列表那样额外留一行）
 		expect(model.rows[0].marginTop).toBe(40 * 20);
 		expect(last.marginTop).toBe(0);
 		expect(last.marginBottom).toBe((count - model.end) * 20);
@@ -129,11 +126,9 @@ describe('YMCommandList 虚拟滚动窗口（只渲染可见行）', () => {
 		const el = await mountList(100);
 		const seen = vi.fn();
 		el.addEventListener('rowmodel', seen);
-		// 同一个窗口内滚动（不足一行）⇒ 不派发
 		el.scrollTop = 5;
 		el.resize();
 		expect(seen).not.toHaveBeenCalled();
-		// 跨到下一行 ⇒ 派发
 		el.scrollTop = 20;
 		el.resize();
 		expect(seen).toHaveBeenCalledTimes(1);
@@ -146,7 +141,7 @@ describe('YMCommandList 虚拟滚动窗口（只渲染可见行）', () => {
 		await nextTick();
 		const model = el.getRowModel();
 		expect(model.start).toBe(30);
-		expect(model.end).toBe(51); // 50 条命令 + 空白行
+		expect(model.end).toBe(51);
 		expect(model.rows[0].index).toBe(30);
 		expect(el.querySelectorAll('.command-item').length).toBe(model.rows.length);
 	});

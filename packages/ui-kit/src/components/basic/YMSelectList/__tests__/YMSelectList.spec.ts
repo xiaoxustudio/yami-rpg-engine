@@ -28,7 +28,6 @@ const makeTarget = (
 		value: () => rect,
 		configurable: true
 	});
-	// `dataItems` / `dataValue` 是宿主元素的元素数据（不再是元素自身的属性）
 	const targetData = elementDataOf<{
 		dataItems: { value: string; name: string; tip?: string }[];
 		dataValue: string;

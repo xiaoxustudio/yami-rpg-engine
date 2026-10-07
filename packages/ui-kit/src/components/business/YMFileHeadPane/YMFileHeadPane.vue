@@ -104,13 +104,6 @@ const core = createFileHeadPaneCore();
 const addressNodes = ref<AddressNode[]>([]);
 let addressSeq = 0;
 
-/**
- * 组件生命周期内挂在 `window` 上的临时监听，卸载时兜底摘除。
- *
- * 地址栏按下后注册的 `pointerup` 带 `{ once: true }`，正常情况下会被下一次 pointerup
- * 消费掉；但**按下与抬起之间组件被卸载**（切页 / 关项目）时它还没触发，监听连同闭包
- * （引用着那个地址元素）会留在 window 上。重复摘除是 no-op，所以正常路径不受影响。
- */
 const windowListeners: { type: string; fn: EventListener }[] = [];
 
 function listenWindow<K extends keyof WindowEventMap>(
@@ -135,9 +128,6 @@ const AddressPart = defineComponent({
 			};
 			if (!element) return;
 			element.file = props.node.file;
-			// `folders`/`target` 走显式元素数据（`folders` 已从 DATA_FIELDS 摘除）。
-			// ⚠️ 教训：这两个字段的**读取点是解构**（`const { folders, target } = element`），
-			// 按 `.folders` 检索会漏掉它们——第一次删字段时就是这么踩空的（file-head-pane 的用例当场转红）。
 			const data = elementDataOf<{ folders?: FileItem[]; target?: FileItem }>(element);
 			data.folders = props.node.folders;
 			data.target = props.node.target;
@@ -201,7 +191,6 @@ function addressPointerdown(event: PointerEvent) {
 									break;
 								case 'FILE-HEAD-ADDRESS-ARROW': {
 									const MAX_MENU_ITEMS = 32;
-									// 与写入点同源——都读显式元素数据
 									const addressData = elementDataOf<{
 										folders?: FileItem[];
 										target?: FileItem;
@@ -302,11 +291,6 @@ onMounted(() => {
 		| null
 		| undefined;
 	if (viewRoot) {
-		// 这里把 5 个**具名**成员从滑块组件的公开面搬到它的 root 元素上（消费方按 root 取用）。
-		// 原先两端都写成 `Record<string, any>` —— 于是名单里拼错一个名字、或某天多搬一个
-		// 不在名单里的成员，都静默通过。改成「具名联合 + unknown 值」：
-		// `as const` 让 `key` 是字面量联合（不需要索引签名），名字仍受名单约束；
-		// 值保持 `unknown`（这 5 个成员类型各异，逐个写全签名属于类型设计，不在本轴范围）。
 		const sliderMemberKeys = ['read', 'write', 'updateFiller', 'bar', 'filler'] as const;
 		type SliderViewMember = (typeof sliderMemberKeys)[number];
 		const viewApi = viewEl.value as Partial<Record<SliderViewMember, unknown>>;
@@ -319,8 +303,6 @@ onMounted(() => {
 			viewRoot.input = viewInputEl;
 			viewInputEl.max = '4';
 		}
-		// 原先这里写 `viewRoot.activeWheel = true`（元素数据），但 YMSliderBox 只读
-		// `props.activeWheel`——**没有任何读取方**，属死写入，已删（字段也从 DATA_FIELDS 摘除）。
 		viewRoot.addEventListener('focus', viewFocus);
 		viewRoot.addEventListener('input', viewInput);
 	}

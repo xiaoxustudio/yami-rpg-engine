@@ -11,9 +11,6 @@ import {
 } from '../tree-api';
 import { elementDataOf } from '../../../../utils/element-data';
 
-// 数据派生行渲染（虚拟滚动的唯一渲染路径）：
-// 派生行/虚拟窗口/元素回写桥/受控 class/折叠与搜索。
-
 interface TreeData {
 	id: string;
 	name: string;
@@ -96,10 +93,8 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 			'Child 2',
 			'Item 1'
 		]);
-		// 折叠标记：folder 有、file 无
 		expect(rows[0].querySelector('.folder-mark')).not.toBeNull();
 		expect(rows[1].querySelector('.folder-mark')).toBeNull();
-		// 元素桥：treeRowElement(item) as HTMLElement 指向渲染出的行，且内部字段挂载
 		expect(treeRowElement(data[0]) as HTMLElement).toBe(rows[0]);
 		expect(
 			elementDataOf<{ textNode?: Text }>(treeRowElement(data[0])).textNode?.nodeValue
@@ -126,7 +121,6 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 		el.expandSelection();
 		await nextTick();
 		expect(el.querySelectorAll('.node-item')).toHaveLength(4);
-		// 折叠→展开后行元素复用（treeRowElement(item) as HTMLElement 引用不变）
 		expect(treeRowElement(data[0]) as HTMLElement).toBe(folderElement);
 		wrapper.unmount();
 	});
@@ -174,7 +168,6 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 	it('消费方实例级 updateNodeElement 覆写仍是受支持扩展点（步骤 5 删除默认实现后）', async () => {
 		const data = makeData();
 		const { wrapper, el } = await mountList(data);
-		// 模拟 text-tip 一类窗口：把富行内容渲染挂到列表实例上
 		(el as unknown as { updateNodeElement: (row: HTMLElement) => void }).updateNodeElement = (
 			row: HTMLElement
 		): void => {
@@ -209,18 +202,12 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 		const row = el.querySelectorAll('.node-item')[1];
 		expect(row.textContent?.trim()).toBe('0:Child 1');
 		expect(row.classList.contains('weak')).toBe(true);
-		// 取消注册后 class 消失
 		setTreeItemClass(child, 'weak', false);
 		await nextTick();
 		expect(el.querySelectorAll('.node-item')[1].classList.contains('weak')).toBe(false);
 		wrapper.unmount();
 	});
 
-	/**
-	 * 回归（实机：`Cannot read properties of undefined (reading 'class')` at command-tip listPointerdown）：
-	 * 把行 item 搬进**元素数据**后，`event.target.item` 这个 expando 一律是 `undefined`，
-	 * 消费方必须走 `treeItemOf`。它同时承担"事件目标 → 行"的归一（标签文字在 `.node-text` 里）。
-	 */
 	it('treeItemOf：行元素与行内后代都归一到 item；行外节点返回 undefined', async () => {
 		const data = makeData();
 		const { wrapper, el } = await mountList(data);
@@ -231,7 +218,6 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 		expect(treeItemOf(text)).toBe(data[0]);
 		expect(treeItemOf(icon)).toBe(data[0]);
 		expect(treeItemOf(treeRowElement(data[1]))).toBe(data[1]);
-		// 行外（列表根/spacer/空）不算行
 		expect(treeItemOf(el)).toBeUndefined();
 		expect(treeItemOf(null)).toBeUndefined();
 		expect(treeItemOf(undefined)).toBeUndefined();
@@ -259,7 +245,6 @@ describe('YMTreeList v-for 行渲染（步骤 2）', () => {
 		const extras = el.querySelector('.tree-node-extras') as HTMLElement;
 		const button = extras.querySelector('.extras-button') as HTMLElement;
 		expect(treeItemOf(button)).toBeUndefined();
-		// 但 extras 所在的行本身依旧取得到
 		expect(treeItemOf(extras.closest('.node-item'))).toBe(data[0]);
 		wrapper.unmount();
 	});

@@ -199,10 +199,6 @@ const state = {
 	object: null,
 	type: null as string | null,
 	data: null as (ParamDataItem | null)[] | null,
-	// 手法库第 4 条：与 `onMounted` 里那两处（第 84 轮改过）**同形** —— 初始值也一次成型。
-	// 原来写的是 `[] as unknown as ParamElements`：一个**声称有 6 个游标字段、实际一个都没有**
-	// 的数组（断言替它撒了谎）。`onMounted` 随后会用同形的 `Object.assign` 覆盖它，
-	// 所以这里改成同形只是让初始值不再说谎，行为不变。
 	elements: Object.assign([], {
 		versionId: 0,
 		count: 0,
@@ -1230,7 +1226,6 @@ onMounted(() => {
 	attachStateAccessors(self);
 	self.type = null;
 	self.data = null;
-	// 与命令列表同一处理（第 84 轮）：断言之后紧跟着把断言里声称的字段逐个写上去 ⇒ `Object.assign` 一次写完。
 	self.elements = Object.assign([], {
 		versionId: 0,
 		count: 0,
@@ -1250,10 +1245,6 @@ onMounted(() => {
 	self.dragging = null;
 	self.history = null;
 	getListConfig(self).togglable = false;
-	// `togglable` 不在 `state` 里：它是列表配置（`ListConfig`）的一部分，真源只有一个 ——
-	// 经 `getListConfig()` 读写。原先它同时存在于 `state.togglable`（元素访问器写这份）
-	// 与 `getListConfig().togglable`（行为只读这份，见 :686 / :1119）⇒ `el.togglable = true`
-	// 写了也没人读。这里保留元素访问器这一对外形状，但把它代理到唯一真源。
 	Object.defineProperty(self, 'togglable', {
 		configurable: true,
 		get: () => getListConfig(self).togglable,
@@ -1262,7 +1253,6 @@ onMounted(() => {
 		}
 	});
 	self.height = undefined;
-	// `_paddingTop` 在类型里本来就是可选的（`_paddingTop?: number`）⇒ 赋 `undefined` 无需断言。
 	self._paddingTop = undefined;
 	Object.defineProperty(self, 'innerHeight', {
 		configurable: true,

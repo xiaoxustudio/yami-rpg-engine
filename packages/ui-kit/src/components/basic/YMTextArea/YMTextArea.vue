@@ -6,7 +6,6 @@ interface Props {
 	id?: string;
 	modelValue?: string;
 	disabled?: boolean;
-	/** 可访问名（aria-label），不渲染可见文本 */
 	label?: string;
 }
 

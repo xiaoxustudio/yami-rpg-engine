@@ -61,14 +61,6 @@ describe('tree-core', () => {
 			expect(data.initialized).toBeUndefined();
 		});
 
-		/**
-		 * 回归（2026-09-20）：`children` 可以是 `null` 而不是 `undefined` ——
-		 * `CustomFolder.children` 的声明就是 `CustomCommandItem[] | null`。
-		 * 原先的守卫写 `!== undefined`，于是 `null` 会被当成「有 children」送进
-		 * `uninstall()`，在 `for (const item of items)` 上抛
-		 * "TypeError: items is not iterable"。本用例已对着**修复前**的守卫跑过一次：
-		 * 失败并抛出的正是这个 TypeError。
-		 */
 		it('children 为 null 时不抛错，且照常删除 parent 缓存', () => {
 			const data: TreeShapeNode[] = [{ children: null }, { children: [{ children: null }] }];
 			core.createParents(data, null);

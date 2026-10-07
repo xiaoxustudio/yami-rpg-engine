@@ -4,10 +4,6 @@ import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane.vue';
 import { deriveFileRows } from '../file-body-render';
 
-/**
- * 渲染出的行必须带**派生层发的稳定行 key**（`element.rowKey`）。
- * 这些 key 直接当模板的 `:key`（没有它们就只能用下标）。
- */
 class FileItem {
 	path: string;
 	name: string;

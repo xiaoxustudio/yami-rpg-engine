@@ -36,7 +36,6 @@
 
 <script setup lang="ts">
 type FileBrowserApi = HTMLElement & {
-	/** 宿主写入的「当前项目目录根」（`Browser.directory = [Directory.assets]`），close 靠它判断是否已加载项目 */
 	directory?: unknown;
 	load?(folders: unknown[]): void;
 	select?(item: unknown): void;
@@ -70,15 +69,6 @@ type FileBodyApi = HTMLElement & {
 	selections?: unknown[];
 	[key: string]: unknown;
 };
-/**
- * 拖拽起点所在「页」的**读点面**。
- *
- * 原先这四处成员是在调用点内联写成字面量再 `as unknown as`（`HTMLElement` 与它
- * 「互不重叠」，只能靠 `unknown` 跨过去）。四个成员**全是运行期挂上的**（两个 pane 都用
- * `Object.defineProperty` 暴露 `pressing`，见 `YMFileNavPane.vue` / `YMFileBodyPane.vue`；
- * `selections` / `textBox` 由 body 侧提供），静态推导不出来 ⇒ 收成一处**具名**类型，
- * 断言从「跨类型跳跃」降级成「补上运行期成员」的单次 `as`，且契约只写一遍。
- */
 interface ActivePage extends HTMLElement {
 	pressing?: unknown;
 	activeFile?: unknown;
@@ -87,7 +77,6 @@ interface ActivePage extends HTMLElement {
 }
 interface FileHeadApi extends HTMLElement {
 	updateAddress?(): void;
-	/** 头部搜索框（YMTextBox 元素 API）：close 用 legacy 的 `searcher.write('')` 清关键字 */
 	searcher?: { write?(value: string): void; deleteInputContent?(): void };
 	el?: HTMLElement;
 	[key: string]: unknown;
@@ -231,13 +220,6 @@ const childCreateTextBox = props.createTextBox;
 
 let display: 'normal' | 'search' = 'normal';
 let keyword: RegExp | null = null;
-/**
- * 拖拽状态**挂在触发它的那个 DOM 事件对象上**：`dragstart`/`osDragstart` 把
- * `dropPath`/`dropTarget`/`mode` 等字段直接写在 `event` 上，之后又从同一个变量读回来。
- * 所以这里的类型是「事件 ∩ 状态」—— 原先只声明了 `DragEvent | PointerEvent`，
- * 漏掉了后半截，于是 8 个读点各自写了一次 `as unknown as DragState` 把它补回来。
- * 现在把这个「谎」收敛到赋值处一次，读点直接读。
- */
 type Dragging = (DragEvent | PointerEvent) & DragState;
 let dragging: Dragging | null = null;
 let filters: unknown[] | null = null;
@@ -274,9 +256,6 @@ function update(): void {
 	syncDisplayState();
 	const body = bodyEl.value?.el as FileBodyApi;
 	body?.updateFiles?.();
-	// 与 `:387` 同形（那里本来就是**单次** `as`）——同一个 `headEl.value`，两处不该写法不同。
-	// 原来这里是 `as unknown as FileHeadApi`，而 `:387` 的 `as FileHeadApi | undefined`
-	// 已经证明单次 `as` 就够（`HTMLElement` 与 `FileHeadApi` 可比）。
 	(headEl.value as FileHeadApi | undefined)?.updateAddress?.();
 }
 
@@ -315,9 +294,6 @@ function restoreDisplay(): void {
 			backupFolders = [];
 			searchResults = [];
 			syncDisplayState();
-			// legacy 的 `this.head.searcher.write('')`：搜索框里的关键字同样属于"上一个项目"的残留。
-			// （删掉的那句裸 `?.el?.querySelector?.('.file-head-searcher')` 正是它的残骸——
-			// 有调用无接收方，从未生效；现在走头部元素的搜索框 API，与 legacy 同一句 `write('')`。）
 			(
 				(headEl.value as { el?: FileHeadApi } | undefined)?.el?.searcher as
 					| { write?(value: string): void }
@@ -344,8 +320,6 @@ function backToParentFolder(): boolean {
 		}
 		case 'search': {
 			const active = document.activeElement as HTMLElement;
-			// 接收方是**头部元素**里的搜索框（组件只暴露 `{ updateAddress, el }`）；
-			// 原来的 `headEl.value?.searcherEl` 字段名与接收方都不对，一直是静默 no-op
 			(
 				(headEl.value as { el?: FileHeadApi } | undefined)?.el?.searcher as
 					| { deleteInputContent?(): void }
@@ -400,7 +374,6 @@ function close(): void {
 		const body = bodyEl.value?.el as FileBodyApi | undefined;
 		nav?.clear?.();
 		body?.clear?.();
-		// legacy 的 `head.address.clear()`：头部的面包屑是数据派生，清空选择后重算即为空
 		(headEl.value as FileHeadApi | undefined)?.updateAddress?.();
 	}
 }

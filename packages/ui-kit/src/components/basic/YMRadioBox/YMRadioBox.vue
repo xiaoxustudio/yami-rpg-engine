@@ -64,7 +64,6 @@ const onKeydown = (event: KeyboardEvent): void => {
 		return;
 	}
 	if (event.code === 'Space') {
-		// 空格是 radio 的标准激活键（读屏会按 role=radio 提示它）；必须拦默认滚动
 		event.preventDefault();
 		event.stopPropagation();
 		select();

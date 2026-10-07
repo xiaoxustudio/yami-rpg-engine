@@ -5,11 +5,6 @@ import { type CommandListApiOptions, type CommandListElementApi } from '../comma
 import { elementDataOf } from '../../../../utils/element-data';
 import YMCommandList from '../YMCommandList.vue';
 
-/**
- * 行为金标准（第二组）：锁住缩进/嵌套/选区/翻页/滚动等行为，
- * **这些用例只允许改断言方式，不允许改语义**。
- * 刻意不 mount SFC：直接用 `createCommandListElement` 拿元素 API（与命令编辑器的真实用法一致）。
- */
 interface CommandListElement extends HTMLElement {
 	[k: string]: unknown;
 	read: () => unknown;
@@ -32,10 +27,6 @@ interface CommandListElement extends HTMLElement {
 	>;
 }
 
-/**
- * 命令列表自己的状态（选区窗口 / 聚焦）走**显式元素数据**——原实现读 `HTMLElement.prototype`
- * 上的访问器；字段从 `DATA_FIELDS` 摘除后，`el.start` 这类读法会静默变成 `undefined`。
- */
 interface CommandListState {
 	start: number | null;
 	end: number | null;
@@ -123,7 +114,6 @@ const makeList = async (data: unknown[] = [], language = 'zh-CN'): Promise<Comma
 /** 40 行足够翻页（innerHeight 400 / 每行 20px） */
 const manyCommands = (n = 40) => Array.from({ length: n }, (_, i) => makeCommand(`c${i}`));
 
-/** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
 const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandListElementApi>(
 	options: CommandListApiOptions
 ): Promise<T> => {
@@ -146,14 +136,12 @@ describe('YMCommandList（行为金标准 第二组：缩进/嵌套/选区/翻�
 
 	it('缩进行契约：空白行（createBlankElement）位于列表末尾，且行数 = 命令数 + 1', async () => {
 		const el = await makeList([makeCommand('a'), makeCommand('b')]);
-		expect(el.elements.count).toBe(3); // 2 行命令 + 1 个空白行（点击追加位置）
+		expect(el.elements.count).toBe(3);
 		const last = el.elements[el.elements.count - 1] as unknown as HTMLElement;
 		expect(last.classList.contains('command-item')).toBe(true);
 	});
 
 	it('嵌套渲染：parse 里 `{ children: [子命令] }` 才会展开子命令（子行 indent 更深）', async () => {
-		// 嵌套入口是 `content.children`（`createCommandBuffer` 里 `buffer.push(content.children)`），
-		// 不是"返回值里直接放数组"——后者实测只渲染父命令。
 		const nestedParse = (item: Record<string, unknown>) =>
 			(item.params as { child?: boolean } | undefined)?.child === true
 				? [{ color: 'normal' }, { text: 'child' }]
@@ -266,7 +254,6 @@ describe('YMCommandList（行为金标准 第二组：缩进/嵌套/选区/翻�
 		const endBefore = listState(el).end;
 		el.selectMultipleTo(2);
 		expect(listState(el).end).not.toBe(endBefore);
-		// 选中态由行模型驱动 → 断言渲染结果前要等一拍（否则读到的还是上一次的 patch）
 		await nextTick();
 		expect(el.querySelectorAll('.command-item.selected').length).toBeGreaterThan(1);
 	});
@@ -296,12 +283,10 @@ describe('YMCommandList（行为金标准 第二组：缩进/嵌套/选区/翻�
 		await nextTick();
 		expect(el.querySelectorAll('.command-item.selected').length).toBe(1);
 
-		// 轻微移动（仍在第一行内）。行高若取离屏元素（0）⇒ `floor(10 / 0)` = Infinity ⇒ 一路选到末尾
 		pointer('pointermove', window, 10);
 		await nextTick();
 		expect(el.querySelectorAll('.command-item.selected').length).toBe(1);
 
-		// 真的往下拖时仍要扩选（别把拖动选择一起改坏）
 		pointer('pointermove', window, 45);
 		await nextTick();
 		expect(el.querySelectorAll('.command-item.selected').length).toBe(3);
@@ -352,7 +337,7 @@ describe('YMCommandList（行为金标准 第二组：缩进/嵌套/选区/翻�
 
 	it('缩进行契约：空白行（createBlankElement）位于列表末尾，且行数 = 命令数 + 1', async () => {
 		const el = await makeList([makeCommand('a'), makeCommand('b')]);
-		expect(el.elements.count).toBe(3); // 2 行命令 + 1 个空白行（点击追加位置）
+		expect(el.elements.count).toBe(3);
 		const last = el.elements[el.elements.count - 1] as unknown as HTMLElement;
 		expect(last.classList.contains('command-item')).toBe(true);
 	});

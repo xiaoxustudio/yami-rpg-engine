@@ -48,18 +48,11 @@ export interface ScrollBarApi extends HTMLElement {
 	updateDisplay(state: boolean): void;
 }
 
-/**
- * 滚动条自身的可变状态走**显式元素数据**（`thumb` / `timer` 已从 DATA_FIELDS 摘除）。
- * `timer` 是"按键连续滚动"的帧循环句柄，绑定在元素上以便同一条滚动条复用。
- */
 interface ScrollBarData {
 	thumb: ScrollThumb | null;
 	timer: ScrollTimer | null;
-	/** 宿主元素（被滚动的内容元素） */
 	target: HTMLElement | null;
-	/** 拖拽中的 pointerdown 事件；`dragging.target` 是事件目标（thumb），不是元素数据 */
 	dragging: ScrollDragging | null;
-	/** 显示状态（对应 `visible` class） */
 	visible: boolean;
 }
 
@@ -69,8 +62,6 @@ export function attachScrollBarApi(
 ): ScrollBarApi {
 	const bar = el as ScrollBarApi;
 	if (isApiAttached(bar)) return bar;
-	// `thumb` / `timer` / `target` / `dragging` / `visible` 走显式元素数据
-	// （`thumb`/`timer` 已从 DATA_FIELDS 摘除）
 	const data = elementDataOf<ScrollBarData>(bar);
 
 	data.target = options.target ?? null;
@@ -154,9 +145,6 @@ export function attachScrollBarApi(
 		const inner = document.createElement('div');
 		addClass(inner, 'scroll-thumb-inner');
 		thumb.appendChild(inner);
-		// 交叉断言（手法库第 6 条）：这个 div 之后会被挂上 `ScrollThumb` 的几个 expando 字段
-		// （`left`/`width`/`top`/`height`，见上面 update*Thumb）—— 保留 `HTMLDivElement`
-		// 只补缺口，而不是用 `unknown` 跳板把 div 的类型整块丢掉。
 		el.appendChild((data.thumb = thumb as HTMLDivElement & ScrollThumb));
 		data.target = target;
 		bar.type = type;

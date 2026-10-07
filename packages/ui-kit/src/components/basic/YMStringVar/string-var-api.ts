@@ -42,7 +42,6 @@ export function attachStringVarApi(
 	varBox.filter = 'string';
 
 	elementDataOf<StringVarApi>(box).mode = currentMode;
-	// strBox 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<StringVarApi>(box).strBox = strBox;
 	elementDataOf<StringVarApi>(box).varBox = varBox;
 
@@ -177,8 +176,6 @@ export function attachStringVarApi(
 	});
 
 	markApiAttached(box);
-	// 直接引用本文件的局部实现（与 `attachApi` 挂到元素上的是同一个引用），
-	// 不再取 `box.keydown` 这个方法引用——"方法引用丢 this" 正是 unbound-method 的成因。
 	box.addEventListener('keydown', keydown as EventListener);
 	box.addEventListener('pointerdown', pointerdown as EventListener);
 

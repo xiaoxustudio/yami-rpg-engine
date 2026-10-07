@@ -224,18 +224,14 @@ describe('YMFileBodyPane', () => {
 		const row = node.querySelector('.file-body-item') as HTMLElement & { file?: unknown };
 		expect(row).not.toBe(null);
 
-		// 按下未选中的行：激活该文件（临时高亮）并登记"抬起即选中"
-		// 注意：经 props 传进来的 links 是响应式代理，行上的 `file` 与 `a` 深相等但非同一对象
 		row.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
 		expect(node.activeFile).toBe(row.file);
 		expect(typeof node.pressing).toBe('function');
 
-		// 拖拽开始：宿主把 pressing 置空 ⇒ 抬起不再选中（旧实现写的是元素属性，落空）
 		node.pressing = null;
 		window.dispatchEvent(new PointerEvent('pointerup'));
 		expect(node.selections).toEqual([]);
 
-		// 拖拽结束：宿主调 deactivateFile ⇒ 撤掉临时高亮（旧实现连这个方法都没有）
 		expect(row.classList.contains('selected')).toBe(true);
 		expect(typeof node.deactivateFile).toBe('function');
 		node.deactivateFile?.();
@@ -278,7 +274,6 @@ describe('YMFileBodyPane', () => {
 		const row = node.querySelector('.file-body-item') as HTMLElement;
 		row.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
 
-		// 覆写生效 ⇒ 不再走内置的"临时高亮 + 抬起再选中"
 		expect(override).toHaveBeenCalledTimes(1);
 		expect(node.activeFile).toBe(null);
 
@@ -340,13 +335,11 @@ describe('YMFileBodyPane', () => {
 				new MouseEvent(type, { bubbles: true, button: 0, clientX: 10, clientY: 10 })
 			);
 		};
-		// 第一次点击（真实浏览器按坐标命中行内最深的元素）
 		const firstIcon = row.querySelector('.file-body-icon') as HTMLElement;
 		click(firstIcon, 'pointerdown');
 		click(firstIcon, 'pointerup');
 		await nextTick();
 
-		// 第二次点击：重新按坐标命中（若第一次点击的选中态把行元素换成了新节点，命中的就是另一个元素）
 		const secondRow = node.querySelector('.file-body-item') as HTMLElement;
 		const secondIcon = secondRow.querySelector('.file-body-icon') as HTMLElement;
 		click(secondIcon, 'pointerdown');

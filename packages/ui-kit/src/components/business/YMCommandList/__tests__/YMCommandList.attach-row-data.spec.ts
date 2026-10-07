@@ -136,7 +136,6 @@ describe('command-api（attachRowData 与建行闭包语义一致）', () => {
 		const built = api.querySelectorAll<RowElement>('.command-item');
 		expect(built.length).toBeGreaterThan(0);
 
-		// 用 api 建出的第一行的数据，挂到一个新元素上，逐项比对
 		const source = built[0];
 		const copy = host();
 		attachRowData(copy, {
@@ -158,14 +157,6 @@ describe('command-api（attachRowData 与建行闭包语义一致）', () => {
 		expect(copy.contents).toEqual(source.contents);
 	});
 
-	/**
-	 * 回归：`bindRowElement` 必须**先写行下标**再谈其它。
-	 *
-	 * 行下标（元素数据 `dataValue`）是 `rowOf()`（选区、双击编辑）和 editor 的
-	 * `getSelectionPosition()`（指令窗口定位）的唯一依据。旧写法在行数据暂时缺失时
-	 * 直接 `return`，整行没有下标 ⇒ `getSelectionPosition()` 返回 null ⇒
-	 * `CommandSchema` 的 `if (point)` 把"双击编辑"整条链路静默吞掉（双击没反应）。
-	 */
 	it('行数据缺失时也写 dataValue（双击编辑的定位依赖它）', async () => {
 		const api = await makeApi();
 		const el = api as unknown as {
@@ -176,7 +167,6 @@ describe('command-api（attachRowData 与建行闭包语义一致）', () => {
 		el.write([{ id: 'a', params: {}, commands: [] }]);
 		await nextTick();
 		const row = api.querySelector<RowElement>('.command-item')!;
-		// 越界下标：模型里没有这一行（源元素/行数据都取不到）
 		el.bindRowElement(row, 99);
 		expect(elementDataOf<{ dataValue?: number }>(row).dataValue).toBe(99);
 	});

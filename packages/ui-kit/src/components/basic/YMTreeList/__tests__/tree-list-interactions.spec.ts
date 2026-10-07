@@ -40,7 +40,6 @@ interface TreeListElement extends HTMLElement {
 	root: TreeData | null;
 }
 
-/** `dragging` 不再是元素上的隐式属性，走显式元素数据 */
 interface TreeListElementData {
 	dragging:
 		| null
@@ -150,7 +149,6 @@ describe('YMTreeList 拖拽交互', () => {
 	it('search 模式拒绝 dragstart', async () => {
 		const { wrapper, el, data } = await mountList();
 		getListConfig(el).removable = true;
-		// 步骤 2：display 切换会重派生行（search 结果为空 → 行卸载），先取行元素再切模式
 		const row = treeRowElement(data[0]) as HTMLElement;
 		el.display = 'search';
 		el.select(data[0]);
@@ -174,7 +172,6 @@ describe('YMTreeList 拖拽交互', () => {
 		expect(hintTarget(listData(el).dragging!.hint)).toBe(folder);
 		fireMouse(folder, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 8 });
 		expect(listData(el).dragging!.hint.position).toBe('into');
-		// 步骤 4：hint class 由派生行渲染，需等一次 patch
 		await nextTick();
 		expect(folder.classList.contains('hint')).toBe(true);
 		fireMouse(folder, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 20 });

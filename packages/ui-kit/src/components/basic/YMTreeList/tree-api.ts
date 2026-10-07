@@ -43,19 +43,10 @@ import {
 
 const treeCore = createTreeCore();
 
-/**
- * 树列表自身的可变状态（`keyword` 等）从"元素上的原型访问器"改成**显式元素数据**。
- * 这里给一个类型化视图，避免 `getElementData(el).x` 的 `unknown` 参与运算
- * （在 `command-api` 直接换写法的负结果：访问器天生无类型，
- * 一旦换成 `unknown` 就要处处收窄；**按字段给出准确类型**才是可做的那条路）。
- */
 interface TreeListElementData {
 	keyword: RegExp | null;
-	/** 重命名用的计时器（`timer` 已从 DATA_FIELDS 摘除） */
 	timer: Timer;
-	/** 拖拽中的 dragstart 事件；`dragging.target` 是事件目标（行元素），不是元素数据 */
 	dragging: TreeListDragEvent | null;
-	/** 当前选中项（列表元素自身的元素数据） */
 	selections: TreeItem[];
 }
 const treeData = (el: unknown): TreeListElementData => elementDataOf<TreeListElementData>(el);
@@ -88,17 +79,9 @@ const rowTargetOf = (target: EventTarget | null | undefined): NodeElement | null
 const hintData = (el: unknown): { target: HTMLElement | null } =>
 	elementDataOf<{ target: HTMLElement | null }>(el);
 
-// 步骤 5：渲染路径唯一（数据派生 + v-for），命令式渲染与开关已删除。
 const renderStateOf = (list: TreeListHost | null | undefined): TreeRenderState | undefined =>
 	list?.renderState;
 
-/**
- * 消费方 API（步骤 4）：按 item 直接操作行状态，无需触碰 DOM。
- * - setTreeItemClass：行 class（selected/weak/related-event 等）注册到派生层；
- * - setTreeItemText：覆盖行显示文本（不再直写 textNode）；恢复由重派生负责（`clearItemText` 内部态）；
- * - isTreeItemRendered：该行当前是否在虚拟窗口内物化（步骤 5b 后由渲染状态判定）；
- * - treeListOfItem：按 item 反查所属列表（窗口外 item 亦可）。
- */
 export interface TreeListRowApi<T = unknown> {
 	/** 行总数（全部数据行，与虚拟窗口无关） */
 	rowCount(): number;
@@ -131,18 +114,6 @@ export const isTreeItemRendered = (item: unknown): boolean => {
 export const treeRowElement = (item: unknown): HTMLElement | undefined =>
 	rowElementOf(item as TreeItem);
 
-/**
- * 消费方 API（步骤 5b）：把**事件目标或行内任意后代节点**归一成它所属行的 item。
- *
- * 它是 `treeRowElement` 的**反向**入口，取代旧的 `element.item` 反向桥：item 只存在
- * 元素数据里（`tree-render.bindRowElement` 写的 `data.item`），DOM 元素上不再挂 expando，
- * 因此 `event.target.item` 一律是 `undefined`（实机表现为 `Cannot read properties of undefined
- * (reading 'class')`）。顺带把 `event.target` 归一成行——行文本在 `.node-text` 里，
- * 点击标签时 target 不是行元素本身。
- *
- * 非行节点返回 `undefined`：`.tree-node-extras` 下的按钮/输入框（显隐、锁定、重命名）不是行内容，
- * 语义与 `doubleclick` 的归一保持一致；不在任何行内（或元素已卸载）同样是 `undefined`。
- */
 export const treeItemOf = <T = unknown>(target: unknown): T | undefined => {
 	const element = rowTargetOf(target as EventTarget | null);
 	if (element === null) return undefined;
@@ -176,9 +147,6 @@ export const treeOwnerListOf = (item: unknown): unknown => treeListOfItem(item);
 const isSSR = typeof document === 'undefined';
 
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
-	// SSR 分支原先写 `null as unknown as HTMLDivElement`，等于谎报一个非空 host；
-	// 一旦真在无 DOM 环境走到这里，下面 `render(vnode, null)` 会以一个难懂的方式炸。
-	// 明确抛错，把「这里需要 DOM」讲清楚（本项目只在 Electron 渲染进程/ jsdom 测试里跑）。
 	if (isSSR) throw new Error('[tree-api] renderElement 需要 DOM 环境');
 	const host = document.createElement('div');
 	render(vnode, host);
@@ -288,11 +256,8 @@ const createTextBox = (): TextBox => {
 	});
 
 	textBox.addEventListener('blur', function (this: TextBox) {
-		// 这里 `this` 是重命名文本框本身，父节点是当前行元素、再上一级是列表元素
-		// （结构由 `rename()` 保证：文本框会被挂到行元素下）。类型上按这条链显式写出来。
 		const element = this.parentNode as HTMLElement;
 		const list = element.parentNode as TreeListHost;
-		// 重命名框的父节点就是行元素（`bindRowElement` 必定写过 item），与原 `element.item` 同义
 		const item = rowData(element).item!;
 		const name = this.read().trim();
 		const boxData = elementDataOf<{ hiddenNodes: HTMLElement[] | null; lastText: string }>(
@@ -330,20 +295,6 @@ const createTextBox = (): TextBox => {
 let textBoxInstance: TextBox | null = null;
 
 export const treeListStatics = {
-	// ⚠️ 这两个 API 的形参用 `object[]` 而不是 `TreeItem[]`，理由必须记清楚：
-	//
-	// 树的 `children` / `parent` 是**运行时挂上去的**（见 `createParents` 的
-	// `Object.defineProperty`）。于是调用方的类型声明里**普遍没有**这两个字段：
-	//   - `AnimationMotion` / `EasingDataShape` / `PluginItemShape` / `CustomCommandData`
-	//     只声明业务字段；`EventListItem` 声明了 name/id/class… 但没有 children/parent。
-	//   ⇒ 用精确的 `TreeItem[]` 要求源类型带索引签名（接口没有隐式索引签名）→ 不通过；
-	//      改用「全可选」的结构类型（`TreeShapeNode`）又会撞上 TS 的 **weak-type 检查**
-	//      （`Type 'X' has no properties in common with type 'TreeShapeNode'`，实测 7 处）。
-	//      两个方向都被量过，**没有任何单一结构类型能同时接纳这批调用方**。
-	//
-	// 所以断言在这里**收敛一处**、并写明理由，而不是让 7 个调用点各自写
-	// `as unknown as Parameters<typeof TreeList.createParents>[0]`。收窄走单次
-	// `as TreeShapeNode`（不是双重断言，不给 `unknown-casts` 加数）。
 	createParents: (items: object[], parent: object | null): void => {
 		treeCore.createParents(items as TreeShapeNode[], parent as TreeShapeNode | null);
 	},
@@ -356,8 +307,6 @@ export const treeListStatics = {
 		if (textBoxInstance) {
 			return textBoxInstance;
 		}
-		// 本项目只在 Electron 渲染进程 / jsdom 测试里跑（与 renderElement 同一约定）：
-		// 无 DOM 时明确抛错，而不是返回一个假的非空元素。
 		if (isSSR) {
 			throw new Error('[tree-api] textBox 需要 DOM 环境');
 		}
@@ -372,21 +321,7 @@ export interface TreeListApiOptions {
 	renderNodeIcon?: (item: TreeItem, container: HTMLElement) => void;
 }
 
-/**
- * tree 列表元素的**元素 API 契约**。
- *
- * 与命令列表的 `CommandListElementApi` 同一套约定：**消费方实际使用的方法写精确签名**，其余用
- * `[k: string]: unknown` 兜底（"其余内部/较少使用的方法保留松散签名，保证既有调用点不因类型化而报错"）。
- *
- * **它替掉了编辑器侧原来的逃生口**：`@app/components/tree-list.ts` 过去写
- * `interface TreeListElement extends HTMLElement { [k: string]: any }`——那是**没有任何类型安全**的写法，
- * 任何拼错的方法名、任何根本不存在的成员都能通过编译（这类"假绿"本仓库已踩过多次）。
- * 实测把它换掉只需补 3 个成员（`display` / `deleteNode` / `createString`）。
- *
- * 同时它也是 `attachApi` 的键集合校验依据：`attachApi<TreeListElementApi>(list, { getMenuState })`。
- */
 export interface TreeListElementApi extends YamiElementApi {
-	/** 当前行数据（虚拟滚动下是**全量**行，不是可见窗口内的那些） */
 	read<T = unknown>(): T | null;
 	update(): void;
 	refresh(): void;
@@ -399,11 +334,9 @@ export interface TreeListElementApi extends YamiElementApi {
 	rename(...args: unknown[]): unknown;
 	parseName(...args: unknown[]): unknown;
 	deleteNode(...args: unknown[]): unknown;
-	/** 列表显示模式：搜索时切到 `'search'`，否则 `'normal'`（编辑器各窗口读它判断当前是否在搜索结果视图） */
 	display: string;
 	/** 菜单状态查询——由宿主经选项注入，树列表在弹右键菜单前据此避让 */
 	getMenuState(): string;
-	// —— 其余内部/较少使用的方法（保留松散签名，保证既有调用点不因类型化而报错）——
 	[k: string]: unknown;
 }
 
@@ -427,28 +360,16 @@ type TreeListDragEvent = DragEvent & {
  * 继承它等于让"没声明的成员"继续静默通过——那份宽松正是这里要收窄掉的东西。
  */
 export interface TreeListHost extends HTMLElement {
-	// —— 数据与视图状态 ——
-	/** 行数据（虚拟滚动下是**全量**行）。根节点就是本数组本身，历史语义见 `addNodeTo` */
 	data: TreeItem[] | null;
-	/** 根"节点"：`bind` 里用 `Object.defineProperty` 造出的 `{ children: get data }` */
 	root: TreeItem | null;
-	/** `'normal' | 'search'`（对外契约里是 `string`，保持宽松比较） */
 	display: string;
 	searchResults: TreeItem[] | null;
 	renderState: TreeRenderState;
 	rowHeight: number;
-	/** 元素上的可视高度（`scrollToSelection` 用；不是 `HTMLElement` 成员） */
 	innerHeight: number;
-	/** `searchNodesDebounced` 的防抖缓存 */
 	_searchNodesDebounced?: (keyword: string | RegExp) => void;
-	/**
-	 * 行元素数组（运行时由组件装配；形状直接复用 `CommonListLike['elements']`，
-	 * 不另抄一份）—— 共享助手 `commonListUpdateHeadAndFoot` 就是读它的窗口游标撑滚动高度。
-	 * 之前没声明，导致这句调用得写成 `this as unknown as CommonListLike`。
-	 */
 	elements: CommonListLike['elements'];
 
-	// —— 事件开关（`on()` 按事件名置位，各方法体里读） ——
 	recordEventEnabled: boolean;
 	selectEventEnabled: boolean;
 	unselectEventEnabled: boolean;
@@ -456,7 +377,6 @@ export interface TreeListHost extends HTMLElement {
 	openEventEnabled: boolean;
 	updateEventEnabled: boolean;
 
-	// —— 列表读写（消费方 API） ——
 	read(): TreeItem | null;
 	update(): void;
 	refresh(): void;
@@ -477,7 +397,6 @@ export interface TreeListHost extends HTMLElement {
 		options?: boolean | AddEventListenerOptions
 	): void;
 
-	// —— 节点增删改 ——
 	addNodeTo(sItem: TreeItem, dItem: TreeItem | null | undefined, insertBefore?: boolean): void;
 	deleteNode(item: TreeItem): void;
 	removeItemTo(sItem: TreeItem, dItem: TreeItem | null | undefined): void;
@@ -491,17 +410,14 @@ export interface TreeListHost extends HTMLElement {
 	updateHeadAndFoot(): void;
 	initialize(): void;
 
-	// —— 重命名 / 行渲染入口 ——
 	rename(item: TreeItem): void;
 	cancelRenaming(): void;
 	parseName(item: TreeItem): string;
 	createIcon(item: TreeItem): HTMLElement;
 
-	// —— 搜索 ——
 	searchNodes(keyword: string | RegExp): void;
 	searchNodesAlgorithm(data: TreeItem[], keyword: RegExp, list: TreeItem[]): void;
 
-	// —— 虚拟滚动 / 行查询 ——
 	syncRenderRows(overrideRows?: unknown): void;
 	syncRenderWindow(): void;
 	rowCount(): number;
@@ -514,15 +430,12 @@ export interface TreeListHost extends HTMLElement {
 	pageDown(select: boolean): void;
 	getElementIndexOfSelection(defIndex: number): number;
 
-	// —— 行元素绑定（模板 :ref 回调 → 派生层） ——
 	setItemClass(item: TreeItem, className: string, on?: boolean): void;
 	bindRow(item: TreeItem, el: unknown): void;
 	bindNodeIcon(item: TreeItem, el: HTMLElement): void;
 	bindNodeExtras(item: TreeItem, el: HTMLElement): void;
 	applyRowUpdaters(): void;
 
-	// —— 事件处理器（原型上的同名成员，也是注册到 DOM 的监听器） ——
-	// DOM 边界上一律按标准事件类型声明（`cmdOrCtrlKey` 之类扩展字段是实现内部的事，见各实现签名）
 	keydown(event: KeyboardEvent): void;
 	pointerdown(event: PointerEvent): void;
 	pointerup(event: PointerEvent): void;
@@ -534,7 +447,6 @@ export interface TreeListHost extends HTMLElement {
 	dragover(event: DragEvent): void;
 	drop(event: DragEvent): void;
 	dataChange(event: Event): void;
-	/** 拖拽期间的临时监听器：`dragstart` 装、`dragend` 拆，必须共用同一函数引用 */
 	dragListeners: {
 		dragenter: (event: DragEvent) => void;
 		dragleave: (event: DragEvent) => void;
@@ -542,7 +454,6 @@ export interface TreeListHost extends HTMLElement {
 		drop: (event: DragEvent) => void;
 	};
 
-	// —— 宿主（消费方）注入 / 覆写的钩子 ——
 	renderNodeExtras?: (item: TreeItem, container: HTMLElement) => void;
 	renderNodeIcon?: (item: TreeItem, container: HTMLElement) => void;
 	/** 由宿主经选项注入（`attachApi`），弹右键菜单前据此避让 */
@@ -571,7 +482,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 			}
 		},
 
-		// 步骤 5：唯一渲染路径 = 数据派生（v-for），命令式差量渲染实现已删除
 		update: function (this: TreeListHost): void {
 			this.syncRenderRows();
 			if (this.updateEventEnabled) {
@@ -651,14 +561,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 		},
 
 		updateItemName: function (this: TreeListHost, item: TreeItem): void {
-			// **幂等**：重派生会产出的文本与当前派生行一致时直接返回，不做 `syncRenderRows()`。
-			//
-			// 这不是优化而是正确性：消费方会把它挂进 `updaters`
-			// （实机：`animation-initialize.ts` 的 `updaters.push((item) => list.updateItemName(item))`），
-			// 而 updater 由 `YMTreeList` 的 `onUpdated → applyRowUpdaters()` 在**每次 patch** 里调用；
-			// `syncRenderRows()` 里的 `bump()` 无条件让组件渲染 effect 失效 ⇒ 同一个 flush 里
-			// 反复排队自己 ⇒ Vue 报
-			// `Maximum recursive updates exceeded in component <YMTreeList>`（实测 101 次后中止渲染）。
 			const state = renderStateOf(this);
 			const derived = state === undefined ? undefined : state.rowData.get(rowKeyOf(item));
 			const renderedName =
@@ -667,14 +569,12 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 					: (state.textOverrides.get(item) ?? this.parseName(item));
 			if (derived !== undefined && derived.name === renderedName) return;
 
-			// 步骤 5：行文本由派生层渲染 —— 名称变更触发重派生（直写 textNode 会被 patch 覆盖）
 			const last = item?.name;
 			this.syncRenderRows();
 			if (this.display === 'search') {
 				const keyword = treeData(this).keyword;
 				const name = this.parseName(item);
 				if (keyword!.test(last) || keyword!.test(name)) {
-					// 进入本分支即 `display === 'search'`，此时 keyword 必已由 `searchNodes` 写入
 					this.searchNodes(treeData(this).keyword!);
 				}
 			}
@@ -735,13 +635,11 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 				return;
 			}
 
-			// 把原先靠 `this: any` 兜住的两个局部变量显式类型化（`dList` 可能为 null）
 			let dList: TreeItem[] | null | undefined;
 			let dIndex = 0;
 
 			const { data } = this;
 			if (!dItem) {
-				// 根"节点"就是 `data` 数组本身（历史语义，见 `bind` 里对该元素的 `data` 定义）
 				dItem = data as TreeItem[] & TreeItem;
 			}
 			if ((dItem as unknown) === data) {
@@ -758,7 +656,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 			}
 			if (dList) {
 				dList.splice(dIndex, 0, sItem);
-				// 步骤 2：unselect() 会触发派生重算，新节点必须先把 parent 建好（否则派生抛 No parent!）
 				if (sItem.parent === undefined) {
 					treeListStatics.createParents([sItem], null);
 				}
@@ -1044,7 +941,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 			if (item instanceof Object && this.read() !== item) {
 				this.unselect();
 				treeData(this).selections.push(item);
-				// 步骤 5b：不再直写行元素 class——选中态由派生行（row.selected）渲染，下面 syncRenderRows 即刷新
 				this.syncRenderRows();
 				if (this.selectEventEnabled) {
 					const select: ValueEvent = new Event('select') as ValueEvent;
@@ -1072,7 +968,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 			}
 			if (selections.length !== 0) {
 				treeListStatics.textBox.input.blur();
-				// 步骤 5b：不再直写行元素 class——取消选中由派生行（row.selected）渲染，末尾 syncRenderRows 即刷新
 				if (this.unselectEventEnabled) {
 					const select: ValueEvent = new Event('unselect') as ValueEvent;
 					select.value = selections;
@@ -1239,7 +1134,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 				index = Math.max(index, 0);
 				this.select(this.rowItemAt(index));
 			}
-			// 等价于 scrollBy(0, -delta) 且 jsdom 也支持（jsdom 未实现 Element.scrollBy）
 			this.scrollTop -= scrollLines * ROW_HEIGHT;
 		},
 
@@ -1253,7 +1147,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 				index = Math.min(index, count - 1);
 				this.select(this.rowItemAt(index));
 			}
-			// 等价于 scrollBy(0, +delta) 且 jsdom 也支持（jsdom 未实现 Element.scrollBy）
 			this.scrollTop += scrollLines * ROW_HEIGHT;
 		},
 
@@ -1266,7 +1159,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 
 		rename: function (this: TreeListHost, item: TreeItem): void {
 			if (getListConfig(this).renamable) {
-				// 步骤 5b：行元素由渲染状态持有（窗口外的行未物化 → 直接不进入重命名）
 				const element = rowElementOf(item);
 				const { textBox } = treeListStatics;
 				if (
@@ -1301,7 +1193,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 		},
 
 		cancelRenaming: function (this: TreeListHost): void {
-			// `timer` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 			const timer = treeData(this).timer;
 			if (timer.target) {
 				timer.target = null;
@@ -1319,7 +1210,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 				this.searchResults = [];
 			}
 			this.unselect();
-			// 步骤 5b：只有派生行一条路径——Vue 管理的行不能手清 DOM（会炸掉 vnode），只清数据 + bump
 			this.syncRenderRows([]);
 			return this;
 		},
@@ -1401,8 +1291,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 						event.preventDefault();
 						this.selectRelative('down');
 						break;
-					// 分页键（步骤 1 缺口收口）：与搜索框的 searcherKeydown 语义一致——
-					// 选中随页移动 + 滚动联动；preventDefault 抑制浏览器自身的 PageUp/PageDown 滚动。
 					case 'PageUp':
 						event.preventDefault();
 						this.pageUp(true);
@@ -1439,10 +1327,8 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 						this.update();
 						dispatchChangeEvent(this);
 					} else {
-						// 目标归一：点在标签文字/图标上时取所属行（legacy 的裸文本节点等价物）
 						const element = rowTargetOf(event.target);
 						if (element !== null) {
-							// 步骤 5b：选中态按数据判断（不再依赖行元素上的 selected class 是否已 patch）
 							const item = rowData(element).item;
 							if (item !== undefined && this.read() !== item) {
 								this.select(item);
@@ -1492,7 +1378,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 					if (this.popupEventEnabled && document.activeElement === this) {
 						const element = seek(event.target, '.node-item');
 						const item = rowData(element).item;
-						// 步骤 5b：是否已选中按数据判断（pointerdown 选中后派生 class 要等一次 patch）
 						const isSelected = item !== undefined && this.read() === item;
 						const popup: PopupEvent = new Event('popup') as PopupEvent;
 						popup.value = hasClass(element, 'node-item') && isSelected ? item : null;
@@ -1505,7 +1390,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 		},
 
 		doubleclick: function (this: TreeListHost, event: MouseEvent): void {
-			// 目标归一：双击标签文字时 target 是 `.node-text`，legacy 里它是行上的裸文本节点
 			const element = rowTargetOf(event.target);
 			if (element !== null) {
 				this.cancelRenaming();
@@ -1537,8 +1421,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 				addClass(event.hint, 'for-list');
 				this.parentNode!.insertBefore(hide(event.hint), this);
 				addClass(this, 'dragging');
-				// 拖拽期间的临时监听器取自 `dragListeners`（`dragend` 要按**同一函数引用**拆掉，
-				// 所以不能在两处各写一个箭头），这里不再直接传 `this.dragenter` 这类方法引用。
 				const listeners = this.dragListeners;
 				this.addEventListener('dragenter', listeners.dragenter);
 				this.addEventListener('dragleave', listeners.dragleave);
@@ -1551,10 +1433,8 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 			const data = treeData(this);
 			if (data.dragging) {
 				removeClass(this, 'dragging');
-				// 拖拽起于本列表（`dragstart` 里 `parentNode.insertBefore` 装过 hint），故两者都必定存在
 				this.parentNode!.removeChild(data.dragging.hint!);
 				data.dragging = null;
-				// 步骤 4：hint 行 class 由派生行渲染，拖拽结束需重派生清除
 				this.syncRenderRows();
 				const listeners = this.dragListeners;
 				this.removeEventListener('dragenter', listeners.dragenter);
@@ -1618,7 +1498,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 								hintState.target = element;
 								hint.position = position;
 								hint.moveDown().set(r);
-								// 步骤 4：行 hint class 由派生行渲染（position 变化需重派生）
 								this.syncRenderRows();
 							}
 							break;
@@ -1646,7 +1525,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 							break;
 					}
 				} else {
-					// 步骤 5b：取"最后一行"的已物化元素（窗口外行同样为空 ⇒ 与旧 `elements[count-1]` 语义一致）
 					const state = renderStateOf(this) as TreeRenderState;
 					const rows = state.rows.value;
 					const lastRow = rows[rows.length - 1];
@@ -1674,11 +1552,9 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 				return;
 			}
 			event.stopPropagation();
-			// drop 只在 dragstart 装配的拖拽流程里触发，此时 hint 必定存在（原 `dragging.hint` 同义）
 			const hint = dragging.hint!;
 			const hintState = hintData(hint);
 			if (!hasClass(hint, 'hidden')) {
-				// 拖拽源与 hint 指向的目标行都必定是已物化行（`dragover` 才会给 hint 定 target）
 				const sItem = rowData(dragging.target).item!;
 				const dItem = rowData(hintState.target).item!;
 				if (hint.position !== 'append' && this.contain(sItem, dItem)) {
@@ -1693,7 +1569,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 						break;
 					case 'after':
 					case 'append': {
-						// 步骤 5b：先定位 hint.target 所在行，再取下一行的 item（语义同旧 `elements.indexOf` + 1）
 						const state = renderStateOf(this) as TreeRenderState;
 						const rows = state.rows.value;
 						const index = rows.findIndex(
@@ -1715,7 +1590,6 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 
 		dataChange: function (this: TreeListHost, _event: Event): void {
 			if (this.display === 'search') {
-				// `display === 'search'` 时 keyword 必已写入（与 `updateItemName` 同一不变式）
 				this.searchNodes(treeData(this).keyword!);
 			}
 		}
@@ -1726,20 +1600,13 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	const getMenuState = options?.getMenuState ?? (() => 'closed');
 	list.renderNodeExtras = options?.renderNodeExtras;
 	list.renderNodeIcon = options?.renderNodeIcon;
-	// 步骤 5：渲染状态恒存在（数据派生 + v-for）
 	list.renderState = createTreeRenderState(list);
 	attachApi<TreeListElementApi>(list, { getMenuState });
 
-	// 原型表是动态键集合（`Object.keys` 驱动）。这里用 `Reflect.get`/`Reflect.set` 而不是
-	// 「把宿主断言成 `Record<string, unknown>`」：
-	// `TreeListHost` 是 interface，**没有隐式索引签名**，指向索引签名类型的断言在 TS 里就是不允许的
-	// （只能靠 `as unknown as` 绕）。而 `Reflect.set(list, name, value)` 与 `sink[name] = value`
-	// 走的是同一个 `[[Set]]`（`Reflect.get` 同 `[[Get]]`）—— **语义逐条相同，且不需要任何断言**。
 	for (const name of Object.keys(treeListPrototype)) {
 		Reflect.set(list, name, Reflect.get(treeListPrototype, name));
 	}
 
-	// the attach guard now lives in element data (helper in element-data.ts)
 	elementDataOf<{ _initialized?: boolean }>(list)._initialized = false;
 	list.display = 'normal';
 	treeData(list).keyword = null;
@@ -1750,7 +1617,6 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.syncRenderRows = function (this: TreeListHost, overrideRows?: unknown): void {
 		const state = renderStateOf(this) as TreeRenderState;
 		this.initialize();
-		// `selections` / `dragging` 走显式元素数据；`?.` 链一律保留（hint/target 可能为空）
 		const listOwnerData = treeData(this);
 		const draggingHint = listOwnerData.dragging?.hint;
 		const hintItem =
@@ -1767,7 +1633,6 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 						foldable: getListConfig(this).foldable === true,
 						parseName: (item: TreeItem) => this.parseName(item),
 						selections: listOwnerData.selections ?? [],
-						// 步骤 4：与旧实现一致——只有 'into' 位置才给目标行加 hint class
 						hintItem,
 						root: (this.root ?? null) as TreeItem | null
 					});
@@ -1775,7 +1640,6 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		state.bump();
 		this.syncRenderWindow();
 	};
-	/** 同步虚拟窗口（start/end）——步骤 5b 后 `elements` shim 已删，这里只剩窗口计算 */
 	list.syncRenderWindow = function (this: TreeListHost): void {
 		const state = renderStateOf(this) as TreeRenderState;
 		const rows = state.rows.value;
@@ -1805,7 +1669,6 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		setItemClass(state, item, className, on);
 	};
 	list.rowHeight = ROW_HEIGHT;
-	// 行元素绑定（模板 :ref 回调）：维护行元素上的内部字段，并跑 creators/updaters 钩子
 	list.bindRow = function (this: TreeListHost, item: TreeItem, el: unknown): void {
 		const state = renderStateOf(this);
 		if (state === undefined) return;
@@ -1828,11 +1691,9 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 		if (state === undefined) return;
 		const updaters = getListConfig(this).updaters as ((item: TreeItem) => void)[];
 		for (const el of state.rowElements.values()) {
-			// 行元素的 item / nodeIcon 走显式元素数据
 			const elData = rowData(el);
 			const item = elData.item;
 			if (item === undefined) continue;
-			// 图标：提供 renderNodeIcon 时交给回调填充；否则回退 createIcon（编辑器可覆写该原型方法）
 			if (typeof this.renderNodeIcon === 'function') {
 				if (elData.nodeIcon) this.renderNodeIcon(item, elData.nodeIcon);
 			} else if (
@@ -1852,14 +1713,11 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 			if (typeof this.renderNodeExtras === 'function' && el.extras) {
 				this.renderNodeExtras(item, el.extras);
 			}
-			// 兼容扩展点：消费方实例级覆写 updateNodeElement（如 text-tip 的富行内容）
-			// 时按其语义调用；默认实现已在步骤 5 删除，故此处不会触发内置渲染。
 			if (typeof this.updateNodeElement === 'function') {
 				this.updateNodeElement(el);
 			}
 		}
 	};
-	// 根"节点"：`{ children: data }` 的惰性视图（历史语义），显式断言成 `TreeItem`
 	list.root = Object.defineProperty({}, 'children', {
 		get: () => list.data
 	}) as TreeItem;
@@ -1880,7 +1738,6 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	});
 	treeData(list).selections = [];
 	treeData(list).dragging = null;
-	// 列表配置不再是元素上的属性，统一经 getListConfig 落到元素数据（WeakMap）
 	listConfig.padded = el.hasAttribute('padded');
 	listConfig.removable = false;
 	listConfig.renamable = false;
@@ -1895,8 +1752,6 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.updateEventEnabled = false;
 	list.tabIndex = 0;
 
-	// 拖拽临时监听器一次生成（箭头包装把接收者写死为本元素），
-	// 这样 `dragstart` 装、`dragend` 拆拿到的必然是同一个函数对象。
 	list.dragListeners = {
 		dragenter: (event) => list.dragenter(event),
 		dragleave: (event) => list.dragleave(event),

@@ -61,8 +61,6 @@ describe('YMNavBar', () => {
 		expect(vm.read()).toBeUndefined();
 	});
 
-	// 回归（实机「点哪个页签都同时显示 active」）：页签由整壳 Teleport 在分组间搬运，
-	// 搬进来的页签带着旧组的 `selected`；旧 `unselect` 只清第一个 ⇒ 残留 + 新选中同时亮。
 	it('unselect 清掉全部 selected（不只第一个）', () => {
 		const wrapper = mountNav();
 		const vm = wrapper.vm as unknown as NavBarApi;
@@ -84,7 +82,7 @@ describe('YMNavBar', () => {
 		stale.className = 'nav-item selected';
 		stale.setAttribute('value', 'b');
 		wrapper.element.appendChild(stale);
-		await Promise.resolve(); // MutationObserver 走微任务
+		await Promise.resolve();
 
 		expect(wrapper.element.querySelectorAll('.selected')).toHaveLength(1);
 		expect(wrapper.findAll('.nav-item')[0].classes()).toContain('selected');

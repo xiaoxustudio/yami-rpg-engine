@@ -24,9 +24,6 @@ export interface TextAreaApi extends HTMLElement {
 	on(...args: unknown[]): void;
 }
 
-/**
- * 带历史记录的内部 textarea 元素（见 HistoryInputElement 同源说明）。
- */
 export interface HistoryTextAreaElement extends HTMLTextAreaElement {
 	history: { reset(): void };
 }

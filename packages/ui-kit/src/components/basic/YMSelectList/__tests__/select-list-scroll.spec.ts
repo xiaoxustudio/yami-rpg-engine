@@ -15,9 +15,6 @@ function makeTarget() {
 		write: vi.fn(),
 		input: vi.fn()
 	});
-	// `dataItems` / `dataValue` 是**元素数据**（生产侧由 `select-box-api.ts` 写入同一份 WeakMap）。
-	// 访问器退役前 `Object.assign` 会经原型 setter 落进 WeakMap，退役后只会变成 own 属性 ⇒
-	// 夹具必须显式写元素数据，否则 `open()` 读到的 `dataItems` 是 undefined（`items is not iterable`）。
 	elementDataOf<{ dataItems: Array<{ value: string; name: string }> }>(target).dataItems = [
 		{ value: 'a', name: 'A' },
 		{ value: 'b', name: 'B' }

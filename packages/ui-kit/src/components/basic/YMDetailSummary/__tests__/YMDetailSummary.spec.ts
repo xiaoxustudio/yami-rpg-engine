@@ -38,8 +38,6 @@ describe('YMDetailSummary', () => {
 	});
 
 	it('折叠标题可聚焦并暴露 aria-expanded', async () => {
-		// `trigger()` 直接派发事件、绕开「能不能真的拿到焦点」，所以必须显式断言 tabindex：
-		// 修复前根 div 没有 tabindex，上面那个 Enter 测试能过，但真实键盘用户按不到它。
 		const wrapper = mount(YMDetailBox, {
 			props: { open: false },
 			slots: slotsWithSummary()

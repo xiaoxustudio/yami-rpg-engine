@@ -67,7 +67,6 @@ describe('YMSwitchItem', () => {
 		expect(forward.emitted('update:modelValue')![0]).toEqual([1]);
 		expect(event.defaultPrevented).toBe(true);
 
-		// 从 0 后退要回绕到 2（不能传负数进 write 的取模）
 		const backward = mount(YMSwitchItem, { props: { modelValue: 0, length: 3 } });
 		await backward.trigger('keydown', { code: 'ArrowDown' });
 		expect(backward.emitted('update:modelValue')![0]).toEqual([2]);

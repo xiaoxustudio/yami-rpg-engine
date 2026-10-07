@@ -5,10 +5,6 @@ import { type CommandListApiOptions, type CommandListElementApi } from '../comma
 import YMCommandList from '../YMCommandList.vue';
 import { rowKeyOf } from '../command-render';
 
-/**
- * 渲染出的行必须带**派生层发的稳定行 key**（`li.rowKey === rowKeyOf(command)`）。
- * 模板 `v-for` 直接拿这些 key 当 `:key`——没有它们就只能用下标。
- */
 interface ListElement extends HTMLElement {
 	[k: string]: unknown;
 	write: (data: unknown[]) => void;
@@ -52,7 +48,6 @@ const makeOptions = (): CommandListApiOptions =>
 
 const makeCommand = (id: string) => ({ id, params: {}, commands: [] });
 
-/** 挂载组件并在下一拍读取行元素（换源后行由模板渲染） */
 const mountCommandList = async <T extends HTMLElement = HTMLElement & CommandListElementApi>(
 	options: CommandListApiOptions
 ): Promise<T> => {

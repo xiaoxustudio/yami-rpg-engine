@@ -8,7 +8,6 @@ interface Props {
 	id?: string;
 	modelValue?: string;
 	disabled?: boolean;
-	/** 可访问名（aria-label），不渲染可见文本 */
 	label?: string;
 }
 
@@ -238,7 +237,6 @@ function initializeApi(): void {
 	const el = root.value;
 	const input = inputEl.value;
 	if (!el || !input || isApiAttached(el)) return;
-	// 走显式元素数据
 	elementDataOf<TextBoxApi>(el).lastText = '';
 	elementDataOf<TextBoxApi>(el).hiddenNodes = [];
 	(el as TextBoxApi).input = input;
@@ -260,7 +258,6 @@ function initializeApi(): void {
 	});
 	write(props.modelValue);
 	if (props.disabled) disable();
-	// 与 `*-api.ts` 工厂同一套守卫（第十六刀只改了工厂，三个 SFC 仍留着私有 expando）
 	markApiAttached(el);
 }
 

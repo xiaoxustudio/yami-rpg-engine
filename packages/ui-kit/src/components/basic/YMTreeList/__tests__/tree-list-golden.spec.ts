@@ -47,7 +47,6 @@ interface TreeListElement extends HTMLElement {
 	renamable: boolean;
 	display: string;
 	root: TreeData | null;
-	/** 步骤 5b：`elements` shim 已删，虚拟窗口改从渲染状态读取 */
 	renderState: {
 		rows: { value: unknown[] };
 		start: { value: number };
@@ -55,7 +54,6 @@ interface TreeListElement extends HTMLElement {
 	};
 }
 
-/** `dragging` 不再是元素上的隐式属性，走显式元素数据 */
 interface TreeListElementData {
 	dragging:
 		| null
@@ -158,7 +156,6 @@ describe('YMTreeList 拖拽取消收尾（金标准）', () => {
 		});
 		const folder = treeRowElement(data[0]) as HTMLElement;
 		fireMouse(folder, 'dragover', { dataTransfer: makeDataTransfer(), offsetY: 8 });
-		// 步骤 4：hint class 由派生行渲染，需等一次 patch
 		await nextTick();
 		expect(folder.classList.contains('hint')).toBe(true);
 		fireMouse(el, 'dragend', {});
@@ -374,7 +371,6 @@ describe('YMTreeList element 契约（金标准）', () => {
 		const child = treeRowElement(data[0].children![0]) as HTMLElement;
 		el.refresh();
 		await nextTick();
-		// 步骤 5b：行元素由渲染状态持有，refresh/update 后 key 稳定 ⇒ 复用同一元素回填
 		expect(folder!.isConnected).toBe(true);
 		expect(child!.isConnected).toBe(true);
 		expect(treeRowElement(data[0]) as HTMLElement).toBeDefined();
@@ -392,7 +388,6 @@ describe('YMTreeList element 契约（金标准）', () => {
 		el.expandSelection();
 		await nextTick();
 		expect(treeRowCount(el)).toBe(2);
-		// 行被卸载（fold 折叠）→ element 缓存回收；消费方须按「窗口内行才有 element」适配
 		expect(childEl!.isConnected).toBe(false);
 		expect(treeRowElement(data[0].children![0]) as HTMLElement).toBeUndefined();
 		el.expandSelection();
@@ -478,7 +473,6 @@ describe('YMTreeList 虚拟滚动窗口（金标准）', () => {
 	it('200 行初始窗口 [0,21)：仅窗口行挂载，上下 spacer 占位正确', async () => {
 		const data = makeFlatData(200);
 		const { wrapper, el } = await mountList(data);
-		// 步骤 5b：`elements` shim 已删——窗口看 renderState，物化看真实 DOM
 		expect(treeRowCount(el)).toBe(200);
 		expect(el.renderState.start.value).toBe(0);
 		expect(el.renderState.end.value).toBe(21);
@@ -486,7 +480,6 @@ describe('YMTreeList 虚拟滚动窗口（金标准）', () => {
 		expect(rendered.length).toBe(21);
 		expect(rendered[0].parentNode).toBe(el);
 		expect(rendered[20].parentNode).toBe(el);
-		// 窗口外行不物化：渲染行数就是窗口大小，其余高度由 spacer 承担（累计偏移保持）
 		expect(spacerHeights(el)).toEqual({ top: '0px', bottom: `${(200 - 21) * 20}px` });
 		wrapper.unmount();
 	});
@@ -550,7 +543,6 @@ describe('YMTreeList scrollToSelection（金标准）', () => {
 		const settled = el.scrollTop;
 		el.scrollToSelection('middle');
 		expect(el.scrollTop).toBe(settled);
-		// 无滚动条（scrollHeight 未放大 → hasScrollBar false）：不改变
 		const wrapper2 = mount(YMTreeList, { attachTo: document.body });
 		const el2 = wrapper2.element as unknown as TreeListElement;
 		mockHeight(el2);
@@ -598,7 +590,6 @@ describe('YMTreeList Ctrl+Arrow 纯滚动（金标准）', () => {
 });
 
 describe('YMTreeList PageUp/PageDown 分页（金标准）', () => {
-	// clientHeight 400 → 每页 19 行（floor(400 / 20) - 1）
 	it('PageDown：选中下移一页并滚动联动', async () => {
 		const data = makeFlatData(100);
 		const { wrapper, el } = await mountList(data);
@@ -648,8 +639,6 @@ describe('YMTreeList PageUp/PageDown 分页（金标准）', () => {
 		const { wrapper, el } = await mountList(data);
 		el.select(data[3]);
 		await nextTick();
-		// 注意：列表自身在 keydown 末尾会 stopImmediatePropagation，故不能用"后加的监听器"探测，
-		// 直接看事件对象上的 defaultPrevented（cancelable 事件被 preventDefault 后即为 true）。
 		const event = new KeyboardEvent('keydown', {
 			bubbles: true,
 			cancelable: true,

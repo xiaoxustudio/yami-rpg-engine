@@ -88,7 +88,6 @@ describe('YMFileNavPane', () => {
 		const el = wrapper.element as unknown as FileNavPaneElement & {
 			pressing?: ((event: PointerEvent) => void) | null;
 		};
-		// 宿主（`YMFileBrowser.dragstart`）在拖拽开始时把待定回调置空 ⇒ 抬起不再选中
 		expect(el.pressing).toBe(null);
 		const sentinel = (): void => {};
 		el.pressing = sentinel;

@@ -29,28 +29,17 @@ const props = withDefaults(defineProps<Props>(), {
 
 const root = ref<HTMLElement | null>(null);
 
-/**
- * 模板渲染可见行。
- * 行来源是 **api 自己的行模型**（`getRowModel`）——不是派生层：`parse` 的 `break`/`script`/`children`
- * 会决定实际行集合，只有 api 知道（见 `YMCommandList.derive-boundary.spec.ts`）。
- */
 const rows = shallowRef<CommandRowDescriptor[]>([]);
 
 function refreshRows(): void {
 	const el = root.value as CommandListRootElement | null;
 	if (!el?.getRowModel) return;
 	rows.value = el.getRowModel().rows;
-	// **重要**：行元素在 key 不变时被 Vue 复用（`:ref` 不会再触发），而内容可能已经变了
-	// （重写数据、更换 `updateCommandElement` 覆写等）。旧实现靠 `resize()` 里的
-	// `updateOnResize(element)` 兜这件事；换源后在这里**同步**补一次：
-	// 按序重绑当前已渲染的行（同步执行 ⇒ 不会与 Vue 的渲染调度互相触发）。
 	const rendered = el.querySelectorAll('.command-item');
 	rows.value.forEach((row, i) => {
 		const element = rendered[i];
 		if (element instanceof HTMLElement) el.bindRowElement(element, row.index);
 	});
-	// 再补一拍：首帧时行还没渲染出来（`rendered` 为空），等 Vue 挂完再按序重绑一次，
-	// 让"跨行"的判定（缩进线的 line-start/line-end）拿到完整的邻居行。
 	void nextTick().then(() => {
 		const node = root.value as CommandListRootElement | null;
 		if (!node?.bindRowElement) return;
@@ -59,7 +48,6 @@ function refreshRows(): void {
 			const element = list[i];
 			if (element instanceof HTMLElement) node.bindRowElement(element, row.index);
 		});
-		// 行都挂好了，再让上层做跨行处理（折叠线分类；editor 的 eslints 覆盖这个钩子）
 		(node as { updateLineClasses?: () => void }).updateLineClasses?.();
 	});
 }
@@ -79,14 +67,6 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	createCommandListApi(el, props.options ?? {});
-	// 刷新时机**只有两个**，都表示"行模型真的变了"：
-	// - `update`：数据重建 / 选区变化（模型重建后 api 派发）
-	// - `rowmodel`：可见窗口移动（api 的 `resize` 里窗口真的动了才派发）
-	//
-	// ⚠️ 不要监听 `scroll`：滚动事件每个像素都来（滚轮一次几十个），而 `refreshRows` 会按行
-	// 重绑元素（`bindRowElement` → `updateCommandElement`）并在下一拍跑 `updateLineClasses`
-	// （读 `getBoundingClientRect`）⇒ 滚动热路径上反复强制布局，实机表现为行内容闪烁/抖动。
-	// 窗口没动时 `scroll` 本来也不需要刷新：行、margins 都由模型决定。
 	el.addEventListener('update', refreshRows);
 	el.addEventListener('rowmodel', refreshRows);
 	refreshRows();

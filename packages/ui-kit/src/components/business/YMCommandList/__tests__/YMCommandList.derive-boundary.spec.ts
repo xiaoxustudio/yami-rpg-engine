@@ -75,7 +75,6 @@ describe('command-render ↔ command-api（行序列的已知边界）', () => {
 			return [{ color: 'normal' }, { script: 'l1 \n l2 \n l3' }];
 		}, data);
 		expect(keys.length).toBeGreaterThan(derived.length);
-		// api 侧出现 break 行与脚本行（派生层不产生这些 key）
 		expect(keys.some((k) => k.includes('-b'))).toBe(true);
 		expect(keys.some((k) => k.includes('-s'))).toBe(true);
 		expect(derived.some((k) => k.includes('-b') || k.includes('-s'))).toBe(false);
