@@ -25,15 +25,9 @@ interface LogShape {
 	displayDonationList: ((...args: unknown[]) => void) | null;
 	parseCommunityReleases: ((...args: unknown[]) => void) | null;
 	openVSCode: ((file: string, line: number, column: number) => void) | null;
-	/**
-	 * **桥接到 `stores/log` 的 `logs`**（本文件末尾用 `Object.defineProperty` 安装 get/set），
-	 * 不是独立字段。**这一条在去掉逃生口前就已经有生产读取方**——`components/tools/LogMessage.vue`
-	 * 的 `Log.list.slice()` 一直是靠 `[k: string]: any` 通过的（那正是"假绿"）。
-	 */
 	list: { type: string; message: string; duration: number }[];
 }
 
-/** 同 `AudioManager`：`list` 由本文件末尾的桥安装，字面量按 `Omit<…, 'list'>` 校验后再断言。 */
 const log: Omit<LogShape, 'list'> = {
 	get box() {
 		return logEls.get('log-message') as YamiElement;
@@ -45,7 +39,6 @@ const log: Omit<LogShape, 'list'> = {
 	clear: null as (() => void) | null,
 	update: null as (() => void) | null,
 	tick: null as (() => void) | null,
-	// runtime 挂载: main/initialize.ts 中挂载警告输出,
 	warn: null as ((message: string, ...args: unknown[]) => void) | null,
 	catchError: null as ((...args: unknown[]) => void) | null,
 	catchRejection: null as ((...args: unknown[]) => void) | null,

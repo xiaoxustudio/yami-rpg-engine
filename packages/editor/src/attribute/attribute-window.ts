@@ -27,7 +27,6 @@ import type { YamiElement } from '@app/types/element-api';
 import type { YamiEvent } from '@app/types/editor-event';
 import { clone as deepClone } from '@app/utils/object';
 
-/** 元素注册表——由对应窗口 SFC 在模板里登记 */
 export const attributeEls = createElementRegistry();
 
 export interface AttributeItem {
@@ -95,12 +94,6 @@ interface AttributeWindowShape {
 	unpackAttribute: (this: typeof Attribute) => void;
 	packAttribute: (this: typeof Attribute) => void;
 	saveHistory: (this: typeof Attribute, item: AttributeItem, key: string, value?: string) => void;
-	/**
-	 * **桥接到 `stores/attribute`**——本文件末尾按 `attributeStateKeys` 用
-	 * `Object.defineProperty` 把 `idMap` 等状态装到 `Attribute` 上，不是模块自己的字段。
-	 * 原先被类型上的 `[k: string]: any` 兜住，收掉逃生口后由 `tsc` 当场报出
-	 * （`module/monkey-patches.ts` 1 处）。
-	 */
 	idMap: Record<string, boolean>;
 	windowClose: (this: typeof Attribute, event: YamiEvent) => void;
 	windowClosed: (this: typeof Attribute, event: YamiEvent) => void;
@@ -137,11 +130,6 @@ interface AttributeWindowShape {
 	[k: string]: unknown;
 }
 
-/**
- * `idMap` 是**桥键**（本文件末尾按 `attributeStateKeys` 用 `Object.defineProperty` 装 get/set），
- * 字面量给不出它 ⇒ 字面量按 `Omit<AttributeWindowShape, 'idMap'>` 校验（其余成员仍逐项受检），
- * 导出时再断言成完整形状（与 `AudioManager`/`Log`/`Variable` 同一手法）。
- */
 const attribute = {
 	inputs: {
 		name: null,
@@ -159,7 +147,6 @@ function ensureDomBound() {
 	if (Attribute.list) return;
 	const list = attributeEls.get('attribute-list');
 	if (!list) return;
-	// `attributeEls` 给的是 `HTMLElement`，而它上面的元素 API 由 `attachTreeListApi` 装配
 	Attribute.list = list as TreeListElement;
 	Attribute.panel = attributeEls.get('attribute-properties-flex') as YamiElement;
 	hide(Attribute.panel);
@@ -185,7 +172,6 @@ function ensureDomBound() {
 	});
 }
 
-// attribute-type 是一组 <radio-box name="attribute-type">，共享逻辑控件由 RadioBox 升级时塞入 RadioProxy.map，故 inputs.type 不能顶层求值，改为惰性 getter
 Object.defineProperty(Attribute.inputs, 'type', {
 	get() {
 		return RadioProxy.map['attribute-type'];
@@ -320,9 +306,6 @@ Attribute.initialize = function (this: typeof Attribute) {
 		capture: true
 	});
 	on(list, 'doubleclick', this.listDoubleclick, { capture: true });
-	// list select/record/open/popup 经 Vue 模板转发（Attribute.vue @select/@record/@open/@popup → Attribute.list*）
-	// name/key input 经 Vue 模板转发（Attribute.vue @input → Attribute.nameInput/keyInput）
-	// type write/input 经 Vue 模板转发（Attribute.vue @write/@input → Attribute.typeWrite/typeInput）
 	on(this.inputs.enum, 'input', this.enumInput);
 	on(this.inputs.note, 'input', this.noteInput);
 	on(this.inputs.note, 'compositionend', this.noteInput);
@@ -657,7 +640,6 @@ Attribute.listRecord = function (event: YamiEvent) {
 	const response = event.value;
 	switch (response.type) {
 		case 'rename': {
-			// 如果是属性则执行操作否则进入默认分支
 			const { item, oldValue, newValue } = response;
 			if (getAttributeStore().state.selected === item) {
 				write(Attribute.inputs.name, newValue);
@@ -774,7 +756,6 @@ Attribute.listPopup = function (event: YamiEvent & { clientX: number; clientY: n
 		});
 	}
 	if (selected && item.class === 'folder') {
-		// 旧写法 `item.element?.group` 恒为 undefined，导致菜单勾选从来不显示。
 		const group = folderGroupOf(getAttributeStore().state.settings, item.id);
 		const submenu = [
 			{
@@ -931,12 +912,8 @@ Attribute.apply = function (this: typeof Attribute, _event?: Event) {
 	}
 }.bind(Attribute);
 
-// bindListClipboardMethods 改为 ensureDomBound 内调用（list 顶层为 null）
-
-// 列表 - 保存滚动状态
 Attribute.list_saveScroll = function (this: TreeListElement) {
 	const { attribute } = Data;
-	// 将数据保存在外部可以切换项目后重置
 	if (attribute.scrollTop === undefined) {
 		Object.defineProperty(attribute, 'scrollTop', {
 			writable: true,
@@ -946,12 +923,10 @@ Attribute.list_saveScroll = function (this: TreeListElement) {
 	attribute.scrollTop = this.scrollTop;
 };
 
-// 列表 - 恢复滚动状态
 Attribute.list_restoreScroll = function (this: TreeListElement) {
 	this.scrollTop = Data.attribute.scrollTop ?? 0;
 };
 
-// 列表 - 取消搜索
 Attribute.list_cancelSearch = function (this: TreeListElement) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
@@ -962,7 +937,6 @@ Attribute.list_cancelSearch = function (this: TreeListElement) {
 	}
 };
 
-// 列表 - 创建文件夹
 Attribute.list_createFolder = function () {
 	return {
 		class: 'folder',
@@ -973,7 +947,6 @@ Attribute.list_createFolder = function () {
 	};
 };
 
-// 列表 - 创建属性
 Attribute.list_createAttribute = function () {
 	return {
 		id: Attribute.createId(),
@@ -985,22 +958,18 @@ Attribute.list_createAttribute = function () {
 	};
 };
 
-// 列表 - 重写解析名称方法
 Attribute.list_parseName = function (item: AttributeItem) {
 	return GameLocal.replace(item.name);
 };
 
-// 列表 - 在创建数据时回调
 Attribute.list_onCreate = function (item: AttributeItem) {
 	Attribute.register(item);
 };
 
-// 列表 - 在删除数据时回调
 Attribute.list_onDelete = function (item: AttributeItem) {
 	Attribute.unregister(item);
 };
 
-// 列表 - 在恢复数据时回调
 Attribute.list_onResume = function (item: AttributeItem) {
 	Attribute.register(item);
 };

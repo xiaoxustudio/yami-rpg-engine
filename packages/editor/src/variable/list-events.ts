@@ -26,7 +26,6 @@ Variable.listRecord = function (event: YamiMouseEvent) {
 	const response = event.value;
 	switch (response.type) {
 		case 'rename': {
-			// 如果是变量则执行操作否则进入默认分支
 			const { item, oldValue, newValue } = response;
 			if (getVariableStore().state.selected === item) {
 				write(Variable.inputs.name, newValue);
@@ -44,8 +43,6 @@ Variable.listRecord = function (event: YamiMouseEvent) {
 };
 
 Variable.listPopup = function (event: YamiMouseEvent) {
-	// 不需要断言：`createFolder` / `createVariable` / `copy` / `paste` / `delete` / `rename` /
-	// `addNodeTo` 这 7 个成员在 `YamiElementApi`（ui-kit）里都有声明 —— `createVariable` 此前是
 	const list = Variable.list;
 	const item = event.value;
 	const selected = !!item;

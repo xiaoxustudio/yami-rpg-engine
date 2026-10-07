@@ -16,8 +16,6 @@ export function renderDetached(vnode: VNode): HTMLElement {
 	const host = createDetachedElement();
 	render(vnode, host);
 	const el = host.firstElementChild as HTMLElement;
-	// 返回**已脱离宿主**的节点：调用方普遍会把它插到别处，而"仍挂在宿主上"会让
-	// 依赖 parentNode 的列表实现（Reference 的 appendElement）行为不一致。
 	el?.remove();
 	return el;
 }
@@ -63,8 +61,6 @@ export function css(
 	...args: [string] | [string, string] | [Record<string, string>]
 ): string | void {
 	if (args.length === 1) {
-		// 单次断言：`CSSStyleDeclaration` 是 interface（无隐式字符串索引签名），
-		// 而这里就是按**动态键**读样式 —— 交叉一支写出「也可当字符串表用」，比 `unknown` 换掉整表诚实。
 		return (getComputedStyle(el as Element) as CSSStyleDeclaration & Record<string, string>)[
 			args[0] as string
 		];

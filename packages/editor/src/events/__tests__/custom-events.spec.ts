@@ -1,10 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { emitCustom, onCustom } from '../custom-events';
 
-/**
- * 自定义事件类型化通道。三条要点——无载荷事件就是普通 `Event`；
- * 带载荷事件的字段能原样读到；`onCustom` 返回的取消订阅函数真的能摘掉监听。
- */
 describe('custom-events（类型化事件通道）', () => {
 	it('emitCustom：无载荷事件派发普通 Event，监听方能收到', () => {
 		const listener = vi.fn();

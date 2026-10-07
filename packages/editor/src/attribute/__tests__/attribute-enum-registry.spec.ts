@@ -7,11 +7,6 @@ import EnumWindow from '@app/components/tools/Enum.vue';
 import { Attribute, attributeEls } from '../attribute-window.ts';
 import { Enum, enumEls } from '@app/enum/enum-window.ts';
 
-/**
- * 属性/枚举窗口不再用 `按 id` 查 DOM，而由对应 SFC 在模板里通过
- * `registryRef(reg, id)` 登记元素、模块的 `ensureDomBound()` 从注册表取。
- * 锁住「登记 → 绑定 panel/searcher/inputs/list」这条链路（此前无覆盖）。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
@@ -61,7 +56,6 @@ describe('属性/枚举窗口元素注册表', () => {
 		expect(Attribute.inputs.name).toBe(attributeEls.get('attribute-name'));
 		expect(Attribute.inputs.key).toBe(attributeEls.get('attribute-key'));
 		expect(Attribute.inputs.enumBox).toBe(attributeEls.get('attribute-enum-box'));
-		// panel 在绑定后被 hide()（加 hidden class），说明拿到的是真实元素
 		expect((Attribute.panel as HTMLElement).classList.contains('hidden')).toBe(true);
 
 		wrapper.unmount();

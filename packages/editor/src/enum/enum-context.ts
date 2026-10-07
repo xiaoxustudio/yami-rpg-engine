@@ -60,10 +60,6 @@ export class EnumerationContext extends TreeDataContext {
 		}) as unknown[];
 	}
 
-	/**
-	 * 返回缓存项列表，与 `EnumModule.getMergedItems` 声明的 `Array<{ value: string }>` 同形。
-	 * `getCachedItems` 的形参与返回值都是 `unknown`，故在出口处断言一次（同 `getStringItems`）。
-	 */
 	getMergedItems(
 		headItems: unknown[] | null | undefined,
 		groupKey: string,

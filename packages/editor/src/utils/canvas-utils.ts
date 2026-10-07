@@ -20,7 +20,6 @@ export function resizeCanvasContext(
 	if (canvas.width === width && canvas.height === height) {
 		canvas.width = width;
 	} else {
-		// 尽量少的画布缓冲区重置次数
 		if (canvas.width !== width) {
 			canvas.width = width;
 		}

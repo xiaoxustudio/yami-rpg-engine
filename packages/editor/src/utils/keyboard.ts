@@ -10,7 +10,6 @@ window.addEventListener(
 					event.preventDefault();
 					break;
 				case 'KeyA':
-					// 当存在css(user-select: text)元素时 全选将选中该元素和文本框在内的所有文本块
 					if (
 						document.activeElement instanceof HTMLInputElement ||
 						document.activeElement instanceof HTMLTextAreaElement

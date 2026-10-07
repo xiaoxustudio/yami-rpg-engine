@@ -3,11 +3,6 @@ import { defineComponent, h, nextTick, withDirectives } from 'vue';
 import { mount } from '@vue/test-utils';
 import { vTip } from '../tip.ts';
 
-/**
- * 回归：`v-tip` 指令把 i18n 文案挂到元素 tooltip 上（替代本地化器的逐键 DOM 扫描）。
- * 断言三点：① 挂载后调用 setTooltip 且文案含 label 与 tip；② 空串不挂；
- * ③ 绑定值变化时（语言切换）重新挂载。
- */
 const setTooltipMock = vi.hoisted(() => vi.fn());
 vi.mock('@app/utils/element-utils', () => ({
 	setTooltip: setTooltipMock
@@ -37,7 +32,6 @@ describe('v-tip 指令', () => {
 		expect(setTooltipMock).toHaveBeenCalled();
 		const [el, text] = setTooltipMock.mock.calls.at(-1) as [HTMLElement, string];
 		expect((el as HTMLElement).id).toBe('widget');
-		// parseLocalTip(tip, title)：非 $ 前缀 → "<b>title</b>\n tip"
 		expect(String(text)).toContain('My Label');
 		expect(String(text)).toContain('Some tip');
 

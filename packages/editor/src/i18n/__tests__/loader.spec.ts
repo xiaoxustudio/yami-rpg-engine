@@ -4,8 +4,6 @@ import type { Dirent } from 'node:fs';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { loadLanguage, loadLanguageList, resolveLanguage, type LanguageEntry } from '../loader';
 
-// 测试替身：loader 只用 `name` / `isDirectory` / `isFile` 三个成员，故单次断言到 `Dirent`
-// （`FSP.readdir` 现在收成了本仓实际用到的那两支重载，元素类型就是 `Dirent<string>` ⇒ 可比）。
 const dirent = (name: string, isFile: boolean) =>
 	({
 		name,

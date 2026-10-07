@@ -39,7 +39,6 @@ describe('i18n 唯一真源', () => {
 		initYamiI18n();
 		const zh = loadLocale('zh-CN.简体中文.json');
 		applyLocaleData('zh-CN', zh);
-		// 不存在 menuFile.none 时应回退 common.none
 		expect(getYamiI18n().global.t('menuFile.none')).toBe(getYamiI18n().global.t('common.none'));
 	});
 });

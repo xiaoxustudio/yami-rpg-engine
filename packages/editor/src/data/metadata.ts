@@ -15,8 +15,6 @@ export const Meta = (function IIFE() {
 		other: 'others'
 	});
 	const loaderDescriptor = { path: null as string | null, type: 'json' };
-	// 标成 `PropertyDescriptor`：标准库里 `value` 是可选 `any`，因此初值可直接写 `null`，
-	// 不必再用 `null as unknown as FileItem` 去凑"非空"（真值在下面 `fileDescriptor.value = file`）。
 	const fileDescriptor: PropertyDescriptor = { writable: true, value: null };
 	const guidDescriptor = { writable: true, value: '' };
 	const codeDescriptor = { writable: true, value: '' };
@@ -32,7 +30,6 @@ export const Meta = (function IIFE() {
 	return class FileMeta {
 		path: string;
 		size: number;
-		// 以下字段用 `declare` 仅作类型声明，运行期完全由 Object.defineProperties(this, descriptors) 定义为不可枚举属性。切勿写成类字段（如 `file;` 或 `file = null`）——useDefineForClassFields:true 下 TS 会发射 `Object.defineProperty(this,'file',{enumerable:true,...})`，使 JSON.stringify 看到 file -> FileItem.meta 循环引用。
 		declare file: FileItem;
 		declare guid: string;
 		declare mtimeMs: number | bigint | null;
@@ -41,43 +38,16 @@ export const Meta = (function IIFE() {
 		declare dataMap: Record<string, object> | null;
 		x: number | null = null;
 		y: number | null = null;
-		/**
-		 * 脚本参数定义（只有 `script` 类型会赋值，见构造函数）。
-		 *
-		 * 类型取**运行期真相** `ParameterShape[]`（解析器 `plugin-parse-meta.ts` 写入的完整参数：
-		 * 含 min/max/decimals/options，`validate` 为对象）。ui-kit 的 `YMParameterPane` 会直接读
-		 * 清单条目的 `parameters`，它声明的 `ParamDef` 已按并集放宽（`validate`/`group`），
-		 * 因此 `ParameterShape` 结构性满足 `ManifestEntry.parameters: ParamDef[]`，跨包 prop 绑定
-		 * 不再需要断言；`plugin-reconstruct.ts` 也就无需 `as unknown as ParameterShape[]`。
-		 */
 		parameters: ParameterShape[] | null = null;
-		/**
-		 * 语言映射（运行期由元数据装载写入，编辑器侧没有静态写点）。
-		 * 形状取自 ui-kit 的读点：`meta.langMap.active` 与 `meta.langMap.update().get(key)` /
-		 * `update().active`（`YMParameterPane.vue` 的 `windowLocalize`）。与 ui-kit 的
-		 * `ManifestEntry.langMap` **必须一致**，否则跨包 prop 绑定当场报 TS2322。
-		 */
 		declare langMap: {
 			active: string;
 			update(): { active: string; get(key: string | undefined): string };
 		};
-		/**
-		 * 参数管理器（运行期由 `plugin-parse-meta.ts` 的 `Object.defineProperties` 挂上，
-		 * 值就是那里的 `OptionManager.sort()`）：ui-kit 的 `updateParamDisplay` 读 `states`，
-		 * 编辑器侧重建设置参数时调 `update()`（见 `plugin-reconstruct.ts`）。
-		 * 形状与 `plugin.ts` 的 `PluginMetaShape.manager` 对齐（`OptionManager` 两处都提供）。
-		 */
 		declare manager: {
 			states: Record<string, boolean>;
 			update: (parameters: Record<string, unknown>) => void;
 		};
-		/**
-		 * 概览信息（运行期写入）。ui-kit 只读 `overview.deprecated`（见 `:353-356`）；
-		 * 编辑器侧 `PluginOverview.vue` 还要从 `manifest.guidMap[*].overview.plugin` 取插件名 ⇒ 补 `plugin`。
-		 * `deprecated` 保持 `string`：必须与 ui-kit 的 `ManifestEntry.overview` 一致，否则跨包 prop 绑定报 TS2322。
-		 */
 		declare overview?: { plugin?: string; deprecated?: string };
-		// script 类型运行时由 Object.defineProperty 挂载（非枚举）
 		declare code: string;
 
 		constructor(file: FileItem, guid: string) {

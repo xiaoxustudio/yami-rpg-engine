@@ -72,7 +72,6 @@ type TreeItemShape = {
 	contents?: unknown;
 };
 
-/** 树行元素上的元素数据（`item` 原先靠原型访问器透明落到 WeakMap） */
 interface ReferenceRowData {
 	item?: { id?: string; presetId?: string };
 }
@@ -909,7 +908,6 @@ Reference.getPointerdownListener = function (this: typeof Reference, list: HTMLE
 					const item = rowData(element).item;
 					const guid = item!.id ?? item!.presetId;
 					if (guid) {
-						// 阻止focus后快捷键不被禁用的情况
 						event.preventDefault();
 						event.stopImmediatePropagation();
 						Reference.openRelated!(guid);

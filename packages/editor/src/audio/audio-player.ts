@@ -4,7 +4,6 @@ import { Reverb } from './reverb.ts';
 import { clamp, roundTo } from '@app/utils/math';
 
 export class AudioPlayer {
-	// HTMLAudioElement 运行时挂载 .path 字段（play/stop 读写）
 	audio: HTMLAudioElement & { path: string };
 	source: MediaElementAudioSourceNode;
 	panner: StereoPannerNode;

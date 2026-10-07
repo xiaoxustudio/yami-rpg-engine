@@ -65,8 +65,6 @@ export const Directory: {
 		},
 		getChanges: () => Data.manifest.changes,
 		onSaved: (metas: Array<unknown>) => {
-			// 同 `File.planToSave`：`changes` 是普通数组，没有 `remove` 方法，
-			// 必须用自由函数 `remove(changes, meta)`（2026-09-18）。
 			const changes = Data.manifest.changes;
 			for (const meta of metas) {
 				remove(changes, meta as (typeof changes)[number]);

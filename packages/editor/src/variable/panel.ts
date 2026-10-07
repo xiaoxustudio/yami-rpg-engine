@@ -65,7 +65,6 @@ Variable.sortInput = function (event: Event & { value?: number }) {
 		sort: item.sort,
 		value: item.value
 	});
-	// 如果从临时变量对象类型切换到其他分类，修改变量的值为布尔值
 	if (item.value === null) {
 		item.value = read(Variable.inputs.boolean);
 		write(Variable.inputs.type, 'boolean');
@@ -76,8 +75,6 @@ Variable.sortInput = function (event: Event & { value?: number }) {
 };
 
 Variable.typeWrite = function (event: Event & { value?: string }) {
-	// `inputs.value` 在 `initialize()` 里绑定；类型下拉框能触发本函数就说明已经过了绑定阶段
-	// （`!` 只是编译期断言，运行期行为不变）。
 	const { style } = Variable.inputs.value!;
 	Variable.manager.switch(event.value ?? null);
 	switch (event.value) {

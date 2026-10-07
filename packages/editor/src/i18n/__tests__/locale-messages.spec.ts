@@ -4,19 +4,6 @@ import { resolve } from 'node:path';
 import { applyLocaleData, getYamiI18n, initYamiI18n } from '@app/i18n';
 import { convertLocaleData, INTERPOLATION_NAMES, type LocaleData } from '@app/i18n/convert';
 
-/**
- * 语言文件全量「可编译 / 不失真」回归。
- *
- * vue-i18n 把消息体当模板编译：`@` 是 linked message 语法、`|` 是复数分隔符、
- * `{name}` 是命名插值。文案里的这些字符会被当成语法——轻则内容丢失（`{Y}` 无参数时
- * 渲染成空串），重则直接抛编译错误（`@code` → Invalid linked format；
- * `{0, 1, 2, 3, ...}` → Unterminated closing brace）。`t()` 又在 render 里同步调用，
- * 抛错会连带炸掉整个窗口渲染（Vue: Unhandled error during execution of render function，
- * 表现为 downloadFile / uploadFile / requestURL / httpRequest / webSocketConnect 等窗口报错）。
- *
- * `convert.ts` 在转换边界做字面量转义，这里锁住两条不变量：① 每个键都能编译；
- * ② 每条 `.tip` 逐字渲染（不被语法字符吃掉内容）。
- */
 const LOCALES_DIR = resolve(process.cwd(), 'Project/Locales');
 
 type Locale = { file: string; lang: string; data: LocaleData };
@@ -111,11 +98,6 @@ describe('语言文件消息可编译 / 不失真（@ | {} 字面量转义）', 
 		expect(t('confirmation.deleteSingleFile', { filename: 'a.scene' })).toContain('a.scene');
 	});
 
-	/**
-	 * 白名单的**每一个**名字都要有一个真实用例：`INTERPOLATION_NAMES` 是
-	 * 「哪些 `{…}` 算插值」的唯一判据，漏一个就会让那条文案的占位符被转义成字面量。
-	 * 这条用例同时锁住两件事——名字不许多（多出来的名字没有样例就会红）、也不许少。
-	 */
 	it('INTERPOLATION_NAMES 的每个参数名都有可插值的真实文案', () => {
 		initYamiI18n();
 		const { lang, data } = locales[0];
@@ -144,11 +126,6 @@ describe('语言文件消息可编译 / 不失真（@ | {} 字面量转义）', 
 		}
 	});
 
-	/**
-	 * 把"逐字渲染"从 `.tip` 扩到**全部消息**：白名单外的 `{…}` 必须原样出现
-	 * （`{Y}: Year` 这类示例、`{0, 1, 2, 3, ...}` 这类取值列举），白名单内的插值在无参时
-	 * 渲染成空串。新增一条带字面大括号的文案若忘了分类，这里会红。
-	 */
 	it('全部消息：白名单外的 {...} 逐字渲染，白名单内的按插值处理', () => {
 		initYamiI18n();
 		const { lang, data } = locales[0];

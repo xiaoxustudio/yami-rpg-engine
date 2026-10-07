@@ -5,7 +5,6 @@ import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { uiElClasses } from '@app/engine/ui/element-classes.ts';
-// 另一半在 `engine/ui/text-element.ts` ⇒ 那边只能 `as unknown as` 跳过来说话。见该接口的注释。
 import type { UIImageElementShape } from '@app/engine/ui/element-classes.ts';
 import { getUIStore } from '@app/stores/ui';
 import { Title } from '@app/title/title-bar.ts';
@@ -25,21 +24,8 @@ interface TextEffectShape {
 	color?: string | number;
 }
 
-/**
- * 绘制一条文本命令的方法签名 —— 四个实现完全相同（`drawText` / `drawTextWithShadow` /
- * `drawTextWithStroke` / `drawTextWithOutline`，签名见各 `static` 定义），调用点也只有一个：
- * `executeCommands()` 里的 `drawingMethod(context, command, string[i])`（`context` 来自
- * `this.context!`，类型就是 `CanvasTextContext`）。
- */
 type DrawingMethod = (context: CanvasTextContext, command: TextCommandShape, text: string) => void;
 
-/**
- * `drawingMethods` 的**取值面**：只能是这四个绘制方法名。
- *
- * 之间没有任何检查，取值只能靠 `Printer as unknown as Record<string, (...args: unknown[]) => unknown>`
- * 把整个 `Printer` 谎报成一张函数字典。收成方法名联合之后：① 表里写错名字当场报错；
- * ② `Printer[name]` 直接得到 `DrawingMethod`，断言与那句谎一起消失。
- */
 type DrawingMethodName =
 	| 'drawText'
 	| 'drawTextWithShadow'
@@ -52,22 +38,6 @@ interface TextCommandShape {
 	y: number;
 	font: string;
 	size: number;
-	/**
-	 * 文本颜色 —— 值就是 **CSS 颜色串**（`'rgba(r, g, b, a)'`）。
-	 *
-	 * 4 处 `context.fillStyle = color` 也是对的。原先怀疑「真实取值是打包整数」，
-	 * 但把来源一路量到底即可排除：
-	 *
-	 * - 唯一写入点是 `drawBuffer` 的 `command.color = this.colors[0]`；
-	 * - `colors[0]` 由 `CSSRGBA(...)` 写入（`drawBuffer` 之外的写入点在
-	 *   `text-element.ts:230/340`，同样是 `CSSRGBA(value)`）；
-	 * - `ui-kit/src/utils/color.ts:9` 的签名是 `CSSRGBA(hex: string): string`，
-	 *   且 `ui-kit` 的用例断言 `CSSRGBA('10203040') === 'rgba(16, 32, 48, 64)'`。
-	 *
-	 * ⇒ 运行期从来不是整数。会让人误判的是**同文件另一条独立的颜色通道**（效果颜色用
-	 * `r + (g + (b + a * 256) * 256) * 256` 打包整数），那与 `fillStyle` 无关。
-	 * 唯一真正的谎言是占位命令里的 `0 as unknown as string`，已改为 `''`（见 `fetchCommand`）；
-	 */
 	color: string;
 	effect: TextEffectShape | null;
 	image: UIImageElementShape | null;
@@ -83,10 +53,8 @@ type FontNameList = string[];
 export class Printer {
 	static print: ((...args: unknown[]) => void) | null = null;
 	texture!: PrinterTexture | null;
-	// images 运行时挂上 .changed 标志（L56/L200/L469 读写）
 	images!: UIImageElementShape[] & { changed?: boolean };
 	canvas!: HTMLCanvasElement;
-	// CanvasRenderingContext2D 运行时挂上 .paddingItalic/.paddingVertical/.size 扩展（printer 内赋值）
 	context: CanvasTextContext | null;
 	content!: string;
 	buffer!: string;
@@ -488,7 +456,6 @@ export class Printer {
 		command.drawingMethod = fnEmpty;
 
 		this.breakable = true;
-		// 根据不同的文本方向，计算下一个位置、行高、文本区域宽度、文本区域高度
 		if (horizontal) {
 			this.x += imageWidth + letterSpacing;
 			this.lineHeight = Math.max(this.lineHeight, imageHeight);
@@ -976,15 +943,12 @@ export class Printer {
 			let width = 0;
 			let height = 0;
 			if (!match[2]) {
-				// 存在1个参数
 				width = this.sizes[0];
 				height = this.sizes[0];
 			} else if (!match[4]) {
-				// 存在3个参数
 				width = parseInt(match[2]);
 				height = parseInt(match[3]);
 			} else {
-				// 存在5-7个参数
 				clip = [
 					parseInt(match[2]),
 					parseInt(match[3]),
@@ -1017,10 +981,6 @@ export class Printer {
 	static commandCount = 0;
 	static commandMaximum = 0;
 	static drawingMethods = null as Record<string, DrawingMethodName> | null;
-	/**
-	 * 运行期在这条数组上还挂着一个 `signature`（上一批导入字体的指纹，用来跳过重复导入）。
-	 * 声明里写清它，读点就不必再写一次 `as unknown as { signature: string }`。
-	 */
 	static imported: FontNameList & { signature?: string } = [];
 	static importing: FontNameList = [];
 
@@ -1045,34 +1005,26 @@ export class Printer {
 		textOutlineRestore: RegExp;
 		image: RegExp;
 	} = {
-		// 使用索引颜色: [1]:Index(0-15)
 		colorIndex: /^<color:(\d|1[0-5])>$/i,
-		// 使用指定颜色: [1]:R(00-ff), [2]:G(00-ff), [3]:B(00-ff), [4]:A(00-ff)(可选)
 		color: /^<color:([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?>$/i,
 		colorRestore: /^<\/color>$/i,
-		// 使用字体: [1]:字体族群
 		font: /^<font:([\S ]+)>$/i,
 		fontRestore: /^<\/font>$/i,
 		italic: /^<italic>$/i,
 		italicRestore: /^<\/italic>$/i,
 		bold: /^<bold>$/i,
 		boldRestore: /^<\/bold>$/i,
-		// 使用字体大小: [1]:字体大小(10-400)
 		fontSize: /^<size:([1-9]\d|[1-3]\d\d|400)>$/i,
 		fontSizeRestore: /^<\/size>$/i,
 		textPosition: /^<(x|y):(?:(add),)?(-?(?:\d|[1-9]\d|[1-9]\d\d|1000))>$/i,
-		// 使用阴影效果: [1]:水平偏移(-9-9), [2]:垂直偏移(-9-9), [3]:R(00-ff), [4]:G(00-ff), [5]:B(00-ff), [6]:A(00-ff)(可选)
 		textShadow:
 			/^<shadow:(0|-?[1-9]),(0|-?[1-9]),([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?>$/i,
 		textShadowRestore: /^<\/shadow>$/i,
-		// 使用描边效果: [1]:描边宽度(1-20), [2]:R(00-ff), [3]:G(00-ff), [4]:B(00-ff), [5]:A(00-ff)(可选)
 		textStroke:
 			/^<stroke:([1-9]|1\d|20),([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?>$/i,
 		textStrokeRestore: /^<\/stroke>$/i,
-		// 使用轮廓效果: [1]:R(00-ff), [2]:G(00-ff), [3]:B(00-ff), [4]:A(00-ff)(可选)
 		textOutline: /^<outline:([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?>$/i,
 		textOutlineRestore: /^<\/outline>$/i,
-		// 使用指定图像: [1]:GUID(16个字符), [2]:参数1(0-10000)(可选), [3]:参数2(0-10000)(可选), [4]:参数1(0-10000)(可选), [5]:参数2(0-10000)(可选), [6]:参数1(0-10000)(可选), [7]:参数2(0-10000)(可选)
 		image: /^<image:([0-9a-f]{16})(?:,(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000),(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000))?(?:,(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000),(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000))?(?:,(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000),(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000))?>$/i
 	};
 
@@ -1242,10 +1194,6 @@ export class Printer {
 				y: 0,
 				font: '',
 				size: 0,
-				// 见 `TextCommandShape.color` 的注释：它真实类型就是 `string`（值来自 `CSSRGBA`），
-				// 所以这里写 `''` 即可，不再需要 `0 as unknown as string` 那种「打包整数」谎话。
-				// 这个对象是**空白模板**、必然在绘制前被填上；即便被提前读到，`0` 与 `''` 对 canvas
-				// 同样都是非法 fillStyle（静默忽略），故改动等价。
 				color: '',
 				effect: null as TextEffectShape | null,
 				image: null as UIImageElementShape | null,
@@ -1253,8 +1201,6 @@ export class Printer {
 				imageHeight: 0,
 				imageSpacing: 0,
 				horizontalWidth: 0,
-				// 于是原先那句 `'' as unknown as (...args: unknown[]) => unknown` 消失 ——
-				// 占位对象里现在一处断言都没有。
 				drawingMethod: fnEmpty
 			};
 			if (count < this.commandMaximum) {

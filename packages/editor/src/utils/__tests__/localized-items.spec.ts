@@ -1,9 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-/**
- * 模块侧选项名：`localizedItems` / `applyLocalizedItems`。
- * 关键行为——**语言切换（`localizationchange` 事件）时要重新应用**，否则名字会停在旧语言。
- */
 const t = vi.fn((key: string) => `T:${key}`);
 const language = { value: 'zh-CN' };
 

@@ -2,19 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Easing } from '@app/data/transition-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 
-/**
- * 回归：缓动窗口的标记图（`Images/curve_mark.png`）是**异步**加载的。
- * `drawCurve` 原守卫写作 `if (image === null) return;`，而 `pointImage` 在 promise
- * resolve 之前其实是 `undefined`（声明里的 `| null` 只是类型标注，运行时没人赋过初值），
- * 于是打开窗口的第一次重绘就抛
- * `TypeError: Failed to execute 'drawImage' on 'CanvasRenderingContext2D': The provided
- * value is not of type '(CSSImageValue or HTMLCanvasElement or ...)'`，
- * 而且**每一帧**都会再抛一次，直到图片就绪。
- *
- * 这里用假画布 + 假上下文覆盖三种 source：未加载（undefined）/ 坏图（naturalWidth 0）/
- * 已就绪，确保守卫拦住前两种且不误伤第三种。
- */
-
 const drawImageCalls: unknown[][] = [];
 
 function createFakeContext() {
@@ -76,7 +63,6 @@ function installRuntime() {
 	Easing.pointImage = null;
 }
 
-/** 一张"已就绪"的图片源：非 HTMLImageElement，因此不受 naturalWidth 判定影响 */
 const readyImage = { width: 7, height: 25 } as unknown as CanvasImageSource;
 
 describe('Easing.drawCurve 的标记图守卫', () => {
@@ -93,7 +79,6 @@ describe('Easing.drawCurve 的标记图守卫', () => {
 	});
 
 	it('标记图未加载（undefined）时不抛错也不画', () => {
-		// 这就是崩溃现场：pointImage 从未被赋值，旧的 `=== null` 守卫放行了 undefined
 		Easing.pointImage = undefined as unknown as typeof Easing.pointImage;
 
 		expect(() => Easing.drawCurve()).not.toThrow();
@@ -108,7 +93,6 @@ describe('Easing.drawCurve 的标记图守卫', () => {
 	});
 
 	it('标记图加载失败（naturalWidth 为 0）时跳过标记绘制', () => {
-		// File.get 的 onerror 分支仍会 resolve 一个 src 为空、naturalWidth 为 0 的 <img>
 		Easing.pointImage = document.createElement('img');
 
 		expect(() => Easing.drawCurve()).not.toThrow();

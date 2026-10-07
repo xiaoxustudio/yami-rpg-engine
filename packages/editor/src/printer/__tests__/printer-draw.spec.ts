@@ -1,7 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Printer 只用到 GL 的 `arrays`（charWidths 视图）与 `maxTexSize`；其余重模块在 draw 路径上
-// 也用不到，全部挡掉，避免把它们庞大的启动副作用带进 jsdom。
 vi.mock('@app/engine/webgl/webgl-init.ts', () => ({
 	GL: { arrays: [{}, { uint32: new Uint32Array(4096) }], maxTexSize: 4096 }
 }));
@@ -15,15 +13,6 @@ vi.mock('@app/title/title-bar.ts', () => ({ Title: {} }));
 import { Printer } from '@app/printer/printer.ts';
 import type { Texture as PrinterTexture } from '@app/engine/webgl/texture.ts';
 
-/**
- * `Printer.draw` 的回归测试：这条路径曾经在运行时炸
- * `TypeError: this.context.resize is not a function`——画布尺寸调整原本挂在
- * `CanvasRenderingContext2D.prototype` 上的内建补丁里，补丁被当成死代码删掉后，
- * 因为 `this.context` 的调用形式逃过了静态检索，测试也没覆盖到这里。
- *
- * 因此这里的假上下文**故意不提供** `resize`：只要有人再往上下文上挂非标准方法，
- * `draw()` 就会立刻抛错。
- */
 const fillTextCalls: Array<{ text: string; x: number; y: number }> = [];
 
 function createFakeContext(canvas: HTMLCanvasElement) {
@@ -111,8 +100,6 @@ describe('Printer.draw', () => {
 		printer.draw('abc');
 		const { width, height } = canvases[0];
 
-		// 真实调用方（`TextElement.updatePrinter`、`Printer.restoreTexture`）在重绘前会
-		// `reset()`：`draw()` 自己只清内容，不清 x/y/width/height。
 		printer.reset();
 		expect(() => printer.draw('abc')).not.toThrow();
 		expect(canvases[0].width).toBe(width);

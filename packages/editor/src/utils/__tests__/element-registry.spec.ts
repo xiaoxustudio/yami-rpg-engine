@@ -6,10 +6,6 @@ import {
 	registryRef
 } from '@app/utils/element-registry';
 
-/**
- * `createElementRegistry(mirror)` 的镜像语义——**写入时**同步（含卸载时的 `null`），
- * 而不是在 SFC 的 `onMounted` 里循环拷贝（子组件 onMounted 早于父组件，会慢一拍）。
- */
 describe('元素注册表（element-registry）', () => {
 	it('默认注册表：registryRef 写入元素、卸载时清空该项', () => {
 		const registry = createElementRegistry();
@@ -78,7 +74,6 @@ describe('元素注册表（element-registry）', () => {
 		registryRef(registry, 'b')(b);
 
 		expect(registryElements(registry, ['b', 'a'])).toEqual([b, a]);
-		// 未登记 / 已清空的键直接跳过（不产生 undefined 占位）
 		expect(registryElements(registry, ['a', 'missing', 'b'])).toEqual([a, b]);
 		registryRef(registry, 'a')(null);
 		expect(registryElements(registry, ['a', 'b'])).toEqual([b]);

@@ -10,19 +10,14 @@ import { localizeDomComponents, type LocalComponentItem } from '@app/localize/do
 import { getLocalStore } from '@app/stores/local';
 import { Editor } from '@app/services/project/editor';
 
-// vue-i18n 唯一真源（扁平消息表）。
-// 组件内使用 useI18n()，非组件代码使用 getYamiI18n().global.t 访问全局 Composer。
-
 let locale = 'en-US';
 const flatMessages: Record<string, FlatMessages> = {};
 const loadedLocaleData: Record<string, LocaleData> = {};
 let loadPromise: Promise<string> | null = null;
 
-// 自定义 messageResolver：按完整点路径键查扁平表（避免嵌套冲突）+ legacy common fallback
 function resolveFlat(messages: unknown, key: string): unknown {
 	const table = (messages ?? {}) as FlatMessages;
 	if (key in table) return table[key];
-	// 嵌套对象读取：t('languages') 返回 languages.* 的嵌套对象（如 {en, zh-CN}）
 	const prefix = `${key}.`;
 	let nested: Record<string, unknown> | null = null;
 	for (const flatKey of Object.keys(table)) {
@@ -61,7 +56,6 @@ const options = {
 
 const i18n = createI18n<false, typeof options>(options);
 
-// 由 legacy Local 语言加载流程调用：把语言 JSON 喂给 i18n（唯一真源）
 export function applyLocaleData(lang: string, data: LocaleData): void {
 	if (!i18n) return;
 	loadedLocaleData[lang] = data;
@@ -72,12 +66,10 @@ export function applyLocaleData(lang: string, data: LocaleData): void {
 	locale = lang;
 }
 
-// 已加载的原始语言 JSON（loader 或 legacy Local 任一方加载后均可用，避免重复读文件）
 export function getLoadedLocaleData(lang: string): LocaleData | undefined {
 	return loadedLocaleData[lang];
 }
 
-// 应用初始化：注册到 App（legacy Local 加载完成后会经 applyLocaleData 填充）
 export function initYamiI18n(options?: { autoLoad?: boolean; language?: string }) {
 	if (options?.autoLoad) {
 		loadI18n(options.language).catch(() => undefined);
@@ -85,7 +77,6 @@ export function initYamiI18n(options?: { autoLoad?: boolean; language?: string }
 	return i18n;
 }
 
-// i18n 独立加载语言文件（不依赖 legacy Local）：读列表 → 解析当前语言 → 读取 JSON → 喂 i18n
 export async function loadI18n(language?: string): Promise<string> {
 	if (loadPromise) {
 		return loadPromise.then(() => loadI18n(language));
@@ -104,7 +95,6 @@ export async function loadI18n(language?: string): Promise<string> {
 				const data = await loadLanguage(entry.filename);
 				applyLocaleData(entry.key, data);
 			} else {
-				// messages 已存在（如启动 autoLoad 已加载）——仍需切换 locale，否则 t() 用旧语言
 				i18n.global.locale.value = entry.key;
 				locale = entry.key;
 			}
@@ -135,9 +125,6 @@ export function getYamiI18n() {
 	return i18n;
 }
 
-// 启动初始化：加载语言 → 标记本地化就绪（主菜单由 AppShell 依 store 状态显示）
-// 说明：confirm/cancel 的 hotkey 已改为在 YMFormButtons.vue 模板里声明，不再启动时扫 DOM；
-// 主菜单可见性同理改由 stores/local 的 ready 驱动（原实现给 #menu 加 .visible）。
 export async function initI18n(): Promise<string> {
 	const language = await loadI18n(Editor.config?.language ?? '');
 	getLocalStore().setReady(true);

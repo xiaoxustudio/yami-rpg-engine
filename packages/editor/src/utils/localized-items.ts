@@ -1,12 +1,3 @@
-/**
- * 模块侧选项名：给**组件外**的代码（元素工厂 / 数据模块）一条与 `useLocalizedOptions`
- * 等价的路径——按当前语言生成选项名，并在**语言切换时重新应用**。
- *
- * 为什么不能直接用组合式函数：`useLocalizedOptions` 依赖 `useI18n()` 与 `watchEffect`，只能在
- * Vue 的 setup 里调用；而 `data/transition-window.ts`、`components/condition-list.ts` 这类
- * **元素工厂模块**不是组件。若交给本地化器在语言切换时往控件里写名字，那些键会一直
- * 留在扫描面里。这里用 `getYamiI18n()`（非响应式）+ 订阅 `localizationchange` 事件达到同样效果。
- */
 import { getYamiI18n } from '@app/i18n';
 import { onCustom } from '@app/events/custom-events';
 import { parseLocalTip } from '@app/localize/dom-localizer';
@@ -39,7 +30,6 @@ export function applyLocalizedItems<T>(
 ): () => void {
 	const run = (): void => apply(localizedItems(key, values));
 	run();
-	// 走类型化通道（事件名与载荷形状集中在 events/custom-events）
 	return onCustom('localizationchange', run);
 }
 

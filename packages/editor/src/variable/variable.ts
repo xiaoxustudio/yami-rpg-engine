@@ -60,14 +60,6 @@ interface VariableModule {
 	panelKeydown: ((event: KeyboardEvent) => void) | null;
 	searcherInput: ((event: InputEvent) => void) | null;
 	confirm: (event?: Event) => void;
-	/**
-	 * 「应用」动作。参数**可选**：它有两条调用路径 ——
-	 * 窗口按钮走 `Variable?.apply?.(new Event('click'))`（带事件），
-	 * 而 `Variable.confirm` 内部要主动触发一次（无事件，故过去写成
-	 * `this.apply!(undefined as unknown as Event)`——两处谎言）。
-	 * 兄弟单例（`Attribute` / `Enum` / `Localization` / `PluginManager`）本来
-	 * 就是以 `x?.apply?.()` 无参调用的，这里只是把 `Variable` 对齐到同一契约。
-	 */
 	apply: ((event?: Event) => void) | null;
 	list_saveScroll: () => void;
 	list_restoreScroll: () => void;
@@ -78,28 +70,12 @@ interface VariableModule {
 	list_onDelete: (item: unknown) => void;
 	list_onResume: (item: unknown) => void;
 	_listMethodsLoaded: boolean;
-	/**
-	 * 以下三个成员**不是模块自己的字段，而是桥接到 `stores/variable`**——本文件末尾按
-	 * `variableStateKeys`（`target`/`data`/`idMap`/`history`/`changed`/`selected`）用
-	 * `Object.defineProperty` 装 get/set。原先它们被类型上的 `[k: string]: any` 兜着，所以"这里有座桥"
-	 * 在类型里完全看不见；收掉逃生口后由 `tsc` 当场报出（`variable/data.ts` 1 处、
-	 * `variable/list-events.ts` 4 处、`module/monkey-patches.ts` 1 处）。
-	 */
 	target: { getFocus?: () => void } | null;
 	idMap: Record<string, boolean>;
 	history: History;
 	[k: string]: unknown;
 }
 
-/**
- * 桥键（`target`/`idMap`/`history`）由本文件末尾的 `Object.defineProperty` 安装，
- * 字面量给不出它们 ⇒ 字面量按 `Omit<VariableModule, 'target' | 'idMap' | 'history'>` 校验，
- * **其余成员的拼写仍逐项受检**，导出时再断言成完整形状（与 `AudioManager`/`Log` 同一手法）。
- *
- * `satisfies Partial<…>` 同时承担另一件事：延迟绑定槽（DOM 元素、方法）在 `initialize()`
- * 之后才存在，字面量里写 `null as unknown as T` 是**谎报类型**；改为让这些槽「此刻不存在」，
- * 由 `initialize()` 里的真实赋值补齐（那些赋值同样逐字段受检）。
- */
 type VariableLiteral = Omit<VariableModule, 'target' | 'idMap' | 'history'>;
 
 const variable = {
@@ -170,7 +146,6 @@ function ensureDomBound() {
 	});
 }
 
-// radio-box 组的共享 radio-proxy 实例由 RadioBox 升级时惰性塞入 RadioProxy.map，故 inputs.sort/type/boolean 不能在顶层求值（彼时 map 为空），改为惰性 getter
 Object.defineProperties(Variable.inputs, {
 	sort: {
 		get() {
@@ -343,9 +318,6 @@ Variable.initialize = function () {
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {
 		capture: true
 	});
-	// list select/record/popup/open 经 Vue 模板转发（Variable.vue @select/@record/@popup/@open → Variable.list*）
-	// name input 经 Vue 模板转发（Variable.vue @input → Variable.nameInput）
-	// sort/type write/input 经 Vue 模板转发（Variable.vue @write/@input → Variable.sortWrite/sortInput/typeWrite/typeInput）
 	on(this.inputs.boolean, 'input', this.valueInput!);
 	on(this.inputs.number, 'input', this.valueInput!);
 	on(this.inputs.string, 'input', this.valueInput!);
@@ -355,7 +327,6 @@ Variable.initialize = function () {
 	on(this.panel, 'keydown', this.panelKeydown!);
 	on(this.searcher, 'input', this.searcherInput!);
 	on(this.searcher, 'compositionend', this.searcherInput!);
-	// confirm 由 Variable.vue 的 @confirm 驱动（按钮由 WindowFrame 生成，注册表取不到）
 };
 
 for (const key of variableStateKeys) {

@@ -25,12 +25,9 @@ describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 		const vBar = parent.querySelector('.scroll-bar.vertical');
 		expect(hBar).toBeTruthy();
 		expect(vBar).toBeTruthy();
-		// 滚动条的宿主（`target`）是**元素数据**（`scroll-bar-api.ts` 的 `data.target`），
-		// 元素上不再有同名隐式属性——这里读元素数据（原先读 `hBar.target` 恒为 undefined）
 		expect(elementDataOf<{ target?: HTMLElement | null }>(hBar).target).toBe(target);
 		expect(elementDataOf<{ target?: HTMLElement | null }>(vBar).target).toBe(target);
 
-		// 拖拽 vertical thumb → scrollTop 更新 + userscroll 派发（marquee 同步链）
 		let userscrollCount = 0;
 		target?.addEventListener?.('userscroll', () => userscrollCount++);
 		const thumb = elementDataOf<{ thumb?: HTMLElement }>(vBar).thumb;

@@ -68,7 +68,6 @@ export const File: {
 	route: null
 };
 
-// 开发模式取 process.cwd()/Project，生产模式从 HTML 文件位置推导避免 process.cwd() 不准确
 function getFallbackRoot(): string {
 	if ((import.meta as { env?: { DEV?: boolean } }).env?.DEV) {
 		return typeof process !== 'undefined' && typeof process.cwd === 'function'
@@ -85,7 +84,6 @@ File.get = function (descriptor) {
 	} else if (descriptor.guid) {
 		path = (File.path as FileMethod)(this.getPath!(descriptor.guid));
 	} else if (descriptor.local) {
-		// local 指编辑器自带资源（Images/*.png、default.json 等），固定解析到编辑器根，避免被项目根污染；绝对路径（语言包）直接使用
 		const localPath = String(descriptor.local);
 		path = /^[A-Za-z]:[\\/]/.test(localPath)
 			? localPath
@@ -96,7 +94,6 @@ File.get = function (descriptor) {
 	const type = descriptor.type;
 	switch (type) {
 		case 'image': {
-			// 图像带 guid 时追加版本号到路径
 			if (descriptor.guid) {
 				const meta = Data.manifest.guidMap[descriptor.guid];
 				if (meta) path += `?ver=${meta.mtimeMs}`;
@@ -125,7 +122,6 @@ File.get = function (descriptor) {
 			);
 		}
 		default:
-			// 中文文件名经 URI 编码后 XHR 找不到文件，改用 Node fs.readFileSync 直接读磁盘；loaderDescriptor 硬编码 type='json' 含 .ts 脚本，JSON.parse 失败时回退包装对象
 			return new Promise((resolve, reject) => {
 				try {
 					const fs = nodeFs;
@@ -153,7 +149,6 @@ File.get = function (descriptor) {
 							try {
 								resolve(JSON.parse(content));
 							} catch (_parseError) {
-								// 非 JSON 文件回退包装对象，避免 Object.defineProperty 对字符串抛错
 								resolve({ code: content });
 							}
 						} else {
@@ -191,7 +186,6 @@ File.save = function (hint = true) {
 		}, 100);
 	}
 
-	// 未处理写入失败的情况
 	return YamiIpc.invoke.waitWriteFile();
 };
 
@@ -234,12 +228,6 @@ File.saveFile = function (meta) {
 
 File.planToSave = function (meta) {
 	if (meta instanceof Object) {
-		// ⚠️ 这里**必须**用 `@app/utils/array` 的自由函数形态。
-		// `changes` 是**普通数组**（`Manifest` 里 `changes: { value: [] }`），
-		// 没有 `append` / `remove` 方法 —— 写成 `changes.append(meta)` 会抛
-		// `TypeError: Data.manifest.changes.append is not a function`。
-		// 该形态全仓库几十处（`services/updater/*.ts` 全是 `append(changes, meta)`）——
-		// 写成方法调用是这处最容易犯的错，故在此钉住。
 		return append(Data.manifest.changes, meta);
 	} else {
 		throw new Error('Invalid file meta');
@@ -338,7 +326,6 @@ File.updateRoot = function (path) {
 	this.root = path.slice(0, index + 1);
 };
 
-// this.root 为空时回退编辑器资源根，并清理尾随斜杠避免双斜杠
 File.path = function (relativePath) {
 	const isAbsolute = /^[A-Za-z]:[\\/]/.test(relativePath);
 	if (isAbsolute) return relativePath;

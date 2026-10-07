@@ -35,7 +35,6 @@ export class Manifest {
 	fonts: FileMeta[] = [];
 	script: FileMeta[] = [];
 	others: FileMeta[] = [];
-	// 以下字段由 constructor 内 Object.defineProperties 挂载（非枚举）
 	declare project: Record<string, ProjectMeta>;
 	declare changes: FileMeta[];
 	declare code: string;
@@ -65,7 +64,6 @@ export class Manifest {
 		let i = metaList.length;
 		while (--i >= 0) {
 			const meta = metaList[i]!;
-			// 如果版本ID不一致，表示文件已被删除
 			if (meta.versionId !== versionId) {
 				this.deleteMeta(meta);
 			}

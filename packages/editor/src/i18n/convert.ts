@@ -1,10 +1,3 @@
-// 语言 JSON → vue-i18n messages 转换（扁平表）。
-// JSON 采用 vue-i18n 推荐的嵌套树写法：properties/components 两段均为嵌套对象。
-// properties 展平为点路径键；"值 vs 前缀"冲突键（既含字符串值又含子项）以 `name`
-// 子键存储字符串值，展平时提升为父级完整键（如 command.setVideo.name → command.setVideo）。
-// components 段 label/tip/content/options。
-// vue-i18n 经自定义 messageResolver 按完整键精确查询（+ legacy common fallback）。
-
 export type LocaleData = {
 	properties: Record<string, unknown>;
 	components: Record<string, Record<string, unknown>>;
@@ -12,19 +5,6 @@ export type LocaleData = {
 
 export type FlatMessages = Record<string, string>;
 
-// vue-i18n 把消息体当模板编译：`@` 是 linked message 语法（`@:key` / `@.modifier`）、
-// `|` 是复数分支分隔符、`{…}` 是插值/复数语法。文案里的普通 `@`（如 `@code` / `@event`）
-// 会让编译直接抛 `Message compilation error: Invalid linked format`；而 `t()` 是在 render
-// 里同步调用的，抛错会连带炸掉整个窗口渲染（Vue: Unhandled error during execution of
-// render function）。本项目的消息表只用字面文案、不使用 linked message / 复数，故在转换
-// 边界统一转义成 vue-i18n 的字面量写法（`{'@'}`），只影响 i18n 消息表：legacy DOM 本地化器
-// 读原始 JSON，tooltip 文案仍是原样的 `@code`。
-//
-// `{…}` 同理但**必须分两类**：只有下面这份白名单里的名字才是插值（由 `t(key, { name })`
-// 传入），其余都是给用户看的字面示例——`{Y}: Year` 这类时间格式说明、`{0, 1, 2, 3, ...}`
-// 这类取值列举。字面量的 `{`/`}` 各转义一次（中间的文字留在插值之外，逗号等字符就不会
-// 被当语法），否则轻则内容被吃掉（无参插值渲染成空串），重则直接编译报错
-// （`{0, 1, 2, 3, ...}` → Unterminated closing brace）。
 export const INTERPOLATION_NAMES: ReadonlySet<string> = new Set([
 	'dirName',
 	'actor',
@@ -35,7 +15,6 @@ export const INTERPOLATION_NAMES: ReadonlySet<string> = new Set([
 	'langname'
 ]);
 
-/** `{` / `}` 的字面量写法（vue-i18n 的 literal interpolation） */
 const literalBraces = (inner: string): string => `{'{'}${inner}{'}'}`;
 
 const escapeBraces = (value: string): string =>
@@ -47,7 +26,6 @@ const escapeBraces = (value: string): string =>
 const escapeMessage = (value: string): string =>
 	escapeBraces(value).replace(/@/g, "{'@'}").replace(/\|/g, "{'|'}");
 
-// 递归展开嵌套对象为点路径键；叶子 `name` 提升为父级完整键（值限定为字符串/数字/布尔）
 function flatten(obj: unknown, prefix: string, out: Record<string, string>): void {
 	if (obj === null || typeof obj !== 'object') return;
 	for (const key of Object.keys(obj as Record<string, unknown>)) {
@@ -66,7 +44,6 @@ function flatten(obj: unknown, prefix: string, out: Record<string, string>): voi
 	}
 }
 
-// components 段转换：label/tip/content + options（字符串直值/对象统一 name+label）
 function flattenComponents(
 	components: Record<string, Record<string, unknown>>,
 	out: Record<string, string>
@@ -85,7 +62,6 @@ function flattenComponents(
 			for (const optKey of Object.keys(options as Record<string, unknown>)) {
 				const opt = (options as Record<string, unknown>)[optKey];
 				if (typeof opt === 'string') {
-					// 字符串直值：同作 name 与 label（兼容旧 getLabel / 新 t 双习惯）
 					out[`components.${id}.options.${optKey}.name`] = escapeMessage(opt);
 					out[`components.${id}.options.${optKey}.label`] = escapeMessage(opt);
 				} else if (opt !== null && typeof opt === 'object') {
@@ -110,7 +86,6 @@ export function convertLocaleData(data: LocaleData): FlatMessages {
 	return flat;
 }
 
-// 展平 properties 为点路径键（保留中间对象键，与 legacy Local.setProperties 语义一致）
 export function flattenProperties(data: Record<string, unknown>): Record<string, string> {
 	const map: Record<string, string> = {};
 	const setProperty = (path: string, value: unknown) => {

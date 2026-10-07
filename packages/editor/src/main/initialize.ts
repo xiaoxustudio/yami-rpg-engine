@@ -83,7 +83,6 @@ Editor.initialize = async function (this: typeof Editor) {
 		const code = JSON.stringify(data);
 		this.config = data ?? {};
 		Object.defineProperty(this.config, 'code', { value: code });
-		// 尽早加载语言（与窗口簇加载并行），使异步组件挂载时语言已就绪，避免本地化缺失
 		await initI18n().catch(() => undefined);
 
 		clusterRef = await import('@app/tools/window-cluster');
@@ -93,12 +92,10 @@ Editor.initialize = async function (this: typeof Editor) {
 		const { Layout } = cluster;
 		if (this.config) this.checkForEditorUpdates!();
 
-		// 核心布局先就绪并立即显示 Home，不等待 145+ 个命令/工具弹窗组件挂载
 		initCore(cluster);
 		this.loadConfig!();
 		Layout.manager.switch('home');
 
-		// 后台：等待弹窗组件挂载后，再初始化标题栏事件、编辑器与工具
 		void Promise.resolve()
 			.then(() =>
 				Promise.race([
@@ -107,7 +104,6 @@ Editor.initialize = async function (this: typeof Editor) {
 				])
 			)
 			.then(async () => {
-				// 组件已挂载，重放本地化（首次 initI18n 在组件挂载前，延后窗口错过 localize）
 				await loadI18n(Editor.config?.language ?? '').catch(() => undefined);
 				cluster.Title.initialize!();
 				initEditors(cluster);

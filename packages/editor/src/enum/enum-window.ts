@@ -27,7 +27,6 @@ import type { YamiElement } from '@app/types/element-api';
 import type { YamiEvent } from '@app/types/editor-event';
 import { clone as deepClone } from '@app/utils/object';
 
-/** 元素注册表——由对应窗口 SFC 在模板里登记 */
 export const enumEls = createElementRegistry();
 
 export interface EnumItem {
@@ -112,11 +111,9 @@ interface EnumModule {
 	searcherInput: (this: YamiElement, event: InputEvent) => void;
 	confirm: (this: typeof Enum, event?: Event) => void;
 	apply: (this: typeof Enum, event?: Event) => void;
-	/** 由 store 桥接（见 stores/enum.ts 与 stores/__tests__/window-state.spec.ts 的 legacy 写入用例） */
 	mode: string;
 	data: unknown[] | null;
 	changed: boolean;
-	/** guid → 枚举项 id 的映射（monkey-patches.ts 用 `Enum.idMap![copy.id]` 判重） */
 	idMap: Record<string, unknown> | null;
 }
 
@@ -132,7 +129,6 @@ function ensureDomBound() {
 	if (Enum.list) return;
 	const list = enumEls.get('enum-list');
 	if (!list) return;
-	// `enumEls` 给的是 `HTMLElement`，而它上面的元素 API 由 `attachTreeListApi` 装配
 	Enum.list = list as TreeListElement;
 	Enum.panel = enumEls.get('enum-properties-flex') as YamiElement;
 	hide(Enum.panel!);
@@ -276,8 +272,6 @@ Enum.initialize = function (this: typeof Enum) {
 		capture: true
 	});
 	on(list, 'doubleclick', this.listDoubleclick, { capture: true });
-	// list select/record/open/popup 经 Vue 模板转发（Enum.vue @select/@record/@open/@popup → Enum.list*）
-	// name/value input 经 Vue 模板转发（Enum.vue @input → Enum.nameInput/valueInput）
 	on(this.inputs.note, 'input', this.noteInput);
 	on(this.inputs.note, 'compositionend', this.noteInput);
 	on(this.panel, 'keydown', this.panelKeydown);
@@ -599,7 +593,6 @@ Enum.listRecord = function (event: YamiEvent) {
 	const response = event.value;
 	switch (response.type) {
 		case 'rename': {
-			// 如果是字符串则执行操作否则进入默认分支
 			const { item, oldValue, newValue } = response;
 			if (getEnumStore().state.selected === item) {
 				write(Enum.inputs.name, newValue);
@@ -716,7 +709,6 @@ Enum.listPopup = function (event: YamiEvent & { clientX: number; clientY: number
 		});
 	}
 	if (selected && item.class === 'folder') {
-		// 旧写法 `item.element?.group` 恒为 undefined，导致菜单勾选从来不显示。
 		const group = folderGroupOf(getEnumStore().state.settings, item.id);
 		const submenu = [
 			{

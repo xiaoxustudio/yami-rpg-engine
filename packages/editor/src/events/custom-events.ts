@@ -1,17 +1,5 @@
-/**
- * 应用级自定义事件的**类型化通道**。
- *
- * 现状（`pnpm events:surface`）：`window` 上有 15 个自定义事件，载荷靠"往 `Event` 上挂字段"传递，
- * 派发/监听两侧各自写 `as Event & { … }`（全仓曾 70+ 处，已收口成 `createPayloadEvent`/`readPayload`）。
- * 本文件再往前一步：把**事件名与载荷形状**集中成一张表，提供 `emitCustom` / `onCustom`——
- * 事件名写错、载荷形状不符会在编译期暴露，而不是运行时静默拿不到值。
- *
- * 为什么不用 `mitt`（依赖已删）：自定义事件已经在"window 事件 + 元素注册表"这套机制上跑通，
- * 再引入总线只会多一条并行通道；类型化的收益不需要换机制就能拿到。
- */
 import { createPayloadEvent, readPayload } from '@ui-kit';
 
-/** 事件名 → 载荷形状（`undefined` 表示无载荷）。名册与 `pnpm events:surface` 的自定义事件列表一致。 */
 export interface CustomEventPayloads {
 	localizationchange: undefined;
 	localize: undefined;

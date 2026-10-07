@@ -4,19 +4,6 @@ import { nextTick } from 'vue';
 import { YMCommandList } from '@ui-kit';
 import { clear } from '@app/utils/element-utils';
 
-/**
- * 回归（实机报错，与用户日志逐帧一致）：
- * ```
- * TypeError: Cannot read properties of null (reading 'insertBefore')
- *   at insert → mountElement → processElement → patch → patchKeyedChildren
- *   → patchChildren → processFragment → patch → patchBlockChildren → patchElement
- * ```
- * 根因：`clear(el)` 对**Vue 渲染的列表**执行 `el.textContent = ''`，把行元素从 DOM 里摘掉，
- * Vue 的节点表随即失真；此后该组件**任何一次**更新都会以 null 容器 insert。
- *
- * 命令列表就是这条路径：`EventEditor.closeCommandList` / `windowClosed` 调 `clear(commandList)`。
- * 修法：`clear()` 遇到自带 `clear()` 的列表/面板时委托给它（清数据、由模板重渲染），不再动 DOM。
- */
 const options = {
 	command: {
 		parse: (item: Record<string, unknown>) => [{ color: 'normal' }, { text: String(item.id) }],
@@ -72,10 +59,8 @@ describe('clear()：Vue 渲染的列表不能被命令式 wipe', () => {
 
 		clear(el);
 		await nextTick();
-		// 行由模板收回（数量归零），而不是留下"Vue 不知道已消失"的 DOM
 		expect(el.querySelectorAll('.command-item').length).toBe(0);
 
-		// 关键断言：wipe 之后的下一次更新（旧实现这里抛 insertBefore of null）
 		el.write([cmd('a'), cmd('c')]);
 		await nextTick();
 		await nextTick();

@@ -36,10 +36,6 @@ type ScriptFile = {
 	path: string;
 };
 
-/**
- * `Data` 单例。装载后 26 个数据字段非空；`close()` 用 Reflect.set 清空，字面量占位写 `null!`。
- * 已知的更外层问题：`DataEntry` 未按数据类拆分（读出来是 unknown），与 types/shapes.ts 的 DynamicShape 同根。
- */
 interface DataModule {
 	// oxlint-disable-next-line no-explicit-any
 	loadAll: () => Promise<any>;
@@ -72,11 +68,7 @@ interface DataModule {
 	parseGUID: (meta: { path: string }) => string;
 	loadScript: (file: ScriptFile) => Promise<void>;
 	jsonReplacer: (key: string, value: unknown) => unknown;
-	// 装载后非空（正常状态）；`close()` 用 Reflect.set 清回 null，故字面量占位写 `null!`。
 	manifest: Manifest;
-	// `variables` 是变量树数组，`createVariableMap()` 用 `defineProperty` 在其上挂一个查表对象。
-	// 该属性刻意不叫 `map` —— 与 `Array.prototype.map` 同名会让「数组方法 ∩ 查表对象」在类型上
-	// 无法并存（赋一个普通数组都会因 `map` 不兼容而报错）。改名后读侧零断言。
 	variables: VariableNode[] & {
 		scrollTop?: number;
 		mapById?: Record<string, VariableNodeShape>;
@@ -192,10 +184,6 @@ Data.loadFile = function (this: typeof Data, filename: string) {
 		if (!data) {
 			throw new SyntaxError(path);
 		}
-		// 「数据文件条目」（只有 guid/path/dataMap），比完整 `FileMeta` 少 file/group/versionId 等
-		// 运行期反引用字段。按 `ProjectMeta` 声明（`dataMap: unknown`）后 `FileMeta` 反向满足它，
-		// 因此写进 `guidMap` 只需**单次**断言 —— 它只作 `File.planToSave` / `File.saveFile` 的入参，
-		// 不参与 guidMap 的元数据查询。
 		const meta: ProjectMeta = {
 			guid: filename,
 			path: path,
@@ -266,7 +254,6 @@ Data.close = function (this: typeof Data) {
 Data.createEasingItems = function (this: typeof Data) {
 	let items = this.easings.items;
 	if (items === undefined) {
-		// 把属性写入数组中不会被保存到文件
 		items = this.easings.items = [];
 		const easings = this.easings;
 		const length = easings.length;
@@ -572,7 +559,6 @@ Data.registerScenePresets = function (this: typeof Data, sceneId: string) {
 			}
 		};
 		setMap(scene.objects);
-		// 如果发生了改变，立即写入UI文件，避免重新打开工程时影响已有预设元素的ID
 		if (changed) {
 			File.planToSave!(Data.manifest.guidMap[sceneId]);
 			File.save!(false);
@@ -627,7 +613,6 @@ Data.registerUiPresets = function (this: typeof Data, uiId: string) {
 			}
 		};
 		setMap(ui.nodes);
-		// 如果发生了改变，立即写入UI文件，避免重新打开工程时影响已有预设元素的ID
 		if (changed) {
 			File.planToSave!(Data.manifest.guidMap[uiId]);
 			File.save!(false);
@@ -663,7 +648,6 @@ Data.saveManifest = function (this: typeof Data) {
 	if (manifest?.changed) {
 		manifest.changed = false;
 		const copy = Data.filterManifest(manifest as Manifest & Record<string, unknown>);
-		// replacer 剥离运行期反引用键（dataMap、file、group、manifest、code 等），避免循环
 		const json = JSON.stringify(copy, Data.jsonReplacer, 2);
 		const last = manifest.code;
 		if (json && json !== last) {
@@ -680,7 +664,6 @@ Data.saveManifest = function (this: typeof Data) {
 	return null;
 };
 
-// JSON.stringify replacer：丢弃 dataMap/file/group/manifest/code/meta/project/changes/metaList 运行期反引用键，阻断循环
 Data.jsonReplacer = function (key: string, value: unknown) {
 	switch (key) {
 		case 'dataMap':

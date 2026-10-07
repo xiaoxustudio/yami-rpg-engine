@@ -1,7 +1,6 @@
 import { AudioManager } from './audio-manager.ts';
 import { remove } from '@app/utils/array';
 
-// HTMLAudioElement 运行时挂载的扩展字段（getAudio 内赋值）
 interface MultipleAudioElement extends HTMLAudioElement {
 	onStop: () => void;
 	source: MediaElementAudioSourceNode;

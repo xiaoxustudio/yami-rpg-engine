@@ -4,11 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { localizeDomComponents } from '../dom-localizer.ts';
 import { templateLocalizedKeys } from '../template-localized.ts';
 
-/**
- * `template-localized.ts` 是**生成物**，本 spec 从源码反推同一集合与之比对（防漂移）；
- * 并验证本地化器对这些键**真的跳过 DOM 查询**。
- */
-const ROOT = join(__dirname, '../../..'); // packages/editor
+const ROOT = join(__dirname, '../../..');
 const SRC = join(ROOT, 'src');
 
 const readVues = (): { f: string; src: string }[] => {
@@ -26,7 +22,6 @@ const readVues = (): { f: string; src: string }[] => {
 	return out;
 };
 
-/** 模块侧（元素工厂/数据模块）：与生成器同源——`applyLocalizedItems` 也算"代码已承担" */
 const readModules = (): { f: string; src: string }[] => {
 	const out: { f: string; src: string }[] = [];
 	const walk = (p: string): void => {
@@ -50,14 +45,9 @@ const deriveKeys = (): string[] => {
 	const components = JSON.parse(
 		readFileSync(join(ROOT, 'Project/Locales/en-US.English.json'), 'utf8')
 	).components as Record<string, Record<string, unknown>>;
-	// editor 的 SelectBox 包装器自己按 `components.<id>.options` 生成选项名；
-	// 该通用逻辑存在时，`<SelectBox id="<键>">` 的 options 由宿主组件承担（与生成器同源）。
 	const selectBoxSrc = readFileSync(join(SRC, 'components/common/SelectBox.vue'), 'utf8');
 	const selectBoxGeneric = selectBoxSrc.includes('components.${id}.options');
 
-	// 倒排索引：一次扫描建「id → 文件」「components.<键>. 片段 → 文件」两张表，
-	// 避免每个键都对全量 vue 做两次 filter 的 O(键 × 文件 × 长度) 扫描
-	// （键集合是 locale 里的 2000+ 条，纯线性化后才不会在全量并发下超时）。
 	const push = (
 		map: Map<string, { f: string; src: string }[]>,
 		key: string,
@@ -70,7 +60,6 @@ const deriveKeys = (): string[] => {
 	const idCarriers = new Map<string, { f: string; src: string }[]>();
 	const messageCarriers = new Map<string, { f: string; src: string }[]>();
 	for (const v of vues) {
-		// 同一文件对同一键的多次命中只登记一次（与原 `vues.filter(...).length` 的「按文件」语义一致）。
 		const ids = new Set<string>();
 		for (const m of v.src.matchAll(/id="([^"]*)"/g)) ids.add(m[1]);
 		for (const id of ids) push(idCarriers, id, v);

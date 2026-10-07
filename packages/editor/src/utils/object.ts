@@ -1,8 +1,3 @@
-/**
- * 本文件过去**同时**导出朴素 `clone` 并把它挂到全局 `Object.clone`（另一份更稳健的实现）。
- * 现在只保留**一份**实现（原 `Object.clone` 那份：处理循环引用与"纯对象"判定），
- * 由调用点显式 import——不再给内置 `Object` 打补丁。
- */
 const { isArray } = Array;
 
 const isPlainObject = (value: unknown): boolean => {

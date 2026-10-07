@@ -15,22 +15,9 @@ export interface LocalComponentItem {
 const saveTagExp = /^#(\S+)$/;
 const titleTagExp = /\$([\S ]+)(?=\n|$)/g;
 
-/**
- * `save 别名 → 条目` 索引。tip 里写作 `"#deviation"` 时，正文取自这里。
- *
- * 🔴 它**不能**只在扫描循环中途存在：tip 的承载者是模板 `v-tip`，
- * `parseLocalTip` 的调用点因此位于扫描循环**之外**（指令 `mounted` / `updated`），
- * 而别名持有者（`particleLayer-anchor-x-1`，`save: "deviation"`）可能已被
- * 模板承担而**不在扫描面内**。若索引只在循环里累积、循环末尾清空，
- * 语言表里 19 条 `"#deviation"` tooltip 会静默丢掉正文，只剩一行加粗标题。
- *
- * ⇒ 由 `localizeDomComponents` 在扫描**之前**按全表（含被跳过的键）建立并保留。
- * 回归用例：`__tests__/save-alias.spec.ts`。
- */
 let saveItems: Record<string, LocalComponentItem> = {};
 
 export function setLocalElement(element: HTMLElement, item: LocalComponentItem): void {
-	// 外壳元素（window-frame / text-box / select-box）带本仓库装配的元素 API
 	const target = element as YamiElement;
 	if (item.save !== undefined) {
 		saveItems[item.save] = item;
@@ -76,13 +63,8 @@ export function parseLocalTip(tip: string, title: string): string {
 }
 
 export function localizeDomComponents(components: Record<string, LocalComponentItem>): void {
-	// 模板已承担的键（t()/v-tip）跳过 DOM 查询，扫描面 2130 → ~200
 	const entries = Object.entries(components ?? {});
 
-	// `#别名` 索引按**全表**建立——包括下面会被跳过的键。
-	// 原因：`v-tip` 指令在扫描循环之外调用 `parseLocalTip`，
-	// 而别名持有者本身可能已被模板承担（`particleLayer-anchor-x-1` 就是这种）。
-	// 该表**跨调用保留**（不再在末尾清空），否则指令侧解析不到。
 	saveItems = {};
 	for (let i = 0; i < entries.length; i++) {
 		const item = entries[i][1];
@@ -112,5 +94,4 @@ export function localizeDomComponents(components: Record<string, LocalComponentI
 			}
 		} catch {}
 	}
-	// 注意：**不要**在这里 `saveItems = {}`——见函数开头的注释与 `save-alias.spec.ts`
 }

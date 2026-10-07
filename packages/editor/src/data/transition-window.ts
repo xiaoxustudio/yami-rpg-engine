@@ -75,18 +75,11 @@ const EasingBase = {
 	changed: false
 };
 
-/**
- * 延迟绑定槽：由 `initialize()` 填充（此前读到的是 undefined）。
- */
 interface EasingSlots {
 	data: EasingData[] | null;
 	list:
 		| (YamiElement & {
 				// oxlint-disable-next-line no-explicit-any
-				// 全仓其它 `read` 声明一律是 `unknown` 或精确类型（`command-tip.ts:104`
-				// 的 `read(...args: unknown[]): unknown`、`custom-command-window.ts:57` 的
-				// `read(): CustomCommandData | null` …），只有这一处写成 `Record<string, any>`
-				// —— 孤例。改成 `unknown` 后唯一的读点（`Easing.pointInput`）用一次单断言收窄。
 				read: () => Record<string, unknown>;
 				rename: (item: EasingData | null) => void;
 				restoreSelection: () => void;
@@ -181,12 +174,6 @@ function ensureDomBound() {
 	if (Easing.list) return;
 	const list = dataEls.get('easing-list') as YamiElement;
 	if (!list) return;
-	// 形状里 `list` 是 `EasingSlots.list`（一个带 9 个成员的联合类型，见上方 `:83`），
-	// 不去断言时 tsc 的真实报错是 **缺那 9 个成员**
-	// （`read` / `rename` / `restoreSelection` / `addNodeTo` / `deleteNode` / `select` / `update` /
-	// `saveSelection` / `clear`），与 `null` 无关。原因是刚取出来的是**裸 `YamiElement`**
-	// （那 9 个成员由 ui-kit 的列表组件在运行期挂上，紧随其后的 190–193 行又补了 4 个）。
-	// ⇒ 按手法库第 6 条用**交叉断言**：保留 `YamiElement`、只补缺口那一支，`unknown` 跳板不再需要。
 	Easing.list = list as NonNullable<typeof Easing.list>;
 	Easing.curve = registryElement<EasingCanvasShape>(dataEls, 'easing-curve-canvas');
 	Easing.preview = registryElement<EasingCanvasShape>(dataEls, 'easing-preview-canvas');
@@ -211,13 +198,11 @@ function isDrawableImage(
 	return true;
 }
 
-// 用箭头函数绑定 Easing 词法作用域，避免裸调 initialize() 时 this===undefined 炸 （initialize.js 用 .call(Easing) 绑 this，但若别处裸调会丢上下文；箭头函数根除问题）
 Easing.initialize = () => {
 	ensureDomBound();
 	if (!Easing.list) return;
 	Easing.startPoint = { x: 0, y: 0 };
 	Easing.endPoint = { x: 1, y: 1 };
-	// 显式置空：形状里声明的就是 `null`，运行时默认的 `undefined` 会被旧的 `=== null` 守卫漏掉
 	Easing.pointImage = null;
 
 	const { list } = Easing;
@@ -301,10 +286,7 @@ Easing.initialize = () => {
 	on(dataEls.get('easing') as YamiElement, 'closed', Easing.windowClosed);
 	on(dataEls.get('easing-points-grid') as YamiElement, 'change', Easing.dataChange);
 	on(list, 'keydown', Easing.listKeydown);
-	// list select/open/popup 经 Vue 模板转发（Easing.vue @select/@open/@popup → Easing.list*）
-	// list change 经 Vue 模板转发（Easing.vue @change → Easing.dataChange）
 	on(dataEls.get('easing-mode') as YamiElement, 'input', Easing.modeSelect);
-	// 缓动点控件批量绑 input——改按 id 列表读 dataEls
 	registryElements(dataEls, [
 		'easing-points-0-x',
 		'easing-points-0-y',
@@ -331,7 +313,6 @@ Easing.initialize = () => {
 		on(Easing.curve, 'wheel', Easing.curveWheel, { passive: true });
 		on(Easing.curve, 'blur', Easing.curveBlur);
 	}
-	// confirm 由 Easing.vue 的 @confirm 驱动（按钮由 WindowFrame 生成）
 };
 
 (() => {
@@ -638,7 +619,6 @@ Easing.drawCurve = function (this: typeof Easing) {
 	}
 
 	const image = this.pointImage;
-	// 标记图是异步加载的：就绪前（或加载失败）跳过整段标记绘制，而不是让 drawImage 抛错中断渲染
 	if (!isDrawableImage(image)) return;
 	for (let i = 0; i < pLength; i++) {
 		const point = points[i];
@@ -664,8 +644,6 @@ Easing.drawPreview = function (this: typeof Easing) {
 	const width = canvas.width;
 	const height = canvas.height;
 	const image = this.previewImage;
-	// previewImage 在 open() 同步建好、windowClosed() 置空；这里同样用守卫而不是非空断言，
-	// 避免极端时序（timer 回调落在关闭之后）下 `image.height` 直接抛错
 	if (!image) return;
 	const size = image.height;
 	const halfsize = size / 2;
@@ -779,20 +757,16 @@ Easing.selectPointByCoords = function (this: typeof Easing, mouseX: number, mous
 
 Easing.createPointImage = function (this: typeof Easing) {
 	if (isDrawableImage(this.pointImage)) return;
-	// File.get 按 path 缓存 in-flight promise：并发/重复调用不会重复发请求
 	File.get!({
 		local: 'Images/curve_mark.png',
 		type: 'image'
 	})
 		.then((image: CanvasImageSource) => {
-			// 加载失败时不落缓存，下次 open 会重试；成功则补一次重绘（否则要等下一个 timer tick）
 			if (!isDrawableImage(image)) return;
 			this.pointImage = image;
 			this.requestRendering();
 		})
-		.catch(() => {
-			// 读取失败：保持 pointImage 为空，由 isDrawableImage 守卫跳过标记绘制
-		});
+		.catch(() => {});
 };
 
 Easing.createPreviewImage = function (this: typeof Easing) {
@@ -1074,8 +1048,6 @@ Easing.pointInput = function (this: YamiElement, _event: YamiEvent) {
 	const end = keys.length - 1;
 	let node = Easing.list!.read();
 	for (let i = 0; i < end; i++) {
-		// `list.read()` 返回浅层的 `Record<string, unknown>`；这里按 `-` 分段逐层下钻，
-		// 每层都是同一种「具名对象」。用一次单断言收窄（不是双重断言）。
 		node = node[keys[i]] as Record<string, unknown>;
 	}
 	const property = keys[end];
@@ -1158,7 +1130,6 @@ Easing.curvePointerdown = function (this: typeof Easing, event: PointerEvent & E
 
 Easing.curveWheel = function (this: typeof Easing, event: WheelEvent) {
 	if (!this.dragging && event.deltaY !== 0) {
-		// 组内成员改读 proxy.group
 		const radios =
 			(radioProxyMap['easing-scale'] as RadioProxyElement | undefined)?.group ?? [];
 		const length = radios.length;
@@ -1167,8 +1138,6 @@ Easing.curveWheel = function (this: typeof Easing, event: WheelEvent) {
 				const step = event.deltaY < 0 ? -1 : 1;
 				const radio = radios[i + step];
 				if (radio !== undefined) {
-					// 交叉断言：交叉的一支就是源类型本身（`RadioProxyElement`），
-					// 另一支补上运行期真实存在的行处理器 `pointerdown`。
 					(
 						radio as RadioProxyElement & { pointerdown: (event: WheelEvent) => void }
 					).pointerdown(event);
@@ -1193,14 +1162,8 @@ Easing.pointerup = function (this: typeof Easing, event?: PointerEvent) {
 		return;
 	}
 	if (event === undefined) {
-		// 交叉断言（同上面那处）：`dragging` 是拖拽起始事件，运行期就是一个 PointerEvent。
 		event = dragging as EasingDrag & PointerEvent;
 	}
-	// `relate` 是**模块级**工具（`@app/utils/element-utils`，同 `animation-pointer` / `animation-list`
-	// 的拖拽收尾同一手法）：判「这次 pointerup 是不是同一个指针」。
-	// ⚠️ 原先写的是 `this.relate(...)`，而 `Easing` 上从来没有这个成员（历史里也从没赋过）
-	// —— 那句靠 `this: typeof Easing & { relate: … }` 的断言蒙过去，运行期一拖拽完就抛
-	// `TypeError: this.relate is not a function`（2026-10-05 实机）。断言去掉，直接调真函数。
 	if (relate(dragging, event)) {
 		this.dragging = null;
 		window.removeEventListener('pointerup', this.pointerup);
@@ -1263,7 +1226,6 @@ Easing.confirm = function (this: typeof Easing, _event: YamiEvent) {
 	Window.close!('easing');
 }.bind(Easing);
 
-// 三次方曲线映射表类 - 必须使用Float64 因为Float32会导致部分点参数出现绘制BUG:线条变粗 Chromium78-89都存在这个BUG而Chromium69是正常的
 Easing.CurveMap = class CurveMap extends Float64Array {
 	count!: number;
 
@@ -1334,12 +1296,10 @@ Easing.EasingMap = (function IIFE() {
 					}
 				}
 			}
-			// 尾数不一定是精确值 因此需要设置为1
 			this[SCALE] = 1;
 			return this;
 		}
 
-		// 映射（改名为 ease 避开基类 Float64Array.map 协变契约）
 		ease(time: number): number {
 			return this[round(time * SCALE)];
 		}

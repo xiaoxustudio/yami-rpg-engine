@@ -3,8 +3,6 @@ import type { VariableNodeShape } from '@app/stores/data';
 
 export function getVariable(id: string | number | null | undefined): VariableNodeShape | undefined {
 	if (id == null) return undefined;
-	// `Data.variables.mapById` 是 `createVariableMap()` 用 `defineProperty` 挂上的查表对象。
-	// 刻意避开 `map` 这个与 `Array.prototype.map` 同名的键，读侧因此无需任何断言。
 	return Data.variables?.mapById?.[id];
 }
 

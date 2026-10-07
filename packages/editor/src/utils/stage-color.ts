@@ -22,7 +22,6 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 export function safeHex(value: unknown, fallback: string): string {
 	if (typeof value !== 'string') return fallback;
 	if (/^[0-9a-fA-F]{8}$/.test(value)) return value;
-	// 6 位视为不透明：alpha 补 ff，而不是留一个 NaN
 	if (/^[0-9a-fA-F]{6}$/.test(value)) return `${value}ff`;
 	return fallback;
 }
