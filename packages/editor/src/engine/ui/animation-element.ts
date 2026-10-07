@@ -164,11 +164,6 @@ uiElClasses.Animation = class AnimationElement extends uiElClasses.Element! {
 		if (player !== null) {
 			GL.alpha = this.opacity;
 			const gl = GL;
-			// 这四个值每帧由 `UIEngine.updateTransform` 写进遗留单例的 `this.scrollLeft…`
-			// （`ui-engine.ts` 那四行），store 侧的 `scrollLeft…` 是**委托该单例**的访问器
-			// （见 `stores/ui.ts` 的说明）。早先 store 里是同名 `shallowRef` 且没有写入方，
-			// 配合这里的 `!` 断言会在 `project(gl.flip, sr - sl, sb - st)` 上抛错（2026-09-18）。
-			// 现在数据源已接通，`?? 0` 只是防御性兜底——即便某帧顺序异常也只是渲不出内容，不会崩。
 			const sl = getUIStore().scrollLeft ?? 0;
 			const st = getUIStore().scrollTop ?? 0;
 			const sr = getUIStore().scrollRight ?? 0;

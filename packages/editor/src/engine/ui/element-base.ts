@@ -5,20 +5,6 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { radians } from '@app/utils/math';
 import { append, remove } from '@app/utils/array';
 
-/**
- *
- * 此前这里是**空接口 + `[k: string]: any`** —— 本文件 `:249` 那条 2026-09-18 的注释写得很清楚：
- * 「索引签名让 tsc 在这一层**完全瞎**」。本轮按实测把它收成 7 个成员：把索引签名摘掉后，
- * `tsc` 报的 **20 条 TS2339 全部在这一个文件里**，点名要的正是这 7 个
- * （`parent`9 · `connect`3 · `resize`3 · `connected`2 · `destroy` · `disconnect` · `draw`）。
- *
- * `draw` 声明成**可选**，与上面 `requestResizing` 同一处理（`:54`）：基类实例本身没有它
- * （只有具体元素类有），而 `remove()` 会把 `this`（基类实例）传进 `this.parent!.children`
- * 这类 `UIElementShape[]` 里。调用点配 `?.`（`:217`）—— 实际 children 全是具体元素类，
- * 所以那条路径运行期不会走到，`?.` 只是把「类型看不见的事实」写成不崩的形态。
- *
- * 写成**函数属性**而不是方法简写 —— 与同文件 `:16` / `:54` 的写法一致。
- */
 interface UIElementShape {
 	parent: UIParentShape | null;
 	connected: boolean;
@@ -44,24 +30,10 @@ interface UIParentShape {
 	opacity: number;
 	matrix: Matrix;
 	children: UIElementShape[];
-	/**
-	 * 原先靠 `[k: string]: any` 索引签名兜着。基类字段本身就是 `UIParentShape | null`（`:61`）。
-	 */
 	parent: UIParentShape | null;
-	/**
-	 * 请求重算尺寸 —— **只有窗口类元素**有它：调用点 `remove()` 在
-	 * `this.parent instanceof uiElClasses.Window` 之后才调（`:257`）。
-	 * 声明成可选即如实描述；调用点配 `?.`（那个 `instanceof` 守卫就是它安全的理由）。
-	 */
 	requestResizing?: () => void;
 }
 
-/**
- * 元素的**变换数据**形状 —— 就是 `element-classes.ts` 的 `UIElementTransform`。
- *
- * 原先这里是一份**逐字抄写的第二份声明**（`element-classes.ts` 那边写着「字段照抄原处（15 个）」）：
- * 同一形状两份声明，任一侧加字段都会漂移。改为别名，只留一处。
- */
 type TransformShape = UIElementTransform;
 
 /**
@@ -99,19 +71,7 @@ uiElClasses.Element = class UIElement {
 	height: number;
 	matrix: Matrix;
 	opacity: number;
-	/**
-	 * 真正声明它的是 `image-element` / `text-element` / `progress-bar-element` / `video-element`
-	 * （各自 `blend: string`）。所以这里用可选 + `declare`（与上面 `node` / `resize` 同一手法）：
-	 * 只说「基类方法会读到一个可能是 string 的 blend」，**不产生任何运行期字段**（无 defineProperty、
-	 * 不改实例自有键集合），也不新增断言 —— 原先读侧写的是
-	 * `(this as unknown as { blend: string }).blend`。
-	 */
 	declare blend?: string;
-	/**
-	 * 元素自己的变换数据。**非空**：构造函数保证（`data.transform` 为 `null`/缺省时补
-	 * `createElementTransform()` 的恒等变换），所以读点一律直接解引用。
-	 * 根实例是唯一的「没有自己的变换」的元素 —— 它拿到的是一份恒等变换（见构造函数注释）。
-	 */
 	transform: TransformShape;
 	parent: UIParentShape | null;
 	children: UIElementShape[];
@@ -126,16 +86,6 @@ uiElClasses.Element = class UIElement {
 		this.height = 0;
 		this.matrix = new Matrix();
 		this.opacity = 1;
-		// **每个实例都必须有变换数据——根实例也不例外。**
-		//
-		// `root-element.ts` 的 `RootElement` 原先显式传 `{ transform: null }`（根不参与变换链），
-		// 旧写法 `data.transform as TransformShape` 把这个 null 断言掉了 ⇒「实例一定有 transform」
-		// 在运行期是假的：`ui-engine.ts` 的父链旋转累加走到根就抛
-		// `Cannot read properties of null (reading 'rotation')`（每帧一次，控制点画不出来）。
-		//
-		// 这里按「漏传/显式传 null 都补一份恒等变换」兜底，让 `transform: TransformShape` 这句声明
-		// **结构上成立** —— 于是任何读点都不需要 `!`（与 `element-classes.ts` 顶部对 `matrix`
-		// 的判定同一手法：不变式成立就收紧类型，而不是给读点补一批 `!` 蒙过去）。
 		this.transform = data.transform ?? createElementTransform();
 		this.parent = null;
 		this.children = [];
@@ -281,10 +231,6 @@ uiElClasses.Element = class UIElement {
 
 	appendChild(element: UIElementShape) {
 		if (element && append(this.children, element)) {
-			// ⚠️ `children` 是**普通数组**（`this.children = []`），没有 `remove` 方法；
-			// 必须与下一行同形的自由函数 `remove(arr, value)`。
-			// 写成 `children.remove(x)` 会抛 `... .remove is not a function`
-			// —— `UIElementShape` 是 `[k: string]: any`，所以 tsc 永远看不见（2026-09-18）。
 			if (element.parent instanceof uiElClasses.Element!)
 				remove(element.parent!.children, element);
 			element.parent = this;
@@ -310,8 +256,6 @@ uiElClasses.Element = class UIElement {
 				if (!element.connected) element.connect();
 				element.resize();
 			}
-			// `tryUpdateReferenceElements` 只有根元素有（`UIElementInstance` 是共同视图 ⇒ 可选）；
-			// 这里拿的就是 `getUIStore().root` ⇒ 按本仓惯例用 `!`（保持不变式破坏时当场抛错的行为）
 			getUIStore().root!.tryUpdateReferenceElements!(this);
 		}
 	}

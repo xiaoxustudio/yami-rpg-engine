@@ -38,16 +38,12 @@ const initialize = function (this: UIShape) {
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
-	// 搜索框也走 `registryElement`：`UIShape.searcher` 在 `YamiElement` 之上换了更精确的 `input`
-	// （`HTMLElement` → `HTMLInputElement`）⇒ 裸 `as YamiElement` 不再够用，而这正是那处单点收窄的用途。
 	this.searcher = registryElement<UIShape['searcher']>(uiEls, 'ui-searcher')!;
 	const oldList = this.list;
-	// 列表句柄走 `registryElement`（单点收窄；返回 `T | null`）⇒ 补可见的 `!`（同 `ui-singleton.ts` 那处）
 	this.list = registryElement<UIListNodeShape>(uiEls, 'ui-list')!;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	// `page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = uiEls.get(
 		'ui-element'
 	) as YamiElement;
@@ -73,7 +69,6 @@ const initialize = function (this: UIShape) {
 		},
 		list: []
 	};
-	// 控制点按优先级从低到高排序
 	points.list = [
 		points.rotate.TL,
 		points.rotate.TR,
@@ -96,11 +91,8 @@ const initialize = function (this: UIShape) {
 	}).then((image: { guid?: string; [k: string]: unknown }) => {
 		if (!image) return;
 		image.guid = 'ui:control-point';
-		// 「先写字段再解引用」不再能靠 `any` 蒙过去 —— 用局部变量表达"刚建好的这个"。
-		// **顺序与原实现逐字一致**（先赋值、再设 protected），不加断言、不改行为。
 		const texture = new ImageTexture(image);
 		this.controlPointTexture = texture;
-		// `base` 在类型上可空（`ImageTexture` 的声明如此），而这里刚构造完、一定有 ——
 		texture.base!.protected = true;
 	});
 
@@ -161,13 +153,6 @@ const initialize = function (this: UIShape) {
 	this.padding = 800;
 
 	this.matrix = new Matrix();
-	// ⚠️ 必须把**同一个实例**交给 store：相机每帧改的是 `this.matrix`
-	// （`ui-engine.ts` 的 `updateTransform` 里 `this.matrix.reset().scale().translate()`），
-	// 而**所有绘制**读的是 `getUIStore().matrix`（`element-base.ts` 的
-	// `gl.matrix.set(getUIStore().matrix!)…`、`ui-engine.ts` 的坐标轴/控制点）。
-	// store 里那个 `new Matrix()` 兜底**没有写入方**，于是绘制一直用一个
-	// 永远停留在单位矩阵的副本 —— 表现是「画面能出来、但平移/缩放完全不动、且不报错」
-	// （单位矩阵是合法值，所以连异常都没有）（2026-09-18 实测定位）。
 	getUIStore().matrix = this.matrix;
 
 	this.inspectorTypeMap = {
@@ -185,17 +170,11 @@ const initialize = function (this: UIShape) {
 	};
 
 	this.searcher.addCloseButton();
-	// `addKeydownFilter` 全仓没有类型声明（`ui-kit` 的元素契约里也没有）⇒ 按 `scene-window.ts:614`
-	// 与 `stores/browser.ts:394` 的既有写法配 `?.`（那两个调用点对同一成员就是这么写的）。
 	this.searcher.addKeydownFilter?.();
 
 	const { list } = this;
 	getListConfig(list).removable = true;
 	getListConfig(list).renamable = true;
-	// 绑 `this.nodes`：`ui-file.ts` 的 `load()` 会把它与 store 的 `nodes` 同步写入，
-	// 两者始终是同一个数组。这里保持绑 `this.nodes` 是**刻意**的 ——
-	// TreeList 的 `bind` 只接受精确的 `TreeItem[]`，直接绑 `getUIStore().nodes`
-	// 需要一层难看的断言；既然两者同源，就没有必要付那个代价（2026-09-18）。
 	list.bind(() => this.nodes);
 
 	History.processors['ui-object-create'] = (
@@ -274,13 +253,10 @@ const initialize = function (this: UIShape) {
 		data: { editor: DynamicShape; target: UINodeShape; anchorX: number; anchorY: number }
 	) => {
 		const { editor, target, anchorX, anchorY } = data;
-		// 历史记录里的目标一定是**已装配**的节点 ⇒ `instances` 存在
-		// （它是 `ui-prefab.ts` 挂上的运行期成员，数据形状里可选，见 `element-classes.ts` 顶部）。
 		const { transform } = target;
 		const instances = target.instances!;
 		data.anchorX = transform.anchorX;
 		data.anchorY = transform.anchorY;
-		// transform.anchorX = anchorX transform.anchorY = anchorY
 		instances.setProperty('transform-anchorX', anchorX);
 		instances.setProperty('transform-anchorY', anchorY);
 		if (editor.target === target) {
@@ -300,7 +276,6 @@ const initialize = function (this: UIShape) {
 		const instances = target.instances!;
 		data.x = transform.x;
 		data.y = transform.y;
-		// transform.x = x transform.y = y
 		instances.setProperty('transform-x', x);
 		instances.setProperty('transform-y', y);
 		if (editor.target === target) {
@@ -320,7 +295,6 @@ const initialize = function (this: UIShape) {
 		const instances = target.instances!;
 		data.width = transform.width;
 		data.height = transform.height;
-		// transform.width = width transform.height = height
 		instances.setProperty('transform-width', width);
 		instances.setProperty('transform-height', height);
 		if (editor.target === target) {
@@ -339,7 +313,6 @@ const initialize = function (this: UIShape) {
 		const { transform } = target;
 		const instances = target.instances!;
 		data.rotation = transform.rotation;
-		// transform.rotation = rotation
 		instances.setProperty('transform-rotation', rotation);
 		if (editor.target === target) {
 			write(editor, { rotation });
@@ -356,7 +329,6 @@ const initialize = function (this: UIShape) {
 	window.addEventListener('keydown', Reference.getKeydownListener!(list));
 	on(this.page, 'resize', this.windowResize!);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored!);
-	// head/toolbar/zoom/screen(keydown/wheel)/marquee(pointerdown/doubleclick) 经 Vue 模板转发（LayoutPanel @pointerdown/@input/@focus/@keydown/@wheel）
 	on(this.screen, 'userscroll', this.screenUserscroll!);
 	on(this.screen, 'blur', this.screenBlur!);
 	on(this.marquee, 'pointermove', this.marqueePointermove!);
@@ -368,12 +340,9 @@ const initialize = function (this: UIShape) {
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {
 		capture: true
 	});
-	// list select/record/popup/open 经 Vue 模板转发（LayoutPanel @select/@record/@popup/@open → UI.list*）
-	// list change 经 Vue 模板转发（LayoutPanel @change → UI.listChange）
 	on(elementDataOf<{ page?: HTMLElement | null }>(list).page, 'resize', this.listPageResize!);
 };
 
-/** 本域提供的成员表（④-3：域模块只**提供**成员对象；装配由 `ui-members.ts` 汇总、`ui-window.ts` 挂上） */
 export type UIInitializeMembers = { initialize: (this: UIShape) => void };
 
 export const uiInitializeMembers: UIInitializeMembers = { initialize };

@@ -30,9 +30,6 @@ const open = function (this: UIShape, context: UIContextShape) {
 		getUIStore().state = 'open';
 		this.context = context;
 		this.meta = meta;
-		// 同 `load()` 里的 root/nodes/history：`meta` 的读取方已迁到 `getUIStore()`
-		// （`ui-events.ts` 的 `File.planToSave!(this.meta)`、`usePresetElementWindow.ts:87`），
-		// 只写 `this.meta` 会让它们永远读到 null。
 		getUIStore().meta = meta;
 		show(this.body);
 		this.load!(context);
@@ -62,7 +59,6 @@ const load = function (this: UIShape, context: UIContextShape) {
 			history: new History(100),
 			centerX: context.ui!.width / 2,
 			centerY: context.ui!.height / 2
-			// listScrollTop: 0,
 		};
 	}
 	const { ui, editor } = context;
@@ -70,11 +66,6 @@ const load = function (this: UIShape, context: UIContextShape) {
 	getUIStore().width = ui!.width;
 	getUIStore().height = ui!.height;
 	this.nodes = ui!.nodes;
-	// ⚠️ root / nodes / history 必须**同时**写 store：读取方（reference-element / element-base /
-	// ui-engine / inspector 共 15 处）已迁到 `getUIStore()`，而 store 里的 shallowRef 没有别的
-	// 写入点。只写 `this.x` 会让它们永远是 null —— 打开 UI 文件时
-	// `getUIStore().root!.addReference(...)` 直接抛错（2026-09-18）。
-	// `nodes` 用同一数组实例（TreeList 的 `bind` 绑的是 `this.nodes`，两者必须同源）。
 	this.nodes = getUIStore().nodes = this.nodes;
 
 	this.root = editor!.root;
@@ -88,7 +79,6 @@ const load = function (this: UIShape, context: UIContextShape) {
 		const nodes = this.nodes!;
 		const length = nodes.length;
 		for (let i = 0; i < length; i++) {
-			// `this.root` 在上面几行刚由 `editor.root` 赋过（`ui-file.ts:81`）⇒ 此处非空
 			this.loadElement!(nodes[i], this.root!);
 		}
 	} else {
@@ -96,12 +86,9 @@ const load = function (this: UIShape, context: UIContextShape) {
 	}
 
 	this.list.update();
-	// this.list.scrollTop = editor.listScrollTop
 
 	this.setTarget!(editor!.target);
 
-	// `this.context` 同样是本函数开头那两行 `this.context = context` 定的；`load()` 就是「打开一份文档」
-	// 的入口 ⇒ 这里非空（与 `getUIStore().state === 'open'` 是同一时刻的前提）。
 	if (this.context!.fontChanged) {
 		this.updateElementFont!();
 	}
@@ -119,9 +106,6 @@ const load = function (this: UIShape, context: UIContextShape) {
 
 const save = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
-		// `state === 'open'` 就是「有打开的文档」⇒ `this.context` 非空（`load()` 里赋值、`close()` 里置 null），
-		// 而 `context.ui` / `context.editor` 同样是那一步建的（`load()` 开头 `if (firstLoad) context.editor = …`，
-		// `open()` 里 `if (!context.ui) context.ui = Data.ui[meta.guid]` 且只有非空才走到这里）。
 		const context = this.context!;
 		const ui = context.ui!;
 		const editor = context.editor!;
@@ -135,7 +119,6 @@ const save = function (this: UIShape) {
 		editor.history = this.history!;
 		editor.centerX = this.centerX;
 		editor.centerY = this.centerY;
-		// editor.listScrollTop = this.list.scrollTop
 	}
 };
 
@@ -153,8 +136,6 @@ const close = function (this: UIShape) {
 		this.nodes = null;
 		this.history = null;
 		this.root = null;
-		// 故意不清 store 的 root/nodes/history：只在 load() 写入，关闭后保留旧值不会误导
-		// 消费者（同一文件重开时 load() 的 else 分支会重新指向它），却能避免让调用方读到 null。
 		write(this.searcher, '');
 		clear(this.list);
 		hide(this.body);
@@ -169,7 +150,6 @@ const destroy = function (this: UIShape, context: UIContextShape) {
 		this.save!();
 		this.close!();
 	}
-	// 销毁UI组件实例
 	context.editor.root!.destroy();
 	TreeList.deleteCaches!(context.ui!.nodes as Parameters<typeof TreeList.deleteCaches>[0]);
 };
@@ -246,8 +226,6 @@ const createShortcut = function (this: UIShape, item: UINodeShape) {
 	reference.prefabId = item.presetId;
 	reference.synchronous = true;
 	reference.transform = { ...item.transform };
-	// `item.parent` 非空是不变式：快捷键只对画布树里的节点建（根节点不在列表里可选），
-	// 而类型上根节点的 `parent` 是 `null`（见 `element-classes.ts` 的 `UINodeShape.parent`）。
 	const index = item.parent!.children.indexOf(item);
 	const next = item.parent!.children[index + 1];
 	if (next) {
@@ -281,13 +259,6 @@ const redo = function (this: UIShape) {
 	}
 };
 
-/**
- *
- * 本轮**只搬声明、不动函数体**（同第 173/179 轮）：体内 `UI.x` 原地保留 ⇒ 行为逐字不变、零风险；
- * `import { UI }` 暂时保留（伴随判据如实不降）。
- *
- * ⚠️ 槽位名 `delete` 是**保留字**，局部变量只能叫别的（`deleteSlot`），成员对象的**键**保持 `delete` ✓。
- */
 export const uiFileMembers = {
 	open: open,
 	load: load,

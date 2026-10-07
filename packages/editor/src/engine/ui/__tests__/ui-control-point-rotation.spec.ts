@@ -4,32 +4,6 @@ import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import { getUIStore } from '@app/stores/ui';
 import type { UIShape } from '@app/engine/ui/ui-singleton.ts';
 
-/**
- * `UIEngine.updateControlPoints` 的**父链旋转累加** —— 本文件对应一次真实崩溃（2026-10-01）：
- *
- * ```
- * TypeError: Cannot read properties of null (reading 'rotation')
- *   at UIEngine.updateControlPoints (ui-engine.ts)
- *   at UIEngine.drawControlPoints
- *   at UIEngine.renderingFunction
- *   at Timer.update
- * ```
- *
- * 触发链：在元素面板里选中一个 UI 元素 → `ui-transform.ts` 的 `setTarget` →
- * `requestRendering()` → 下一帧 `drawControlPoints` → `updateControlPoints`。
- *
- * 根因：`52ced02b1` 把这句
- * `while ((element = element.parent)?.transform) { rotation += element.transform.rotation }`
- * 改写成 `for (let parent = instance.parent; parent !== null; parent = parent.parent)`，
- * 理由写在注释里：「`transform` 在具名类型下是非可选的，所以 `?.transform` 只可能在父元素为
- * null 时为假」。**这条前提是错的**：根实例就是 `transform: null` ——
- * `root-element.ts` 的 `RootElement` 构造时显式传 `{ transform: null }`（根不参与 transform 链），
- * 而 `element-base.ts` 那句 `this.transform = data.transform as TransformShape` 把它断言掉了。
- * 于是循环一路走到根，读 `null.rotation`，**每帧抛错**，选中框/控制点整块画不出来。
- *
- * 本文件钉住的是「父链到**没有 transform 的祖先**为止」这条语义：根必须被跳过（它没有 transform），
- * 而不是被解引用。
- */
 describe('UIEngine.updateControlPoints：父链旋转累加', () => {
 	const makePoints = () => ({
 		rotate: {
@@ -60,7 +34,6 @@ describe('UIEngine.updateControlPoints：父链旋转累加', () => {
 	it('父链走到根（transform 为 null）时不得抛错，且旋转只累加有 transform 的祖先', () => {
 		const store = getUIStore();
 		const self = engineOf();
-		// 真实的树形：根实例 transform 为 null（RootElement），它的孩子才是可选中元素
 		const root = { transform: null, parent: null };
 		const parent = { transform: { rotation: 30 }, parent: root };
 		const instance = {

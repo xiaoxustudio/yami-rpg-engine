@@ -94,8 +94,6 @@ uiElClasses.ProgressBar = class ProgressBarElement extends uiElClasses.Element! 
 			}
 			const scaleX = this.width / texture.width;
 			const scaleY = this.height / texture.height;
-			// 第二个 `!`：`calculateProgressVertices` 的分支没有兜底 `return`（推断里带 `undefined`），
-			// 而调用点一直假定「type 必然命中某个 case」—— 不命中时本来就会当场抛，`!` 只写类型。
 			const { vertices, vertexLength, drawingLength } = this.calculateProgressVertices!()!;
 
 			GL.alpha = this.opacity;
@@ -144,8 +142,6 @@ uiElClasses.ProgressBar = class ProgressBarElement extends uiElClasses.Element! 
 		const h = texture.height;
 		const tw = texture.base!.width;
 		const th = texture.base!.height;
-		// 直接引用本类：`response` 是本类的**静态**成员（`:380`），经注册表（`UIElementCtor`）
-		// 读不到静态面 —— 原先靠 `& Record<string, any>` 兜着，那正是本轮摘掉的那半个形状。
 		const response = ProgressBarElement.response;
 		const vertices = response.vertices;
 		const step = this.step;
@@ -385,8 +381,6 @@ uiElClasses.ProgressBar = class ProgressBarElement extends uiElClasses.Element! 
 		vertices: new Float32Array(28),
 		angles: new Float64Array(4),
 		array: new Float64Array(6),
-		// `calculateProgressVertices()` 的每条返回路径都会先写这两个字段再返回；
-		// 这里给「长度」一个自然初值 0，而不是谎报成 null 再 cast 回 number。
 		vertexLength: 0,
 		drawingLength: 0
 	};

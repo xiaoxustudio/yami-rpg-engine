@@ -15,18 +15,6 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
 import type { YamiElement } from '@app/types/element-api';
 
-/**
- * ⚠️ 这里原先有一个局部 `interface UIRootApi extends UINodeShape`（+ 三个文本/打印方法），
- * 用来把 `getUIStore().root`（类型是 `UIElementInstance`）断言成「节点 + 额外成员」。
- * 站不住 —— 根是**实例**，而这些函数真正遍历的也是**实例树**（下一句就 `instanceof uiElClasses.Text`
- * 判定，那是实例判定）。方法本身（`updateTextContent` / `updatePrinter` / `resize`）现在
- * 都声明在 `UIElementInstance` 上 ⇒ 读点不再需要任何断言或局部类型。
- */
-
-/**
- * `updateTargetItem` 用到的 TreeList 专有方法（不在通用 `YamiElementApi` 上）。
- * 只补缺的那一个，避免为一个方法把整个 TreeList 类型搬进来。
- */
 interface UIListApi {
 	selectWithNoEvent(item: unknown): void;
 }
@@ -48,10 +36,6 @@ const setSize = function (this: UIShape, width: number, height: number) {
 
 const setHover = function (this: UIShape, hover: UINodeShape | null) {
 	if (this.hover !== hover) {
-		// `drawHoverWireframe` 不判空就解引用 `hover.instance.visible`（`UIFacadeShape` 把
-		// `instance` 声明为**必填**），所以"被 hover 的节点必是已建实例的主节点"是一条
-		// **既有不变式**：违反它会在每帧抛错，而不是静默失效。这里只是把这条前提写进类型。
-		// 运行期一行未改（`setHover` 的形参口径也没动 ⇒ `ui-pointer` 的调用点不受影响）。
 		this.hover = hover as HoverNode | null;
 		UIEngine.requestRendering!.call(this);
 	}
@@ -104,8 +88,6 @@ const revealTarget = (function IIFE() {
 	return function (this: UIShape) {
 		const target = getUIStore().target;
 		if (target && !timer.target) {
-			// `getUIStore().target` 是画布上**已装配**的节点 ⇒ `instance` 必存在
-			// （见 `element-classes.ts` 顶部对 `instance` / `instances` 可选的判定记录）。
 			const instance = target.instance!;
 			const matrix = instance.matrix;
 			const L = instance.x;
@@ -131,7 +113,6 @@ const revealTarget = (function IIFE() {
 			const toleranceX = 0.5 / this.scaleX;
 			const toleranceY = 0.5 / this.scaleY;
 			const { centerX, centerY } = this;
-			// 目标和摄像机的位置不一定相等
 			if (Math.abs(x - centerX) > toleranceX || Math.abs(y - centerY) > toleranceY) {
 				timer.target = target;
 				timer.startX = centerX;
@@ -152,8 +133,6 @@ const updateHover = function (this: UIShape) {
 };
 
 const updateTarget = function (this: UIShape) {
-	// 同 `updateTargetItem`：`this.list` 已迁到元素注册表，注册表未登记时是 `{}` 兜底，
-	// 而 `read({})` 会抛 `Invalid value used as weak map key`。
 	const item = read(getUIStore().elements.list) ?? null;
 	if (item !== getUIStore().target) {
 		this.setTarget!(item);
@@ -161,10 +140,6 @@ const updateTarget = function (this: UIShape) {
 };
 
 const updateTargetItem = function (this: UIShape) {
-	// ⚠️ `target` 已迁到 store、`list` 已迁到元素注册表，**不能**再读 `this.target` /
-	// `this.list`：前者是 `undefined`，后者在注册表未登记时是 `{}` 兜底，而 `read({})`
-	// 会抛 `Invalid value used as weak map key` —— 每次点选都在这里抛异常，
-	// 表现是「UI 整个像截图一样冻住、连选中框都不出现」（异常被 Vue 事件处理吞掉）。
 	const target = getUIStore().elements.target;
 	if (target !== null) {
 		const list = getUIStore().elements.list as (YamiElement & UIListApi) | null;
@@ -178,13 +153,9 @@ const updateTargetItem = function (this: UIShape) {
 
 const updateElementFont = function (this: UIShape) {
 	if (getUIStore().state === 'open') {
-		// `state === 'open'` ⇒ 有打开的文档 ⇒ `this.context` 非空（`ui-file.ts` 的 `load()` 写、
-		// `close()` 时随 state 一起置回）。下面是本文件里同一前提的 3 组读点。
 		if (this.context!.fontChanged) {
 			delete this.context!.fontChanged;
 		}
-		// 递归遍历的是**实例树**（`root.children` 是 `UIElementInstance[]`），
-		// 下面的 `instanceof uiElClasses.Text` 也是实例判定 ⇒ 形参口径用实例类型。
 		const update = (element: UIElementInstance) => {
 			if (
 				element instanceof uiElClasses.Text! ||
@@ -194,14 +165,8 @@ const updateElementFont = function (this: UIShape) {
 			) {
 				let el = element;
 				if (el instanceof uiElClasses.Button!) {
-					// Button 的 `shadowText` 是它自己的文本子元素，构造时就建好
-					// （`button-element.ts:98` 的 `this.shadowText = this.createShadowText(data)`）
-					// ⇒ 这里用 `!`（缺了会当场抛，与原先「索引签名免检」时的行为一致）。
 					el = el.shadowText!;
 				}
-				// `printer` 在文本类元素的构造函数里就是 `null` 起步
-				// （`text-element.ts:77` / `text-box-element.ts:85`），只有文本类元素有它 ——
-				// 而能走到这里的前提正是上面那组 `instanceof` 判定 ⇒ `!` 表达「文本元素必有该成员」。
 				if (el.printer !== null) {
 					el.printer!.reset();
 					if (el._font === '') {
@@ -259,11 +224,7 @@ const updateIndexedColor = function (this: UIShape, index: number) {
 		const TextElement = uiElClasses.Text!;
 		const regexp = new RegExp(`<color:${index}>`, 'i');
 		const update = (element: UIElementInstance): void => {
-			// `content` 只有文本类元素有（数据形状里可选）。`regexp.test(undefined)` 与
-			// `regexp.test('')` 对这个正则（`<color:N>`）都是 false，所以 `?? ''` 不改变行为、
-			// 也不需要再包一层 `!== undefined` 判断。
 			if (element instanceof TextElement && regexp.test(element.content ?? '')) {
-				// `printer` 同上一处：文本类元素的构造函数里必有它（`null` 起步）。
 				element.printer!.reset();
 				UIEngine.requestRendering!.call(this);
 			}
@@ -303,8 +264,6 @@ const updateAllReferences = function (this: UIShape) {
 		const update = (elements: UIElementInstance[]): void => {
 			for (const element of elements) {
 				if (element instanceof uiElClasses.Reference!) {
-					// `update` 是引用元素自己的方法（`reference-element.ts:127`），
-					// 上面的 `instanceof` 已证明类型；`!` 与原先「索引签名免检」的运行期行为一致。
 					element.update!();
 				} else {
 					update(element.children);
@@ -316,8 +275,6 @@ const updateAllReferences = function (this: UIShape) {
 };
 
 const updateElement = function (this: UIShape, target: UINodeShape) {
-	// `nodes` / `root` 都已迁到 store（`ui-file.ts` 里写入），`this.nodes` 是 `undefined`
-	// —— `.includes` 会直接抛（2026-09-18）。
 	let nodes: UINodeShape[] = [];
 	let instance;
 	const rootNodes = getUIStore().nodes as UINodeShape[] | null;
@@ -326,17 +283,6 @@ const updateElement = function (this: UIShape, target: UINodeShape) {
 		nodes = rootNodes;
 		instance = root;
 	} else {
-		/**
-		 * 查找时**实际用到**的节点面：`children` 用于递归下钻，`instance` 用于回传。
-		 *
-		 * 断言成 `UINodeShape`（还得走 `unknown`）—— 而它**根本不是**一个节点：没有 `class`、
-		 * 也没有序列化成员，只是为了把 store 的 root 与 nodes 凑成一次查找的入口。
-		 * 按读点收成这个局部形状之后，包装对象与递归用的真实节点都能传进来（断言消失）——
-		 * 与 `SceneAnimateThis` / `SceneSelectionThis` 是同一手法。
-		 *
-		 * `instance` 的类型是**元素实例**（不是 `UIRootApi` 那种「节点 + 附加成员」的混合体）：
-		 * 顶层来自 store 的根实例，下钻时来自真实节点的 `node.instance`。
-		 */
 		type FindNode = { children: UINodeShape[]; instance?: UIElementInstance | null };
 		const find = (node: FindNode): FindNode | null => {
 			const children = node.children;
@@ -358,18 +304,12 @@ const updateElement = function (this: UIShape, target: UINodeShape) {
 		}
 	}
 	if (instance) {
-		// `appendChildTo` 的首参就是「要挂成子元素的实例」，而 `target.instance` 在类型上
-		// 还可能是 `undefined`（数据形状里可选）；该方法的头一句是 `instanceof` 判定 ⇒
-		// `undefined` 与 `null` 行为完全相同（都不进 `if`），这里只是把两者归一到同一写法。
 		instance.appendChildTo(target.instance ?? null, nodes.indexOf(target));
 	}
 	UIEngine.requestRendering!.call(this);
 };
 
 const deleteElement = function (this: UIShape, target: UINodeShape) {
-	// 删除的是**实例**：`remove()` 从父元素的 `children` 里摘掉自己、`destroy()` 再从
-	// `node.instances` 里摘掉（`element-base.ts:241` / `:287`）。`target` 是当前选中的节点
-	// ⇒ 必已装配，`instance` 存在（同 `element-classes.ts` 顶部那条不变式）。
 	const instance = target.instance!;
 	instance.remove();
 	instance.destroy();
@@ -385,7 +325,6 @@ const updateHead = function (this: UIShape) {
 		const iRect = rect(item);
 		const left = iRect.right - nRect.left;
 		head.style.left = `${left}px`;
-		// 调整居中组件的位置 const width = nRect.right - iRect.right if (head.width !== width) { head.width = width const [start, center, end] = head.children end.style.marginLeft = '0' const sRect = start.rect() const cRect = center.rect() const eRect = end.rect() const spacing = eRect.left - sRect.right - cRect.width const difference = sRect.right - nRect.left - eRect.width const margin = Math.min(spacing, difference) end.style.marginLeft = `${margin}px` }
 	}
 };
 
@@ -422,19 +361,12 @@ const resize = function (this: UIShape) {
 		GL.resize!(screenWidth, screenHeight);
 		UIEngine.updateCamera!.call(this);
 		UIEngine.updateTransform!.call(this);
-		// `root` 已迁到 store（`ui-file.ts` 里写入），`this.root` 是 `undefined`
-		// ⇒ `Cannot read properties of undefined (reading 'resize')`（2026-09-18）。
 		getUIStore().root?.resize();
 		this.marquee.resize();
 		this.screen.updateScrollbars();
 	}
 };
 
-/**
- *
- * 行为逐字不变、零风险；`import { UI }` 暂时保留（伴随判据因此仍记 5，如实）。
- * 走完全程（体内改 `this.` / 入口传参 + 删 import）见 PHASE 手法库 #47。
- */
 export const uiTransformMembers = {
 	setSize,
 	setHover,

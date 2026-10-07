@@ -361,25 +361,18 @@ const listPageResize = function (this: UIShape, _event: YamiMouseEvent) {
 	UI.list.resize();
 };
 
-// 选框 - 调整目标
 UI.marquee.resize = function (this: HTMLElement & { pointerevent?: UIPointerEvent | null }) {
 	if (this.pointerevent) {
 		UI.marqueePointermove!(this.pointerevent!);
 	}
 };
 
-// ⚠️ 下面 6 个挂在**列表元素**上（`UI.list.copy = …`），调用时 `this` 是列表元素 —— 不是 UI 单例。
-// `this.deleteNode!` / `this.update()` / `this.display` / `this.expandToSelection!` 全是列表面的成员，
-// 原先标 `UIShape` 只能靠索引签名（`this.data` 都是 `any`）通过。
-
-// 列表 - 复制
 UI.list.copy = function (this: UIListNodeShape, item: UINodeShape) {
 	if (item) {
 		(GlobalClipboard as GlobalClipboardHost).write('yami.ui.object', item);
 	}
 };
 
-// 列表 - 粘贴
 UI.list.paste = function (
 	this: UIListNodeShape,
 	dItem: UINodeShape | null,
@@ -393,7 +386,6 @@ UI.list.paste = function (
 	}
 };
 
-// 列表 - 删除
 UI.list.delete = function (this: UIListNodeShape, item: UINodeShape) {
 	if (item) {
 		this.deleteNode!(item);
@@ -401,7 +393,6 @@ UI.list.delete = function (this: UIListNodeShape, item: UINodeShape) {
 	}
 };
 
-// 列表 - 开关
 UI.list.toggle = function (this: UIListNodeShape, item: UINodeShape) {
 	if (item) {
 		UI.history!.save({
@@ -416,7 +407,6 @@ UI.list.toggle = function (this: UIListNodeShape, item: UINodeShape) {
 	}
 };
 
-// 列表 - 取消搜索
 UI.list.cancelSearch = function (this: UIListNodeShape) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
@@ -427,10 +417,7 @@ UI.list.cancelSearch = function (this: UIListNodeShape) {
 	}
 };
 
-// 列表 - 更新头部位置
 UI.list.updateHead = function (this: UIListNodeShape) {
-	// `page` / `head` 已不在 DATA_FIELDS 内（原型访问器退役），`this` 是列表元素 ⇒ 解构 `this`
-	// 会拿到 undefined（`page.clientWidth` 抛错）。改读同一份元素数据。
 	const { page, head } = elementDataOf<{ page: HTMLElement; head: HTMLElement }>(this);
 	if (page.clientWidth !== 0) {
 		const nav = headNavOf(head);
@@ -443,19 +430,16 @@ UI.list.updateHead = function (this: UIListNodeShape) {
 	}
 };
 
-// 列表 - 在创建数据时回调
 getListConfig(UI.list).onCreate = function (this: UIShape, item: UINodeShape) {
 	UI.registerPreset!(item);
 	UI.loadElement!(item);
 	UI.updateElement!(item);
 } as (item: unknown) => void;
 
-// 列表 - 在迁移数据时回调
 getListConfig(UI.list).onRemove = function (this: UIShape, item: UINodeShape) {
 	UI.updateElement!(item);
 } as (item: unknown) => void;
 
-// 列表 - 在删除数据时回调
 getListConfig(UI.list).onDelete = function (this: UIShape, item: UINodeShape) {
 	UI.unregisterPreset!(item);
 	UI.deleteElement!(item);
@@ -464,21 +448,12 @@ getListConfig(UI.list).onDelete = function (this: UIShape, item: UINodeShape) {
 	UIEngine.requestRendering!.call(UI);
 } as (item: unknown) => void;
 
-// 列表 - 在恢复数据时回调
 getListConfig(UI.list).onResume = function (this: UIShape, item: UINodeShape) {
 	UI.registerPreset!(item);
 	UI.loadElement!(item);
 	UI.updateElement!(item);
 } as (item: unknown) => void;
 
-/**
- * 本域提供的 10 个**顶层**成员（第 ④-3 步：域模块只提供成员对象，装配见 `ui-members.ts`）。
- *
- * ⚠️ 本轮**只搬声明、不动函数体**：体内的 `UI.x` 原地保留 ⇒ 行为逐字不变（零风险），
- * 而 `this` 到底是不是 UI 这一点**尚未定论**（挂载由 `ui-initialize.ts` 的 `on(el, …, this.x)` 等
- * 注册，`on()` 对自定义元素转调 `el.on(...)`，接收者取决于各组件实现）—— 在验明之前
- * **不**把体内 `UI.x` 改成 `this.x`：`this` 是否指 UI 尚未定论，理由见上。
- */
 export const uiListMembers = {
 	searcherInput,
 	listKeydown,

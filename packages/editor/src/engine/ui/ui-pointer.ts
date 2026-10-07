@@ -38,21 +38,12 @@ const selectObject = (function IIFE() {
 				!element.node.locked &&
 				element.isPointIn(x, y)
 			) {
-				// `element.node` 必存在：上面那句 `element.node?.instance === element` 已经把它证明出来了
-				// （实例的 `node` 由 `ui-prefab.ts:94` 的 `instance.node = node` 挂上，只有 `node` 存在
-				// 才谈得上相等），这里改用 `!` 而不是 `?.`，避免把「命中却返回 null」这种静默失效写进类型。
 				return element.node!;
 			}
 		}
 		return null;
 	};
 	return function (this: UIShape, x: number, y: number) {
-		// ⚠️ `root` 已迁到 store（`ui-file.ts` 的 `getUIStore().root = this.root`），
-		// 遗留的 `this.root` 是 `undefined` —— 读 `.children` 直接抛
-		// `Cannot read properties of undefined (reading 'children')`，
-		// 表现就是「**在画布上点选毫无反应**，但从左侧列表点选正常」
-		// （列表走 `UI.listSelect`，不经过这里）（2026-09-18 实测定位）。
-		// `root` 的类型本来就是 `UIElementInstance | null`（`stores/ui.ts` 的 `root`），
 		const root = getUIStore().root;
 		if (root === null) return null;
 		return find(root.children, x, y);
@@ -85,7 +76,6 @@ const marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 					case points.rotate.TR:
 					case points.rotate.BL:
 					case points.rotate.BR: {
-						// 当前选中的节点必已装配（同 `element-classes.ts` 顶部那条不变式）⇒ `instance` 存在。
 						const instance = target.instance!;
 						const matrix = Matrix.instance.set(UI.matrix).multiply(instance.matrix);
 						const X = instance.x + instance.width * transform.anchorX;
@@ -258,10 +248,7 @@ const pointermove = function (this: UIShape, event: UIPointerEvent) {
 			case 'object-resize': {
 				const target = getUIStore().target;
 				if (target) {
-					// 同上面 rotate 分支：选中的节点必已装配。
 					const instance = target.instance!;
-					// 父元素非空也是不变式：能选中就说明它在画布树里，而树里除根实例外都有父元素
-					// （根实例本身不可选）—— 缩放要用父元素的宽高做百分比换算。
 					const parent = instance.parent!;
 					const { transform } = instance;
 					const points = this.controlPoints!;
@@ -399,10 +386,6 @@ const pointermove = function (this: UIShape, event: UIPointerEvent) {
 						y = Math.round(dragging.startY + distY);
 					}
 					if (transform.x !== x || transform.y !== y) {
-						// `!` 的理由：`x` / `y` 在两个分支里**都必然被赋值** ——
-						// `section = (proportion * 4 + 0.5) % 4 ∈ [0, 4)` ⇒ `Math.floor(section)` 只可能是
-						// 0/1/2/3，而上面那四个 `case` 全覆盖（0/2 写一组、1/3 写另一组）。
-						// `tsc` 看不到 `%` 的值域，所以这里用可见的 `!` 写下这条前提（运行期一行未改）。
 						UIEngine.shiftTarget!.call(this, x!, y!);
 					}
 				}
@@ -611,12 +594,6 @@ const menuPopup = function (this: UIShape, event: UIPointerEvent) {
 	);
 };
 
-/**
- *
- * 本轮**只搬声明、不动函数体**（同第 173/179/182 轮）：体内 `UI.x` 原地保留 ⇒ 行为逐字不变、
- * 零风险（本域的挂载经 `on()` 注册 ⇒ 运行期 `this` 是**元素**，见 PHASE 手法库 #45，
- * 所以这一步**更不能**顺手把体内 `UI.` 改成 `this.`）。
- */
 export const uiPointerMembers = {
 	selectObject: selectObject,
 	marqueePointerdown: marqueePointerdown,

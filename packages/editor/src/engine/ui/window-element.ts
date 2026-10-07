@@ -271,7 +271,6 @@ uiElClasses.Window = class WindowElement extends uiElClasses.Element! {
 		}
 		this.scrollWidth = scrollWidth;
 		this.scrollHeight = scrollHeight;
-		// this.scrollX = this.scrollX this.scrollY = this.scrollY
 	}
 
 	destroy() {

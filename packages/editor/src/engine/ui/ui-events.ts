@@ -32,18 +32,6 @@ const planToSave = function (this: UIShape) {
  * ⇒ 写成 `unknown` 不是放松，而是把"值未经校验"这件事如实写下来，并把归一化的责任放回实现里。
  */
 const saveToConfig = function (this: UIShape, config: { colors: Record<string, unknown> }) {
-	// 真源是 store 的 `background` / `foreground`（`ui-engine.ts` 的 `drawBackground` 也读它，
-	// 菜单栏改色走的也是 `getUIStore().background`）。`this.background` 是遗留单例上的**影子副本**，
-	// 只在 `UI.loadFromConfig` 里建一次，所以它既可能**根本不存在**，也可能停在**开机时的旧值**：
-	//
-	//   `primeWindows` 不再预热 `'ui'` 槽位，`main/initialize.ts` 的 `loadConfig()` 执行时
-	//   `UI.loadFromConfig` 取到 undefined，`stores/ui.ts` 那句 `UI?.loadFromConfig?.(…)`
-	//   **不报错地什么也没做**（代理不为 null，`?.` 挡不住），于是这里读 `this.background.hex`
-	//   抛 `Cannot read properties of undefined (reading 'hex')`，并连带让
-	//   `services/project/config.ts` 的整条 `saveConfig` 中断（后续配色保存与 config.json 落盘都不执行）；
-	// - 旧值：改色只写 store，影子副本不跟随 ⇒ 采信它会把本次会话的配色改动写回开机时的值。
-	//
-	// 故一律以 store 为准，遗留字段仅作 store 取不到时的兜底；两者都没有时保持 config 原值不动。
 	const store = getUIStore();
 	const background = store.background ?? this.background;
 	const foreground = store.foreground ?? this.foreground;
@@ -52,19 +40,11 @@ const saveToConfig = function (this: UIShape, config: { colors: Record<string, u
 };
 
 const loadFromConfig = function (this: UIShape, config: { colors: Record<string, unknown> }) {
-	// `background` / `foreground` 的真源是 store 的 `loadFromConfig`（见 `stores/ui.ts`），
-	// 这里只维护遗留单例上的那一份，给仍读 `this.background` 的遗留/插件路径用
-	// （`saveToConfig` 已改为读 store，不再依赖它是否被调用到——见上面的说明）。
-	//
-	// 这条规则此前只有 store 侧有（`safeHex`），于是同一个 config 在这里会造出一份 alpha 为 NaN
-	// 的影子副本 —— 索引签名与 `Record<string, string>` 一起把这件事挡了几十轮。
-	// 契约改成 `unknown` 之后，这一处**不再是可选的**：类型说"值未校验"，实现就得校验。
 	this.background = new StageColor(safeHex(config.colors.uiBackground, '00000000'), () =>
 		UIEngine.requestRendering!.call(this)
 	);
 	this.foreground = new StageColor(safeHex(config.colors.uiForeground, '000000ff'), () => {
 		if (getUIStore().state === 'open') {
-			// `root` 已迁到 store；`this.root` 是 `undefined`（2026-09-18）。
 			getUIStore().root?.resize();
 			UIEngine.requestRendering!.call(this);
 		}
@@ -351,15 +331,8 @@ const screenUserscroll = function (this: UIShape, _event: Event) {
 const screenBlur = function (this: UIShape, _event: FocusEvent) {
 	this.translationKeyup!();
 	this.pointerup!();
-	// this.marqueePointerleave!()
 }.bind(UI);
 
-/**
- *
- * 本轮**只搬声明、不动函数体**（同第 173/179/182 轮）：体内 `UI.x` 原地保留 ⇒ 行为逐字不变、
- * 零风险（本域的挂载经 `on()` 注册 ⇒ 运行期 `this` 是**元素**，见 PHASE 手法库 #45，
- * 所以这一步**更不能**顺手把体内 `UI.` 改成 `this.`）。
- */
 export const uiEventsMembers = {
 	switchSettings: switchSettings,
 	planToSave: planToSave,

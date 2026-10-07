@@ -12,20 +12,8 @@ import type { ControlPoint, UIFacadeShape } from './ui-facade.ts';
 import type { UIPointerEvent } from './ui-singleton.ts';
 import { clamp, roundTo, dist, modDegrees } from '@app/utils/math';
 
-/**
- * 惰加载的 UI 单例代理。`renderingFunction` 里那 7 个 draw 需要**显式的 UI 接收者** ——
- * 原因见该函数内的注释（它自己被 `Timer` 裸调用，`this` 恒为 `undefined`）。
- * 不能 `import { UI } from '@app/engine/ui/ui-singleton.ts'`：那是静态循环导入；这个代理只在运行时解析。
- */
 const UI = getLazyWindow('ui', loadUI);
 
-/**
- * 引擎读 UI 成员的契约在 `ui-facade.ts`（**单一真源**，由台账轴 `ui-facade-gaps` 守着）。
- *
- * 于是「漏声明的成员」与「拼错的成员名」都通过编译，只在运行期表现为 `undefined` ——
- * 那正是本阶段要消灭的静默失效。现在 `this.<x>` 必须在 `UIFacadeShape` 里显式在案，
- * `tsc` 会逐个点名；缺的是**补进契约**，不是把 `any` 加回来。
- */
 type UIShape = UIFacadeShape;
 
 /**
@@ -40,43 +28,6 @@ type UIShape = UIFacadeShape;
  */
 const historyOf = (ui: UIShape) => ui.history!;
 
-/**
- *
- * ## 为什么需要它
- *
- * `Record<string, any>` 让**任何**成员名、**任何**调用形状都通过编译：拼错的名字、
- * 传错个数的实参、`this` 绑到谁，`tsc` 全都看不见（只在运行期变成 `undefined is not a function`）。
- * 实测把那张注解摘掉之后是 **93 条报错、错误码只有一种（TS2339「属性不存在」）**、
- * 非 TS2339 **0 条** ⇒ 缺的正是一张成员表（"容器没有形状"，不是"形状不对"）。
- *
- * ## 签名怎么来的：**不是手抄**
- *
- * 用类型检查器按 AST 取每个 `UIEngine.<name> = <函数表达式>` **右侧表达式的类型**
- * （`scripts/oneoff/gen-engine-members.mjs`，只读）。**不能读属性**：容器本身是
- * `Record<string, any>`，`UIEngine.x` 读出来永远是 `any` —— 有类型的是右侧那个函数表达式。
- *
- * ## 两处**不是**机械抄写的地方
- *
- * 1. `renderingFunction: () => void` —— **它没有 `this`**，且这是刻意的：它被 `Timer` **裸调用**
- *    （`stageRendering(deltaTime)`），`this` 恒为 `undefined`；里面那 7 个 draw 必须走
- *    `UI.drawXxx()`（方法调用）才能把接收者绑到单例上。给它在表里写 `this: UIShape`
- *    等于宣称一个**运行期不存在的接收者** —— 2026-09-18 那次「黑屏且不报错」就是这么来的
- *    （本文件里那段"连错三次"的注释与 `__tests__/ui-rendering-receiver.spec.ts` 守着它）。
- * 2. **`getPointerCoords` 的形参写 `UIPointerEvent`（不是实现里的 `PointerEvent`）** ——
- *    与第 201/210 轮同一条：**契约描述调用方怎么调它**。调用方（`ui-pointer.ts` 的 4 处）
- *    手里是 `UIPointerEvent`（`YamiMouseEvent & {…}`），而实现只用到 `clientX/clientY`
- *    （经 `getRelativeCoords`）⇒ 把实现那一侧的形参一起改成 `UIPointerEvent` 即可，
- *    **不新增任何断言**。
- * 3. 其余成员都写成**函数属性**（`(this: UIShape, …) => R`）而不是方法简写 —— 与第 131/134 轮
- *    同一条：方法简写会让 `typescript(unbound-method)` 在搬运点报出来，而函数属性如实表达
- *    "这是一个独立函数，`this` 由调用方给"。
- *
- * ## 装表之后暴露的两件事（第 216/217 轮实测）
- *
- * 1. `this` 一有类型，「域模块的 `this: UIShape`（单例）交给引擎成员（要 `UIFacadeShape`）」
- *    契约条目、把 `history` 改成如实的可空、并把不变式收进 `historyOf()`）。
- * 2. 调用侧开始被检查 ⇒ 上面第 2 条那个形参分歧显形。
- */
 type UIEngineShape = {
 	setZoom: (this: UIShape, zoom: number) => void;
 	shiftAnchor: (this: UIShape, anchorX: number, anchorY: number) => void;
@@ -97,7 +48,6 @@ type UIEngineShape = {
 	drawControlPoints: (this: UIShape) => void;
 	selectControlPoint: (this: UIShape, x: number, y: number) => ControlPoint | null;
 	requestRendering: (this: UIShape) => void;
-	/** ⚠️ **无 `this`**（被 `Timer` 裸调用）——理由见本类型上方的第 1 条。 */
 	renderingFunction: () => void;
 	stopRendering: (this: UIShape) => void;
 };
@@ -147,10 +97,6 @@ UIEngine.shiftAnchor = function (this: UIShape, anchorX: number, anchorY: number
 	const target = getUIStore().target;
 	if (target !== null) {
 		this.planToSave!();
-		// `instance` / `instances` 是装配期用 `Object.defineProperty` 挂上的**不可枚举**运行期成员
-		// （不进 JSON ⇒ 数据形状里是可选，见 `element-classes.ts` 顶部那段判定记录）。
-		// `getUIStore().target` 一定是画布上**已装配**的节点 —— 本文件这几处 `!`
-		// 与 `ui-facade.ts` 的 `HoverNode.instance`（必填）说的是同一条不变式。
 		const instances = target.instances!;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
@@ -173,7 +119,6 @@ UIEngine.shiftAnchor = function (this: UIShape, anchorX: number, anchorY: number
 				anchorY: transform.anchorY
 			});
 		}
-		// transform.anchorX = anchorX transform.anchorY = anchorY
 		instances.setProperty('transform-anchorX', anchorX);
 		instances.setProperty('transform-anchorY', anchorY);
 		instances.resize();
@@ -211,15 +156,8 @@ UIEngine.shiftTarget = function (this: UIShape, x: number, y: number) {
 				y: transform.y
 			});
 		}
-		// transform.x = x transform.y = y
 		instances.setProperty('transform-x', x);
 		instances.setProperty('transform-y', y);
-		// 这里原先有一块 `[DEBUG-instances]` 探针（`JSON.stringify` 打印 `instances instanceof Map`、
-		// `typeof instances.set`、`Object.keys(instances)`），只在 `instances[0].resize` 不是函数时输出。
-		// （`Array` 子类，只有 `setProperty` / `resize` / `remove`），压进去的又都是元素实例
-		// （基类都有 `resize`）⇒ 那个分支与探针里的 `Map` / `.set` 判断永远不成立。
-		// 探针本身是「索引签名什么都能读」时代的产物：`instances.set` / `instances.name`
-		// 在具名类型下根本不存在。
 		instances.resize();
 		UIEngine.requestRendering!.call(this);
 
@@ -259,11 +197,9 @@ UIEngine.resizeTarget = function (this: UIShape, width?: number, height?: number
 			});
 		}
 		if (width !== undefined) {
-			// transform.width = width
 			instances.setProperty('transform-width', width);
 		}
 		if (height !== undefined) {
-			// transform.height = height
 			instances.setProperty('transform-height', height);
 		}
 		instances.resize();
@@ -303,7 +239,6 @@ UIEngine.rotateTarget = function (this: UIShape, rotation: number) {
 				rotation: transform.rotation
 			});
 		}
-		// transform.rotation = rotation
 		instances.setProperty('transform-rotation', rotation);
 		instances.resize();
 		UIEngine.requestRendering!.call(this);
@@ -419,17 +354,6 @@ UIEngine.updateControlPoints = function (this: UIShape) {
 		resize.BR.x = x3 + ox3 - ox2;
 		resize.BR.y = y3 + oy3 - oy2;
 		let rotation = instance.transform.rotation;
-		// 沿父链累加旋转，**到「没有 transform 的祖先」为止**（根实例没有自己的变换，见下）。
-		//
-		// 历史：`52ced02b1` 曾把它写成只判 `parent !== null`，理由是「`transform` 在具名类型下非可选」。
-		// 那条推理踩空了 —— 根实例当时显式传 `transform: null`（`root-element.ts`），循环一路走到根
-		// 读 `null.rotation`：**每帧抛** `Cannot read properties of null (reading 'rotation')`
-		// （`drawControlPoints` 起点 ⇒ 控制点/选中框画不出来）。
-		//
-		// 现在两道都在：① `element-base.ts` 的构造函数给每个实例补恒等变换（根也有一份），
-		// 「实例一定有 transform」结构上成立（与 `element-classes.ts` 顶部对 `matrix` 的判定同一手法）；
-		// ② 这里的真值判断留作第二道 —— 祖先的 transform 若被显式置空也只是「停下」，不会解引用。
-		// 两条都由 `__tests__/ui-control-point-rotation.spec.ts` 钉住。
 		for (let parent = instance.parent; parent?.transform; parent = parent.parent) {
 			rotation += parent.transform.rotation;
 		}
@@ -484,7 +408,6 @@ UIEngine.updateTransform = function (this: UIShape) {
 };
 
 UIEngine.drawBackground = function (this: UIShape) {
-	// 取色读 store（store 是这些字段的真源），不再依赖 `this.background`：
 	const background = getUIStore().background;
 	if (!background) return;
 	const gl = GL;
@@ -493,18 +416,12 @@ UIEngine.drawBackground = function (this: UIShape) {
 };
 
 UIEngine.drawElements = function (this: UIShape) {
-	// 同上：`root` 也走 store（`ui-file.ts` 的 `UI.load` 里赋值、`close` 时置 null）
 	getUIStore().root?.draw();
 };
 
 UIEngine.drawCoordinateAxes = function (this: UIShape) {
 	const target = getUIStore().target;
 	if (target !== null) {
-		// 坐标轴画的是**父元素**的框（`parent.matrix` / `parent.x`…）。`parent` 非空是不变式：
-		// 画布树里的节点都由 `ui-file.ts` 的 `loadElement` 递归挂到根实例之下
-		// （`element-base.appendChild` 会给每个元素设 `parent`），只有根实例自己没有父元素，
-		// 而根**不是**可选中的 `target`。原先这里靠 `target.instance` 与 `parent` 的索引签名
-		// 一路免检，本轮按这条前提写 `!`（破坏时当场抛错，与之前行为一致）。
 		const parent = target.instance!.parent!;
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
@@ -676,9 +593,6 @@ UIEngine.drawControlPoints = function (this: UIShape) {
 		gl.uniform1i(program.u_ColorMode, 0);
 		gl.uniform4f(program.u_Tint, 0, 0, 0, 0);
 		gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STREAM_DRAW, 0, vi);
-		// `texture.base` 在类型上可空，但不变式是「贴图建好后 base 必然已挂上」
-		// （`ui-initialize.ts:88` 也是直接 `this.controlPointTexture.base.protected = true`）。
-		// 这里 `!` 只是把这条既有前提显式写出来 —— ④-1b 去掉索引签名后它才第一次被 tsc 看见。
 		gl.bindTexture(gl.TEXTURE_2D, texture.base!.glTexture);
 		gl.drawElements(gl.TRIANGLES, (vi / 16) * 6, gl.UNSIGNED_INT, 0);
 	}
@@ -711,25 +625,6 @@ UIEngine.requestRendering = function (this: UIShape) {
 
 UIEngine.renderingFunction = function () {
 	if (GL.width * GL.height !== 0) {
-		// ⚠️ 这里是全仓**唯一**「接收者不在手」的地方，务必与别处的改写形态区分开。
-		//
-		//   · 本函数是由 `Timer` 直接调用的：`timer.ts:195` 是
-		//     `stageRendering(deltaTime)` —— **裸函数调用，没有接收者**，所以
-		//     本函数自己的 `this` 恒为 `undefined`（不是"指向了错的对象"，是根本没有）。
-		//   · 因此下面 7 个 draw 只能**显式**指定接收者，且只能是 `UI`
-		//     （实现里的 `this.scaleX` / `this.centerX` 等靠它取到值）。
-		//   · 曾一度（2026-09-18）改成 `UIEngine.drawXxx!.call(this)` 并加
-		//     `if (!this?.renderingFunction) return` 作保护：因为 `this` 恒为 `undefined`，
-		//     那个保护**每帧都提前 return** ⇒ **「不报错但整个 UI 画布一片黑」**（连错三次）。
-		//
-		// `UIEngine.x!.call(this/UI, …)` 时，**这 7 处必须传 `UI`**，不能跟着写成 `.call(this)`：
-		// 别处的 `this` 是真实接收者，这里的 `this` 不存在 —— 形式相似，含义相反。
-		// 该不变式现在有会失败的用例兜着：`__tests__/ui-rendering-receiver.spec.ts`
-		// 裸调用本函数，断言 7 个 draw 全部执行且接收者都不是 `undefined`（改回 `.call(this)` 即红）。
-		//
-		// 数据源已经迁走：`drawBackground` 读 store 的 `background`、
-		// `drawElements` 读 store 的 `root`，所以这两处不再依赖 `this.*`；
-		// 其余几个仍读 `this.*`，因此 `UI` 这个接收者依旧是承重的。
 		UIEngine.drawBackground!.call(UI);
 		UIEngine.drawElements!.call(UI);
 		UIEngine.drawCoordinateAxes!.call(UI);
@@ -744,7 +639,4 @@ UIEngine.stopRendering = function (this: UIShape) {
 	Timer.removeUpdater!('stageRendering', UIEngine.renderingFunction);
 };
 
-// 转发优先走这里、而不是 `ui-window.ts` 的镜像。**必须放在文件末尾**（上面所有挂载都已就位）。
-// 为什么用注册而不是让 store import 本模块：本模块已静态 import store，反向会成静态环。
-// 见 `stores/ui.ts` 里 `registerUIEngine` 的说明。
 registerUIEngine(UIEngine);

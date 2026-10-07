@@ -4,27 +4,6 @@ import { UI, uiWindowReady } from '@app/engine/ui/ui-singleton.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Editor } from '@app/services/project/editor.ts';
 
-/**
- *
- * ## 这条用例守的是什么
- *
- * `hasPrefab` / `clearInvalidPrefabs` 的**实现**已搬出 `engine/ui/legacy/`，落到目录外的
- * `engine/ui/ui-slots.ts`，由 `uiWindowReady` 动态 import 后在模块顶层绑定回 `UI`。
- *
- * 这里**故意不 import `ui-slots.ts`** —— 如果直接 import，用例会把待验证的那条链路自己短路掉，
- * 变成「证明了它被 import 过」而不是「证明了 `uiWindowReady` 会把它拉起来」。
- * 这正是本仓「仪器要自证」的要求：用例必须能失败在真实的坏改动上
- * （删掉 `ui-window.ts` 里那行动态 import，本文件必须红）。
- *
- * ## 为什么盯 `uiWindowReady` 而不是 `loadUI`
- *
- * 原文此处写的是「真机上 UI 对象**不是**由 `loadUI` 到达的：`primeWindows` 直接塞缓存，
- * 遍历的是该模块的命名空间，没有 `UI` 就没有 `'ui'` 键，真机与 vitest 一样走 `loadUI`。
- * 该不变式由同目录的 `ui-window-arrival-path.spec.ts` 钉住（加回那行导出即变红）。
- *
- * 仍然盯 `uiWindowReady` 的理由不变：它是「`UI` 已建好」的**汇合点**（`clusterReady` 里含它），
- * 绑定挂在这里就不必假设调用方是谁，也不必赌 loader 有没有真的被调用过。
- */
 describe('1c ③：目录外的 UI 槽位绑定', () => {
 	it('uiWindowReady 解析之后，两个槽位已被绑定（而不是对象字面量里的 null）', async () => {
 		await uiWindowReady;
@@ -59,7 +38,6 @@ describe('1c ③：目录外的 UI 槽位绑定', () => {
 			const list = ['guid-keep', 'guid-gone', 'guid-also-gone'];
 			UI.clearInvalidPrefabs!(list);
 
-			// 既删对了、又是**就地**改（调用方 `ui-events.ts` 依赖传引用）
 			expect(list).toEqual(['guid-keep']);
 		} finally {
 			Data.uiPresets = previous;
@@ -79,17 +57,14 @@ describe('1c ③：目录外的 UI 槽位绑定', () => {
 
 			UI.registerPreset!(root as never);
 
-			// 空 id ⇒ 生成新 id（不是保持空串）
 			expect(root.presetId).not.toBe('');
 			expect(child.presetId).not.toBe('');
-			// **递归**：子节点也登记了，且 uiId 取自 UI.meta
 			expect(Object.keys(Data.uiPresets).sort()).toEqual(
 				[root.presetId, child.presetId].sort()
 			);
 			expect(Data.uiPresets[root.presetId]!.uiId).toBe('ui-guid');
 
 			UI.unregisterPreset!(root as never);
-			// **递归**注销：父子都清干净
 			expect(Object.keys(Data.uiPresets)).toEqual([]);
 		} finally {
 			Data.uiPresets = previousPresets;

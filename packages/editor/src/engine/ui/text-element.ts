@@ -161,7 +161,6 @@ uiElClasses.Text = class TextElement extends uiElClasses.Element! {
 	}
 
 	set content(value: string) {
-		// 需要刷新语言包中的内容，不做差异判断
 		this._rawContent = value;
 		this._content = TextElement.replaceGlobalVariable(GameLocal.replace(value));
 	}
@@ -439,8 +438,6 @@ uiElClasses.Text = class TextElement extends uiElClasses.Element! {
 	}
 
 	resizeEmbeddedImages(offsetX: number, offsetY: number) {
-		// 合并成一份具名形状后**整条断言都不需要了**：`printer.images` 已经是
-		// `UIImageElementShape[] & { changed?: boolean }`，`changed` 的读/写对可选布尔都成立。
 		const images = this.printer!.images;
 		if (images.changed) {
 			images.changed = false;
