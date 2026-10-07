@@ -1,5 +1,4 @@
 <template>
-	<!-- 公告窗口 -->
 	<WindowFrame id="update-log" :ref="registryRef(logEls, 'update-log')" no-buttons>
 		<template #title
 			><TitleBar

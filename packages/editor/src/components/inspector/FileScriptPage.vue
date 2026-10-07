@@ -74,7 +74,7 @@ onBeforeUnmount(() => {
 	margin: 4px;
 	padding: 4px 10px;
 	width: calc(100% - 8px);
-	/* font-family: var(--font-family-mono); */
+
 	user-select: text;
 	overflow: hidden;
 	white-space: pre-wrap;

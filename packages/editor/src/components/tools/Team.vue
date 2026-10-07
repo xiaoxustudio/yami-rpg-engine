@@ -1,5 +1,4 @@
 <template>
-	<!-- 队伍窗口 -->
 	<WindowFrame id="team" :ref="registryRef(composableEls, 'team')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -96,7 +95,6 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #team {
 	width: 304px;
 	height: 420px;

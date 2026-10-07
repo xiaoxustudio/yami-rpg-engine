@@ -140,7 +140,6 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 onMounted(() => {});
 </script>
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #easing {
 	width: 800px;
 	height: 604px;
@@ -207,7 +206,6 @@ onMounted(() => {});
 	top: 1px;
 	width: calc(100% - 2px);
 	height: calc(100% - 2px);
-	/* background-color: green; */
 }
 
 #easing-preview-fieldset {
@@ -223,7 +221,6 @@ onMounted(() => {});
 	top: 1px;
 	width: calc(100% - 2px);
 	height: calc(100% - 2px);
-	/* background-color: green; */
 }
 
 #easing-preview-grid {

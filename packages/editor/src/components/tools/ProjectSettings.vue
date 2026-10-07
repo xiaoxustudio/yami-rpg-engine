@@ -46,7 +46,6 @@ const onConfirm = () => {
 </script>
 
 <style>
-/* 不能用 scoped：选择器需命中子组件内部生成的元素 */
 #project-settings {
 	width: 480px;
 	height: 700px;
@@ -59,7 +58,6 @@ const onConfirm = () => {
 	width: 100%;
 	overflow-x: hidden;
 	overflow-y: scroll;
-	/* background-color: green; */
 }
 
 #project-grid-box {

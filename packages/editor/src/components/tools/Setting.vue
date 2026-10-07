@@ -1,5 +1,4 @@
 <template>
-	<!-- Open设置窗口 -->
 	<WindowFrame id="setting" :ref="registryRef(serviceEls, 'setting')" @confirm="onConfirm">
 		<template #title
 			><TitleBar id="setting-title"
@@ -153,7 +152,6 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #setting {
 	width: 520px;
 	height: 700px;

@@ -112,7 +112,6 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #event {
 	width: 1280px;
 	height: 700px;
@@ -154,7 +153,7 @@ onMounted(() => {});
 	display: flex;
 	flex-direction: column;
 	position: absolute;
-	/* margin-top: -20px; */
+
 	width: 32px;
 }
 

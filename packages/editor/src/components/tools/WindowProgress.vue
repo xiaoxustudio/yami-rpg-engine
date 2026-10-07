@@ -1,5 +1,4 @@
 <template>
-	<!-- 进度窗口 -->
 	<WindowFrame id="windowProgress" no-buttons>
 		<template #title><TitleBar>进度</TitleBar></template>
 
@@ -24,7 +23,6 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 不能用 scoped：选择器需命中子组件内部生成的元素 */
 #windowProgress {
 	width: 380px;
 	height: 116px;

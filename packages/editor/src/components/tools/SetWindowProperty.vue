@@ -1,5 +1,4 @@
 <template>
-	<!-- 设置窗口 - 属性 -->
 	<WindowFrame id="setWindow-property" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -119,7 +118,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #setWindow-property {
 	width: 324px;
 	height: 122px;

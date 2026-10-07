@@ -130,7 +130,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #addAnimationComponent {
 	width: 324px;
 	height: 242px;

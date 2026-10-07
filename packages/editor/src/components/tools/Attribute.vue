@@ -268,7 +268,6 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #attribute {
 	width: 572px;
 	height: 700px;

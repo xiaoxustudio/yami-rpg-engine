@@ -1,5 +1,4 @@
 <template>
-	<!-- 文本建议列表 -->
 	<TreeList
 		id="text-suggestions"
 		:ref="registryRef(textSuggestionEls, 'text-suggestions')"
@@ -28,7 +27,7 @@ onMounted(() => {});
 	display: block;
 	position: fixed;
 	margin-left: var(--1dpx);
-	/* box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.5); */
+
 	background-color: var(--suggestion-widget-background);
 	outline: var(--window-outline);
 	pointer-events: visible;

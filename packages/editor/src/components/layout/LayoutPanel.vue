@@ -52,7 +52,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #project-browser {
 	width: 100%;
 	height: 100%;
@@ -84,13 +83,12 @@ onMounted(() => {
 	display: flex;
 	flex: 0 0 auto;
 	width: 115px;
-	/* background: yellow; */
 }
 
 #scene-head-center {
 	display: flex;
 	flex: 0 0 auto;
-	/* background: green; */
+
 	border-left: var(--toolbar-item-border);
 }
 
@@ -101,7 +99,6 @@ onMounted(() => {
 
 #scene-head-end {
 	flex: 0 0 auto;
-	/* background: blue; */
 }
 
 #scene-zoom {
@@ -165,19 +162,17 @@ onMounted(() => {
 	display: flex;
 	flex: 0 0 auto;
 	width: 28px;
-	/* background: yellow; */
 }
 
 #ui-head-center {
 	display: flex;
 	flex: 0 0 auto;
-	/* background: green; */
+
 	border-left: var(--toolbar-item-border);
 }
 
 #ui-head-end {
 	flex: 0 0 auto;
-	/* background: blue; */
 }
 
 #ui-zoom {
@@ -239,7 +234,6 @@ onMounted(() => {
 	bottom: 10px;
 }
 
-/* 不能用 scoped：选择器需命中子组件内部生成的元素 */
 #fileImage {
 	display: flex;
 	flex-direction: column;
@@ -271,8 +265,7 @@ onMounted(() => {
 	top: 28px;
 	right: 0;
 	bottom: 0;
-	/* 覆盖 YMPageManager 模块类的 height:100%
-	 * 否则 top+height 并存时 bottom:0 失效，高度超出窗口 28px */
+
 	height: auto;
 	overflow: hidden;
 	border-top: var(--nav-bar-border);
@@ -281,14 +274,13 @@ onMounted(() => {
 #home-content {
 	display: block;
 	position: absolute;
-	/* 稍微调整显示位置 */
+
 	margin-left: -40px;
 	margin-top: 20px;
 	left: 100px;
 	top: 100px;
 	width: 636px;
 	height: 522px;
-	/* background-color: yellow; */
 }
 
 #home-version {
@@ -308,7 +300,6 @@ onMounted(() => {
 	font-size: 32px;
 	font-weight: bold;
 	color: var(--home-title-color);
-	/* background-color: green; */
 }
 
 #home-start-list {
@@ -320,7 +311,6 @@ onMounted(() => {
 	width: 160px;
 	height: 422px;
 	row-gap: 10px;
-	/* background-color: red; */
 }
 
 #animation-easing {
@@ -343,7 +333,6 @@ onMounted(() => {
 #animation-easing-id {
 	margin: 2px;
 	flex: 1 1 auto;
-	/* background: blue; */
 }
 
 #animation-easing-canvas {

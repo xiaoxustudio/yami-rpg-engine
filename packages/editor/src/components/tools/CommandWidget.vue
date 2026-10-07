@@ -29,6 +29,5 @@ onMounted(() => {});
 	height: 20px;
 	box-shadow: none;
 	outline: none;
-	/* outline-color: var(--input-border-color-focus); */
 }
 </style>

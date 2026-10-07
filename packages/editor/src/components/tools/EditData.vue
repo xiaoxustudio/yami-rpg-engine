@@ -41,11 +41,10 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #edit-data {
 	width: 720px;
 	height: calc(238px * 1.5);
-	/* 输入提示框可溢出 */
+
 	overflow: visible;
 }
 
@@ -55,7 +54,7 @@ onMounted(() => {});
 	top: 10px;
 	width: 700px;
 	height: calc(238px * 1.15);
-	/* 用于填补150%缩放时边框处的缝隙 */
+
 	background-color: var(--input-background);
 	border: var(--fieldset-border);
 	border-radius: 2px;

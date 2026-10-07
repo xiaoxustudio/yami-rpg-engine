@@ -1,5 +1,4 @@
 <template>
-	<!-- 变量窗口 -->
 	<WindowFrame
 		id="variable"
 		:ref="registryRef(variableEls, 'variable')"
@@ -134,7 +133,6 @@ onMounted(() => {
 });
 </script>
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #variable {
 	width: 572px;
 	height: 700px;

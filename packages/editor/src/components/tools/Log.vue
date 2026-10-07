@@ -20,7 +20,6 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 不能用 scoped：选择器需命中子组件内部生成的元素 */
 #log-message {
 	display: none;
 	position: absolute;
@@ -30,7 +29,7 @@ onMounted(() => {});
 	height: auto;
 	line-height: 16px;
 	background-color: var(--log-message-background);
-	/* pointer-events: none; */
+
 	z-index: 10;
 }
 </style>

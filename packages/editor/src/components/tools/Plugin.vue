@@ -140,7 +140,6 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #plugin {
 	width: 700px;
 	height: 700px;
@@ -169,7 +168,7 @@ onMounted(() => {});
 	margin: 4px;
 	padding: 4px 10px;
 	width: calc(100% - 8px);
-	/* font-family: var(--font-family-mono); */
+
 	user-select: text;
 	overflow: hidden;
 	white-space: pre-wrap;

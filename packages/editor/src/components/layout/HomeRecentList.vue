@@ -73,6 +73,5 @@ onBeforeUnmount(() => {
 	height: 422px;
 	row-gap: 10px;
 	overflow: hidden;
-	/* background-color: blue; */
 }
 </style>

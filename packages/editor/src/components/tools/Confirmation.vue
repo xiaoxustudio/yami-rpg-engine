@@ -49,7 +49,6 @@ watch(
 </script>
 
 <style>
-/* 不能用 scoped：选择器需命中子组件内部生成的元素 */
 #confirmation {
 	width: 304px;
 	height: 98px;

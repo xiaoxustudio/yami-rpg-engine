@@ -89,8 +89,6 @@ onBeforeUnmount(() => {
 
 <template>
 	<div ref="root" class="command-list" :id="props.id">
-		<!-- 可见行由模板渲染；`:key` 用行模型的稳定 key，行内内容仍由 api 的
-		     `updateCommandElement`（经 `:ref` 回写桥）生成 ⇒ 编辑器侧 eslints 的缩进线与标记照旧 -->
 		<div
 			v-for="row in rows"
 			:key="row.key"
@@ -108,9 +106,7 @@ onBeforeUnmount(() => {
 	width: 100%;
 	height: 100%;
 	overflow-y: auto;
-	/* 虚拟滚动：窗口移动会改首/末行的 margin ⇒ 内容高度在锚点上方变化，
-	   浏览器默认的滚动锚定（overflow-anchor: auto）会去"补偿"scrollTop，与列表自己的
-	   窗口计算互相拉扯（实机表现：滚动条回弹/自动跑、内容整块跳一行）。由列表自己管滚动。 */
+
 	overflow-anchor: none;
 	font-family: var(--font-family-mono);
 	user-select: none;

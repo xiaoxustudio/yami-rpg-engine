@@ -1,5 +1,4 @@
 <template>
-	<!-- 设置视频 - 属性 -->
 	<WindowFrame id="setVideo-property" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -86,7 +85,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #setVideo-property {
 	width: 324px;
 	height: 122px;

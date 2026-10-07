@@ -1,5 +1,4 @@
 <template>
-	<!-- 设置文本 - 属性 -->
 	<WindowFrame id="setText-property" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -180,7 +179,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #setText-property {
 	width: 324px;
 	height: 194px;

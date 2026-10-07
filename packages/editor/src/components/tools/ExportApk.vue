@@ -41,7 +41,7 @@
 					v-model="exportApkForm.apkVersionCode"
 				/>
 			</div>
-			<!-- 超链接点击由本组件转发（Menubar.initialize 不再全文档查 `.href`） -->
+
 			<div class="box" id="export-apk-PS" @click="onHrefClick">
 				<div class="text project-summary export-apk-major">PS（温馨提示）</div>
 				<div class="text export-apk-major">

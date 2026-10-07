@@ -335,7 +335,6 @@ defineExpose({ updateAddress, el });
 	white-space: pre;
 	text-overflow: ellipsis;
 	text-indent: 2px;
-	/* background-color: green; */
 }
 
 :global(.file-head-address::before) {
@@ -352,7 +351,6 @@ defineExpose({ updateAddress, el });
 	vertical-align: top;
 	padding: 0 2px;
 	text-indent: 0;
-	/* background-color: green; */
 }
 
 :global(:where(file-head-address-arrow)) {
@@ -362,7 +360,6 @@ defineExpose({ updateAddress, el });
 	height: 20px;
 	text-indent: 0;
 	border-color: var(--folder-mark-color);
-	/* background-color: red; */
 }
 
 :global(:where(file-head-address-link)) {
@@ -373,7 +370,6 @@ defineExpose({ updateAddress, el });
 	height: 20px;
 	text-indent: 0;
 	color: var(--folder-mark-color);
-	/* background-color: red; */
 }
 
 :global(:where(file-head-address-text)) {
@@ -383,7 +379,6 @@ defineExpose({ updateAddress, el });
 	overflow: hidden;
 	white-space: pre;
 	text-overflow: ellipsis;
-	/* background-color: red; */
 }
 
 :global(:where(file-head-address-folder.drop-target)) {
@@ -416,7 +411,6 @@ defineExpose({ updateAddress, el });
 	border-left-width: 6px;
 	border-left-style: solid;
 	border-left-color: inherit;
-	/* background-color: blue; */
 }
 
 :global(:where(.upper-level-directory)) {
@@ -448,6 +442,5 @@ defineExpose({ updateAddress, el });
 :global(:where(.file-head-view)) {
 	flex: 0 1 80px;
 	margin: 2px 4px 2px 2px;
-	/* background-color: red; */
 }
 </style>

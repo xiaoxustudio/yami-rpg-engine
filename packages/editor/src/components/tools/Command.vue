@@ -171,19 +171,17 @@ onMounted(() => {});
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #command-suggestions {
 	display: block;
 	position: fixed;
 	margin-left: var(--1dpx);
 	width: calc(400px - var(--2dpx));
-	/* box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.5); */
+
 	background-color: var(--suggestion-widget-background);
 	outline: var(--window-outline);
 	pointer-events: visible;
 }
 
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #command-searcher {
 	position: absolute;
 	top: 0;
@@ -204,7 +202,6 @@ onMounted(() => {});
 	padding-left: 12px;
 }
 
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #command {
 	width: 700px;
 	height: 700px;
@@ -233,7 +230,7 @@ onMounted(() => {});
 	margin: 4px;
 	padding: 4px 10px;
 	width: calc(100% - 8px);
-	/* font-family: var(--font-family-mono); */
+
 	user-select: text;
 	overflow: hidden;
 	white-space: pre-wrap;

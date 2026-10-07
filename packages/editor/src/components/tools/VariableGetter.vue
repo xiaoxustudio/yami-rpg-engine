@@ -1,5 +1,4 @@
 <template>
-	<!-- 变量访问器窗口 -->
 	<WindowFrame ref="frame" id="variableGetter" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -126,7 +125,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #variableGetter {
 	width: 324px;
 	height: 146px;

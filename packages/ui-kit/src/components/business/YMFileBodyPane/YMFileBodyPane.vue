@@ -1,7 +1,5 @@
 <template>
 	<div class="file-body-pane" ref="el" :data-v-ref="''">
-		<!-- 行元素由模板渲染——`:key`/`:style`/`:class` 全部吃"行描述"数据，
-		     api 只负责算可见窗口，并把模板建出的元素经 `bindRowElement` 登记回 `elements[]` -->
 		<div class="file-body-content" ref="contentEl" tabindex="0" :data-v-ref="''">
 			<div
 				v-for="row in visibleRows"
@@ -11,7 +9,6 @@
 				:class="{ 'file-item': !row.isFolder, selected: row.selected }"
 				:style="row.style"
 			>
-				<!-- 文件名由模板渲染（Vue 负责改名后的更新）；图标仍由 api 建（画布/图片类不可替代） -->
 				<span class="file-body-name">{{ row.name }}</span>
 			</div>
 		</div>
@@ -2211,11 +2208,10 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	position: relative;
 	padding: 0;
 	text-align: left;
-	/* width: 100%; */
+
 	height: 100%;
 	font-size: 1em;
 	line-height: 20px;
-	/* background-color: green; */
 }
 
 :global(:where(.file-body-content.list > .file-body-item)) {
@@ -2235,11 +2231,6 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	height: 16px;
 	line-height: 16px;
 	image-rendering: auto !important;
-	/* background: green; */
-	/* pointer-events: none; */
-	/* background-position: center; */
-	/* background-repeat: no-repeat; */
-	/* background-size: 100%; */
 }
 
 :global(:where(.file-body-content.list > .file-body-item > .file-body-icon.icon-file-event)) {
@@ -2258,7 +2249,6 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	width: 220px;
 	height: 20px;
 	white-space: pre;
-	/* background-color: red; */
 }
 
 :global(:where(.file-body-content.small)) {
@@ -2275,7 +2265,6 @@ defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
 	line-height: 15px;
 }
 
-/* 必须指定.file-body-item的宽度，否则可能是0px高度 */
 :global(:where(.file-body-content.small > .file-body-item)) {
 	position: absolute;
 	width: 40px;

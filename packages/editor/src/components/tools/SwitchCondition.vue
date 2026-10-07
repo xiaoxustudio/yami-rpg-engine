@@ -1,5 +1,4 @@
 <template>
-	<!-- 匹配 - 条件 -->
 	<WindowFrame
 		id="switch-condition"
 		:ref="registryRef(fieldEls, 'switch-condition')"
@@ -192,7 +191,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #switch-condition {
 	width: 324px;
 	height: 146px;

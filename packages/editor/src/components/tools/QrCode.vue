@@ -63,7 +63,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 不能用 scoped：选择器需命中子组件内部生成的元素 */
 #qr-code {
 	width: 320px;
 	height: 400px;

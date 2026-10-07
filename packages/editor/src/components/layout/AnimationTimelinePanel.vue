@@ -163,8 +163,6 @@
 				></div>
 			</div>
 		</div>
-		<!-- 播放栏在 `#animation-timeline-head` 里（紧跟页签之后、刻度尺之前）：
-		     head 带 `z-index` 压在分组页签带之上，所以两者都看得见。 -->
 	</div>
 </template>
 

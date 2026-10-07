@@ -8,7 +8,7 @@
 
 		<div class="grid-box">
 			<div class="text" id="about-credits">{{ t('components.about-credits.content') }}</div>
-			<!-- 超链接点击由本组件转发（Menubar.initialize 不再全文档查 `.href`） -->
+
 			<div class="text" @click="onHrefClick">
 				<div class="text href">刀里个刀</div>
 				<br />

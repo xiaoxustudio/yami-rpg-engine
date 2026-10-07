@@ -1,5 +1,4 @@
 <template>
-	<!-- 瓦片地图访问器窗口 -->
 	<WindowFrame ref="frame" id="tilemapGetter" @confirm="onConfirm">
 		<template #title
 			><TitleBar
@@ -76,7 +75,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #tilemapGetter {
 	width: 324px;
 	height: 122px;

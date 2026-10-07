@@ -277,7 +277,7 @@ const inspectorPageComponents = inspectorPages.map(({ value, target, loader }) =
 	height: 28px;
 	line-height: 28px;
 	text-align: center;
-	/* font-size: 10px; */
+
 	font-family: var(--font-family-symbol);
 }
 

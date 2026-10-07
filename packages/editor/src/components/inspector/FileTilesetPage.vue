@@ -45,14 +45,12 @@ onMounted(() => {
 #palette-head-start {
 	display: flex;
 	flex: 0 0 auto;
-	/* background-color: green; */
 }
 
 #palette-zoom {
 	flex: 0 0 auto;
 	margin: 2px 4px;
 	width: 80px;
-	/* background-color: green; */
 }
 
 #palette-body {

@@ -1,5 +1,4 @@
 <template>
-	<!-- 匹配 - 分支 -->
 	<WindowFrame
 		id="switch-branch"
 		:ref="registryRef(fieldEls, 'switch-branch')"
@@ -54,7 +53,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #switch-branch {
 	width: 324px;
 	height: 180px;

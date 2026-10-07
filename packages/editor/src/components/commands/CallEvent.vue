@@ -95,7 +95,7 @@
 				v-model="form.eventType"
 			/>
 		</div>
-		<!-- 参数标签的「模板节点」（不再用 document.createElement('div') + render()）→ 模板提供、模块 cloneNode -->
+
 		<div class="hidden">
 			<div
 				class="text call-event-component"
@@ -197,7 +197,6 @@ onMounted(() => {
 </script>
 
 <style>
-/* 不能用 scoped：-confirm/-cancel 等元素由 WindowFrame 内部生成 */
 #callEvent {
 	width: 324px;
 	height: 146px;
