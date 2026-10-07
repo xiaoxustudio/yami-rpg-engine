@@ -7,10 +7,6 @@ import {
 	clampEasingPointY
 } from '@app/composables/useEasingWindow.ts';
 
-// 回归：缓动编辑器表单从 `composables/useEasingWindow.ts:31` 的模块级 `reactive` 升进
-// `stores/easing-form.ts`。门面 `useEasingWindow()` 必须返回**同一个** reactive 对象，
-// 否则 `Easing.vue:103` / `EasingPointsSection.vue:238` 与单例 6 处就地改值会失去响应性。
-
 const resetForm = (): void => {
 	const { form } = getEasingFormStore();
 	form.points = Array.from({ length: 8 }, () => ({ x: 0, y: 0 }));

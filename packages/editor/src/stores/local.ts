@@ -17,7 +17,6 @@ export const useLocalStore = defineStore('local', () => {
 	const languages = shallowRef<{ key: string; alias: string; filename: string }[]>([]);
 	const properties = shallowRef<Record<string, string>>({});
 	const components = shallowRef<Record<string, LocalComponentShape>>({});
-	// 语言资源就绪标志：主菜单文案来自本地化数据，就绪后才显示（原实现由 i18n 启动时给 #menu 加 .visible）
 	const ready = shallowRef(false);
 
 	function setLanguage(value: string) {

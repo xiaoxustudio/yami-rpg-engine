@@ -16,9 +16,6 @@ describe('useLocalizationStore（Localization 状态反转：store 为源）', (
 			expect(key in store, String(key)).toBe(true);
 		}
 
-		// 「白名单写了但没桥」是假象：逐个用单例写一次、再从 store 读回校验。
-		// 用功能性校验而不是 `Object.getOwnPropertyDescriptor(Localization, key)`：
-		// 后者断言的是全局单例的属性形状，在全量套件里与其它 spec 的加载顺序耦合（实测会偶发红）。
 		const probes: Record<string, unknown> = {
 			state: 'open',
 			strings: { k: 'v' },

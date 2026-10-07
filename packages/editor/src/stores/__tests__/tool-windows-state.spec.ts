@@ -2,9 +2,6 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { getSelectionStore } from '@app/stores/selection';
 import { getColorStore } from '@app/stores/color';
 
-// 契约：① 单例读写落在 store；② store 读写经桥反向可读；③ 桥是 getter/setter（真接线）。
-// `Selection.regexps`、`Color` 的 DOM/方法槽位都不在这次迁移范围内。
-
 describe('Selection → stores/selection（text-capture）', () => {
 	beforeEach(() => {
 		const store = getSelectionStore();
@@ -14,8 +11,6 @@ describe('Selection → stores/selection（text-capture）', () => {
 
 	it('单例写 → store 读（inserting / context 两个字段）', async () => {
 		const { Selection } = await import('@app/tools/text-capture.ts');
-		// `SelectionShape.context.target` 是真实的 EventTargetElement（HTMLTextAreaElement & …），
-		// 本用例只验桥接，不构造真元素 ⇒ 用 never 断言（探针值的形状对桥来说无关）
 		const snapshot = { target: { name: 'input' }, inserting: true };
 		Selection.inserting = true;
 		Selection.context = snapshot as never;
@@ -63,8 +58,6 @@ describe('Color → stores/color（color-picker）', () => {
 		expect(Color.pillarY).toBe(9);
 		expect(Color.indexEnabled).toBe(false);
 
-		// 初值语义：旧实现是「延迟绑定槽」（读到 undefined），现在按字段类型给 0/false，
-		// 对既有用法（`if (…)` 与 `Math.round(this.paletteX)`）都安全。
 		store.paletteX = 0;
 		store.indexEnabled = false;
 		expect(Color.paletteX).toBe(0);

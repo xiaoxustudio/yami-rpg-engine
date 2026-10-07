@@ -7,10 +7,6 @@ import { requestKeyValueForm } from '@app/composables/commands/useRequestURLComm
 import { form as switchConditionForm } from '@app/composables/useSwitchConditionSchema';
 import { FrameGenerator } from '@app/palette/tile-frame-generator.ts';
 
-// 回归：三份「命令工具弹窗」表单 + 生成帧窗口表单，从模块级 `reactive` 升进 Pinia。
-// 共同契约：调用方拿到的仍是**同一个 reactive 对象/可读写属性**，且读写都落在 store 上
-// （模板 v-model 依赖前者，DevTools/隔离依赖后者）。
-
 describe('command-forms 三份表单 → stores/commandForms', () => {
 	beforeEach(() => {
 		const s = getCommandFormsStore();
@@ -45,7 +41,6 @@ describe('command-forms 三份表单 → stores/commandForms', () => {
 		const stored = getCommandFormsStore().switchConditionForm;
 		expect(stored.type).toBe('variable');
 		expect(stored.numberValue).toBe(42);
-		// 嵌套对象是同一引用：就地改也能被 store 看见
 		expect(stored.variable.type).toBe('global');
 	});
 
@@ -57,8 +52,6 @@ describe('command-forms 三份表单 → stores/commandForms', () => {
 		expect(stored.variable).toEqual({ type: 'global', key: 'hp' });
 		expect(stored.valueVariable).toEqual({ type: 'local', key: 'x' });
 		expect(stored.list).toEqual([{ text: 'a' }]);
-		// `useGetObjectPropertyCommandSchema.ts` 的 `setForm` 是它的访问器；
-		// 那条链路由既有 command-schemas 系列 spec（走 customLoad → Object.assign(setForm, …)）覆盖。
 	});
 
 	it('四份切片都是 reactive（模板 v-model 依赖深层响应性）', () => {

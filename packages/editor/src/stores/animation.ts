@@ -12,12 +12,6 @@ const loadAnimation = () =>
 	});
 const Animation = getLazyWindow('animation', loadAnimation);
 
-/**
- * 白名单的**唯一来源**是 `./animation-keys.ts`（叶子模块，单例侧的桥接循环共用同一份）。
- *
- * 历史上这里手写了一份独立的数组，与 `animation/animation-window.ts` 的 `animationBridgeKeys`
- * 漂移过（少了 5 个已桥接键）—— 现在两侧都 import 同一常量，结构上不可能再漂移。
- */
 export { ANIMATION_STATE_KEYS as animationStateKeys } from './animation-keys';
 
 type AnimationFrameShape = {
@@ -31,7 +25,6 @@ type AnimationFrameShape = {
 	[key: string]: unknown;
 };
 
-// 与动画侧同一份模型：store 存的 motion 就是运行期对象（setMotion 直接存、setDirection 直接读 dirCases）。
 type AnimationMotionShape = AnimationMotionData;
 
 type AnimationContextShape = {

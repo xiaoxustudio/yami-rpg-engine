@@ -29,17 +29,14 @@ describe('useDataStore（Data 状态桥接）', () => {
 		const store = getDataStore();
 		const first = { guidMap: { g9: { id: 'z' } } } as unknown as ManifestShape;
 		store.setManifest(first);
-		// ref 侧是原始引用（shallowRef 不代理）；经 data 代理读到的是同一份内容
 		expect(store.manifest).toBe(first);
 		expect(store.data.manifest).toEqual(first);
 
 		const second = { guidMap: {} } as unknown as ManifestShape;
-		store.data.manifest = second; // 写字段 ⇒ 落到同一个 ref
+		store.data.manifest = second;
 		expect(store.manifest).toBe(second);
 		expect(store.data.manifest).toEqual(second);
 
-		// 可枚举性：`Object.keys` 与 `JSON.stringify` 都必须看得到 manifest，
-		// 否则项目数据的序列化会静默丢字段（这正是当初不敢去重的原因）。
 		expect(Object.keys(store.data)).toContain('manifest');
 		expect(JSON.stringify(store.data)).toContain('"manifest"');
 

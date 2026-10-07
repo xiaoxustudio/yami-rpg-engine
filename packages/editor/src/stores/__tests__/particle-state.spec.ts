@@ -22,7 +22,6 @@ describe('useParticleStore（Particle 窗口状态桥接）', () => {
 		for (const key of particleStateKeys) {
 			expect(key in store, String(key)).toBe(true);
 		}
-		// 白名单写了但没桥 = 假象：逐个用单例写一次、从 store 读回校验
 		for (const key of particleStateKeys) {
 			const probe: unknown =
 				key === 'translationKey' ? 0b0101 : key === 'state' ? 'open' : true;

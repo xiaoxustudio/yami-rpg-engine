@@ -62,8 +62,6 @@ describe('usePaletteStore（Palette 工具栏状态反转：store 为源）', ()
 		expect(store.scrollable).toBe(true);
 		Palette.activeIndex = 7;
 		expect(store.activeIndex).toBe(7);
-		// 夹具按 `PaletteTilesetShape` 的必填项给全（`height`/`tileWidth`/`tileHeight`/`tiles`
-		// 在本用例里用不到，但接口里是必填 —— 真源 `Data.tilesets[guid]` 一定有）
 		Palette.tileset = {
 			type: 'auto',
 			width: 8,

@@ -16,8 +16,6 @@ describe('useAutoTileStore（AutoTile 窗口状态反转：store 为源）', () 
 		expect(store.ruleBits).toEqual([0, 0, 0, 0, 0, 0, 0, 0]);
 	});
 
-	// 9 = 8 个被桥接到单例 `AutoTile` 的键 + 纯 store 侧的 `ruleBits`。
-	// 原本还有 `state` / `target`（两端都无读写者）—— 已删除，故 11 → 9。
 	it('状态键完整（9 项）', () => {
 		const store = getAutoTileStore();
 		expect(autoTileStateKeys).toHaveLength(9);

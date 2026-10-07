@@ -42,8 +42,6 @@ export const useLayoutStore = defineStore('layout', () => {
 	const focusableSelector = shallowRef<string | null>(null);
 	const focusableElements = shallowRef<HTMLElement[] | null>(null);
 
-	// 运行时页面/页签归属：value → 当前承载该页面的 group-manager / leaf nav 元素
-	// （整壳 Teleport :to 输入）。
 	const pageTargets = shallowReactive<Record<string, HTMLElement | null>>({});
 	const tabTargets = shallowReactive<Record<string, HTMLElement | null>>({});
 

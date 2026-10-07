@@ -15,9 +15,7 @@ import { pinia } from './pinia';
  * 所以这里索性只留单例侧那一份，从根上避免出现第二份。
  */
 export const useSelectionStore = defineStore('selection', () => {
-	/** 是否处于「插入」态（`Selection.inserting`） */
 	const inserting = shallowRef<boolean>(false);
-	/** 上下文快照（结构见 `SelectionShape.context`；target 类型来自 element-api，这里不复制它） */
 	const context = shallowRef<{ target: unknown; inserting: boolean } | null>(null);
 
 	return { inserting, context };

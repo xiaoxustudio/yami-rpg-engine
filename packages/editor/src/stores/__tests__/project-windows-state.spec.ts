@@ -3,11 +3,6 @@ import { isReactive } from 'vue';
 import { getNewProjectStore } from '@app/stores/new-project';
 import { getDeploymentStore } from '@app/stores/deployment';
 
-// 回归：新建/部署项目窗口的表单与「确认按钮启用态」，从模块级 `reactive`/`ref` 升进 Pinia。
-// 契约：① 表单仍是可读写对象（`Object.assign` 也走 setter）；② 确认态仍是 **ref 形状**
-// （`computed` 可写），所以模板里 `:confirm-disabled="confirmDisabled"` 自动解包、
-// `confirmDisabled.value = …` 也照旧；③ 读写都落在 store 上。
-
 describe('NewProject 表单 → stores/newProject', () => {
 	beforeEach(async () => {
 		const store = getNewProjectStore();
@@ -18,7 +13,6 @@ describe('NewProject 表单 → stores/newProject', () => {
 	});
 
 	it('form 是可读写访问器，读写落在 store（含 Object.assign 路径）', async () => {
-		// `form` 在窗口模块里是私有的，对外经 `NewProject.form` 暴露
 		const { NewProject } = await import('@app/title/new-project-window.ts');
 		const { newProjectConfirmDisabled } = await import('@app/title/new-project-window.ts');
 		Object.assign(NewProject.form, {

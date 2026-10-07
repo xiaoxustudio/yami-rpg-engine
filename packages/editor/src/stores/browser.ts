@@ -51,10 +51,6 @@ export interface FileBrowserBody {
 
 export interface FileBrowserInstance {
 	state?: string;
-	/**
-	 * 当前项目目录根（**数组**：legacy `this.directory = [Directory.assets]`，同时用作
-	 * `Directory.searchFiles` 的搜索基集）。浏览器组件靠它判断"是否已加载项目"并据此清理。
-	 */
 	directory?: unknown[] | null;
 	page?: HTMLElement;
 	searcher?: HTMLElement & { addKeydownFilter?(): void };
@@ -379,7 +375,6 @@ export const useBrowserStore = defineStore('browser', () => {
 	function initialize() {
 		const Browser = getBrowser();
 		if (!Browser) {
-			// setComponent 由 FileBrowser.vue 的双 nextTick 完成，可能晚于本初始化调用，延迟重试
 			if (initRetryCount < 20) {
 				initRetryCount++;
 				setTimeout(() => initialize(), 50);
@@ -547,7 +542,6 @@ export const useBrowserStore = defineStore('browser', () => {
 		if (selections.length === 0) {
 			selections.push(Directory?.assets ?? null);
 		}
-		// legacy：`this.directory = [Directory.assets]`（数组，供 `Directory.searchFiles` 递归搜索用）
 		Browser.directory = [Directory?.assets];
 		Browser.body?.setViewIndex?.(view);
 		Browser.nav?.load?.(...selections);

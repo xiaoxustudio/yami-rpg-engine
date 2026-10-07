@@ -22,7 +22,6 @@ export const sceneStateKeys = [
 	'zoom',
 	'scaleX',
 	'scaleY',
-	// 无每帧读写（`activeTilemapId` 由 computeActiveTilemapId 在目标/动画切换时才写）
 	'brush',
 	'symbol',
 	'showLight',
@@ -41,7 +40,6 @@ export const useSceneStore = defineStore('scene', () => {
 	const zoom = shallowRef<number | null>(null);
 	const scaleX = shallowRef<number | null>(null);
 	const scaleY = shallowRef<number | null>(null);
-	/** 当前笔刷（`palette-engine.ts:634` 判 `=== 'eraser'`）/ 当前符号 / 显示灯光·动画开关 / 背景序号 */
 	const brush = shallowRef<string | null>(null);
 	const symbol = shallowRef<unknown>(null);
 	const showLight = shallowRef<boolean>(false);

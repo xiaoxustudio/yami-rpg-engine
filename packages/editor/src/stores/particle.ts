@@ -63,7 +63,6 @@ export const useParticleStore = defineStore('particle', () => {
 	const zoom = shallowRef<number | null>(null);
 	const scaleX = shallowRef<number | null>(null);
 	const scaleY = shallowRef<number | null>(null);
-	/** 重启键（UI 触发器）/ 平移修饰键位掩码 / 显示坐标轴开关 */
 	const restartKey = shallowRef<boolean>(false);
 	const translationKey = shallowRef<number>(0b0000);
 	const showAxes = shallowRef<boolean>(true);

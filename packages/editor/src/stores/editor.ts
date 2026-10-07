@@ -31,7 +31,6 @@ export interface EditorConfigShape {
 	[key: string]: unknown;
 }
 
-// Editor.project 结构（宽类型起步——字段随迁移细化）
 export interface EditorProjectShape {
 	version?: string;
 	scene?: unknown;

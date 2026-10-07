@@ -36,23 +36,6 @@ export const loadUI = async () => {
 };
 const UI = getLazyWindow('ui', loadUI);
 
-/**
- * 引擎自身实现的注册点（`UIEngine`）。
- *
- * ## 为什么用「引擎注册自己」而不是 `import { UIEngine }`
- *
- * `ui-engine.ts` 已经**静态** import 本文件（它要 `loadUI` 与 `getUIStore`）。
- * 若这里反向静态 import `ui-engine.ts`，就成了一条静态环 —— 而本文件顶部那段注释
- * 讲的正是这个坑（`loadUI` 存在的理由就是绕开静态环）。所以反过来：**由引擎在模块加载
- * 末尾注册自己**，依赖方向仍然是单向的（引擎 → store）。
- *
- * ## 为什么这样就能不等 ④-2 的镜像删除
- *
- * 注册之前（或引擎尚未加载时）调用方**回退**到 `UI` 惰加载代理。两条路拿到的是
- * **同一个函数对象**（`UI.x` 就是 `UIEngine.x` 的镜像）、**同一个接收者**（都以 `UI` 为
- * `this`），所以行为等价 —— 这一点由 `stores/__tests__/ui-state.spec.ts` 的既有用例兜底。
- * 于是本步先把 store 的 7 个引擎转发与镜像**解耦**，等 ④-2b 删镜像时它们已经不需要镜像了。
- */
 let uiEngineRef: Record<string, unknown> | null = null;
 
 /** 由 `engine/ui/ui-engine.ts` 在模块加载**末尾**调用（那时它的挂载已全部就位）。 */
@@ -60,22 +43,6 @@ export function registerUIEngine(engine: Record<string, unknown>): void {
 	uiEngineRef = engine;
 }
 
-/**
- * UI 窗口 store 的状态键。
- *
- * 与 `engine/ui/ui-singleton.ts:339` 的 `uiBridgeKeys`（6 个：state / target / zoom / width /
- * height / mode）**不是同一份**，且这是**有意**的：
- *
- * - 前 6 个被桥接到单例 `UI` 上（ui-kit 与遗留代码按 `UI.xxx` 取用）；
- * - 其余 15 个（controlPointTexture / inspectorTypeMap / history / matrix / root / background /
- *   meta / nodes / foreground / scrollLeft / scrollTop / scrollRight / scrollBottom / dragging /
- *   hover）**只在 editor 内经 `getUIStore()` 使用** —— 实测 72 处，例如
- *   `engine/ui/animation-element.ts:172-175` 的滚动偏移、`engine/animation/animation-window-engine.ts:767`
- *   的控制点纹理、`composables/usePresetElementWindow.ts:87` 的 `meta.guid`；单例上不镜像。
- *
- * 换言之：桥接列表 = 「外部/遗留按 `UI.xxx` 取的字段」，本数组 = 「store 拥有的全部状态」，
- * 两者职责不同，因此长度本来就可以不等（`autoTile` 的 `ruleBits` 是同一类情况）。
- */
 export const uiStateKeys = [
 	'state',
 	'target',
@@ -100,15 +67,11 @@ export const uiStateKeys = [
 	'hover'
 ] as const;
 
-// 此处与 `ui-singleton.ts` 的同名重复声明）。此前两份靠索引签名「碰巧兼容」，
-// 一旦其中一份收紧就会互不兼容（`ui-transform.ts:59` 曾当场报错）。
-
 interface UIContextShape {
 	meta: { guid: string; path: string };
 	ui?: { width: number; height: number; nodes: UINodeShape[] } & Record<string, unknown>;
 	editor?: {
 		target: UINodeShape | null;
-		/** 根节点是**实例**（见 `engine/ui/ui-singleton.ts` 同名接口的说明）。 */
 		root: UIElementInstance | null;
 		history: History;
 		centerX: number;
@@ -127,14 +90,6 @@ interface UIPrefabShape {
 	[key: string]: unknown;
 }
 
-/**
- * `hasPrefab` 的真实入参口径。
- *
- * 两处调用方都是**图标渲染器**（`LayoutPanel.vue` / `PresetElement.vue`），
- * 手里只有节点的局部视图（`class?: string`、没有 `children`），
- * 按完整的 `UINodeShape` 收参会让它们在 vue-tsc 报 TS2345；
- * 而该动作实际只读 `presetId`。
- */
 interface PrefabRefShape {
 	presetId?: string;
 }
@@ -152,25 +107,7 @@ export const useUIStore = defineStore('ui', () => {
 	const width = shallowRef<number | null>(null);
 	const height = shallowRef<number | null>(null);
 	const mode = shallowRef<string | null>(null);
-	/**
-	 * 控制点贴图（WebGL 资源）。原先只挂在遗留单例 `UI.controlPointTexture` 上，
-	 * 由 `ui-initialize.ts:87` 在异步载图回调里赋值、`animation-window-engine.ts:716` 读取。
-	 *
-	 * 升进 store 的理由：它正是让 `animation-window-engine` 摆脱 `@app/engine/ui/ui-singleton.ts` 的
-	 * 唯一阻塞点（那个文件只用到这一个成员）。
-	 *
-	 * 为什么写入能同步过来：`stores/ui.ts:63` 是 `u?.initialize?.()`，接收者就是 UI 单例，
-	 * 因此 `ui-initialize.ts` 里的 `this.controlPointTexture = …` 会命中 `uiStateKeys` 的
-	 * `defineProperty` setter。`shallowRef` 不深追代理——WebGL 包装对象不该进深层响应式。
-	 */
 	const controlPointTexture = shallowRef<ImageTexture | null>(null);
-	/**
-	 * class 名 → 检查器类型 的映射表。由 `ui-initialize.ts:149` 以对象字面量整体赋值
-	 * （`this.inspectorTypeMap = { … }`），所以按**整体替换**语义存取即可，不需要深层响应式。
-	 *
-	 * 升进 store 的理由：它是 `update/updater-hooks.ts` 摆脱 `@app/engine/ui/ui-singleton.ts` 的唯一阻塞点。
-	 * 同一个名字在 Scene / Animation 单例上各有一份互不相干的表，这里只接 UI 那一份。
-	 */
 	const inspectorTypeMap = shallowRef<Record<string, string> | null>(null);
 	/**
 	 * `elements.list` / `.head` / `.body` / `.screen` 一律从**元素注册表**读取，
@@ -227,91 +164,11 @@ export const useUIStore = defineStore('ui', () => {
 		(uiEls.get('ui-body') as YamiElement | undefined) ?? null;
 	const screenEl = (): YamiElement | null =>
 		(uiEls.get('ui-screen') as YamiElement | undefined) ?? null;
-	/**
-	 * UI 画布的历史栈（撤销/重做）。
-	 *
-	 * 注意它与 `ParamHistory` 是**两套不同的东西**：后者（`composables/useParamHistory.ts`）
-	 * 是检查器参数编辑的历史，前者只服务 UI 画布节点的增删改。
-	 *
-	 * 生命周期：`ui-file.ts` 在 `load()` 里从 `context.editor.history` 取出、在 `close()` 里置 null。
-	 * 因为写入走的是同一个单例的 setter，store 会**跟随时序**变化（关闭后即 null），
-	 * 不会留下陈旧引用。调用方必须判空——老代码是 `UI.history.save(...)`，
-	 * 关闭后调用会直接抛 TypeError，这里暴露成可判空的形状正是修掉那个隐患。
-	 */
 	const history = shallowRef<History | null>(null);
-	/**
-	 * UI 画布的 GL 变换矩阵。
-	 *
-	 * ⚠️ 这里的初值只是**防止初始化前读到 null 的兜底**，它**不是**真源。
-	 * 真源是 `UI.matrix`（`ui-initialize.ts` 里 `this.matrix = new Matrix()`），
-	 * 由相机 `ui-engine.ts` 的 `updateTransform` 每帧 `reset().scale().translate()`。
-	 * `ui-initialize.ts` 会把**同一个实例**赋给本字段，因此之后两边是同一个对象。
-	 *
-	 * ## 为什么初值不能当成真源（2026-09-18，实测「画面冻结」）
-	 *
-	 * 纯计算对象不代表它是**常量**。曾经这里只放一个 `new Matrix()` 兜底、又没有写入方，
-	 * 于是所有绘制（`element-base.ts` 的 `gl.matrix.set(getUIStore().matrix!)…`、
-	 * `ui-engine.ts` 的坐标轴/控制点）都在用一个**永远停在单位矩阵**的副本：
-	 * 相机怎么平移缩放，画面都一模一样，而且**一个异常都不抛**
-	 * （单位矩阵是合法值）。这是最难查的一类：不崩、不报错、只是不动。
-	 *
-	 * 教训：给 store 字段补"安全初值"之前，先确认它**是谁在改**；
-	 * 否则等于把「崩溃」悄悄换成「静默失效」。
-	 */
 	const matrix = shallowRef<Matrix>(new Matrix());
-	/**
-	 * UI 画布的根节点**实例**（`RootElement`，由 `ui-file.ts:68` 从
-	 * `context.editor.root` 取出、`close()` 时置 null）。
-	 *
-	 * 注意与 `uiElClasses.Root`（那个**类**）的区别：这里是实例。
-	 * `element-base.ts` 通过 `elementDataOf` 之外的方式引用它来调
-	 * `tryUpdateReferenceElements()`（`root-element.ts:59` 的实例方法）。
-	 */
 	const root = shallowRef<UIElementInstance | null>(null);
-	/**
-	 * 前景色 / 背景色。
-	 *
-	 * ⚠️ **不要**退回 `null`（2026-09-18 实测崩溃）：`RootElement.resize()` 直接调
-	 * `getUIStore().foreground!.getINTRGBA()`，而 `resize()` 会在 `UI.initialize()` 之前被触发
-	 * （`ui-events.ts` 的 resize handler → `UI.resize` → `root.resize`），于是
-	 * `Cannot read properties of null (reading 'getINTRGBA')`。
-	 *
-	 * 遗留层里它们是 `ui-window.ts` 模块加载期的 `null` + 由 `ui-events.ts` 在 config 回调里
-	 * `new StageColor(...)` —— 也就是说**旧代码同样可能在初始化前为 null**，只是那条路径
-	 * 恰好没被触发。这里给 `services/project/config.ts` 的默认色（透明背景 / 不透明前景），
-	 * 语义上等于「还没配过颜色」，且 `getINTRGBA()` 对全 0 hex 是安全的。
-	 *
-	 * 真正的颜色由本 store 的 `loadFromConfig` 写入（**不是**经 `ui-events.ts` 桥接 ——
-	 * 那正是「UI 画布一片黑」的根因，见该函数注释与
-	 * `__tests__/ui-state.spec.ts` 的 loadFromConfig 用例）。
-	 */
 	const foreground = shallowRef<StageColor>(new StageColor('000000ff', () => undefined));
 	const background = shallowRef<StageColor>(new StageColor('00000000', () => undefined));
-	// 四个 DOM 引用走注册表派生值（每次读都重新求值，永远反映当前元素）。见上方说明。
-	//
-	// ⚠️ 这里**必须**是「访问器」，不能是 `computed(...)`。
-	// `uiEls` 是**普通 Map**（`createElementRegistry` 返回的裸 `Map`），本身没有响应性，
-	// 所以 `computed` 在**首次求值后永远不再重新求值**：只要有人在元素登记**之前**读过一次
-	// （例如某个开着 UI 窗口的路径、或任何一次早期读取），它就永久缓存 `null`
-	// —— 那恰好就是这次要修的崩溃本身。
-	//
-	// 实测（vitest，2026-09-18）：`computed(() => plainMap.get(k))` 在 `map.set(k, v)` 之后
-	// 仍然返回旧值；换成下面这种 getter 写法则每次读都求值。
-	//
-	// 也不用 `reactive(new Map())` 换取响应性：Vue 的集合代理会让 `.get()` **每次返回新的
-	// Proxy**，破坏元素**同一性**（实测 `m.get('k') === el` 为 `false`）。这些元素是
-	// `YamiElementApi` 契约对象，调用方会把它们当命令式 API 长期持有并做同一性比较，
-	// 换成每读一个新代理是实打实的行为回归。裸 `Map` 保证返回的就是登记时那个对象。
-	//
-	// ⚠️ `markRaw` 不可省：Pinia 会把 setup 返回的**普通对象包成 `reactive()`**，于是
-	// `store.elements` 本身成了代理，读 `.list` 拿到的又是**对元素的代理**
-	// —— 同一性照样丢（实测 `store.elements.list === el` 为 `false`，
-	// `isProxy(store.elements)` 为 `true`）。`markRaw` 让 Pinia 跳过包装，访问器结果原样透出
-	// （实测 `same=true` / `isProxy=false`）。
-	// 这里本来就不需要深层响应性——`elements` 只是个只读访问器容器，数据源是裸 `Map`。
-	//
-	// `screen` 与 `ui-initialize.ts:23` 读的是**同一个元素**；`addScrollbars` 作用于该元素本身，
-	// 因此这里不需要（也不应该）再挂一次。
 	const elements = markRaw({
 		get list() {
 			return listEl();
@@ -343,37 +200,10 @@ export const useUIStore = defineStore('ui', () => {
 	});
 	const meta = shallowRef<{ guid: string; path: string } | null>(null);
 	const nodes = shallowRef<UINodeShape[] | null>(null);
-	/**
-	 * 当前可视区域的滚动边界（`updateTransform` 每帧算出的世界坐标范围）。
-	 *
-	 * ⚠️ 这四个**委托**给遗留 `UI.scrollLeft/Top/Right/Bottom`，不能是 store 自己的
-	 * `shallowRef`。原因（2026-09-18 定位）：写入方是 `engine/ui/ui-engine.ts:434` 的
-	 * `this.scrollLeft = …`（写的就是 `UI.scrollLeft`），而 store 里的同名 `shallowRef`
-	 * **没有任何写入方** —— 读取方 `engine/ui/animation-element.ts` 的
-	 * `getUIStore().scrollLeft!` 会读到 `null`，进而在
-	 * `gl.matrix.project(gl.flip, sr - sl, sb - st)` 上抛错。
-	 *
-	 * 之所以能零改动地委托：`UIShape` 已声明 `scrollLeft/Top/Right/Bottom: number`，
-	 * 所以 `UI.scrollLeft` 是**强类型**的，不需要任何断言（也不给 `unknown-casts` 加数）。
-	 * 等 1c 把 `ui-engine.ts` 的 `this.*` 收编进 store，这四个就能换回普通 `shallowRef`。
-	 */
 	const scrollLeft = computed<number | null>(() => UI?.scrollLeft ?? null);
 	const scrollTop = computed<number | null>(() => UI?.scrollTop ?? null);
 	const scrollRight = computed<number | null>(() => UI?.scrollRight ?? null);
 	const scrollBottom = computed<number | null>(() => UI?.scrollBottom ?? null);
-	/**
-	 * 当前拖拽中的指针事件 / 当前 hover 的节点。
-	 *
-	 * 同 `scrollLeft`：两者都委托给遗留字段（`ui/ui-pointer.ts` 写 `this.dragging`、
-	 * `ui-transform.ts` 写 `this.hover`），因为 store 里的同名 `shallowRef` 没有写入方 ——
-	 * 那会让 `engine/ui/button-element.ts:328-330` 的按下态/hover 判断永远为 false
-	 * （按钮的 active 与 hover 贴图静默失效）。
-	 *
-	 * `UIShape` 里这两个的字面量初值是 `null`，推断类型因此是 `null`（而非
-	 * `UIPointerEvent | null` / `UINodeShape | null`），所以这里各断言一次。这是本文件
-	 * 既有的写法（见下方 `UI as unknown as Record<string, unknown>`），根因是遗留类型契约
-	 * 没跟上，属于独立的清理项。
-	 */
 	const dragging = computed<{ node?: unknown } | null>(() => UI?.dragging ?? null);
 	const hover = computed<unknown>(() => UI?.hover ?? null);
 
@@ -550,8 +380,6 @@ export const useUIStore = defineStore('ui', () => {
 		UI?.unregisterPreset?.(node);
 	}
 
-	// 只读 presetId：`presetId` 缺失时遗留实现里的 `includes(undefined)` 本就返回 false，
-	// 所以收窄入参不改变行为，只是让图标渲染器的局部视图能传进来。
 	function hasPrefab(node: PrefabRefShape) {
 		return UI?.hasPrefab?.(node);
 	}
@@ -641,24 +469,6 @@ export const useUIStore = defineStore('ui', () => {
 		forwarders[key] = makeForwarder(key, () => UI);
 	}
 
-	/**
-	 * UIEngine 自身实现的转发（7 个）。与上面那批的区别：它们的**实现**在
-	 * `engine/ui/ui-engine.ts` 里，`ui-window.ts` 只是 `UI.x = UIEngine.x` 地镜像过去
-	 * ——而那不是「间接层」，是 **`this` 绑定**（`UIEngine.requestRendering` 内部用
-	 * `this.renderingFunction`、`shiftAnchor` 内部用 `this.planToSave`）。
-	 *
-	 * 遗留单例（`ui-window.ts` 的对象字面量退役），到那时 `UI` 就不再被加载，
-	 * 这 7 个动作会**静默失效**（`UI?.x?.()` 返回 undefined）。
-	 * 让它们改为直连 `UIEngine`，就把这 7 个从「依赖遗留层」移出去了：
-	 * `ui-slot-coverage` 轴的 `legacyOnly` 计数随之下降。
-	 *
-	 * （改由 `loadUI` 直连 `engine/ui/ui-singleton.ts`，不再经 `window-cluster` 再导出）。
-	 *
-	 * `UIEngine`（`makeEngineForwarder`），不再依赖 `ui-window.ts` 的镜像 —— 于是 ④-2b 删镜像时
-	 * store 这条路已经不受影响。接收者仍是 `UI`（见 `makeEngineForwarder` 的说明）。
-	 * 注意**不能**写成 `UIEngine.setZoom(…)`：那样 `this` 会变成 `UIEngine`，而实现里读的
-	 * 是 `this.planToSave` 等 UI 侧成员。必须以 `UI` 为接收者（`apply`）。
-	 */
 	const uiEngineForwardKeys = [
 		'requestRendering',
 		'setZoom',
@@ -676,26 +486,7 @@ export const useUIStore = defineStore('ui', () => {
 		UI?.saveToConfig?.(config);
 	}
 
-	// 它属于「`StageColor` 的输入格式」，而此前只有本文件做归一化，
-	// `ui-events.ts` 的 `UI.loadFromConfig` 拿到同一份 config 时**不归一化**
-	// （直接 `new StageColor(config.colors.…, …)`）⇒ 同一输入在两侧算出不同的 alpha（6 位 hex ⇒ NaN）。
-
 	function loadFromConfig(config: { colors: Record<string, unknown> }) {
-		// ⚠️ store 侧必须**自己**建 StageColor，不能只转发给 `UI.loadFromConfig`：
-		// 那个遗留实现写的是 `this.background` / `this.foreground`（UI 单例上的另一份），
-		// 而 `drawBackground` 读的是 `getUIStore().background` —— 只转发的话 store 里
-		// 永远是构造时那个**透明**兜底值，于是每帧 `clearColor(0,0,0,0)`，
-		// 表现就是「UI 画布一片黑，且不报错」（2026-09-18 实测）。
-		//
-		// 两份 StageColor 由同一份 config 驱动、回调语义一致（改色即请求重绘），
-		// 因此不会漂移；store 这份才是 `drawBackground` 的真源。
-		// `UI.loadFromConfig` 继续调用是为了兼容仍读 `UI.background` / `UI.foreground` 的遗留与插件路径。
-		//
-		// `window-cluster` 不再导出 `UI`，`primeWindows` 不再预热它），而 `main/initialize.ts` 的
-		// `loadConfig()` 早于它到位 —— 此刻 `getLazyWindow` 的 get trap 返回 undefined，
-		// `?.()` 什么也不做。**不要在别处依赖「这次转发一定执行过」**：
-		// `ui-events.ts` 的 `saveToConfig` 曾因此读到 `undefined.hex`（退出时报错、配置写不出去），
-		// 现已改为以 store 为准取值。
 		background.value = new StageColor(safeHex(config.colors.uiBackground, '00000000'), () =>
 			requestRendering()
 		);
@@ -785,8 +576,6 @@ export const useUIStore = defineStore('ui', () => {
 		setAsPrefab,
 		unsetAsPrefab,
 		clearInvalidPrefabs,
-		// 事件转发槽位（见 uiForwardKeys）：类型上必须逐个具名列出——`...forwarders` 只是
-		// 运行时的批量实现，TS 无法从展开推断出属性名，调用方 `getUIStore().listChange` 会报错。
 		listChange: forwarders.listChange,
 		headPointerdown: forwarders.headPointerdown,
 		switchPointerdown: forwarders.switchPointerdown,

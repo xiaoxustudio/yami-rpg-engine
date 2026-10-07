@@ -23,7 +23,6 @@ export interface ProjectMetaShape {
 	[k: string]: unknown;
 }
 
-// Manifest 结构类型（对齐 legacy metadata-manifest.ts 字段——宽类型起步，随迁移细化）
 export interface ManifestShape {
 	actors: FileMeta[];
 	skills: FileMeta[];
@@ -52,29 +51,24 @@ export interface ManifestShape {
 	code: string;
 }
 
-// 场景预设映射（registerScenePresets 写入：sceneId + 数据节点）
 export interface ScenePresetShape {
 	sceneId: string;
 	data: { [k: string]: unknown };
 }
 
-// UI 预设映射（registerUiPresets 写入：uiId + 数据节点）
 export interface UiPresetShape {
 	uiId: string;
 	data: { [k: string]: unknown };
 }
 
-// guid → 数据对象映射（createDataMaps 初始化为 {}）
 export interface DataMapShape {
 	[guid: string]: DataEntryShape;
 }
 
-// 数组列表类数据（loadFile 从 Data/xxx.json 加载——运行期附加 map 等属性，legacy 经 Data:any 访问）
 export interface DataListShape extends Array<DataEntryShape> {
 	items?: { name: string; value: unknown }[];
 }
 
-// 变量树节点（createVariableMap 递归 map——children 表示分组）
 export interface VariableNodeShape {
 	id: string;
 	name: string;
@@ -84,10 +78,8 @@ export interface VariableNodeShape {
 	children?: VariableNodeShape[];
 }
 
-// 变量列表（树形——运行期附加 map）
 export interface VariablesShape extends Array<VariableNodeShape> {}
 
-// 队伍数据（createTeamMap：list 数组 + map）
 export interface TeamShape {
 	id: string;
 	name?: string;
@@ -102,7 +94,6 @@ export interface TeamsShape {
 	relations?: string;
 }
 
-// 本地化数据（createLocalizationMap：list 数组 + map）
 export interface LocalizationItemShape {
 	id: string;
 	contents?: Record<string, string>;
@@ -114,37 +105,24 @@ export interface LocalizationShape {
 	map?: Record<string, LocalizationItemShape>;
 }
 
-// 属性/枚举数据（createAttributeContext/createEnumerationContext：数组 + context）
 export interface ContextDataShape extends Array<DataEntryShape> {
 	context?: Record<string, unknown>;
 }
 
-/** 语言条目：`config.localization.languages` 的元素
- * （`services/updater/config.ts` 的 1.0.115 迁移把旧的**字符串**形态升级成它，故联合里两种都在） */
 export interface LanguageSettingsShape {
 	name: string;
 	font: string;
 	scale: number;
 }
 
-/**
- * 工程配置（`Data/config.json`，即 `DataShape.config`）。
- *
- * 具名部分是**本仓类型化读到**的字段（`services/updater/config.ts` 的版本迁移逐个字段读写，
- * `useProjectSettingsWindow` 的表单与之一一对应）。末尾的索引签名是 `unknown` 而非 `any`
- * 迁移循环要按 `Object.keys()` 逐键搬运，配置本身也是可扩展的（插件可加键）——
- * 但读侧必须先收窄，拼错键不会静默变成 `any`。
- */
 export type GameConfigShape = {
 	gameId: string;
-	/** 旧形态：1.0.54 迁移把它改名成 `text` */
 	font?: { imports: unknown; default: unknown };
 	text: {
 		highDefinition?: boolean;
 		importedFonts?: unknown;
 		fontFamily?: unknown;
 		wordWrap?: unknown;
-		/** 1.0.52 迁移删掉的旧字段 */
 		pixelated?: unknown;
 		threshold?: unknown;
 	};
@@ -287,7 +265,6 @@ export const useDataStore = defineStore('data', () => {
 	const manifest = shallowRef<ManifestShape | null>(null);
 
 	function setManifest(value: ManifestShape | null) {
-		// 只写一处：`data.manifest` 是访问器，指向同一个 ref。
 		manifest.value = value;
 	}
 

@@ -98,13 +98,11 @@ export const useSelectorStore = defineStore('selector', () => {
 		target.value = Selector?.target ?? null;
 	}
 
-	// confirm 按钮由 WindowFrame 生成 → 由 Selector.vue 的 @confirm 调 store.confirm
 	let initRetryCount = 0;
 
 	function initialize() {
 		const Selector = getSelector();
 		if (!Selector) {
-			// setComponent 由 FileBrowser.vue 的双 nextTick 完成，可能晚于本初始化调用，延迟重试
 			if (initRetryCount < 20) {
 				initRetryCount++;
 				setTimeout(() => initialize(), 50);
@@ -122,9 +120,6 @@ export const useSelectorStore = defineStore('selector', () => {
 		(storesEls.get('selector') as YamiElement)?.on?.('closed', windowClosed);
 		(storesEls.get('selector') as YamiElement)?.on?.('resize', windowResize);
 		EventBus.once('editor_loaded', () => {
-			// `selector-search` 的 tip **不能**靠"运行期赋 id + 本地化器按 id 反查"，
-			// 那样它会一直留在本地化器的扫描面里。直接把文案挂到搜索框上（语言切换自动重挂），
-			// 该键随之退出扫描面。
 			applyLocalizedTip(Selector.head?.searcher, 'selector-search');
 		});
 	}

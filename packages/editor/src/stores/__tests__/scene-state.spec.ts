@@ -22,7 +22,6 @@ describe('useSceneStore（Scene 状态反转：store 为源）', () => {
 		for (const key of sceneStateKeys) {
 			expect(key in store, String(key)).toBe(true);
 		}
-		// 「白名单写了但没桥」是假象：逐个键用单例写一次、再从 store 读回校验
 		const { Scene } = await import('@app/scene/scene-window.ts');
 		const probes: Record<string, unknown> = {
 			state: 'open',
