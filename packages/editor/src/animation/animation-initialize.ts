@@ -48,14 +48,12 @@ Animation.initialize = function (this: typeof Animation) {
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	// `page`（列表所属的页面元素）走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = animationEls.get(
 		'animation-motion'
 	) as YamiElement;
 	elementDataOf<{ head: HTMLElement }>(this.list).head = animationEls.get(
 		'animation-list-head'
 	) as YamiElement;
-	// 模块求值先于 Vue 挂载，$() 会拿到占位对象；重查询真实元素时回迁模块级挂载的属性/方法
 	const oldLayerList = this.layerList;
 	this.layerList = animationEls.get('animation-layer-list') as typeof this.layerList;
 	if (oldLayerList && this.layerList && oldLayerList !== this.layerList) {
@@ -141,10 +139,6 @@ Animation.initialize = function (this: typeof Animation) {
 		BL: { x: 0, y: 0, angle: 135 },
 		BR: { x: 0, y: 0, angle: 45 }
 	};
-	// 控制点按优先级从低到高排序。
-	// 原先写成「`rectList: null as unknown as {x;y;angle}[]`，紧接着再整体赋一次」，
-	// 那个 `null as unknown as` 只是为了先立个非空的属性类型 —— 把两个子对象提前成
-	// 局部 const，就能在字面量里直接内联这份有序数组，断言随之消失（2026-09-18）。
 	const points = {
 		jointRotate: {},
 		rectRotate,
@@ -247,11 +241,6 @@ Animation.initialize = function (this: typeof Animation) {
 	const { list } = this;
 	getListConfig(list).removable = true;
 	list.bind(() => this.motions);
-	// updater 由 YMTreeList 的 `onUpdated → applyRowUpdaters()` 在**每次 patch** 里调用。
-	// `updateItemName` 现在是幂等的（派生文本没变就不重派生、不 bump，见 ui-kit
-	// `YMTreeList/tree-api.ts`），所以这里保留「每次刷新名字」是安全的——枚举改名/本地化
-	// 变化后无需额外触发点。**不要**改成 `list.update()`：那会无条件重派生 + bump，
-	// 在 updater 里等于自激，Vue 会报 Maximum recursive updates exceeded。
 	getListConfig(list).updaters.push((item: unknown) =>
 		list.updateItemName(item as AnimationMotion)
 	);
@@ -260,7 +249,6 @@ Animation.initialize = function (this: typeof Animation) {
 	getListConfig(layerList).removable = true;
 	getListConfig(layerList).renamable = true;
 	layerList.bind(() => this.layers);
-	// 补赋递归状态方法（同根因：模块顶层赋值会固化拿 null，挪到 initialize 内赋真函数） 保留 567/569/580/582 段 layerList.* 调用姿势不变
 	layerList.restoreRecursiveStates = Scene.list.restoreRecursiveStates as (
 		...args: unknown[]
 	) => unknown;
@@ -504,7 +492,6 @@ Animation.initialize = function (this: typeof Animation) {
 	window.addEventListener('keydown', this.keydown);
 	on(this.page, 'resize', this.windowResize);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored);
-	// head/toolbar/zoom/screen(keydown/wheel)/marquee(pointerdown/doubleclick) 经 Vue 模板转发（LayoutPanel @pointerdown/@input/@focus/@keydown/@wheel）
 	on(this.screen, 'userscroll', this.screenUserscroll);
 	on(this.screen, 'blur', this.screenBlur);
 	on(this.marquee, 'pointermove', this.marqueePointermove);
@@ -513,16 +500,11 @@ Animation.initialize = function (this: typeof Animation) {
 	this.searcher.addEventListener('compositionend', this.searcherInput);
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
-	// list select/record/open/popup 经 Vue 模板转发（LayoutPanel @select/@record/@open/@popup → Animation.list*）
-	// list change 经 Vue 模板转发（LayoutPanel @change → Animation.listChange）
 	on(elementDataOf<{ page?: HTMLElement | null }>(list).page, 'resize', this.listPageResize);
 	on(this.timeline, 'resize', this.timelinePageResize);
-	// toolbar pointerdown 经 Vue 模板转发（LayoutPanel @pointerdown → Animation.timelineToolbarPointerdown）
 	on(this.layerList, 'scroll', this.layerListScroll);
 	on(this.layerList, 'keydown', this.layerListKeydown, { capture: true });
 	on(this.layerList, 'pointerdown', this.layerListPointerdown);
-	// layerList select/record/popup 经 Vue 模板转发（LayoutPanel @select/@record/@popup → Animation.layerList*）
-	// layerList change 经 Vue 模板转发（LayoutPanel @change → Animation.layerListChange）
 	on(this.outerTimelineList, 'keydown', this.outerTimelineListKeydown);
 	on(this.outerTimelineList, 'scroll', this.outerTimelineListScroll);
 	on(this.outerTimelineList, 'blur', this.outerTimelineListBlur);

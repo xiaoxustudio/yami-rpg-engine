@@ -21,10 +21,6 @@ import { ANIM_GRID_X, ANIM_GRID_Y } from '@app/constants/editor.ts';
 
 const Clipboard = GlobalClipboard;
 
-/**
- * 时间轴选框（`Animation.timelineMarquee`）的元素数据视图。
- * `origin` 是本次多选/框选的锚点帧号（`selectMarquee` 写入，扩展选择时用来判断方向）。
- */
 interface TimelineMarqueeElementData {
 	origin: number;
 }
@@ -443,7 +439,6 @@ Animation.createTimelines = (function IIFE() {
 		for (const layer of layers) {
 			let { timeline } = layer;
 			if (timeline === undefined) {
-				// 离屏节点统一走 utils/dom 的唯一创建缝隙
 				timeline = createDetachedElement();
 				addClass(timeline, 'box');
 				addClass(timeline, 'timeline-frames');
@@ -464,7 +459,6 @@ Animation.createTimelines = (function IIFE() {
 				const easing = !!frame.easingId;
 				let { key } = frame;
 				if (key === undefined) {
-					// 同上
 					key = createDetachedElement();
 					addClass(key, 'box');
 					addClass(key, 'timeline-key');
@@ -653,11 +647,9 @@ Animation.extendFrame = function (this: typeof Animation) {
 		if (x >= end) continue;
 		if (x >= start) {
 			this.cloneFrame!(frames, i).end += length;
-			// const next = frames[i + 1] if (next && frame.end > next.start) { this.shiftFrames!(frames, i + 1, frame.end - next.start) }
 		} else {
 			if (i === 0) return;
 			this.cloneFrame!(frames, i - 1).end = ex;
-			// if (ex > start) { this.shiftFrames!(frames, i, ex - start) }
 		}
 		this.sortFrames!(frames);
 		this.updateTimeline!();
@@ -738,7 +730,6 @@ Animation.copyFrame = function (this: typeof Animation, returnData = false) {
 			frame.start -= x;
 			frame.end -= x;
 		}
-		// 选中关键帧头部则必要时扩展选框长度 否则裁剪尾部关键帧
 		const last = copies[copies.length - 1];
 		if (last.start >= 0) {
 			length = Math.max(last.end, length);
@@ -774,7 +765,6 @@ Animation.pasteFrame = function (
 		return;
 	}
 	const { copies, length: dLength } = data;
-	// y 来自文件数据（unknown）——这里按运行期约定收窄一次
 	this.selectMarquee!(x, y as number, dLength, x);
 	this.saveFrames!([layer], { layer, x, length: sLength }, { layer, x, length: dLength });
 	for (const frame of copies) {
@@ -789,16 +779,13 @@ Animation.pasteFrame = function (
 		const end = frame.end;
 		if (x >= end) continue;
 		if (x > start) {
-			// 插入到关键帧中间 const next = frames[i + 1] if (next && ex > next.start) { this.shiftFrames!(frames, i + 1, ex - next.start) }
 			if (x < end) {
 				this.cloneFrame!(frames, i).end = x;
 			}
 			frames.splice(i + 1, 0, ...copies);
 		} else if (x === start) {
-			// 插入到关键帧之前 this.shiftFrames!(frames, i, dLength)
 			frames.splice(i, 0, ...copies);
 		} else {
-			// 插入到空白帧 if (ex > start) { this.shiftFrames!(frames, i, ex - start) }
 			frames.splice(i, 0, ...copies);
 		}
 		this.sortFrames!(frames);
@@ -985,7 +972,6 @@ Animation.shiftSelectedFrames = function (this: typeof Animation, mode: string) 
 		const data = this.copyFrame!(true);
 		if (data) {
 			const { updateTimeline, openFrame, saveFrames } = this;
-			// !：dy 处的行必然带着图层（原实现直接把可能为 undefined 的值塞进数组，运行期行为未改）
 			const dLayer = (timelines[dy] as HTMLElement & { layer?: AnimationLayer }).layer!;
 			const destination = { layer: dLayer, x: dx, y: dy };
 			const sMarquee = { layer: sLayer, x: sx, length: length };
@@ -1058,7 +1044,6 @@ Animation.selectObject = function (this: typeof Animation, x: number, y: number)
 	let target: AnimationFrame | null = null;
 	let weight = 0;
 
-	// 选择关节对象 - 节点
 	if (getAnimationStore().showMark && target === null) {
 		const active = this.targetContext;
 		const scale = Math.max(this.scale, 1);
@@ -1082,7 +1067,6 @@ Animation.selectObject = function (this: typeof Animation, x: number, y: number)
 		}
 	}
 
-	// 选择粒子发射器对象 - 锚点
 	if (getAnimationStore().showMark && target === null) {
 		const scale = Math.max(this.scale, 1);
 		const anchorRadius = 32 / scale;
@@ -1105,7 +1089,6 @@ Animation.selectObject = function (this: typeof Animation, x: number, y: number)
 		}
 	}
 
-	// 选择关节对象 - 手臂
 	if (getAnimationStore().showMark && target === null) {
 		const active = this.targetContext;
 		const scale = Math.max(this.scale, 1);
@@ -1207,7 +1190,6 @@ Animation.isPointInFrame = function (
 	const cross2 = x2 * y3 - y2 * x3;
 	const cross3 = x3 * y4 - y3 * x4;
 	const cross4 = x4 * y1 - y4 * x1;
-	// 如果矩形选择区域中有两个点重合 代表是零面积区域，则无法选中 后面的公式会失效
 	if (
 		(x1 === x2 && y1 === y2) ||
 		(x2 === x3 && y2 === y3) ||

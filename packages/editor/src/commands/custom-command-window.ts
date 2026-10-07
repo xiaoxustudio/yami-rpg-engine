@@ -35,7 +35,6 @@ export const commandForm = reactive<{ alias: string; keywords: string }>({
 	keywords: ''
 });
 
-// 自定义指令列表元素契约
 interface CustomCommandList {
 	removable: boolean;
 	creators: CustomCommandMethod[];
@@ -130,10 +129,6 @@ interface CustomCommandShape {
 	list_paste: CustomCommandMethod;
 	list_saveSelection: CustomCommandMethod;
 	list_restoreSelection: CustomCommandMethod;
-	/**
-	 * 与 Pinia store 双向桥接的两个键（见 `stores/custom-command.ts` 的
-	 * `customCommandStateKeys = ['state', 'commands']`），类型与 store 的 `shallowRef` 对齐。
-	 */
 	state: string;
 	commands: CustomCommandData[];
 }
@@ -175,7 +170,6 @@ export const CustomCommand = {
 	close: null as ((id?: string) => void) | null
 } satisfies Partial<CustomCommandShape> as CustomCommandShape;
 
-/** 控件元素注册表——由 `Command.vue` 在模板里登记 */
 export const customCommandEls = createElementRegistry();
 
 function ensureDomBound() {
@@ -197,10 +191,6 @@ function ensureDomBound() {
 		'command-settings-detail'
 	)!;
 	hide(CustomCommand.settingsPane);
-	// 注：这里原本先把 insert/toggle/copy/paste/saveSelection/restoreSelection 六个成员
-	// 写成 `null as unknown as (...args) => void`，紧接着在同一个函数里（下面 6 行）
-	// 又全部赋上真实现 —— 那 6 行是**纯死写**（中间没有任何读取），却各贡献一个
-	// `null as unknown as`。直接删掉：语义等价，两条棘轮轴同步下降（2026-09-18）。
 	list.delete = PluginManager.list_delete as (item: CustomCommandData | null) => void;
 	list.updateTextNode = PluginManager.list_updateTextNode as (...args: unknown[]) => void;
 	list.edit = CustomCommand.list_edit as (...args: unknown[]) => void;
@@ -219,18 +209,13 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	getListConfig(list).removable = true;
 	getListConfig(list).foldable = false;
 	list.bind(() => this.data);
-	// 源联合 `((...args: any[]) => any) | null` 的函数那一支（`strictFunctionTypes` 下参数逆变，
-	// `any` 收得住 `unknown`；返回 `void` 收得住 `any`）⇒ 断言合法，`unknown` 跳板是多余的。
-	// 运行期一字未改：仍然**不加空值判断**，可空值照旧被登记进去、由调用点抛。
 	getListConfig(list).updaters.push(list.updateTextNode as (item: unknown) => void);
 
 	const frame = customCommandEls.get('command');
 	frame?.addEventListener('close', this.windowClose!);
 	frame?.addEventListener('closed', this.windowClosed!);
 	on(list, 'keydown', this.listKeydown!);
-	// list select/popup/open/change 经 Vue 模板转发（Command.vue @select/@popup/@open/@change → CustomCommand.list*）
 	on(list, 'unselect', this.listUnselect!);
-	// confirm 由 SFC 的 @confirm 驱动（`command-confirm` 按钮由 WindowFrame 生成，注册表取不到）
 };
 
 CustomCommand.open = function (this: CustomCommandShape): void {
@@ -498,7 +483,6 @@ CustomCommand.list_edit = function (this: CustomCommandList, item: CustomCommand
 					item.id = id;
 					item.parameters = {};
 					CustomCommand.changed = true;
-					// CustomCommand.parameterPane.update()
 				}
 				this.update();
 			}
@@ -575,8 +559,6 @@ for (const key of customCommandBridgeKeys) {
 	Object.defineProperty(CustomCommand, key, {
 		get: () => getCustomCommandStore()[key],
 		set: (value: unknown) => {
-			// `Reflect.set` 与 `store[key] = value` 是同一个 `[[Set]]`；store 是 interface
-			// （无隐式索引签名），「断言成 Record<…, any>」既过不了可比、又顺带引入一个 `any`。
 			Reflect.set(getCustomCommandStore(), key, value);
 		},
 		configurable: true

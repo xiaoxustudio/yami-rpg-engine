@@ -40,11 +40,6 @@ import {
 
 const Clipboard = GlobalClipboard;
 
-/**
- * 时间轴外框列表（`outerTimelineList`）的元素数据（`dragging` 原先靠原型访问器透明落到 WeakMap）。
- * 拖拽记录按分支写入、也只在该分支内读：`select`/`shift` 写 `pointerdownX`/`pointerdownY`/`layer`，
- * `scroll`/`ready-to-scroll` 写 `scrollLeft`/`scrollTop`。
- */
 type TimelineListDragEvent = PointerEvent & {
 	dragKey?: boolean;
 	mode?: string;
@@ -62,14 +57,12 @@ interface TimelineListElementData {
 const timelineListData = (el: unknown): TimelineListElementData =>
 	elementDataOf<TimelineListElementData>(el);
 
-/** 时间轴选框（`timelineMarquee`）的元素数据（`origin` 是多选/框选的锚点帧号） */
 interface TimelineMarqueeElementData {
 	origin: number;
 }
 const timelineMarqueeData = (el: unknown): TimelineMarqueeElementData =>
 	elementDataOf<TimelineMarqueeElementData>(el);
 
-/** 时间轴内层刻度尺（`innerRuler`）的元素数据（`start` 是当前起始刻度号，首次滚动前为空） */
 interface TimelineRulerElementData {
 	start?: number;
 }
@@ -111,7 +104,6 @@ Animation.listKeydown = function (this: typeof Animation, event: KeyboardEvent) 
 			case 'Backspace':
 				this.cancelSearch!();
 				break;
-			// case 'Escape': Animation.setMotion!(null) break
 		}
 	}
 };
@@ -269,10 +261,6 @@ Animation.timelinePageResize = function (this: typeof Animation, _event: Event) 
 Animation.timelineToolbarPointerdown = function (this: typeof Animation, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			// 图标是内联 SVG（见 `AnimationTimelinePanel.vue`）：`event.target` 通常是
-			// `path`/`rect`/`svg` 而不是 `.item` 本身。按**最近的 `.item`** 判定归属 ——
-			// 只认 `event.target` 会变成「点图标正中没反应、点按钮留白才有反应」，
-			// 播放/循环的状态也就跟着不变。监听只挂在播放栏容器上，`closest` 不会越出播放栏。
 			const { target } = event;
 			const element = target instanceof Element ? target.closest('.item') : null;
 			if (element !== null) {
@@ -299,7 +287,6 @@ Animation.timelineToolbarPointerdown = function (this: typeof Animation, event: 
 Animation.layerListScroll = function (this: typeof Animation & HTMLElement, _event: Event) {
 	const { outerTimelineList } = Animation;
 	const { scrollTop } = this;
-	// 改用显式元素数据
 	getElementData(this).lastScrollTop = scrollTop;
 	if (getElementData(outerTimelineList as HTMLElement).lastScrollTop !== scrollTop) {
 		outerTimelineList.scrollTop = scrollTop;
@@ -307,7 +294,6 @@ Animation.layerListScroll = function (this: typeof Animation & HTMLElement, _eve
 };
 
 Animation.layerListKeydown = function (this: typeof Animation & HTMLElement, event: KeyboardEvent) {
-	// 避免重命名输入框键盘按下事件
 	if (event.target !== this || !this.data) {
 		return;
 	}
@@ -605,12 +591,10 @@ Animation.outerTimelineListScroll = function (this: typeof Animation & HTMLEleme
 				number += 5;
 			}
 		}
-		// 通过容差来消除非1:1时的抖动
 		const tolerance = 0.0001;
 		outerRuler.scrollLeft = (scrollLeft + tolerance) % 80;
 		outerPointerArea.scrollLeft = scrollLeft;
 	}
-	// 改用显式元素数据
 	const selfData = getElementData(this);
 	if (selfData.lastScrollTop !== scrollTop) {
 		selfData.lastScrollTop = scrollTop;
@@ -912,7 +896,6 @@ Animation.outerTimelineListPointermove = function (this: typeof Animation, event
 };
 
 Animation.innerTimelineListPointermove = function (this: typeof Animation, event: PointerEvent) {
-	// 本事件可能被直接调用 因此不使用this来获取元素
 	const { x, y } = Animation.getFrameCoords!(event);
 	const list = Animation.innerTimelineList;
 	const ex = Animation.frameMax;
@@ -946,21 +929,18 @@ Animation.innerTimelineListDblclick = function (this: typeof Animation, event: P
 	}
 };
 
-// 选框 - 调整目标
 Animation.marquee.resize = function (this: typeof Animation) {
 	if (this.pointerevent) {
 		Animation.marqueePointermove!(this.pointerevent);
 	}
 };
 
-// 列表 - 复制
 Animation.list.copy = function (this: typeof Animation, item: AnimationMotion) {
 	if (item) {
 		Clipboard.write('yami.animation.object', item);
 	}
 };
 
-// 列表 - 粘贴
 Animation.list.paste = function (this: typeof Animation, dItem: AnimationMotion | null) {
 	const copy = Clipboard.read('yami.animation.object');
 	if (copy && this.data) {
@@ -968,14 +948,12 @@ Animation.list.paste = function (this: typeof Animation, dItem: AnimationMotion 
 	}
 };
 
-// 列表 - 删除
 Animation.list.delete = function (this: typeof Animation, item: AnimationMotion) {
 	if (item) {
 		this.deleteNode!(item);
 	}
 };
 
-// 列表 - 取消搜索
 Animation.list.cancelSearch = function (this: typeof Animation) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
@@ -986,10 +964,7 @@ Animation.list.cancelSearch = function (this: typeof Animation) {
 	}
 };
 
-// 列表 - 更新头部位置
 Animation.list.updateHead = function (this: typeof Animation) {
-	// `page` / `head` 已不在 DATA_FIELDS 内（原型访问器退役），而 `this` 是列表**元素**——
-	// 直接解构会拿到 undefined（下一行 `page.clientWidth` 当场抛错）。改读同一份元素数据。
 	const { page, head } = elementDataOf<{ page: HTMLElement; head: HTMLElement }>(this);
 	if (page.clientWidth !== 0) {
 		const nav = headNavOf(head);
@@ -1002,7 +977,6 @@ Animation.list.updateHead = function (this: typeof Animation) {
 	}
 };
 
-// 列表 - 重写解析名称方法
 Animation.list.parseName = function (this: typeof Animation, item: unknown) {
 	const animationItem = item as AnimationMotion;
 	const enumString = Enum.getString!(animationItem.id);
@@ -1011,12 +985,10 @@ Animation.list.parseName = function (this: typeof Animation, item: unknown) {
 		: Command.parseUnlinkedId!(animationItem.id);
 };
 
-// 列表 - 在删除数据时回调
 getListConfig(Animation.list).onDelete = function (this: typeof Animation) {
 	Animation.updateMotion!();
 };
 
-// 图层列表 - 重写更新方法
 Animation.layerList.update = function (this: typeof Animation) {
 	TreeList.prototype.update.call(this);
 	if (!Animation.contextLoaded) {
@@ -1035,7 +1007,6 @@ Animation.layerList.update = function (this: typeof Animation) {
 	Animation.updateTimeline!();
 };
 
-// 图层列表 - 创建图层
 Animation.layerList.create = function (
 	this: typeof Animation,
 	dItem: AnimationLayer | null,
@@ -1059,14 +1030,12 @@ Animation.layerList.create = function (
 	this.addNodeTo!(data, dItem);
 };
 
-// 图层列表 - 复制
 Animation.layerList.copy = function (this: typeof Animation, item: AnimationLayer) {
 	if (item) {
 		Clipboard.write('yami.animation.layer', item);
 	}
 };
 
-// 图层列表 - 粘贴
 Animation.layerList.paste = function (this: typeof Animation, dItem: AnimationLayer | null) {
 	const copy = Clipboard.read('yami.animation.layer');
 	if (copy && this.data) {
@@ -1074,14 +1043,12 @@ Animation.layerList.paste = function (this: typeof Animation, dItem: AnimationLa
 	}
 };
 
-// 图层列表 - 删除
 Animation.layerList.delete = function (this: typeof Animation, item: AnimationLayer) {
 	if (item) {
 		this.deleteNode!(item);
 	}
 };
 
-// 图层列表 - 在删除数据时回调
 getListConfig(Animation.layerList).onDelete = function (
 	this: typeof Animation,
 	item: AnimationLayer
@@ -1092,56 +1059,38 @@ getListConfig(Animation.layerList).onDelete = function (
 	}
 } as (item: unknown) => void;
 
-// 时间轴 - 更新头部位置 + 内容列（图层列宽 / 帧网格左缘 / 刻度尺）
 Animation.timeline.updateHead = function (this: typeof Animation) {
-	// 同 `Animation.list.updateHead`——`head` 在元素数据里，不再走原型访问器。
-	//
-	// 版式口径：`[页签条][播放栏][内容列：刻度尺 / 帧网格]`。播放栏宽度由内容撑开（6 个按钮），
-	// 页签条 + 按钮经常超过图层列的 18% —— 那时刻度尺（左缘 = 内容列左缘）就会被按钮挡住。
-	// 所以内容列取「18% 与播放栏右缘之后」的较大者，并**同时**写给图层列宽 / 帧网格左缘 /
-	// 指针区左缘 / 刻度尺左缘这四处。刻度对齐靠 `outerRuler.scrollLeft` 镜像帧网格滚动，
-	// 所以内容列一动必须四处一起动：只动刻度尺会让整条刻度与帧格错开，只动网格会让刻度被挡。
 	const { head } = elementDataOf<{ head?: HTMLElement }>(this);
-	// ⚠️ 元素数据是 `Animation.initialize` 期写死的：那一刻面板若还没登记（注册表为空）它就是
-	// undefined，而下面每一行都要碰 `head`。旧实现是靠 `if (!nav || !item) return` 顺带兜住的
-	// —— 去掉那个提前 return 之后必须显式判空，否则会新引入 `head.style` 的 TypeError。
 	if (head === undefined || this.clientWidth === 0) return;
 
 	const ruler = Animation.outerRuler;
 	const list = Animation.outerTimelineList;
-	// 这两个成员可能是模块加载期的 `{}` 占位（`if (x)` 拦不住，`x.style`/`rect()` 才是 undefined）
 	if (!(ruler instanceof HTMLElement) || !(list instanceof HTMLElement)) return;
 
 	const page = this as unknown as HTMLElement;
 	const frameRect = rect(page);
 	const nav = headNavOf(head);
 	const item = lastNavItemOf(nav);
-	// 分组没有页签时 `nav`/`item` 为 null（旧实现此处直接 return ⇒ head 因 CSS 无 left
-	// 收窄成 0 宽、子元素被挤出可视区），退回页面框左缘。
 	const navItemRight = item === null ? null : rect(item).right;
 	head.style.left = `${timelineHeadLeft(navItemRight, frameRect.left)}px`;
 
-	// ① 内容列：默认 18%，但不允许落在播放栏下面（见 `timelineContentLeft`）
 	const toolbar = Animation.toolbar;
 	const toolbarRight =
 		toolbar instanceof HTMLElement && rect(toolbar).width !== 0 ? rect(toolbar).right : null;
 	const naturalLeft = frameRect.left + page.clientWidth * TIMELINE_CONTENT_RATIO;
 	const contentLeft = timelineContentLeft(naturalLeft, toolbarRight, frameRect.right);
 	const contentOffset = `${roundTo(contentLeft - frameRect.left, 3)}px`;
-	// 图层列宽 / 帧网格左缘 / 指针区左缘：与刻度尺同一口径（CSS 里的 18% 只是 JS 未跑时的兜底）
 	const layerList = Animation.layerList;
 	if (layerList instanceof HTMLElement) layerList.style.width = contentOffset;
 	list.style.left = contentOffset;
 	const pointerArea = Animation.outerPointerArea;
 	if (pointerArea instanceof HTMLElement) pointerArea.style.left = contentOffset;
 
-	// ② 刻度尺相对 head 的左偏移（= 内容列左缘 − head 左缘），清掉历史实现留下的 margin
 	ruler.style.marginLeft = '';
 	ruler.style.left = `${timelineRulerLeft(contentLeft - rect(head).left)}px`;
 	Animation.updateRuler!();
 };
 
-// 时间轴列表 - 恢复动作和图层对象
 Animation.outerTimelineList.restoreMotionAndLayer = function (
 	this: typeof Animation,
 	motion: AnimationMotion | null,
@@ -1156,12 +1105,10 @@ Animation.outerTimelineList.restoreMotionAndLayer = function (
 	Animation.updateTimeline = updateTimeline;
 };
 
-// 时间轴选框 - 判断点是否在选框区域内
 Animation.timelineMarquee.isPointIn = function (this: typeof Animation, x: number, y: number) {
 	return x >= this.x && x < this.x + this.length && y === this.y;
 };
 
-// 时间轴选框 - 判断帧是否已选中
 Animation.timelineMarquee.isSelected = function (this: typeof Animation) {
 	const { layer, x, length } = this;
 	const ex = x + length;
@@ -1178,14 +1125,12 @@ Animation.timelineMarquee.isSelected = function (this: typeof Animation) {
 	return false;
 };
 
-// 时间轴选框 - 判断是否可延长
 Animation.timelineMarquee.isExtendable = function (this: typeof Animation) {
 	const frames = this.layer.frames;
 	const frame = frames[0];
 	return frame ? this.x >= frame.start : false;
 };
 
-// 时间轴选框 - 判断是否可收缩
 Animation.timelineMarquee.isShrinkable = function (this: typeof Animation) {
 	const frames = this.layer.frames;
 	const frame = frames[frames.length - 1];

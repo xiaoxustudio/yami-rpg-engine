@@ -16,7 +16,6 @@ import type {
 } from '@app/engine/particle/particle-engine.ts';
 import type { YamiElement } from '@app/types/element-api';
 import type { DragEventItem } from '@app/scene/scene-events.ts';
-// 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 // oxlint-disable-next-line no-explicit-any
 export type ParticleMethod = ((...args: any[]) => any) | null;
 
@@ -24,13 +23,6 @@ export type ParticleEmitterDataShape = {
 	layers: ParticleLayerDataShape[];
 } & Record<string, unknown>;
 
-/**
- * 图层数据 —— **直接引用引擎侧那一份**。
- *
- * 同名声明合并到 `particle-engine.ts` 的 `ParticleLayerData`；这里却还留着一份更窄的副本，
- * 于是 `new Particle.Emitter(data)` 的入参对不上（本轮摘掉 `ParticleEngine` 的索引签名时露出来）。
- * 保留别名只是为了不动调用点（`particle-file.ts` 的 `ParticleEmitterDataShape`）。
- */
 export type ParticleLayerDataShape = ParticleLayerData;
 
 export type ParticleElementShape = {
@@ -42,17 +34,8 @@ export type ParticleElementShape = {
 	scaleFactor: number;
 };
 
-/**
- * 图层实例 —— **就是引擎侧那一份**（`ParticleLayerShape`，本文件不再另写一份）。
- *
- * 原先这里是一份更窄的副本（`data` / `elements` / `unitWidth` / `unitHeight` / `texture` / `draw`
- * 加 5 个 inspector 方法），与引擎的同名声明各自漂移：本轮摘掉 `ParticleEngine` 的索引签名后，
- * `Particle.Layer` 的构造签名当场对不上（缺 `emitter` / `textureWidth` / `easing` / `capacity` / `reserves` …）。
- * 合并之后「一份形状」既是构造签名、也是读侧视图。
- */
 export type ParticleLayerShape = EngineParticleLayerShape;
 
-/** `calculateOuterRect()` 的产物（也直接挂在发射器上作 `bounding`，见 `scene-context.ts`） */
 export interface ParticleOuterRectShape {
 	left: number;
 	top: number;
@@ -64,7 +47,6 @@ export interface ParticleOuterRectShape {
 }
 
 export interface ParticleEmitterShape {
-	// —— 变换 / 外观（引擎与动画播放器都读写：`animation-player.ts` 的 `emitter.scale/speed/opacity/angle`）——
 	startX: number;
 	startY: number;
 	scale: number;
@@ -73,7 +55,6 @@ export interface ParticleEmitterShape {
 	opacity: number;
 	matrix: Matrix | null;
 	layers: ParticleLayerShape[];
-	// —— 包围盒：`calculateOuterRect()` 的结果由**调用方**回写（`animation-motion.ts` / `scene-context.ts`）——
 	bounding: ParticleOuterRectShape;
 	hasArea: boolean;
 	outerLeft: number;
@@ -82,21 +63,15 @@ export interface ParticleEmitterShape {
 	outerBottom: number;
 	outerWidth: number;
 	outerHeight: number;
-	// —— 编辑器状态（粒子列表 / 指针用它们高亮当前发射器）——
 	active: boolean;
 	selected: boolean;
-	// —— 引擎运行期接口 ——
 	disabled: boolean;
 	isEmpty: () => boolean;
-	/** 按数据对象同一性取图层实例（实现见引擎，入参只做引用比较 ⇒ `object`；找不到时 `undefined`） */
 	getLayer: (data: object) => ParticleLayerShape | undefined;
-	/** 来源图层（动画播放器装配时挂上）。唯一读点是 `emitter.layer.order`（决定粒子画在精灵前/后），
-	 *  取值见运行期契约 `AnimationParticleOrder`（`yami.animation.d.ts`）。 */
 	layer: { order?: 'before' | 'after' };
 	draw: () => void;
 	emitParticles: (deltaTime: number) => void;
 	updateParticles: (deltaTime: number) => number;
-	// —— 窗口侧已声明的方法 ——
 	calculateOuterRect: () => ParticleOuterRectShape;
 	update: (deltaTime: number) => void;
 	updateLayers: () => void;
@@ -105,7 +80,6 @@ export interface ParticleEmitterShape {
 	destroy: () => void;
 }
 
-// 粒子编辑器上下文（tab 传入 + open/load 运行时挂载 editor）
 export interface ParticleContextShape {
 	meta: { guid: string; path: string } & Record<string, unknown>;
 	particle?: Record<string, unknown>;
@@ -120,7 +94,6 @@ export interface ParticleContextShape {
 	[k: string]: unknown;
 }
 
-// history processor 记录数据（particle-layer-create/delete/remove/hidden）
 export interface ParticleHistoryData {
 	item: { hidden: boolean } & Record<string, unknown>;
 	oldValue: boolean;
@@ -129,7 +102,6 @@ export interface ParticleHistoryData {
 	[k: string]: unknown;
 }
 
-// config 中 colors 运行时必有（save/load 访问 colors.particleBackground）
 export type ParticleConfigShape = EditorConfigShape & {
 	colors: NonNullable<EditorConfigShape['colors']>;
 };
@@ -142,7 +114,6 @@ export interface ParticleShape {
 	screen: YamiElement;
 	marquee: YamiElement & { pointerevent: unknown };
 	list: YamiElement & {
-		// 运行时挂载的列表方法（Scene.list / Particle.list 共享）
 		create: (dItem?: unknown) => unknown;
 		copy: (item?: unknown) => unknown;
 		paste: (dItem?: unknown) => unknown;
@@ -151,10 +122,8 @@ export interface ParticleShape {
 		onRemove: (item?: unknown) => unknown;
 		onDelete: ((item?: unknown) => unknown) | null;
 		onResume: ((item?: unknown) => unknown) | null;
-		// inspector 调用路径（particle-layer-page.ts:411/426）
 		unselect: ((item?: unknown) => unknown) | null;
 		updateItemName: ((item?: unknown) => unknown) | null;
-		// TreeList 运行时挂载
 		data: unknown;
 		removable: boolean;
 		renamable: boolean;
@@ -177,11 +146,6 @@ export interface ParticleShape {
 	translationTimer: Timer | null;
 	showAxes: boolean;
 	background: StageColor;
-	/**
-	 * 要求这五项与 `ParticleStageShape` 相容。它们由 `particle-initialize.ts:94`
-	 * （`this.matrix = new Matrix()`）与 `resize` 赋真值，全仓没有一处写回 `null`；
-	 * 字面量里那 5 行 `null` 占位已删（只参与绘制期算术）。
-	 */
 	matrix: Matrix;
 	zoomTimer: Timer | null;
 	scale: number | null;
@@ -199,10 +163,6 @@ export interface ParticleShape {
 	context: ParticleContextShape | null;
 	meta: ParticleContextShape['meta'] | null;
 	layers: ParticleLayerShape[] | null;
-	/**
-	 * 窗口打开时由 `editor.emitter` 带过来，`close()` 里清空 ⇒ 关闭后**确实是 null**。
-	 * 读侧都落在「窗口已打开」上下文（或已有 `state === 'open'` 守卫）里，故用 `!` 收口。
-	 */
 	emitter: ParticleEmitterShape | null;
 	initialize: (() => void) | null;
 	open: ParticleMethod;
@@ -275,21 +235,12 @@ export interface ParticleShape {
 	listRecord: ParticleMethod;
 	listPopup: ParticleMethod;
 	listChange: ParticleMethod;
-	// classes（运行时挂载 ParticleEmitter/ParticleLayer/ParticleElement 类）
 	Emitter: { new (data: ParticleEmitterDataShape): ParticleEmitterShape };
 	Layer: {
 		new (emitter: ParticleEmitterShape, data: ParticleLayerDataShape): ParticleLayerShape;
 	};
 	Element: {
 		new (layer: ParticleElementLayer): ParticleElementShape;
-		/**
-		 * 元素类的静态共享面（`ParticleElement.stage`）—— **当前舞台**。
-		 *
-		 * `particle-file.ts:23` 存 `Particle` 单例、`animation-file.ts:21` 存 `Animation` 单例、
-		 * `scene-window.ts:1067` 存 `Scene` 单例；唯一读点在 `particle-engine.ts`
-		 * （`.multiply(stage.matrix)` 与两组 `scroll*`）。两边现在引用**同一个**
-		 * `ParticleStageShape`（`engine/particle/particle-engine.ts` 导出）。
-		 */
 		stage: ParticleStageShape;
 	};
 }
@@ -412,7 +363,6 @@ const particleBridgeKeys = [
 	'zoom',
 	'scaleX',
 	'scaleY',
-	// `restartKey`/`translationKey`/`showAxes` 都是纯 UI 开关，无每帧读写
 	'restartKey',
 	'translationKey',
 	'showAxes'

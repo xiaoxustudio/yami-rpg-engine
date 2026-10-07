@@ -2,13 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Animation } from '@app/animation/animation-window.ts';
 import '@app/animation/register.ts';
 
-// 时间轴播放栏「命中生效动作」金标准。
-//
-// 图标是内联 SVG（`svg` / `path` / `rect`），pointerdown 的 `event.target` 常常就是图标自身
-// 而不是 `.item` 本身：handler 只按 `event.target` 精确匹配 `.item` 时，会表现为
-// 「点图标正中没反应、点按钮留白才有反应」——播放/循环按钮尤其明显（状态也不跟着变）。
-// 这里锁定「按最近的 `.item` 归属」的命中语义。
-
 const TOOLBAR_MARKUP = `
 	<div class="item toolbar-item" value="previousKey">
 		<svg viewBox="0 0 16 16"><rect x="1.5" y="2" width="2" height="12" /></svg>
@@ -44,7 +37,6 @@ beforeEach(() => {
 	toolbar = document.createElement('div');
 	toolbar.id = 'animation-timeline-toolbar';
 	toolbar.innerHTML = TOOLBAR_MARKUP;
-	// 与 AnimationTimelinePanel.vue 一致：容器上的一次转发
 	toolbar.addEventListener('pointerdown', (event) => {
 		Animation.timelineToolbarPointerdown!(event as PointerEvent);
 	});

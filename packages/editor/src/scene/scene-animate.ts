@@ -6,20 +6,12 @@ import { Scene } from './scene-window.ts';
 import { SceneAnimateEngine } from '@app/engine/scene/scene-animate-engine.ts';
 import type { YamiElement } from '@app/types/element-api';
 
-/**
- * marquee 元素上的元素数据（`key`/`visible` 原先靠原型访问器透明落到 WeakMap）。
- * `key` 是选框当前工具（`tile`/`object`/`terrain`…，初始化写入、`switch` 时切换），`visible` 是选框可见态。
- */
 interface SceneMarqueeData {
 	key: string | null;
 	visible: boolean;
 }
 const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
-// `!` 是**如实**的：`SceneAnimateEngine` 声明为 `Partial<…>`（它确实是「先建空对象、
-// 下面按域挂载」），而这几行在本模块求值期执行，此时 `scene-animate-engine.ts` 已求值完毕
-// ⇒ 7 个成员必然已就位。用 `Partial` 而不是 `{} as Shape` 就是为了让「可能未挂载」
-// 在类型上可见，代价就是这里要写 `!`。
 Scene.requestAnimation = SceneAnimateEngine.requestAnimation!;
 Scene.updateAnimation = SceneAnimateEngine.updateAnimation!;
 Scene.stopAnimation = SceneAnimateEngine.stopAnimation!;
@@ -30,8 +22,6 @@ Scene.updateFont = SceneAnimateEngine.updateFont!;
 
 Scene.switchLayer = (function IIFE() {
 	let layerGroup: HTMLElement | null = null;
-	// `tilemap` 这一项在层元素被查出来之前**就是 null**（读取处 L56 本来就是 `if (element)` 真值判断），
-	// 所以记录的值类型写成可空，而不是谎报成 HTMLElement。
 	let items: Record<string, HTMLElement | null> = { tilemap: null };
 	let selection: HTMLElement | null | undefined = undefined;
 	const query = () => {
@@ -179,9 +169,6 @@ Scene.switchSettings = function (this: typeof Scene) {
 };
 
 Scene.switchTerrain = function (this: typeof Scene) {
-	// 两个 `!`：`saveData.terrain` 的类型是「保存槽或 null」（组件 `restore` 会把它置 null），
-	// 而这里已由 `key === 'terrain'` 判定走到 terrain 槽 —— 它由 `save('terrain')` 写入，
-	// 一定带 `terrain` 字段（见 `scene-marquee-engine.ts:89`）。运行期一行未改。
 	const context =
 		marqueeData(this.marquee).key === 'terrain' ? this.marquee : this.marquee.saveData.terrain!;
 	context.terrain = (context.terrain! + 2) % 3;

@@ -67,19 +67,6 @@ interface CommandSchemaConfig {
 	save?: () => unknown;
 	customSave?: () => unknown;
 	noWindow?: boolean;
-	/**
-	 * 每条指令自带的**自定义成员袋**（`parseOperation` / `parseOperand` / `parseCondition` /
-	 * `remapSelectorPatch` …），在各自模块里经 `this.<key>` 调用。
-	 *
-	 * ⚠️ 这里保留 `any` 是**实测过的取舍**（本轮把两侧索引签名都摘掉跑了一遍）：
-	 * 全仓 `new CommandSchema({...})` 有 150+ 处，每处都夹带自己的键；摘掉后当场 112 条错误，
-	 * 全在那些指令模块里。而且**收成「函数袋」也不行**：本接口同时声明了数据成员
-	 * （`name: string` / `fields: CommandField[]` / `noWindow: boolean` …），索引签名类型必须
-	 * 同时容得下它们与可调用的自定义成员 —— 两者不可兼得（`unknown` 不可调用，
-	 * 函数类型容不下 `string`）。要收口只能给 150 条指令各写一份扩展接口，
-	 * 那是独立的一件事，不是「补个类型名」。同类先例：`components/command-list.ts` 的
-	 * `CommandListStaticsType.prototype` 是**纯方法袋**，所以能写成 `Record<string, (...args) => …>`。
-	 */
 	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
@@ -97,8 +84,6 @@ export class CommandSchema {
 	customLoad;
 	customSave;
 	noWindow;
-	// 同上（`CommandSchemaConfig` 的索引签名）：构造器把配置里**全部键**逐个搬到实例上
-	// （本文件下方的 `this[key] = config[key]`），所以实例侧必须是同一个「自定义成员袋」。
 	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 
@@ -145,16 +130,10 @@ export class CommandSchema {
 			this[key] = config[key];
 		}
 		if (this.noWindow) {
-			// noWindow 指令没有参数窗口 ⇒ **故意**把 `load` / `initialize` 置空：
-			// 给实例装上值为 null 的自有属性，遮蔽原型上的实现，调用点靠 `?.` 跳过
-			//（`CommandSchema.open` 等处就是 `initialize?.()`）。
-			// 用 `Object.assign` 而不是 `this.load = null`：这两个槽在类上声明为不可空方法，
-			// 直接赋 null 会被 tsc 拒（原先正是靠 `null as unknown as …` 绕过去的）。
 			Object.assign(this, { load: null, initialize: null });
 		}
 	}
 
-	// 取字段默认值（支持函数延迟求值）
 	_getDefault(field: CommandField) {
 		return typeof field.default === 'function' ? field.default() : field.default;
 	}
@@ -236,8 +215,6 @@ export class CommandSchema {
 		}
 		Command.save?.(data);
 	}
-
-	// --- 静态分发方法 ---
 
 	static _resolve(id: string) {
 		return commandCases[id];
@@ -331,13 +308,6 @@ export class CommandSchema {
 		}, 2000);
 	}
 
-	/**
-	 * 打开指令窗口并把参数灌进去（`insert` / `edit` 共用）。
-	 *
-	 * `point`（活动行的屏幕位置）**只用于定位**窗口：拿不到时退回当前定位模式，
-	 * 不再"静默不打开"。行改由模板渲染后，活动行可能尚未物化（`scrollAndResize` 改了窗口，
-	 * 而模板要等 Vue 一拍），旧实现会因此什么都不做——用户看到的就是"双击没反应"。
-	 */
 	static openWindow(
 		target: CommandTarget | null | undefined,
 		windowId: string,
@@ -381,8 +351,6 @@ export class CommandSchema {
 		if (meta !== undefined) {
 			Command.id = id;
 			if (meta.parameters.length !== 0) {
-				// 参数面板由 `Command.custom.load` 按脚本参数描述现场生成，与指令名表无关 ⇒ 不再以
-				// `commandNameMap` 为门槛（它只提供窗口标题，缺失时退回指令 id）。
 				CommandSchema.openWindow(Command.target, 'scriptCommand', () =>
 					Command.custom.load(id, {})
 				);
@@ -404,7 +372,6 @@ export class CommandSchema {
 			return;
 		}
 		if (handler) {
-			// 有内置定义但没有参数窗口（`noWindow`：无参数、插入即生效）⇒ 客观上没有可编辑内容
 			console.warn(`[command] "${id}" 没有参数窗口（noWindow），双击无可编辑内容`);
 			return;
 		}
@@ -424,8 +391,6 @@ export class CommandSchema {
 
 	static save(params: Record<string, unknown>) {
 		const { id, target } = Command;
-		// `id` 在解析阶段写入；`save` 只在解析后的编辑流程里被调用，
-		// 所以这里断言它已就绪（与原先的行为一致：null 值在下面几处本来就会炸）。
 		target?.save?.({ id: id!, params });
 		const handler = CommandSchema._resolve(id!);
 		if (handler !== undefined) {

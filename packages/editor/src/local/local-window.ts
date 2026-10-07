@@ -52,7 +52,6 @@ export interface LocalizationTarget {
 	input?: (id: string) => void;
 }
 
-/** 内容面板元素上的元素数据（`item` 原先靠原型访问器透明落到 WeakMap） */
 interface LocalizationPanelData {
 	item: LocalizationItem | null;
 }
@@ -126,14 +125,6 @@ interface LocalizationShape {
 	close: (() => void) | null;
 	saveToProject: ((project: EditorProjectShape) => void) | null;
 	loadFromProject: ((project: EditorProjectShape) => void) | null;
-	/**
-	 * 与 Pinia store 双向桥接的窗口状态之一（见 `stores/localization.ts` 的
-	 * `localizationStateKeys`，当前 7 键：state/strings/target/data/languages/history/changed），
-	 * 类型与 store 的 `shallowRef` 对齐。
-	 *
-	 * `data` / `languages` / `target` / `history` / `changed` 由 store 持有 ——
-	 * 桥在下方 `localizationBridgeKeys` 上循环，两份数组必须同值。
-	 */
 	state: string;
 }
 
@@ -146,8 +137,6 @@ export const Localization = {
 	history: null as History | null,
 	changed: false,
 	_previousActive: null as UndoableEditor | null,
-	// runtime 挂载: createInputs/fromExcel/toExcel 在本文件下方动态挂载,
-	// list 方法引用（ensureDomBound 内挂到真实 list 上）,
 	close: null as (() => void) | null,
 	saveToProject: null as ((project: EditorProjectShape) => void) | null,
 	loadFromProject: null as ((project: EditorProjectShape) => void) | null
@@ -233,7 +222,6 @@ Localization.initialize = function () {
 		capture: true
 	});
 	on(list, 'doubleclick', this.listDoubleclick, { capture: true });
-	// list select/record/open/popup 经 Vue 模板转发（Localization.vue @select/@record/@open/@popup → Localization.list*）
 	on(this.searcher, 'input', this.searcherInput);
 	on(this.searcher, 'compositionend', this.searcherInput);
 
@@ -777,12 +765,8 @@ Localization.toExcel = function (this: LocalizationShape, _event?: Event) {
 	});
 }.bind(Localization);
 
-// bindListClipboardMethods 改为 ensureDomBound 内调用（list 顶层为 null）
-
-// 列表 - 保存滚动状态
 Localization.list_saveScroll = function (this: TreeListElement) {
 	const { localization } = Data;
-	// 将数据保存在外部可以切换项目后重置
 	if (localization.scrollTop === undefined) {
 		Object.defineProperty(localization, 'scrollTop', {
 			writable: true,
@@ -792,12 +776,10 @@ Localization.list_saveScroll = function (this: TreeListElement) {
 	localization.scrollTop = this.scrollTop;
 };
 
-// 列表 - 恢复滚动状态
 Localization.list_restoreScroll = function (this: TreeListElement) {
 	this.scrollTop = Data.localization.scrollTop ?? 0;
 };
 
-// 列表 - 取消搜索
 Localization.list_cancelSearch = function (this: TreeListElement) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
@@ -808,7 +790,6 @@ Localization.list_cancelSearch = function (this: TreeListElement) {
 	}
 };
 
-// 列表 - 创建文件夹
 Localization.list_createFolder = function () {
 	return {
 		class: 'folder',
@@ -818,7 +799,6 @@ Localization.list_createFolder = function () {
 	};
 };
 
-// 列表 - 创建本地化项目
 Localization.list_createItem = function () {
 	const contents: Record<string, string> = {};
 	for (const language of Localization.languages!) {
@@ -831,23 +811,19 @@ Localization.list_createItem = function () {
 	};
 };
 
-// 列表 - 重写更新项目名称方法
 Localization.list_updateItemName = function (this: TreeListElement, item: LocalizationItem) {
 	TreeList.prototype.updateItemName.call(this, item);
 	this.update();
 };
 
-// 列表 - 在创建数据时回调
 Localization.list_onCreate = function (item: LocalizationItem) {
 	Localization.register(item);
 };
 
-// 列表 - 在删除数据时回调
 Localization.list_onDelete = function (item: LocalizationItem) {
 	Localization.unregister(item);
 };
 
-// 列表 - 在恢复数据时回调
 Localization.list_onResume = function (item: LocalizationItem) {
 	Localization.register(item);
 };

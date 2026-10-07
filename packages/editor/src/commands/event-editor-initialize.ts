@@ -21,14 +21,10 @@ import { getEventEditorStore } from '@app/stores/event-editor';
 import type { YamiElement } from '@app/types/element-api';
 import { ROW_HEIGHT } from '@app/constants/editor.ts';
 
-/** 事件编辑器窗口的元素注册表——由 `Event.vue` 在模板里登记 */
 export const eventEditorEls = createElementRegistry();
 
 function ensureDomBound() {
 	if (EventEditor.list) return;
-	// 注册表在挂载后才填充，未挂载时为 null ⇒ 仍需判空。
-	// 收窄走 `registryElement`（把「按 id 收窄」集中到一处），
-	// 于是下面两处不再各写一遍 `as unknown as`。
 	const list = registryElement<HTMLElement & EventEditorList>(eventEditorEls, 'event-open-list');
 	if (!list) return;
 	EventEditor.list = list;
@@ -36,10 +32,8 @@ function ensureDomBound() {
 		eventEditorEls,
 		'event-commands'
 	)!;
-	// 注册表在挂载后才填充，未挂载时为 undefined；沿用原先 `$()` 的非空断言语义
 	EventEditor.outerGutter = eventEditorEls.get('event-commands-gutter-outer') as YamiElement;
 	EventEditor.innerGutter = eventEditorEls.get('event-commands-gutter-inner') as YamiElement;
-	// 滚动位置改用显式元素数据
 	getElementData(list).lastScrollTop = 0;
 	EventEditor.list.close = null;
 	EventEditor.list.closeMultiple = null;
@@ -55,7 +49,6 @@ function ensureDomBound() {
 function bindListMethods() {
 	const list = EventEditor.list!;
 	list.selectIndex = function (this: HTMLElement & EventEditorList, index: number) {
-		// （窗口外的行同样取得到，与旧实现"取不到就什么都不做"的边界一致）
 		const count = treeRowCount(this);
 		const last = count - 1;
 		if (index < 0 || last < 0) return;
@@ -150,7 +143,6 @@ function bindListMethods() {
 	};
 
 	list.saveScroll = function (this: HTMLElement & EventEditorList) {
-		// 改用显式元素数据
 		getElementData(this).lastScrollTop = this.scrollTop;
 	};
 
@@ -511,5 +503,4 @@ EventEditor.initialize = function (this: EventEditorShape) {
 	if (commandListEl) on(commandListEl, 'change', this.commandListChange!);
 	on(this.commandList, 'update', this.commandListUpdate!);
 	on(this.commandList, 'scroll', this.commandListScroll!);
-	// confirm 由 SFC 的 @confirm 驱动（`event-confirm` 按钮由 WindowFrame 生成，注册表取不到）
 };

@@ -154,8 +154,6 @@ PluginManager.parseMeta = (function IIFE() {
 		};
 	};
 	const parseDefault = () => {
-		// `parseDefault()` 的唯一调用点是 `setDefault()`（L429 起），那里第一行就是
-		// `if (parameter === null) return;` ⇒ 走到这里 `parameter` 必然非空。`!` 是如实断言。
 		switch (parameter!.type) {
 			case 'boolean':
 				return parseBoolean(content);
@@ -610,7 +608,6 @@ PluginManager.parseMeta = (function IIFE() {
 
 		append({ key, values }: { key: string; values: (string | number | boolean)[] }) {
 			const { wraps, states } = this;
-			// 同 `relate()`：只在解析阶段被调用，此时 `parameter` 一定是当前正在解析的参数。
 			const pKey = parameter!.key;
 			const owner = paramMap[key];
 			if (
@@ -666,10 +663,6 @@ PluginManager.parseMeta = (function IIFE() {
 
 		relate(values: (string | number | boolean)[]) {
 			const { owner } = this;
-			// 这里用 `!` 是**如实断言**而不是圆谎：`relate()` 只由 `OptionManager.append()`
-			// 调用（L628），而 `append()` 及各 processor 一律在「已给 `parameter` 赋过值」的
-			// 解析阶段运行 —— 同文件十来处 `if (parameter === null) return;` 正是这个前提的体现。
-			// 若真的为 null，旧代码同样会在这里抛 TypeError，行为不变。
 			if (parameter!.type === 'option') {
 				let node: OptionParameterShape | null | undefined = owner;
 				while ((node = node.parent)) {
@@ -774,18 +767,11 @@ PluginManager.parseMeta = (function IIFE() {
 		'group[]': setGroupRepeatable
 	};
 
-	// 这五个状态的初值就是**返回的那个闭包开头会立刻写进去的值**（见下面 781 行起），
-	// 所以原先的 `null as unknown as T` 是纯粹的谎报 —— 直接写成真值即可，
-	// 类型保持不可空，读侧一行都不用改。
 	let overview: OverviewShape = { requires: [] };
 	let parameters: ParameterShape[] = [];
 	let paramMap: Record<string, ParameterShape> = {};
 	let langMap: LanguageMap = new LanguageMap();
 	let manager: OptionManager = new OptionManager();
-	// `parameter` 不同：它由各 processor 在**解析过程中**写入，闭包开头并不重置它，
-	// 因此「还没有解析到参数」这个 null 状态是有意义的 —— 代码里本来就有十来处
-	// `if (parameter === null) return;` 与 `parameter?.type` 在按可空使用它，
-	// 所以类型写 `| null` 才是与真实用法一致。
 	let parameter: ParameterShape | null = null;
 	let type = '';
 	let content = '';
@@ -801,7 +787,6 @@ PluginManager.parseMeta = (function IIFE() {
 		let match = selector.exec(code);
 		if (match) {
 			const code = match[0];
-			// 当元数据代码未改变时不用重新解析
 			if (meta.overview?.code === code) {
 				return;
 			}
@@ -831,11 +816,6 @@ PluginManager.parseMeta = (function IIFE() {
 			}
 		});
 
-		// 收尾只清 `parameter`（以及两个字符串游标）：它是**解析过程中**才写入的，
-		// 下一次调用若在解析到新参数之前读到上一轮的残留值就会串味。
-		// 其余五个（overview/parameters/paramMap/langMap/manager）在闭包开头（L786 起）
-		// 就会被无条件重新赋值，这里再置空是纯死写 —— 而且 `meta` 已经通过
-		// `Object.defineProperties` 持有 langMap/manager 的引用，置空也释放不了什么。
 		parameter = null;
 		type = '';
 		content = '';

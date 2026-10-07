@@ -6,11 +6,6 @@ import EventWindow from '@app/components/tools/Event.vue';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { eventEditorEls } from '@app/commands/event-editor-initialize.ts';
 
-/**
- * 事件编辑器窗口不再用 `按 id` 查 DOM，而由 `Event.vue` 在模板里
- * 通过 `registryRef(eventEditorEls, id)` 登记元素，`event-editor-*` 模块从注册表取。
- * 本用例锁住「登记 → ensureDomBound 绑定」这条链路（此前无覆盖）。
- */
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
@@ -52,7 +47,6 @@ describe('事件编辑器元素注册表', () => {
 		const wrapper = mount(EventWindow, { attachTo: document.body });
 		await nextTick();
 
-		// initialize 会挂这些处理器（正常启动时由其它模块赋值），用例里补桩以便走到绑定段
 		const handlers = [
 			'windowLocalize',
 			'windowClose',

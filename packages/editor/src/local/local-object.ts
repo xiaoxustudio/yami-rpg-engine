@@ -146,13 +146,11 @@ GameLocal.datachange = function (event: {
 		const nowLanguages = now.languages!.map((lang: LanguageSettings) => lang.name);
 		if (JSON.stringify(lastLanguages) !== JSON.stringify(nowLanguages)) {
 			GameLocal.reloadLanguages();
-			// 如果是自动语言，随着语言列表的变化重新加载
 			if (now.default === 'auto') {
 				void GameLocal.setLanguage(now.default);
 				return;
 			}
 		}
-		// 默认语言改变时重新设置语言
 		if (last.default !== now.default) {
 			void GameLocal.setLanguage(now.default);
 			return;

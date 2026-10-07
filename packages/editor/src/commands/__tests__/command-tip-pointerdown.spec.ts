@@ -4,15 +4,6 @@ import { nextTick } from 'vue';
 import { YMTreeList } from '@ui-kit';
 import { CommandSuggestion } from '@app/commands/command-tip';
 
-/**
- * 回归（实机报错）：
- * ```
- * VM1121:3 [Uncaught Error] TypeError: Cannot read properties of undefined (reading 'class')
- *     at CommandSuggestion.listPointerdown (command-tip.ts:418:53)
- * ```
- * 原因：把行 item 搬进**元素数据**后，`event.target.item` 这个 expando 一律是 `undefined`。
- * `listPointerdown` 必须走 `treeItemOf` / `treeRowElement`（行 API 的正反向入口）——本用例钉住这条链路。
- */
 interface SuggestionRow {
 	id: string;
 	name: string;
@@ -60,11 +51,9 @@ describe('CommandSuggestion.listPointerdown（行 → item 经行 API，不读 e
 		const select = vi.fn();
 		CommandSuggestion.select = select;
 
-		// 旧实现（`hasClass(element, 'node-item') && element.item.class`）在这里抛 TypeError
 		expect(() => {
 			pointerdown(text);
 		}).not.toThrow();
-		// 目标归一：点标签文字也算点这一行（旧实现要求 target 必须是行元素本身）
 		rows[0].dispatchEvent(new Event('pointerup', { bubbles: true }));
 		expect(select).toHaveBeenCalledWith(data[0]);
 		wrapper.unmount();
@@ -92,7 +81,6 @@ describe('CommandSuggestion.listPointerdown（行 → item 经行 API，不读 e
 		rows[0].dispatchEvent(new Event('pointerup', { bubbles: true }));
 		expect(select).not.toHaveBeenCalled();
 
-		// 行外（窗口空白处）不是行：不抛错也不注册
 		const outside = document.createElement('div');
 		expect(() => {
 			pointerdown(outside);

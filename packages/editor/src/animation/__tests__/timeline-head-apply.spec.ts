@@ -3,14 +3,6 @@ import { elementDataOf } from '@ui-kit';
 import { Animation } from '@app/animation/animation-window.ts';
 import '@app/animation/register.ts';
 
-// 时间轴头部/内容列版式的生效动作金标准（jsdom 无像素，锁的是**写法与口径**）。
-//
-// 契约（实机「刻度尺被播放按钮组挡到」那次的三处联动）：
-// ① head.left = 分组最后一个页签右缘（`timelineHeadLeft`）；
-// ② 内容列（= 图层列宽 / 帧网格左缘 / 指针区左缘 / 刻度尺左缘）必须**同一口径**，且不低于
-//    页面 18%；有播放栏时还要越过它 —— 只动刻度尺会让刻度与帧格错开，只动网格会让刻度被挡；
-// ③ 刻度尺写绝对定位的 `left`（内容列 − head 左缘），**不写 `margin-left`**。
-
 interface HeadHost extends HTMLElement {
 	updateHead: () => void;
 }
@@ -50,12 +42,10 @@ describe('Animation.timeline.updateHead 版式收口', () => {
 
 	it('内容列三处联动 + 刻度尺写 left（不写 margin-left）', () => {
 		const { timeline, head, ruler, list, pointerArea, layerList } = buildTimeline(800);
-		// 上一版实现留下的内联 margin-left 必须被清掉（否则刻度整条偏移）
 		ruler.style.marginLeft = '77px';
 
 		timeline.updateHead();
 
-		// jsdom 里 rect 全 0 ⇒ 默认列 = 页面 18% = 144px
 		expect(head.style.left).toBe('0px');
 		expect(layerList.style.width).toBe('144px');
 		expect(list.style.left).toBe('144px');

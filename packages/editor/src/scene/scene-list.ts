@@ -13,33 +13,17 @@ import { GlobalClipboard } from '@app/utils/clipboard';
 import type { MenuItem } from '@ui-kit';
 import { clone as deepClone } from '@app/utils/object';
 
-/**
- * 场景树里的一个对象（列表项）。
- *
- * （本文件一份、`scene-events.ts` 一份），字段各有出入（那份多了 `tiles` / `presetId`、
- * `parent` 写成可空）—— `SceneListExtensions` 收口时它们**互不兼容**（TS2345）才暴露出来。
- * 现在全仓只有这一份，`scene-events.ts` 直接再导出它。
- *
- * 门面那份 `SceneListItem`（`scene-window.ts`）是它的**结构超集**，两者成对维护（见那里的说明）。
- */
 export type SceneItem = {
 	class: string;
 	element: HTMLElement;
-	/** 树列表里的显示名（`copy` 写入、重命名读写） */
 	name?: string;
-	/** tilemap 的快捷栏编号（只有 tilemap 有） */
 	shortcut?: number;
-	/** 树列表挂上的父节点（新建时还没有，`!` 只在「已在树里」的读点用）。`null` 是组件侧会写的值。 */
 	parent?: SceneItem | null;
-	/** 子树（叶子没有） */
 	children?: SceneItem[];
-	/** 瓦片地图的行数据（只有 tilemap 有）。类型与 codec 的 `TilemapData.tiles` 一致 —— 读点要 `.length`。 */
 	tiles?: Uint32Array;
-	/** 场景对象引用的预设 id（右键菜单「复制 id」读它） */
 	presetId?: string;
 };
 
-// 列表 - 复制
 Scene.list.copy = function (this: typeof Scene, item: SceneItem) {
 	if (item) {
 		switch (item.class) {
@@ -51,7 +35,6 @@ Scene.list.copy = function (this: typeof Scene, item: SceneItem) {
 	}
 };
 
-// 列表 - 粘贴
 Scene.list.paste = function (
 	this: typeof Scene,
 	dItem: SceneItem | 'auto' | null,
@@ -82,7 +65,6 @@ Scene.list.paste = function (
 	}
 };
 
-// 列表 - 创建副本
 Scene.list.duplicate = function (this: typeof Scene, item: SceneItem) {
 	let copy;
 	switch (item.class) {
@@ -106,14 +88,12 @@ Scene.list.duplicate = function (this: typeof Scene, item: SceneItem) {
 	}
 };
 
-// 列表 - 删除
 Scene.list.delete = function (this: typeof Scene, item: SceneItem) {
 	if (item) {
 		this.deleteNode!(item);
 	}
 };
 
-// 列表 - 开关对象
 Scene.list.toggle = function (this: typeof Scene, item: SceneItem) {
 	if (item && 'enabled' in item) {
 		Scene.history.save({
@@ -124,13 +104,11 @@ Scene.list.toggle = function (this: typeof Scene, item: SceneItem) {
 		});
 		item.enabled = !item.enabled;
 		this.update();
-		// 这里那次 `as unknown as HTMLElement` 是**签名放宽后忘了清的调用点** ⇒ 直接删。
 		dispatchChangeEvent(this);
 		Scene.requestRendering!();
 	}
 };
 
-// 列表 - 取消搜索
 Scene.list.cancelSearch = function (this: typeof Scene) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
@@ -141,7 +119,6 @@ Scene.list.cancelSearch = function (this: typeof Scene) {
 	}
 };
 
-// 列表 - 创建文件夹
 Scene.list.createFolder = function (this: typeof Scene) {
 	return {
 		class: 'folder',
@@ -153,7 +130,6 @@ Scene.list.createFolder = function (this: typeof Scene) {
 	};
 };
 
-// 列表 - 创建瓦片地图快捷方式菜单选项
 Scene.list.createTilemapShortcutItems = function (this: typeof Scene, tilemap: SceneItem) {
 	const { shortcuts } = Scene.tilemaps;
 	const { shortcut } = tilemap;
@@ -191,7 +167,6 @@ Scene.list.createTilemapShortcutItems = function (this: typeof Scene, tilemap: S
 	return menuItems;
 };
 
-// 列表 - 恢复递归状态
 Scene.list.restoreRecursiveStates = (function IIFE() {
 	const restore = (node: SceneItem, key: string, states: SceneItem[], index: number) => {
 		if (Reflect.get(node, key) !== undefined) {
@@ -211,7 +186,6 @@ Scene.list.restoreRecursiveStates = (function IIFE() {
 	};
 })();
 
-// 列表 - 设置递归状态
 Scene.list.setRecursiveStates = (function IIFE() {
 	const set = (node: SceneItem, key: string, state: boolean, backups: unknown[]) => {
 		if (Reflect.get(node, key) !== undefined) {
@@ -232,7 +206,6 @@ Scene.list.setRecursiveStates = (function IIFE() {
 	};
 })();
 
-// 列表 - 更新文件夹状态
 Scene.list.updateFolderState = (function IIFE() {
 	let key: string;
 	const list = Scene.list;
@@ -271,7 +244,6 @@ Scene.list.updateFolderState = (function IIFE() {
 	};
 })();
 
-// 列表 - 判断是否可以开关状态 因为可视和锁定状态自动更新导致了历史操作可能无法正确还原 锁死不包含场景对象的文件夹是为了保证撤消重做结果的正确性
 Scene.list.canSwitchState = (function IIFE() {
 	const check = (item: SceneItem) => {
 		if (item.class === 'folder') {
@@ -287,10 +259,7 @@ Scene.list.canSwitchState = (function IIFE() {
 	};
 })();
 
-// 列表 - 更新头部位置
 Scene.list.updateHead = function (this: typeof Scene) {
-	// `page` / `head` 已不在 DATA_FIELDS 内（原型访问器退役），`this` 是列表元素 ⇒ 解构 `this`
-	// 会拿到 undefined（`page.clientWidth` 抛错）。改读同一份元素数据。
 	const { page, head } = elementDataOf<{ page: HTMLElement; head: HTMLElement }>(this);
 	if (page.clientWidth !== 0) {
 		const nav = headNavOf(head);
@@ -303,7 +272,6 @@ Scene.list.updateHead = function (this: typeof Scene) {
 	}
 };
 
-// 列表 - 在创建数据时回调
 getListConfig(Scene.list).onCreate = function (this: typeof Scene, item: SceneItem) {
 	if (item.class === 'folder') return;
 	Scene.registerPreset!(item);
@@ -312,13 +280,11 @@ getListConfig(Scene.list).onCreate = function (this: typeof Scene, item: SceneIt
 	Scene.requestRendering!();
 } as (item: unknown) => void;
 
-// 列表 - 在迁移数据时回调
 getListConfig(Scene.list).onRemove = function (this: typeof Scene) {
 	Scene.loadObjects!();
 	Scene.requestRendering!();
 };
 
-// 列表 - 在删除数据时回调
 getListConfig(Scene.list).onDelete = function (this: typeof Scene, item: SceneItem) {
 	Scene.unregisterPreset!(item);
 	Scene.updateTarget!();
@@ -327,7 +293,6 @@ getListConfig(Scene.list).onDelete = function (this: typeof Scene, item: SceneIt
 	Scene.requestRendering!();
 } as (item: unknown) => void;
 
-// 列表 - 在恢复数据时回调
 getListConfig(Scene.list).onResume = function (this: typeof Scene, item: SceneItem) {
 	Scene.registerPreset!(item);
 	Scene.loadObjects!();

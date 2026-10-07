@@ -120,7 +120,6 @@ Particle.initialize = function () {
 	window.addEventListener('keydown', this.keydown!);
 	on(this.page, 'resize', this.windowResize!);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored!);
-	// head/toolbar/control/zoom/screen(keydown/wheel)/marquee(pointerdown) 经 Vue 模板转发（LayoutPanel @pointerdown/@input/@focus/@keydown/@wheel）
 	on(particleEls.get('particle-speed') as YamiElement, 'input', this.speedInput!);
 	on(this.screen, 'userscroll', this.screenUserscroll!);
 	on(this.screen, 'blur', this.screenBlur!);
@@ -134,7 +133,6 @@ Particle.initialize = function () {
 	on(this.list, 'change', this.listChange!);
 };
 
-// 三个类在 `particle-engine.ts` 末尾装配；本文件在初始化期运行，那时它们已就位
 Particle.Emitter = ParticleEngine.Emitter!;
 Particle.Layer = ParticleEngine.Layer!;
 Particle.Element = ParticleEngine.Element!;

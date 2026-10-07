@@ -11,7 +11,6 @@ interface TilemapData {
 
 export class TilemapShortcuts {
 	tilemaps: TilemapData[];
-	// 索引 1-6 挂载对应快捷方式的 tilemap（reset 时初始化为 null）
 	[index: number]: TilemapData | null;
 
 	constructor(tilemaps: TilemapData[]) {

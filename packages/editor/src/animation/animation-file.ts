@@ -65,7 +65,6 @@ Animation.load = function (this: typeof Animation, context: AnimationFileContext
 			listScrollTop: 0
 		};
 	}
-	// `editor` 是可选的（tab 传入的上下文，open/load 才挂它）；上面的 `firstLoad` 分支刚保证它存在
 	const editor = context.editor!;
 	const { animation } = context;
 
@@ -85,7 +84,6 @@ Animation.load = function (this: typeof Animation, context: AnimationFileContext
 	}
 
 	this.list.update();
-	// this.list.scrollTop = editor.listScrollTop
 
 	this.setMotion!(editor.motion);
 
@@ -112,7 +110,6 @@ Animation.save = function (this: typeof Animation) {
 		editor.centerY = this.centerY;
 		editor.selectionX = this.timelineMarquee.x;
 		editor.selectionLength = this.timelineMarquee.length;
-		// editor.listScrollTop = this.list.scrollTop
 	}
 };
 
@@ -126,11 +123,11 @@ Animation.close = function (this: typeof Animation) {
 		getAnimationStore().state = 'closed';
 		this.context = null;
 		this.meta = null;
-		this.player = null!; // 关闭文件时清空（读点都在打开状态内）
+		this.player = null!;
 		getAnimationStore().mode = null;
-		this.sprites = null!; // 关闭文件时清空：类型上非空（读点都在打开状态内）
+		this.sprites = null!;
 		this.motions = null;
-		this.history = null!; // 关闭文件时清掉：类型上非空（读点都在打开状态内），这里按收尾赋值
+		this.history = null!;
 		write(this.searcher, '');
 		clear(this.list);
 		clear(this.layerList);

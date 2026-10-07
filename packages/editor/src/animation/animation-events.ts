@@ -12,7 +12,6 @@ import { roundTo } from '@app/utils/math';
 Animation.requestRefreshingList = function (this: typeof Animation) {
 	if (getAnimationStore().state === 'open') {
 		const list = this.list;
-		// 改用显式元素数据（`getElementData`）而不是原型访问器 `list.refreshing`
 		const data = getElementData(list as HTMLElement);
 		if (!data.refreshing) {
 			data.refreshing = true;
@@ -68,7 +67,6 @@ Animation.switchSettings = function (this: typeof Animation) {
 Animation.switchLoop = (function IIFE() {
 	return function (this: typeof Animation, enabled = !getAnimationStore().loop) {
 		getAnimationStore().loop = enabled;
-		// 在开启残影的情况下应该刷新
 		if (getAnimationStore().showOnionskin && getAnimationStore().state === 'open') {
 			this.updateFrameContexts!();
 			this.requestRendering!();
@@ -407,5 +405,4 @@ Animation.screenUserscroll = function (this: typeof Animation, _event: Event) {
 Animation.screenBlur = function (this: typeof Animation, _event: Event) {
 	this.translationKeyup!();
 	this.pointerup!();
-	// this.marqueePointerleave!()
 }.bind(Animation);

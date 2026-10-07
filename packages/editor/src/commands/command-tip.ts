@@ -41,7 +41,6 @@ export interface CommandSuggestionItem {
 	keywords?: string;
 	expanded?: boolean;
 	children?: CommandSuggestionItem[] | null;
-	// 列表渲染时挂载的 DOM 元素
 	element?: HTMLElement & { item: CommandSuggestionItem };
 	item?: CommandSuggestionItem;
 }
@@ -141,7 +140,6 @@ export const CommandSuggestion = {
 	listOpen: null
 } satisfies Partial<CommandSuggestionShape> as CommandSuggestionShape;
 
-/** 控件元素注册表——由 `CommandWidget.vue` / `CommandSuggestions.vue` 在模板里登记 */
 export const commandSuggestionEls = createElementRegistry();
 
 function ensureDomBound() {
@@ -226,7 +224,6 @@ function bindListMethods() {
 		return function (item: CommandSuggestionItem): void {
 			const element = treeRowElement(item);
 			if (element === undefined) return;
-			// `Command.words` 的真实类型本来就带 `push`/`join` ⇒ 直接读，无需断言形状
 			const words = Command.words;
 			words.push(item.class);
 			if (item.class !== 'custom') {
@@ -245,7 +242,6 @@ function bindListMethods() {
 	})();
 
 	list.selectDefaultCommand = function (this: CommandSuggestionList): void {
-		// 当前项经 `read()` 取——`list.selection` 是已退役的旧属性（无人写入，恒为 null）
 		const selection = this.read();
 		if (selection && selection.class !== 'folder') {
 			if (treeRowIndexOf(this, selection) !== -1) {
@@ -267,8 +263,6 @@ CommandSuggestion.initialize = function (): void {
 	const { list } = this;
 	list.bind(() => this.data);
 
-	// 挂载列表项创建器/更新器 ——
-	// 此前这些方法定义了却未挂进 creators/updaters，导致新版 DOM 丢失 class 与 tooltip 元素。
 	getListConfig(list).creators.push(list.createCommandTip!);
 
 	this.data = File.get!({
@@ -293,9 +287,6 @@ CommandSuggestion.open = function (): void {
 	const list = Command.target as CommandSuggestionList;
 	list.scrollAndResize();
 	const point = list.getSelectionPosition();
-	// 定位点拿不到（活动行尚未物化 / 列表刚被清空）时**不能静默不打开**——那正是"双击没反应"。
-	// 退回列表自身位置：窗口位置只是观感，打开与否才是功能。
-	// 单次断言即可：`CommandTargetShape` 与 `HTMLElement` 是**可比较**的，tsc 会检查这一点；
 	const rect = (Command.target as HTMLElement).getBoundingClientRect?.();
 	const x = (point?.x ?? rect?.x ?? 0) - 5;
 	const y = point?.y ?? rect?.y ?? 0;
@@ -332,7 +323,6 @@ CommandSuggestion.windowLocalize = function (_event: Event): void {
 };
 
 CommandSuggestion.windowClose = function (_event: Event): void {
-	// 但是异步触发的scroll事件因为列表被隐藏而不会刷新列表项
 	CommandSuggestion.searcher.deleteInputContent();
 	hide(CommandSuggestion.list);
 	window.removeEventListener('pointerdown', CommandSuggestion.pointerdown!, {
@@ -407,9 +397,6 @@ CommandSuggestion.listKeydown = function (event: KeyboardEvent): void {
 };
 
 CommandSuggestion.listPointerdown = function (event: PointerEvent): void {
-	// 行 → item 经行 API 取（`element.item` expando 已退役，直接读会抛
-	// `Cannot read properties of undefined (reading 'class')`）；顺带把标签文字
-	// （`.node-text`）上的点击归一成行，点名字也能选中。
 	const item = treeItemOf<CommandSuggestionItem>(event.target);
 	if (item === undefined || item.class === 'folder') return;
 	const element = treeRowElement(item);

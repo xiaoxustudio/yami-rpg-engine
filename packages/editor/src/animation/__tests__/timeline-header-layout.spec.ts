@@ -5,12 +5,6 @@ import {
 	timelineRulerLeft
 } from '@app/animation/timeline-header-layout.ts';
 
-// 时间轴头部/内容列布局的生效动作金标准。三个量必须自洽：
-//   ① 内容列左缘（帧网格 / 指针区 / 刻度尺共用起点）
-//   ② head 左缘（贴分组最后一个页签右缘）
-//   ③ 刻度尺相对 head 的偏移（① − ②）
-// 刻度对齐靠 `outerRuler.scrollLeft` 镜像帧网格滚动，所以 ① 一动必须三处一起动。
-
 describe('timelineHeadLeft', () => {
 	it('有页签时贴在最后一个页签右缘之后', () => {
 		expect(timelineHeadLeft(320, 60)).toBe(260);
@@ -32,8 +26,6 @@ describe('timelineContentLeft（内容列自适应）', () => {
 		expect(timelineContentLeft(198, 197, 1100)).toBe(198);
 	});
 
-	// 回归（实机「刻度尺还是被播放按钮组挡到」）：播放栏越过 18% 时内容列必须整体右移到
-	// 播放栏右缘之后 —— 只右移刻度尺会让刻度与帧格错开，只右移网格会让刻度被挡，必须一起动。
 	it('播放栏越过 18% 时内容列右移到「播放栏右缘 + 1px」', () => {
 		expect(timelineContentLeft(198, 270, 1100)).toBe(271);
 		expect(timelineContentLeft(198, 380, 1100)).toBe(381);
@@ -42,7 +34,6 @@ describe('timelineContentLeft（内容列自适应）', () => {
 	it('面板窄到放不下播放栏时贴住页面右缘（不把内容列推出页面）', () => {
 		expect(timelineContentLeft(30, 400, 100)).toBe(99);
 		expect(timelineContentLeft(40, 10, 50)).toBe(40);
-		// 页面右缘在默认列左边（退化）时保持默认列，绝不返回更小的值
 		expect(timelineContentLeft(60, 400, 50)).toBe(60);
 	});
 

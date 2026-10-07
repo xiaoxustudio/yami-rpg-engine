@@ -213,6 +213,5 @@ Particle.screenUserscroll = function (this: ParticleShape, _event: YamiEvent) {
 }.bind(Particle);
 
 Particle.screenBlur = function (this: ParticleShape, _event: YamiEvent) {
-	// this.translationKeyup() this.pointerup()
 	this.marqueePointerleave!();
 }.bind(Particle);

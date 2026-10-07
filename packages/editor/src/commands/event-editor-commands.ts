@@ -101,7 +101,6 @@ EventEditor.openCommandList = function (this: EventEditorShape, item: EventListI
 	write('commands', commands);
 	write('type', item.type);
 
-	// 窗口刚打开时布局可能未就绪（clientHeight 0），resize 会跳过渲染，延迟刷新确保指令显示
 	const { commandList } = this;
 	if (commandList) {
 		setTimeout(() => {
@@ -159,7 +158,6 @@ EventEditor.resizeGutter = function (this: EventEditorShape) {
 		if (i !== length) {
 			if (i < length) {
 				while (i < length) {
-					// 离屏节点统一走 utils/dom 的 renderDetached
 					const node = renderDetached(
 						h('div', { class: 'box event-commands-line-number' })
 					);

@@ -104,7 +104,6 @@ Scene.revealTarget = (function IIFE() {
 		const { target, meta } = this;
 		const toleranceX = 1 / this.scaledTileWidth / this.scaleX;
 		const toleranceY = 1 / this.scaledTileHeight / this.scaleY;
-		// 目标和摄像机的位置不一定相等
 		if (
 			target &&
 			!timer.target &&

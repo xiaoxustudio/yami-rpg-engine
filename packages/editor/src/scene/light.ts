@@ -8,7 +8,6 @@ interface LightData {
 	x: number;
 	y: number;
 	range: number;
-	// area 光源额外字段
 	width?: number;
 	height?: number;
 	angle?: number;
@@ -20,14 +19,11 @@ interface LightData {
 	measureOffsetY?: number;
 	measureWidth?: number;
 	measureHeight?: number;
-	// 颜色与混合（`drawPointLight` 里逐项读到）
 	red: number;
 	green: number;
 	blue: number;
 	intensity: number;
-	/** 混合模式名（`gl.blend` 是 string，见 webgl-methods.ts） */
 	blend: string;
-	/** area 光源的遮罩贴图键（`Scene.textures` 的键） */
 	mask: string;
 }
 

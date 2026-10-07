@@ -121,16 +121,9 @@ export interface PluginManagerShape {
 	list_restoreSelection: (() => void) | null;
 	list_updateTextNode: ((item: PluginItemShape) => void) | null;
 	reload: (() => void) | null;
-	/**
-	 * **桥接到 `stores/plugin`**（本文件末尾用 `Object.defineProperty` 按
-	 * `pluginBridgeKeys` 安装 get/set），不是独立字段。
-	 * 原先靠类型上的 `[k: string]: any` 兜着，所以"这里有座桥"在类型里看不见——
-	 * 去掉逃生口后由 `tsc` 当场报出（`stores/__tests__/plugin.spec.ts` 3 处）。
-	 */
 	plugins: PluginItemShape[] | Record<string, PluginItemShape>;
 }
 
-/** 同 `AudioManager`：`plugins` 由本文件末尾的桥安装，字面量按 `Omit<…, 'plugins'>` 校验后再断言。 */
 const pluginManager = {
 	list: null,
 	overviewPane: null,
@@ -179,8 +172,6 @@ const pluginManager = {
 } satisfies Partial<Omit<PluginManagerShape, 'plugins'>> as Omit<PluginManagerShape, 'plugins'>;
 
 export const PluginManager = pluginManager as PluginManagerShape;
-
-// 注意：不再重写 ParameterPane.createDetailBox / clear，以保留参数面板按 @group 分组的多 detail-box 渲染能力 （原生 ParameterPane 已支持，见 components/parameter-pane.js）
 
 const pluginBridgeKeys = ['plugins'] as const;
 import { getPluginStore } from '@app/stores/plugin';

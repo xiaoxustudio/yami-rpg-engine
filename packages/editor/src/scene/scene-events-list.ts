@@ -32,7 +32,6 @@ Scene.listKeydown = function (this: typeof Scene, event: KeyboardEvent) {
 	if (!this.data) {
 		return;
 	}
-	// 这里那次 `as unknown as HTMLElement` 是**签名放宽后忘了清的调用点**，直接删。
 	const item = read(this);
 	const isFile = item && item.class !== 'folder';
 	if (event.ctrlKey || event.metaKey) {
@@ -88,7 +87,6 @@ Scene.listSelect = function (this: typeof Scene, event: Event & { value: SceneIt
 			Scene.setTarget!(null);
 			break;
 		case 'tilemap':
-			// 正在编辑图块时直接打开瓦片地图 图块组关闭时打开瓦片地图检查器
 			if (Scene.tilemap) {
 				if (Palette.state === 'closed') {
 					Scene.setTarget!(item);
@@ -137,9 +135,6 @@ Scene.listRecord = function (
 			break;
 		}
 		case 'delete': {
-			// `parent` 类型上可空（`SceneItem.parent` 是 `SceneItem | null`，`create` 分支里还可能 undefined），
-			// 但走到这几个 case 时该项**已经在树里**（事件由列表自身派发）⇒ `!` 写下这条前提，
-			// 与 `scene-window.ts` 那几个 History 处理器里的同类读法一致。
 			const parent = response.item.parent!;
 			list.updateFolderState(parent, 'hidden');
 			list.updateFolderState(parent, 'locked');

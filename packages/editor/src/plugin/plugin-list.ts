@@ -50,7 +50,6 @@ PluginManager.listSelect = function (
 	void PluginManager.load!(event.value!);
 } as ((...args: unknown[]) => void) | null;
 
-// 列表 - 取消选择事件
 PluginManager.listUnselect = function (this: typeof PluginManager, _event: Event) {
 	PluginManager.unload!();
 } as ((...args: unknown[]) => void) | null;
@@ -133,7 +132,6 @@ PluginManager.listOpen = function (
 	(PluginManager.list as TreeListElement).edit(event.value);
 } as ((...args: unknown[]) => void) | null;
 
-// 列表 - 编辑
 PluginManager.list_edit = function (this: TreeListElement, item: PluginItemShape) {
 	getSelectorInstance()?.open?.(
 		{
@@ -153,7 +151,6 @@ PluginManager.list_edit = function (this: TreeListElement, item: PluginItemShape
 	);
 };
 
-// 列表 - 插入
 PluginManager.list_insert = function (this: TreeListElement, dItem: PluginItemShape) {
 	getSelectorInstance()?.open?.(
 		{
@@ -167,7 +164,6 @@ PluginManager.list_insert = function (this: TreeListElement, dItem: PluginItemSh
 	);
 };
 
-// 列表 - 开关
 PluginManager.list_toggle = function (this: TreeListElement, item: PluginItemShape) {
 	if (item) {
 		item.enabled = !item.enabled;
@@ -176,14 +172,12 @@ PluginManager.list_toggle = function (this: TreeListElement, item: PluginItemSha
 	}
 };
 
-// 列表 - 复制
 PluginManager.list_copy = function (this: TreeListElement, item: PluginItemShape) {
 	if (item) {
 		GlobalClipboard.write('yami.data.plugin', item);
 	}
 };
 
-// 列表 - 粘贴
 PluginManager.list_paste = function (this: TreeListElement, dItem: PluginItemShape) {
 	const copy = GlobalClipboard.read('yami.data.plugin');
 	if (copy) {
@@ -191,7 +185,6 @@ PluginManager.list_paste = function (this: TreeListElement, dItem: PluginItemSha
 	}
 };
 
-// 列表 - 删除
 PluginManager.list_delete = function (this: TreeListElement, item: PluginItemShape) {
 	const get = (key: string) => t('confirmation.' + key);
 	const name = Command.removeTextTags(Command.parseFileName(item.id));
@@ -217,10 +210,8 @@ PluginManager.list_delete = function (this: TreeListElement, item: PluginItemSha
 	);
 };
 
-// 列表 - 保存选项状态
 PluginManager.list_saveSelection = function (this: TreeListElement) {
 	const { plugins } = Data;
-	// 将数据保存在外部可以切换项目后重置
 	if (plugins.selection === undefined) {
 		Object.defineProperty(plugins, 'selection', {
 			writable: true,
@@ -233,7 +224,6 @@ PluginManager.list_saveSelection = function (this: TreeListElement) {
 	}
 };
 
-// 列表 - 恢复选项状态
 PluginManager.list_restoreSelection = function (this: TreeListElement) {
 	const id = Data.plugins.selection;
 	const item = PluginManager.getItemById!(id) ?? this.data?.[0];

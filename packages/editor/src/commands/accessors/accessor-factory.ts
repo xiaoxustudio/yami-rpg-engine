@@ -26,8 +26,6 @@ export interface AccessorConfig<TTarget extends AccessorTarget = AccessorTarget>
 	createDefaultForPlugin?: () => { getter: string; type: string };
 }
 
-// 收敛访问器窗口的通用样板（target 持有 / open / confirm / 插件契约），
-// 各访问器自定义的 initialize（选项加载 + relate）仍留在各自文件内
 export function createAccessor<
 	TTarget extends AccessorTarget = AccessorTarget,
 	TExtra extends object = object

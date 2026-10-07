@@ -40,10 +40,6 @@ import { clamp as mathClamp, modDegrees } from '@app/utils/math';
 import { computeIndexDigits } from '@app/utils/number';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
-/**
- * 方向列表（`animation-dirList`）的元素数据视图。
- * `mode` 是列表当前呈现的动作模式（`1-dir` / `4-dir` / `none` …），随动作模式变化而更新。
- */
 interface AnimationDirListElementData {
 	mode: string;
 }
@@ -51,10 +47,6 @@ interface AnimationDirListElementData {
 const dirListData = (el: unknown): AnimationDirListElementData =>
 	elementDataOf<AnimationDirListElementData>(el);
 
-/**
- * 时间轴内层刻度尺（`animation-timeline-ruler-inner`）的元素数据视图。
- * `start` 是刻度尺当前起始刻度号，首次滚动前为空（`Animation.outerTimelineListScroll` 写入）。
- */
 interface AnimationRulerElementData {
 	start?: number;
 }
@@ -69,7 +61,6 @@ Animation.play = function (this: typeof Animation) {
 	if (getAnimationStore().motion === null) return;
 	const range = this.getAnimationRange!();
 	const player = this.player;
-	// 使用animIndex属性来避免加载最后一帧时被取整的情况
 	if (player.index < range.end - 1) {
 		this.animIndex = player.index;
 	} else {
@@ -382,7 +373,6 @@ Animation.setDirection = function (this: typeof Animation, direction: number) {
 	this.contextLoaded = false;
 	this.layerList.update();
 	this.dirList.setDirDirection?.(dirIndex);
-	// 标记动作对象为已加载状态 - 以便销毁元素
 	if (dirCase.loaded === undefined) {
 		Object.defineProperty(dirCase, 'loaded', {
 			configurable: true,
@@ -396,7 +386,6 @@ Animation.createDirItems = function (this: typeof Animation) {
 	const motion = getAnimationStore().motion;
 	const mode = motion?.mode ?? 'none';
 	const data = dirListData(dirList);
-	// 当动作模式发生变化时，更新方向选项
 	if (data.mode !== mode) {
 		data.mode = mode;
 		const dirs = this.dirTags[mode] ?? [];
@@ -474,7 +463,6 @@ Animation.revealTarget = (function IIFE() {
 			const toleranceX = 0.5 / this.scaleX;
 			const toleranceY = 0.5 / this.scaleY;
 			const { centerX, centerY } = this;
-			// 目标和摄像机的位置不一定相等
 			if (Math.abs(x - centerX) > toleranceX || Math.abs(y - centerY) > toleranceY) {
 				timer.target = target;
 				timer.startX = centerX;
@@ -741,7 +729,6 @@ Animation.updateSoundContexts = function (this: typeof Animation) {
 		const layer = context.layer;
 		if (layer.class === 'sound') {
 			const frame = Animation.getFrame!(layer.frames, index);
-			// 如果当前帧是关键帧且未播放过，则播放动画音效
 			if (frame && frame.start === index && context.version !== index) {
 				context.version = index;
 				if (frame.sound) {
@@ -974,7 +961,6 @@ Animation.getKeyFrame = function (this: typeof Animation, x: number, y: number) 
 			const end = frame.end;
 			if (sx >= end) continue;
 			if (ex <= start) break;
-			// 如果指向第一个关键帧则返回有效帧
 			return x === start ? frame : null;
 		}
 	}
@@ -1081,7 +1067,6 @@ Animation.updateRuler = function (this: typeof Animation) {
 				const start = innerRulerData(innerRuler).start ?? 0;
 				let number = (start + i) * 5;
 				while (i < length) {
-					// 离屏节点统一走 utils/dom 的唯一创建缝隙
 					const node = createDetachedElement();
 					addClass(node, 'box');
 					addClass(node, 'timeline-number');

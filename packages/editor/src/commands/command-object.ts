@@ -106,11 +106,6 @@ interface CommandCustomShape {
 	windowY: number | null;
 	parsingScript: { id: string; parameters: Record<string, unknown> | null };
 	loadedScript: { id: string; parameters: Record<string, unknown> | null };
-	/**
-	 * 下面三个元素槽由 `Command.custom.initialize()` 从元素注册表取（见 `command-custom.ts`），
-	 * 在那之前**确实不存在** —— `initialize()` 里本来就有一处 `if (!this.parameterPane) return;`。
-	 * 所以声明成可选，字面量不必再写 `null as unknown as …` 占位。
-	 */
 	windowFrame?: HTMLElement & {
 		style: CSSStyleDeclaration;
 		absolute(x: number | null, y: number | null): void;
@@ -122,11 +117,6 @@ interface CommandCustomShape {
 		createDetailBox?: () => unknown;
 		clear?: () => void;
 	};
-	/**
-	 * 参数网格元素。`initialize()` 里是从元素注册表取的 **`YamiElement`**
-	 * （见 `command-custom.ts` 的赋值），所以这里如实声明 —— 原先写 `HTMLElement` 时，
-	 * `ParameterWrap` 的字面量只能靠 `as unknown as` 硬塞进去。
-	 */
 	parameterGrid?: YamiElement;
 	[k: string]: unknown;
 }

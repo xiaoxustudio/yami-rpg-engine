@@ -75,7 +75,6 @@ interface ParameterPane extends YamiElement {
 	scriptChange: (event: Event) => void;
 }
 
-/** 脚本命令窗口的元素注册表——由 `ScriptCommand.vue` 在模板里登记 */
 export const scriptCommandEls = createElementRegistry();
 
 Command.custom = {
@@ -85,21 +84,17 @@ Command.custom = {
 	windowY: null as number | null,
 	parsingScript: { id: '', parameters: null } as ScriptObject,
 	loadedScript: { id: '', parameters: null } as ScriptObject,
-	// 这些元素由 ScriptCommand.vue 在模板里登记，initialize() 时从注册表取
 
 	initialize: function (): void {
 		window.addEventListener('localize', this.windowLocalize);
 
-		this.windowFrame =
-			// `windowFrame` 在 command-object.ts 里声明为可选；这里取到即用（与改动前的
-			// 断言同义：真缺元素时下面那句 addEventListener 照样抛，行为未变）。
-			registryElement<
-				HTMLElement & {
-					style: CSSStyleDeclaration;
-					absolute(x: number | null, y: number | null): void;
-					setTitle(title: string): void;
-				}
-			>(scriptCommandEls, 'scriptCommand')!;
+		this.windowFrame = registryElement<
+			HTMLElement & {
+				style: CSSStyleDeclaration;
+				absolute(x: number | null, y: number | null): void;
+				setTitle(title: string): void;
+			}
+		>(scriptCommandEls, 'scriptCommand')!;
 		this.parameterPane = registryElement<ParameterPane>(
 			scriptCommandEls,
 			'scriptCommand-parameter-pane'
@@ -112,10 +107,8 @@ Command.custom = {
 
 		const grid = this.parameterGrid;
 		this.parameterPane.onResize = () => {
-			// 回调体里丢失了 `initialize()` 里的赋值收窄，这里用 `!` 复述「槽位已绑定」这一前提
 			const height = grid.clientHeight;
 			this.windowFrame!.style.height = `${height + 78}px`;
-			// 如果窗口被拖动过会重置位置，不过影响不大
 			this.windowFrame!.absolute(this.windowX, this.windowY);
 		};
 
@@ -123,9 +116,6 @@ Command.custom = {
 			scriptCommandEls,
 			'scriptCommand-parameter-detail'
 		)!;
-		// `ParameterWrap` 的成员就是 `box`/`grid`/`children` 三个 —— 字面量本来就是它的形状。
-		// `grid` 之所以能直接放进来：`parameterGrid` 的声明已按事实改成 `YamiElement`
-		// （原先声明成 `HTMLElement`，只能靠 `as unknown as` 把整个字面量硬塞过去）。
 		const wrap: ParameterWrap = { box, grid, children: [] };
 		box.wrap = wrap;
 		this.parameterPane.createDetailBox = function (): ParameterWrap {
@@ -157,8 +147,6 @@ Command.custom = {
 
 	parse: function (id: string, parameters: Record<string, unknown>): Record<string, unknown>[] {
 		const meta = Data.scripts[id];
-		// 指令名表可能还没建好（`loadCommandList` 依赖 Data.commands 与建议列表）：
-		// `!.` 会在表为 null 时抛 "Cannot read properties of null"，这里走"无效指令"分支而不是崩。
 		const name = this.commandNameMap?.[id];
 		if (meta === undefined || name === undefined) {
 			const label = t('command.invalidCommand');
@@ -311,7 +299,6 @@ Command.custom = {
 		const selector = Layout.focusableSelector;
 		const focusable = this.parameterPane!.querySelector(selector);
 		if (focusable) getFocus(focusable);
-		// 标题只是展示：名表缺失时退回指令 id，窗口照常打开（编辑能力不取决于名表）
 		this.windowFrame!.setTitle(this.commandNameMap?.[id] ?? id);
 	},
 

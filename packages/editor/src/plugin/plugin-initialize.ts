@@ -20,10 +20,6 @@ function ensureDomBound() {
 	PluginManager.overview = pluginEls.get('plugin-overview') as YamiElement;
 	PluginManager.parameterPane = pluginEls.get('plugin-parameter-pane') as YamiElement;
 	hide(PluginManager.parameterPane);
-	// 注：这里原本先把 7 个成员写成 `null as unknown as (...args) => any`（占位），
-	// 紧接着在同一个函数里又逐个赋上 `PluginManager.list_*` 的真实现 —— 那 14 行是
-	// **纯死写**（中间没有任何读取），却贡献了 7 个 `null as unknown as` 与 7 条
-	// `no-explicit-any` 豁免。直接删掉：语义等价，棘轮同步下降（2026-09-18）。
 	list.updateTextNode = PluginManager.list_updateTextNode as (
 		...args: unknown[]
 		// oxlint-disable-next-line no-explicit-any
@@ -48,8 +44,6 @@ function ensureDomBound() {
 	) => any;
 }
 
-// pane methods 注意：不再重写 ParameterPane.createDetailBox / clear，因为它们在 ParameterPane.initialize 中被重写
-
 PluginManager.initialize = function (this: typeof PluginManager) {
 	ensureDomBound();
 	const list = this.list as TreeListElement | null;
@@ -67,14 +61,9 @@ PluginManager.initialize = function (this: typeof PluginManager) {
 	on(pluginEls.get('plugin') as YamiElement, 'close', this.windowClose!);
 	on(pluginEls.get('plugin') as YamiElement, 'closed', this.windowClosed!);
 	on(list, 'keydown', this.listKeydown!);
-	// list select/popup/open 经 Vue 模板转发（Plugin.vue @select/@popup/@open → PluginManager.list*）
 	on(list, 'unselect', this.listUnselect!);
-	// list change 经 Vue 模板转发（Plugin.vue @change → PluginManager.listChange）
 	on(this.overview, 'pointerdown', this.overviewPointerdown!);
 	on(this.parameterPane, 'update', this.parameterPaneUpdate!);
-	// confirm 按钮由 `WindowFrame`/`YMFormButtons` 生成、注册表里没有它 ⇒ 不能在这里按 id 绑定
-	// （`pluginEls.get('plugin-confirm')` 恒为 null，过去会打一行 `[on] el is null/undefined` 并让
-	// 确认按钮失效）。改由 `Plugin.vue` 的 `@confirm` 转发 —— 与其它窗口同一手法。
 };
 
 PluginManager.open = function (this: typeof PluginManager) {

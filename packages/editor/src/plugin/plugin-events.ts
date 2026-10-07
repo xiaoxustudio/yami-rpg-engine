@@ -79,7 +79,6 @@ PluginManager.keydown = function (this: typeof PluginManager, event: KeyboardEve
 } as ((...args: unknown[]) => void) | null;
 
 PluginManager.pointerdown = function (this: typeof PluginManager, event: PointerEvent) {
-	// 阻止鼠标在窗口外部双击会选中概述内容的行为 并且调用失去焦点方法避免阻止后失效
 	if (event.target === document.documentElement) {
 		event.preventDefault();
 		(document.activeElement as HTMLElement | null)?.blur();

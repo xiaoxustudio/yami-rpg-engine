@@ -86,5 +86,4 @@ Scene.screenBlur = function (this: typeof Scene, _event: FocusEvent) {
 	this.shiftKeyup();
 	this.translationKeyup();
 	this.pointerup();
-	// this.marqueePointerleave()
 }.bind(Scene);

@@ -135,9 +135,6 @@ Particle.updateHead = function () {
 		const width = nRect.right - iRect.right;
 		if (head.width !== width) {
 			head.width = width;
-			// ⇒ 原来必须走 `unknown`。`Array.from` 先得到 `Element[]`，它与 `HTMLElement[]` 是
-			// **可比**的 ⇒ 换成**单次** `as`（tsc 会真的检查这次收窄）。
-			// 行为等价：这里只做下标解构、不修改集合。
 			const [start, center, end] = Array.from(head.children) as HTMLElement[];
 			end.style.marginLeft = '';
 			const sRect = rect(start);
@@ -248,7 +245,6 @@ Particle.drawCoordinateAxes = function () {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const matrix = gl.matrix.set(Particle.matrix);
-		// 避免缩放时虚线抖动
 		const L = -10000 / getParticleStore().scaleX!;
 		const T = -10000 / getParticleStore().scaleY!;
 		const R = 10000 / getParticleStore().scaleX!;

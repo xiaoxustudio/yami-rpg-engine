@@ -34,9 +34,7 @@ export const ObjectFolder: {
 	confirm: null
 };
 
-ObjectFolder.initialize = function (this: typeof ObjectFolder) {
-	// confirm 由 ObjectFolder.vue 的 @confirm 驱动（该按钮由 WindowFrame 生成，注册表取不到）
-};
+ObjectFolder.initialize = function (this: typeof ObjectFolder) {};
 
 ObjectFolder.open = function (this: typeof ObjectFolder) {
 	Window.open!('object-folder');

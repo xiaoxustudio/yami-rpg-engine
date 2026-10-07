@@ -32,7 +32,6 @@ vi.mock('@app/stores/local', () => ({
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
-/** 属性窗口工厂对外只暴露行为，这里按用到的成员做结构化声明。 */
 interface PropertyWindowLike {
 	target: (Record<string, unknown> & { save?: (() => unknown) | null }) | null;
 	open: ((data?: { key: string; value: unknown }) => void) | null;
@@ -41,29 +40,17 @@ interface PropertyWindowLike {
 
 interface PropertyWindowCase {
 	name: string;
-	/** 窗口根 id，确认按钮为 `<windowId>-confirm` */
 	windowId: string;
 	component: Component;
 	property: PropertyWindowLike;
-	/** key 下拉应有的项数（= 窗口 keys 数） */
 	keyCount: number;
-	/** 用例选中的属性 key 与其值 */
 	key: string;
 	value: unknown;
-	/** 选中该 key 后应可见/应被隐藏的字段控件 id */
 	visible: string;
 	hidden: string[];
-	/** init() 负责加载的二级下拉（id → 项数） */
 	lists?: Array<{ id: string; count: number }>;
 }
 
-/**
- * 属性窗口族的懒挂载契约（回归自 fe1d0444「改用 SFC 控件注册表」）：
- * 工厂的 ensureSetup 以 `fields.get('<prefix>-property-key')` 为门槛——**任一窗口漏登记
- * key 控件，整个窗口就会静默早退**：key 下拉空白、init() 里的二级下拉（类型/显示/翻转/混合…）
- * 不加载、key↔字段显隐联动不生效（所有字段一起显示）。
- * 同一批提交里 moveElement/moveLight 还漏了 `@confirm`，确认按钮点了没反应。
- */
 const cases: PropertyWindowCase[] = [
 	{
 		name: 'setTextBox（设置文本框）',
@@ -233,8 +220,6 @@ describe('属性窗口懒挂载初始化（ensureSetup）', () => {
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
 
-			// 关键回归点：属性窗口是懒挂载的，ParamList.bind 时的 initialize 早退后，
-			// 组件 onMounted 的 ensureSetup 必须补齐 key 选项与字段显隐联动（key 控件漏登记 → 整窗早退）
 			expect(dataItemsOf(el(keyListId(c.windowId))), 'key 下拉选项').toHaveLength(c.keyCount);
 			for (const list of c.lists ?? []) {
 				expect(dataItemsOf(el(list.id)), `${list.id} 选项`).toHaveLength(list.count);
@@ -244,13 +229,11 @@ describe('属性窗口懒挂载初始化（ensureSetup）', () => {
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
 
-			// 当前 key 对应的控件可见，其余字段（含其标签）应被隐藏模式收起
 			expect(el(c.visible).style.display, `${c.visible} 应可见`).not.toBe('none');
 			for (const id of c.hidden) {
 				expect(el(id).style.display, `${id} 应隐藏`).toBe('none');
 			}
 
-			// 确认按钮必须接线（曾经 moveElement/moveLight 漏了 @confirm → 点了没反应）
 			const target = { save: vi.fn(() => ({ key: c.key, value: c.value })) };
 			c.property.target = target;
 			el(`${c.windowId}-confirm`).click();

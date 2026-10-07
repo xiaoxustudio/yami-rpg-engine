@@ -28,9 +28,6 @@ import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
 
-// 列表运行时挂载的扩展方法（Scene.list / UI.list 共享，ui-window.ts:218-238 调用）
-// 形状与 `scene-list.ts` 的 `SceneItem` **成对维护**：两边字段不一致时，`Scene.list.*` 的
-// 赋值会以 TS2322 报出来（门面要求 `SceneListItem` 可赋给实现侧的 `SceneItem`）。
 interface SceneListItem {
 	class: string;
 	element: HTMLElement & { [k: string]: unknown };
@@ -40,23 +37,12 @@ interface SceneListItem {
 	children?: SceneListItem[];
 }
 
-/** `Scene.searcher`（TextBox 元素）运行时挂载的实例 API —— 见 `components/common/TextBox.vue` */
 interface SceneSearcherExtensions {
 	deleteInputContent?(): void;
 	addCloseButton?(): void;
 	addKeydownFilter?(): void;
 }
 
-/**
- * 选框的一个「保存槽」（`Scene.marquee.save(key)` 的产物）。
- *
- * 注意**两种形状并存**，这是既有事实、不是这里写松了：
- * - `ui-kit` 的 `YMMarqueeArea.vue:5` 存的是 `x/y/width/height/scaleX/scaleY`；
- * - `engine/scene/scene-marquee-engine.ts:72` 的 `save`（运行时**覆盖**了组件那个）存的是
- *   `x/y/width/height/offsetX/offsetY` 再加 `tiles` 或 `terrain`，**不含** `scaleX/scaleY`。
- *
- * 于是字段全写成可选、`scaleX/scaleY` 也在内（组件侧 `restore` 会读它们）。
- */
 export type SceneMarqueeSaveData = {
 	x: number;
 	y: number;
@@ -70,21 +56,7 @@ export type SceneMarqueeSaveData = {
 	terrain?: number;
 };
 
-/**
- *
- * 成员来源三处，逐条对齐：
- * 1. `ui-kit` 的 `YMMarqueeArea.vue`（组件实例属性 + `onMounted` 挂上的元素方法）：
- *    `x` / `y` / `width` / `height` / `scaleX` / `scaleY` / `visible` / `saveData`，
- *    以及 `save` / `restore` / `resize` / `clear` / `select`；
- * 2. `engine/scene/scene-marquee-engine.ts`：覆盖其中 4 个（`save` / `resize` / `clear` / `select`），
- *    并补 `switch` / `selectInPencilMode` / `selectInRectMode` / `selectInCopyMode` /
- *    `selectInObjectMode` / `getTiles`；
- * 3. 本文件 `Scene.initialize`（`scene-window.ts:600` 起）另挂的选框状态：
- *    `offsetX` / `offsetY` / `tilesetMap` / `tiles` / `terrain` / `previewTiles` / `pointerevent`
- *    与 7 个颜色字段（`*Normal` / `*Copy` / `*Rect` / `backgroundColorInvalid`）。
- */
 interface SceneMarqueeExtensions {
-	// —— 组件（`YMMarqueeArea.vue`） ——
 	x: number;
 	y: number;
 	width: number;
@@ -93,21 +65,17 @@ interface SceneMarqueeExtensions {
 	scaleY: number;
 	visible: boolean;
 	saveData: Record<string, SceneMarqueeSaveData | null>;
-	/** `key` 也接受 `null`：引擎的 `switch` 会把「上一个 key」（可能是 null）直接传进来（原样保留该行为）。 */
 	save: (key?: string | null) => void;
 	restore: (key?: string) => void;
 	resize: () => void;
 	clear: () => void;
 	select: (x?: number, y?: number, width?: number, height?: number) => void;
-	// —— 场景引擎（`scene-marquee-engine.ts`） ——
 	switch: (key: string) => void;
-	/** 三个 `selectIn*Mode` 的形参在实现里可直接透传给 `select`（后者自带默认值）⇒ 声明成可选。 */
 	selectInPencilMode: (x?: number, y?: number, width?: number, height?: number) => void;
 	selectInRectMode: (x?: number, y?: number, width?: number, height?: number) => void;
 	selectInCopyMode: (x?: number, y?: number, width?: number, height?: number) => void;
 	selectInObjectMode: (x: number, y: number) => void;
 	getTiles: (raw: boolean) => unknown;
-	// —— 本文件另挂 ——
 	offsetX: number;
 	offsetY: number;
 	tilesetMap: Record<string, string>;
@@ -127,7 +95,6 @@ interface SceneMarqueeExtensions {
 }
 
 interface SceneListExtensions {
-	// 列表基础方法（Scene.list.* 运行时挂载）
 	create: ((dItem?: unknown) => unknown) | null;
 	copy: ((item: SceneListItem) => unknown) | null;
 	paste:
@@ -149,24 +116,13 @@ interface SceneListExtensions {
 	onRemove: ((item?: unknown) => unknown) | null;
 	onDelete: ((item: SceneListItem) => unknown) | null;
 	onResume: ((item: SceneListItem) => unknown) | null;
-	// creators/updaters 数组（运行时挂载，供 push 挂载方法）
 	creators: unknown[];
 	updaters: unknown[];
 
-	//
-	// 分两类，形参口径按**实现侧到底谁在实现**给：
-	// ① 实现在 `ui-kit` 的树列表契约里（`update` / `resize` / `bind` / `rename` / `restore` /
-	//    `searchNodesDebounced` / `selectWithNoEvent` / `expandToSelection` / `scrollToSelection` /
-	//    `unselect` / `updateItemName` / `addNodeTo` / `getItemByProperties`）——
-	//    它们的形参由组件侧决定，这里只需「能收下调用点传的东西」，故用 `unknown`/宽松签名；
-	// ② 实现在本地 `scene-list.ts`（`duplicate` / `createFolder` / `createTilemapShortcutItems` /
-	//    `updateFolderState` / `canSwitchState`）—— 形参必须与那边的 `SceneItem` **逐字相容**
 	update: () => unknown;
 	resize: () => unknown;
-	/** 绑定行数据源（`scene-window.ts:621` 的 `list.bind(() => this.objects)`）。 */
 	bind: (data: () => unknown) => unknown;
 	rename: (item: unknown) => unknown;
-	/** 撤销/重做处理器用：`restore(operation, response)`（`scene-window.ts:628` 起 4 处）。 */
 	restore: (operation: string, response: unknown) => unknown;
 	searchNodesDebounced: (keyword: string) => unknown;
 	selectWithNoEvent: (item: unknown) => unknown;
@@ -174,7 +130,6 @@ interface SceneListExtensions {
 	scrollToSelection: () => unknown;
 	unselect: (item: unknown) => unknown;
 	updateItemName: (item: unknown) => unknown;
-	/** 首个参数是**被加进列表的项**（`Inspector.*.create()` 的产物 / `createFolder()` 的返回值）。 */
 	addNodeTo: (item: unknown, dItem?: unknown, insertBefore?: boolean) => unknown;
 	duplicate: (item: SceneItem) => unknown;
 	getItemByProperties: (properties: { class: string; name: string }) => SceneItem | undefined;
@@ -191,24 +146,14 @@ interface SceneListExtensions {
 	canSwitchState: (item: SceneItem) => boolean;
 }
 
-/**
- * 场景单例的形状。
- *
- * **导出**（2026-09-20）：`engine/scene/*-engine.ts` 的各个命名空间需要按读点
- * `Pick<SceneShape, …>` 出精确的 `this`，不再写 `this: typeof Scene` 或 `Record<string, any>`。
- * 只导出**类型**，运行时没有任何变化（`import type` 会被完全擦除，不引入循环依赖）。
- */
 export interface SceneShape {
 	page: YamiElement;
 	head: HTMLElement & { width?: number };
 	body: YamiElement;
 	info: YamiElement;
 	screen: YamiElement;
-	// marquee 运行时挂载 .resize()/.terrain/.previewTiles/.pointerevent/.save/.switch/.select/.getTiles 等大量扩展 用 [ k: string ]: any 索引签名兜底所有运行时挂载字段，避免穷举
 	// oxlint-disable-next-line no-explicit-any
 	marquee: HTMLElement & SceneMarqueeExtensions;
-	// searcher 运行时挂载 TextBox 的实例 API（`components/common/TextBox.vue` 暴露、经元素 API 挂上）
-	// 声明为可选：不保证每种形态都挂全，调用点用 `?.` / `!` 兜底
 	searcher: HTMLElement & SceneSearcherExtensions;
 	list: HTMLElement & SceneListExtensions;
 	initialize: (() => void) | null;
@@ -225,16 +170,7 @@ export interface SceneShape {
 	undo: (() => void) | null;
 	redo: (() => void) | null;
 	planToSave: (() => void) | null;
-	/**
-	 * 之前那个 `| null` 只是字面量里的 `null` 占位（已删），运行期没有一处把它写回 `null`。
-	 */
 	requestRendering: () => void;
-	/**
-	 * 它们由 `Scene.initialize` 赋真值（`this.matrix = new Matrix()`，`scene-window.ts:700`；
-	 * `scroll*` 由 `Scene.resize` 从屏幕滚动量算出），运行期没有任何一处写回 `null`。
-	 * 字面量里那 5 行 `null` 占位已删（与 `pointerevent` 那类「参与判等」的占位不同 ——
-	 * 这五个只参与绘制期算术，全部发生在 `initialize` 之后）。
-	 */
 	matrix: Matrix;
 	scrollLeft: number;
 	scrollTop: number;
@@ -244,7 +180,6 @@ export interface SceneShape {
 	loadFromConfig: ((config: EditorConfigShape) => void) | null;
 	saveToProject: ((project: EditorProjectShape) => void) | null;
 	loadFromProject: ((project: EditorProjectShape) => void) | null;
-	// editor properties（运行时挂载具体值，统一 any | null）
 	// oxlint-disable-next-line no-explicit-any
 	[k: string]: any;
 }
@@ -307,7 +242,6 @@ export const Scene = {
 	body: hide(sceneEls.get('scene-body') as YamiElement),
 	info: sceneEls.get('scene-info') as YamiElement,
 	screen: sceneEls.get('scene-screen') as YamiElement,
-	// 选框元素是 vue 组件（`YMMarqueeArea.vue`）建的 ⇒ 走具名注册表收窄（与 `ui-singleton.ts` 的 `ui-list` 同一手法）
 	marquee:
 		registryElement<SceneShape['marquee']>(sceneEls, 'scene-marquee') ??
 		({} as SceneShape['marquee']),
@@ -326,7 +260,6 @@ export const Scene = {
 	animationFrame: null,
 	animationElapsed: null,
 	background: null,
-	// 它们是舞台面成员，非空声明 + `Particle.Element.stage = Scene` 的赋值点现在受检查。
 	zoomTimer: null,
 	scale: null,
 	scaledTileWidth: null,
@@ -562,42 +495,22 @@ export const Scene = {
 	listPageResize: null,
 	Textures: null,
 	Point: null
-	// `SceneShape` 里已声明为**非空**的舞台面成员（`matrix` / `scroll*` / `requestRendering`）
-	// 不再需要在字面量里放 `null` 占位 —— 它们由 `Scene.initialize` 赋真值，
-	// 而 `Particle.Element.stage = Scene` 那个赋值点现在真正受检查了。
 } satisfies Partial<SceneShape> as Partial<SceneShape> as SceneShape;
 
-/** marquee 元素上的元素数据（`key` 原先靠原型访问器透明落到 WeakMap） */
 interface SceneMarqueeData {
 	key: string | null;
 }
 const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarqueeData>(el);
 
-// `key = null`），现在**整块删除**：
-// - 那 10 个方法（`switch` / `selectIn*Mode` / `getTiles` 等）在 `SceneMarqueeExtensions` 里是**真声明**，
-//   写 `null` 既编不过也不再需要 —— 真实实现在 `scene-marquee.ts`（`SceneMarqueeEngine` 的逐条镜像）
-//   与 `YMMarqueeArea.vue` 的**模块/挂载期**赋值，调用点全在用户交互之后；
-// - `key` 的正源是**元素数据**（`marqueeData(this.marquee).key`，见上面那个接口与
-//   `scene-marquee-engine.ts:128`），直接写属性那一行是原型访问器退役前的残留；
-// - `offsetX` / `offsetY` / `tilesetMap` / `tiles` / `terrain` / `pointerevent` 的真实初值都在
-//   `Scene.initialize` 里（`scene-window.ts:675` 那一批），此处的中转 `null` 没有任何作用。
-//
-// 但下面**两行保留**，理由与前 12 行不同 —— 它们的初值参与运行期**判等**：
-// `scene-events-pointer.ts:244/292/301/305` 用 `marquee.pointerevent === null` / `!== null` 判断
-// 「当前有没有拖拽中的指针」，初值若是 `undefined` 会走进另一条分支；`previewTiles` 同理保留 `false`。
 Scene.marquee.pointerevent = null;
 Scene.marquee.previewTiles = false;
 
-// `page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 elementDataOf<{ page?: HTMLElement | null }>(Scene.list).page = sceneEls.get(
 	'scene-object'
 ) as YamiElement;
 elementDataOf<{ head: HTMLElement }>(Scene.list).head = sceneEls.get(
 	'scene-list-head'
 ) as YamiElement;
-// 三行占位**已删除**：它们在 `SceneListExtensions` 里现在是**真声明**（非空），写 `null` 既编不过、
-// 也不再需要。行为不变 —— 真实实现在 `scene-list.ts:145/224/263` 的**模块加载期**赋值，
-// 而调用点全在用户交互路径（与 `ui-singleton.ts` 里那批 `UI.list.* = null` 占位同一处理）。
 
 Scene.initialize = function (this: SceneShape) {
 	this.page = sceneEls.get('scene') as YamiElement;
@@ -616,7 +529,6 @@ Scene.initialize = function (this: SceneShape) {
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	// `page` 走显式元素数据（字段已从 DATA_FIELDS 摘除）
 	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = sceneEls.get(
 		'scene-object'
 	) as YamiElement;
@@ -1036,7 +948,6 @@ Scene.initialize = function (this: SceneShape) {
 	window.addEventListener('keydown', Reference.getKeydownListener!(list));
 	on(this.page, 'resize', this.windowResize);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored);
-	// head/toolbar/zoom/screen(keydown/wheel)/marquee(pointerdown/doubleclick) 经 Vue 模板转发（ScenePage @pointerdown/@input/@focus/@keydown/@wheel）
 	on(this.screen, 'userscroll', this.screenUserscroll);
 	on(this.screen, 'blur', this.screenBlur);
 	on(this.screen, 'dragenter', this.screenDragenter);
@@ -1052,8 +963,6 @@ Scene.initialize = function (this: SceneShape) {
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {
 		capture: true
 	});
-	// list select/record/popup/open 经 Vue 模板转发（LayoutPanel @select/@record/@popup/@open → Scene.list*）
-	// list change 经 Vue 模板转发（LayoutPanel @change → Scene.listChange）
 	on(elementDataOf<{ page?: HTMLElement | null }>(list).page, 'resize', this.listPageResize);
 
 	ObjectFolder.initialize!();
@@ -1073,15 +982,12 @@ Scene.open = function (this: SceneShape, context: SceneContextShape) {
 
 	Particle.Element.stage = this;
 
-	// 把场景页切到所属叶子前台。否则同叶子若激活了其它页签，场景页是 display:none
-	// → 画布与 screen 宽高为 0 → 预览空白且渲染循环刷 WebGL 零尺寸帧缓冲报错。
 	Layout.activateLayoutPage?.(this.page);
 
 	if (context.scene) {
 		getSceneStore().state = 'open';
 		this.load!(context);
 		show(this.body);
-		// 因此在这里调用resize
 		this.resize!();
 		this.requestAnimation!();
 		this.requestRendering!();
@@ -1108,16 +1014,6 @@ Scene.open = function (this: SceneShape, context: SceneContextShape) {
 	}
 };
 
-/**
- * 列表型容器：运行期就是「**空数组** + 窗口游标（`count`/`start`/`end`/`head`/`foot`/`versionId`）」，
- * 游标由 `common-list` 家族助手稍后填写。
- *
- * 类型上必须带游标字段（否则助手读不到），但**声明这一刻它们确实还不存在**。
- * 与其在每个站点各写一遍断言，不如收敛到这一个工厂，把「为什么这里是谎」写在唯一的地方。
- *
- * **实测不成立**。对**未约束**的类型参数 `T`，`[] as T` 本身就通过（tsc `TS2352` 只在两边
- * 类型不可比时报），所以那个 `unknown` 跳板是**多余**的，已去掉。
- */
 const emptyListWithCursor = <T>(): T => [] as T;
 
 Scene.load = function (this: SceneShape, context: SceneContextShape) {
@@ -1127,7 +1023,6 @@ Scene.load = function (this: SceneShape, context: SceneContextShape) {
 		tilemaps.shortcuts = new TilemapShortcuts(tilemaps as TilemapShortcuts['tilemaps']);
 
 		const regions = emptyListWithCursor<RegionsShape>();
-		// `Object.assign` 与「先 `[]` 再 `.count = 0`」逐条等价（同一个 `[[Set]]`），但不需要断言。
 		regions.visibleList = Object.assign([] as unknown[], { count: 0 });
 
 		context.changed = false;
@@ -1149,7 +1044,6 @@ Scene.load = function (this: SceneShape, context: SceneContextShape) {
 			animationFrame: 0,
 			animationElapsed: 0,
 			animationInterval: -1
-			// listScrollTop: 0,
 		};
 	}
 	const scene = context.scene!;
@@ -1193,7 +1087,6 @@ Scene.load = function (this: SceneShape, context: SceneContextShape) {
 	this.loadAllContexts!();
 
 	this.list.update();
-	// this.list.scrollTop = editor.listScrollTop
 
 	this.tilemaps.shortcuts.update();
 
@@ -1243,7 +1136,6 @@ Scene.save = function (this: SceneShape) {
 		editor.animationFrame = this.animationFrame;
 		editor.animationElapsed = this.animationElapsed;
 		editor.animationInterval = this.animationInterval;
-		// editor.listScrollTop = this.list.scrollTop
 
 		if (this.context.changed) {
 			this.context.changed = false;
@@ -1449,8 +1341,6 @@ Scene.getDefaultObjectFolder = function (this: SceneShape, kind: string) {
 		? null
 		: this.list.getItemByProperties({
 				class: 'folder',
-				// `!name` 已排除 falsy；`defaultFolders` 就是「class → 文件夹名」这张表（值必是字符串），
-				// 而它来自 `Editor.project!.scene` 的宽松类型（`Record<string, unknown>`）⇒ 这里收窄一次。
 				name: name as string
 			});
 };
@@ -1494,9 +1384,6 @@ Scene.create = function (this: SceneShape, kind: string, x: number, y: number) {
 	const dItem = this.getDefaultObjectFolder!(kind);
 	const map = this.inspectorTypeMap;
 	const key = map[kind];
-	// `map` 的值就是 `Inspector` 的成员名（见本文件 `:580` 的初始化表）：这里用一次**收窄断言**
-	// 把它点明，好过整块 `Record<string, any>` —— 后者连下一行的 `editor.create()` 都不检查。
-	// （手法库第 139 条：断言可能说谎，但比 `any` 诚实；运行期这个值确实取自那张表。）
 	const editor = Inspector[key as keyof typeof Inspector];
 	const object = editor.create();
 	object.x = x;
@@ -1610,7 +1497,6 @@ Scene.registerPreset = (function IIFE() {
 	};
 	const registerPreset = (node: PresetNodeShape) => {
 		const { scenePresets } = Data;
-		// 新对象或对象ID冲突，生成新ID
 		if (node.presetId === '' || node.presetId in scenePresets) {
 			node.presetId = generatePresetId();
 		}

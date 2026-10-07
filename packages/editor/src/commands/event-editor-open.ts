@@ -54,7 +54,6 @@ EventEditor.openGlobalEvent = function (this: EventEditorShape, guid: string) {
 		list.expandToSelection!(false);
 		list.update!();
 		list.restoreScroll!();
-		// select 事件可能因选中状态相同不触发（重开场景），显式写入保证指令列表渲染
 		this.openCommandList!(item);
 	} else {
 		const item = list.createGlobalEventItem!(guid);

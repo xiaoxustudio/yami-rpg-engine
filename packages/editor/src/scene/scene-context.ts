@@ -226,7 +226,6 @@ Scene.loadTextures = async function (this: typeof Scene) {
 							const ty = (tile >> 16) & 0xff;
 							const id = tx + ty * tileset.width;
 							const autoTile = tileset.tiles[id];
-							// autoTile的值可能是0|undefined
 							if (
 								autoTile &&
 								textures[autoTile.image] === undefined &&
@@ -321,8 +320,6 @@ Scene.loadActorContext = function (this: typeof Scene, actor: SceneActor) {
 Scene.loadLightContext = function (this: typeof Scene, light: SceneLight) {
 	Object.defineProperty(light, 'instance', {
 		configurable: true,
-		// 交叉断言（手法库第 6 条）：`Light` 的形参是 `LightData`，而传进去的就是这个场景节点本身
-		// （旧格式把光照参数直接挂在节点上）—— 保留 `SceneLight` 只补缺口，不用 `unknown` 跳板。
 		value: new Light(light as SceneLight & ConstructorParameters<typeof Light>[0])
 	});
 };
@@ -366,7 +363,6 @@ Scene.loadParallaxContext = function (this: typeof Scene, parallax: SceneParalla
 	}
 	Object.defineProperty(parallax, 'player', {
 		configurable: true,
-		// 同上：`Parallax` 的形参也是场景节点本身。
 		value: new Parallax(parallax as SceneParallax & ConstructorParameters<typeof Parallax>[0])
 	});
 };
@@ -518,10 +514,6 @@ Scene.createPreviewObject = function (this: typeof Scene, file: PreviewFile) {
 Scene.deletePreviewObject = function (this: typeof Scene) {
 	const object = this.previewObject;
 	if (object) {
-		// ⚠️ `actors` / `animations` / `particles` 都是**普通数组**（`scene-context.ts` 里
-		// `actors: []` 初始化、用 `actors.length = actorIndex` 收缩），没有 `remove` 方法。
-		// 必须用 `@app/utils/array` 的自由函数形态 —— 写成 `arr.remove(x)` 会抛
-		// `... .remove is not a function`（数组元素类型带索引签名，tsc 看不见）（2026-09-18）。
 		switch (object.class) {
 			case 'actor':
 				remove(this.actors, object);

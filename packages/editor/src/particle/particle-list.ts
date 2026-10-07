@@ -174,19 +174,16 @@ Particle.listChange = function (_event: YamiEvent) {
 	Particle.planToSave!();
 };
 
-// 列表 - 创建
 Particle.list.create = function (dItem) {
 	this.addNodeTo(Inspector.particleLayer.create(), dItem);
 };
 
-// 列表 - 复制
 Particle.list.copy = function (item) {
 	if (item) {
 		(GlobalClipboard as GlobalClipboardHost).write('yami.particle.layer', item);
 	}
 };
 
-// 列表 - 粘贴
 Particle.list.paste = function (dItem) {
 	const copy = (GlobalClipboard as GlobalClipboardHost).read('yami.particle.layer');
 	if (copy && this.data) {
@@ -194,27 +191,23 @@ Particle.list.paste = function (dItem) {
 	}
 };
 
-// 列表 - 删除
 Particle.list.delete = function (item) {
 	if (item) {
 		this.deleteNode(item);
 	}
 };
 
-// 列表 - 在创建数据时回调
 getListConfig(Particle.list).onCreate = function () {
 	Particle.emitter!.updateLayers();
 	Particle.computeOuterRect!();
 	Particle.requestRendering!();
 };
 
-// 列表 - 在迁移数据时回调
 getListConfig(Particle.list).onRemove = function () {
 	Particle.emitter!.updateLayers();
 	Particle.requestRendering!();
 };
 
-// 列表 - 在删除数据时回调
 getListConfig(Particle.list).onDelete = function () {
 	Particle.updateTarget!();
 	Particle.emitter!.updateLayers();
@@ -224,7 +217,6 @@ getListConfig(Particle.list).onDelete = function () {
 	Particle.requestRendering!();
 };
 
-// 列表 - 在恢复数据时回调
 getListConfig(Particle.list).onResume = function () {
 	Particle.emitter!.updateLayers();
 	Particle.computeOuterRect!();

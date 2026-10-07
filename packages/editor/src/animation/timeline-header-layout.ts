@@ -1,18 +1,3 @@
-/**
- * 时间轴头部（`#animation-timeline-head`）与「内容列」的版式口径。
- *
- * 三个量必须自洽，否则实机上会出现「刻度尺被播放栏挡住」或「刻度和帧格对不齐」：
- *
- * 1. **内容列左缘**（`timelineContentLeft`）：帧网格 / 指针区 / 刻度尺共用的起点；
- * 2. head 左缘（`timelineHeadLeft`）：贴着分组最后一个页签的右缘；
- * 3. 刻度尺相对 head 的偏移（`timelineRulerLeft`）：把 1 与 2 相减。
- *
- * 刻度尺的刻度对齐**不是**按左缘定的，而是靠 `outerRuler.scrollLeft` 镜像帧网格的滚动
- * （见 `Animation.outerTimelineListScroll`），所以刻度尺盒子的左缘必须**精确等于**内容列左缘
- * ——既不右移（会与帧格整条错开），也不左移（会伸到页签条底下）。
- */
-
-/** 内容列默认占比（= `#animation-layer-list` 的图层列宽，CSS 里的 18% 兜底） */
 export const TIMELINE_CONTENT_RATIO = 0.18;
 
 /**
@@ -32,9 +17,7 @@ export const timelineContentLeft = (
 	toolbarRight: number | null,
 	frameRight: number
 ): number => {
-	// 期望值：不低于默认列；有播放栏时还要越过它 1px
 	const wanted = toolbarRight === null ? naturalLeft : Math.max(naturalLeft, toolbarRight + 1);
-	// 上限：贴住页面右缘，但绝不低于默认列（面板极窄时宁可让播放栏压住刻度尺）
 	const limit = Math.max(naturalLeft, frameRight - 1);
 	return Math.min(wanted, limit);
 };

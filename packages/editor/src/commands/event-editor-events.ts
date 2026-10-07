@@ -107,7 +107,6 @@ EventEditor.windowResize = function (this: EventEditorShape, _event: YamiMouseEv
 	list.resize!();
 	commandList.resize();
 
-	// 会触发BUG: 插入指令resize刷新时增加scrollTop 重置scrollTop可以避免这个现象 由于scroll是异步事件因此不会重复触发
 	const st = commandList.scrollTop;
 	commandList.scrollTop = 0;
 	commandList.scrollTop = st;
@@ -164,10 +163,8 @@ EventEditor.windowPointermove = function (this: EventEditorShape, event: Pointer
 
 EventEditor.listPointerdown = function (this: EventEditorShape, event: PointerEvent) {
 	if (event.altKey && event.button === 0) {
-		// 行 → item 经行 API 取（`element.item` expando 已退役）；标签文字上的点击同样归一成行
 		const item = treeItemOf<EventListItem>(event.target);
 		if (item !== undefined && item.id) {
-			// 阻止focus后快捷键不被禁用的情况
 			event.preventDefault();
 			event.stopImmediatePropagation();
 			EventEditor.findRelatedEvents!(item.id);

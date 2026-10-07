@@ -10,7 +10,6 @@ export type LanguagePackShape = {
 
 export const langProp = /(#\S+)\s+([\s\S]+?)(?=\s+#|$)/g;
 
-// 插件语言包映射：按当前语言选择匹配度最高的 pack 并解析 #key 映射表
 export class LanguageMap {
 	language: string;
 	active: Record<string, string>;
@@ -65,7 +64,6 @@ export class LanguageMap {
 			for (const pack of this.packs) {
 				if (pack.name === base) {
 					this.parse(pack);
-					// 避免循环继承报错
 					try {
 						Object.setPrototypeOf(map, pack.map!);
 					} catch (_error: unknown) {}

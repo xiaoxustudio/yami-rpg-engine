@@ -5,7 +5,6 @@ import { createAccessor } from './accessor-factory.ts';
 
 export const ActorGetter = createAccessor({
 	initialize() {
-		// 控件从 SFC 登记的注册表取（不再按 id 查 DOM）
 		if (!this.fields?.get('actorGetter-type')) return;
 		this.fields?.get('actorGetter-type')?.loadItems?.([
 			{ name: 'Event Trigger Actor', value: 'trigger' },
