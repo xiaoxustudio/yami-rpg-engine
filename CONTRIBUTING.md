@@ -64,38 +64,6 @@ pnpm -F @yami/editor test            # 独占跑
 pnpm run build:vite
 ```
 
-> **本地跑 editor 测试时的一个坑（2026-09-21 实测）**：`electron` 的 `index.js` 在**被 require 时**
-> 会检查 `dist/` 里的二进制，缺失就**当场下载**；本机若下不到 `electron@43.2.0`（镜像/网络受限），
-> 任何**间接 import 了 `electron`** 的 spec 都会以
-> `Error: Electron failed to install correctly` **整文件**失败（表现为「137 个文件 0 用例」，很容易
-> 被误读成代码坏了）。它是**环境问题**，与改动无关。绕过办法（不下载、不改代码）：
->
-> ```shell
-> # 让 electron 直接返回一个路径、不再尝试下载（内容不会被用到 —— 测试里 electron 全被 window.yami 垫掉）
-> $env:ELECTRON_OVERRIDE_DIST_PATH = "$env:LOCALAPPDATA\electron\Cache"   # PowerShell
-> pnpm -F @yami/editor test
-> ```
->
-> **另一个「别把它当成自己弄坏的」现象**：跑完测试/typecheck 后，
-> `packages/editor/src/module/packmeta.json` 在 `git status` 里变成已修改。这不是幻觉 ——
-> `src/module/constants.ts` 在**模块加载期**就会把 `Editor` / `Project` / `Community` 版本号
-> 写回这个文件（`JSON.stringify(PackMeta)`，单行形态）。所以：
->
-> - 它是**运行期自有**的数据文件，**已在 `.oxfmtrc.json` 的 `ignorePatterns` 里豁免格式化** ——
->   否则「跑一次测试」就会把 `format:check` 这条件禁弄红，而红的原因与任何人的改动无关；
-> - 提交前请 `git checkout -- packages/editor/src/module/packmeta.json`，
->   不要把它（连带被刷新的版本号）顺手提交进去。
->
-> **`.md` 为什么也不在 `format:check` 的扫描面里**：`oxfmt` 会把 Markdown **围栏里的代码**
-> 按本项目的 TS 配置一起格式化 —— 实测它把计划文档里一段**专门演示
-> 「只留单次断言、保留尾逗号」**的样例的尾逗号删掉了。文档是本项目的**记忆**（代码片段是证据，
-> 不是待格式化的源码），所以 `ignorePatterns` 里加了
-> `**/*.md`。写文档时仍请遵循既有排版，只是这条门禁不替你做决定。
->
-> 判定「是不是这两个坑」的方法：**同一个 spec 在 `git stash` 前后都失败** ⇒ 与你的改动无关。
-
-**迁移进度的唯一数字真源**是 `pnpm migration:ledger`（跨轴总账 + 棘轮），基线在 `scripts/migration-ledger-baseline.json`。任何文档里的数字都可能过时，以脚本输出为准。
-
 ## 目录详解
 
 ```
