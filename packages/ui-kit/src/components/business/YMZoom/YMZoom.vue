@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import YMWindowFrame from '../YMWindowFrame/YMWindowFrame.vue';
 import YMTitleBar from '../YMTitleBar/YMTitleBar.vue';
 import YMNumberBox from '../../basic/YMNumberBox/YMNumberBox.vue';
@@ -20,15 +19,10 @@ const emit = defineEmits<{
 	'update:modelValue': [value: number];
 	confirm: [];
 }>();
-
-const frame = ref<{
-	root: HTMLElement | null;
-	on(type: string, listener: (event: Event) => void): void;
-} | null>(null);
 </script>
 
 <template>
-	<YMWindowFrame ref="frame" id="zoom" @confirm="emit('confirm')">
+	<YMWindowFrame id="zoom" @confirm="emit('confirm')">
 		<template #title>
 			<YMTitleBar>
 				{{ props.title }}

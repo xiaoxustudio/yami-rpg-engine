@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import YMWindowFrame from '../YMWindowFrame/YMWindowFrame.vue';
 import YMTitleBar from '../YMTitleBar/YMTitleBar.vue';
 import YMNumberBox from '../../basic/YMNumberBox/YMNumberBox.vue';
@@ -19,19 +18,10 @@ const emit = defineEmits<{
 	confirm: [];
 	closed: [];
 }>();
-
-const frame = ref<{
-	root: HTMLElement | null;
-} | null>(null);
 </script>
 
 <template>
-	<YMWindowFrame
-		ref="frame"
-		id="arrayList-number"
-		@closed="emit('closed')"
-		@confirm="emit('confirm')"
-	>
+	<YMWindowFrame id="arrayList-number" @closed="emit('closed')" @confirm="emit('confirm')">
 		<template #title>
 			<YMTitleBar>
 				{{ props.title }}

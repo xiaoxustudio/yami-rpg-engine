@@ -226,6 +226,47 @@ const elLayer = ref<InstanceType<typeof SelectBox> | null>(null);
 const elLight = ref<InstanceType<typeof SelectBox> | null>(null);
 const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
 
+const refreshLocalizedItems = () => {
+	try {
+		const readOption = (id: string, key: string) => {
+			const legacyComponents = local.components as Record<
+				string,
+				{ options?: Record<string, { name?: string }> }
+			>;
+			const legacyName = legacyComponents[id]?.options?.[key]?.name;
+			if (legacyName) return legacyName;
+			return t(`components.${id}.options.${key}.label`);
+		};
+		const lightRoot = elLight.value?.root as
+			| (HTMLElement & {
+					lightItems: { all: unknown[]; tile: unknown[]; sprite: unknown[] };
+			  })
+			| null;
+		if (lightRoot) {
+			const items = {
+				raw: { name: readOption('sceneTilemap-light', 'raw'), value: 'raw' },
+				global: { name: readOption('sceneTilemap-light', 'global'), value: 'global' },
+				ambient: {
+					name: readOption('sceneTilemap-light', 'ambient'),
+					value: 'ambient'
+				},
+				anchor: { name: readOption('sceneTilemap-light', 'anchor'), value: 'anchor' }
+			};
+			lightRoot.lightItems = {
+				all: Object.values(items),
+				tile: [items.raw, items.global, items.ambient],
+				sprite: [items.raw, items.global, items.anchor]
+			};
+			elLight.value?.loadItems([items.raw, items.global, items.ambient]);
+		}
+		elBlend.value?.loadItems([
+			{ name: readOption('sceneTilemap-blend', 'normal'), value: 'normal' },
+			{ name: readOption('sceneTilemap-blend', 'additive'), value: 'additive' },
+			{ name: readOption('sceneTilemap-blend', 'subtract'), value: 'subtract' }
+		]);
+	} catch {}
+};
+
 onMounted(() => {
 	registerElement(inspectorEls, 'sceneTilemap-layer', elLayer.value);
 	registerElement(inspectorEls, 'sceneTilemap-light', elLight.value);
@@ -249,46 +290,6 @@ onMounted(() => {
 			value: 'object'
 		}
 	]);
-	const refreshLocalizedItems = () => {
-		try {
-			const readOption = (id: string, key: string) => {
-				const legacyComponents = local.components as Record<
-					string,
-					{ options?: Record<string, { name?: string }> }
-				>;
-				const legacyName = legacyComponents[id]?.options?.[key]?.name;
-				if (legacyName) return legacyName;
-				return t(`components.${id}.options.${key}.label`);
-			};
-			const lightRoot = elLight.value?.root as
-				| (HTMLElement & {
-						lightItems: { all: unknown[]; tile: unknown[]; sprite: unknown[] };
-				  })
-				| null;
-			if (lightRoot) {
-				const items = {
-					raw: { name: readOption('sceneTilemap-light', 'raw'), value: 'raw' },
-					global: { name: readOption('sceneTilemap-light', 'global'), value: 'global' },
-					ambient: {
-						name: readOption('sceneTilemap-light', 'ambient'),
-						value: 'ambient'
-					},
-					anchor: { name: readOption('sceneTilemap-light', 'anchor'), value: 'anchor' }
-				};
-				lightRoot.lightItems = {
-					all: Object.values(items),
-					tile: [items.raw, items.global, items.ambient],
-					sprite: [items.raw, items.global, items.anchor]
-				};
-				elLight.value?.loadItems([items.raw, items.global, items.ambient]);
-			}
-			elBlend.value?.loadItems([
-				{ name: readOption('sceneTilemap-blend', 'normal'), value: 'normal' },
-				{ name: readOption('sceneTilemap-blend', 'additive'), value: 'additive' },
-				{ name: readOption('sceneTilemap-blend', 'subtract'), value: 'subtract' }
-			]);
-		} catch {}
-	};
 	if (elLight.value) {
 		editor.lightBox = elLight.value.root;
 		refreshLocalizedItems();

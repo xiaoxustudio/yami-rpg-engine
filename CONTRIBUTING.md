@@ -64,6 +64,35 @@ pnpm -F @yami/editor test            # 独占跑
 pnpm run build:vite
 ```
 
+**写行为测试时的三个坑（2026-10 实测）**
+
+1. **「卸载时调了 `removeEventListener`」不等于「挂载真的发生过」。** 收口到 `useEventListener`
+   之后，卸载是**无条件**摘除的，于是「拖拽中卸载」这类用例恒绿、其实什么也没测。
+   判据：**「如果我让挂载永远不发生，这条用例会红吗？」** 不会红的就是**假绿**
+   （本仓实测翻出过两条）。行为用例应断言**相对基线**的变化，而不是绝对次数。
+2. **`mount` 不带 `attachTo` 时，事件不会冒泡到 `window`。** 组件树挂在游离容器里，到不了
+   `document`。凡验证「监听挂在 `window` 上」的用例，必须
+   `mount(…, { attachTo: document.body })`，否则表现为「处理器根本没跑」。
+3. **jsdom 没实现 `document.execCommand`。** 走它的路径（如 `deleteInputContent()`）要打桩；
+   **打桩后别断言「内容被清空」**（没东西真的删了），改断言 `stopPropagation` /
+   `stopImmediatePropagation` 的可观测效果（冒泡是否被拦下）。
+
+> 另：`toHaveBeenCalledWith` 比对的是**完整实参表**。`useEventListener` 内部是
+> `removeEventListener(type, handler, native)`，`native` 未传时实参是**三个**（第三个
+> `undefined`），只写两个实参的断言会莫名失败。
+
+**两个同名 `packmeta.json` 别搞混**
+
+- `packages/editor/src/module/packmeta.json` —— **运行期会被写回**
+  （`src/module/constants.ts` 在模块加载期用 `JSON.stringify` 覆写它），已在
+  `.oxfmtrc.json` 的 `ignorePatterns` 里豁免；跑完测试/typecheck 后 `git checkout --` 它，
+  不要提交被刷新的版本号。
+- `packages/editor/packmeta.json`（**包根**那个）—— **没有代码读写它**，是一次性遗留物。
+  它曾是单行 JSON 且**不在**豁免列表里，导致 **CI 的 `format:check` 在 HEAD 上就红**
+  （2026-10-21 已格式化修好，纯排版、值未变）。注意 `format:check` 的扫描面只有
+  `packages/editor` + `packages/ui-kit`，`scripts/**` 不在其中 ——
+  所以 `scripts/oneoff/declare-data-fields.mjs` 单独跑 `oxfmt --check` 虽会红，但不影响 CI。
+
 ## 目录详解
 
 ```

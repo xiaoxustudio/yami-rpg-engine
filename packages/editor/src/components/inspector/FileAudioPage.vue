@@ -119,12 +119,7 @@
 			<div ref="elPointerTime" class="text" id="fileAudio-pointerTime"></div>
 		</div>
 	</DetailBox>
-	<DetailBox
-		ref="elFrequencyDetail"
-		id="fileAudio-frequency-detail"
-		open
-		@toggle="onFrequencyToggle"
-	>
+	<DetailBox id="fileAudio-frequency-detail" open @toggle="onFrequencyToggle">
 		<DetailSummary>{{
 			t('components.fileAudio-frequency-canvas.label') || 'Frequency'
 		}}</DetailSummary>
@@ -157,7 +152,6 @@ const elProgressFiller = ref<HTMLElement | null>(null);
 const elProgressPointer = ref<HTMLElement | null>(null);
 const elCurrentTime = ref<HTMLElement | null>(null);
 const elPointerTime = ref<HTMLElement | null>(null);
-const elFrequencyDetail = ref<InstanceType<typeof DetailBox> | null>(null);
 const elCanvas = ref<HTMLCanvasElement | null>(null);
 
 /**

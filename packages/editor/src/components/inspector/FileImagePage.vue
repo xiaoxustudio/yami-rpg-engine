@@ -22,7 +22,7 @@
 			</div>
 		</div>
 	</DetailBox>
-	<DetailBox id="fileImage-image-detail" ref="elImageDetail" open @toggle="windowResize">
+	<DetailBox id="fileImage-image-detail" open @toggle="windowResize">
 		<DetailSummary>{{ t('components.fileImage-image-viewer.label') || 'Image' }}</DetailSummary>
 		<div class="box" id="fileImage-image-viewer">
 			<img id="fileImage-image" ref="elImage" alt="" />
@@ -46,7 +46,6 @@ const { t } = useI18n();
 const { form, sync, updateImage, windowResize } = useFileImagePage();
 
 const elImage = ref<HTMLImageElement | null>(null);
-const elImageDetail = ref<InstanceType<typeof DetailBox> | null>(null);
 
 onMounted(() => {
 	const fileImage = Inspector.fileImage;

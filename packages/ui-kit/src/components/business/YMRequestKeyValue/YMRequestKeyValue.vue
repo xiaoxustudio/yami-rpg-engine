@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import YMWindowFrame from '../YMWindowFrame/YMWindowFrame.vue';
 import YMTitleBar from '../YMTitleBar/YMTitleBar.vue';
 import YMStringVar from '../../basic/YMStringVar/YMStringVar.vue';
@@ -26,19 +25,10 @@ const emit = defineEmits<{
 	confirm: [];
 	closed: [];
 }>();
-
-const frame = ref<{
-	root: HTMLElement | null;
-} | null>(null);
 </script>
 
 <template>
-	<YMWindowFrame
-		ref="frame"
-		id="request-keyValue"
-		@closed="emit('closed')"
-		@confirm="emit('confirm')"
-	>
+	<YMWindowFrame id="request-keyValue" @closed="emit('closed')" @confirm="emit('confirm')">
 		<template #title>
 			<YMTitleBar>
 				{{ props.title }}
