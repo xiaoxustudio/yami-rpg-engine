@@ -342,10 +342,6 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
-	el.addEventListener('scroll', onScroll);
-	el.addEventListener('keydown', keydown);
-	el.addEventListener('pointerdown', pointerdown);
-	el.addEventListener('pointerup', pointerup);
 	attachApi(el, {
 		read,
 		write,
@@ -367,7 +363,16 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="root" class="common-list" :class="$style.list" :id="props.id" />
+	<div
+		ref="root"
+		class="common-list"
+		:class="$style.list"
+		:id="props.id"
+		@scroll="onScroll"
+		@keydown="keydown"
+		@pointerdown="pointerdown"
+		@pointerup="pointerup"
+	/>
 </template>
 
 <style module>

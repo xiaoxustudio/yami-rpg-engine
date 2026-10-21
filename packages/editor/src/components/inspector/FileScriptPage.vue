@@ -16,17 +16,18 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileScript-overview.label') || 'Overview' }}</DetailSummary>
-		<div class="box" id="fileScript-overview" ref="overviewEl">
+		<div class="box" id="fileScript-overview" ref="overviewEl" @update="syncOverview">
 			<PluginOverview :meta="overviewMeta" detailed />
 		</div>
 	</DetailBox>
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileScriptPage } from '@app/composables/useFileScriptPage';
+import { useEventListener } from '@app/composables/useEventListener';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -40,31 +41,43 @@ const { form, sync } = useFileScriptPage();
 
 const overviewEl = ref<HTMLElement | null>(null);
 const overviewMeta = ref<PluginMetaShape | null>(null);
-let localizeHandler: ((event: Event) => void) | null = null;
 
 const syncOverview = (): void => {
 	overviewMeta.value = Inspector.fileScript?.meta ?? null;
 };
 
+/**
+ * `localize` 是全局事件，改走 composable（挂/摘成对，不再靠模块级 `localizeHandler`
+ * 加 `onBeforeUnmount` 手工配对）。
+ *
+ * 两点**必须保留**的原有语义，否则是行为变更：
+ *   1. **注册时机**：原实现只在 `onMounted` 且 `Inspector.fileScript` 已就绪时才挂。
+ *      `useEventListener` 只能在 setup 期调用，故用 `enabled`（初始 false → 挂载时置真）
+ *      把首次注册推迟到那一刻；置真的赋值会触发内部 watch 完成注册。
+ *   2. **不做方法提取**：调 `Inspector.fileScript?.windowLocalize(e)` 会把 `this` 隐式绑成
+ *      `Inspector.fileScript`，而原实现是取一次方法、以普通函数身份注册的。故先存
+ *      `localizeHandler`，触发时按普通函数调用。
+ */
+const localizeHandler = ref<((event: Event) => void) | null>(null);
+const localizeEnabled = ref(false);
+
+useEventListener(window, 'localize', (event) => localizeHandler.value?.(event), {
+	enabled: localizeEnabled
+});
+
 onMounted(() => {
 	const fileScript = Inspector.fileScript;
 	if (fileScript) {
 		fileScript.overview = overviewEl.value;
-	}
-	overviewEl.value?.addEventListener('update', syncOverview);
-	if (fileScript) {
 		const onLocalize = fileScript.windowLocalize;
-		localizeHandler = onLocalize;
-		window.addEventListener('localize', onLocalize);
+		localizeHandler.value = onLocalize;
+		localizeEnabled.value = true;
 	}
 	const el = inspectorEls.get('fileScript');
 	if (el) {
 		attachElementApi(el, { update: sync });
 	}
 	sync();
-});
-onBeforeUnmount(() => {
-	if (localizeHandler) window.removeEventListener('localize', localizeHandler);
 });
 </script>
 

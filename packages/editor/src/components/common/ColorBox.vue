@@ -7,6 +7,7 @@
 		:id="props.id"
 		:label="props.label"
 		@open="openColor"
+		@keydown="onKeydown"
 	/>
 </template>
 
@@ -93,6 +94,25 @@ const openColor = (): void => {
 	Color.open(el);
 };
 
+/**
+ * 根元素上的 `keydown`。原先是在 `onMounted` 里用内联闭包 `addEventListener` 挂的，
+ * 现改模板 `@keydown`（`YMColorBox` 单根，事件经 fallthrough 落到它自己的根 div 上）。
+ * 处理器从 `root.value` 取元素，与原先捕获的 `el` 是同一个节点。
+ */
+const onKeydown = (event: KeyboardEvent): void => {
+	const el = root.value;
+	if (!el) return;
+	switch (event.code) {
+		case 'Enter':
+		case 'NumpadEnter':
+			if (!(event.ctrlKey || event.metaKey)) {
+				event.stopPropagation();
+				Color.open(el);
+			}
+			break;
+	}
+};
+
 defineExpose({ read, write, input, enable, disable, on, root });
 
 onMounted(() => {
@@ -102,22 +122,15 @@ onMounted(() => {
 	Object.defineProperty(el, 'dataValue', {
 		configurable: true,
 		get: () => ym.value?.read?.() ?? '',
-		set: (value: string) => ym.value?.write?.(value)
+		set: (value: string) => {
+			// 写成块体：setter 不能有返回值（`eslint(no-setter-return)`），
+			// 而 `ym.value?.write?.(value)` 作表达式体就会被判为"返回值"。行为完全一致。
+			ym.value?.write?.(value);
+		}
 	});
 	el.foreground = el.querySelector('.color-box-foreground') as HTMLElement;
 	el.inputEventEnabled = false;
 	attachElementApi(el, { read, write, input, enable, disable, on });
-	el.addEventListener('keydown', (event: KeyboardEvent) => {
-		switch (event.code) {
-			case 'Enter':
-			case 'NumpadEnter':
-				if (!(event.ctrlKey || event.metaKey)) {
-					event.stopPropagation();
-					Color.open(el);
-				}
-				break;
-		}
-	});
 	on('input', (e: YamiEvent) => {
 		emit('input', e.value);
 		emit('update:modelValue', e.value);

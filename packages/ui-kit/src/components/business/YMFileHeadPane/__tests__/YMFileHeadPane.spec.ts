@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import YMFileHeadPane from '../YMFileHeadPane.vue';
 
 interface FileItem {
@@ -120,5 +121,34 @@ describe('YMFileHeadPane 的卸载清理', () => {
 		spy.mockRestore();
 
 		expect(removed).not.toContain('pointerup');
+	});
+
+	/**
+	 * 行为验证：先前那两条只断言"卸载时摘了/没摘"，**证不了抬起处理真的会跑**。
+	 * 这条走完整路径：按下较早的面包屑 → window 抬起 → 导航到该文件夹。
+	 */
+	it('地址栏文件夹：按下后抬起会导航到该文件夹（once 监听走 enabled 通道）', async () => {
+		const root = makeFolder('Root');
+		const sub = makeFolder('Sub', root);
+		root.subfolders = [sub];
+		const load = vi.fn();
+		const links = makeLinks({
+			nav: { selections: [root, sub], load, scrollToSelection: vi.fn() }
+		});
+		const wrapper = mount(YMFileHeadPane, { props: { links }, attachTo: document.body });
+		(wrapper.vm as unknown as { updateAddress: () => void }).updateAddress();
+		await nextTick();
+
+		const address = wrapper.element.querySelector('.file-head-address') as HTMLElement;
+		const folders = address.querySelectorAll('file-head-address-folder');
+		expect(folders.length).toBe(2);
+		const first = folders[0] as HTMLElement;
+		// 较早的面包屑（非当前目录）才是可点击的
+		first.dispatchEvent(new PointerEvent('pointerdown', { button: 0, bubbles: true }));
+		// enabled 的挂载在 flush: 'post'，让出一拍
+		await nextTick();
+		first.dispatchEvent(new PointerEvent('pointerup', { button: 0, bubbles: true }));
+		expect(load).toHaveBeenCalledWith(root);
+		wrapper.unmount();
 	});
 });

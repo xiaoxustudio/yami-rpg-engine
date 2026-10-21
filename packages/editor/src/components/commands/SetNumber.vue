@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="setNumber" :ref="registryRef(fieldEls, 'setNumber')" @confirm="onConfirm">
+	<WindowFrame
+		id="setNumber"
+		:ref="registryRef(fieldEls, 'setNumber')"
+		@confirm="onConfirm"
+		@closed="onClosed"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setNumber.title') }}
@@ -53,11 +58,13 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+const onClosed = () => {
+	clear(fieldEls.get('setNumber-operands'));
+};
+
 onMounted(() => {
 	fieldEls.get('setNumber-operands')?.bind?.(NumberOperand);
-	fieldEls.get('setNumber')?.on?.('closed', (_event: Event) => {
-		clear(fieldEls.get('setNumber-operands'));
-	});
 });
 </script>
 

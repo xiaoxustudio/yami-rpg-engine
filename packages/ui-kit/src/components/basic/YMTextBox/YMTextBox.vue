@@ -89,6 +89,55 @@ const updateCloseButton = (): void => {
 	closeButtonDisplay.value = read() !== '' ? '' : 'none';
 };
 
+/**
+ * 两个 opt-in 是否已启用 —— 根元素上的两个监听改成了**常驻模板绑定**，
+ * 由这两个开关在处理器里早退，以保持"按需生效"的原语义（见 `onRootKeydown`）。
+ */
+const closeButtonActive = ref(false);
+const keydownFilterActive = ref(false);
+
+/**
+ * 根元素上的 `keydown`：**合并自两个 opt-in 方法**。
+ *
+ * 为什么必须合并：`addCloseButton()` 与 `addKeydownFilter()` **都**往同一个根元素登记 `keydown`，
+ * 而同一元素同一事件只能有一个模板 `@keydown`。顺序**可观测**（filter 会
+ * `stopImmediatePropagation`），故不能随意排：
+ * 实测唯一同时启用两者的是 `editor/src/scene/scene-window.ts`，
+ * 顺序固定为「先 `addCloseButton`、后 `addKeydownFilter`」—— 这里按同一顺序合并。
+ */
+function onRootKeydown(event: KeyboardEvent): void {
+	if (closeButtonActive.value) {
+		switch (event.code) {
+			case 'Escape':
+				if (read() !== '') {
+					event.stopPropagation();
+					deleteInputContent();
+				}
+				break;
+		}
+	}
+	if (!keydownFilterActive.value) return;
+	const cmdOrCtrlKey = event.ctrlKey || event.metaKey;
+	if (event.altKey) {
+		return;
+	} else if (!cmdOrCtrlKey && !event.shiftKey) {
+		switch (event.code) {
+			case 'Escape':
+			case 'F1':
+			case 'F3':
+			case 'F4':
+			case 'F9':
+				return;
+		}
+	}
+	event.stopImmediatePropagation();
+}
+
+/** 根元素上的 `input`（内层 `<input>` 的原生 input 冒泡上来）：刷新关闭按钮显隐。 */
+function onRootInput(): void {
+	if (closeButtonActive.value) updateCloseButton();
+}
+
 const addCloseButton = (): void => {
 	const el = root.value;
 	const closeButton = closeButtonEl.value;
@@ -98,21 +147,7 @@ const addCloseButton = (): void => {
 		baseWrite(value);
 		updateCloseButton();
 	};
-	const keydown = (event: KeyboardEvent): void => {
-		switch (event.code) {
-			case 'Escape':
-				if (read() !== '') {
-					event.stopPropagation();
-					deleteInputContent();
-				}
-				break;
-		}
-	};
-	const input = (): void => {
-		updateCloseButton();
-	};
-	el.addEventListener('keydown', keydown);
-	el.addEventListener('input', input);
+	closeButtonActive.value = true;
 	(el as TextBoxApi).closeButton = closeButton;
 	closeButtonDisplay.value = 'none';
 };
@@ -126,25 +161,7 @@ const onCloseButtonClick = (): void => {
 	deleteInputContent();
 };
 const addKeydownFilter = (): void => {
-	const el = root.value;
-	if (!el) return;
-	const keydown = (event: KeyboardEvent): void => {
-		const cmdOrCtrlKey = event.ctrlKey || event.metaKey;
-		if (event.altKey) {
-			return;
-		} else if (!cmdOrCtrlKey && !event.shiftKey) {
-			switch (event.code) {
-				case 'Escape':
-				case 'F1':
-				case 'F3':
-				case 'F4':
-				case 'F9':
-					return;
-			}
-		}
-		event.stopImmediatePropagation();
-	};
-	el.addEventListener('keydown', keydown);
+	keydownFilterActive.value = true;
 };
 const on = (
 	type: string,
@@ -265,7 +282,14 @@ onMounted(initializeApi);
 </script>
 
 <template>
-	<div ref="root" class="text-box" :class="$style.box" :id="props.id">
+	<div
+		ref="root"
+		class="text-box"
+		:class="$style.box"
+		:id="props.id"
+		@keydown="onRootKeydown"
+		@input="onRootInput"
+	>
 		<input
 			ref="inputEl"
 			class="text-box-input"

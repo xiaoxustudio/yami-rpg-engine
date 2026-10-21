@@ -1,5 +1,15 @@
 <template>
-	<div class="file-nav-pane" ref="el" tabindex="-1" :data-v-ref="''"></div>
+	<div
+		class="file-nav-pane"
+		ref="el"
+		tabindex="-1"
+		:data-v-ref="''"
+		@scroll="resize"
+		@keydown="keydown"
+		@pointerdown="panePointerdown"
+		@pointerup="pointerup"
+		@select="listSelect"
+	></div>
 </template>
 
 <script setup lang="ts">
@@ -22,19 +32,9 @@ import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf } from '../../../utils/element-data';
 import { createFileNavCore } from './file-nav-pane-core';
 import { createPayloadEvent } from '../../../utils/payload-event';
+import { useEventListener } from '../../../composables/useEventListener';
 
 const core = createFileNavCore();
-
-const windowListeners: { type: string; fn: EventListener }[] = [];
-
-function listenWindow<K extends keyof WindowEventMap>(
-	type: K,
-	fn: (event: WindowEventMap[K]) => void,
-	options?: AddEventListenerOptions
-): void {
-	window.addEventListener(type, fn, options);
-	windowListeners.push({ type, fn: fn as EventListener });
-}
 
 const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
 	const host = document.createElement('div');
@@ -208,19 +208,60 @@ let selections: FileItem[] = [];
 let pressing: ((event: PointerEvent) => void) | null = null;
 let selectEventEnabled = false;
 let textBox: TextBoxElement | undefined;
-let dirchangeHandler: (event: Event) => void;
 let resizeObserver: ResizeObserver | null = null;
 
-function listenDraggingScrollbarEvent() {
+/**
+ * 待处理的「抬手」意图。
+ *
+ * `pressing` 仍是对外导出的**取消令牌**（`YMFileBrowser` 会 `page.pressing = null` 取消，
+ * 两条 spec 也断言它的 get/set），所以它保持原样；这里只把「挂 window 监听」交给
+ * `useEventListener`，并把每次交互捕获的 `element`/`files` 从闭包里挪到 `pendingPress`。
+ *
+ * 原实现是「每次交互现造一个 `pointerup` 闭包 + `listenWindow(…, { once: true })`」，
+ * 靠 `pressing === pointerup` 这个**闭包身份**判断自己是否已被取代。改成一个常驻处理器后，
+ * 身份判断变成 `pressing !== onPendingPointerup`，语义不变（更晚的交互会覆盖令牌）。
+ * 另外**去掉 `once`**：`once` 与 `enabled` 组合时，两次按下之间若没有抬手，
+ * 第二次就不会重新注册（`enabled` 一直为真）；改成由 `enabled` 管生命周期即无此问题。
+ */
+let pendingPress: { element: HTMLElement; files: FileItem[] } | null = null;
+
+/** window 上是否挂着待处理的 `pointerup` —— 专供 `useEventListener` 的 `enabled`。 */
+const pressingActive = ref(false);
+
+const onPendingPointerup = (event: Event): void => {
+	// 被消费者取消（`pressing = null`）或已被更晚的交互取代 ⇒ 本次不作数
+	if (pressing !== onPendingPointerup) return;
+	pressing = null;
+	pressingActive.value = false;
+	const intent = pendingPress;
+	pendingPress = null;
+	if (!intent) return;
+	if (intent.element.contains((event as PointerEvent).target as Node)) {
+		select(...intent.files);
+	}
+};
+
+useEventListener(window, 'pointerup', onPendingPointerup, { enabled: pressingActive });
+
+// `dirchange` 是挂载期常驻配对（原先 onMounted 挂、onBeforeUnmount 摘）
+useEventListener(window, 'dirchange', dirchange);
+
+/**
+ * 窗格根元素上的 `pointerdown`。
+ *
+ * 原先这里有**两个**监听：`listenDraggingScrollbarEvent()` 里那枚"点右缘则捕获指针"的闭包
+ * （注册得更早）与具名 `pointerdown`（选择逻辑）。同一元素同一事件类型只能有一个模板 `@`，
+ * 故合并成一个处理器，并**保持原执行顺序**（先指针捕获，再选择）。
+ */
+function panePointerdown(event: PointerEvent): void {
 	const node = el.value!;
-	node.addEventListener('pointerdown', (event: PointerEvent) => {
-		if (event.button === 0 && event.target === node) {
-			const nodeRect = rect(node);
-			if (event.offsetX >= nodeRect.width) {
-				node.setPointerCapture(event.pointerId);
-			}
+	if (event.button === 0 && event.target === node) {
+		const nodeRect = rect(node);
+		if (event.offsetX >= nodeRect.width) {
+			node.setPointerCapture(event.pointerId);
 		}
-	});
+	}
+	pointerdown(event);
 }
 
 function load(...folders: FileItem[]): void {
@@ -564,16 +605,9 @@ function pointerdown(event: PointerEvent): void {
 							const file = (element as FolderElement).file;
 							const index = files.indexOf(file);
 							if (index !== -1) files.splice(index, 1);
-							const pointerup = (event: PointerEvent) => {
-								if (pressing === pointerup) {
-									pressing = null;
-									if (element.contains(event.target as Node)) {
-										select(...files);
-									}
-								}
-							};
-							pressing = pointerup;
-							listenWindow('pointerup', pointerup, { once: true });
+							pendingPress = { element, files };
+							pressing = onPendingPointerup;
+							pressingActive.value = true;
 						}
 						return;
 					}
@@ -597,16 +631,9 @@ function pointerdown(event: PointerEvent): void {
 						select((element as FolderElement).file);
 					} else if (event.button === 0) {
 						if (length > 1) {
-							const pointerup = (event: PointerEvent) => {
-								if (pressing === pointerup) {
-									pressing = null;
-									if (element.contains(event.target as Node)) {
-										select((element as FolderElement).file);
-									}
-								}
-							};
-							pressing = pointerup;
-							listenWindow('pointerup', pointerup, { once: true });
+							pendingPress = { element, files: [(element as FolderElement).file] };
+							pressing = onPendingPointerup;
+							pressingActive.value = true;
 						} else if (
 							props.menuState?.() === 'closed' &&
 							document.activeElement === node &&
@@ -770,14 +797,9 @@ onMounted(() => {
 
 	textBox = createTextBox();
 	node.textBox = textBox;
-	listenDraggingScrollbarEvent();
 
-	node.addEventListener('scroll', resize);
-	node.addEventListener('keydown', keydown as EventListener);
-	node.addEventListener('pointerdown', pointerdown as EventListener);
-	node.addEventListener('pointerup', pointerup as EventListener);
+	// scroll / keydown / pointerdown / pointerup / select 已改为模板 `@` 常驻绑定
 	attachDoubleclick(node, doubleclick);
-	node.addEventListener('select', listSelect);
 	selectEventEnabled = true;
 
 	if (typeof ResizeObserver !== 'undefined') {
@@ -788,9 +810,6 @@ onMounted(() => {
 		});
 		resizeObserver.observe(node);
 	}
-
-	dirchangeHandler = dirchange.bind(undefined);
-	window.addEventListener('dirchange', dirchangeHandler);
 
 	attachApi(node, {
 		load,
@@ -816,6 +835,9 @@ onMounted(() => {
 		get: () => pressing,
 		set: (value: ((event: PointerEvent) => void) | null) => {
 			pressing = value;
+			// 只有令牌是「本组件自己那个待处理处理器」时才真的需要 window 监听；
+			// 消费者塞进来的哨兵值（spec 里有这种断言）不该顺手挂上一个监听。
+			pressingActive.value = value === onPendingPointerup;
 		},
 		configurable: true
 	});
@@ -831,9 +853,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-	window.removeEventListener('dirchange', dirchangeHandler);
-	for (const { type, fn } of windowListeners) window.removeEventListener(type, fn);
-	windowListeners.length = 0;
+	// window 上的 pointerup / dirchange 已由 useEventListener 随作用域销毁自动摘除
 	resizeObserver?.disconnect?.();
 });
 

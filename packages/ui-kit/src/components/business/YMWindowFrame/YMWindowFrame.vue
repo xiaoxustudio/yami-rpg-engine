@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import {
 	clamp,
 	addClass,
@@ -10,6 +10,7 @@ import {
 	focusWithOptions
 } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
+import { useEventListener } from '../../../composables/useEventListener';
 import YMFormButtons from '../../basic/YMFormButtons/YMFormButtons.vue';
 
 interface WindowFrameHost {
@@ -58,6 +59,8 @@ const emit = defineEmits<{
 	resize: [];
 	maximize: [];
 	unmaximize: [];
+	confirm: [];
+	apply: [];
 }>();
 
 const root = ref<HTMLElement | null>(null);
@@ -74,6 +77,16 @@ const state = reactive({
 	maximizeEventEnabled: false,
 	unmaximizeEventEnabled: false
 });
+
+/**
+ * window 上的 `resize` 是否挂着 —— 专供 `useEventListener` 的 `enabled`。
+ *
+ * 它是**状态相关**而非挂载期常驻：只有「最大化 + 该组件被 `on('resize')` 订阅过」时才需要
+ * （原实现在 `open`/`maximize` 里挂、在 `close`/`unmaximize` 里摘，四处手工配对）。
+ * `state` 已是 `reactive`，但「是否最大化」是 DOM class（`hasClass(element,'maximized')`）
+ * 不是响应式的，所以不能直接拿它当开关，仍另起一个 ref，与那四处的语义同进同出。
+ */
+const resizeActive = ref(false);
 
 const on = (
 	type: string,
@@ -198,7 +211,7 @@ const open = (): void => {
 		element.dispatchEvent(new Event('open'));
 		if (state.resizeEventEnabled && hasClass(element, 'maximized')) {
 			element.dispatchEvent(new Event('resize'));
-			window.addEventListener('resize', state.windowResize!);
+			resizeActive.value = true;
 		}
 	} else if (!hasClass(element, 'open')) {
 		addClass(element, 'open');
@@ -240,7 +253,7 @@ const close = (): boolean => {
 			}
 		}
 		if (state.resizeEventEnabled && hasClass(element, 'maximized')) {
-			window.removeEventListener('resize', state.windowResize!);
+			resizeActive.value = false;
 		}
 		if (document.activeElement !== document.body) {
 			(document.activeElement as HTMLElement).blur();
@@ -263,7 +276,7 @@ const maximize = (): void => {
 		}
 		if (state.resizeEventEnabled) {
 			element.dispatchEvent(new Event('resize'));
-			window.addEventListener('resize', state.windowResize!);
+			resizeActive.value = true;
 		}
 	}
 };
@@ -280,7 +293,7 @@ const unmaximize = (): void => {
 		}
 		if (state.resizeEventEnabled) {
 			element.dispatchEvent(new Event('resize'));
-			window.removeEventListener('resize', state.windowResize!);
+			resizeActive.value = false;
 		}
 	}
 };
@@ -382,13 +395,30 @@ const applyLocalization = (): void => {
 	}
 };
 
+// 全局 `localize` 监听走 composable：挂/摘成对，不再在 onMounted/onUnmounted 里手工配对。
+// `applyLocalization` 自身对「元素未就绪」「没有 localize」都有早退保护，故 setup 期注册是安全的；
+// 首次应用仍由 onMounted 里那次 `applyLocalization()` 完成。
+useEventListener(window, 'localize', applyLocalization);
+
+/**
+ * window 上的 `resize` 也走 composable，`enabled` 由 `resizeActive` 驱动
+ * （见其注释：最大化 / 订阅状态变化时挂或摘）。
+ *
+ * 处理器**在调用时**才读 `state.windowResize`，而不是注册时捕获：
+ * 该属性可由外部随时改写（元素上的 setter 见下），原先「注册时捕获、摘除时读当前值」的写法
+ * 在窗口活着时被换过 `windowResize` 的情况下**会摘不掉旧函数**，是个已存在的隐患；
+ * 调用时读取顺带把它消掉了。
+ */
+useEventListener(window, 'resize', (event) => state.windowResize?.(event), {
+	enabled: resizeActive
+});
+
 onMounted(() => {
 	const element = root.value as HTMLElement & { [k: string]: unknown };
 	if (!element) {
 		return;
 	}
 	applyLocalization();
-	window.addEventListener('localize', applyLocalization);
 	attachApi(element, {
 		open,
 		close,
@@ -442,11 +472,17 @@ onMounted(() => {
 	on('resize', () => emit('resize'));
 	on('maximize', () => emit('maximize'));
 	on('unmaximize', () => emit('unmaximize'));
-	element.addEventListener('cancel', () => close());
-});
-
-onUnmounted(() => {
-	window.removeEventListener('localize', applyLocalization);
+	// `YMFormButtons` 现在**同时**派发原生事件与 Vue emit。这里改走 emit 通道
+	// （模板 `@confirm` / `@apply` / `@cancel`，见下），因此不再需要原生桥。
+	//
+	// 历史：原先只桥了 `cancel`、漏了 `confirm`，导致外层包装组件
+	// （YMZoom / YMFont / YMRename / YMSetKey / YMSetQuantity / YMRequestKeyValue /
+	// YMArrayListString / YMArrayListNumber 等 12 处）在
+	// `frame.value.root.addEventListener('confirm', …)` 上等的那个事件**永远不会到来**，
+	// 表现为"点确定没反应"。那 12 处已改为模板 `@confirm`，故这层桥可以整体删掉。
+	//
+	// ⚠️ 不要再在这里挂原生 `confirm`/`apply` 监听：`YMFormButtons` 的原生派发仍在，
+	// 两条通道都接就会**双触发**。
 });
 </script>
 
@@ -461,6 +497,9 @@ onUnmounted(() => {
 			:id-prefix="props.buttonsIdPrefix || props.id || ''"
 			:show-apply="props.showApply"
 			:confirm-disabled="props.confirmDisabled"
+			@confirm="emit('confirm')"
+			@apply="emit('apply')"
+			@cancel="close()"
 		/>
 	</div>
 </template>

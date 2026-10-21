@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { useEventListener } from '../../../composables/useEventListener';
 import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import {
 	createSelectBoxCore,
@@ -58,7 +59,6 @@ const state: SelectBoxCoreState = {
 };
 
 const builtinOpen = ref(false);
-let documentPointerdown: ((event: PointerEvent) => void) | null = null;
 
 const core = createSelectBoxCore({ getRoot: () => root.value, getInfo: () => info.value }, state);
 const {
@@ -106,22 +106,27 @@ const relate = (entries: unknown): void => {
 const openBuiltin = (): void => {
 	if (!props.popup || props.disabled) return;
 	builtinOpen.value = true;
-	documentPointerdown = (event: PointerEvent) => {
-		const el = root.value;
-		if (el && !el.contains(event.target as Node)) {
-			closeBuiltin();
-		}
-	};
-	document.addEventListener('pointerdown', documentPointerdown);
 };
 
 const closeBuiltin = (): void => {
 	builtinOpen.value = false;
-	if (documentPointerdown) {
-		document.removeEventListener('pointerdown', documentPointerdown);
-		documentPointerdown = null;
-	}
 };
+
+/**
+ * 点弹层外部即关闭：走 `useEventListener` 的 `enabled`，**保持原有的附加时机**——
+ * 只在弹层打开期间挂着 `document` 的 `pointerdown`，关闭即摘（不是常驻）。
+ */
+useEventListener(
+	document,
+	'pointerdown',
+	(event) => {
+		const el = root.value;
+		if (el && !el.contains(event.target as Node)) {
+			closeBuiltin();
+		}
+	},
+	{ enabled: builtinOpen }
+);
 
 const pick = (item: SelectItem): void => {
 	input(item.value);
@@ -164,6 +169,9 @@ const onPointerdown = (event: PointerEvent): void => {
 		emit('open');
 	}
 };
+
+/** 根元素上的 `change` → Vue emit（模板 `@change` 绑定，见下）。 */
+const onChange = (): void => emit('change', read());
 
 defineExpose({
 	read,
@@ -246,7 +254,6 @@ function initializeApi(): void {
 		emit('input', e.value);
 	});
 	on('write', (e: Event & { value?: unknown }) => emit('write', e.value));
-	el.addEventListener('change', () => emit('change', read()));
 	if (props.modelValue !== null) write(props.modelValue);
 	if (props.disabled) disable();
 	markApiAttached(el);
@@ -273,6 +280,7 @@ onBeforeUnmount(() => {
 		:aria-controls="popupId"
 		@keydown="onKeydown"
 		@pointerdown="onPointerdown"
+		@change="onChange"
 	>
 		<div class="select-box-text" ref="info" :data-v-ref="''" />
 		<div

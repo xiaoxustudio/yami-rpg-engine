@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="loop" :ref="registryRef(fieldEls, 'loop')" @confirm="onConfirm">
+	<WindowFrame
+		id="loop"
+		:ref="registryRef(fieldEls, 'loop')"
+		@confirm="onConfirm"
+		@closed="onClosed"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.loop.title') }}
@@ -52,15 +57,17 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口关闭时复位。原先是**元素优先 API**（经 `fieldEls` 取到窗口元素后在其上订阅 closed）。 */
+const onClosed = () => {
+	reset();
+	clear(fieldEls.get('loop-conditions'));
+};
+
 onMounted(() => {
 	fieldEls.get('loop-conditions')?.bind?.(IfCondition);
 	useLocalizedOptions('loop-mode', ['all', 'any'], (items) =>
 		fieldEls.get('loop-mode')?.loadItems?.(items)
 	);
-	fieldEls.get('loop')?.on?.('closed', () => {
-		reset();
-		clear(fieldEls.get('loop-conditions'));
-	});
 });
 </script>
 

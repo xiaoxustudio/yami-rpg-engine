@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import YMWindowFrame from '../YMWindowFrame/YMWindowFrame.vue';
 import YMTitleBar from '../YMTitleBar/YMTitleBar.vue';
 import YMTextBox from '../../basic/YMTextBox/YMTextBox.vue';
@@ -28,17 +28,11 @@ const frame = ref<{
 	on(type: string, listener: (event: Event) => void): void;
 } | null>(null);
 
-onMounted(() => {
-	const el = frame.value?.root;
-	if (!el) return;
-	el.addEventListener('confirm', () => emit('confirm'));
-});
-
 defineExpose({ root: computed(() => frame.value?.root ?? null) });
 </script>
 
 <template>
-	<YMWindowFrame ref="frame" :id="props.id">
+	<YMWindowFrame ref="frame" :id="props.id" @confirm="emit('confirm')">
 		<template #title>
 			<YMTitleBar>
 				{{ props.title }}

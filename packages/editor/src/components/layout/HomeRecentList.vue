@@ -32,8 +32,9 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useEventListener } from '@app/composables/useEventListener';
 import { Home, type HomeRecentCard } from '@app/title/home-page.ts';
 
 const { t } = useI18n();
@@ -54,12 +55,10 @@ const onRecentPointerup = (event: PointerEvent) => {
 
 onMounted(() => {
 	refresh();
-	window.addEventListener('home-recent-update', refresh);
 });
 
-onBeforeUnmount(() => {
-	window.removeEventListener('home-recent-update', refresh);
-});
+// 全局事件走 composable：挂/摘成对，不再手写 onBeforeUnmount 配对。
+useEventListener(window, 'home-recent-update', refresh);
 </script>
 
 <style>

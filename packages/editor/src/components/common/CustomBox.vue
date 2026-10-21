@@ -18,10 +18,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { YMCustomBox } from '@ui-kit';
 import { customBoxOptions } from '../custom-box-opts';
 import { attachElementApi } from '@app/utils/attach-element-api';
+import { useEventListener } from '@app/composables/useEventListener';
 
 interface Props {
 	id?: string;
@@ -94,6 +95,16 @@ const on = (
 
 defineExpose({ read, write, input, enable, disable, focus, on, root });
 
+/**
+ * `localize` 全局事件。原先是 `onMounted` 里的内联 `onLocalize` + 手写 `onBeforeUnmount` 配对；
+ * 该 handler 只用到 setup 作用域的 `ym`，故提到 setup 层交给 composable —— 挂/摘成对。
+ */
+const onLocalize = (): void => {
+	ym.value?.update?.();
+};
+
+useEventListener(window, 'localize', onLocalize);
+
 onMounted(() => {
 	const el = root.value as HTMLElement & {
 		read(): unknown;
@@ -110,12 +121,5 @@ onMounted(() => {
 	if (!el) return;
 	attachElementApi(el, { read, write, input, enable, disable, on });
 	ym.value?.write(props.modelValue ?? '');
-	const onLocalize = (): void => {
-		ym.value?.update?.();
-	};
-	window.addEventListener('localize', onLocalize);
-	onBeforeUnmount(() => {
-		window.removeEventListener('localize', onLocalize);
-	});
 });
 </script>

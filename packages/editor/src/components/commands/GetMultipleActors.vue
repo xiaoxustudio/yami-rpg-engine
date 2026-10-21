@@ -3,6 +3,7 @@
 		id="getMultipleActors"
 		:ref="registryRef(fieldEls, 'getMultipleActors')"
 		@confirm="onConfirm"
+		@open="onWindowOpen"
 	>
 		<template #title
 			><TitleBar
@@ -122,6 +123,12 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	const items = Data.createTeamItems!();
+	fieldEls.get('getMultipleActors-teamId')?.loadItems?.(items);
+};
+
 onMounted(() => {
 	useLocalizedOptions(
 		'getMultipleActors-area',
@@ -167,10 +174,6 @@ onMounted(() => {
 			either: 'command.getMultipleActors.either'
 		}
 	);
-	fieldEls.get('getMultipleActors')?.on?.('open', function (_event: Event) {
-		const items = Data.createTeamItems!();
-		fieldEls.get('getMultipleActors-teamId')?.loadItems?.(items);
-	});
 });
 </script>
 

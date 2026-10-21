@@ -1,5 +1,14 @@
 <template>
-	<div class="file-body-pane" ref="el" :data-v-ref="''">
+	<div
+		class="file-body-pane"
+		ref="el"
+		:data-v-ref="''"
+		@scroll="scrollResize"
+		@keydown="keydown"
+		@pointerdown="pointerdown"
+		@pointerup="pointerup"
+		@wheel.passive="wheel"
+	>
 		<div class="file-body-content" ref="contentEl" tabindex="0" :data-v-ref="''">
 			<div
 				v-for="row in visibleRows"
@@ -38,6 +47,7 @@ import {
 	focusWithOptions
 } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
+import { useEventListener } from '../../../composables/useEventListener';
 import { elementDataOf } from '../../../utils/element-data';
 import { renderDetached } from '../../../utils/detached';
 import { createFileBodyCore, type GridMetrics } from './file-body-core';
@@ -390,16 +400,6 @@ const timer: {
 	}
 };
 
-const windowListeners: { type: string; fn: EventListener }[] = [];
-
-function listenWindow<K extends keyof WindowEventMap>(
-	type: K,
-	fn: (event: WindowEventMap[K]) => void,
-	options?: AddEventListenerOptions
-): void {
-	window.addEventListener(type, fn, options);
-	windowListeners.push({ type, fn: fn as EventListener });
-}
 let elements: (FileBodyItemApi | undefined)[] & {
 	count: number;
 	start: number;
@@ -415,9 +415,45 @@ let selectEventEnabled = false;
 let unselectEventEnabled = false;
 let popupEventEnabled = false;
 let textBox: FileBodyTextBox;
-let windowKeydownHandler: (event: KeyboardEvent) => void;
-let windowResizeHandler: () => void;
 let resizeObserver: ResizeObserver | null = null;
+
+/**
+ * Alt 提示是否正在显示 —— **专供 `useEventListener` 的 `enabled`**。
+ *
+ * 按住 Alt 时挂 window 的 `keyup` / `pointermove` 用来撤掉提示，松开或移动即摘。
+ * 原先是每次按下现造/用 `listenWindow` 登记 + 两处手工 `removeEventListener`；
+ * 改成一个 ref 与那两个时机同进同出。
+ */
+const altHintActive = ref(false);
+
+/**
+ * 待处理的「抬手」意图。
+ *
+ * `pressing` 仍是对外导出的**取消令牌**（`Object.defineProperty(node, 'pressing', …)`，
+ * `file-body-pane.spec.ts` 断言它的 get/set），故保持原样；这里只把「挂 window 监听」交给
+ * `useEventListener`，并把每次交互的动作从闭包里挪到 `pendingPress.commit`。
+ * 身份判断由 `pressing === 闭包` 改为 `pressing !== onPendingPointerup`，语义不变。
+ * **去掉 `once`**：`once` 与 `enabled` 组合时，两次按下之间若没有抬手，第二次不会重新注册。
+ */
+let pendingPress: { element: HTMLElement | null; commit: () => void } | null = null;
+
+/** window 上是否挂着待处理的 `pointerup` —— 专供 `useEventListener` 的 `enabled`。 */
+const pressingActive = ref(false);
+
+const onPendingPointerup = (event: Event): void => {
+	// 被消费者取消（`pressing = null`）或已被更晚的交互取代 ⇒ 本次不作数
+	if (pressing !== onPendingPointerup) return;
+	pressing = null;
+	pressingActive.value = false;
+	const intent = pendingPress;
+	pendingPress = null;
+	if (!intent) return;
+	// `element` 为 null 表示"不看落点"（如站点 A 的 selectActiveFile）
+	if (intent.element && !intent.element.contains((event as PointerEvent).target as Node)) return;
+	intent.commit();
+};
+
+useEventListener(window, 'pointerup', onPendingPointerup, { enabled: pressingActive });
 
 function setViewIndex(idx: number): void {
 	idx = core.clamp(idx, 0, 4);
@@ -924,14 +960,9 @@ function activateFile(file: FileBodyFile): void {
 			if (c.element) removeClass(c.element, 'selected');
 		}
 	}
-	const pointerup = (_event: PointerEvent) => {
-		if (pressing === pointerup) {
-			pressing = null;
-			selectActiveFile();
-		}
-	};
-	pressing = pointerup;
-	listenWindow('pointerup', pointerup, { once: true });
+	pendingPress = { element: null, commit: () => selectActiveFile() };
+	pressing = onPendingPointerup;
+	pressingActive.value = true;
 }
 
 function selectActiveFile(): void {
@@ -1597,16 +1628,9 @@ function pointerdown(event: PointerEvent): void {
 							const file = (element as FileBodyItemApi).file;
 							const index = files.indexOf(file);
 							if (index !== -1) files.splice(index, 1);
-							const pointerup = (event: PointerEvent) => {
-								if (pressing === pointerup) {
-									pressing = null;
-									if (element.contains(event.target as Node)) {
-										select(...files);
-									}
-								}
-							};
-							pressing = pointerup;
-							listenWindow('pointerup', pointerup, { once: true });
+							pendingPress = { element, commit: () => select(...files) };
+							pressing = onPendingPointerup;
+							pressingActive.value = true;
 						}
 						return;
 					}
@@ -1639,16 +1663,12 @@ function pointerdown(event: PointerEvent): void {
 						}
 					} else if (event.button === 0) {
 						if (length > 1) {
-							const pointerup = (event: PointerEvent) => {
-								if (pressing === pointerup) {
-									pressing = null;
-									if (element.contains(event.target as Node)) {
-										select((element as FileBodyItemApi).file);
-									}
-								}
+							pendingPress = {
+								element,
+								commit: () => select((element as FileBodyItemApi).file)
 							};
-							pressing = pointerup;
-							listenWindow('pointerup', pointerup, { once: true });
+							pressing = onPendingPointerup;
+							pressingActive.value = true;
 						} else {
 							activateFileViaElement((element as FileBodyItemApi).file);
 							if (
@@ -1733,8 +1753,7 @@ function windowKeydown(event: KeyboardEvent): void {
 			case 'AltLeft':
 				if (!Window?.getTopWindow() || Window?.getTopWindow()?.id === 'selector') {
 					addClass(contentEl.value, 'alt');
-					listenWindow('keyup', windowKeyup);
-					listenWindow('pointermove', windowPointermove);
+					altHintActive.value = true;
 				}
 				break;
 		}
@@ -1746,8 +1765,8 @@ function windowKeyup(event: KeyboardEvent): void {
 		switch (event.code) {
 			case 'AltLeft':
 				removeClass(contentEl.value, 'alt');
-				window.removeEventListener('keyup', windowKeyup);
-				window.removeEventListener('pointermove', windowPointermove);
+				// 置假即摘掉 window 上的 keyup / pointermove
+				altHintActive.value = false;
 				break;
 		}
 	}
@@ -1756,8 +1775,7 @@ function windowKeyup(event: KeyboardEvent): void {
 function windowPointermove(event: PointerEvent): void {
 	if (!event.altKey) {
 		removeClass(contentEl.value, 'alt');
-		window.removeEventListener('keyup', windowKeyup);
-		window.removeEventListener('pointermove', windowPointermove);
+		altHintActive.value = false;
 	}
 }
 
@@ -1864,6 +1882,52 @@ function on(
 	}
 }
 
+/**
+ * window 上的 `resize` / `keydown`。
+ *
+ * 原先两者都是**在 `onMounted` 里现造闭包**（`resize`）或赋给一个 `let`（`keydown`），
+ * 再在 `onBeforeUnmount` 里手工配对摘除。改为 setup 层常驻处理器：
+ * `resize` 在调用时读 `el.value`（与原先闭包捕获同一个元素，等价），
+ * `keydown` 直接用 hoisted 的 `windowKeydown`；挂/摘交给 `useEventListener`。
+ */
+const onWindowResize = (): void => {
+	const node = el.value;
+	if (!node) return;
+	requestAnimationFrame(() => {
+		if (node.clientHeight > 0 && elements.count > 0) {
+			computeGridProperties();
+			elements.start = -1;
+			elements.end = -1;
+			resize();
+		}
+	});
+};
+
+useEventListener(window, 'resize', onWindowResize);
+useEventListener(window, 'keydown', (event) => windowKeydown(event as KeyboardEvent)); // Alt 提示期间才挂的两个：见 `altHintActive`
+useEventListener(window, 'keyup', (event) => windowKeyup(event as KeyboardEvent), {
+	enabled: altHintActive
+});
+useEventListener(window, 'pointermove', (event) => windowPointermove(event as PointerEvent), {
+	enabled: altHintActive
+});
+
+/**
+ * 滚动节流：一次滚动只排一帧。
+ *
+ * 原先是 `onMounted` 内部的闭包（配一个挂载作用域的 `resizeRaf`），随那五个根监听一起
+ * 改为模板 `@` 后必须提到 setup 层 —— 模板只能引用 setup 作用域的绑定。
+ * `resizeRaf` 一并提上来，`resize()` 本就是顶层 hoisted 函数且调用时读 `el.value`，故等价。
+ */
+let resizeRaf = 0;
+const scrollResize = (): void => {
+	if (resizeRaf) return;
+	resizeRaf = requestAnimationFrame(() => {
+		resizeRaf = 0;
+		resize();
+	});
+};
+
 onMounted(() => {
 	const node = el.value as FileBodyPaneApi;
 	const content = contentEl.value as FileBodyContentApi;
@@ -1903,21 +1967,8 @@ onMounted(() => {
 	textBox = createTextBox();
 	node.textBox = textBox;
 
-	let resizeRaf = 0;
-	const scrollResize = (): void => {
-		if (resizeRaf) return;
-		resizeRaf = requestAnimationFrame(() => {
-			resizeRaf = 0;
-			resize();
-		});
-	};
-
-	node.addEventListener('scroll', scrollResize);
-	node.addEventListener('keydown', keydown);
-	node.addEventListener('pointerdown', pointerdown);
-	node.addEventListener('pointerup', pointerup);
+	// scroll / keydown / pointerdown / pointerup / wheel 五个已改为模板 `@` 常驻绑定
 	attachDoubleclick(node, doubleclick);
-	node.addEventListener('wheel', wheel, { passive: true });
 
 	if (typeof ResizeObserver !== 'undefined') {
 		resizeObserver = new ResizeObserver(() => {
@@ -1932,21 +1983,6 @@ onMounted(() => {
 		});
 		resizeObserver.observe(node);
 	}
-
-	windowResizeHandler = () => {
-		requestAnimationFrame(() => {
-			if (node.clientHeight > 0 && elements.count > 0) {
-				computeGridProperties();
-				elements.start = -1;
-				elements.end = -1;
-				resize();
-			}
-		});
-	};
-	window.addEventListener('resize', windowResizeHandler);
-
-	windowKeydownHandler = windowKeydown;
-	window.addEventListener('keydown', windowKeydownHandler);
 
 	attachApi(node, {
 		setViewIndex,
@@ -1996,6 +2032,8 @@ onMounted(() => {
 		get: () => pressing,
 		set: (value: ((event: PointerEvent) => void) | null) => {
 			pressing = value;
+			// 只有令牌是「本组件自己那个待处理处理器」时才需要 window 监听
+			pressingActive.value = value === onPendingPointerup;
 		},
 		configurable: true
 	});
@@ -2015,10 +2053,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-	window.removeEventListener('keydown', windowKeydownHandler);
-	window.removeEventListener('resize', windowResizeHandler);
-	for (const { type, fn } of windowListeners) window.removeEventListener(type, fn);
-	windowListeners.length = 0;
 	timer.remove();
 	resizeObserver?.disconnect?.();
 });

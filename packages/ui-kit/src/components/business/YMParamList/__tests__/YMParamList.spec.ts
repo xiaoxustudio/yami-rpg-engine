@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import YMParamList from '../YMParamList.vue';
 import { getListConfig } from '../../../../utils/list-config';
 import { ParamListHistory } from '../param-history';
@@ -77,6 +78,33 @@ describe('YMParamList', () => {
 		]) {
 			expect(typeof el[name], name).toBe('function');
 		}
+	});
+
+	/**
+	 * 拖拽选择期的两个 window 监听（`pointerup` 收尾 / `pointermove` 跟随）本次改成
+	 * `useEventListener` + `enabled`。此前 spec 只覆盖了右键 popup 那条分支，
+	 * **拖拽选择分支没有任何用例**，故补这条：验证 `pointerup` 收尾确实能到达（清空 `dragging`）。
+	 */
+	it('拖拽选择：window 上的 pointerup 能收尾（useEventListener 的 enabled 通道）', async () => {
+		const wrapper = mount(YMParamList, { attachTo: document.body });
+		const el = wrapper.element as unknown as ParamListElement;
+		mockHeight(el);
+		el.bind(makeObject());
+		el.focus();
+		el.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }]);
+		await nextTick();
+
+		const item = el.querySelector('.param-item') as HTMLElement;
+		item.dispatchEvent(
+			new PointerEvent('pointerdown', { button: 0, bubbles: true, pointerId: 5 })
+		);
+		expect(el.dragging).toBeTruthy();
+		// window 上的监听由 useEventListener 在 flush: 'post' 挂载，先让出一拍
+		await nextTick();
+		window.dispatchEvent(
+			new PointerEvent('pointerup', { button: 0, bubbles: true, pointerId: 5 })
+		);
+		expect(el.dragging).toBe(null);
 	});
 
 	it('bind and write render items', () => {

@@ -69,8 +69,6 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	attachApi(el, { toggle, on });
-	el.addEventListener('keydown', keydown as EventListener);
-	el.addEventListener('pointerdown', pointerdown);
 });
 
 defineExpose({ toggle, on, root });
@@ -85,6 +83,8 @@ defineExpose({ toggle, on, root });
 		role="button"
 		tabindex="0"
 		:aria-expanded="expanded"
+		@keydown="keydown"
+		@pointerdown="pointerdown"
 	>
 		<slot />
 	</div>

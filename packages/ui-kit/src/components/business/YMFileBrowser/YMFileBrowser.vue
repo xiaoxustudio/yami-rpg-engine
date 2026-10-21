@@ -125,8 +125,9 @@ interface OsDragEvent {
 	cmdOrCtrlKey?: boolean;
 }
 
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
+import { useEventListener } from '../../../composables/useEventListener';
 import { hideDragImage, addClass, hasClass, removeClass } from '../../../utils/dom';
 import type { MenuItem, MenuOptions } from '../../basic/YMMenuList/menu-api';
 import YMFileNavPane from '../YMFileNavPane/YMFileNavPane.vue';
@@ -749,7 +750,22 @@ function setupLinks() {
 	}
 }
 
-let dirchangeHandler: (event: Event) => void;
+/**
+ * 三个 window 监听（`os-dragstart` / `os-dragend` / `dirchange`）是否已就绪。
+ *
+ * 原先是 `onMounted` → `nextTick` → `setupLinks()` **之后**才手工登记、`onBeforeUnmount` 手工摘除。
+ * 收口到 `useEventListener` 后仍用 `enabled` 保持同一时机：因为处理器要读 `bodyEl.value?.el`
+ * 这类**尚未就绪的子组件 ref**，若在 setup 期就挂上，早到的窗口事件会打到未初始化状态。
+ */
+const windowHooksReady = ref(false);
+
+useEventListener(window, 'os-dragstart', (event) => osDragstart(event as DragEvent), {
+	enabled: windowHooksReady
+});
+useEventListener(window, 'os-dragend', (event) => osDragend(event as DragEvent), {
+	enabled: windowHooksReady
+});
+useEventListener(window, 'dirchange', dirchange, { enabled: windowHooksReady });
 
 onMounted(() => {
 	nextTick(() => {
@@ -759,10 +775,8 @@ onMounted(() => {
 		node.addEventListener('pointerdown', pointerdown as EventListener);
 		node.addEventListener('dragstart', dragstart as EventListener);
 		node.addEventListener('dragend', dragend as EventListener);
-		window.addEventListener('os-dragstart', osDragstart as EventListener);
-		window.addEventListener('os-dragend', osDragend as EventListener);
-		dirchangeHandler = dirchange;
-		window.addEventListener('dirchange', dirchangeHandler as EventListener);
+		// window 上的三个监听由上方 useEventListener + enabled 管理，此处只放行
+		windowHooksReady.value = true;
 
 		if (node.id === 'project-browser') {
 			props.onBrowserMount?.();
@@ -797,12 +811,6 @@ onMounted(() => {
 			set: () => {}
 		});
 	});
-});
-
-onBeforeUnmount(() => {
-	window.removeEventListener('os-dragstart', osDragstart as EventListener);
-	window.removeEventListener('os-dragend', osDragend as EventListener);
-	window.removeEventListener('dirchange', dirchangeHandler as EventListener);
 });
 
 defineExpose({ update, searchFiles, backToParentFolder, el });

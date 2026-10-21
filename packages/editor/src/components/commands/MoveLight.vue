@@ -1,5 +1,11 @@
 <template>
-	<WindowFrame id="moveLight" :ref="registryRef(fieldEls, 'moveLight')" @confirm="onConfirm">
+	<WindowFrame
+		id="moveLight"
+		:ref="registryRef(fieldEls, 'moveLight')"
+		@confirm="onConfirm"
+		@open="onWindowOpen"
+		@closed="onClosed"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.moveLight.title') }}
@@ -87,17 +93,21 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+const onClosed = () => {
+	clear(fieldEls.get('moveLight-properties'));
+};
+
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	fieldEls.get('moveLight-easingId')?.loadItems?.(Data.createEasingItems!());
+};
+
 onMounted(() => {
 	fieldEls.get('moveLight-properties')?.bind?.(LightProperty);
 	useLocalizedOptions('moveLight-wait', [true, false], (items) =>
 		fieldEls.get('moveLight-wait')?.loadItems?.(items)
 	);
-	fieldEls.get('moveLight')?.on?.('open', () => {
-		fieldEls.get('moveLight-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
-	fieldEls.get('moveLight')?.on?.('closed', () => {
-		clear(fieldEls.get('moveLight-properties'));
-	});
 });
 </script>
 

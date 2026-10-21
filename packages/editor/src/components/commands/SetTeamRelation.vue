@@ -3,6 +3,7 @@
 		id="setTeamRelation"
 		:ref="registryRef(fieldEls, 'setTeamRelation')"
 		@confirm="onConfirm"
+		@open="onWindowOpen"
 	>
 		<template #title
 			><TitleBar
@@ -62,15 +63,17 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	const items = Data.createTeamItems!();
+	fieldEls.get('setTeamRelation-teamId1')?.loadItems?.(items);
+	fieldEls.get('setTeamRelation-teamId2')?.loadItems?.(items);
+};
+
 onMounted(() => {
 	useLocalizedOptions('setTeamRelation-relation', [0, 1], (items) =>
 		fieldEls.get('setTeamRelation-relation')?.loadItems?.(items)
 	);
-	fieldEls.get('setTeamRelation')?.on?.('open', () => {
-		const items = Data.createTeamItems!();
-		fieldEls.get('setTeamRelation-teamId1')?.loadItems?.(items);
-		fieldEls.get('setTeamRelation-teamId2')?.loadItems?.(items);
-	});
 });
 </script>
 

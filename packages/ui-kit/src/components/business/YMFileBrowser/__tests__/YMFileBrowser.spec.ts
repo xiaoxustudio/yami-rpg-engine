@@ -93,6 +93,42 @@ describe('YMFileBrowser', () => {
 		container.remove();
 	});
 
+	/**
+	 * `os-dragstart` / `os-dragend` / `dirchange` 三个 window 监听本次改成了 `useEventListener`
+	 * + `enabled`（原先是 onMounted 的 nextTick 回调里手工登记、onBeforeUnmount 手工摘除）。
+	 * 此前 spec 只覆盖挂载与 API，**没有一条派发过这三个事件**，故补这条行为例：
+	 * 收到 `os-dragstart` 后应在根元素上补挂拖放四件套，`os-dragend` 后再摘掉。
+	 */
+	it('window 上的 os-dragstart / os-dragend 能到达并切换根元素上的拖放监听', async () => {
+		const container = makeContainer();
+		const wrapper = mount(YMFileBrowser, { props: makeProps(), attachTo: container });
+		// `windowHooksReady` 在 onMounted 的 nextTick 回调里才置真，再经 flush: 'post' 挂载，故多等一拍
+		await nextTick();
+		await nextTick();
+
+		const added: string[] = [];
+		const removed: string[] = [];
+		const addSpy = vi
+			.spyOn(container, 'addEventListener')
+			.mockImplementation((type: string | symbol) => void added.push(String(type)));
+		const removeSpy = vi
+			.spyOn(container, 'removeEventListener')
+			.mockImplementation((type: string | symbol) => void removed.push(String(type)));
+
+		window.dispatchEvent(new Event('os-dragstart'));
+		expect(added).toContain('dragenter');
+		expect(added).toContain('drop');
+
+		window.dispatchEvent(new Event('os-dragend'));
+		expect(removed).toContain('dragenter');
+		expect(removed).toContain('drop');
+
+		addSpy.mockRestore();
+		removeSpy.mockRestore();
+		wrapper.unmount();
+		container.remove();
+	});
+
 	it('getFilePaths maps relative and absolute paths', async () => {
 		const container = makeContainer();
 		const _wrapper = mount(YMFileBrowser, { props: makeProps(), attachTo: container });

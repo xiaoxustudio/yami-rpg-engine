@@ -3,6 +3,7 @@
 		id="getObjectProperty"
 		:ref="registryRef(fieldEls, 'getObjectProperty')"
 		@confirm="onConfirm"
+		@closed="onClosed"
 	>
 		<template #title
 			><TitleBar
@@ -66,11 +67,13 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口关闭时清空列表。原先是元素优先写法（`fieldEls` 取到元素后在其上订阅 closed）。 */
+const onClosed = () => {
+	clear(fieldEls.get('getObjectProperty-list'));
+};
+
 onMounted(() => {
 	fieldEls.get('getObjectProperty-list')?.bind?.(IndexBind);
-	fieldEls.get('getObjectProperty')?.on?.('closed', () => {
-		clear(fieldEls.get('getObjectProperty-list'));
-	});
 });
 </script>
 

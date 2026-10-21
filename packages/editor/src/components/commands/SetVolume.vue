@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="setVolume" :ref="registryRef(fieldEls, 'setVolume')" @confirm="onConfirm">
+	<WindowFrame
+		id="setVolume"
+		:ref="registryRef(fieldEls, 'setVolume')"
+		@confirm="onConfirm"
+		@open="onWindowOpen"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setVolume.title') }}
@@ -89,6 +94,11 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	fieldEls.get('setVolume-easingId')?.loadItems?.(Data.createEasingItems!());
+};
+
 onMounted(() => {
 	fieldEls.get('setVolume-type')?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
@@ -99,9 +109,6 @@ onMounted(() => {
 	useLocalizedOptions('setVolume-wait', [true, false], (items) =>
 		fieldEls.get('setVolume-wait')?.loadItems?.(items)
 	);
-	fieldEls.get('setVolume')?.on?.('open', () => {
-		fieldEls.get('setVolume-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
 });
 </script>
 

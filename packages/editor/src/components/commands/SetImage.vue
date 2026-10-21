@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="setImage" :ref="registryRef(fieldEls, 'setImage')" @confirm="onConfirm">
+	<WindowFrame
+		id="setImage"
+		:ref="registryRef(fieldEls, 'setImage')"
+		@confirm="onConfirm"
+		@closed="onClosed"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setImage.title') }}
@@ -49,11 +54,13 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+const onClosed = () => {
+	clear(fieldEls.get('setImage-properties'));
+};
+
 onMounted(() => {
 	fieldEls.get('setImage-properties')?.bind?.(ImageProperty);
-	fieldEls.get('setImage')?.on?.('closed', () => {
-		clear(fieldEls.get('setImage-properties'));
-	});
 });
 </script>
 

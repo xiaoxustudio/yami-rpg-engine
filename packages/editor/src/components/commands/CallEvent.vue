@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="callEvent" :ref="registryRef(fieldEls, 'callEvent')" @confirm="onConfirm">
+	<WindowFrame
+		id="callEvent"
+		:ref="registryRef(fieldEls, 'callEvent')"
+		@confirm="onConfirm"
+		@closed="onClosed"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.callEvent.title') }}
@@ -140,6 +145,11 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+const onClosed = () => {
+	onWindowClosed();
+};
+
 onMounted(() => {
 	fieldEls.get('callEvent-type')?.loadItems?.([
 		{ name: 'Global', value: 'global' },
@@ -189,10 +199,6 @@ onMounted(() => {
 				targets: [fieldEls.get('callEvent-element'), fieldEls.get('callEvent-eventType')]
 			}
 		]);
-
-	fieldEls.get('callEvent')?.on?.('closed', () => {
-		onWindowClosed();
-	});
 });
 </script>
 

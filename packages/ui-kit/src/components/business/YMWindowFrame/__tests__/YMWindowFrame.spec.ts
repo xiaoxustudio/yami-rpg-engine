@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import YMWindowFrame from '../YMWindowFrame.vue';
 
 const mockWindow = (): {
@@ -156,6 +157,24 @@ describe('YMWindowFrame', () => {
 		expect(closed).toBe(true);
 	});
 
+	it('把元素上的 confirm 事件桥接成 Vue emit（回归：原先只有 cancel 被桥接）', () => {
+		// 背景：`YMFormButtons` 用 `dispatch()` 在按钮上派发**冒泡的原生** `confirm`/`cancel`
+		// 事件（见该组件 @click="dispatch('confirm', $event)"）。原先 YMWindowFrame 只把
+		// `cancel` 桥接成 emit（`element.addEventListener('cancel', () => close())`），
+		// 而 `confirm` 从未桥接 —— 于是所有在**外层包装组件**里写
+		// `frame.value.root.addEventListener('confirm', () => emit('confirm'))` 的窗口
+		// （YMZoom / YMFont / YMRename / YMSetKey / YMSetQuantity / YMRequestKeyValue /
+		// YMArrayListString / YMArrayListNumber 等 12 处）**永远不会触发**，
+		// 表现为"点确定没反应"。这条用例把该行为锁死。
+		mockWindow();
+		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
+		const confirm = wrapper.element.querySelector(
+			'button[name="confirm"]'
+		) as HTMLButtonElement;
+		confirm.click();
+		expect(wrapper.emitted('confirm')).toHaveLength(1);
+	});
+
 	it('close can be cancelled by close event', () => {
 		const _W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
@@ -182,6 +201,39 @@ describe('YMWindowFrame', () => {
 		el.unmaximize();
 		expect(el.classList.contains('maximized')).toBe(false);
 		expect(unmaximized).toBe(1);
+	});
+
+	/**
+	 * `resize` 监听是**状态相关**的：只有 `on('resize')` 订阅过、且窗口被最大化时才挂在 window 上
+	 * （原实现在 open / maximize 里挂、close / unmaximize 里摘，四处手工配对）。
+	 *
+	 * 这条从**行为**上证明整条 `enabled` 通道：最大化后 window 的 resize 能透传成元素上的
+	 * resize 事件；取消最大化后不再透传。只断言"卸载时摘了"是不够的 ——
+	 * `useEventListener` 卸载时无条件调 `removeEventListener`，那证不了挂载真的发生过。
+	 */
+	it('resize 监听随最大化挂 / 摘（useEventListener 的 enabled 通道）', async () => {
+		const _W = mockWindow();
+		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
+		const el = wrapper.element as unknown as WindowFrameElement;
+		el.open();
+		let resized = 0;
+		el.on('resize', () => resized++);
+
+		el.maximize();
+		await nextTick();
+		// maximize 自己会先在元素上派发一次 resize，所以基线是 1（不是 0）
+		expect(resized).toBe(1);
+		window.dispatchEvent(new Event('resize'));
+		// 能涨 ⇒ window 上的监听确实挂上了
+		expect(resized).toBe(2);
+
+		el.unmaximize();
+		await nextTick();
+		// unmaximize 自己同样会派发一次 resize，故记下当时的基线再比
+		const afterUnmaximize = resized;
+		window.dispatchEvent(new Event('resize'));
+		// 不再涨 ⇒ 已摘
+		expect(resized).toBe(afterUnmaximize);
 	});
 
 	it('blur and focus manage focusable tabindex', () => {

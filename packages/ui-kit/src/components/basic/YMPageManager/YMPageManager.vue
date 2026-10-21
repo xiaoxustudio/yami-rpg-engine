@@ -112,20 +112,23 @@ onMounted(() => {
 			configurable: true
 		});
 	}
-	element.addEventListener('switch', (e: Event & { last?: unknown; value?: unknown }) =>
-		emit('switch', e.last, e.value)
-	);
 	state.switchEventEnabled = true;
 	new MutationObserver(() => {
 		if (state.index !== null) switchover(state.index);
 	}).observe(element, { childList: true });
 });
 
+/** 元素上的原生 `switch` 事件 → Vue emit（模板 @switch 绑定，见下）。 */
+const onSwitch = (event: Event): void => {
+	const e = event as Event & { last?: unknown; value?: unknown };
+	emit('switch', e.last, e.value);
+};
+
 defineExpose({ switch: switchover, on, root });
 </script>
 
 <template>
-	<div ref="root" class="page-manager" :class="$style.manager" :id="props.id">
+	<div ref="root" class="page-manager" :class="$style.manager" :id="props.id" @switch="onSwitch">
 		<slot />
 	</div>
 </template>

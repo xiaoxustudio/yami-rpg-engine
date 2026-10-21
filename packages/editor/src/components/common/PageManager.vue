@@ -1,5 +1,5 @@
-﻿<template>
-	<YMPageManager ref="ym" :id="props.id">
+<template>
+	<YMPageManager ref="ym" :id="props.id" @switch="onSwitch">
 		<slot />
 	</YMPageManager>
 </template>
@@ -47,14 +47,18 @@ const on = (
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
+/**
+ * 子组件的 `switch` 现在是 **Vue emit**（`YMPageManager` 已把元素上的原生 `switch`
+ * 用模板 `@switch` 收成 `emit('switch', last, value)`），所以这里是 emit → emit 的桥，
+ * 不再需要 `root.value.addEventListener`。载荷是两个参数，故 handler 也收两个。
+ */
+const onSwitch = (last: unknown, value: unknown): void => emit('switch', last, value);
+
 defineExpose({ switch: switchover, on, root });
 
 onMounted(() => {
 	const el = root.value as PageManagerElement | null;
 	if (!el) return;
 	attachElementApi(el, { switch: switchover, on });
-	el.addEventListener('switch', (e: Event & { last?: unknown; value?: unknown }) =>
-		emit('switch', e.last, e.value)
-	);
 });
 </script>

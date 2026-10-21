@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 
@@ -140,9 +140,20 @@ const inputKeydown = (event: KeyboardEvent): void => {
 	markInputting();
 };
 
-const inputInput = (): void => {
+/**
+ * 合并原先**两个** `input` 监听（`inputInput` 与一个内联的 emit 闭包）为模板上的一处
+ * `@input`。两个监听同目标同事件、注册顺序相邻，合并后语义等价且少一次闭包分配。
+ * 原先的 `inputInput` 只剩这一处调用点，已并入本函数（保留独立名字反而不清楚）。
+ */
+const onInput = (): void => {
 	markInputting();
+	const value = read();
+	emit('update:modelValue', value);
+	emit('input', value);
 };
+
+const onInputFocus = (event: FocusEvent): void => emit('focus', event);
+const onInputBlur = (event: FocusEvent): void => emit('blur', event);
 
 defineExpose({ read, write, insert, enable, disable, getFocus, on, input: inputEl, root });
 
@@ -170,22 +181,22 @@ onMounted(() => {
 	const el = root.value;
 	const input = inputEl.value;
 	if (!el || !input) return;
-	input.addEventListener('keydown', inputKeydown);
-	input.addEventListener('input', inputInput);
 	(el as TextAreaHost).input = input;
 	attachApi(el, { read, write, insert, enable, disable, getFocus, on });
-	input.addEventListener('input', () => {
-		const val = read();
-		emit('update:modelValue', val);
-		emit('input', val);
-	});
-	input.addEventListener('focus', (e: FocusEvent) => emit('focus', e));
-	input.addEventListener('blur', (e: FocusEvent) => emit('blur', e));
 	write(props.modelValue);
 	if (props.disabled) disable();
 });
 </script>
 
+<!--
+  `keydown` / `input` / `focus` / `blur` 走模板 @。原先 `on()` 里那对 focus/blur 的
+  **条件性**再派发（消费者给根元素挂 focus/blur 时才把内层 textarea 的事件转发上去）保持不动 ——
+  它本身就是「消费者挂根监听」这一契约的配套实现，属 P2 删 `on` 时一并处理的范畴。
+
+  ⚠️ 这正是 `wrapper.element` 陷阱：注释若写在 `<template>` 的**根元素之前**，Vue 会把它当成
+  模板根节点，于是 `wrapper.element` 变成注释节点、`wrapper.classes()` 恒为空数组。
+  所以这段说明放在模板**外面**（SFC 允许 template 之外有顶层注释）。
+-->
 <template>
 	<div ref="root" class="text-area" :class="$style.box" :id="props.id">
 		<textarea
@@ -193,6 +204,10 @@ onMounted(() => {
 			class="text-area-input"
 			:class="$style.input"
 			:aria-label="props.label || undefined"
+			@keydown="inputKeydown"
+			@input="onInput"
+			@focus="onInputFocus"
+			@blur="onInputBlur"
 		/>
 	</div>
 </template>

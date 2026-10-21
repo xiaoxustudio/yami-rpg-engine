@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-10-06T11:11:03.805Z",
+	"generatedAt": "2026-10-21T12:30:37.687Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -20,7 +20,7 @@
 			"target": "zero",
 			"value": {
 				"total": 0,
-				"storeRefs": 42
+				"storeRefs": 41
 			}
 		},
 		"any-hatches": {
@@ -133,17 +133,26 @@
 			"value": {
 				"total": 0,
 				"declared": 12,
-				"assigned": 133,
-				"storeRefs": 42,
+				"assigned": 132,
+				"storeRefs": 41,
 				"engineBacked": 0
+			}
+		},
+		"uikit-on-api": {
+			"label": "元素优先 on() API（消费站点已达下界，仅需不增）",
+			"target": "stable",
+			"value": {
+				"total": 35,
+				"exposed": 22,
+				"consumed": 13
 			}
 		},
 		"unknown-casts": {
 			"label": "双重断言 as unknown as",
 			"target": "zero",
 			"value": {
-				"total": 0,
-				"files": 0
+				"total": 1,
+				"files": 1
 			}
 		},
 		"unremovable-listeners": {
@@ -152,6 +161,22 @@
 			"value": {
 				"total": 9,
 				"files": 8
+			}
+		},
+		"vue-global-listeners": {
+			"label": ".vue 内裸 window/document 监听（应改 useEventListener）",
+			"target": "zero",
+			"value": {
+				"total": 0,
+				"files": 0
+			}
+		},
+		"vue-local-listeners": {
+			"label": ".vue 内自有元素监听（余量已是豁免项，仅需不增）",
+			"target": "stable",
+			"value": {
+				"total": 74,
+				"files": 40
 			}
 		}
 	}

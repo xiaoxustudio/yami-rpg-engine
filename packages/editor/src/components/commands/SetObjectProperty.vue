@@ -3,6 +3,7 @@
 		id="setObjectProperty"
 		:ref="registryRef(fieldEls, 'setObjectProperty')"
 		@confirm="onConfirm"
+		@closed="onClosed"
 	>
 		<template #title
 			><TitleBar
@@ -68,11 +69,13 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+const onClosed = () => {
+	clear(fieldEls.get('setObjectProperty-list'));
+};
+
 onMounted(() => {
 	fieldEls.get('setObjectProperty-list')?.bind?.(IndexBind);
-	fieldEls.get('setObjectProperty')?.on?.('closed', () => {
-		clear(fieldEls.get('setObjectProperty-list'));
-	});
 });
 </script>
 

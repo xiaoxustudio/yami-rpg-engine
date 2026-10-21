@@ -13,6 +13,7 @@
 				type="file"
 				filter="animation"
 				@input="onParamInput"
+				@write="onAnimationIdWrite"
 			></CustomBox>
 			<div class="text">{{ t('components.uiAnimation-motion.label') || 'Motion' }}</div>
 			<SelectBox
@@ -119,6 +120,17 @@ const onParamInput = (value: unknown): void => {
 	onParamInputEvent(value as Event);
 };
 
+/**
+ * 动画 id 变更：重算动作列表。原先是元素优先 API（在 `CustomBox` 实例上挂 DOM 监听）。
+ *
+ * `@write` 给的是 **emit 出来的 value**，而 `UIAnimation.animationIdWrite` 读的是
+ * **`event.value`**（元素优先时代 DOM 事件带的载荷形状），故这里重新包一层 ——
+ * 与 `SceneAnimationPropertiesSection` / `FileActorPropertiesSection` 已有的写法一致。
+ */
+const onAnimationIdWrite = (value: unknown): void => {
+	Inspector?.uiAnimation?.animationIdWrite?.({ value });
+};
+
 const elAnimation = ref<InstanceType<typeof CustomBox> | null>(null);
 const elMotion = ref<InstanceType<typeof SelectBox> | null>(null);
 const elAutoplay = ref<InstanceType<typeof CheckBox> | null>(null);
@@ -132,9 +144,6 @@ onMounted(() => {
 	registerElement(inspectorEls, 'uiAnimation-motion', elMotion.value);
 	const uiAnimation = Inspector.uiAnimation;
 	if (!uiAnimation) return;
-	elAnimation.value?.on('write', (event: Event) => {
-		uiAnimation.animationIdWrite(event);
-	});
 	const elements = [
 		elAnimation.value?.root,
 		elMotion.value?.root,

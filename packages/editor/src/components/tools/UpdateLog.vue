@@ -65,10 +65,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { logEls } from '@app/log/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
+import { useEventListener } from '@app/composables/useEventListener';
 import { UpdateLog, type UpdateLogItem } from '@app/log/update-log-window.ts';
 import { markndownToHtml } from '@app/module/global.ts';
 import { File } from '@app/file/file-system-core.ts';
@@ -129,12 +130,10 @@ const onDonorClick = (donor: Donor) => {
 
 onMounted(() => {
 	refresh();
-	window.addEventListener('update-log-update', refresh);
 });
 
-onBeforeUnmount(() => {
-	window.removeEventListener('update-log-update', refresh);
-});
+// 全局事件走 composable：挂/摘成对，不再手写 onBeforeUnmount 配对。
+useEventListener(window, 'update-log-update', refresh);
 </script>
 
 <style>

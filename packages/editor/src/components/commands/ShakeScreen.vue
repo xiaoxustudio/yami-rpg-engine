@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="shakeScreen" :ref="registryRef(fieldEls, 'shakeScreen')" @confirm="onConfirm">
+	<WindowFrame
+		id="shakeScreen"
+		:ref="registryRef(fieldEls, 'shakeScreen')"
+		@confirm="onConfirm"
+		@open="onWindowOpen"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.shakeScreen.title') }}
@@ -110,6 +115,11 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	fieldEls.get('shakeScreen-easingId')?.loadItems?.(Data.createEasingItems!());
+};
+
 onMounted(() => {
 	useLocalizedOptions('shakeScreen-mode', ['random', 'horizontal', 'vertical'], (items) =>
 		fieldEls.get('shakeScreen-mode')?.loadItems?.(items)
@@ -117,9 +127,6 @@ onMounted(() => {
 	useLocalizedOptions('shakeScreen-wait', [true, false], (items) =>
 		fieldEls.get('shakeScreen-wait')?.loadItems?.(items)
 	);
-	fieldEls.get('shakeScreen')?.on?.('open', () => {
-		fieldEls.get('shakeScreen-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
 });
 </script>
 

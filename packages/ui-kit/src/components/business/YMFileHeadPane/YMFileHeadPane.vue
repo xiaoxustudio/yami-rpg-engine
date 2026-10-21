@@ -23,17 +23,19 @@
 			name="view"
 			hotkey="Ctrl+Wheel"
 			:data-v-ref="''"
+			@input="viewInput"
 		></YMSliderBox>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { defineComponent, h, type PropType, onBeforeUnmount, onMounted, ref } from 'vue';
+import { defineComponent, h, type PropType, onMounted, ref } from 'vue';
 import { addClass, hasClass, rect, removeClass, focusWithOptions } from '../../../utils/dom';
 import { elementDataOf } from '../../../utils/element-data';
 import YMTextBox from '../../basic/YMTextBox/YMTextBox.vue';
 import YMSliderBox from '../../basic/YMSliderBox/YMSliderBox.vue';
 import { createFileHeadPaneCore, type AddressNode, type FileItem } from './file-head-pane-core';
+import { useEventListener } from '../../../composables/useEventListener';
 
 interface MenuOptions {
 	x: number;
@@ -104,16 +106,97 @@ const core = createFileHeadPaneCore();
 const addressNodes = ref<AddressNode[]>([]);
 let addressSeq = 0;
 
-const windowListeners: { type: string; fn: EventListener }[] = [];
+/** 地址栏元素（folder / arrow）在按下、抬起两处共用的元素形状。 */
+type AddressElement = HTMLElement & {
+	disabled: boolean;
+	file: FileItem;
+	folders: FileItem[];
+	target: FileItem;
+	rect(): DOMRect;
+	hasClass(cls: string): boolean;
+	addClass(cls: string): void;
+	removeClass(cls: string): void;
+};
 
-function listenWindow<K extends keyof WindowEventMap>(
-	type: K,
-	fn: (event: WindowEventMap[K]) => void,
-	options?: AddEventListenerOptions
-): void {
-	window.addEventListener(type, fn, options);
-	windowListeners.push({ type, fn: fn as EventListener });
-}
+/** 地址栏元素按下后，等待「抬起」的那一个元素；非 `null` 时 window 上挂着一次性 `pointerup`。 */
+const addressPointerupTarget = ref<AddressElement | null>(null);
+
+/**
+ * 地址栏元素的「抬起」处理。
+ *
+ * 原先由 `addressPointerdown` 经本组件自定义的
+ * `listenWindow('pointerup', fn, { once: true })` 注册，再用一个 `windowListeners` 数组 +
+ * `onBeforeUnmount` 循环手工回收 —— 那正是 `useEventListener` 已经负责的事，故一并撤掉。
+ *
+ * ⚠️ 原监听是 `{ once: true }`（一次点击只处理一次抬起），所以处理器**无论是否命中都要清空目标**：
+ * 一次性监听已被消费，`enabled` 必须回到假；否则 target 一直非 null，下一次点击时
+ * `enabled` 没有 假→真 的变化，监听不会再被注册。
+ */
+const onAddressPointerup = (event: Event): void => {
+	const element = addressPointerupTarget.value;
+	addressPointerupTarget.value = null;
+	if (!element) return;
+	const pointer = event as PointerEvent;
+	if (pointer.button !== 0 || element !== pointer.target) return;
+	const head = el.value as FileHeadElement;
+	const nav = head.links!.nav;
+	switch (element.tagName) {
+		case 'FILE-HEAD-ADDRESS-FOLDER':
+			if (!element.disabled) {
+				nav.load(element.file);
+				nav.scrollToSelection('middle');
+			}
+			break;
+		case 'FILE-HEAD-ADDRESS-ARROW': {
+			const MAX_MENU_ITEMS = 32;
+			const addressData = elementDataOf<{
+				folders?: FileItem[];
+				target?: FileItem;
+			}>(element);
+			const folders = addressData.folders ?? [];
+			const target = addressData.target;
+			const elementRect = rect(element);
+			const length = Math.min(folders.length, MAX_MENU_ITEMS);
+			const menuItems = Array.from<MenuItem>({ length });
+			const click = function (this: MenuItem) {
+				nav.load(this.folder);
+				nav.scrollToSelection('middle');
+			};
+			for (let i = 0; i < length; i++) {
+				const folder = folders[i];
+				menuItems[i] = {
+					label: folder.name,
+					checked: folder === target,
+					folder: folder,
+					click: click
+				};
+			}
+			if (folders.length > MAX_MENU_ITEMS) {
+				menuItems.push({
+					label: '...',
+					enabled: false
+				});
+			}
+			addClass(element, 'active');
+			props.menuPopup(
+				{
+					x: elementRect.left,
+					y: elementRect.bottom,
+					close: () => {
+						removeClass(element, 'active');
+					}
+				},
+				menuItems
+			);
+			break;
+		}
+	}
+};
+
+useEventListener(window, 'pointerup', onAddressPointerup, {
+	enabled: () => addressPointerupTarget.value !== null,
+	native: { once: true }
+});
 
 const AddressPart = defineComponent({
 	props: {
@@ -162,91 +245,17 @@ function pointerdown(event: PointerEvent) {
 function addressPointerdown(event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target as HTMLElement & {
-				disabled: boolean;
-				file: FileItem;
-				folders: FileItem[];
-				target: FileItem;
-				rect(): DOMRect;
-				hasClass(cls: string): boolean;
-				addClass(cls: string): void;
-				removeClass(cls: string): void;
-			};
+			const element = event.target as AddressElement;
 			if (element.parentNode === addressEl.value) {
 				if (hasClass(element, 'active')) {
 					return;
 				}
-				listenWindow(
-					'pointerup',
-					(event: PointerEvent) => {
-						if (event.button === 0 && element === event.target) {
-							const head = el.value as FileHeadElement;
-							const nav = head.links!.nav;
-							switch (element.tagName) {
-								case 'FILE-HEAD-ADDRESS-FOLDER':
-									if (!element.disabled) {
-										nav.load(element.file);
-										nav.scrollToSelection('middle');
-									}
-									break;
-								case 'FILE-HEAD-ADDRESS-ARROW': {
-									const MAX_MENU_ITEMS = 32;
-									const addressData = elementDataOf<{
-										folders?: FileItem[];
-										target?: FileItem;
-									}>(element);
-									const folders = addressData.folders ?? [];
-									const target = addressData.target;
-									const elementRect = rect(element);
-									const length = Math.min(folders.length, MAX_MENU_ITEMS);
-									const menuItems = Array.from<MenuItem>({ length });
-									const click = function (this: MenuItem) {
-										nav.load(this.folder);
-										nav.scrollToSelection('middle');
-									};
-									for (let i = 0; i < length; i++) {
-										const folder = folders[i];
-										menuItems[i] = {
-											label: folder.name,
-											checked: folder === target,
-											folder: folder,
-											click: click
-										};
-									}
-									if (folders.length > MAX_MENU_ITEMS) {
-										menuItems.push({
-											label: '...',
-											enabled: false
-										});
-									}
-									addClass(element, 'active');
-									props.menuPopup(
-										{
-											x: elementRect.left,
-											y: elementRect.bottom,
-											close: () => {
-												removeClass(element, 'active');
-											}
-										},
-										menuItems
-									);
-									break;
-								}
-							}
-						}
-					},
-					{ once: true }
-				);
+				addressPointerupTarget.value = element;
 			}
 			break;
 		}
 	}
 }
-
-onBeforeUnmount(() => {
-	for (const { type, fn } of windowListeners) window.removeEventListener(type, fn);
-	windowListeners.length = 0;
-});
 
 function backButtonClick(_event: Event) {
 	const { browser } = props.links;
@@ -260,11 +269,12 @@ function searcherInput(event: Event) {
 	}
 }
 
-function viewFocus(_event: Event) {
-	focusWithOptions(props.links.body.content, { preventScroll: true });
-}
-
-function viewInput(_event: Event) {
+/**
+ * 视图滑块的 `input`。载体是 `YMSliderBox` 的 **Vue emit**（模板 `@input`），
+ * 不再对 `viewEl.value.root` 挂原生监听。取值仍走 `read()`，与原先一致。
+ * 参数是 emit 带上来的值，本函数不用它（故收 `unknown`）。
+ */
+function viewInput(_value?: unknown) {
 	const value = viewEl.value?.read?.();
 	if (value !== undefined) {
 		props.links.body.setViewIndex(value);
@@ -283,6 +293,10 @@ onMounted(() => {
 	root.searcher = searcherEl.value!.root;
 	root.address = addressEl.value;
 	searcherEl.value?.root?.addCloseButton?.();
+	// ⚠️ 这两条**必须留在原生监听**上，不能换成模板 `@input` / `@compositionend`（2026-10 定论）：
+	// `searcherInput` 读的是 `(event as InputEvent).inputType`（要跳过 `insertCompositionText`），
+	// 而 `YMTextBox` 的 `input` emit 带的是**值**（string），不是 InputEvent；
+	// 它也没有 `compositionend` emit。要迁得先给 `YMTextBox` 加一条"原始事件"新契约。
 	searcherEl.value?.root?.addEventListener?.('input', searcherInput);
 	searcherEl.value?.root?.addEventListener?.('compositionend', searcherInput);
 	const viewRoot = viewEl.value?.root;
@@ -303,8 +317,6 @@ onMounted(() => {
 			viewRoot.input = viewInputEl;
 			viewInputEl.max = '4';
 		}
-		viewRoot.addEventListener('focus', viewFocus);
-		viewRoot.addEventListener('input', viewInput);
 	}
 });
 

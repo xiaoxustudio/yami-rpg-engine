@@ -200,8 +200,9 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { inject, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useEventListener } from '@app/composables/useEventListener';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement, registryRef } from '@app/utils/element-registry';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -296,12 +297,19 @@ onMounted(() => {
 	if (elBlend.value) {
 		refreshLocalizedItems();
 	}
+	// ⚠️ 这条元素优先订阅**不能**改成模板 `@input`（2026-10 定论）：
+	// 1) `SceneTilemap.layerInput` 的实现首句是 `if (managerData(...).focusing === this)` ——
+	//    它靠 `this` 拿元素。元素优先调用天然把 `this` 绑成那个元素，模板 `@` 给不了。
+	// 2) 该 `SelectBox` 的 `@input` 已被上面的 `onParamInput` 占用 ——
+	//    同一元素同一事件只能有一个模板 `@`。
+	// 要迁得先把 `layerInput` 改写成接收元素参数的函数（那是另一件事）。
 	elLayer.value?.on('input', editor.layerInput!);
 	watch(
 		() => local.components,
 		() => refreshLocalizedItems()
 	);
-	window.addEventListener('localize', refreshLocalizedItems);
-	onBeforeUnmount(() => window.removeEventListener('localize', refreshLocalizedItems));
 });
+
+// 全局事件走 composable：挂/摘成对，不再手写 onBeforeUnmount 配对。
+useEventListener(window, 'localize', refreshLocalizedItems);
 </script>

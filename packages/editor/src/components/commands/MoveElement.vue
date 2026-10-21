@@ -1,5 +1,11 @@
 <template>
-	<WindowFrame id="moveElement" :ref="registryRef(fieldEls, 'moveElement')" @confirm="onConfirm">
+	<WindowFrame
+		id="moveElement"
+		:ref="registryRef(fieldEls, 'moveElement')"
+		@confirm="onConfirm"
+		@open="onWindowOpen"
+		@closed="onClosed"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.moveElement.title') }}
@@ -88,17 +94,21 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+const onClosed = () => {
+	clear(fieldEls.get('moveElement-properties'));
+};
+
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	fieldEls.get('moveElement-easingId')?.loadItems?.(Data.createEasingItems!());
+};
+
 onMounted(() => {
 	fieldEls.get('moveElement-properties')?.bind?.(TransformProperty);
 	useLocalizedOptions('moveElement-wait', [true, false], (items) =>
 		fieldEls.get('moveElement-wait')?.loadItems?.(items)
 	);
-	fieldEls.get('moveElement')?.on?.('open', () => {
-		fieldEls.get('moveElement-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
-	fieldEls.get('moveElement')?.on?.('closed', () => {
-		clear(fieldEls.get('moveElement-properties'));
-	});
 });
 </script>
 

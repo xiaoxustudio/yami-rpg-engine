@@ -10,6 +10,7 @@
 		:localize="localize"
 		:clipboard="clipboard"
 		:ctrl="ctrl"
+		@change="emit('change', $event)"
 	/>
 </template>
 
@@ -35,6 +36,17 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const { t } = useI18n();
+
+/**
+ * 转发 ui-kit `YMParamList` 的 `change`。
+ *
+ * 为什么要加：本仓有消费方仍在用元素优先写法（取到本组件的实例/元素后再订阅 change），
+ * 而 `YMParamList` 早就 `emit('change', value)` 了，只是这层包装没有转发。
+ * 补上后消费方可用 `@change`，与 editor `common/WindowFrame` 转发 open/closed 是同一处理。
+ */
+const emit = defineEmits<{
+	change: [value: unknown];
+}>();
 
 const historyFactory = (list: unknown): ParamListHistory => new ParamListHistory(list as never);
 const menuPopup = (options: MenuOptions, items: MenuItem[]): void => Menu.popup(options, items);

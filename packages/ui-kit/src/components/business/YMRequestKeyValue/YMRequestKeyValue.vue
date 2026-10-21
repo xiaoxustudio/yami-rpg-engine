@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import YMWindowFrame from '../YMWindowFrame/YMWindowFrame.vue';
 import YMTitleBar from '../YMTitleBar/YMTitleBar.vue';
 import YMStringVar from '../../basic/YMStringVar/YMStringVar.vue';
@@ -30,16 +30,15 @@ const emit = defineEmits<{
 const frame = ref<{
 	root: HTMLElement | null;
 } | null>(null);
-
-onMounted(() => {
-	const el = frame.value?.root;
-	if (!el) return;
-	el.addEventListener('confirm', () => emit('confirm'));
-});
 </script>
 
 <template>
-	<YMWindowFrame ref="frame" id="request-keyValue" @closed="emit('closed')">
+	<YMWindowFrame
+		ref="frame"
+		id="request-keyValue"
+		@closed="emit('closed')"
+		@confirm="emit('confirm')"
+	>
 		<template #title>
 			<YMTitleBar>
 				{{ props.title }}

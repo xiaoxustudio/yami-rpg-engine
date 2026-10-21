@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import YMTitleBar from '../YMTitleBar.vue';
 
 type FrameElement = HTMLElement & { maximize: () => void; unmaximize: () => void };
@@ -67,6 +68,9 @@ describe('YMTitleBar', () => {
 		document.body.appendChild(frame);
 		el.dispatchEvent(makePointerEvent('pointerdown', 200, 100));
 		expect(el.dragging).toBeTruthy();
+		// window 上的三个监听由 useEventListener 在 flush: 'post' 挂载，先让出一拍；
+		// 真实拖拽里 pointerdown 与随后的 pointermove 本就分属不同 task。
+		await nextTick();
 		window.dispatchEvent(makePointerEvent('pointermove', 250, 130));
 		expect(frame.style.left).toBe('150px');
 		expect(frame.style.top).toBe('80px');
@@ -126,6 +130,30 @@ describe('YMTitleBar', () => {
 		maxBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 		expect(maximized).toBe(0);
 		maxBtn.remove();
+		frame.remove();
+	});
+
+	/**
+	 * `blur`（窗口失焦即取消拖拽）是本次改造的三个 window 监听之一，此前**没有用例覆盖**。
+	 * 这条验证：拖拽中失焦 ⇒ 手势态清空 ⇒ 之后再移动不再改变窗口位置（监听确实被摘掉）。
+	 */
+	it('拖拽中 window 失焦即取消，之后不再跟随移动', async () => {
+		const wrapper = mount(YMTitleBar, { attachTo: document.body });
+		const el = wrapper.element as unknown as TitleBarElement;
+		const frame = makeFrame();
+		frame.appendChild(el);
+		document.body.appendChild(frame);
+		el.dispatchEvent(makePointerEvent('pointerdown', 200, 100));
+		await nextTick();
+		window.dispatchEvent(makePointerEvent('pointermove', 250, 130));
+		expect(frame.style.left).toBe('150px');
+
+		window.dispatchEvent(new Event('blur'));
+		expect(el.dragging).toBe(null);
+		await nextTick();
+		const after = frame.style.left;
+		window.dispatchEvent(makePointerEvent('pointermove', 400, 300));
+		expect(frame.style.left).toBe(after);
 		frame.remove();
 	});
 

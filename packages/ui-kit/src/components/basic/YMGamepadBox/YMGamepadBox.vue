@@ -154,12 +154,6 @@ const inputBlur = (): void => {
 };
 
 onMounted(() => {
-	const inputEl = input.value;
-	if (inputEl) {
-		inputEl.addEventListener('keydown', inputKeydown);
-		inputEl.addEventListener('focus', inputFocus);
-		inputEl.addEventListener('blur', inputBlur);
-	}
 	const el = root.value as HTMLElement & { [k: string]: unknown };
 	if (!el) return;
 	attachApi(el, { read, write, enable, disable, getFocus });
@@ -180,6 +174,9 @@ defineExpose({ read, write, enable, disable, getFocus, root });
 			ref="input"
 			type="text"
 			:aria-label="props.label || undefined"
+			@keydown="inputKeydown"
+			@focus="inputFocus"
+			@blur="inputBlur"
 		/>
 	</div>
 </template>

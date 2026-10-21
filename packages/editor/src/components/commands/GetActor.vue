@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="getActor" :ref="registryRef(fieldEls, 'getActor')" @confirm="onConfirm">
+	<WindowFrame
+		id="getActor"
+		:ref="registryRef(fieldEls, 'getActor')"
+		@confirm="onConfirm"
+		@open="onWindowOpen"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.getActor.title') }}
@@ -156,6 +161,13 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	const items = Data.createTeamItems!();
+	fieldEls.get('getActor-teamId')?.loadItems?.(items);
+	fieldEls.get('getActor-exclusionTeamId')?.loadItems?.(items);
+};
+
 onMounted(() => {
 	useLocalizedOptions(
 		'getActor-area',
@@ -237,11 +249,6 @@ onMounted(() => {
 			{ case: 'actor', targets: [fieldEls.get('getActor-exclusionActor')] },
 			{ case: 'team', targets: [fieldEls.get('getActor-exclusionTeamId')] }
 		]);
-	fieldEls.get('getActor')?.on?.('open', () => {
-		const items = Data.createTeamItems!();
-		fieldEls.get('getActor-teamId')?.loadItems?.(items);
-		fieldEls.get('getActor-exclusionTeamId')?.loadItems?.(items);
-	});
 });
 </script>
 

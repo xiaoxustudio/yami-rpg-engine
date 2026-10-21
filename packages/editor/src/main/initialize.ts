@@ -34,10 +34,10 @@ function initSingleton(name: string, singleton: unknown): void {
 		console.warn(`[init] ${name} initialize failed:`, (e as Error)?.message);
 		console.warn(`[init] ${name} stack:`, (e as Error)?.stack);
 	}
+	markBoot(`init:${name}`);
 }
 
 function initCore(cluster: ClusterShape): void {
-	initSingleton('AudioManager', cluster.AudioManager);
 	initSingleton('Menubar', cluster.Menubar);
 	initSingleton('Layout', cluster.Layout);
 	initSingleton('Home', cluster.Home);
@@ -100,11 +100,20 @@ Editor.initialize = async function (this: typeof Editor) {
 		if (this.config) this.checkForEditorUpdates!();
 
 		initCore(cluster);
+		markBoot('init-core');
 		this.loadConfig!();
+		markBoot('load-config');
 		Layout.manager.switch('home');
 		markBoot('home-visible');
 		reportBootTimeline();
 		emitCustom('boot-ready', { ok: true });
+
+		const initAudio = () => initSingleton('AudioManager', cluster.AudioManager);
+		if (typeof requestIdleCallback === 'function') {
+			requestIdleCallback(initAudio, { timeout: 2000 });
+		} else {
+			setTimeout(initAudio, 0);
+		}
 
 		void Promise.resolve()
 			.then(() =>

@@ -21,6 +21,7 @@ import {
 import { ParamListHistory } from './param-history';
 import { createParamListCore, type ParamDataItem } from './param-list-core';
 import { attachScrollListener, type ScrollListenerApi } from './scroll-listener';
+import { useEventListener } from '../../../composables/useEventListener';
 
 const core = createParamListCore();
 
@@ -194,6 +195,14 @@ const emit = defineEmits<{
 const root = ref<HTMLElement | null>(null);
 
 let el: ParamListElement | null = null;
+
+/**
+ * 是否正处于一次拖拽选择中 —— **专供 `useEventListener` 的 `enabled`** 的响应式信号。
+ *
+ * 拖拽状态存在 `self.dragging`（元素数据）里，不是响应式的，所以不能直接拿它当开关。
+ * 本 ref 与 `self.dragging` 在同样的两处同进同出：按下建拖拽时置真、`windowPointerup` 里置假。
+ */
+const dragActive = ref(false);
 
 const state = {
 	object: null,
@@ -984,8 +993,8 @@ const pointerdown = (event: PointerEvent): void => {
 				(event as DragEventState).mode = 'select';
 				(event as DragEventState).itemIndex = index;
 				(event as DragEventState).itemHeight = element.clientHeight;
-				window.addEventListener('pointerup', self.windowPointerup);
-				window.addEventListener('pointermove', self.windowPointermove);
+				// window 上的 pointerup / pointermove 由 useEventListener + enabled 管理
+				dragActive.value = true;
 				self.scrollListener.addScrollListener('vertical', 2, true, () => {
 					windowPointermove((event as DragEventState).latest!);
 				});
@@ -1147,8 +1156,7 @@ const windowPointerup = (event: PointerEvent): void => {
 			self.scrollListener.removeScrollListener();
 		}
 		self.dragging = null;
-		window.removeEventListener('pointerup', windowPointerup);
-		window.removeEventListener('pointermove', windowPointermove);
+		dragActive.value = false;
 	}
 };
 
@@ -1173,6 +1181,21 @@ const windowPointermove = (event: PointerEvent): void => {
 		}
 	}
 };
+
+/**
+ * 拖拽选择期才挂 window 的 `pointerup`/`pointermove`：`enabled` 由 `dragActive` 驱动，
+ * 挂/摘成对，不再在 `pointerdown` 与 `windowPointerup` 手工 add / remove。
+ *
+ * ⚠️ 与其余 P1i 组件同一套配方：开关必须响应式（`self.dragging` 是元素数据，不触发 watcher）；
+ * 挂载时机是 `flush: 'post'`，同一 tick 内连续派发 pointerdown → pointermove 的测试需先
+ * `await nextTick()`（真实浏览器里两者本就分属不同 task）。
+ */
+useEventListener(window, 'pointerup', (event) => windowPointerup(event as PointerEvent), {
+	enabled: dragActive
+});
+useEventListener(window, 'pointermove', (event) => windowPointermove(event as PointerEvent), {
+	enabled: dragActive
+});
 
 const on = (
 	type: string,
@@ -1217,6 +1240,19 @@ defineExpose({
 	on,
 	root
 });
+
+/**
+ * 根元素上的 `change`（内层控件冒泡上来的原生 change）：读当前值并转发为组件事件。
+ *
+ * 原先这里是 `onMounted` 里的一段**内联闭包**，改成模板 `@change` 后必须提到 setup 层
+ * （模板只能引用 setup 作用域的绑定）。
+ */
+const onSelfChange = (): void => {
+	const self = el!;
+	const value = readElement(self);
+	emit('change', value);
+	emit('update:modelValue', value);
+};
 
 onMounted(() => {
 	el = root.value as ParamListElement | null;
@@ -1263,12 +1299,8 @@ onMounted(() => {
 		get: getPaddingTop
 	});
 	self.scrollListener = attachScrollListener(self);
-	self.addEventListener('scroll', resize);
-	self.addEventListener('focus', listFocus);
-	self.addEventListener('blur', listBlur);
-	self.addEventListener('keydown', keydown as EventListener);
-	self.addEventListener('pointerdown', pointerdown as EventListener);
-	self.addEventListener('pointerup', pointerup as EventListener);
+	// scroll / focus / blur / keydown / pointerdown / pointerup / change
+	// 七个已改为模板 `@` 常驻绑定（`self` 就是模板根 `ref="root"`）
 	attachDoubleclick(self, doubleclick);
 	attachApi(self, {
 		bind,
@@ -1312,11 +1344,6 @@ onMounted(() => {
 		windowPointermove,
 		on
 	});
-	self.addEventListener('change', () => {
-		const value = readElement(self);
-		emit('change', value);
-		emit('update:modelValue', value);
-	});
 	watch(
 		() => props.modelValue,
 		(value) => {
@@ -1338,7 +1365,19 @@ onMounted(() => {
 	vue-test-utils 的 `wrapper.element` 就不再是元素本身。
 -->
 <template>
-	<div ref="root" class="param-list" :id="props.id" tabindex="0" />
+	<div
+		ref="root"
+		class="param-list"
+		:id="props.id"
+		tabindex="0"
+		@scroll="resize"
+		@focus="listFocus"
+		@blur="listBlur"
+		@keydown="keydown"
+		@pointerdown="pointerdown"
+		@pointerup="pointerup"
+		@change="onSelfChange"
+	/>
 </template>
 
 <style module>

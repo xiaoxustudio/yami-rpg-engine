@@ -5,6 +5,7 @@ import { addClass, removeClass, hasClass, hide, show, rect } from '../../../util
 import { createDragAndDropHintElement } from '../YMDragAndDropHint/drag-and-drop-hint-api';
 import { createTabBarCore, type TabItem, type TabItemMeta } from './tab-bar-core';
 import { createPayloadEvent } from '../../../utils/payload-event';
+import { useEventListener } from '../../../composables/useEventListener';
 
 const core = createTabBarCore();
 
@@ -91,6 +92,15 @@ const emit = defineEmits<{
 }>();
 
 const root = ref<HTMLElement | null>(null);
+
+/**
+ * 是否正处于一次拖拽手势中 —— **专供 `useEventListener` 的 `enabled`** 的响应式信号。
+ *
+ * 本组件的手势状态存在 `tabBarData(el)`（元素数据，WeakMap 式）里，**不是响应式的**，
+ * 所以不能直接拿 `data.dragging` 当开关。这里另起一个 ref，与 `data.dragging`
+ * 在同样的两处同进同出：`pointerdown` 建 dragging 时置真、`clearGesture` 里置假。
+ */
+const gestureActive = ref(false);
 
 let selectionIndex = 0;
 
@@ -313,17 +323,19 @@ const on = (
  *
  * `dragend`（自然结束）与 `onBeforeUnmount`（拖拽中途卸载）共用它——否则组件的 window 监听
  * 与游离 hint 会永久残留。
+ *
+ * 注：原先这里还要摘掉 `dragenter`/`dragleave`/`dragover`/`drop` 四个**手势期临时**监听；
+ * 那四个已改为模板 `@` 常驻。改成常驻是安全的：四个 handler 开头都早退于
+ * `if (!tabBarData(el).dragging) return`，非手势期本就是空转（这也是当初能安全摘掉的前提）。
+ * `dragging` 状态与 window `pointerup` 的回收语义不变。
  */
 const clearGesture = (el: TabBarElement): void => {
 	const data = tabBarData(el);
 	data.dragging?.hint?.remove();
 	data.dragging = null;
-	window.removeEventListener('pointerup', windowPointerup);
+	// 置假即摘掉 window 上的 pointerup（见下方 useEventListener + enabled）
+	gestureActive.value = false;
 	removeClass(el, 'dragging');
-	el.removeEventListener('dragenter', dragenter);
-	el.removeEventListener('dragleave', dragleave);
-	el.removeEventListener('dragover', dragover);
-	el.removeEventListener('drop', drop);
 };
 
 const dragend = (): void => {
@@ -355,7 +367,7 @@ const pointerdown = (event: PointerEvent): void => {
 					}
 				};
 				data.dragging = dragging;
-				window.addEventListener('pointerup', windowPointerup);
+				gestureActive.value = true;
 				return;
 			}
 			if (hasClass(element, 'tab-item') && !hasClass(element, 'selected')) {
@@ -374,7 +386,7 @@ const pointerdown = (event: PointerEvent): void => {
 						mode: 'popup'
 					};
 					data.dragging = dragging;
-					window.addEventListener('pointerup', windowPointerup);
+					gestureActive.value = true;
 				}
 			}
 			break;
@@ -399,10 +411,6 @@ const dragstart = (event: DragEvent): void => {
 		el.parentNode.insertBefore(hide(hint), el);
 		addClass(el, 'dragging');
 		props.updateAppRegion?.();
-		el.addEventListener('dragenter', dragenter);
-		el.addEventListener('dragleave', dragleave);
-		el.addEventListener('dragover', dragover);
-		el.addEventListener('drop', drop);
 	}
 };
 
@@ -600,9 +608,22 @@ onMounted(() => {
 	el.find = find;
 	el.clear = clear;
 	el.on = on;
-	el.addEventListener('pointerdown', pointerdown);
-	el.addEventListener('dragstart', dragstart);
-	el.addEventListener('dragend', dragend);
+});
+
+/**
+ * 拖拽期才挂 window 的 `pointerup`：`enabled` 由 `gestureActive` 驱动，挂/摘成对，
+ * 不再在 `pointerdown`（两处）与 `clearGesture` 手工 add / remove。
+ *
+ * ⚠️ 两点必知（与 `YMScrollBar` 同一套配方）：
+ *  1. 开关必须响应式（见 `gestureActive` 注释）——`tabBarData` 里的 `dragging` 不触发 watcher。
+ *  2. 挂载时机是 `flush: 'post'`，因此**同一 tick 内连续派发 pointerdown → pointerup 的测试
+ *     需要先 `await nextTick()`**；真实浏览器里两者本就分属不同 task。
+ *
+ * `event as PointerEvent`：composable 的 handler 形参是宽松的 `Event`，而 window 上的
+ * `pointerup` 必然是 PointerEvent —— 用 cast 表达这层已知事实，不放宽 composable 签名。
+ */
+useEventListener(window, 'pointerup', (event) => windowPointerup(event as PointerEvent), {
+	enabled: gestureActive
 });
 
 onBeforeUnmount(() => {
@@ -613,7 +634,18 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div ref="root" class="tab-bar" :id="props.id" />
+	<div
+		ref="root"
+		class="tab-bar"
+		:id="props.id"
+		@pointerdown="pointerdown"
+		@dragstart="dragstart"
+		@dragenter="dragenter"
+		@dragover="dragover"
+		@dragleave="dragleave"
+		@drop="drop"
+		@dragend="dragend"
+	/>
 </template>
 
 <style module>

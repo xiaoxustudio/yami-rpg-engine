@@ -72,6 +72,7 @@
 				v-tip="t('components.fileEvent-parameters.tip')"
 				class="inspector-list"
 				flexible
+				@change="onParametersChange"
 			/>
 		</DetailBox>
 	</DetailBox>
@@ -115,6 +116,14 @@ watch(
 const elType = ref<InstanceType<typeof SelectBox> | null>(null);
 const elReturnType = ref<InstanceType<typeof SelectBox> | null>(null);
 const elParameters = ref<InstanceType<typeof ParamList> | null>(null);
+
+/**
+ * 参数列表变更：标记待保存。原先是元素优先 API 的订阅（取到 `ParamList` 实例后挂 DOM 监听）。
+ * `FileEvent.listChange` 本身不用事件参数，故这里不收参数。
+ */
+const onParametersChange = (): void => {
+	Inspector.fileEvent?.listChange?.();
+};
 
 onMounted(() => {
 	registerElement(inspectorEls, 'fileEvent-type', elType.value);
@@ -201,7 +210,6 @@ onMounted(() => {
 	]);
 
 	elParameters.value?.bind(editor.parameters);
-	elParameters.value?.on('change', editor.listChange);
 
 	sync();
 });

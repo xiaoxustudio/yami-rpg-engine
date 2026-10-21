@@ -209,8 +209,6 @@ onMounted(() => {
 	(el as TextAreaVarApi).getFocus = getFocus;
 	(el as TextAreaVarApi).on = on;
 	elementDataOf<TextAreaVarApi>(el).mode = mode.value;
-	el.addEventListener('keydown', keydown);
-	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);
 	}
@@ -219,7 +217,14 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="root" class="text-area-var" :class="[mode, { disabled }]" :id="props.id">
+	<div
+		ref="root"
+		class="text-area-var"
+		:class="[mode, { disabled }]"
+		:id="props.id"
+		@keydown="keydown"
+		@pointerdown="pointerdown"
+	>
 		<YMTextArea
 			v-show="mode === 'constant'"
 			ref="areaRef"

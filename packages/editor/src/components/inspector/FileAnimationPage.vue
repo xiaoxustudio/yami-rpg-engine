@@ -9,6 +9,7 @@
 			ref="elSprites"
 			class="inspector-list"
 			flexible
+			@change="Animation.listChange"
 		/>
 	</DetailBox>
 </template>
@@ -33,7 +34,6 @@ onMounted(() => {
 
 	if (elSprites.value) {
 		elSprites.value.bind(editor.sprites);
-		elSprites.value.on('change', Animation.listChange);
 	}
 });
 </script>

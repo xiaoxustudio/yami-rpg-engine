@@ -3,6 +3,7 @@
 		id="setGameSpeed"
 		:ref="registryRef(fieldEls, 'setGameSpeed')"
 		@confirm="onConfirm"
+		@open="onWindowOpen"
 	>
 		<template #title
 			><TitleBar
@@ -76,13 +77,15 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	fieldEls.get('setGameSpeed-easingId')?.loadItems?.(Data.createEasingItems!());
+};
+
 onMounted(() => {
 	useLocalizedOptions('setGameSpeed-wait', [true, false], (items) =>
 		fieldEls.get('setGameSpeed-wait')?.loadItems?.(items)
 	);
-	fieldEls.get('setGameSpeed')?.on?.('open', () => {
-		fieldEls.get('setGameSpeed-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
 });
 </script>
 

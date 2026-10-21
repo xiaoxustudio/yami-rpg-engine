@@ -48,7 +48,7 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		ensureWaveformBuffers: (() => boolean) | null;
 		stopAnimation: (() => void) | null;
 		themechange: ((event: YamiEvent) => void) | null;
-		windowResize: ((event: YamiEvent) => void) | null;
+		windowResize: ((event?: YamiEvent) => void) | null;
 		progressPointerdown: ((event: PointerEvent) => void) | null;
 		progressPointermove: ((event: PointerEvent) => void) | null;
 		progressPointerleave: ((event: PointerEvent) => void) | null;
@@ -426,7 +426,7 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 		}
 	}.bind(FileAudio);
 
-	FileAudio.windowResize = function (this: typeof FileAudio, _event: YamiEvent) {
+	FileAudio.windowResize = function (this: typeof FileAudio, _event?: YamiEvent) {
 		if (FileAudio.target !== null && FileAudio.symbol === null) {
 			FileAudio.updateCanvas!();
 		}

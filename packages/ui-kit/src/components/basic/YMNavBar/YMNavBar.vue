@@ -123,7 +123,6 @@ onMounted(() => {
 	(element as NavBarHost).write = write;
 	(element as NavBarHost).unselect = unselect;
 	(element as NavBarHost).on = on;
-	element.addEventListener('pointerdown', pointerdown);
 	new MutationObserver(() => {
 		if (current !== undefined) write(current);
 	}).observe(element, { childList: true });
@@ -133,7 +132,7 @@ defineExpose({ read, write, unselect, on, root });
 </script>
 
 <template>
-	<div ref="root" class="nav-bar" :class="$style.bar" :id="props.id">
+	<div ref="root" class="nav-bar" :class="$style.bar" :id="props.id" @pointerdown="pointerdown">
 		<slot />
 	</div>
 </template>

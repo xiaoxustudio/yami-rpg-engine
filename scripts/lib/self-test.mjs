@@ -55,6 +55,12 @@ import {
 } from './ui-slots.mjs';
 import { checkTextIntegrity, scanTextIntegrity } from './text-integrity.mjs';
 import { detectMojibake } from './gbk-mojibake.mjs';
+import {
+	eventWiringOf,
+	wiresLocalListener,
+	onApiSurfaceOf,
+	onApiConsumers
+} from './event-wiring.mjs';
 
 // ---------------------------------------------------------------------------
 // 极简测试框架（够用就好：一个用例 = 一个函数 + 一句断言）
@@ -1064,6 +1070,193 @@ test('文本污染：当前全仓零命中（规则不能靠「够宽」来制�
 		issues.map((i) => `${i.rel}:${i.line}`),
 		[]
 	);
+});
+
+// ---------------------------------------------------------------------------
+// 事件接线三轴（vue-local-listeners / vue-global-listeners / uikit-on-api）
+//
+// 这三条轴的口径由 `lib/event-wiring.mjs` 单一持有，台账与守卫 spec 共用。这里逐条用
+// **故意写错**的样本证明「路由器分得清自有元素与全局目标」「on API 的两个半边都认得」——
+// 规则写了却从没验证过它抓不抓得到，与「门禁起不来」是同一个失败模式。
+// ---------------------------------------------------------------------------
+
+process.stdout.write('\n事件接线 —— 路由器必须分得清自有元素 / 全局目标 / on API\n');
+
+test('wiresLocalListener：自有元素命中，window/document 不命中', () => {
+	ok(wiresLocalListener("el.addEventListener('click', f);"), 'el 应判为自有元素');
+	ok(wiresLocalListener("root.value?.addEventListener('click', f);"), 'optional chain 应命中');
+	ok(wiresLocalListener("this.input.addEventListener('input', f);"), 'this.x 应命中');
+	ok(wiresLocalListener("tb.input.addEventListener('keydown', f);"), '嵌套属性应命中');
+	eq(wiresLocalListener("window.addEventListener('resize', f);"), false, 'window 不是自有元素');
+	eq(
+		wiresLocalListener("document.addEventListener('keydown', f);"),
+		false,
+		'document 不是自有元素'
+	);
+	eq(wiresLocalListener('const a = 1;'), false, '无监听不算命中');
+});
+
+test('wiresLocalListener：只看 <script>，模板与注释里的写法不算债', () => {
+	// 模板里出现 `addEventListener` 只可能是字符串/表达式，不是真实调用。
+	eq(
+		wiresLocalListener(
+			'<template><div @click="x" /></template>\n<script setup>const a = 1;</script>'
+		),
+		false,
+		'模板段应被排除'
+	);
+	// `.vue` 无 script 段时退回整篇（与 scan.mjs 的 codeOnly 语义一致）。
+	ok(wiresLocalListener("el.addEventListener('click', f);"), '无 script 段时应仍能命中');
+});
+
+test('wiresLocalListener：可选调用 `addEventListener?.(` 必须命中（2026-10 补的口径漏洞）', () => {
+	// 实测背景：`YMFileHeadPane` 里写的是
+	//   `searcherEl.value?.root?.addEventListener?.('input', searcherInput)`
+	// —— 方法名后是 `?.(`（**可选调用**），而旧口径只认 `addEventListener(`，
+	// 于是这类写法被**整体漏计**（该文件少报 2 处自有元素监听）。
+	ok(wiresLocalListener("el.addEventListener?.('x', f);"), '`?.(` 形式应命中');
+	ok(
+		wiresLocalListener("root.value?.root?.addEventListener?.('x', f);"),
+		'对象链与可选调用同时出现也应命中'
+	);
+	eq(
+		wiresLocalListener("window.addEventListener?.('resize', f);"),
+		false,
+		'window + 可选调用仍不是自有元素'
+	);
+	ok(
+		eventWiringOf("el.addEventListener?.('x', f);").localListeners === 1,
+		'eventWiringOf 的 local 计数也要包含可选调用'
+	);
+});
+
+test('`self` 必须归入自有元素口径，不能算全局（2026-10 补的误记）', () => {
+	// 实测背景：`YMParamList` / `YMParameterPane` 里写的是
+	//   `const self = el!;` … `self.addEventListener('scroll' | 'focus' | 'keydown' …)`
+	// —— 浏览器里 `self === window`，但本仓 `.vue` 里 `self` **一律是组件自己的根元素**。
+	// 旧清单把 `self` 当全局目标，导致这 9 处自有元素监听被误记到全局轴
+	// （全局轴因此虚高 9，自有元素轴少报 9）。
+	ok(wiresLocalListener("self.addEventListener('scroll', resize);"), '`self` 应判为自有元素');
+	ok(
+		wiresLocalListener("const self = el!;\nself.addEventListener('keydown', f);"),
+		'`const self = el!` 之后也应判为自有元素'
+	);
+	eq(
+		eventWiringOf("self.addEventListener('scroll', f);").localListeners,
+		1,
+		'eventWiringOf 应计入 local'
+	);
+	eq(
+		eventWiringOf("self.addEventListener('scroll', f);").globalListeners,
+		0,
+		'eventWiringOf 不应计入 global'
+	);
+	// 真正的全局目标不受影响 —— 否则这次修正就成了"把全局也一起放过"
+	eq(wiresLocalListener("window.addEventListener('resize', f);"), false, 'window 仍是全局');
+	eq(wiresLocalListener("document.addEventListener('keydown', f);"), false, 'document 仍是全局');
+	eq(
+		eventWiringOf(
+			"window.addEventListener('resize', a);\ndocument.addEventListener('keydown', b);"
+		).globalListeners,
+		2,
+		'window/document 仍应计入 global'
+	);
+});
+
+test('eventWiringOf：自有元素与全局监听分开计数，且不漏总数', () => {
+	const src = [
+		'const el = root.value;',
+		"el.addEventListener('pointerdown', f);",
+		"el.addEventListener('dragenter', g);",
+		"window.addEventListener('pointerup', h);",
+		"document.addEventListener('keydown', i);",
+		'<template><div @click="x" @keyup="y" /></template>'
+	].join('\n');
+	const w = eventWiringOf(src);
+	eq(w.localListeners, 2, '自有元素应为 2');
+	eq(w.globalListeners, 2, '全局应为 2');
+	eq(w.localFiles, 1);
+	eq(w.globalFiles, 1);
+	eq(w.templateHandlers, 2, '模板 @ 处理器应计 2');
+	eq(w.targets, ['el']);
+});
+
+test('onApiSurfaceOf：定义 on 与 attachApi 装配各自可辨', () => {
+	const defines = 'const on = (type, listener) => {};';
+	eq(onApiSurfaceOf(defines), { defines: true, attaches: false });
+	const attaches = 'attachApi<BoxApi>(box, { read, write, on });';
+	eq(onApiSurfaceOf(attaches), { defines: false, attaches: true });
+	const both = `${defines}\n${attaches}`;
+	eq(onApiSurfaceOf(both), { defines: true, attaches: true });
+	eq(onApiSurfaceOf('const onSomething = 1;'), { defines: false, attaches: false });
+	// 只把 `on` 当普通标识符出现（不是对象字面量的键）时不算暴露。
+	eq(onApiSurfaceOf('const x = on;'), { defines: false, attaches: false });
+});
+
+test('onApiConsumers：ui-kit 组件计入，原生宿主对象剔除', () => {
+	const files = [
+		{
+			rel: 'packages/editor/src/a.vue',
+			full: '/a.vue',
+			content: "elSprites.value.on('change', f);\nelAnimationId.value?.on('write', g);"
+		},
+		{
+			rel: 'packages/editor/src/b.vue',
+			full: '/b.vue',
+			content: "texture.on('load', f);\nzipfile.on('entry', g);\nproxy.on('write', h);"
+		},
+		{
+			rel: 'packages/editor/src/c.ts',
+			full: '/c.ts',
+			content: "scope.on('pointerdown', f);"
+		}
+	];
+	const read = (full) => files.find((f) => f.full === full).content;
+	const r = onApiConsumers(files, read);
+	eq(r.total, 2, '只有两个 ui-kit 组件调用应计入');
+	eq(
+		r.sites.map((s) => s.event),
+		['change', 'write']
+	);
+});
+
+test('onApiConsumers：接收者是「调用表达式 + 可选调用」时必须计入且接收者可辨（2026-10 补的漏计）', () => {
+	// 真实形态（全仓 52 处，此前整体漏计）：
+	//   `fieldEls.get('block')?.on?.('closed', () => reset())`
+	// 旧正则的接收者字符集不含 `(`/引号，只能从末尾的 `?` 起匹配 ⇒ object 被捕获成 `"?"`，
+	// 站点也漏计；连 NON_UIKIT_ON_HOSTS 排除名单都因此形同虚设。
+	const content = [
+		"fieldEls.get('block')?.on?.('closed', reset);",
+		"fieldEls.get('move').on('open', onOpen);",
+		"props.links.body?.on?.('resize', onResize);"
+	].join('\n');
+	const files = [{ rel: 'packages/editor/src/d.vue', full: '/d.vue', content }];
+	const r = onApiConsumers(files, (full) => (full === '/d.vue' ? content : ''));
+	eq(r.total, 3, '三处调用表达式接收者都要计入');
+	eq(
+		r.sites.map((s) => s.event),
+		['closed', 'open', 'resize']
+	);
+	// 接收者必须可辨（不能退化成 `?`），否则排除名单失效
+	ok(
+		r.sites.every((s) => s.object.includes('fieldEls') || s.object.includes('body')),
+		`接收者应保留完整表达式，实际：${JSON.stringify(r.sites.map((s) => s.object))}`
+	);
+	// 排除名单仍要生效：texture 带可选调用时不算 ui-kit 消费者
+	const t = onApiConsumers(
+		[{ rel: 'packages/editor/src/e.ts', full: '/e.ts', content: "texture?.on?.('load', f);" }],
+		(full) => (full === '/e.ts' ? "texture?.on?.('load', f);" : '')
+	);
+	eq(t.total, 0, 'texture 即使带可选链也应被排除');
+});
+
+test('事件接线：路由器对当前仓库的计数与台账轴一致（防止两处口径漂移）', () => {
+	// 这条是「台账数字 ↔ 守卫红绿」的一致性锚：两边都从 event-wiring.mjs 取口径，
+	// 若有人把正则抄到别处并改了语义，这里不会失败——但台账轴会与守卫测试同时变，
+	// 因此用一条「至少不为零」的下界断言把「路由器被整体改坏成不命中」这种失效暴露出来。
+	const sample = "el.addEventListener('click', f);\nwindow.addEventListener('resize', g);";
+	const w = eventWiringOf(sample);
+	ok(w.localListeners === 1 && w.globalListeners === 1, '路由器对混合样本应各计 1');
 });
 
 // ---------------------------------------------------------------------------

@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="setReverb" :ref="registryRef(fieldEls, 'setReverb')" @confirm="onConfirm">
+	<WindowFrame
+		id="setReverb"
+		:ref="registryRef(fieldEls, 'setReverb')"
+		@confirm="onConfirm"
+		@open="onWindowOpen"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setReverb.title') }}
@@ -100,6 +105,11 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	fieldEls.get('setReverb-easingId')?.loadItems?.(Data.createEasingItems!());
+};
+
 onMounted(() => {
 	fieldEls.get('setReverb-type')?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
@@ -110,9 +120,6 @@ onMounted(() => {
 	useLocalizedOptions('setReverb-wait', [true, false], (items) =>
 		fieldEls.get('setReverb-wait')?.loadItems?.(items)
 	);
-	fieldEls.get('setReverb')?.on?.('open', () => {
-		fieldEls.get('setReverb-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
 });
 </script>
 

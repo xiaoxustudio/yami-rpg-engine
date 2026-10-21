@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="setAngle" :ref="registryRef(fieldEls, 'setAngle')" @confirm="onConfirm">
+	<WindowFrame
+		id="setAngle"
+		:ref="registryRef(fieldEls, 'setAngle')"
+		@confirm="onConfirm"
+		@open="onWindowOpen"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setAngle.title') }}
@@ -78,13 +83,15 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	fieldEls.get('setAngle-easingId')?.loadItems?.(Data.createEasingItems!());
+};
+
 onMounted(() => {
 	useLocalizedOptions('setAngle-wait', [true, false], (items) =>
 		fieldEls.get('setAngle-wait')?.loadItems?.(items)
 	);
-	fieldEls.get('setAngle')?.on?.('open', () => {
-		fieldEls.get('setAngle-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
 });
 </script>
 

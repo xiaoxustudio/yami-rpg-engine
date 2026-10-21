@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import YMTabBar from '../YMTabBar.vue';
 import { elementDataOf } from '../../../../utils/element-data';
 
@@ -160,7 +161,7 @@ describe('YMTabBar', () => {
 		expect(el.find('none')).toBe(undefined);
 	});
 
-	it('pointerdown on close mark triggers close on pointerup', () => {
+	it('pointerdown on close mark triggers close on pointerup', async () => {
 		const wrapper = mount(YMTabBar, { attachTo: document.body });
 		const el = wrapper.element as unknown as TabBarElement;
 		const data = makeData();
@@ -170,6 +171,8 @@ describe('YMTabBar', () => {
 		const closeMark = tab.querySelector('.tab-close') as HTMLElement;
 		closeMark.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
 		expect(listData(el).dragging).toBeTruthy();
+		// window 上的 pointerup 由 `useEventListener` 在 flush: 'post' 挂载，让出一拍
+		await nextTick();
 		const alpha = data[0];
 		closeMark.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0 }));
 		expect(data).not.toContain(alpha);
@@ -201,7 +204,7 @@ describe('YMTabBar', () => {
 		expect(listData(el).dragging).toBe(null);
 	});
 
-	it('popup 手势：pointerup 不再抛错，命中时派发 popup 事件并清空手势态', () => {
+	it('popup 手势：pointerup 不再抛错，命中时派发 popup 事件并清空手势态', async () => {
 		const wrapper = mount(YMTabBar, { attachTo: document.body });
 		const el = wrapper.element as unknown as TabBarElement;
 		const data = makeData();
@@ -212,6 +215,7 @@ describe('YMTabBar', () => {
 		const tab = el.querySelectorAll('.tab-item')[0] as HTMLElement;
 		tab.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 2 }));
 		expect(listData(el).dragging).toBeTruthy();
+		await nextTick();
 		expect(() =>
 			tab.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 2 }))
 		).not.toThrow();
@@ -219,7 +223,7 @@ describe('YMTabBar', () => {
 		expect(listData(el).dragging).toBe(null);
 	});
 
-	it('关闭键按下后把指针移开再松开：不关标签，但手势态必须清空', () => {
+	it('关闭键按下后把指针移开再松开：不关标签，但手势态必须清空', async () => {
 		const wrapper = mount(YMTabBar, { attachTo: document.body });
 		const el = wrapper.element as unknown as TabBarElement;
 		const data = makeData();
@@ -229,12 +233,13 @@ describe('YMTabBar', () => {
 		const closeMark = tab.querySelector('.tab-close') as HTMLElement;
 		closeMark.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
 		expect(listData(el).dragging).toBeTruthy();
+		await nextTick();
 		document.body.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0 }));
 		expect(el.querySelectorAll('.tab-item').length).toBe(3);
 		expect(listData(el).dragging).toBe(null);
 	});
 
-	it('拖拽途中卸载：window 监听与组件子树之外的 hint 都被显式回收', () => {
+	it('拖拽途中卸载：组件子树之外的 hint 被显式回收', () => {
 		const wrapper = mount(YMTabBar, { attachTo: document.body });
 		const el = wrapper.element as unknown as TabBarElement;
 		const data = makeData();
@@ -246,10 +251,36 @@ describe('YMTabBar', () => {
 		const hint = document.querySelector('.drag-and-drop-hint') as HTMLElement;
 		expect(hint).not.toBe(null);
 		const hintRemove = vi.spyOn(hint, 'remove');
-		const removeListener = vi.spyOn(window, 'removeEventListener');
 		wrapper.unmount();
 		expect(hintRemove).toHaveBeenCalled();
-		expect(removeListener).toHaveBeenCalledWith('pointerup', expect.any(Function));
+		vi.restoreAllMocks();
+	});
+
+	/**
+	 * 这条原先和上面的 hint 回收混在一句里，靠的是旧实现**无条件**
+	 * `window.removeEventListener('pointerup', …)`，所以 `dragstart` 那条手势
+	 * （它**不挂** window 监听，只有 `pointerdown` 的两条分支才挂）也能"通过"。
+	 *
+	 * 改走 `enabled` 后摘除是**有条件的**，于是必须用一个真的会挂上监听的手势来测，
+	 * 并且等 `flush: 'post'` 挂完再卸载 —— 这样断言的才是真实回收。
+	 */
+	it('手势进行中卸载：window 上的 pointerup 被回收（enabled 通道）', async () => {
+		const wrapper = mount(YMTabBar, { attachTo: document.body });
+		const el = wrapper.element as unknown as TabBarElement;
+		el.data = makeData();
+		el.update();
+		const tab = el.querySelectorAll('.tab-item')[0] as HTMLElement;
+		const closeMark = tab.querySelector('.tab-close') as HTMLElement;
+		closeMark.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+		expect(listData(el).dragging).toBeTruthy();
+		await nextTick();
+
+		const removeListener = vi.spyOn(window, 'removeEventListener');
+		wrapper.unmount();
+		// 注意第三个实参：`useEventListener` 内部是 `removeEventListener(type, handler, native)`，
+		// `native` 未传时为 `undefined`。vitest 的 `toHaveBeenCalledWith` 比对**完整实参表**，
+		// 只写两个实参匹配不上（旧实现是组件自己调的，恰好只传两个，故原断言是两参形式）。
+		expect(removeListener).toHaveBeenCalledWith('pointerup', expect.any(Function), undefined);
 		vi.restoreAllMocks();
 	});
 });

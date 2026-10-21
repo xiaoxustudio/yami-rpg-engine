@@ -3,6 +3,7 @@
 		id="setProgressBar"
 		:ref="registryRef(fieldEls, 'setProgressBar')"
 		@confirm="onConfirm"
+		@closed="onClosed"
 	>
 		<template #title
 			><TitleBar
@@ -54,11 +55,13 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+const onClosed = () => {
+	clear(fieldEls.get('setProgressBar-properties'));
+};
+
 onMounted(() => {
 	fieldEls.get('setProgressBar-properties')?.bind?.(ProgressBarProperty);
-	fieldEls.get('setProgressBar')?.on?.('closed', () => {
-		clear(fieldEls.get('setProgressBar-properties'));
-	});
 });
 </script>
 

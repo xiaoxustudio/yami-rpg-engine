@@ -194,8 +194,6 @@ onMounted(() => {
 	(el as SelectVarApi).getFocus = getFocus;
 	(el as SelectVarApi).on = on;
 	elementDataOf<SelectVarApi>(el).mode = mode.value;
-	el.addEventListener('keydown', keydown);
-	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);
 	}
@@ -204,7 +202,14 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="root" class="select-var" :class="[mode, { disabled }]" :id="props.id">
+	<div
+		ref="root"
+		class="select-var"
+		:class="[mode, { disabled }]"
+		:id="props.id"
+		@keydown="keydown"
+		@pointerdown="pointerdown"
+	>
 		<YMSelectBox
 			v-show="mode === 'constant'"
 			ref="selectRef"

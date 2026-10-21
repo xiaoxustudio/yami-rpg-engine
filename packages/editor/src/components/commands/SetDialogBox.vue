@@ -3,6 +3,7 @@
 		id="setDialogBox"
 		:ref="registryRef(fieldEls, 'setDialogBox')"
 		@confirm="onConfirm"
+		@closed="onClosed"
 	>
 		<template #title
 			><TitleBar
@@ -54,11 +55,13 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+const onClosed = () => {
+	clear(fieldEls.get('setDialogBox-properties'));
+};
+
 onMounted(() => {
 	fieldEls.get('setDialogBox-properties')?.bind?.(DialogBoxProperty);
-	fieldEls.get('setDialogBox')?.on?.('closed', () => {
-		clear(fieldEls.get('setDialogBox-properties'));
-	});
 });
 </script>
 

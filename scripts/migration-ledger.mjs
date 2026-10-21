@@ -32,6 +32,7 @@ import {
 	collectFiles,
 	readSource,
 	countCodeMatches,
+	codeOnly,
 	importRefs,
 	unremovableListeners,
 	hasDomExemption,
@@ -51,6 +52,7 @@ import {
 	uiFacadeGaps,
 	domainSingletonImporters
 } from './lib/ui-slots.mjs';
+import { eventWiringOf, onApiSurfaceOf, onApiConsumers } from './lib/event-wiring.mjs';
 
 const BASELINE_FILE = join(ROOT, 'scripts', 'migration-ledger-baseline.json');
 
@@ -83,6 +85,8 @@ function countCodeByFile(files, re) {
 function buildAxes() {
 	const src = collectFiles({ dirs: SCAN_DIRS });
 	const srcWithTests = collectFiles({ dirs: SCAN_DIRS, includeTests: true });
+	// 事件接线三轴只关心 SFC：`.ts` 里没有 template/emits，事件面口径不适用于它。
+	const vues = src.filter((f) => f.rel.endsWith('.vue'));
 	const { match: isWhitelisted, patterns: whitelistPatterns } = loadDomWhitelist();
 
 	return [
@@ -406,6 +410,119 @@ function buildAxes() {
 				return {
 					value: { total: r.count, files: r.files.length },
 					detail: r.files.map(([rel, n]) => ({ rel, count: n }))
+				};
+			}
+		},
+		{
+			id: 'vue-local-listeners',
+			label: '.vue 内自有元素监听（余量已是豁免项，仅需不增）',
+			// 从 `zero` 改成 `stable` 的理由（2026-10 逐站点实测）。**这不是"降低标准"**：
+			// `compare()` 与 `target` 无关，两种目标的棘轮行为完全一样（都只判"升"）；
+			// 改的只是**报表里那句话是否诚实** —— 否则"归零 / 74"会让人以为还剩 74 处债要清。
+			//
+			// 余量的构成（逐站点核对过目标表达式与位置，**无一是"还没迁"**）：
+			//   · 21 处 `on()` 定义体 + 4 处 `on('focus'/'blur')` 桥 —— **永久保留**：
+			//     `uikit-on-api` 的下界是 13（其中 12 处 store/composable 消费方**没有模板**），
+			//     所以 `on()` 这条公共 API 不能删，它的实现体就一直计入本轴。
+			//     **两条轴的下界互相锁死**，不存在"删掉 on() 就自动清掉一批"。
+			//   · ~20 处命令式创建的游离元素（`createTextBox()` 造的 `tb`/`tb.input`、
+			//     控件 `input`、`slider.input`）—— 不在本组件模板里，无 `@` 可标注
+			//   · 11 处注册表元素（`inspectorEls.get(...)` / `registryElements(...)` 取的）
+			//   · 11 处**父组件渲染的宿主元素**：`YMFileBrowser` 的全部站点挂在
+			//     `el.value = nav?.closest('.file-browser')` 取到的**祖先容器**上，
+			//     而画那个容器的是父组件 `layout/ProjectPanel.vue`、`tools/Selector.vue`
+			//   · 2 处需要原生事件对象：`YMFileHeadPane` 的 `searcherEl.root` 回调读
+			//     `InputEvent.inputType`，而组件的 `input` emit 带的是**值**（且它没有 `compositionend` emit）
+			//   · 2 处已实测不可迁：`YMCommandList` 的 `update`/`rowmodel` —— 模板通道不生效，
+			//     成因是 `utils/dom.ts` 里**复用的非冒泡事件实例** + `rows` 为 `shallowRef`
+			//     且模型原地变更，重渲染对调用次数/时机敏感
+			//   · 1 处游离元素工厂（`YMToastManager` 的 toast，`createElement` 造出来 append 的）
+			//   · 1 处 editor `WindowFrame` 的 cancel 按钮 click（与窗口体系重叠，待一并判断）
+			target: 'stable',
+			measure() {
+				// 口径见 `lib/event-wiring.mjs`（与守卫 spec 共用同一份正则，因此台账数字与门禁红绿
+				// 不可能互相矛盾）。排除 window/document 等全局目标——那些归 `vue-global-listeners`。
+				//
+				// 为什么这条轴不在 lint 里：`.oxlintrc.json` 的 `no-restricted-properties` 按
+				// `object` 字面量匹配，`el.addEventListener(...)` 的 `el` 是任意标识符，规则
+				// 无法表达「除了 window/document 之外的任何目标」。故用台账棘轮 + 守卫 spec 承担。
+				const perFile = [];
+				let total = 0;
+				for (const { full, rel } of vues) {
+					const w = eventWiringOf(codeOnly(readSource(full)));
+					if (w.localListeners === 0) continue;
+					total += w.localListeners;
+					perFile.push({ rel, count: w.localListeners, targets: w.targets });
+				}
+				return {
+					value: { total, files: perFile.length },
+					detail: perFile.sort((a, b) => b.count - a.count)
+				};
+			}
+		},
+		{
+			id: 'vue-global-listeners',
+			label: '.vue 内裸 window/document 监听（应改 useEventListener）',
+			target: 'zero',
+			measure() {
+				// 「裸」= 直接写 `window.addEventListener(`，未经 composer 收口。`useEventListener`
+				// 内部持有目标对象、不出现 `window.` 字面量，因此迁移后自然归零。
+				//
+				// 计数走 `eventWiringOf().globalListeners`（与「自有元素」同一套路由器，因而
+				// `local + global` 恒等于该文件 script 段的 `addEventListener` 总数）；
+				// 不另用保守正则 `countGlobalListeners`——两者实测差 9 处（46 vs 37，
+				// 差异在 YMParameterPane / YMParamList 的多写形式），同一份报表里两个数会互相打脸。
+				const perFile = [];
+				let total = 0;
+				for (const { full, rel } of vues) {
+					const w = eventWiringOf(codeOnly(readSource(full)));
+					if (w.globalListeners === 0) continue;
+					total += w.globalListeners;
+					perFile.push({ rel, count: w.globalListeners });
+				}
+				return {
+					value: { total, files: perFile.length },
+					detail: perFile.sort((a, b) => b.count - a.count)
+				};
+			}
+		},
+		{
+			id: 'uikit-on-api',
+			label: '元素优先 on() API（消费站点已达下界，仅需不增）',
+			// 从 `zero` 改成 `stable` 的理由（2026-10）：消费站点 59 → 13 后**已到可达下界**，剩下 13 处里 12 处在
+			// `stores/selector.ts`(6) / `stores/browser.ts`(5) / `composables/useIfConditionFields.ts`(1)
+			// —— **这些文件没有模板**，`@` 无从附着；它们靠 `Selector.body` / `Browser.body`
+			// 这类元素 API 对象取元素，元素优先 API 是唯一手段。
+			// 剩 1 处（`SceneTilemapPropertiesSection` 的 `input`）的回调
+			// `SceneTilemap.layerInput` **靠 `this` 拿元素**（`focusing === this`），
+			// 且该 `SelectBox` 的 `@input` 已被 `onParamInput` 占用。
+			//
+			// ⇒ **`on()` 这条 API 不能删**（`exposed` 也就不能归零），这也意味着
+			// `vue-local-listeners` 里那 21 处 `on()` 定义体 + 4 处桥**永久保留**。
+			// 改 `target` 不影响棘轮行为（`compare()` 只看升/降），只是让报表不再暗示一件做不到的事。
+			target: 'stable',
+			measure() {
+				// 两半一起看：
+				//   exposed  = ui-kit `.vue` 仍定义/装配 `on`（元素优先事件 API 的暴露面）
+				//   consumed = editor 侧仍调用 `.on('事件')`（已剔除原生宿主对象，见 NON_UIKIT_ON_HOSTS）
+				// 「暴露面归零」而消费站点不为零是坏状态（会把消费者打断），反之亦然——故两条子指标
+				// 都在同一轴上，棘轮会同时盯住。
+				const exposed = [];
+				for (const { full, rel } of vues) {
+					if (!rel.startsWith('packages/ui-kit/')) continue;
+					const surface = onApiSurfaceOf(readSource(full));
+					if (surface.defines || surface.attaches) {
+						exposed.push({ rel, defines: surface.defines, attaches: surface.attaches });
+					}
+				}
+				const consumers = onApiConsumers(src, readSource);
+				return {
+					value: {
+						total: exposed.length + consumers.total,
+						exposed: exposed.length,
+						consumed: consumers.total
+					},
+					detail: [...exposed, ...consumers.sites]
 				};
 			}
 		},

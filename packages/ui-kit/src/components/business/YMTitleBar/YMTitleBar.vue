@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { clamp, hasClass, rect, rasterize, relate } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
+import { useEventListener } from '../../../composables/useEventListener';
 
 function getWindow(): { close(id?: string): void } | undefined {
 	const host: Window = window;
@@ -18,6 +19,23 @@ const root = ref<HTMLDivElement | null>(null);
 
 let dragging: PointerEvent | null = null;
 
+/**
+ * 本次拖拽的起始几何与目标窗口。**刻意是普通对象、不进响应式**——
+ * 它装着 DOM 元素，proxy 化没有意义还可能出问题；需要响应式的只是「拖拽是否进行中」。
+ */
+let drag: {
+	frame: HTMLElement;
+	left: number;
+	top: number;
+	width: number;
+	height: number;
+	startX: number;
+	startY: number;
+} | null = null;
+
+/** 拖拽中为真 —— 专供 `useEventListener` 的 `enabled`（见下方三个 window 监听）。 */
+const dragActive = ref(false);
+
 const on = (
 	type: string,
 	listener: (event: Event) => void,
@@ -25,6 +43,56 @@ const on = (
 ): void => {
 	root.value?.addEventListener(type, listener, options);
 };
+
+/**
+ * 结束本次标题栏拖拽：清状态并让 `dragActive` 归假，三个 window 监听随之被摘除。
+ *
+ * 原先这三个监听是 `pointerdown` 里**每次拖拽现造的三个闭包**（各自捕获那一次的起始几何），
+ * 并在 `cancel` 里逐条 `removeEventListener`。改为 setup 层的常驻处理器 + `enabled` 驱动，
+ * 几何挪到 `drag` 里；`cancel` 的语义整个由 `endDrag` 承担。
+ */
+const endDrag = (): void => {
+	dragging = null;
+	drag = null;
+	dragActive.value = false;
+};
+
+const dragPointermove = (event: Event): void => {
+	const moveEvent = event as PointerEvent;
+	const current = drag;
+	if (!current || !dragging || !relate(dragging, moveEvent)) return;
+	const { frame, left, top, width, height, startX, startY } = current;
+	let right = window.innerWidth - width;
+	let bottom = window.innerHeight - height;
+	if (hasClass(document.body, 'border')) {
+		const dpx = 1 / window.devicePixelRatio;
+		right -= dpx * 2;
+		bottom -= dpx * 2;
+	}
+	const x = rasterize(left - startX + moveEvent.clientX);
+	const y = rasterize(top - startY + moveEvent.clientY);
+	frame.style.left = `${clamp(x, 0, right)}px`;
+	frame.style.top = `${clamp(y, 0, bottom)}px`;
+};
+
+const dragPointerup = (event: Event): void => {
+	const upEvent = event as PointerEvent;
+	if (dragging && relate(dragging, upEvent)) {
+		endDrag();
+	}
+};
+
+/**
+ * 拖拽期才挂的三个 window 监听（`pointermove` 跟随、`pointerup` 收尾、`blur` 失焦即取消）。
+ * `event as PointerEvent`：composable 的 handler 形参是宽松的 `Event`，而这三个事件名在 window 上
+ * 必然是 PointerEvent / FocusEvent，用 cast 表达这层已知事实，不放宽 composable 签名。
+ *
+ * ⚠️ 挂载时机是 `flush: 'post'`：真实拖拽里 pointerdown 与随后的 pointermove 必然分属不同 task，
+ * 不受影响；但**同一 tick 内连续派发这两个事件的测试需要先 `await nextTick()`**。
+ */
+useEventListener(window, 'pointermove', dragPointermove, { enabled: dragActive });
+useEventListener(window, 'pointerup', dragPointerup, { enabled: dragActive });
+useEventListener(window, 'blur', endDrag, { enabled: dragActive });
 
 const pointerdown = (event: PointerEvent): void => {
 	const element = root.value;
@@ -49,37 +117,10 @@ const pointerdown = (event: PointerEvent): void => {
 	const { left, top, width, height } = rect(windowFrame);
 	const startX = event.clientX;
 	const startY = event.clientY;
-	const pointermove = (moveEvent: PointerEvent): void => {
-		if (dragging && relate(dragging, moveEvent)) {
-			let right = window.innerWidth - width;
-			let bottom = window.innerHeight - height;
-			if (hasClass(document.body, 'border')) {
-				const dpx = 1 / window.devicePixelRatio;
-				right -= dpx * 2;
-				bottom -= dpx * 2;
-			}
-			const x = rasterize(left - startX + moveEvent.clientX);
-			const y = rasterize(top - startY + moveEvent.clientY);
-			windowFrame.style.left = `${clamp(x, 0, right)}px`;
-			windowFrame.style.top = `${clamp(y, 0, bottom)}px`;
-		}
-	};
-	const pointerup = (upEvent: PointerEvent): void => {
-		if (dragging && relate(dragging, upEvent)) {
-			cancel();
-		}
-	};
-	const cancel = (_event?: Event): void => {
-		dragging = null;
-		window.removeEventListener('pointermove', pointermove);
-		window.removeEventListener('pointerup', pointerup);
-		window.removeEventListener('blur', cancel);
-	};
+	drag = { frame: windowFrame, left, top, width, height, startX, startY };
 	dragging = event;
-	(event as PointerEvent & { cancel(event?: Event): void }).cancel = cancel;
-	window.addEventListener('pointermove', pointermove);
-	window.addEventListener('pointerup', pointerup);
-	window.addEventListener('blur', cancel);
+	(event as PointerEvent & { cancel(event?: Event): void }).cancel = endDrag;
+	dragActive.value = true;
 };
 
 const mouseclick = (event: Event): void => {

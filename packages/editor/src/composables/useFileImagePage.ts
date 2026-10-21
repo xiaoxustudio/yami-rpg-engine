@@ -63,7 +63,12 @@ export function useFileImagePage() {
 		}
 	};
 
-	const windowResize = (_event: Event): void => {
+	/**
+	 * 参数**刻意不收窄**（`unknown` 且可选）：这个回调既被 `el.addEventListener('resize', …)` 用，
+	 * 也被模板 `@toggle` 用 —— 前者给 DOM `Event`，后者给 `DetailBox` emit 出来的 `string`。
+	 * 形参本来就没用到，写成 `unknown` 才能两条路径都成立。
+	 */
+	const windowResize = (_value?: unknown): void => {
 		const fileImage = Inspector.fileImage;
 		if (fileImage?.target !== null && fileImage?.symbol === null) {
 			updateImage();

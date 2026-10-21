@@ -224,8 +224,6 @@ onMounted(() => {
 	el.tabIndex = 0;
 	attachApi(el, { read, write, switch: switchMode, enable, disable, getFocus, on });
 	elementDataOf<NumberVarApi>(el).mode = mode.value;
-	el.addEventListener('keydown', keydown);
-	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);
 	}
@@ -234,7 +232,14 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="root" class="number-var" :class="[mode, { disabled }]" :id="props.id">
+	<div
+		ref="root"
+		class="number-var"
+		:class="[mode, { disabled }]"
+		:id="props.id"
+		@keydown="keydown"
+		@pointerdown="pointerdown"
+	>
 		<YMNumberBox
 			v-show="mode === 'constant'"
 			ref="numBoxRef"

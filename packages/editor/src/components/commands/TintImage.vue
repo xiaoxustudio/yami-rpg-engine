@@ -1,5 +1,11 @@
 <template>
-	<WindowFrame id="tintImage" :ref="registryRef(fieldEls, 'tintImage')" @confirm="onConfirm">
+	<WindowFrame
+		id="tintImage"
+		:ref="registryRef(fieldEls, 'tintImage')"
+		@confirm="onConfirm"
+		@open="onWindowOpen"
+		@closed="onClosed"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.tintImage.title') }}
@@ -195,6 +201,16 @@ watch(
 	}
 );
 
+/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+const onClosed = () => {
+	clear(fieldEls.get('tintImage-filter'));
+};
+
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	fieldEls.get('tintImage-easingId')?.loadItems?.(Data.createEasingItems!());
+};
+
 onMounted(() => {
 	useLocalizedOptions(
 		'tintImage-mode',
@@ -232,12 +248,6 @@ onMounted(() => {
 	useLocalizedOptions('tintImage-wait', [true, false], (items) =>
 		fieldEls.get('tintImage-wait')?.loadItems?.(items)
 	);
-	fieldEls.get('tintImage')?.on?.('open', () => {
-		fieldEls.get('tintImage-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
-	fieldEls.get('tintImage')?.on?.('closed', () => {
-		clear(fieldEls.get('tintImage-filter'));
-	});
 });
 </script>
 

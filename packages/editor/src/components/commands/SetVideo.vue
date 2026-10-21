@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="setVideo" :ref="registryRef(fieldEls, 'setVideo')" @confirm="onConfirm">
+	<WindowFrame
+		id="setVideo"
+		:ref="registryRef(fieldEls, 'setVideo')"
+		@confirm="onConfirm"
+		@closed="onClosed"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setVideo.title') }}
@@ -50,11 +55,13 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+const onClosed = () => {
+	clear(fieldEls.get('setVideo-properties'));
+};
+
 onMounted(() => {
 	fieldEls.get('setVideo-properties')?.bind?.(VideoProperty);
-	fieldEls.get('setVideo')?.on?.('closed', () => {
-		clear(fieldEls.get('setVideo-properties'));
-	});
 });
 </script>
 

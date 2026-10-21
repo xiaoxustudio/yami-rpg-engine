@@ -188,8 +188,6 @@ onMounted(() => {
 		on
 	});
 	elementDataOf<{ mode?: 'constant' | 'variable' }>(el).mode = mode.value;
-	el.addEventListener('keydown', keydown);
-	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);
 	}
@@ -198,7 +196,14 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="root" class="file-var" :class="[mode, { disabled }]" :id="props.id">
+	<div
+		ref="root"
+		class="file-var"
+		:class="[mode, { disabled }]"
+		:id="props.id"
+		@keydown="keydown"
+		@pointerdown="pointerdown"
+	>
 		<div v-show="mode === 'constant'" class="file-var-file">
 			<slot name="file" :value="fileValue" :on-input="onFileInput" />
 		</div>

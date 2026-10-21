@@ -22,7 +22,7 @@
 			</div>
 		</div>
 	</DetailBox>
-	<DetailBox id="fileImage-image-detail" ref="elImageDetail" open>
+	<DetailBox id="fileImage-image-detail" ref="elImageDetail" open @toggle="windowResize">
 		<DetailSummary>{{ t('components.fileImage-image-viewer.label') || 'Image' }}</DetailSummary>
 		<div class="box" id="fileImage-image-viewer">
 			<img id="fileImage-image" ref="elImage" alt="" />
@@ -60,7 +60,6 @@ onMounted(() => {
 	if (!el) return;
 	attachElementApi(el, { updateImage, update: sync });
 	el.addEventListener('resize', windowResize);
-	elImageDetail.value?.on('toggle', windowResize);
 	sync();
 });
 </script>

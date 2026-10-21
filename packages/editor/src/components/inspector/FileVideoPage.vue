@@ -41,10 +41,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, onBeforeUnmount } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileVideoPage } from '@app/composables/useFileVideoPage';
+import { useEventListener } from '@app/composables/useEventListener';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -56,23 +57,21 @@ const { form, sync, windowError } = useFileVideoPage();
 
 const elVideo = ref<HTMLVideoElement | null>(null);
 
-let windowErrorHandler: ((event: Event) => void) | null = null;
+// 全局 `error` 监听走 composable：挂/摘成对，不再靠模块级 windowErrorHandler 手工配对。
+// `windowError` 来自 composable，是稳定的函数引用，直接注册与原先 `windowErrorHandler = windowError`
+// 后注册是同一件事。
+useEventListener(window, 'error', windowError);
 
 onMounted(() => {
 	const fileVideo = Inspector.fileVideo;
 	if (fileVideo) {
 		fileVideo.video = elVideo.value;
 	}
-	windowErrorHandler = windowError;
-	window.addEventListener('error', windowErrorHandler);
 	const el = inspectorEls.get('fileVideo');
 	if (el) {
 		attachElementApi(el, { update: sync });
 	}
 	sync();
-});
-onBeforeUnmount(() => {
-	if (windowErrorHandler) window.removeEventListener('error', windowErrorHandler);
 });
 </script>
 

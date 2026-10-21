@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { attachApi } from '../../../utils/attach-api';
 import { createPayloadEvent } from '../../../utils/payload-event';
+import { useEventListener } from '../../../composables/useEventListener';
 
 interface Props {
 	id?: string;
@@ -48,7 +49,27 @@ const foreground = ref<HTMLElement | null>(null);
 let dataValue = '';
 let inputEventEnabled = false;
 const builtinOpen = ref(false);
-let documentPointerdown: ((event: PointerEvent) => void) | null = null;
+
+/**
+ * 点弹层外部即关闭：用 `useEventListener` 的 `enabled` 保持**原有的附加时机**——
+ * 只在弹层打开期间挂着 `document` 的 `pointerdown`，关闭即摘（不是常驻）。
+ *
+ * 为什么能这么换：`enabled` 是响应式的（挂/摘随 `builtinOpen` 自动切换），
+ * 且 `target` 传的是 getter，每次同步时重新求值 `root.value`，因此
+ * **不存在**「setup 期把 `root.value` 当时快照、之后永远指向空」的问题。
+ * 另：`apply()` 只在真实状态变化时才动 DOM，弹层开着时 `builtinOpen` 反复置真也不会重复注册。
+ */
+useEventListener(
+	document,
+	'pointerdown',
+	(event) => {
+		const el = root.value;
+		if (el && !el.contains(event.target as Node)) {
+			closeBuiltin();
+		}
+	},
+	{ enabled: builtinOpen }
+);
 
 const hexValue = computed(() => {
 	const hex = dataValue.length >= 6 ? dataValue.slice(0, 6) : '000000';
@@ -127,21 +148,10 @@ const on = (
 const openBuiltin = (): void => {
 	if (!props.popup || props.disabled) return;
 	builtinOpen.value = true;
-	documentPointerdown = (event: PointerEvent) => {
-		const el = root.value;
-		if (el && !el.contains(event.target as Node)) {
-			closeBuiltin();
-		}
-	};
-	document.addEventListener('pointerdown', documentPointerdown);
 };
 
 const closeBuiltin = (): void => {
 	builtinOpen.value = false;
-	if (documentPointerdown) {
-		document.removeEventListener('pointerdown', documentPointerdown);
-		documentPointerdown = null;
-	}
 };
 
 const pickColor = (event: Event): void => {
@@ -197,8 +207,6 @@ onMounted(() => {
 	(el as ColorBoxApi).foreground = foreground.value;
 	(el as ColorBoxApi).inputEventEnabled = false;
 	attachApi(el, { read, write, input, enable, disable, on, keydown, mouseclick });
-	el.addEventListener('keydown', keydown as EventListener);
-	el.addEventListener('click', mouseclick as EventListener);
 	write(props.modelValue);
 	if (props.disabled) disable();
 });
@@ -218,6 +226,7 @@ onBeforeUnmount(() => {
 		:aria-disabled="disabled || undefined"
 		:aria-label="props.label || undefined"
 		@keydown="keydown"
+		@click="mouseclick"
 	>
 		<div class="box color-box-background" :class="$style.background" />
 		<div ref="foreground" class="box color-box-foreground" :class="$style.foreground" />

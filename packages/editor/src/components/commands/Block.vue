@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="block" :ref="registryRef(fieldEls, 'block')" @confirm="onConfirm">
+	<WindowFrame
+		id="block"
+		:ref="registryRef(fieldEls, 'block')"
+		@confirm="onConfirm"
+		@closed="reset"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.block.title') }}
@@ -36,7 +41,7 @@ import { createElementRegistry, registryRef } from '@app/utils/element-registry'
 import { composableEls } from '@app/composables/element-registry';
 
 const fieldEls = createElementRegistry(composableEls);
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useBlockCommandSchema } from '@app/composables/commands/useBlockCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -67,12 +72,6 @@ defineExpose({ form });
 const onConfirm = () => {
 	save();
 };
-
-onMounted(() => {
-	fieldEls.get('block')?.on?.('closed', () => {
-		reset();
-	});
-});
 </script>
 
 <style>

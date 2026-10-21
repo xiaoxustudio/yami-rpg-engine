@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import YMFileNavPane from '../YMFileNavPane.vue';
 
 interface FileItem {
@@ -39,6 +40,8 @@ interface NavElement extends HTMLElement {
 	getSelections?: () => unknown[];
 	selections?: FileItem[];
 	elements?: { count: number };
+	/** 对外导出的取消令牌：保存待处理的 pointerup 处理器，置 null 即取消。 */
+	pressing?: ((event: PointerEvent) => void) | null;
 }
 
 describe('YMFileNavPane', () => {
@@ -108,7 +111,7 @@ describe('YMFileNavPane 的卸载清理', () => {
 		items[1].dispatchEvent(event);
 	};
 
-	it('多选按下后卸载：登记在 window 上的 pointerup 被摘掉', () => {
+	it('多选按下后卸载：登记在 window 上的 pointerup 被摘掉', async () => {
 		const wrapper = mount(YMFileNavPane, { props: { links: makeLinks() } });
 		const el = wrapper.element as NavElement;
 		const parent = el.parentNode as HTMLElement & { directory?: unknown };
@@ -119,6 +122,9 @@ describe('YMFileNavPane 的卸载清理', () => {
 		el.load!(folderA);
 		el.select!(folderA, folderB);
 		pressItemWithCmdOrCtrl(el);
+		// window 上的 pointerup 由 useEventListener 在 flush: 'post' 挂载，先让出一拍；
+		// 否则"卸载时摘掉"这条断言其实是在测一个尚未发生的挂载。
+		await nextTick();
 
 		const removed: string[] = [];
 		const spy = vi
@@ -141,5 +147,40 @@ describe('YMFileNavPane 的卸载清理', () => {
 		spy.mockRestore();
 
 		expect(removed).not.toContain('pointerup');
+	});
+});
+
+/**
+ * 行为验证：上面两条只断言"卸载时摘了/没摘"，**证不了抬手处理真的会跑**。
+ * 这条从行为上钉住整条 `enabled` 通道：按下 → 令牌置上 → window 抬手 → 处理器到达并清空令牌。
+ */
+describe('YMFileNavPane 的 pending-press 通道', () => {
+	it('Ctrl 多选按下后抬手：window pointerup 能到达并清空令牌', async () => {
+		// 需要 attachTo：不挂到 document 上，行内派发的 pointerup 冒泡不到 window
+		const wrapper = mount(YMFileNavPane, {
+			props: { links: makeLinks() },
+			attachTo: document.body
+		});
+		const el = wrapper.element as NavElement;
+		const parent = el.parentNode as HTMLElement & { directory?: unknown };
+		const folderA = makeFile('A');
+		const folderB = makeFile('B');
+		parent.directory = { subfolders: [folderA, folderB] };
+		mockHeight(el);
+		el.load!(folderA);
+		el.select!(folderA, folderB);
+
+		const items = Array.from(el.querySelectorAll('.file-nav-item')) as HTMLElement[];
+		expect(items.length).toBeGreaterThan(1);
+		const event = new PointerEvent('pointerdown', { button: 0, bubbles: true });
+		Object.defineProperty(event, 'cmdOrCtrlKey', { value: true });
+		items[1].dispatchEvent(event);
+
+		// 令牌已置上（消费者可见的那份契约）
+		expect(typeof el.pressing).toBe('function');
+		// window 上的监听由 useEventListener 在 flush: 'post' 挂载，先让出一拍
+		await nextTick();
+		items[1].dispatchEvent(new PointerEvent('pointerup', { button: 0, bubbles: true }));
+		expect(el.pressing).toBe(null);
 	});
 });

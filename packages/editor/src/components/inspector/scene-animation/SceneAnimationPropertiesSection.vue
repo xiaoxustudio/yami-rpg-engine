@@ -281,9 +281,7 @@ onMounted(() => {
 	elSpeedSlider.value?.synchronize(elSpeed.value?.root as SyncTarget);
 	elOpacitySlider.value?.synchronize(elOpacity.value?.root as SyncTarget);
 	elPrioritySlider.value?.synchronize(elPriority.value?.root as SyncTarget);
-	const editor = Inspector.sceneAnimation;
-	if (editor) {
-		elAnimationId.value?.on('write', editor.animationIdWrite);
-	}
+	// `write` 已由模板上的 `@write="onAnimationIdWrite"` 处理（见该处理器的注释），
+	// 原先这里还额外用元素优先 API 订阅了一遍 —— 两条路径打的是同一个回调，属重复，已删。
 });
 </script>

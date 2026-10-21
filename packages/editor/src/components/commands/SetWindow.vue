@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="setWindow" :ref="registryRef(fieldEls, 'setWindow')" @confirm="onConfirm">
+	<WindowFrame
+		id="setWindow"
+		:ref="registryRef(fieldEls, 'setWindow')"
+		@confirm="onConfirm"
+		@closed="onClosed"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setWindow.title') }}
@@ -50,11 +55,13 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+const onClosed = () => {
+	clear(fieldEls.get('setWindow-properties'));
+};
+
 onMounted(() => {
 	fieldEls.get('setWindow-properties')?.bind?.(WindowProperty);
-	fieldEls.get('setWindow')?.on?.('closed', () => {
-		clear(fieldEls.get('setWindow-properties'));
-	});
 });
 </script>
 

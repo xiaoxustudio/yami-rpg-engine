@@ -1,5 +1,11 @@
 <template>
-	<WindowFrame id="tintScreen" :ref="registryRef(fieldEls, 'tintScreen')" @confirm="onConfirm">
+	<WindowFrame
+		id="tintScreen"
+		:ref="registryRef(fieldEls, 'tintScreen')"
+		@confirm="onConfirm"
+		@open="onWindowOpen"
+		@closed="onClosed"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.tintScreen.title') }}
@@ -160,16 +166,20 @@ watch(
 	}
 );
 
+/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+const onClosed = () => {
+	clear(fieldEls.get('tintScreen-filter'));
+};
+
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	fieldEls.get('tintScreen-easingId')?.loadItems?.(Data.createEasingItems!());
+};
+
 onMounted(() => {
 	useLocalizedOptions('tintScreen-wait', [true, false], (items) =>
 		fieldEls.get('tintScreen-wait')?.loadItems?.(items)
 	);
-	fieldEls.get('tintScreen')?.on?.('open', () => {
-		fieldEls.get('tintScreen-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
-	fieldEls.get('tintScreen')?.on?.('closed', () => {
-		clear(fieldEls.get('tintScreen-filter'));
-	});
 });
 </script>
 

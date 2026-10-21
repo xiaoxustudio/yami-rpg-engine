@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="setPan" :ref="registryRef(fieldEls, 'setPan')" @confirm="onConfirm">
+	<WindowFrame
+		id="setPan"
+		:ref="registryRef(fieldEls, 'setPan')"
+		@confirm="onConfirm"
+		@open="onWindowOpen"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setPan.title') }}
@@ -89,6 +94,11 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	fieldEls.get('setPan-easingId')?.loadItems?.(Data.createEasingItems!());
+};
+
 onMounted(() => {
 	fieldEls.get('setPan-type')?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
@@ -99,9 +109,6 @@ onMounted(() => {
 	useLocalizedOptions('setPan-wait', [true, false], (items) =>
 		fieldEls.get('setPan-wait')?.loadItems?.(items)
 	);
-	fieldEls.get('setPan')?.on?.('open', () => {
-		fieldEls.get('setPan-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
 });
 </script>
 

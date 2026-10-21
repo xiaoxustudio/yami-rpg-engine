@@ -35,6 +35,7 @@ import {
 	registerSearchHistoryDropdown,
 	BrowserSearchHistory
 } from '@app/module/browser-search-history.ts';
+import { useEventListener } from '@app/composables/useEventListener';
 
 const visible = ref(false);
 const root = ref<HTMLElement | null>(null);
@@ -49,7 +50,25 @@ const position = reactive({
 
 let input: HTMLInputElement | null = null;
 let themeObserver: MutationObserver | null = null;
-let outsideHandler: ((event: Event) => void) | null = null;
+
+/**
+ * 点下拉外部即关闭。
+ *
+ * 原先由 `show()` 在 `setTimeout(…, 0)` 里手工挂、由 `hide()` 与 `onBeforeUnmount` 手工摘。
+ * 那个 0ms 延时是有意的：**打开下拉的那一次点击**不能立刻把它关掉。
+ *
+ * 改走 `useEventListener` 的 `enabled`（由 `visible` 驱动）：内部是 `flush: 'post'` 的 watcher，
+ * 同样在本次渲染之后、下一次用户事件之前生效，因此原意图不变；而摘除由作用域销毁自动完成，
+ * 不再需要三处手工 `removeEventListener`。
+ */
+const onOutsideMousedown = (event: Event): void => {
+	const el = root.value;
+	if (el && !el.contains(event.target as Node) && event.target !== input) {
+		hide();
+	}
+};
+
+useEventListener(document, 'mousedown', onOutsideMousedown, { enabled: visible });
 
 const dropdownStyle = computed<CSSProperties>(() => ({
 	position: 'absolute',
@@ -100,27 +119,10 @@ const show = (target: HTMLInputElement): void => {
 	position.left = `${rect.left + window.scrollX}px`;
 	position.top = `${rect.bottom + window.scrollY}px`;
 	visible.value = true;
-	if (outsideHandler) {
-		document.removeEventListener('mousedown', outsideHandler);
-		outsideHandler = null;
-	}
-	setTimeout(() => {
-		outsideHandler = (event: Event) => {
-			const el = root.value;
-			if (el && !el.contains(event.target as Node) && event.target !== input) {
-				hide();
-			}
-		};
-		document.addEventListener('mousedown', outsideHandler);
-	}, 0);
 };
 
 const hide = (): void => {
 	visible.value = false;
-	if (outsideHandler) {
-		document.removeEventListener('mousedown', outsideHandler);
-		outsideHandler = null;
-	}
 };
 
 const onItemClick = (keyword: string): void => {
@@ -157,10 +159,6 @@ onBeforeUnmount(() => {
 	registerSearchHistoryDropdown(null);
 	themeObserver?.disconnect();
 	themeObserver = null;
-	if (outsideHandler) {
-		document.removeEventListener('mousedown', outsideHandler);
-		outsideHandler = null;
-	}
 });
 
 defineExpose({ show, hide });

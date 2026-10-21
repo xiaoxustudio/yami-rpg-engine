@@ -41,7 +41,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		meta: { file: unknown } | null;
 		parameters: FileEventList | null;
 		update: ((event: FileEventData, key: string, value: unknown) => void) | null;
-		listChange: ((event: Event) => void) | null;
+		listChange: ((event?: Event) => void) | null;
 		[k: string]: unknown;
 	}
 
@@ -183,7 +183,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		}
 	};
 
-	FileEvent.listChange = function (this: FileEventPage, _event: Event) {
+	FileEvent.listChange = function (this: FileEventPage, _event?: Event) {
 		File.planToSave!(FileEvent.meta);
 	};
 

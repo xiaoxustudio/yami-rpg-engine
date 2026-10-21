@@ -209,8 +209,6 @@ onMounted(() => {
 	(el as StringVarApi).getFocus = getFocus;
 	(el as StringVarApi).on = on;
 	elementDataOf<StringVarApi>(el).mode = mode.value;
-	el.addEventListener('keydown', keydown);
-	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);
 	}
@@ -219,7 +217,14 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="root" class="string-var" :class="[mode, { disabled }]" :id="props.id">
+	<div
+		ref="root"
+		class="string-var"
+		:class="[mode, { disabled }]"
+		:id="props.id"
+		@keydown="keydown"
+		@pointerdown="pointerdown"
+	>
 		<YMTextBox
 			v-show="mode === 'constant'"
 			ref="strBoxRef"

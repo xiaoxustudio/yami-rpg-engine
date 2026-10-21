@@ -3,6 +3,7 @@
 		id="setAmbientLight"
 		:ref="registryRef(fieldEls, 'setAmbientLight')"
 		@confirm="onConfirm"
+		@open="onWindowOpen"
 	>
 		<template #title
 			><TitleBar
@@ -95,13 +96,15 @@ const onConfirm = () => {
 	save();
 };
 
+/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+const onWindowOpen = () => {
+	fieldEls.get('setAmbientLight-easingId')?.loadItems?.(Data.createEasingItems!());
+};
+
 onMounted(() => {
 	useLocalizedOptions('setAmbientLight-wait', [true, false], (items) =>
 		fieldEls.get('setAmbientLight-wait')?.loadItems?.(items)
 	);
-	fieldEls.get('setAmbientLight')?.on?.('open', () => {
-		fieldEls.get('setAmbientLight-easingId')?.loadItems?.(Data.createEasingItems!());
-	});
 });
 </script>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import {
 	addClass,
 	dispatchChangeEvent,
@@ -13,6 +13,7 @@ import {
 import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf } from '../../../utils/element-data';
 import { createParamPaneCore, type ParamDef } from './param-pane-core';
+import { useEventListener } from '../../../composables/useEventListener';
 import type { ManifestEntry } from './manifest-entry';
 import { readPayload } from '../../../utils/payload-event';
 
@@ -229,6 +230,15 @@ type ParameterPaneElement = HTMLElement & PaneStateAccessors & ParameterPaneApi;
 
 let el: ParameterPaneElement | null = null;
 
+/**
+ * window 上的 `script-change` 是否挂着 —— 专供 `useEventListener` 的 `enabled`。
+ *
+ * 这条监听不是"挂载即注册"：它在构建完参数行后**无条件挂上**，
+ * 而 `clear()` 里只在 `!self.scriptList?.data` 时摘。故这里是 1:1 的开关镜像，
+ * 逐字保留原有（不对称的）时机，不做"顺手修正"。
+ */
+const scriptChangeActive = ref(false);
+
 const attachStateAccessors = (self: ParameterPaneElement): void => {
 	for (const key of paneStateFields) {
 		Object.defineProperty(self, key, {
@@ -434,7 +444,7 @@ const update = (): void => {
 		dispatchUpdateEvent(self);
 	}
 	self.onResize?.();
-	window.addEventListener('script-change', scriptChange);
+	scriptChangeActive.value = true;
 };
 
 const enableInput = (el: ParamInput): void => {
@@ -860,7 +870,8 @@ const clear = (): void => {
 		self.textContent = '';
 	}
 	if (!self.scriptList?.data) {
-		window.removeEventListener('script-change', scriptChange);
+		// 保留原有的条件：有 scriptList.data 时不摘
+		scriptChangeActive.value = false;
 	}
 };
 
@@ -1000,6 +1011,25 @@ defineExpose({
 	root
 });
 
+/**
+ * 两个 window 监听收口到 composable。
+ *
+ * - `localize` 是干净的挂载期配对（原先 onMounted 挂、onBeforeUnmount 摘）。
+ * - `script-change` 是状态相关的（见 `scriptChangeActive`），由 `enabled` 驱动。
+ */
+useEventListener(window, 'localize', windowLocalize);
+useEventListener(window, 'script-change', scriptChange, { enabled: scriptChangeActive });
+
+/**
+ * 根元素上的 `update`（内层控件冒泡上来的自定义事件）：原样转发。
+ *
+ * 原先这里是 `onMounted` 里的内联闭包，改成模板 `@update` 后按"模板只能引用 setup 作用域绑定"
+ * 的规则提到 setup 层。
+ */
+const onSelfUpdate = (event: Event): void => {
+	emit('update', event);
+};
+
 onMounted(() => {
 	const self = root.value as ParameterPaneElement;
 	if (!self) return;
@@ -1046,21 +1076,19 @@ onMounted(() => {
 		componentChange,
 		applyAffix
 	});
-	window.addEventListener('localize', windowLocalize);
-	self.addEventListener('change', componentChange);
-	self.addEventListener('update', (e: Event) => emit('update', e));
-});
-
-onBeforeUnmount(() => {
-	const self = el;
-	if (!self) return;
-	window.removeEventListener('localize', windowLocalize);
-	window.removeEventListener('script-change', scriptChange);
+	// `window` 上的 localize / script-change 由上方 useEventListener 负责
+	// 根元素上的 change / update 已改为模板 `@` 常驻绑定
 });
 </script>
 
 <template>
-	<div class="parameter-pane" ref="root" :id="props.id">
+	<div
+		class="parameter-pane"
+		ref="root"
+		:id="props.id"
+		@change="componentChange"
+		@update="onSelfUpdate"
+	>
 		<slot />
 		<div ref="headPadRef" style="display: none"></div>
 	</div>

@@ -4,11 +4,12 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, provide } from 'vue';
+import { onMounted, provide, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registryElements } from '@app/utils/element-registry';
 import { useSceneActorPage } from '@app/composables/useSceneActorPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
+import { useEventListener } from '@app/composables/useEventListener';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
@@ -26,7 +27,20 @@ provide(sceneActorContextKey, { form, onParamInput });
 
 const { bindInput, bindSliders } = useInspectorInput();
 
-let datachangeHandler: EventListener | null = null;
+/**
+ * `datachange` 全局事件。原先在 `onMounted` 里 `datachangeHandler = editor.datachange` 后注册，
+ * 并靠模块级变量 + `onBeforeUnmount` 手工配对；而且 `editor`（`Inspector.sceneActor`）要挂载后才
+ * 一定就绪，缺它就整个不注册。
+ *
+ * 用 `enabled`（初始 false，挂载且 `editor` 存在时置真）把首次注册推迟到同一时机，
+ * 并**保留方法提取**（先存 `datachange` 再以普通函数调用），避免 `Inspector.sceneActor?.datachange(e)`
+ * 那种把 `this` 隐式绑成宿主的写法。
+ */
+const datachangeHandler = ref<EventListener | null>(null);
+const datachangeEnabled = ref(false);
+useEventListener(window, 'datachange', (event) => datachangeHandler.value?.(event), {
+	enabled: datachangeEnabled
+});
 
 onMounted(() => {
 	const editor = Inspector.sceneActor;
@@ -35,8 +49,8 @@ onMounted(() => {
 	if (el) {
 		attachElementApi(el, { sync });
 	}
-	datachangeHandler = editor.datachange as EventListener;
-	window.addEventListener('datachange', datachangeHandler);
+	datachangeHandler.value = editor.datachange as EventListener;
+	datachangeEnabled.value = true;
 	const elements = registryElements(inspectorEls, [
 		'sceneActor-name',
 		'sceneActor-type',
@@ -55,9 +69,6 @@ onMounted(() => {
 	bindSliders(sliders);
 
 	sync();
-});
-onBeforeUnmount(() => {
-	if (datachangeHandler) window.removeEventListener('datachange', datachangeHandler);
 });
 </script>
 

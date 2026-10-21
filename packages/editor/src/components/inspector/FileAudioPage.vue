@@ -104,7 +104,14 @@
 			t('components.fileAudio-progress-box.label') || 'Progress'
 		}}</DetailSummary>
 		<div class="box" id="fileAudio-progress-box">
-			<div ref="elProgress" class="box" id="fileAudio-progress">
+			<div
+				ref="elProgress"
+				class="box"
+				id="fileAudio-progress"
+				@pointerdown="onProgressPointerdown"
+				@pointermove="onProgressPointermove"
+				@pointerleave="onProgressPointerleave"
+			>
 				<div ref="elProgressFiller" class="box" id="fileAudio-progress-filler"></div>
 			</div>
 			<div ref="elProgressPointer" class="box" id="fileAudio-progress-pointer"></div>
@@ -112,7 +119,12 @@
 			<div ref="elPointerTime" class="text" id="fileAudio-pointerTime"></div>
 		</div>
 	</DetailBox>
-	<DetailBox ref="elFrequencyDetail" id="fileAudio-frequency-detail" open>
+	<DetailBox
+		ref="elFrequencyDetail"
+		id="fileAudio-frequency-detail"
+		open
+		@toggle="onFrequencyToggle"
+	>
 		<DetailSummary>{{
 			t('components.fileAudio-frequency-canvas.label') || 'Frequency'
 		}}</DetailSummary>
@@ -121,10 +133,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, onBeforeUnmount } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileAudioPage } from '@app/composables/useFileAudioPage';
+import { useEventListener } from '@app/composables/useEventListener';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -147,7 +160,51 @@ const elPointerTime = ref<HTMLElement | null>(null);
 const elFrequencyDetail = ref<InstanceType<typeof DetailBox> | null>(null);
 const elCanvas = ref<HTMLCanvasElement | null>(null);
 
-let themechangeHandler: ((event: Event) => void) | null = null;
+/**
+ * `themechange` 全局事件。原实现把 `fileAudio.themechange` 取出来存进模块级
+ * `themechangeHandler` 后注册，并在 `onBeforeUnmount` 手工摘；而且它嵌在
+ * `if (progress)` 分支里 —— 没有波形进度元素时**连这个全局监听也不注册**。
+ *
+ * 用 `enabled`（初始 false，进入那个分支时才置真）精确保留该时机，并**保留方法提取**
+ * （先存 handler 再以普通函数调用），避免 `Inspector.fileAudio?.themechange(e)` 把 `this`
+ * 隐式绑成宿主。
+ */
+/**
+ * 频率详情展开/收起时重算画布。原先是元素优先 API 的订阅（在 `DetailBox` 实例上挂 DOM 监听）。
+ * `DetailBox` 的 `toggle` emit 带的是 value（string），而这个回调并不用它，故不收参数。
+ */
+const onFrequencyToggle = (): void => {
+	Inspector.fileAudio?.windowResize?.();
+};
+
+/**
+ * 波形进度条上的三个指针监听。原先是元素优先写法
+ * （在 `elProgress` 这个模板 ref 上直接 `addEventListener`）。
+ *
+ * ⚠️ `progressPointermove` 的实现里用了 **`this.clientWidth`**，且它在
+ * `file-audio-page.ts` 里被标注为 `this: HTMLElement` —— 也就是说它**依赖
+ * "以 DOM 监听方式被调用、`this` 就是那个元素"**。模板 `@pointermove` 给不了这个 `this`，
+ * 所以这里显式用 `.call(el, event)` 把元素绑回去，保持原语义。
+ * 另外两个（`progressPointerdown` / `progressPointerleave`）不用 `this`，直接转发即可。
+ */
+const onProgressPointerdown = (event: PointerEvent): void => {
+	Inspector.fileAudio?.progressPointerdown?.(event);
+};
+
+const onProgressPointermove = (event: PointerEvent): void => {
+	const el = elProgress.value;
+	if (el) Inspector.fileAudio?.progressPointermove?.call(el, event);
+};
+
+const onProgressPointerleave = (event: PointerEvent): void => {
+	Inspector.fileAudio?.progressPointerleave?.(event);
+};
+
+const themechangeHandler = ref<EventListener | null>(null);
+const themechangeEnabled = ref(false);
+useEventListener(window, 'themechange', (event) => themechangeHandler.value?.(event), {
+	enabled: themechangeEnabled
+});
 
 onMounted(() => {
 	const fileAudio = Inspector.fileAudio;
@@ -168,14 +225,10 @@ onMounted(() => {
 
 		fileAudio.ensureWaveformBuffers?.();
 		const onThemeChange = fileAudio.themechange;
-		themechangeHandler = onThemeChange;
-		window.addEventListener('themechange', onThemeChange);
+		themechangeHandler.value = onThemeChange;
+		themechangeEnabled.value = true;
 		const el = inspectorEls.get('fileAudio');
 		el?.addEventListener('resize', fileAudio.windowResize);
-		elFrequencyDetail.value?.on('toggle', fileAudio.windowResize);
-		progress.addEventListener('pointerdown', fileAudio.progressPointerdown);
-		progress.addEventListener('pointermove', fileAudio.progressPointermove);
-		progress.addEventListener('pointerleave', fileAudio.progressPointerleave);
 	}
 
 	const el = inspectorEls.get('fileAudio');
@@ -183,9 +236,6 @@ onMounted(() => {
 		attachElementApi(el, { update: sync });
 	}
 	sync();
-});
-onBeforeUnmount(() => {
-	if (themechangeHandler) window.removeEventListener('themechange', themechangeHandler);
 });
 </script>
 

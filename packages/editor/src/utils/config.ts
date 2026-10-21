@@ -1,4 +1,5 @@
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
+import { markBoot } from '@app/utils/boot-timeline';
 import nodePath from 'node:path';
 import os from 'node:os';
 import nodeFs from 'node:fs';
@@ -15,6 +16,7 @@ export const loadConfigPromise: Promise<EditorConfigShape> | undefined = (() => 
 	if (typeof window.__nodeRequire !== 'function') {
 		return undefined;
 	}
+	markBoot('config:start');
 	const dir = Path.resolve(GlobalPath);
 	if (!nodeFs.existsSync(dir)) {
 		nodeFs.mkdirSync(dir, { recursive: true });
@@ -22,8 +24,12 @@ export const loadConfigPromise: Promise<EditorConfigShape> | undefined = (() => 
 	const configFile = Path.join(GlobalPath, 'config.json');
 	return nodeFs.promises
 		.readFile(configFile, 'utf8')
-		.then((json) => JSON.parse(json))
+		.then((json) => {
+			markBoot('config:file-read');
+			return JSON.parse(json);
+		})
 		.catch(() => {
+			markBoot('config:fallback');
 			return import('@app/file/file-system-core.ts').then(({ File }) => {
 				return File.get!({
 					local: 'default.json',
