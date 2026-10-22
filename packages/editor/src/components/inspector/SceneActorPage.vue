@@ -27,15 +27,6 @@ provide(sceneActorContextKey, { form, onParamInput });
 
 const { bindInput, bindSliders } = useInspectorInput();
 
-/**
- * `datachange` 全局事件。原先在 `onMounted` 里 `datachangeHandler = editor.datachange` 后注册，
- * 并靠模块级变量 + `onBeforeUnmount` 手工配对；而且 `editor`（`Inspector.sceneActor`）要挂载后才
- * 一定就绪，缺它就整个不注册。
- *
- * 用 `enabled`（初始 false，挂载且 `editor` 存在时置真）把首次注册推迟到同一时机，
- * 并**保留方法提取**（先存 `datachange` 再以普通函数调用），避免 `Inspector.sceneActor?.datachange(e)`
- * 那种把 `this` 隐式绑成宿主的写法。
- */
 const datachangeHandler = ref<EventListener | null>(null);
 const datachangeEnabled = ref(false);
 useEventListener(window, 'datachange', (event) => datachangeHandler.value?.(event), {

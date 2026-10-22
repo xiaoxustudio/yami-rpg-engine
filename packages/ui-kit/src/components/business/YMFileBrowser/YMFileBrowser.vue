@@ -234,7 +234,7 @@ let links: any = {};
  *
  * 必须读元素属性，不能只用模块局部变量：局部变量没有任何赋值点，`close()` 里的清理分支就永远
  * 进不去——关掉/切换项目时，上一个项目的文件行、文件夹行与地址栏都留在 DOM 里，打开新项目后
- * 与新内容叠在一起（"上一次的项目在背景"）。与 legacy 的 `this.directory` 一致（legacy 里它同时是搜索基集：`Directory.searchFiles(filters, kw, this.directory, list)`）。
+ * 与新内容叠在一起（"上一次的项目在背景"）。
  */
 const directoryItems = (): unknown[] | null => {
 	const value = (el.value as FileBrowserApi | undefined)?.directory;
@@ -243,8 +243,7 @@ const directoryItems = (): unknown[] | null => {
 
 /**
  * 把模块内的 `display` / `searchResults` 镜像到浏览器元素上（nav 侧读 `browser.display`
- * 决定面包屑与"返回上一级"的行为）。`update()` 与 `restoreDisplay()` 都要镜像一次——
- * legacy 里 `display` 就是元素属性本身，改完即生效；换源后它是模块变量，漏镜像就会读到旧值。
+ * 决定面包屑与"返回上一级"的行为）。
  */
 function syncDisplayState(): void {
 	const node = el.value as FileBrowserApi | undefined;
@@ -397,8 +396,6 @@ function getFilePaths(files: unknown[]): { relativePaths: string[]; absolutePath
 
 /**
  * 渲染出来的文件行元素在运行时挂着自己的 `file`（`FileItem`/`FolderItem` 实例）。
- * 断言只在这一处做，调用方直接用返回值 —— 原先 3 个读点各自写了一遍
- * `(element as unknown as { file: { path: string } }).file.path`。
  */
 const fileElementOf = (element: HTMLElement): { path: string } | null => {
 	const file = (element as { file?: unknown }).file;
@@ -750,13 +747,6 @@ function setupLinks() {
 	}
 }
 
-/**
- * 三个 window 监听（`os-dragstart` / `os-dragend` / `dirchange`）是否已就绪。
- *
- * 原先是 `onMounted` → `nextTick` → `setupLinks()` **之后**才手工登记、`onBeforeUnmount` 手工摘除。
- * 收口到 `useEventListener` 后仍用 `enabled` 保持同一时机：因为处理器要读 `bodyEl.value?.el`
- * 这类**尚未就绪的子组件 ref**，若在 setup 期就挂上，早到的窗口事件会打到未初始化状态。
- */
 const windowHooksReady = ref(false);
 
 useEventListener(window, 'os-dragstart', (event) => osDragstart(event as DragEvent), {
@@ -775,7 +765,6 @@ onMounted(() => {
 		node.addEventListener('pointerdown', pointerdown as EventListener);
 		node.addEventListener('dragstart', dragstart as EventListener);
 		node.addEventListener('dragend', dragend as EventListener);
-		// window 上的三个监听由上方 useEventListener + enabled 管理，此处只放行
 		windowHooksReady.value = true;
 
 		if (node.id === 'project-browser') {

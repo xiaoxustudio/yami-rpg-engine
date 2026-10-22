@@ -106,7 +106,6 @@ const core = createFileHeadPaneCore();
 const addressNodes = ref<AddressNode[]>([]);
 let addressSeq = 0;
 
-/** 地址栏元素（folder / arrow）在按下、抬起两处共用的元素形状。 */
 type AddressElement = HTMLElement & {
 	disabled: boolean;
 	file: FileItem;
@@ -118,15 +117,10 @@ type AddressElement = HTMLElement & {
 	removeClass(cls: string): void;
 };
 
-/** 地址栏元素按下后，等待「抬起」的那一个元素；非 `null` 时 window 上挂着一次性 `pointerup`。 */
 const addressPointerupTarget = ref<AddressElement | null>(null);
 
 /**
  * 地址栏元素的「抬起」处理。
- *
- * 原先由 `addressPointerdown` 经本组件自定义的
- * `listenWindow('pointerup', fn, { once: true })` 注册，再用一个 `windowListeners` 数组 +
- * `onBeforeUnmount` 循环手工回收 —— 那正是 `useEventListener` 已经负责的事，故一并撤掉。
  *
  * ⚠️ 原监听是 `{ once: true }`（一次点击只处理一次抬起），所以处理器**无论是否命中都要清空目标**：
  * 一次性监听已被消费，`enabled` 必须回到假；否则 target 一直非 null，下一次点击时
@@ -269,11 +263,7 @@ function searcherInput(event: Event) {
 	}
 }
 
-/**
- * 视图滑块的 `input`。载体是 `YMSliderBox` 的 **Vue emit**（模板 `@input`），
- * 不再对 `viewEl.value.root` 挂原生监听。取值仍走 `read()`，与原先一致。
- * 参数是 emit 带上来的值，本函数不用它（故收 `unknown`）。
- */
+/** 视图滑块的 `input`：从 `read()` 取值并转发。 */
 function viewInput(_value?: unknown) {
 	const value = viewEl.value?.read?.();
 	if (value !== undefined) {
@@ -293,10 +283,6 @@ onMounted(() => {
 	root.searcher = searcherEl.value!.root;
 	root.address = addressEl.value;
 	searcherEl.value?.root?.addCloseButton?.();
-	// ⚠️ 这两条**必须留在原生监听**上，不能换成模板 `@input` / `@compositionend`（2026-10 定论）：
-	// `searcherInput` 读的是 `(event as InputEvent).inputType`（要跳过 `insertCompositionText`），
-	// 而 `YMTextBox` 的 `input` emit 带的是**值**（string），不是 InputEvent；
-	// 它也没有 `compositionend` emit。要迁得先给 `YMTextBox` 加一条"原始事件"新契约。
 	searcherEl.value?.root?.addEventListener?.('input', searcherInput);
 	searcherEl.value?.root?.addEventListener?.('compositionend', searcherInput);
 	const viewRoot = viewEl.value?.root;

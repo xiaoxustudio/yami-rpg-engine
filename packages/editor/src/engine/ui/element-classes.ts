@@ -19,9 +19,6 @@ export interface UIElementInstance {
 	/**
 	 * 画选中/悬停虚线框（`element-base.ts:119`）。实参是**颜色数值**：
 	 * 实现把它写进 `colors[i]`（`gl.arrays[0].uint32` 视图）—— 那个 uint32 槽位就是它的口径。
-	 * ⚠️ `element-base.ts` 自己的声明写的是 `Array<number> | string`，比实现宽（写进 uint32 槽
-	 * 会得到 NaN）；两处调用点（`ui-engine.ts:585` / `:594`）传的都是 `0x…` 数值，本轮把
-	 * 实现侧的声明也一并改成 `number`。
 	 */
 	drawWireframe(color: number): void;
 	/** 从父元素的 `children` 里摘掉自己（`element-base.ts:287`，基类方法）。 */

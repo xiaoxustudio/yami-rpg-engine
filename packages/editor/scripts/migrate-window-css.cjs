@@ -1,21 +1,4 @@
 #!/usr/bin/env node
-/**
- * 组件样式迁移工具：
- * 把 Project/css/<file>.css 中「归属单一 Vue 组件」的顶层 #id 规则块
- * 迁移到对应 .vue 文件的 <style> 中，并从该 css 删除。
- *
- * 用法：
- *   node scripts/migrate-window-css.cjs [xxx.css] --dry-run   # 仅输出计划与保留清单
- *   node scripts/migrate-window-css.cjs [xxx.css] [--pages]   # 实际执行（默认 command.css）
- *
- * 判定规则：
- * 模式 A（窗口，默认）：
- * - Vue 窗口清单：src/components 下所有 .vue 中 <WindowFrame ... id="X">
- * - 规则块归属：块内每个选择器均为 #id[后缀]，取「最长的窗口 id 前缀」作 owner
- * 模式 B（--pages）：模式 A 未命中时，回退按「模板 id 字面量前缀」最长匹配；
- *   所有选择器必须归属同一 .vue 文件（跨文件歧义或非唯一则保留在 css）
- * 找不到 owner / 非纯 #id 规则 / 注释 → 保留在 css
- */
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -46,7 +29,6 @@ function walk(dir) {
 	return out;
 }
 
-/* ---------- 1. 归属索引 ---------- */
 const windowList = []; // WindowFrame id -> file
 for (const file of walk(srcDir)) {
 	if (!file.endsWith('.vue')) continue;
@@ -88,7 +70,6 @@ function findAttrOwner(id) {
 	return null;
 }
 
-/* ---------- 2. 扫描 css 顶层规则块 ---------- */
 const cssText = fs.readFileSync(cssFile, 'utf8');
 function skipWsAndComments(pos) {
 	while (pos < cssText.length) {
@@ -120,7 +101,6 @@ while (i < cssText.length) {
 	i = close + 1;
 }
 
-/* ---------- 3. 归属判定 ---------- */
 const plan = new Map(); // ownerFile -> rules[]
 const skipped = []; // { selectors, reason }
 for (const rule of rules) {
@@ -154,7 +134,6 @@ for (const rule of rules) {
 	plan.get(file).push(rule);
 }
 
-/* ---------- 4. 报告 ---------- */
 const files = [...plan.keys()].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 let moved = 0;
 for (const f of files) moved += plan.get(f).length;
@@ -172,7 +151,6 @@ if (files.length > 30) log(`  ... 其余 ${files.length - 30} 个组件`);
 log(`\n新增 <style> 的组件数: ${files.length}`);
 if (dryRun) return;
 
-/* ---------- 5. 执行：写入组件 ---------- */
 const styleNote = `/* 样式迁移：由 Project/css/${cssArg} 迁入组件（选择器为全局 id，不能用 scoped） */`;
 for (const f of files) {
 	const full = path.join(root, f);
@@ -201,7 +179,6 @@ for (const f of files) {
 	log(`+ <style> 写入 ${f}`);
 }
 
-/* ---------- 6. 从 css 删除已迁移块并清理孤立注释 ---------- */
 const deletions = [];
 for (const f of files) for (const r of plan.get(f)) deletions.push(r);
 deletions.sort((a, b) => b.start - a.start);

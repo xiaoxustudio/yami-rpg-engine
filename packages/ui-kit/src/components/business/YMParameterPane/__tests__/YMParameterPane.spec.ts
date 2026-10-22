@@ -216,12 +216,6 @@ describe('YMParameterPane', () => {
 		expect(inputData(inputs[1]).dataValue).toBe(5);
 	});
 
-	/**
-	 * `script-change` 与 `localize` 两个 window 监听本次改成了 `useEventListener`
-	 * （`script-change` 另带 `enabled`，由 `update()` 置真、`clear()` 里按条件置假）。
-	 * 既有用例只调 `el.update()`，**没有一条派发过这两个事件**，故补这条行为例：
-	 * 载荷命中 `el.metas` 时应触发 `self.update()`。
-	 */
 	it('window 上的 script-change 命中 meta 时触发 update（useEventListener 通道）', async () => {
 		const wrapper = mount(YMParameterPane, {
 			props: makeProps({
@@ -248,7 +242,6 @@ describe('YMParameterPane', () => {
 		scriptList.history = { save: () => {} };
 		el.bind(scriptList);
 		el.update();
-		// update() 末尾把 scriptChangeActive 置真，让出一拍等 enabled 挂上
 		await nextTick();
 
 		const meta = (el.metas as unknown[])[0];

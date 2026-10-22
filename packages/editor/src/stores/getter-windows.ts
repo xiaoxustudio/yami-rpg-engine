@@ -15,17 +15,6 @@ import type { TilemapGetterForm } from '@app/composables/useTilemapGetterWindow'
 import type { TriggerGetterForm } from '@app/composables/useTriggerGetterWindow';
 import type { VariableGetterForm } from '@app/composables/useVariableGetterWindow';
 
-/**
- * 「取值器」窗口组（14 个）的表单状态真源。
- *
- * 它们原先各自是所在 composable 的**模块级** `reactive`（如 `useAngleGetterWindow.ts:25`），
- * 只被对应窗口模板的 v-model 与同文件的 `open`/`confirm` 读写
- * （`open` 里 `Object.assign(form, …)`、`confirm` 里 `const data = form`）
- * ⇒ 升进 store 后 DevTools 可见、可按 pinia 实例隔离。
- *
- * 表单类型仍留在各 composable 里（`import type` 进来，不进运行时）；调用点用同名逐字段
- * 访问器承接 ⇒ 调用点与模板零改动。
- */
 export const useGetterWindowsStore = defineStore('getterWindows', () => {
 	const actorGetterForm = reactive<ActorGetterForm>({
 		type: 'trigger',

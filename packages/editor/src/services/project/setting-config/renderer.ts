@@ -106,8 +106,6 @@ export class SettingRenderer {
 
 	/**
 	 * 设置项一律在**设置窗口帧内**查找。
-	 * 原先用 `document.querySelectorAll('#id')`（bindOption/writeValue/loadSelectOptions）
-	 * 与 `$('#id')`（applyL10n）在**全文档**范围反查，现在把查询收敛到 `#setting` 帧的子树里。
 	 */
 	private byId(id: string): YamiElement | null {
 		if (id === '') return null;

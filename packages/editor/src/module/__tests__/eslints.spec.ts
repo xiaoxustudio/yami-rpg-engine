@@ -36,11 +36,11 @@ const createFakeThis = (): typeof CommandList & {
 	elements: { count: 0, findIndex: () => -1 }
 });
 
-/** 取渲染出来的行元素（换源后行归模板渲染；api 侧 elements 是离屏元素） */
+/** 取渲染出来的行元素。 */
 const renderedRows = (el: HTMLElement): (YamiElement & { lines?: HTMLElement[] })[] =>
 	Array.from(el.querySelectorAll<YamiElement & { lines?: HTMLElement[] }>('.command-item'));
 
-/** 挂载命令列表组件（换源后必须走组件，行元素才会被渲染） */
+/** 挂载命令列表组件（行元素由组件渲染）。 */
 const mountCommandList = async (options: CommandListApiOptions): Promise<HTMLElement> => {
 	const wrapper = mount(YMCommandList, { props: { options } });
 	const el = wrapper.element as unknown as HTMLElement;

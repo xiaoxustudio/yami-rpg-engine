@@ -50,15 +50,6 @@ let dataValue = '';
 let inputEventEnabled = false;
 const builtinOpen = ref(false);
 
-/**
- * 点弹层外部即关闭：用 `useEventListener` 的 `enabled` 保持**原有的附加时机**——
- * 只在弹层打开期间挂着 `document` 的 `pointerdown`，关闭即摘（不是常驻）。
- *
- * 为什么能这么换：`enabled` 是响应式的（挂/摘随 `builtinOpen` 自动切换），
- * 且 `target` 传的是 getter，每次同步时重新求值 `root.value`，因此
- * **不存在**「setup 期把 `root.value` 当时快照、之后永远指向空」的问题。
- * 另：`apply()` 只在真实状态变化时才动 DOM，弹层开着时 `builtinOpen` 反复置真也不会重复注册。
- */
 useEventListener(
 	document,
 	'pointerdown',

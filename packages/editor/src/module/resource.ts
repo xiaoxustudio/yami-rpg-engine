@@ -382,7 +382,7 @@ export const Resources = new (class {
 		void this.checkEditorVersion();
 	}
 
-	/** 行模型初值（对应旧实现那段 HTML 模板里的初始文案） */
+	/** 行模型初值 */
 	private blankRow(key: string): ResourceRow {
 		const sizeLabel = t('confirmation.resource-size-label') || '大小';
 		return {
@@ -398,7 +398,7 @@ export const Resources = new (class {
 		};
 	}
 
-	/** 旧的 `_check()`：按模板目录状态刷新「已安装 / 版本 / 删除可用」，并清理遗留 zip */
+	/** 按模板目录状态刷新「已安装 / 版本 / 删除可用」，并清理遗留 zip。 */
 	refreshRow(row: ResourceRow): void {
 		setNoResourceObj(isNoResource());
 		const tempPath = Path.resolve(TemplatesPath, row.key);

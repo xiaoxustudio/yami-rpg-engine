@@ -78,12 +78,8 @@ export const css = (el: Element): CSSStyleDeclaration => getComputedStyle(el);
 export const rect = (el: Node | null): DOMRect => (el as Element).getBoundingClientRect();
 
 /**
- * `read` / `write` 过去用 `'dataValue' in el` 判断"这个元素是否携带值"——那个判断成立的前提，
- * 正是 `HTMLElement.prototype` 上有 `dataValue` 访问器。访问器退役后它对**元素**恒为 false
- * （元素数据在 WeakMap 里，`in` 看不见），于是 `read` 会静默返回 undefined、`write` 会静默什么都不做。
- *
- * 现在两种承载者分别处理（规则见 `elementDataValueOf`）：自带 own `dataValue` 的宿主走 own 属性，
- * 元素走元素数据，其余（null / 基本类型 / 没有 dataValue 的普通对象）读写都不发生 —— 与旧实现一致。
+ * 读写元素值：自带 `read` / `write` 或 own `dataValue` 的宿主走自身，
+ * 元素走元素数据，其余读写都不发生。
  */
 export const read = (
 	el: HTMLElement | { read?: () => unknown; dataValue?: unknown } | null | undefined
@@ -180,18 +176,6 @@ export const dispatchResizeEvent = (el: { dispatchEvent: (event: Event) => unkno
 	el.dispatchEvent(resizeEvent);
 };
 
-/**
- * 窗口帧数量的**注入端口**。
- *
- * 历史写法是直接读全局 `window.Window.frames.length`（宿主 editor 在
- * `tools/window-object.ts` 末尾把单例挂到 `window` 上）。那让 ui-kit 隐式依赖宿主的全局形状，
- * 也把「窗口层级」这个宿主概念泄漏进了组件库。
- *
- * 现在宿主初始化时注册提供者即可；**未注册时回退到全局读取**，所以既有宿主与测试
- * （只挂 `window.Window`、不注册端口）行为完全不变。
- *
- * 契约：提供者返回的值与旧实现**同口径**（已含末位的 +1）。
- */
 let windowFramesLengthProvider: (() => number) | null = null;
 
 export const setWindowFramesLengthProvider = (provider: (() => number) | null): void => {

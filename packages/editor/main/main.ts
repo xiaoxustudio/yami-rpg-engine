@@ -1,6 +1,3 @@
-// [YAMI RPG EDITOR]主线程
-
-// ESM import——npm 包和 Node 内建模块 external 掉后 runtime 用 createRequire 桥解析
 import { app, Menu, session } from 'electron';
 import type { MenuItemConstructorOptions } from 'electron';
 import fs from 'fs';
@@ -9,7 +6,6 @@ import { createEditorWindow } from './window-manager.ts';
 import { promises } from './ipc-handlers.ts';
 import { logBoot, setDebugMode } from './log.ts';
 
-// 含 --dirname 参数时表示 Node.js 调试模式，重定向根目录并开启调试
 let debug = false;
 let dirname = app.getAppPath();
 const regexp = /^--dirname=(.+)$/;
@@ -22,7 +18,6 @@ for (const arg of process.argv) {
 	}
 }
 
-// 判据用 devServerUrl 存在性而非 debug，避免 start:prod 带 --debug-mode 时误走 dev URL 致空白页
 const devServerUrl = process.argv.find((arg) => arg.startsWith('--dev-server-url='))?.split('=')[1];
 const VITE_DEV_URL = devServerUrl || 'http://localhost:5173';
 const useViteDev = !!devServerUrl;
@@ -34,9 +29,6 @@ const extensionPath = path.resolve(dirname, 'extension');
 
 /**
  * 加载 extension/ 下的全部扩展。
- *
- * `loadExtension` 要的是**绝对路径**（原先传的是 `readdirSync` 出来的裸目录名），
- * 而且失败必须留下痕迹——此前是空 catch，装错扩展没有任何反馈。
  */
 async function loadExtensions(root: string): Promise<void> {
 	if (!fs.existsSync(root)) {
@@ -56,13 +48,11 @@ async function loadExtensions(root: string): Promise<void> {
 
 app.on('ready', () => {
 	logBoot('app-ready');
-	// 拒绝一切权限请求（摄像头/麦克风/地理位置等）
 	session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => {
 		callback(false);
 	});
 	session.defaultSession.setPermissionCheckHandler(() => false);
 
-	// 全局防线：所有 webContents 一律禁止弹窗，禁止导航到非本地/dev 地址
 	app.on('web-contents-created', (_event, contents) => {
 		contents.setWindowOpenHandler(() => ({ action: 'deny' }));
 		contents.on('will-navigate', (event, url) => {
@@ -83,7 +73,6 @@ app.on('window-all-closed', () => {
 	app.quit();
 });
 
-// 阻止退出直到写入完成
 app.on('before-quit', async (event) => {
 	event.preventDefault();
 	await Promise.allSettled(promises);
@@ -107,7 +96,6 @@ const createMenuTemplate = function () {
 		label: 'Edit',
 		submenu: [] as MenuItemConstructorOptions[]
 	};
-	// 开发模式：开启F5刷新
 	if (debug) {
 		file.submenu.push({
 			label: 'Reload',
@@ -127,7 +115,6 @@ const createMenuTemplate = function () {
 		accelerator: 'F12',
 		role: 'toggleDevTools'
 	});
-	// 启用MacOS开发者工具的复制粘贴操作(但跟编辑器冲突)
 	if (process.platform === 'darwin' && debug) {
 		edit.submenu.push(
 			{ role: 'undo' },

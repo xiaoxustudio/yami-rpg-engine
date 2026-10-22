@@ -13,8 +13,6 @@ import * as apkProcessor from './apk.ts';
  * `on` 通道路径入参的统一体检：非空字符串、不含 NUL、且**归一化后是绝对路径**。
  *
  * 合法返回规范化后的绝对路径，不合法返回 `null` 由调用方静默忽略。
- * 此前 `openPath` / `trashItem` 只查了非空与 NUL、没过 `isAbsolute`，
- * 与 `writeFile` / `openVscode` / `showItemInFolder` 的口径不一致。
  */
 function resolveIpcPath(value: unknown): string | null {
 	if (typeof value !== 'string' || value.length === 0 || value.includes('\0')) return null;
@@ -69,7 +67,6 @@ ipcMain.handle(CHANNELS.invoke.fromExcel, (event) => {
 	return fromExcel(event);
 });
 
-// 获取存档目录
 ipcMain.on(CHANNELS.on.getDirPathSync, (event, location) => {
 	switch (location) {
 		case 'app-data':
@@ -175,11 +172,9 @@ ipcMain.on(CHANNELS.on.openPath, (_event, targetPath) => {
 	void shell.openPath(safePath);
 });
 
-// 使用VSCode打开脚本
 ipcMain.on(CHANNELS.on.openVscode, (_event, scriptPath, line, column) => {
 	const normalized = resolveIpcPath(scriptPath);
 	if (normalized === null) return;
-	// 剔除会污染 vscode:// URI 的片段/查询字符，防止协议参数注入
 	const url = `${normalized}:${Number(line) || 0}:${Number(column) || 0}`.replace(/[?#]/g, '');
 	void shell.openExternal(`vscode://file/${url}`);
 });
@@ -217,7 +212,6 @@ ipcMain.handle(CHANNELS.invoke.showSaveDialog, (event, options) => {
 	return dialog.showSaveDialog(window, options);
 });
 
-// 与 writeFile 同形：async 助手把校验失败变成 rejected promise，
 // 渲染进程侧 `await` 得到的是可捕获的错误而不是同步异常
 const trashItem = async (filePath: string) => {
 	const safePath = resolveIpcPath(filePath);
@@ -229,10 +223,8 @@ ipcMain.handle(CHANNELS.invoke.trashItem, (_event, filePath) => {
 	return trashItem(filePath);
 });
 
-// 设置设备像素比率
 ipcMain.on(CHANNELS.on.setDevicePixelRatio, (event, ratio) => {
 	const window = getWindowFromEvent(event);
-	// MacOS不像Windows一样锁定窗口最大化
 	if (process.platform === 'darwin') {
 		if (window.isMaximized() || window.isFullScreen()) {
 			return;
@@ -248,7 +240,6 @@ ipcMain.on(CHANNELS.on.setDevicePixelRatio, (event, ratio) => {
 	const height = Math.round(config.height / ratio);
 	const x = bounds.x + ((bounds.width - width) >> 1);
 	const y = bounds.y + ((bounds.height - height) >> 1);
-	// electron bug：非100%缩放时，窗口位置不能完美地被设置
 	window.setContentBounds({ x, y, width, height });
 });
 
@@ -283,7 +274,6 @@ ipcMain.on(CHANNELS.on.setDisplayMode, (event, display) => {
 	}
 });
 
-// commandLine
 ipcMain.on(CHANNELS.on.getCommandLineSwitch, (event, name) => {
 	event.returnValue = app.commandLine.getSwitchValue(name);
 });
@@ -304,11 +294,9 @@ ipcMain.on(CHANNELS.on.hasCommandLineSwitch, (event, name) => {
 	event.returnValue = app.commandLine.hasSwitch(name);
 });
 
-// 重启应用
 ipcMain.handle(CHANNELS.invoke.relaunchApp, async (event) => {
 	try {
 		const window = getWindowFromEvent(event);
-		// 如果有窗口，等待它真正关闭
 		if (currentPlayerWindow) {
 			const playerWindow = currentPlayerWindow;
 			return await new Promise((resolve) => {

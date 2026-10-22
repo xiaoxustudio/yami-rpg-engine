@@ -3,7 +3,6 @@ import { mount } from '@vue/test-utils';
 import { defineComponent, h, ref } from 'vue';
 import { useEventListener } from '../useEventListener';
 
-/** 最小宿主组件：把 composable 挂在真实的 mount/unmount 生命周期上。 */
 const Host = defineComponent({
 	props: {
 		onEvent: { type: Function, required: true }
@@ -15,10 +14,6 @@ const Host = defineComponent({
 	}
 });
 
-/**
- * 带 `enabled` 开关的宿主：证明「条件性挂全局监听」可响应式开关
- * （`YMColorBox`/`YMSelectBox` 的弹出层点外部关闭就是这种形态）。
- */
 const ToggleHost = defineComponent({
 	props: {
 		onEvent: { type: Function, required: true },
@@ -31,15 +26,6 @@ const ToggleHost = defineComponent({
 	}
 });
 
-/**
- * 目标初始为 `null`（模板 ref 尚未赋值）的宿主：证明 `MaybeRefOrGetter` 的跟随挂载。
- *
- * 这里用**模板 ref + `v-if`**，而不是读 `wrapper.vm.$.setupState` 去改内部状态 ——
- * `setupState` 在 Vue 类型里是 `@internal`，`oxlint` 的 type-aware 检查会直接报
- * 「Property 'setupState' does not exist on type 'ComponentInternalInstance'」，
- * 连 `as unknown as` 也绕不过（TS 层面 `unknown` 断言合法，但该字段本就不在类型里）。
- * 模板 ref 是公开 API，且更贴近真实用法。
- */
 const DeferredHost = defineComponent({
 	props: {
 		onEvent: { type: Function, required: true },
@@ -48,7 +34,6 @@ const DeferredHost = defineComponent({
 	setup(props) {
 		const root = ref<HTMLElement | null>(null);
 		const handler = (event: Event): void => props.onEvent(event);
-		// 传 getter（不是 `root.value`）：setup 期 root 还是 null，传值会永久挂空对象。
 		useEventListener(() => (props.ready ? root.value : null), 'probe', handler);
 		return () => h('div', { ref: root });
 	}
@@ -92,7 +77,6 @@ describe('useEventListener', () => {
 		element.dispatchEvent(new Event('probe'));
 		expect(onEvent).toHaveBeenCalledTimes(1);
 
-		// 卸载后同一元素不再收到
 		wrapper.unmount();
 		element.dispatchEvent(new Event('probe'));
 		expect(onEvent).toHaveBeenCalledTimes(1);

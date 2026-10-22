@@ -196,12 +196,6 @@ const root = ref<HTMLElement | null>(null);
 
 let el: ParamListElement | null = null;
 
-/**
- * 是否正处于一次拖拽选择中 —— **专供 `useEventListener` 的 `enabled`** 的响应式信号。
- *
- * 拖拽状态存在 `self.dragging`（元素数据）里，不是响应式的，所以不能直接拿它当开关。
- * 本 ref 与 `self.dragging` 在同样的两处同进同出：按下建拖拽时置真、`windowPointerup` 里置假。
- */
 const dragActive = ref(false);
 
 const state = {
@@ -430,7 +424,6 @@ const update = (): void => {
 
 	resize();
 
-	// 行已重建 ⇒ 旧的 `self.start`/`self.end` 可能越界，收敛回去（见该函数注释）
 	reconcileSelection();
 };
 
@@ -541,8 +534,6 @@ const select = (start: number, end: number = start): void => {
 
 	unselect();
 
-	// 空列表没有可选的行：把选中整体清空，**不要**留下 `start/end = -1` 这种
-	// "看起来有选中、实际没有行"的状态（见 `resolveSelectionRange` 注释）。
 	if (range === null) {
 		self.start = null;
 		self.end = null;
@@ -639,9 +630,6 @@ const reconcileSelection = (): void => {
 	self.end = Math.max(start, end);
 	self.origin = clamp(self.origin ?? self.start, self.start, self.end);
 	self.active = clamp(self.active ?? self.start, self.start, self.end);
-	// `update()` 把**行元素整个换掉了**：旧元素上的 `selected` 类随旧节点一起扔掉。
-	// 所以哪怕范围没变也必须按新行重画，否则范围还在、界面上却"看起来没选中"
-	// （用户会再点一次，正好踩上"双击没反应"的错觉）。
 	unselect();
 	reselect();
 };
@@ -723,10 +711,6 @@ const edit = (): void => {
 	if (self.start !== null) {
 		const elements = self.elements;
 		const element = elements[self.start];
-		// 兜底：正常路径上 `update()` 末尾的 `reconcileSelection()` 已把选中收敛到有效范围，
-		// 但 `edit()` 是元素 API 的公开方法，仍可能被外部以陈旧/边界索引调用 ——
-		// 没有可编辑的行就早退，否则读 `.dataItem` 会抛
-		// `Cannot read properties of undefined (reading 'dataItem')`（2026-10-22 实报）。
 		if (!element) return;
 		self.inserting = element.dataItem === null;
 		switch (self.inserting) {
@@ -1042,7 +1026,6 @@ const pointerdown = (event: PointerEvent): void => {
 			}
 			if (index !== undefined && index >= 0) {
 				element = self.elements[index];
-				// 陈旧行（DOM 里还挂着、`elements` 已重建）没有对应槽位：不建拖拽，避免读 undefined。
 				if (!element) break;
 				if (event.shiftKey && self.start !== null) {
 					selectMultiple(index);
@@ -1053,7 +1036,6 @@ const pointerdown = (event: PointerEvent): void => {
 				(event as DragEventState).mode = 'select';
 				(event as DragEventState).itemIndex = index;
 				(event as DragEventState).itemHeight = element.clientHeight;
-				// window 上的 pointerup / pointermove 由 useEventListener + enabled 管理
 				dragActive.value = true;
 				self.scrollListener.addScrollListener('vertical', 2, true, () => {
 					windowPointermove((event as DragEventState).latest!);
@@ -1095,13 +1077,9 @@ const pointerup = (event: PointerEvent): void => {
 			if (self.start !== null && document.activeElement === self) {
 				const elements = self.elements;
 				const element = elements[self.start];
-				// 选中索引可能指向不存在的行（列表刚重建、空列表被聚焦过等）。
-				// 这里只降级"针对某一项"的菜单项，不能再无条件读 `.dataItem`：
-				// 那正是 2026-10-22 实报的 `reading 'dataItem'`（右键必崩、菜单不弹）。
 				const valid = !!element?.dataItem;
 				const editable = !!element && self.start === self.end;
 				const pastable = !!getClipboard()?.has(self.type!);
-				// `write()` 之前 `data` 是 null（空列表）：这里同样不能假设它已经有数组。
 				const allSelectable = (self.data?.length ?? 0) > 0;
 				const undoable = self.history!.canUndo();
 				const redoable = self.history!.canRedo();
@@ -1263,14 +1241,6 @@ const windowPointermove = (event: PointerEvent): void => {
 	}
 };
 
-/**
- * 拖拽选择期才挂 window 的 `pointerup`/`pointermove`：`enabled` 由 `dragActive` 驱动，
- * 挂/摘成对，不再在 `pointerdown` 与 `windowPointerup` 手工 add / remove。
- *
- * ⚠️ 与其余 P1i 组件同一套配方：开关必须响应式（`self.dragging` 是元素数据，不触发 watcher）；
- * 挂载时机是 `flush: 'post'`，同一 tick 内连续派发 pointerdown → pointermove 的测试需先
- * `await nextTick()`（真实浏览器里两者本就分属不同 task）。
- */
 useEventListener(window, 'pointerup', (event) => windowPointerup(event as PointerEvent), {
 	enabled: dragActive
 });
@@ -1324,9 +1294,6 @@ defineExpose({
 
 /**
  * 根元素上的 `change`（内层控件冒泡上来的原生 change）：读当前值并转发为组件事件。
- *
- * 原先这里是 `onMounted` 里的一段**内联闭包**，改成模板 `@change` 后必须提到 setup 层
- * （模板只能引用 setup 作用域的绑定）。
  */
 const onSelfChange = (): void => {
 	const self = el!;
@@ -1380,8 +1347,6 @@ onMounted(() => {
 		get: getPaddingTop
 	});
 	self.scrollListener = attachScrollListener(self);
-	// scroll / focus / blur / keydown / pointerdown / pointerup / change
-	// 七个已改为模板 `@` 常驻绑定（`self` 就是模板根 `ref="root"`）
 	attachDoubleclick(self, doubleclick);
 	attachApi(self, {
 		bind,
@@ -1437,14 +1402,6 @@ onMounted(() => {
 });
 </script>
 
-<!--
-	P4b：`:filter` / `:group` 两个绑定已删除。它们在"`HTMLElement.prototype` 上挂着元素数据访问器"的年代
-	会经 Vue 的 patchDOMProp 写进 WeakMap（`'filter' in el` 为真 ⇒ 走属性而不是 attribute），而**没有任何
-	代码读这两个槽位**（组件用的是 `props.filter` / `props.group`）；访问器退役后它们只会变成两个多余的
-	DOM 属性。删掉是等价且更诚实的写法。
-	注意：说明必须放在 `<template>` **之外**——模板里的顶层注释会让组件变成多根（注释 + div），
-	vue-test-utils 的 `wrapper.element` 就不再是元素本身。
--->
 <template>
 	<div
 		ref="root"

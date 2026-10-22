@@ -32,7 +32,6 @@ vi.mock('electron', () => ({
 	BrowserWindow: electronMocks.FakeBrowserWindow
 }));
 
-// 只为拿 options，不必真的把 sharp / xml2js 拉起来
 vi.mock('../apk.ts', () => ({
 	abortBuild: vi.fn(),
 	main: vi.fn(),
@@ -64,10 +63,6 @@ describe('createPlayerWindow 的 debug 标记', () => {
 		electronMocks.created.length = 0;
 	});
 
-	/**
-	 * 回归：原先写死 `additionalArguments: ['--debug-mode']`，而 template-arpg 运行时的
-	 * `util.ts` 把该标记读成自己的 debug 开关，于是「从编辑器启动的游戏」永远在 debug 模式。
-	 */
 	it('debug 关闭时不带 --debug-mode', () => {
 		setDebugMode(false);
 		const player = createPlayerWindow(

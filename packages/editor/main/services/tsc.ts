@@ -5,7 +5,6 @@ import { fork, spawn, type ChildProcess } from 'child_process';
 import path from 'path';
 import { getEditorWindow } from '../window-registry.ts';
 
-// 模块所在目录（dist-electron/），不依赖 import.meta.url 或 CJS __dirname 全局
 const __dirname = path.resolve(app.getAppPath(), 'dist-electron');
 
 let tscProcess: ChildProcess | null = null;
@@ -141,8 +140,6 @@ function transpileWithTypescriptApi(ts: typeof import('typescript'), code: strin
 		reportDiagnostics: true
 	});
 
-	// `transpileModule` 默认对语法错误一声不吭，会把半成品当成功返回；
-	// 这里显式升级成 error，让调用方的「编译错误」分支照常生效。
 	const errors = (output.diagnostics ?? []).filter(
 		(diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error
 	);
@@ -172,7 +169,6 @@ export const compileTscFile = async (code: string): Promise<CompileTscFileResult
 	}
 
 	try {
-		// external 化的动态 import：CJS 产物里落成 require，不会把编译器打进主进程包
 		const ts = await import('typescript');
 		return { res: transpileWithTypescriptApi(ts, code) };
 	} catch (error) {

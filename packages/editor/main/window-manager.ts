@@ -40,14 +40,6 @@ export const createEditorWindow = function (
 		event.preventDefault();
 	});
 
-	// 渲染进程 console 转发。
-	//
-	// 用 Electron 43 的非弃用签名（`details` 上直接带 message / level / lineNumber /
-	// sourceId）。旧的位置参数签名已标记 @deprecated，且 level 是 0..3 的数字，
-	// 原映射 `['log','warning','error'][level]` 会把 info 说成 warning、warning 说成 error。
-	//
-	// 生产环境只转发 error：全量转发意味着渲染进程每一条 console.log 都要跨一次进程
-	// 并写主进程 stdout，循环里的日志会直接变成瓶颈。
 	editor.webContents.on('console-message', (details) => {
 		const { level, message, lineNumber, sourceId } = details;
 		const text = `[renderer:${level}] ${message} (${sourceId}:${lineNumber})`;
@@ -57,15 +49,10 @@ export const createEditorWindow = function (
 			console.log(text);
 		}
 	});
-	// 未捕获错误 / 未处理 rejection 的兜底上报已移到 main/preload.ts：
-	// preload 在页面脚本之前执行，能覆盖启动期（模块求值）抛出的错误，
-	// 而原先这里的 did-finish-load + executeJavaScript 要等加载完成才注册。
 
 	if (useViteDev) {
-		// Vite dev 模式：载 dev server URL，HMR + 模块解析由 Vite 接管
 		void editor.loadURL(viteDevUrl);
 	} else {
-		// prod 模式：载 dist/index.html（vite build 产物）
 		const indexPath = path.resolve(dirname, 'dist/index.html');
 		void editor.loadFile(indexPath);
 	}
@@ -77,7 +64,6 @@ export const createEditorWindow = function (
 	editor.on('enter-full-screen', () => editor.send(CHANNELS.send.enterFullScreen));
 	editor.on('leave-full-screen', () => editor.send(CHANNELS.send.leaveFullScreen));
 
-	// 加载配置文件并设置缩放系数
 	const configPath = path.resolve(path.join(os.homedir(), '.openyami'), 'config.json');
 	const promise = FSP.readFile(configPath);
 	editor.once('ready-to-show', () => {
@@ -143,7 +129,6 @@ export const createPlayerWindow = function (
 		}
 	).window;
 
-	// WIN窗口大小调整：减去菜单栏的高度
 	let windowHeight = window.height;
 	if (process.platform === 'win32') {
 		windowHeight = Math.max(windowHeight - 20, 0);
@@ -163,8 +148,6 @@ export const createPlayerWindow = function (
 			sandbox: false,
 			preload: path.resolve(app.getAppPath(), 'dist-electron', 'preload.js'),
 			spellcheck: false,
-			// 跟随编辑器的 debug 状态：游戏运行时（template-arpg/Script/util.ts）会把它
-			// 读成自己的 debug 开关，写死会让「从编辑器启动的游戏」永远处于 debug 模式
 			additionalArguments: isDebugMode() ? ['--debug-mode'] : []
 		}
 	}) as BrowserWindow & BrowserWindowExtension;
@@ -197,7 +180,6 @@ export const createPlayerWindow = function (
 		if (!player.stopCloseEvent) {
 			player.send(CHANNELS.send.beforeCloseWindow);
 			event.preventDefault();
-			// 如果渲染线程未响应，超时2秒后关闭窗口
 			setTimeout(() => {
 				if (!player.stopCloseEvent) {
 					player.stopCloseEvent = true;

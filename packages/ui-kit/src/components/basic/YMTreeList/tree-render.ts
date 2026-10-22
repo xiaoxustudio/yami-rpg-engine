@@ -205,7 +205,7 @@ export const computeWindow = (
 export const windowRowsOf = (state: TreeRenderState): ComputedRef<TreeRenderRow[]> =>
 	computed(() => state.rows.value.slice(state.start.value, state.end.value));
 
-/** item → 当前已物化的行元素（未物化 / 已卸载返回 undefined）——替代旧的 `item.element` 桥 */
+/** item → 当前已物化的行元素（未物化 / 已卸载返回 undefined）。 */
 export const rowElementOf = (item: TreeItem): NodeElement | undefined => {
 	const state = stateOfItem(item);
 	if (state === undefined) return undefined;

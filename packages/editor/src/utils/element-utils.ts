@@ -150,14 +150,7 @@ export function rect(el: unknown): DOMRect {
 	return (el as Element).getBoundingClientRect();
 }
 
-/**
- * 清空元素内容。
- *
- * —— 类型在说谎，`return el as unknown as HTMLElement` 就是替这个谎背书。
- * 已放宽为 `HTMLElement | null | undefined`。依据：全仓**没有任何调用方取用它的返回值**
- * （实测 `= clear(` / `return clear(` / `clear(…).x` 三种形态都是 0 处）⇒ 无涟漪。
- * 同时那一支与末尾那两个断言都不再需要。
- */
+/** 清空元素内容。 */
 export function clear(el: Node | null | undefined): HTMLElement | null | undefined {
 	if (!el) return el;
 	const element = el as HTMLElement & { clear?: () => unknown };

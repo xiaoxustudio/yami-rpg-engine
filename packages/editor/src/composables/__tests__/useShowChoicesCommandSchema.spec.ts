@@ -127,17 +127,6 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		commandWrapper.unmount();
 	});
 
-	/**
-	 * 回归（2026-10-22 实报）：**打开"显示选项"窗口，选项列表是空的 / 双击没反应**。
-	 *
-	 * `customLoad` 走的是 `Object.assign(form, { choices, … })`。`form` 若没有 `choices`
-	 * 访问器，`Object.assign` 只会往这个普通对象上加一个**非响应式**的自有属性 ——
-	 * 值确实写进去了，但窗口模板上的 `v-model="form.choices"` 永远收不到变更，
-	 * 列表一次都不会被 `write()`，于是打开窗口看到的是空列表。
-	 *
-	 * 断言"一次 `nextTick` 之后行就在 DOM 里"，不允许靠别的原因（比如改参数触发重渲染）
-	 * 蒙混过去。
-	 */
 	it('customLoad 后选项列表立刻有行（v-model 必须真的到达 ParamList）', async () => {
 		const { commandWrapper } = await mountAll();
 		const list = getList('showChoices-choices');
@@ -150,7 +139,6 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		await commandWrapper.vm.$nextTick();
 
 		expect(list.read()).toEqual([makeChoice('Yes'), makeChoice('No')]);
-		// 两行数据 + 末尾"N items"占位行
 		expect(list.querySelectorAll('.param-item')).toHaveLength(3);
 	});
 
@@ -183,7 +171,6 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		const row = list.querySelectorAll('.param-item')[0] as HTMLElement;
 		const coords = { clientX: 20, clientY: 10 };
 		row.dispatchEvent(pointer('pointerdown', { button: 0, ...coords }));
-		// window 上的 pointerup 收尾监听由 useEventListener 在 flush: 'post' 挂载
 		await commandWrapper.vm.$nextTick();
 		window.dispatchEvent(pointer('pointerup', { button: 0, ...coords }));
 		await commandWrapper.vm.$nextTick();

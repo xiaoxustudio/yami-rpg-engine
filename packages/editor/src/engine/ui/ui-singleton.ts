@@ -186,14 +186,10 @@ for (const key of uiBridgeKeys) {
 }
 
 /**
- *
  * ⚠️ 顺序有意义：`ui-initialize` 先建 DOM 引用与定时器、`ui-file` 挂文档生命周期；
  * 其余域只做赋值，彼此不依赖加载顺序。
  *
- * ⚠️ **必须动态 import**：这些域模块静态 import 本模块的 `UI`，静态引入会先于本模块体求值、踩 TDZ。
- * 原来的 `register.ts` 用的是**静态** import（被 `uiWindowReady` 动态引入，于是也晚于本模块体）——
- * 改成顺序 await 之后，"先 initialize 后其余"这条约定**第一次真的被强制**了（原先与并行的
- * `ui-members.ts` 分支存在竞争：那个模块静态 import 全部域模块）。行为上两者等价（域模块只做赋值）。
+ * ⚠️ **必须动态 import**：这些域模块静态 import 本模块的 `UI`，静态引入会先于本模块体求值、踩 TDZ。行为上两者等价（域模块只做赋值）。
  */
 const loadUiDomains = async () => {
 	await import('@app/engine/ui/ui-initialize.ts');

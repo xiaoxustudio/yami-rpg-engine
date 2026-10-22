@@ -273,10 +273,9 @@ const form: ProjectSettingsForm = {
 };
 let changed = false;
 let tscStarted = false;
-/** 语言列表控件（`bind()` 时由 ParamList 传入），供语言窗口的确认动作读取 */
 let languageList: { inserting?: boolean } = {};
 
-/** 取注册表里的控件元素（沿用原先 `document.getElementById(id)!` 的非空断言语义） */
+/** 取注册表里的控件元素 */
 const el = (id: string): YamiElement => composableEls.get(id) as YamiElement;
 
 const PARAM_IDS = [

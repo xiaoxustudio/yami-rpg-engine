@@ -112,10 +112,6 @@ const closeBuiltin = (): void => {
 	builtinOpen.value = false;
 };
 
-/**
- * 点弹层外部即关闭：走 `useEventListener` 的 `enabled`，**保持原有的附加时机**——
- * 只在弹层打开期间挂着 `document` 的 `pointerdown`，关闭即摘（不是常驻）。
- */
 useEventListener(
 	document,
 	'pointerdown',

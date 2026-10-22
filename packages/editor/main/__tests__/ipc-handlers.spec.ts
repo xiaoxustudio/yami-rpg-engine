@@ -241,7 +241,6 @@ describe('ipc-handlers 安全校验', () => {
 			expect(electronMocks.shell.openPath).not.toHaveBeenCalled();
 		});
 
-		// 回归：此前 openPath 只查了非空与 NUL，相对路径会被原样交给 shell.openPath
 		it('相对路径不调用 shell.openPath', () => {
 			emitOpenPath('relative/folder');
 			expect(electronMocks.shell.openPath).not.toHaveBeenCalled();
@@ -284,7 +283,6 @@ describe('ipc-handlers 安全校验', () => {
 		});
 	});
 
-	// 回归：此前 trashItem 没有任何校验，path.normalize 后直接进 shell.trashItem
 	describe('trashItem handler', () => {
 		it('空路径被拒绝且不调用 shell.trashItem', async () => {
 			await expect(invokeTrashItem('')).rejects.toThrow('invalid file path');

@@ -40,13 +40,7 @@ const disable = (el: HTMLElement): void => {
 	addClass(el, 'disabled');
 };
 
-/**
- * 组内成员（`document.getElementsByName`）可能是两种宿主——
- * ① radio-box 元素：`YMRadioBox`/`RadioBox.vue` 在元素上自建 own `dataValue` 访问器（组件自持状态，遮蔽原型）；
- * ② radio-proxy 自身：`dataValue` 是元素数据。
- * 原来的 `element.dataValue` 属性读正好覆盖两者，访问器退役后必须显式二选一——统一走
- * `elementDataValueOf`（own 属性优先，否则元素数据；口径同 `utils/dom.ts` 的 `read`）。
- */
+/** 读取组内成员的 `dataValue`：radio-box 元素走 own 属性，radio-proxy 走元素数据。 */
 const memberDataValue = (el: RadioProxyElement): unknown => elementDataValueOf(el);
 
 const subtract = <T>(a: T[], b: T[]): T[] => {

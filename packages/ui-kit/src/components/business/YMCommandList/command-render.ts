@@ -58,7 +58,7 @@ export const listKeyOf = (list: object): string => {
 
 /**
  * 空白行的稳定 key。**与 `command-api.ts` 的 `createBlankElement` 共用这一个函数**，
- * 保证"派生层算出的行"与"api 建出的行"key 一致（换源前后要靠它逐项比对）。
+ * 保证"派生层算出的行"与"api 建出的行"key 一致。
  *
  * key 必须带**所属列表的身份**：`parse` 可以为**同一条命令**产出**多个 `children`**
  * （`if` / `showChoices` / `switch` 每个分支一个子列表，见 `useIfCommandSchema`），

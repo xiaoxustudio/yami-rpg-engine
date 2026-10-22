@@ -119,16 +119,7 @@ export interface CommandRowAttachData {
 	contents?: CommandContent[] | null;
 }
 
-/**
- * 把一行数据按**与建行代码相同的方式**挂成元素上的闭包。
- *
- * 为什么单独有这个函数：换源后行元素由模板渲染，`createCommandBuffer` 里那套
- * `Object.defineProperty(element, 'dataItem', …)` 不会再跑，而行内渲染
- * （`updateCommandElement`）与整条逻辑链都依赖这些 getter ⇒ 回写桥需要一个等价的挂载入口。
- *
- * **刻意不改动** `createCommandBuffer` 里原有的定义（那些捕获构建期局部变量，合并会改语义）；
- * 这里只是"同一套定义"的第二个入口，并有自己的用例逐项核对语义一致。
- */
+/** 把一行数据挂成元素上的闭包（与建行代码同一套定义的回写桥入口）。 */
 export function attachRowData(element: HTMLElement, row: CommandRowAttachData): void {
 	const node = element as CommandItemElement;
 	let contents: CommandContent[] | null = row.contents === undefined ? [] : row.contents;
@@ -409,7 +400,7 @@ interface CommandListHost extends HTMLElement {
 	delete(): void;
 	undo(): void;
 	redo(): void;
-	/** "编辑数据"入口：ui-kit 未实现，由编辑器侧的 `monkey-patches` 覆写挂上（与原先一样必存在） */
+	/** "编辑数据"入口：ui-kit 未实现，由编辑器侧的 `monkey-patches` 覆写挂上 */
 	openEdit(): void;
 
 	analyzeVariables(): { varList: VariableItem[]; varMap: Record<string, VariableItem> };

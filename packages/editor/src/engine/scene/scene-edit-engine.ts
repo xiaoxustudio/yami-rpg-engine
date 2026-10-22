@@ -79,7 +79,6 @@ type SceneEditEngineShape = {
 	getNewTilesetIndex: (this: SceneEditThis, tilesetMap: Record<string, string>) => number;
 };
 
-/** `Partial<>` 是**如实描述**：对象在下面按域挂载，`{}` 时确实一个成员都没有。 */
 export const SceneEditEngine: Partial<SceneEditEngineShape> = {};
 
 SceneEditEngine.edit = function (

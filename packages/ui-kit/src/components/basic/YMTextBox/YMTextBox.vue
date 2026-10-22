@@ -89,10 +89,6 @@ const updateCloseButton = (): void => {
 	closeButtonDisplay.value = read() !== '' ? '' : 'none';
 };
 
-/**
- * 两个 opt-in 是否已启用 —— 根元素上的两个监听改成了**常驻模板绑定**，
- * 由这两个开关在处理器里早退，以保持"按需生效"的原语义（见 `onRootKeydown`）。
- */
 const closeButtonActive = ref(false);
 const keydownFilterActive = ref(false);
 

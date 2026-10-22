@@ -14,17 +14,8 @@ import type { YamiElement } from '@app/types/element-api';
 /**
  * 惰加载 UI 窗口单例。
  *
- * 导出给 `engine/ui/ui-engine.ts`：它的 `renderingFunction` 需要以**方法调用**形态
- * 调用 `UI.drawXxx()`（见该处注释——`Timer` 是裸调用，没有接收者），
- * 而直接 `import { UI } from '@app/engine/ui/ui-singleton.ts'` 会与 `ui-window.ts → ui-engine.ts`
- * 形成静态循环导入。这个惰加载代理只在**运行时**解析目标，天然避开循环。
- *
- * 改为**直连遗留 UI 窗口模块** —— 桶文件里那行 `export { UI }` 已同步删除，
- * 于是「取 UI 对象」这条接线不再经过它。
- *
- * ⚠️ `await clusterReady` **必须保留**：它等的是 Scene / UI / Animation / Particle / Palette
- * 五个窗口**全部**就绪，而 UI 的动作会用到 `Scene.list` 一类。改成只等 `uiWindowReady`
- * 会缩短就绪契约 —— 那是一条会**静默改变时序**的改动，不属于 ① 的范围。
+ * `await clusterReady` 必须保留：它等 Scene / UI / Animation / Particle / Palette
+ * 五个窗口全部就绪。
  */
 export const loadUI = async () => {
 	const [uiWindow, cluster] = await Promise.all([
@@ -110,51 +101,11 @@ export const useUIStore = defineStore('ui', () => {
 	const controlPointTexture = shallowRef<ImageTexture | null>(null);
 	const inspectorTypeMap = shallowRef<Record<string, string> | null>(null);
 	/**
-	 * `elements.list` / `.head` / `.body` / `.screen` 一律从**元素注册表**读取，
-	 * 而不是靠桥接写入。
+	 * `elements.list` / `.head` / `.body` / `.screen` 一律从**元素注册表**读取，而不是靠桥接写入。
 	 *
-	 * ## 为什么改走注册表（2026-09-18 实测定位）
-	 *
-	 * 这四个字段原本靠 `UI.initialize()` 里的 `this.list = uiEls.get('ui-list')` 赋值，
-	 * 而 `UI.initialize()` **只有一个调用方**：`LayoutPanel.vue` 的 `onMounted` 里
-	 * `nextTick(() => getUIStore().initialize())`。也就是说它**确实会被调用**，
-	 * 但时机是「LayoutPanel 挂载后的下一个 tick」——**晚于** `Layout.initialize`
-	 * （`initCore` 在 `Editor.initialize` 里先跑），也晚于任何在挂载前发生的读取。
-	 *
-	 * 依赖这个时序的直接后果：任何**早于**该 tick 的读取都拿到 `null`，
-	 * 而调用方写的是 `getUIStore().list!.unselect(...)`——`!` 把「可能为 null」在类型上
-	 * 抹掉了，tsc 全程不报错，直到用户点选 UI 元素列表才炸出
-	 * `Cannot read properties of null (reading 'unselect')`。
-	 * 走注册表就不再有这个时序窗口：注册表在 `:ref` 登记那一刻就有值。
-	 *
-	 * ## 为什么注册表是对的
-	 *
-	 * `uiEls` 由 `LayoutPanel.vue` 的模板 `:ref="registryRef(uiEls, '<id>')"` 登记，
-	 * Vue **同步 mount** 完成后才 `emitCustom('vue-app-mounted')` → `Editor.initialize`，
-	 * 所以任何会用到这些元素的代码路径上，注册表都已经登记好；而且它始终反映**当前**元素，
-	 * 不像桥接那样依赖"谁先初始化"。
-	 *
-	 * ## 为什么是「访问器」而不是 `ref` / `computed`
-	 *
-	 * 这四条必须是**每次读都重新求值**且**只读**的访问器（`elements` 上的 getter）。
-	 * 三个坑都踩过，别再改回去：
-	 *
-	 * 1. **不能是 `computed`**：`uiEls` 是普通 `Map`，没有响应性，`computed` 首次求值后
-	 *    **永不重新求值**。只要有人在元素登记**之前**读过一次，它就永久缓存 `null`
-	 *    —— 那正是本次要修的崩溃本身。（vitest 实测：`computed(() => plainMap.get(k))`
-	 *    在 `map.set(k, v)` 之后仍返回旧值；而 getter 写法则立刻返回新值。）
-	 * 2. **不能是 `reactive(new Map())`** 换响应性：Vue 的集合代理让 `.get()` **每次返回新的
-	 *    Proxy**，破坏元素**同一性**（实测 `m.get('k') === el` 为 `false`）。这些是
-	 *    `YamiElementApi` 契约对象，调用方会长期持有并做同一性比较，换代理是行为回归。
-	 * 3. **`elements` 必须 `markRaw`**：Pinia 会把 setup 返回的普通对象包成 `reactive()`，
-	 *    `store.elements` 本身成了代理，读 `.list` 拿到的又是对元素的代理，同一性照样丢
-	 *    （实测 `store.elements.list === el` 为 `false` 且 `isProxy(store.elements)` 为 `true`；
-	 *    加 `markRaw` 后 `true` / `false`）。这里不需要深层响应性，数据源是裸 `Map`。
-	 * 4. 副作用是这四个名字**不再可写**，因此已从 `uiStateKeys` 移除（`uiStateKeys` 是桥接
-	 *    的写入白名单，留着只会误导后人以为可以从单例同步过来）。全仓库已确认没有任何
-	 *    `store.list = …` 形态的写入，所以只读不构成回归。
-	 *
-	 * 回归保护见 `__tests__/ui-state.spec.ts` 的「DOM 引用从元素注册表派生」四条用例。
+	 * 必须是每次读都重新求值且只读的 getter：`uiEls` 是无响应性的普通 `Map`，用 `computed`
+	 * 会永久缓存首次读到的 `null`；用 `reactive(new Map())` 会破坏元素同一性；`elements`
+	 * 必须 `markRaw`，否则 Pinia 的代理同样会破坏同一性。
 	 */
 	const listEl = (): YamiElement | null =>
 		(uiEls.get('ui-list') as YamiElement | undefined) ?? null;
@@ -182,18 +133,7 @@ export const useUIStore = defineStore('ui', () => {
 		get screen() {
 			return screenEl();
 		},
-		/**
-		 * 当前选中的 UI 节点。
-		 *
-		 * 为什么需要它（2026-09-18 实测）：`target` 已经迁到 store，于是遗留层里
-		 * `UI.updateTargetItem` 的 `const { target } = this` 读到 `undefined`，
-		 * 而它下一句 `read(this.list)` 里的 `this.list` 是注册表未登记时的 `{}` 兜底
-		 * ⇒ `read({})` 落到 `elementDataValueOf({})` 抛 `TypeError: Invalid value used
-		 * as weak map key`。**每次点选都会抛**，表现就是「整个 UI 像截图一样冻住、
-		 * 连选中框都不出现」——异常被 Vue 的事件错误处理吞掉，只在控制台留下一行 warn。
-		 *
-		 * 所以这里把 store 的 `target` 也挂到 `elements` 上，让遗留层有地方按新口径取。
-		 */
+		/** 当前选中的 UI 节点（同时挂到 `elements` 上供遗留层读取）。 */
 		get target() {
 			return target.value;
 		}

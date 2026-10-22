@@ -132,7 +132,6 @@ onMounted(() => {
 	refresh();
 });
 
-// 全局事件走 composable：挂/摘成对，不再手写 onBeforeUnmount 配对。
 useEventListener(window, 'update-log-update', refresh);
 </script>
 

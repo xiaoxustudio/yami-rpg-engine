@@ -210,26 +210,11 @@ let selectEventEnabled = false;
 let textBox: TextBoxElement | undefined;
 let resizeObserver: ResizeObserver | null = null;
 
-/**
- * 待处理的「抬手」意图。
- *
- * `pressing` 仍是对外导出的**取消令牌**（`YMFileBrowser` 会 `page.pressing = null` 取消，
- * 两条 spec 也断言它的 get/set），所以它保持原样；这里只把「挂 window 监听」交给
- * `useEventListener`，并把每次交互捕获的 `element`/`files` 从闭包里挪到 `pendingPress`。
- *
- * 原实现是「每次交互现造一个 `pointerup` 闭包 + `listenWindow(…, { once: true })`」，
- * 靠 `pressing === pointerup` 这个**闭包身份**判断自己是否已被取代。改成一个常驻处理器后，
- * 身份判断变成 `pressing !== onPendingPointerup`，语义不变（更晚的交互会覆盖令牌）。
- * 另外**去掉 `once`**：`once` 与 `enabled` 组合时，两次按下之间若没有抬手，
- * 第二次就不会重新注册（`enabled` 一直为真）；改成由 `enabled` 管生命周期即无此问题。
- */
 let pendingPress: { element: HTMLElement; files: FileItem[] } | null = null;
 
-/** window 上是否挂着待处理的 `pointerup` —— 专供 `useEventListener` 的 `enabled`。 */
 const pressingActive = ref(false);
 
 const onPendingPointerup = (event: Event): void => {
-	// 被消费者取消（`pressing = null`）或已被更晚的交互取代 ⇒ 本次不作数
 	if (pressing !== onPendingPointerup) return;
 	pressing = null;
 	pressingActive.value = false;
@@ -243,14 +228,12 @@ const onPendingPointerup = (event: Event): void => {
 
 useEventListener(window, 'pointerup', onPendingPointerup, { enabled: pressingActive });
 
-// `dirchange` 是挂载期常驻配对（原先 onMounted 挂、onBeforeUnmount 摘）
 useEventListener(window, 'dirchange', dirchange);
 
 /**
  * 窗格根元素上的 `pointerdown`。
  *
- * 原先这里有**两个**监听：`listenDraggingScrollbarEvent()` 里那枚"点右缘则捕获指针"的闭包
- * （注册得更早）与具名 `pointerdown`（选择逻辑）。同一元素同一事件类型只能有一个模板 `@`，
+ * 同一元素同一事件类型只能有一个模板 `@`，
  * 故合并成一个处理器，并**保持原执行顺序**（先指针捕获，再选择）。
  */
 function panePointerdown(event: PointerEvent): void {
@@ -798,7 +781,6 @@ onMounted(() => {
 	textBox = createTextBox();
 	node.textBox = textBox;
 
-	// scroll / keydown / pointerdown / pointerup / select 已改为模板 `@` 常驻绑定
 	attachDoubleclick(node, doubleclick);
 	selectEventEnabled = true;
 
@@ -835,8 +817,6 @@ onMounted(() => {
 		get: () => pressing,
 		set: (value: ((event: PointerEvent) => void) | null) => {
 			pressing = value;
-			// 只有令牌是「本组件自己那个待处理处理器」时才真的需要 window 监听；
-			// 消费者塞进来的哨兵值（spec 里有这种断言）不该顺手挂上一个监听。
 			pressingActive.value = value === onPendingPointerup;
 		},
 		configurable: true
@@ -853,7 +833,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-	// window 上的 pointerup / dirchange 已由 useEventListener 随作用域销毁自动摘除
 	resizeObserver?.disconnect?.();
 });
 

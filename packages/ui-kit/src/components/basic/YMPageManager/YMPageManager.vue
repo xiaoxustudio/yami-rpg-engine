@@ -31,9 +31,7 @@ const hasClass = (el: unknown, cls: string): boolean =>
 /**
  * 把 `visible` 收敛到 `target` 一个页框。
  *
- * 页框由**整壳 Teleport**在分组间搬运，搬进来时带着它原来那个组的 `visible`；原来只
- * `active?.classList.remove('visible')`（只清自己记着的那个）⇒ 第二个 `.visible` 页框
- * 会永远留着。页框是 `position:absolute; inset:0`，两个同时可见就是**完全叠在一起**，
+ * 页框是 `position:absolute; inset:0`，两个同时可见就是**完全叠在一起**，
  * 且 DOM 序靠后的那个盖在上面（实机「点哪个页签都亮，内容永远是另一个面板」）。
  */
 const normalizePages = (element: HTMLElement, target: HTMLElement | null): void => {

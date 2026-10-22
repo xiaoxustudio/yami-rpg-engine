@@ -16,7 +16,7 @@ export const uiSlotsMembers: UISlotMembers = {
 	/**
 	 * 槽位 `hasPrefab`：该节点是否已被登记为预制体。
 	 *
-	 * 实现逐字来自 `legacy/ui-prefab.ts`（只改了所在模块）。调用方仍是 `UI.hasPrefab`
+	 * 调用方仍是 `UI.hasPrefab`
 	 * （`ui-pointer.ts` / `ui-list.ts` / `LayoutPanel.vue`）与 store 的转发
 	 * （`stores/ui.ts` 的 `hasPrefab` → `UI?.hasPrefab?.(node)`）——**行为不变**。
 	 */
@@ -26,9 +26,6 @@ export const uiSlotsMembers: UISlotMembers = {
 
 	/**
 	 * 槽位 `clearInvalidPrefabs`：就地剔除已不存在于 `Data.uiPresets` 的 guid。
-	 *
-	 * 同上，逐字来自 `legacy/ui-prefab.ts`；唯一调用方是 `ui-events.ts` 的
-	 * `UI.clearInvalidPrefabs!(uiPrefabs ?? [])`。
 	 */
 	clearInvalidPrefabs(this: UIShape, uiPrefabs: string[]) {
 		let i = uiPrefabs.length;

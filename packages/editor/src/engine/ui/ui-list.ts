@@ -22,9 +22,7 @@ import type { YamiMouseEvent } from '@app/types/editor-event';
 /**
  * 搜索框的 input 处理器。
  *
- * 注册 ⇒ 触发时 `this` 是**搜索框元素**，不是 UI 单例。类型直接取 `UIShape['searcher']`
- * （该成员的说明里写了 `input` 为什么是 `HTMLInputElement`）——
- * 原先标成 `UIShape` 是靠索引签名把 `this.input` 放成了 `any`。
+ * 注册 ⇒ 触发时 `this` 是**搜索框元素**，不是 UI 单例。
  */
 const searcherInput = function (this: UIShape['searcher'], event: InputEvent) {
 	if (event.inputType !== 'insertCompositionText') {

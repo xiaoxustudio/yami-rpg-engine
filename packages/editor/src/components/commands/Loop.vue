@@ -57,7 +57,7 @@ const onConfirm = () => {
 	save();
 };
 
-/** 窗口关闭时复位。原先是**元素优先 API**（经 `fieldEls` 取到窗口元素后在其上订阅 closed）。 */
+/** 窗口关闭时复位。 */
 const onClosed = () => {
 	reset();
 	clear(fieldEls.get('loop-conditions'));

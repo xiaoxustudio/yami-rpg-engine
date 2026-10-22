@@ -6,12 +6,7 @@ import YMCommandList from '../YMCommandList.vue';
 import { elementDataOf } from '../../../../utils/element-data';
 
 /**
- * `attachRowData` 是**回写桥**在挂行时用的数据挂载入口。
- * 它必须与 `createCommandBuffer` 里那套闭包**语义一致**——本用例逐项核对：
- * 挂上去之后，元素上的 `dataItem`/`dataList`/`dataIndex`/`dataIndent`/`dataKey`/`dataParent`/`contents`
- * 与"api 自己建出来的行元素"读出来的一样。
- *
- * 换源后行元素归模板渲染，因此"api 自己建出来的行"必须通过**挂载组件**取得（api 侧行元素已不进 DOM）。
+ * `attachRowData` 的数据挂载入口回归：挂载后的字段读取必须与 api 自己建出来的行一致。
  */
 const makeApi = async (): Promise<HTMLElement & { [k: string]: unknown }> => {
 	const options = {

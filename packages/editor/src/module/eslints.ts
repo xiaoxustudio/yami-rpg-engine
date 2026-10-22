@@ -158,10 +158,7 @@ function applyLineClasses(list: CommandLineRows): void {
 }
 
 /**
- * 行元素已由模板渲染，而 api 侧的 `elements` 是**离屏元素**
- * （跨行判定如 `buffer[buffer.length-1] == e` 仍以 `elements` 为准，语义不变）。
- * 因此折叠线相关处理分两步：**照旧在 `elements` 上计算**，再把结果**同步到渲染出来的行**上。
- * 取不到渲染行时返回 `null`（未换源用法不受影响）。
+ * 取模板渲染出来的行元素；未渲染时返回 `null`。
  */
 function renderedRowsOf(list: {
 	querySelectorAll?: (selector: string) => NodeListOf<Element>;
@@ -223,10 +220,7 @@ export function ensureUpdateCommandElementOverride(): void {
 }
 
 /**
- * 选区里的「活动行」下标。换源后它不再是元素上的 `active` expando，而是**元素数据**
- * （`command-api` 的 `CommandListData.active`）。原来的 `this.elements[this.active]`
- * 因此永远读到 `elements[undefined]` → `undefined.pre` 抛
- * `Cannot read properties of undefined (reading 'pre')`（双击命令 / 打开事件编辑器时爆）。
+ * 选区里的「活动行」下标。
  */
 const activeIndexOf = (list: unknown): number | null => {
 	const { active } = elementDataOf<{ active?: number | null }>(list as HTMLElement);

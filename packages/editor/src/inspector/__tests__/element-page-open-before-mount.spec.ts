@@ -9,9 +9,7 @@ import type { YamiElement } from '@app/types/element-api';
 
 /**
  * 回归：inspector 的控件由 SFC **挂载时**登记（`element-registry.ts`），而 inspector 页面按需渲染
- * ⇒ 首次 `open()` 常常早于挂载。旧代码在那种情况下会走到
- * `this.pointerEvents.previousElementSibling`（`pointerEvents` 还是初始的 `null`）而抛
- * `Cannot read properties of null (reading 'previousElementSibling')`。
+ * ⇒ 首次 `open()` 常常早于挂载。
  *
  * 真机栈（2026-09-19）：`UI.listSelect → UI.setTarget → Inspector.open → UIButton.open → UIElement.open`。
  */

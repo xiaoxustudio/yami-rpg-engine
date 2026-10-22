@@ -84,10 +84,7 @@ describe('Title.saveToProject（标题栏未就绪时的防御）', () => {
 
 	it('tabBar 不存在时不抛错，也不覆盖工程里已有的标签页状态', () => {
 		const project: Project = { openTabs: ['a', 'b'], activeTab: 'b' };
-		// 关闭工程时 `Editor.saveProject` 会走到这里；标题栏未初始化曾是
-		// `Cannot read properties of undefined (reading 'data')` 的来源。
 		expect(() => saveToProject.call({} as never, project as never)).not.toThrow();
-		// 早退而非写空数组：没有标题栏就没有"当前标签页"的信息，不该抹掉已有值
 		expect(project.openTabs).toEqual(['a', 'b']);
 		expect(project.activeTab).toBe('b');
 	});

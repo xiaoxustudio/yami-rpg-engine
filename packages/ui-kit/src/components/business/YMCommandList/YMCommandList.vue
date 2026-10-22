@@ -67,15 +67,6 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	createCommandListApi(el, props.options ?? {});
-	// ⚠️ **这两条不要改成模板 `@update` / `@rowmodel`** —— 实测不可行（2026-10）：
-	// 改了会让窗口化那组 12 个用例红，现象是"模型 2 行、DOM 还有 21 行"（行不重渲染）。
-	// 排查结论：不是事件没到（加日志证实处理器被调用了），也不是挂载时机（加了 apiReady
-	// 闸门仍红）；决定性对照是"模板绑定 + 保留 addEventListener"⇒ 123/123 全绿，
-	// 说明模板通道在这套组件上不生效。
-	// 成因：本组件的事件来自 `utils/dom.ts` 里**复用的非冒泡事件实例**
-	// （`new Event('update')` / `new Event('rowmodel')`），而 `rows` 是 `shallowRef`、
-	// 模型原地变更 —— 重渲染对调用次数/时机敏感，模板通道拿不到同样的序列。
-	// 真要动，得先重构 `refreshRows` 的引用同一性处理，那是另一件事。
 	el.addEventListener('update', refreshRows);
 	el.addEventListener('rowmodel', refreshRows);
 	refreshRows();

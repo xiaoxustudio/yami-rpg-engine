@@ -84,8 +84,6 @@ const serve = async (
 	}
 	const port = await freePort();
 	const startPath = path.join(dir, 'project.yami');
-	// freePort 到真正 bind 之间有窗口，端口可能被别的进程抢走；
-	// startServer 绑定失败会 resolve(false)，这里换端口重试而不是让用例随机变红。
 	for (let attempt = 0; attempt < 5; attempt++) {
 		// oxlint-disable-next-line no-await-in-loop
 		const started = await startServer({} as never, { path: startPath, port: port + attempt });
@@ -122,7 +120,6 @@ describe('预览服务器（Koa）', () => {
 		expect(response.body.toString()).toBe('hello');
 	});
 
-	/** 回归：流式输出必须保证二进制内容逐字节一致（原先一次性 readFileSync）。 */
 	it('大二进制文件流式传输后内容与 Content-Length 都正确', async () => {
 		const payload = Buffer.alloc(2 * 1024 * 1024);
 		for (let i = 0; i < payload.length; i++) payload[i] = i % 251;
@@ -134,7 +131,6 @@ describe('预览服务器（Koa）', () => {
 		expect(response.body.equals(payload)).toBe(true);
 	});
 
-	/** 回归：目录不能穿透（原先靠 readFileSync 抛 EISDIR 兜底成 404）。 */
 	it('子目录请求回 404 而不是抛错或列目录', async () => {
 		const { base } = await serve({ 'sub/inner.txt': 'x' });
 		expect((await rawGet(base, '/sub')).status).toBe(404);
@@ -145,7 +141,6 @@ describe('预览服务器（Koa）', () => {
 		expect((await rawGet(base, '/nope.txt')).status).toBe(404);
 	});
 
-	/** 回归：原先 404 / 400 分支只设 body 不设 status，实际返回的都是 HTTP 200。 */
 	it('404 与 400 分支带正确的 HTTP 状态码', async () => {
 		const { base } = await serve({ 'a.txt': 'hello' });
 		expect((await rawGet(base, '/nope.txt')).status).toBe(404);
@@ -155,7 +150,6 @@ describe('预览服务器（Koa）', () => {
 	it('路径穿越被拦截（不回 previewRoot 之外的文件）', async () => {
 		const { base, dir } = await serve({ 'a.txt': 'hello' });
 		fs.writeFileSync(path.join(dir, 'secret.txt'), 'TOP-SECRET');
-		// 断言目标确实存在：否则下面的 404 可能只是因为文件不存在，用例就空了
 		expect(fs.existsSync(path.join(dir, 'secret.txt'))).toBe(true);
 		const attempts = [
 			'/../secret.txt',
@@ -190,7 +184,6 @@ describe('预览服务器（Koa）', () => {
 		const stale = new Date(Date.now() - 60_000).toUTCString();
 		expect((await rawGet(base, '/a.txt')).status).toBe(200);
 
-		// 写一个更新、且请求方持有的时间戳早于它 → 必须回 200 和新内容
 		fs.writeFileSync(path.join(root, 'a.txt'), 'hello-v2');
 		const second = await rawGet(base, '/a.txt', { 'if-modified-since': stale });
 		expect(second.status).toBe(200);

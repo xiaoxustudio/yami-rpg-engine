@@ -61,8 +61,6 @@ describe('YMFileBodyPane 的卸载清理', () => {
 	it('Alt 序列登记了 keyup / pointermove，卸载时全部摘掉', async () => {
 		const wrapper = mountBody();
 		window.dispatchEvent(new KeyboardEvent('keydown', { code: 'AltLeft', altKey: true }));
-		// keyup / pointermove 由 useEventListener + enabled 在 flush: 'post' 挂载，先让出一拍；
-		// 否则"卸载时摘掉"这条断言是在测一个尚未发生的挂载。
 		await nextTick();
 
 		const { removed, restore } = trackRemovals();

@@ -94,12 +94,12 @@ const onConfirm = () => {
 	save();
 };
 
-/** 窗口关闭时清理。原先是元素优先 API（经 fieldEls 取到元素后订阅 closed）。 */
+/** 窗口关闭时清理。 */
 const onClosed = () => {
 	clear(fieldEls.get('moveElement-properties'));
 };
 
-/** 窗口打开时刷新候选项。原先是元素优先 API（经 fieldEls 取到元素后订阅 open）。 */
+/** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
 	fieldEls.get('moveElement-easingId')?.loadItems?.(Data.createEasingItems!());
 };

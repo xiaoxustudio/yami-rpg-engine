@@ -1152,8 +1152,7 @@ Layout.getGroupOfElement = function (element: HTMLElement): LayoutGroupElement |
 /**
  * 窗口 head 定位（各窗口 updateHead 的公共前置）：
  * - head 可能不在任何组内（窗口关闭/页面未落位）→ 返回 null，调用方直接跳过；
- * - nav 内由 Vue 渲染，末尾可能是**注释/文本锚点**，`lastChild` 未必是元素
- *   （旧实现 `rect(nav.lastChild)` 因此抛 `el.getBoundingClientRect is not a function`）。
+ * - nav 内由 Vue 渲染，末尾可能是注释/文本锚点，`lastChild` 未必是元素。
  */
 export const headNavOf = (head: HTMLElement | null | undefined): HTMLElement | null => {
 	if (!head) return null;

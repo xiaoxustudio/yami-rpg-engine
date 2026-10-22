@@ -19,10 +19,6 @@ const root = ref<HTMLDivElement | null>(null);
 
 let dragging: PointerEvent | null = null;
 
-/**
- * 本次拖拽的起始几何与目标窗口。**刻意是普通对象、不进响应式**——
- * 它装着 DOM 元素，proxy 化没有意义还可能出问题；需要响应式的只是「拖拽是否进行中」。
- */
 let drag: {
 	frame: HTMLElement;
 	left: number;
@@ -33,7 +29,6 @@ let drag: {
 	startY: number;
 } | null = null;
 
-/** 拖拽中为真 —— 专供 `useEventListener` 的 `enabled`（见下方三个 window 监听）。 */
 const dragActive = ref(false);
 
 const on = (
@@ -47,8 +42,7 @@ const on = (
 /**
  * 结束本次标题栏拖拽：清状态并让 `dragActive` 归假，三个 window 监听随之被摘除。
  *
- * 原先这三个监听是 `pointerdown` 里**每次拖拽现造的三个闭包**（各自捕获那一次的起始几何），
- * 并在 `cancel` 里逐条 `removeEventListener`。改为 setup 层的常驻处理器 + `enabled` 驱动，
+ * 改为 setup 层的常驻处理器 + `enabled` 驱动，
  * 几何挪到 `drag` 里；`cancel` 的语义整个由 `endDrag` 承担。
  */
 const endDrag = (): void => {
@@ -82,14 +76,6 @@ const dragPointerup = (event: Event): void => {
 	}
 };
 
-/**
- * 拖拽期才挂的三个 window 监听（`pointermove` 跟随、`pointerup` 收尾、`blur` 失焦即取消）。
- * `event as PointerEvent`：composable 的 handler 形参是宽松的 `Event`，而这三个事件名在 window 上
- * 必然是 PointerEvent / FocusEvent，用 cast 表达这层已知事实，不放宽 composable 签名。
- *
- * ⚠️ 挂载时机是 `flush: 'post'`：真实拖拽里 pointerdown 与随后的 pointermove 必然分属不同 task，
- * 不受影响；但**同一 tick 内连续派发这两个事件的测试需要先 `await nextTick()`**。
- */
 useEventListener(window, 'pointermove', dragPointermove, { enabled: dragActive });
 useEventListener(window, 'pointerup', dragPointerup, { enabled: dragActive });
 useEventListener(window, 'blur', endDrag, { enabled: dragActive });

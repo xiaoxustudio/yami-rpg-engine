@@ -13,7 +13,6 @@ const generate32bit = (): string => {
 };
 function generate64bit(): string {
 	let id;
-	// GUID 用作哈希表键，避免纯数字键降低访问速度
 	do {
 		id = generate32bit() + generate32bit();
 	} while (!/[a-f]/.test(id));
@@ -95,7 +94,6 @@ export const fromExcel = async (event: IpcMainInvokeEvent) => {
 		const worksheet = workbook.getWorksheet('open-yami');
 		if (!worksheet) return [];
 
-		// 解析表头：建立列标题到列号的映射
 		const headerRow = worksheet.getRow(1);
 		const colMap: Record<string, number> = {};
 		headerRow.eachCell((cell, colNumber) => {
@@ -138,7 +136,6 @@ export const fromExcel = async (event: IpcMainInvokeEvent) => {
 					};
 
 			if (!isDir) {
-				// 收集多语言内容（排除系统列）
 				Object.keys(colMap).forEach((key) => {
 					if (!['ID', 'Name', 'parentID', 'isDir'].includes(key)) {
 						const cellValue = row.getCell(colMap[key]).value;
@@ -154,7 +151,6 @@ export const fromExcel = async (event: IpcMainInvokeEvent) => {
 			}
 			dataMap.set(rowData.id, rowData);
 
-			// 挂载到父节点或作为根节点
 			if (rowData.parentID) {
 				const parent = dataMap.get(rowData.parentID);
 				if (parent) {

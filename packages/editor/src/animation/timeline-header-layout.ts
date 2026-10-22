@@ -25,11 +25,6 @@ export const timelineContentLeft = (
 /**
  * head 相对**页面框**（`#animation-timeline`）的左偏移。
  *
- * 旧实现只有「贴住分组 nav 最后一项右缘」一条路，而 `headNavOf()` 在分组没有页签时返回 null、
- * `lastNavItemOf()` 也因此为 null —— 老代码此时直接 `return`，`head.style.left` 永远不写：
- * CSS 是 `position:absolute; right:0`（**没有 left**），head 于是按内容收窄成 **0 宽**，
- * 里面的绝对定位子元素全被挤出可视区 —— 实机「刻度尺还在、底部播放按钮整条不见」。
- *
  * @param navItemRight 分组 nav 最后一项的右缘（视口坐标）；没有页签时为 null
  * @param frameLeft 页面框左缘（视口坐标）
  */

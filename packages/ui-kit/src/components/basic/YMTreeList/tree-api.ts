@@ -60,13 +60,7 @@ const rowDataOrUndefined = (el: unknown): NodeElement | undefined =>
 
 /**
  * 行点击目标归一：把事件目标收窄成「它所属的行元素」。
- *
- * 步骤 5 的 v-for 行渲染把标签文本包进了 `.node-text`（legacy 是直接 append 到行上的**裸文本节点**，
- * 点文字时 `event.target` 就是行元素本身），于是 `event.target` 不再等于行——按住标签文字点选
- * 带子节点的组件时一直没有反应。
- *
- * 列元素里的按钮（`.tree-node-extras` 下的显隐/锁定图标、重命名输入框）**不**归一：
- * legacy 里它们同样是行内独立元素，点击不应改变选中。
+ * 列元素里的按钮不归一：点击不应改变选中。
  */
 const rowTargetOf = (target: EventTarget | null | undefined): NodeElement | null => {
 	const element = target as Element | null | undefined;
@@ -109,7 +103,6 @@ export const isTreeItemRendered = (item: unknown): boolean => {
 
 /**
  * 消费方 API（步骤 5b）：取某 item 当前**已物化**的行元素；窗口外 / 未渲染返回 undefined。
- * 取代旧的 `item.element` 桥——需要挂 DOM 的场景（行 tooltip 等）用它。
  */
 export const treeRowElement = (item: unknown): HTMLElement | undefined =>
 	rowElementOf(item as TreeItem);
@@ -122,10 +115,7 @@ export const treeItemOf = <T = unknown>(target: unknown): T | undefined => {
 
 export const treeListOfItem = (item: unknown): unknown => stateOfItem(item as TreeItem)?.owner;
 
-/**
- * 渲染模式无关的行 API（步骤 5b 后只有派生行一条路径）：走 `rowCount/rowItemAt/rowIndexOf`，
- * 覆盖窗口外行；`elements` shim 已删除。
- */
+/** 渲染模式无关的行 API：走 `rowCount/rowItemAt/rowIndexOf`，覆盖窗口外行。 */
 export const treeRowCount = (list: unknown): number => {
 	const target = list as { rowCount?: () => number };
 	return typeof target.rowCount === 'function' ? target.rowCount() : 0;
@@ -165,13 +155,7 @@ type TextBox = HTMLDivElement & {
 	fitContent: () => void;
 };
 
-/**
- * 重命名文本框的创建体。
- *
- * 原先这是对象字面量里的一个立即执行 IIFE：模块加载期就 `document.createElement`，
- * 无 DOM 时返回 `null as unknown as TextBox`（谎报一个非空 host）。现在改成
- * `treeListStatics.textBox` 首次访问时惰性调用；无 DOM 时明确抛错。
- */
+/** 重命名文本框的创建体：首次访问时惰性调用，无 DOM 时明确抛错。 */
 const createTextBox = (): TextBox => {
 	const textBox = document.createElement('div') as TextBox;
 	addClass(textBox, 'text-box');

@@ -6,11 +6,6 @@ import { treeListStatics, treeRowCount, treeRowElement } from '../tree-api';
 import { elementDataOf } from '../../../../utils/element-data';
 import { getListConfig } from '../../../../utils/list-config';
 
-/**
- * 金标准测试：只断言对外行为/数据/DOM 语义，不绑定渲染实现路径；
- * 改动实现时不得改动断言语义。
- */
-
 const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
 	Object.defineProperty(el, 'clientWidth', { value: 300, configurable: true });

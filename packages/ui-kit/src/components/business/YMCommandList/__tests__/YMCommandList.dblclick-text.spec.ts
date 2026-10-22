@@ -3,20 +3,7 @@ import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import YMCommandList from '../YMCommandList.vue';
 
-/**
- * 回归：**双击指令行的"文本"也要能打开指令窗口**。
- *
- * 用户实机症状是"双击有的指令没反应，点行内空白处却可以"。原因不在编辑器侧，而在这里：
- * 双击判定（`utils/doubleclick.ts`）用的是 `event.target === last.target`——**必须是同一个节点**。
- * 而点文本时 `event.target` 是行内的 `.command-text`（`div`，不是 `span`，所以
- * `.command-item > span { pointer-events: none }` 那条规则盖不到它）；
- * 旧 `bindRowElement` 每次挂行都"先清干净再重建"，第一次按下引发的 `select → update → 回写桥`
- * 就把那个文本节点换成了新节点 ⇒ 第二次按下落在新节点上，判定失配 ⇒ 合成不出双击事件。
- * 点行本身（空白处）能work，是因为行元素由 Vue 复用、身份稳定。
- *
- * 这个用例**照实机的方式**按两次：第二下按在"此刻那个位置上存在的节点"上（重新查询），
- * 而不是复用第一次的节点引用——否则就绕过了这个 bug。
- */
+/** 回归：双击指令行的文本也要能打开指令窗口。 */
 const makeOptions = (edit: (list: unknown, command: unknown) => void) => ({
 	command: {
 		parse: (item: Record<string, unknown>) => [

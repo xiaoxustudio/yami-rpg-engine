@@ -30,7 +30,7 @@ interface TabBarElement extends HTMLElement {
 	dirItem: unknown;
 }
 
-/** `dragging` 不再是元素上的隐式属性，走显式元素数据 */
+/** `dragging` 走显式元素数据。 */
 const listData = (el: unknown): { dragging: unknown } => elementDataOf<{ dragging: unknown }>(el);
 
 describe('YMTabBar', () => {
@@ -171,7 +171,6 @@ describe('YMTabBar', () => {
 		const closeMark = tab.querySelector('.tab-close') as HTMLElement;
 		closeMark.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
 		expect(listData(el).dragging).toBeTruthy();
-		// window 上的 pointerup 由 `useEventListener` 在 flush: 'post' 挂载，让出一拍
 		await nextTick();
 		const alpha = data[0];
 		closeMark.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0 }));
@@ -256,14 +255,6 @@ describe('YMTabBar', () => {
 		vi.restoreAllMocks();
 	});
 
-	/**
-	 * 这条原先和上面的 hint 回收混在一句里，靠的是旧实现**无条件**
-	 * `window.removeEventListener('pointerup', …)`，所以 `dragstart` 那条手势
-	 * （它**不挂** window 监听，只有 `pointerdown` 的两条分支才挂）也能"通过"。
-	 *
-	 * 改走 `enabled` 后摘除是**有条件的**，于是必须用一个真的会挂上监听的手势来测，
-	 * 并且等 `flush: 'post'` 挂完再卸载 —— 这样断言的才是真实回收。
-	 */
 	it('手势进行中卸载：window 上的 pointerup 被回收（enabled 通道）', async () => {
 		const wrapper = mount(YMTabBar, { attachTo: document.body });
 		const el = wrapper.element as unknown as TabBarElement;
@@ -277,9 +268,6 @@ describe('YMTabBar', () => {
 
 		const removeListener = vi.spyOn(window, 'removeEventListener');
 		wrapper.unmount();
-		// 注意第三个实参：`useEventListener` 内部是 `removeEventListener(type, handler, native)`，
-		// `native` 未传时为 `undefined`。vitest 的 `toHaveBeenCalledWith` 比对**完整实参表**，
-		// 只写两个实参匹配不上（旧实现是组件自己调的，恰好只传两个，故原断言是两参形式）。
 		expect(removeListener).toHaveBeenCalledWith('pointerup', expect.any(Function), undefined);
 		vi.restoreAllMocks();
 	});

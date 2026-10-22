@@ -96,8 +96,7 @@ const on = (
 defineExpose({ read, write, input, enable, disable, focus, on, root });
 
 /**
- * `localize` 全局事件。原先是 `onMounted` 里的内联 `onLocalize` + 手写 `onBeforeUnmount` 配对；
- * 该 handler 只用到 setup 作用域的 `ym`，故提到 setup 层交给 composable —— 挂/摘成对。
+ * `localize` 全局事件。
  */
 const onLocalize = (): void => {
 	ym.value?.update?.();

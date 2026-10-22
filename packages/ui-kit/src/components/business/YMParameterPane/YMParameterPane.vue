@@ -230,13 +230,6 @@ type ParameterPaneElement = HTMLElement & PaneStateAccessors & ParameterPaneApi;
 
 let el: ParameterPaneElement | null = null;
 
-/**
- * window 上的 `script-change` 是否挂着 —— 专供 `useEventListener` 的 `enabled`。
- *
- * 这条监听不是"挂载即注册"：它在构建完参数行后**无条件挂上**，
- * 而 `clear()` 里只在 `!self.scriptList?.data` 时摘。故这里是 1:1 的开关镜像，
- * 逐字保留原有（不对称的）时机，不做"顺手修正"。
- */
 const scriptChangeActive = ref(false);
 
 const attachStateAccessors = (self: ParameterPaneElement): void => {
@@ -870,7 +863,6 @@ const clear = (): void => {
 		self.textContent = '';
 	}
 	if (!self.scriptList?.data) {
-		// 保留原有的条件：有 scriptList.data 时不摘
 		scriptChangeActive.value = false;
 	}
 };
@@ -1011,20 +1003,11 @@ defineExpose({
 	root
 });
 
-/**
- * 两个 window 监听收口到 composable。
- *
- * - `localize` 是干净的挂载期配对（原先 onMounted 挂、onBeforeUnmount 摘）。
- * - `script-change` 是状态相关的（见 `scriptChangeActive`），由 `enabled` 驱动。
- */
 useEventListener(window, 'localize', windowLocalize);
 useEventListener(window, 'script-change', scriptChange, { enabled: scriptChangeActive });
 
 /**
  * 根元素上的 `update`（内层控件冒泡上来的自定义事件）：原样转发。
- *
- * 原先这里是 `onMounted` 里的内联闭包，改成模板 `@update` 后按"模板只能引用 setup 作用域绑定"
- * 的规则提到 setup 层。
  */
 const onSelfUpdate = (event: Event): void => {
 	emit('update', event);
@@ -1076,8 +1059,6 @@ onMounted(() => {
 		componentChange,
 		applyAffix
 	});
-	// `window` 上的 localize / script-change 由上方 useEventListener 负责
-	// 根元素上的 change / update 已改为模板 `@` 常驻绑定
 });
 </script>
 

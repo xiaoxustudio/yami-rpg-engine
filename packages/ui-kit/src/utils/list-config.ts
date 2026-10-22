@@ -35,12 +35,10 @@ const readList = <T>(data: Record<string, unknown>, key: string): T[] => {
 };
 
 /**
- * 列表配置注册表。**配置存在元素数据（WeakMap）里，不是元素上的访问器属性。**
- * `creators`/`updaters`/`removable`/`renamable`/`togglable`/`foldable`/`onCreate`/`onDelete`/
- * `onRemove`/`onResume`/`lockDirectory`/`multipleSelect`/`padded` 都只能经本函数读写
- * （`common-list.ts` 里对 `el.padded` 的直接读取已改为走本函数）。
- *
- * 调用方一律走 `getListConfig(list).<字段>`（全仓没有对元素本身的直接读写）。
+ * 列表配置注册表。配置存在元素数据（WeakMap）里，不是元素上的访问器属性；
+ * `creators` / `updaters` / `removable` / `renamable` / `togglable` / `foldable` /
+ * `onCreate` / `onDelete` / `onRemove` / `onResume` / `lockDirectory` / `multipleSelect` /
+ * `padded` 都只能经本函数读写。
  */
 export function getListConfig(el: object): ListConfig {
 	const existing = configMap.get(el);

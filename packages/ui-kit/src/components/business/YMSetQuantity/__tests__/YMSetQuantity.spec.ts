@@ -25,12 +25,6 @@ describe('YMSetQuantity', () => {
 		expect(wrapper.emitted('update:modelValue')?.[0]?.[0]).toBe(5);
 	});
 
-	// 契约已从「DOM 桥」改为「Vue emit 链」（2026-10）：`YMFormButtons` 现在 emit
-	// `confirm`，`YMWindowFrame` 用模板 `@confirm` 接住再 emit，本组件再 `@confirm` 转发出去。
-	// 原先本条用 `root.dispatchEvent(new Event('confirm'))` 打在窗口根元素上，那是在断言
-	// YMWindowFrame 里那层 `element.addEventListener('confirm', …)` 桥 —— 那层桥已删
-	// （它正是 12 个包装组件"点确定没反应"的来源，且全仓没有任何生产代码派发原生 `confirm`）。
-	// 现在改为断言**真实用户路径**：点确定按钮 → 一路 emit 上来。
 	it('点确定按钮时转发 confirm（emit 链）', async () => {
 		const wrapper = mount(YMSetQuantity, {
 			props: { modelValue: 1, max: 10 }

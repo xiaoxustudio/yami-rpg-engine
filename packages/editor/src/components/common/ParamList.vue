@@ -31,13 +31,6 @@ interface Props {
 	filter?: string;
 	group?: string;
 	flexible?: boolean;
-	/**
-	 * 透传给 ui-kit `YMParamList` 的 `v-model`。
-	 *
-	 * 显式声明而不是靠 `$attrs` 落到根组件上：`@vue/test-utils` 不受影响，但"这个包装层
-	 * 到底透不透 v-model"原先只能靠 Vue 的 fallthrough 推断。缺了这条，`v-model` 在
-	 * 模板里看起来接了、实际值到不了列表（显示选项窗口的选项列表就空过，2026-10-22）。
-	 */
 	modelValue?: unknown;
 }
 
@@ -47,13 +40,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n();
 
-/**
- * 转发 ui-kit `YMParamList` 的 `change`。
- *
- * 为什么要加：本仓有消费方仍在用元素优先写法（取到本组件的实例/元素后再订阅 change），
- * 而 `YMParamList` 早就 `emit('change', value)` 了，只是这层包装没有转发。
- * 补上后消费方可用 `@change`，与 editor `common/WindowFrame` 转发 open/closed 是同一处理。
- */
 const emit = defineEmits<{
 	change: [value: unknown];
 	'update:modelValue': [value: unknown];

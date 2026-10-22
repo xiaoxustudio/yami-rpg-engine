@@ -373,10 +373,6 @@ NewProject.confirm = function (this: typeof NewProject, ..._args: unknown[]) {
  * 只有「选中的是 ARPG 模板、而它对应的资源不存在」才拦下来（提示 `resource-not-found`），
  * 其余一律放行。
  *
- * ⚠️ 这段判定此前是**恒真的死逻辑**：第三项写成
- * `template != (['arpg-ts-english', 'arpg-ts-chinese'] as unknown as string)` ——
- * 数组被当成字符串参与比较，运行期退化成 `template != 'arpg-ts-english,arpg-ts-chinese'`，
- * 对任何真实模板值都成立 ⇒ `else` 分支（资源不存在的提示）**永远不会执行**（`891cf657` 引入）。
  * 抽成纯函数是为了让这张四行真值表能被用例钉住
  * （`src/title/__tests__/new-project-confirm.spec.ts`）。
  */

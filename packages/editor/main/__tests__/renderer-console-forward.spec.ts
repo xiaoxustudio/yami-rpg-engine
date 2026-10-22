@@ -12,8 +12,6 @@ const electronMocks = vi.hoisted(() => {
 			on: vi.fn((event: string, fn: (...args: unknown[]) => void) => {
 				listeners.set(`wc:${event}`, fn);
 			}),
-			// window-manager 会用 once('did-finish-load') 打启动耗时点；
-			// 这个 fake 是按真实 API 面补的，不需要它注册进 listeners
 			once: vi.fn()
 		};
 		setMenuBarVisibility = vi.fn();
@@ -60,7 +58,6 @@ const emitConsole = (details: ConsoleDetails): void => {
 
 describe('createEditorWindow 的 console 转发', () => {
 	beforeAll(() => {
-		// createEditorWindow 里读 ~/.openyami/config.json 的 promise 在测试中不会被消费
 		process.on('unhandledRejection', () => undefined);
 	});
 
@@ -76,10 +73,6 @@ describe('createEditorWindow 的 console 转发', () => {
 		vi.restoreAllMocks();
 	});
 
-	/**
-	 * 回归：生产环境下渲染进程每一条 console.log 都会跨进程写主进程 stdout，
-	 * 循环里的日志直接变成瓶颈。
-	 */
 	it('非 debug 时不转发 log 级别', () => {
 		setDebugMode(false);
 		emitConsole({ level: 'debug', message: 'noise', lineNumber: 1, sourceId: 'a.ts' });

@@ -65,13 +65,6 @@ Command.cases.switch = new CommandSchema({
 	}
 });
 
-/**
- * 表单**真源在 store**（`switchForm`），这里只做转发。
- *
- * ⚠️ `branches` 必须有访问器：`load()` 用 `Object.assign(form, …)` 一次性写入，
- * 缺访问器时它只会变成普通对象上的**非响应式**自有属性，列表要等同一批写入里
- * `default` 恰好变化引发的重渲染才会更新。与"显示选项"窗口同因（2026-10-22 实报）。
- */
 const form: SwitchForm = {
 	get variable(): SwitchForm['variable'] {
 		return getCommandSchemaFormsStore().switchForm.variable;

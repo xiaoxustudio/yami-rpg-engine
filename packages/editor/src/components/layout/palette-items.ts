@@ -4,7 +4,7 @@ import type { RegisteredLayoutItem } from '@app/engine/layout/layout.ts';
  * 取模板 ref 对应的真实元素：
  * - `ref` 打在普通元素上 → 直接就是 HTMLElement；
  * - `ref` 打在组件上（palette 用 `<NavBar>`/`<PageManager>` 组件包裹）→ 拿到的是组件实例，
- *   其根元素在 `$el`（此前直接读实例的 `children` 导致 `Array.from(undefined)` 抛错）。
+ *   其根元素在 `$el`。
  */
 export const elementOfRef = (ref: unknown): HTMLElement | null => {
 	if (ref instanceof HTMLElement) return ref;

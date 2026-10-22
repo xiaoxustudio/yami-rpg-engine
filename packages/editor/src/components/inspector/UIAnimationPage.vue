@@ -120,22 +120,6 @@ const onParamInput = (value: unknown): void => {
 	onParamInputEvent(value as Event);
 };
 
-/**
- * 动画 id 变更：重算动作列表。原先是在 `onMounted` 里用元素优先 API 挂 DOM 监听。
- *
- * `@write` 给的是 **emit 出来的 value**，而 `UIAnimation.animationIdWrite` 读的是
- * **`event.value`**（元素优先时代 DOM 事件带的载荷形状），故这里重新包一层 ——
- * 与 `SceneAnimationPropertiesSection` / `FileActorPropertiesSection` 已有的写法一致。
- *
- * ⚠️ 必须用 `motionReady` 闸门**保住原先的附加时机**（实测踩出来的）：
- * `CustomBox` 在自己的 `onMounted` 里会 `write(modelValue)` 一次，而 `YMCustomBox.write()`
- * **无条件** `emit('write')`；子组件先挂，模板 `@` 又从首次渲染就生效 ——
- * 于是这次"初始化写值"会在父组件 `onMounted` 里
- * `registerElement(inspectorEls, 'uiAnimation-motion', …)` **之前**打到 `animationIdWrite`，
- * 那里 `inspectorEls.get('uiAnimation-motion')` 仍是 `undefined`，
- * 报 `Cannot read properties of undefined (reading 'loadItems')`。
- * 旧写法把监听挂在父 `onMounted` 里（且在所有 `registerElement` 之后），因而天然早退。
- */
 const motionReady = ref(false);
 const onAnimationIdWrite = (value: unknown): void => {
 	if (!motionReady.value) return;
@@ -153,8 +137,6 @@ const elOffsetY = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
 	registerElement(inspectorEls, 'uiAnimation-motion', elMotion.value);
-	// 注册表填好之后才允许 `@write` 生效 —— 等价于原先"在 onMounted 里挂监听"的时机，
-	// 用来吞掉 CustomBox 挂载期那次初始化 `write`（见 onAnimationIdWrite 的注释）。
 	motionReady.value = true;
 	const uiAnimation = Inspector.uiAnimation;
 	if (!uiAnimation) return;

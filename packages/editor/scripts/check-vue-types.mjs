@@ -1,8 +1,4 @@
 #!/usr/bin/env node
-// vue-tsc 类型检查守卫：与 baseline 对比，仅拦截新增错误，不要求清零存量。
-// 用法：
-//   node scripts/check-vue-types.mjs                   检查新增错误（有新增则 exit 1）
-//   node scripts/check-vue-types.mjs --update-baseline 重新生成 baseline
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,10 +18,6 @@ function runVueTsc() {
 		cwd: ROOT,
 		encoding: 'utf8'
 	});
-	// 「工具起不来」必须与「工具说 0 错误」区分开。
-	// 受限环境（沙箱 / 精简容器）里 spawnSync 会 EPERM；过去只报一条 failed to launch 然后
-	// exit 1，但**那种 1 和「真发现了新增错误」的 1 长得一样**，很容易被当成同一个信号忽略。
-	// 现在用退出码 3 单独标记「不可判定」。
 	if (res.error || (res.status === null && !res.stdout)) {
 		console.error(`typecheck:vue: 无法启动 vue-tsc（${res.error?.code ?? 'unknown'}）。`);
 		console.error('  这是**环境问题**，不是「0 新增错误」。CI 里应把它当作失败处理。');

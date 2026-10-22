@@ -123,10 +123,6 @@ describe('YMFileHeadPane 的卸载清理', () => {
 		expect(removed).not.toContain('pointerup');
 	});
 
-	/**
-	 * 行为验证：先前那两条只断言"卸载时摘了/没摘"，**证不了抬起处理真的会跑**。
-	 * 这条走完整路径：按下较早的面包屑 → window 抬起 → 导航到该文件夹。
-	 */
 	it('地址栏文件夹：按下后抬起会导航到该文件夹（once 监听走 enabled 通道）', async () => {
 		const root = makeFolder('Root');
 		const sub = makeFolder('Sub', root);
@@ -143,9 +139,7 @@ describe('YMFileHeadPane 的卸载清理', () => {
 		const folders = address.querySelectorAll('file-head-address-folder');
 		expect(folders.length).toBe(2);
 		const first = folders[0] as HTMLElement;
-		// 较早的面包屑（非当前目录）才是可点击的
 		first.dispatchEvent(new PointerEvent('pointerdown', { button: 0, bubbles: true }));
-		// enabled 的挂载在 flush: 'post'，让出一拍
 		await nextTick();
 		first.dispatchEvent(new PointerEvent('pointerup', { button: 0, bubbles: true }));
 		expect(load).toHaveBeenCalledWith(root);

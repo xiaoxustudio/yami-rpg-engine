@@ -17,14 +17,7 @@ import { getUIStore } from '@app/stores/ui';
 import type { YamiElement } from '@app/types/element-api';
 import { roundTo } from '@app/utils/math';
 
-/**
- * （域模块不再 `this.x = …` 自我绑定，装配见 `ui-members.ts`）。
- *
- * 体内 ~16 处 `this.x` 已改成 `this.x`、`UIEngine.x.call(this)` 改成 `.call(this)`：实测它**唯一**
- * 的调用路径是 `LayoutPanel.vue` 的 `onMounted` → `nextTick(() => getUIStore().initialize())`
- * → store 转发 `UI?.initialize?.()` ⇒ 接收者恒为 UI；而体内所有嵌套回调（`History.processors[…]` ×9 ·
- * `File.get!().then` · `Timer.update` ×2 · `list.bind`）**都是箭头函数** ⇒ 捕获外层 `this`，
- */
+/** 初始化 UI 域模块的 DOM 引用与状态。 */
 const initialize = function (this: UIShape) {
 	this.page = uiEls.get('ui') as YamiElement;
 	this.head = uiEls.get('ui-head') as YamiElement;

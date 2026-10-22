@@ -155,16 +155,7 @@ const elPointerTime = ref<HTMLElement | null>(null);
 const elCanvas = ref<HTMLCanvasElement | null>(null);
 
 /**
- * `themechange` 全局事件。原实现把 `fileAudio.themechange` 取出来存进模块级
- * `themechangeHandler` 后注册，并在 `onBeforeUnmount` 手工摘；而且它嵌在
- * `if (progress)` 分支里 —— 没有波形进度元素时**连这个全局监听也不注册**。
- *
- * 用 `enabled`（初始 false，进入那个分支时才置真）精确保留该时机，并**保留方法提取**
- * （先存 handler 再以普通函数调用），避免 `Inspector.fileAudio?.themechange(e)` 把 `this`
- * 隐式绑成宿主。
- */
-/**
- * 频率详情展开/收起时重算画布。原先是元素优先 API 的订阅（在 `DetailBox` 实例上挂 DOM 监听）。
+ * 频率详情展开/收起时重算画布。
  * `DetailBox` 的 `toggle` emit 带的是 value（string），而这个回调并不用它，故不收参数。
  */
 const onFrequencyToggle = (): void => {
@@ -172,8 +163,7 @@ const onFrequencyToggle = (): void => {
 };
 
 /**
- * 波形进度条上的三个指针监听。原先是元素优先写法
- * （在 `elProgress` 这个模板 ref 上直接 `addEventListener`）。
+ * 波形进度条上的三个指针监听。
  *
  * ⚠️ `progressPointermove` 的实现里用了 **`this.clientWidth`**，且它在
  * `file-audio-page.ts` 里被标注为 `this: HTMLElement` —— 也就是说它**依赖

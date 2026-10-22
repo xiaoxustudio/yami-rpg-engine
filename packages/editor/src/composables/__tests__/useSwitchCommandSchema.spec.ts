@@ -71,10 +71,6 @@ const mockListBox = (list: HTMLElement): void => {
 
 const words: string[] = [];
 
-/** 本文件挂载的真实窗口：用例只 unmount 了 commandWrapper，其余会在 beforeEach 里被
- *  `document.body.innerHTML = ''` 摘掉但**组件仍处于挂载态**——它们随后任何一次重渲染都会
- *  重新登记自己的元素，把共享注册表覆盖成已脱离文档的旧节点（模块改读 `composableEls`，
- *  这条泄漏会直接表现为"读到旧数据"）。故统一在 afterEach 里卸载。 */
 const mountedWrappers: Array<{ unmount(): void }> = [];
 
 const makeCondition = (value: number) => ({ type: 'number', value });
@@ -138,12 +134,6 @@ describe('useSwitchCommandSchema (switch command window dynamic rows + insert/ed
 		commandWrapper.unmount();
 	});
 
-	/**
-	 * 回归（与"显示选项"窗口同因，2026-10-22）：`branches` 必须真的经 `v-model` 到达列表。
-	 *
-	 * `load()` 是 `Object.assign(form, { variable, branches, default })`。缺 `branches` 访问器时
-	 * 它只会成为普通对象上的非响应式属性 —— `default` 恰好变化时才会顺带刷新。
-	 */
 	it('第二次 customLoad 只有 branches 变化（variable/default 不变）时列表也立刻刷新', async () => {
 		const { commandWrapper } = await mountAll();
 		const list = getList('switch-branches');

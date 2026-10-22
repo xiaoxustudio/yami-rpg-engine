@@ -57,9 +57,6 @@ const { form, sync, windowError } = useFileVideoPage();
 
 const elVideo = ref<HTMLVideoElement | null>(null);
 
-// 全局 `error` 监听走 composable：挂/摘成对，不再靠模块级 windowErrorHandler 手工配对。
-// `windowError` 来自 composable，是稳定的函数引用，直接注册与原先 `windowErrorHandler = windowError`
-// 后注册是同一件事。
 useEventListener(window, 'error', windowError);
 
 onMounted(() => {

@@ -95,9 +95,7 @@ const openColor = (): void => {
 };
 
 /**
- * 根元素上的 `keydown`。原先是在 `onMounted` 里用内联闭包 `addEventListener` 挂的，
- * 现改模板 `@keydown`（`YMColorBox` 单根，事件经 fallthrough 落到它自己的根 div 上）。
- * 处理器从 `root.value` 取元素，与原先捕获的 `el` 是同一个节点。
+ * 根元素上的 `keydown`。
  */
 const onKeydown = (event: KeyboardEvent): void => {
 	const el = root.value;
@@ -123,8 +121,6 @@ onMounted(() => {
 		configurable: true,
 		get: () => ym.value?.read?.() ?? '',
 		set: (value: string) => {
-			// 写成块体：setter 不能有返回值（`eslint(no-setter-return)`），
-			// 而 `ym.value?.write?.(value)` 作表达式体就会被判为"返回值"。行为完全一致。
 			ym.value?.write?.(value);
 		}
 	});

@@ -67,7 +67,7 @@ const onConfirm = () => {
 	save();
 };
 
-/** 窗口关闭时清空列表。原先是元素优先写法（`fieldEls` 取到元素后在其上订阅 closed）。 */
+/** 窗口关闭时清空列表。 */
 const onClosed = () => {
 	clear(fieldEls.get('getObjectProperty-list'));
 };

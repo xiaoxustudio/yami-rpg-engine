@@ -3,7 +3,6 @@ import { ROW_HEIGHT } from '../../../utils/common-list';
 
 export type FileBodyViewMode = 'list' | 'small' | 'medium' | 'large' | 'huge';
 
-/** `viewIndex`（0..4）→ 视图模式；与原 `updateViewMode` 的 switch 一致，越界按边界夹取 */
 export const VIEW_MODE_BY_INDEX: readonly FileBodyViewMode[] = [
 	'list',
 	'small',

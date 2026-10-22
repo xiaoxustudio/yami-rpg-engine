@@ -23,7 +23,6 @@ function dismissBootSplash(reason: 'home' | 'failed' | 'timeout'): void {
 	const splash = appContainer?.firstElementChild;
 	if (!splash || splash.id !== 'yami-boot') return;
 	splash.remove();
-	// 正常路径（`home`）不吭声；兜底与失败路径留痕，便于区分「界面是自己好的还是被强撤的」
 	if (reason !== 'home') console.warn(`[boot] 加载层由非正常路径移除：${reason}`);
 }
 

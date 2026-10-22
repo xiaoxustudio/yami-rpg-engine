@@ -146,13 +146,6 @@ describe('useIfCommandSchema (if command window dynamic rows + insert/edit/save 
 		commandWrapper.unmount();
 	});
 
-	/**
-	 * 回归（与"显示选项"窗口同因，2026-10-22）：`branches` 必须真的经 `v-model` 到达列表。
-	 *
-	 * `load()` 是 `Object.assign(form, { branches, else })`。缺 `branches` 访问器时它只会成为
-	 * 普通对象上的非响应式属性 —— 第一次加载之所以看起来正常，是因为 `else` 同时从 false 变
-	 * true 触发了重渲染。第二次加载 `else` 不变，列表就会停在上一次的内容。
-	 */
 	it('第二次 customLoad 只有 branches 变化（else 不变）时列表也立刻刷新', async () => {
 		const { commandWrapper } = await mountAll();
 		const list = getList('if-branches');
@@ -165,7 +158,6 @@ describe('useIfCommandSchema (if command window dynamic rows + insert/edit/save 
 		await commandWrapper.vm.$nextTick();
 		expect(list.read()).toHaveLength(1);
 
-		// else 仍是 true（不触发重渲染），只有 branches 变了
 		Command.cases.if.customLoad!({
 			branches: [makeBranch(2), makeBranch(3)],
 			elseCommands: [{ id: 'comment' }]

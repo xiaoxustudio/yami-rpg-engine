@@ -1,7 +1,5 @@
 export interface BootMark {
-	/** 阶段名，例如 `vue-mounted` */
 	name: string;
-	/** 相对导航开始的毫秒数 */
 	ms: number;
 }
 

@@ -6,9 +6,7 @@ import { type CommandListApiOptions } from '../command-api';
 import { elementDataOf } from '../../../../utils/element-data';
 
 /**
- * 一致性回归：换源后"模型驱动渲染"，因此**每一步操作之后**行模型的 key 序列都应当与 DOM 一致。
- * 这条用例来自一次探针：它当场抓出 `clear()` 之后书里归零、屏幕上仍留着旧行（模型与 DOM 都还是 6 行）。
- * 单点断言（例如只查 `elements.count === 0`）看不到这类问题——所以这里比对的是**两边**。
+ * 一致性回归：每一步操作之后行模型的 key 序列都应与 DOM 一致。
  */
 const makeOptions = (): CommandListApiOptions =>
 	({

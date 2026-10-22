@@ -55,7 +55,7 @@ const countLeaves = (root: Element): number =>
 		)
 	).length;
 
-/** 组的 `end` 是元素数据（原型访问器已退役），规格改走显式视图 */
+/** 组的 `end` 是元素数据，规格走显式视图。 */
 const groupEndOf = (el: unknown): number => elementDataOf<{ end: number }>(el).end;
 
 /** 基线：进入 directory 工作区并加载 scheme（palette 被清、页/页签搬进 group）。 */

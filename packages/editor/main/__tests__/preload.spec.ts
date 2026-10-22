@@ -139,10 +139,6 @@ describe('preload IPC 桥（安全边界）', () => {
 	});
 });
 
-/**
- * 回归：这两条兜底监听原先在主进程用 `did-finish-load` + `executeJavaScript` 注册，
- * 要等页面加载完成才生效，启动期（模块求值）抛出的错误全漏。现在改到 preload。
- */
 describe('preload 兜底错误上报', () => {
 	const importPreload = async (): Promise<void> => {
 		setContextIsolated(false);

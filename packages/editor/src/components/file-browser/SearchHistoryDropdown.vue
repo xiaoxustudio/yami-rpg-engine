@@ -51,16 +51,7 @@ const position = reactive({
 let input: HTMLInputElement | null = null;
 let themeObserver: MutationObserver | null = null;
 
-/**
- * 点下拉外部即关闭。
- *
- * 原先由 `show()` 在 `setTimeout(…, 0)` 里手工挂、由 `hide()` 与 `onBeforeUnmount` 手工摘。
- * 那个 0ms 延时是有意的：**打开下拉的那一次点击**不能立刻把它关掉。
- *
- * 改走 `useEventListener` 的 `enabled`（由 `visible` 驱动）：内部是 `flush: 'post'` 的 watcher，
- * 同样在本次渲染之后、下一次用户事件之前生效，因此原意图不变；而摘除由作用域销毁自动完成，
- * 不再需要三处手工 `removeEventListener`。
- */
+/** 点下拉外部即关闭。 */
 const onOutsideMousedown = (event: Event): void => {
 	const el = root.value;
 	if (el && !el.contains(event.target as Node) && event.target !== input) {

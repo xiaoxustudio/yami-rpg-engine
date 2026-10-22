@@ -46,18 +46,6 @@ const syncOverview = (): void => {
 	overviewMeta.value = Inspector.fileScript?.meta ?? null;
 };
 
-/**
- * `localize` 是全局事件，改走 composable（挂/摘成对，不再靠模块级 `localizeHandler`
- * 加 `onBeforeUnmount` 手工配对）。
- *
- * 两点**必须保留**的原有语义，否则是行为变更：
- *   1. **注册时机**：原实现只在 `onMounted` 且 `Inspector.fileScript` 已就绪时才挂。
- *      `useEventListener` 只能在 setup 期调用，故用 `enabled`（初始 false → 挂载时置真）
- *      把首次注册推迟到那一刻；置真的赋值会触发内部 watch 完成注册。
- *   2. **不做方法提取**：调 `Inspector.fileScript?.windowLocalize(e)` 会把 `this` 隐式绑成
- *      `Inspector.fileScript`，而原实现是取一次方法、以普通函数身份注册的。故先存
- *      `localizeHandler`，触发时按普通函数调用。
- */
 const localizeHandler = ref<((event: Event) => void) | null>(null);
 const localizeEnabled = ref(false);
 

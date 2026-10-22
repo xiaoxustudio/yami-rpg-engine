@@ -33,10 +33,6 @@ export interface VisibleRange {
 /**
  * 虚拟滚动窗口公式（行高 `ROW_HEIGHT`）—— **全仓唯一一份**。
  *
- * 此前 `param-list-core`、`common-list-core`、`tree-render` 各抄了一遍**逐字相同**的实现，
- * 三处的「与 common-list 现行公式一致」只靠注释与三份内容相同的测试维持；
- * 现在改为共用本函数，公式再改只需要动这里。
- *
  * 调用方分两类，都保留自己的前置守卫：`commonListResize` 先判 `clientHeight === 0` /
  * `count === 0`，`tree-render` 的 `computeWindow` 则把两种空情形都折成 `{0, 0}`。
  */

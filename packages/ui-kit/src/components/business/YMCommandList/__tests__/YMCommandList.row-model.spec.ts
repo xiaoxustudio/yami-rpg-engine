@@ -75,7 +75,7 @@ const makeList = async (data: unknown[] = []): Promise<ListElement> => {
 	return el;
 };
 
-/** `parse` 可以用 `break` 把**一条命令拆成多行**——换源时最容易被忽略的一类行 */
+/** `parse` 可以用 `break` 把一条命令拆成多行。 */
 const makeListWithBreaks = async (data: unknown[]): Promise<ListElement> => {
 	const options = makeOptions() as unknown as { command: Record<string, unknown> };
 	options.command.parse = () => [
@@ -110,11 +110,7 @@ const domKeys = (el: ListElement): (string | undefined)[] =>
 		(row) => row.rowKey
 	);
 
-/**
- * 换源前置：**每一行都要有稳定 key**（`v-for` 的 `:key`）。空白行由 `createBlankElement` 生成，
- * 现在按"所属列表 + 层级 + 列表下标"派生 key（见 `command-api.ts` / `command-render.ts`），
- * 因此本 spec 不再排除它——下面对比的是**包括空白行在内**的完整 key 序列。
- */
+/** 每一行都要有稳定 key，空白行按「所属列表 + 层级 + 列表下标」派生。 */
 const commandKeys = (keys: (string | undefined)[]): string[] =>
 	keys.filter((k): k is string => k !== undefined);
 

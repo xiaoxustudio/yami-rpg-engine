@@ -89,10 +89,8 @@ function fileExists(filePath: string): boolean {
 
 async function copyFolderAsync(source: string, destination: string): Promise<void> {
 	try {
-		// recursive: true 确保父目录存在
 		await fsp.mkdir(destination, { recursive: true });
 		const items = await fsp.readdir(source);
-		// 并行处理所有文件和子目录
 		await Promise.all(
 			items.map(async (item) => {
 				const sourcePath = path.join(source, item);
@@ -125,7 +123,6 @@ function sendLog(msg: string, percentage: number | null = null, isError: boolean
 }
 
 async function main(options: ApkOptions = {}): Promise<ApkResult> {
-	// 如果正在构建中，拒绝新的构建请求
 	if (isBuilding) {
 		sendLog('当前已有构建任务正在进行中', null, false);
 		return false;
@@ -137,7 +134,6 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 	abortController = new AbortController();
 	isBuilding = true;
 
-	// 监听外部中止信号
 	if (signal) {
 		signal.addEventListener('abort', () => {
 			abortBuild();
@@ -164,7 +160,6 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 		onProgress?.('文件验证通过', currentProgress);
 		sendLog('文件验证通过', currentProgress);
 
-		// 递归删除前强制输出目录位于项目 apk 目录内，阻断任意路径删除
 		const projectApkRoot = path.resolve(config.projectPath || '', 'apk');
 		const outputDirResolved = path.resolve(config.outputDir);
 		if (
@@ -335,7 +330,6 @@ async function decompileApk(config: ApkConfig): Promise<{ success: boolean; erro
 			}
 		});
 
-		// 监听中止信号
 		abortController!.signal.addEventListener(
 			'abort',
 			() => {
@@ -358,7 +352,6 @@ async function modifyManifest(config: ApkConfig): Promise<{ success: boolean; er
 	try {
 		let xml = await fs.promises.readFile(manifestPath, 'utf8');
 
-		// 直接通过字符串替换删除roundIcon属性（XML解析器可能漏掉）
 		xml = xml.replace(/android:roundIcon="[^"]*"/g, '');
 
 		const result = await parseXml(xml);
@@ -370,7 +363,6 @@ async function modifyManifest(config: ApkConfig): Promise<{ success: boolean; er
 		if (config.versionCode !== undefined) {
 			result.manifest.$['android:versionCode'] = config.versionCode.toString();
 		}
-		// 确保application标签中只保留正确的icon引用和设置应用名称
 		if (result.manifest.application) {
 			const app = Array.isArray(result.manifest.application)
 				? result.manifest.application[0]
@@ -379,7 +371,6 @@ async function modifyManifest(config: ApkConfig): Promise<{ success: boolean; er
 			app.$['android:label'] = '@string/app_name'; // 确保使用字符串资源中的名称
 			delete app.$.roundIcon;
 
-			// 删除任何硬编码的应用名称
 			if (app.$['android:label'] && app.$['android:label'].startsWith('"')) {
 				app.$['android:label'] = '@string/app_name';
 			}
@@ -447,7 +438,6 @@ async function updateStringsFile(stringsPath: string, config: ApkConfig): Promis
 		});
 	}
 
-	// 如果没有找到app_name，创建一个
 	if (!found) {
 		if (!resources.string) resources.string = [];
 		resources.string.push({
@@ -651,7 +641,6 @@ async function cleanPublicXml(publicXmlPath: string): Promise<void> {
 			const name = item.$.name;
 			const type = item.$.type;
 
-			// 只保留ic_launcher的资源映射，删除其他 launcher 相关资源
 			if (name === 'ic_launcher' && (type === 'mipmap' || type === 'drawable')) {
 				return true;
 			}
@@ -679,7 +668,6 @@ async function rebuildApk(config: ApkConfig): Promise<{ success: boolean; error?
 		]);
 
 		if (stderr && (stderr.includes('W:') || stderr.includes('error:'))) {
-			// 非致命警告不中断构建
 			if (
 				!stderr.includes('failed linking references') &&
 				!stderr.includes('Exception in thread "main"')
@@ -723,7 +711,6 @@ async function zipalignApk(config: ApkConfig): Promise<{ success: boolean; error
 
 	const alignedTempPath = `${config.newApkPath}.aligned`;
 
-	// -f 强制覆盖；4 按4字节对齐
 	try {
 		const { stdout: _stdout, stderr: _stderr } = await runProcess(config.zipalignPath, [
 			'-f',
@@ -796,7 +783,6 @@ async function signApk(config: ApkConfig): Promise<{ success: boolean; error?: s
 		}
 	}
 
-	// 验证签名
 	await verifySignature(config);
 	return { success: true };
 }

@@ -24,7 +24,7 @@ const selectObject = (function IIFE() {
 	 *
 	 * 形参是实例数组、不是节点数组：`element.visible` / `element.node` / `element.isPointIn`
 	 * 三样都长在**实例**上（`element-base.ts`），第二句 `element.node.instance === element`
-	 * 正是「这个实例是它节点的主实例」的自证。此前写 `UINodeShape[]` 是靠索引签名成立的。
+	 * 正是「这个实例是它节点的主实例」的自证。
 	 */
 	const find = (elements: UIElementInstance[], x: number, y: number): UINodeShape | null => {
 		const length = elements.length;

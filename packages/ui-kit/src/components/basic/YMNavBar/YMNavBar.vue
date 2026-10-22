@@ -34,11 +34,6 @@ const read = (): unknown => {
 
 /**
  * 清掉**全部** `selected`，而不是只清第一个。
- *
- * 页签由整壳 Teleport 在分组间搬运，搬进来的页签带着它原来那个组的 `selected`：旧实现用
- * `querySelector('.selected')` 只清一个 ⇒ 残留 + 新选中同时亮（实机「点哪个页签都同时显示
- * active」），而且 `pointerdown` 里 `hasClass(target,'selected')` 为真还会**跳过写入**
- * （点那个残留的活动页签什么都不发生）。
  */
 const unselect = (): void => {
 	const element = root.value;

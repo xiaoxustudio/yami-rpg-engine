@@ -48,9 +48,7 @@ const on = (
 ): void => ym.value?.on(type, listener, options);
 
 /**
- * 子组件的 `switch` 现在是 **Vue emit**（`YMPageManager` 已把元素上的原生 `switch`
- * 用模板 `@switch` 收成 `emit('switch', last, value)`），所以这里是 emit → emit 的桥，
- * 不再需要 `root.value.addEventListener`。载荷是两个参数，故 handler 也收两个。
+ * 子组件 `switch` 事件的转发处理器（载荷为 `last` 与 `value`）。
  */
 const onSwitch = (last: unknown, value: unknown): void => emit('switch', last, value);
 

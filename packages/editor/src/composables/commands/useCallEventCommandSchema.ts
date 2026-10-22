@@ -244,7 +244,7 @@ interface CallEventInputApi {
 	on?(type: string, listener: (event: Event) => void): void;
 }
 
-/** `numBox` / `strBox` 现在是元素数据（WeakMap），消费者经此形状读取 */
+/** `numBox` / `strBox` 的元素数据（WeakMap）读取形状 */
 const numBoxOf = (el: unknown): { input?: { min?: string; max?: string; value?: string } } =>
 	elementDataOf<{
 		numBox: { input?: { min?: string; max?: string; value?: string } };

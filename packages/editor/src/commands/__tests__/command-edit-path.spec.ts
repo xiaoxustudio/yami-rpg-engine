@@ -6,13 +6,8 @@ import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
 
 /**
- * 回归（实机："事件编辑器里有部分指令，双击无法编辑"）：
- *
- * 1. `CommandSchema.edit` 里的 `if (point)` 闸门：`point` 只用于**给窗口定位**，
- *    拿不到时旧实现什么都不做 —— 表现为"双击没反应"。活动行改由模板渲染后，
- *    `getSelectionPosition()` 可能拿不到点（行尚未物化/刚被清空），本用例钉住"仍然开窗"。
- * 2. 脚本指令（插件指令）的 `commandNameMap` 门槛：它只提供窗口标题，
- *    旧实现把它当编辑权限用 ⇒ 指令名表尚未就绪时，插件指令静默不可编辑。
+ * 回归：双击编辑链路不得静默吞掉。
+ * 构造 `CommandSchema.edit` 的 target 桩；`point` 为 null 时模拟拿不到选区位置。
  */
 const makeTarget = (point: { x: number; y: number } | null) => ({
 	scrollAndResize: vi.fn(),

@@ -12,13 +12,6 @@ const props = withDefaults(defineProps<Props>(), { id: '' });
 const root = ref<HTMLElement | null>(null);
 const thumb = ref<HTMLElement | null>(null);
 
-/**
- * 拖拽是否进行中 —— **专门给 `useEventListener` 的 `enabled` 用的响应式信号**。
- *
- * 为什么不能直接用 `state.dragging`：`state` 是普通对象（不是 `reactive()`），
- * 对它的赋值不触发任何 watcher，`enabled` 永远不会重算。故这里另起一个 ref，
- * 与 `state.dragging` 在同样的两处同进同出（`pointerdown` 置真、`windowPointerup` 置假）。
- */
 const draggingActive = ref(false);
 
 interface ThumbElement extends HTMLElement {
@@ -237,7 +230,6 @@ const windowPointerup = (event: PointerEvent): void => {
 	const { dragging } = state;
 	if (dragging && dragging.relate?.(event)) {
 		state.dragging = null;
-		// 置假即摘掉 window 上那两个监听（见下方 useEventListener + enabled）
 		draggingActive.value = false;
 	}
 };
@@ -280,18 +272,6 @@ const windowPointermove = (event: PointerEvent): void => {
 	}
 };
 
-/**
- * 拖拽期才挂 window 的 `pointerup`/`pointermove`：用 `enabled` 由 `draggingActive` 驱动，
- * 挂/摘成对，不再在四处手工 add / remove。
- *
- * ⚠️ 开关必须响应式（见 `draggingActive` 的注释）；挂载时机是 `flush: 'post'`，
- * 因此**同一 tick 内连续派发 pointerdown → pointermove 的测试需要先 `await nextTick()`**。
- * 真实浏览器里 pointerdown 与随后的 pointermove/pointerup 本就分属不同 task，不受影响。
- *
- * 参数处 `event as PointerEvent`：`useEventListener` 的 handler 形参是宽松的 `Event`
- * （它不解析事件名字符串），而挂在 `window` 上的 `pointerup`/`pointermove` 必然是
- * PointerEvent —— 这个 cast 表达的就是这层已知事实，别为了它去放宽 composable 的签名。
- */
 useEventListener(window, 'pointerup', (event) => windowPointerup(event as PointerEvent), {
 	enabled: draggingActive
 });
@@ -343,7 +323,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-	// window 上的 pointerup / pointermove 由 useEventListener 随作用域销毁自动摘除
 	state.dragging = null;
 	draggingActive.value = false;
 	stopAnimation();

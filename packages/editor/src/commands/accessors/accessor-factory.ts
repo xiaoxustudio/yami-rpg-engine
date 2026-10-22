@@ -1,11 +1,7 @@
 import type { AccessorBaseShape, AccessorFields, AccessorTarget } from '@app/types/shapes.ts';
 
 /**
- * 访问器窗口的控件注册表工厂。
- * 用法：SFC 里 `const { fields, fieldRef } = createAccessorFields()`，模板控件挂
- * `:ref="fieldRef('actorGetter-type')"`，并在 setup 期把 `fields` 赋给对应访问器
- * （`ActorGetter.fields = fields`）；模块的 `initialize()` / `open()` 便可用 `this.fields`
- * 取控件，不再按 id 查 DOM。赋值必须早于 `Schema.initAll()`（AppShell 在所有弹窗挂载后触发）。
+ * 访问器窗口的控件注册表工厂。赋值必须早于 `Schema.initAll()`（AppShell 在所有弹窗挂载后触发）。
  */
 export const createAccessorFields = (): {
 	fields: AccessorFields;

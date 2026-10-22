@@ -29,15 +29,6 @@ export type ToggleResult = {
 };
 
 export interface ParamListCore {
-	/**
-	 * 把选中范围夹到有效行内；**没有任何行时返回 `null`**（没有"选中"这回事）。
-	 *
-	 * 早先对 `count === 0` 也照样夹紧，结果 `last = -1`，`select()` 把
-	 * `self.start` / `self.end` 设成 `-1`。`-1` 通过所有 `start !== null` 的检查，
-	 * 于是 `elements[-1]` 是 `undefined` —— 右键菜单读 `.dataItem` 直接抛
-	 * `Cannot read properties of undefined (reading 'dataItem')`（2026-10-22 实报），
-	 * 双击则被 `edit()` 的兜底静默吞掉（表现成"双击没反应"）。
-	 */
 	resolveSelectionRange: (
 		start: number,
 		end: number,

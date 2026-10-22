@@ -192,18 +192,6 @@ describe('navDrop 跨组搬入', () => {
 	});
 });
 
-/* ---------------- 组内合并后的「唯一激活」不变量 ----------------
- *
- * 回归（实机：把「动作」拖到时间轴面板上）：
- *  · 两个页签**同时**是选中态（点哪个都亮）；
- *  · 内容永远停在被拖进来的那个面板上。
- * 根因是同一类「只清一个」：页签/页框由整壳 Teleport 在分组间搬运，会把**旧组的** `selected`
- * / `visible` 一起带过来，而旧实现只清「自己记着的那一个」——
- *   · `YMNavBar.unselect()` 用 `querySelector('.selected')` 只清第一个 ⇒ 残留 + 新选中同时亮；
- *   · `YMPageManager` 只 `removeClass(active,'visible')` ⇒ 第二个 `.visible` 页框永远留着，
- *     而页框是 `position:absolute; inset:0`，DOM 序靠后的那个盖在上面 ⇒ 看到的一直是它。
- */
-
 const selectedValues = (nav: HTMLElement): string[] =>
 	Array.from(nav.querySelectorAll('.nav-item.selected')).map(
 		(item) => item.getAttribute('value') ?? ''
