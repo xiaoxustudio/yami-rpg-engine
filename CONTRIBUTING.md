@@ -81,17 +81,70 @@ pnpm run build:vite
 > `removeEventListener(type, handler, native)`，`native` 未传时实参是**三个**（第三个
 > `undefined`），只写两个实参的断言会莫名失败。
 
-**两个同名 `packmeta.json` 别搞混**
+**编辑器版本只有一个真源：`packages/editor/package.json` 的 `version`**
 
-- `packages/editor/src/module/packmeta.json` —— **运行期会被写回**
-  （`src/module/constants.ts` 在模块加载期用 `JSON.stringify` 覆写它），已在
-  `.oxfmtrc.json` 的 `ignorePatterns` 里豁免；跑完测试/typecheck 后 `git checkout --` 它，
-  不要提交被刷新的版本号。
-- `packages/editor/packmeta.json`（**包根**那个）—— **没有代码读写它**，是一次性遗留物。
-  它曾是单行 JSON 且**不在**豁免列表里，导致 **CI 的 `format:check` 在 HEAD 上就红**
-  （2026-10-21 已格式化修好，纯排版、值未变）。注意 `format:check` 的扫描面只有
-  `packages/editor` + `packages/ui-kit`，`scripts/**` 不在其中 ——
-  所以 `scripts/oneoff/declare-data-fields.mjs` 单独跑 `oxfmt --check` 虽会红，但不影响 CI。
+改动版本号时**只改这一处**，其余都是派生：
+
+- `src/services/updater/updater.ts` 的 `latestEditorVersion` 直接 import 它（不再有字面量）；
+- 该值会被写进用户 `config.json`（迁移纪元，见 `services/project/version.ts`）与
+  运行期 packmeta 的 `Editor`（生产写 `src/module/packmeta.json`、dev 写
+  `packages/editor/packmeta.json`，见下），并显示在首页"当前编辑器版本"；
+- electron-builder 用它命名安装包；发布时由 tag 覆盖（见下节）。
+
+守卫：`src/services/updater/__tests__/version.spec.ts` 会**从磁盘独立读** package.json
+并与 `latestEditorVersion` 比对 —— 若有人把字面量写回去，版本一涨就会红。
+
+> `latestProjectVersion`（1.0.147）是**项目数据 schema 的纪元**，与编辑器版本无关，仍是字面量。
+> `CommunityVersion`（`26072501`）同理，是社区版纪元。
+
+**两个同名 `packmeta.json` 是**同一段代码的两个写回目标** —— 差在运行模式，别只当成重复副本**
+
+`src/module/constants.ts` 在模块加载期把 `Editor`/`Project`/`Community` 覆写进去并落盘，
+落盘路径由 `moduleDir` 决定：
+
+```ts
+const moduleUrl = new URL(import.meta.url);
+const moduleDir = moduleUrl.protocol === 'file:' ? Path.dirname(fileURLToPath(moduleUrl)) : './';
+```
+
+- **生产/打包**：`import.meta.url` 是 `file:` ⇒ 写 `packages/editor/src/module/packmeta.json`；
+- **`pnpm dev`（Vite dev server）**：`import.meta.url` 是 `http:` ⇒ `moduleDir = './'`，
+  于是写到**当前工作目录** = `packages/editor/packmeta.json`。
+
+所以这两个文件都会被运行期覆盖成**单行 JSON**，都在 `.oxfmtrc.json` 的 `ignorePatterns` 里
+（漏掉任何一个，跑一次 dev / 测试就会把 `format:check` 顶红，而红的原因与改动无关）。
+提交前若看到它们变脏，`git checkout --` 掉，不要提交被刷新的版本号。
+
+注意 `format:check` 的扫描面只有 `packages/editor` + `packages/ui-kit`，`scripts/**` 不在其中 ——
+所以 `scripts/oneoff/declare-data-fields.mjs` 单独跑 `oxfmt --check` 虽会红，但不影响 CI。
+
+**发布（已自动化）**：`.github/workflows/release.yml`
+
+- **怎么发**：推一个 `v*` tag —— `git tag v1.2.3 && git push origin v1.2.3`。
+  也可以在 Actions 页面手动 dispatch，填一个**已经推送过**的 tag。
+  tag 带连字符（如 `v1.2.3-beta.1`）会自动标记为 prerelease。
+- **打什么**：四腿矩阵 `win-x64` / `mac-x64` / `mac-arm64` / `linux-x64`，分别跑
+  `packages/editor` 的 `build:winexe` / `build:macexe` / `build:macArmexe` / `build:linuxexe`
+  （每条 = `build:all && electron-builder <target>`，配置内联在 `packages/editor/package.json`
+  的 `build` 字段；产物落 `packages/editor/build/`）。
+- **版本号由 tag 驱动**：打包前 `scripts/release-sync-version.mjs` 把 tag 的 semver 写进
+  `packages/editor/package.json`（**只在 CI 工作区生效，不提交**）。
+  因为那个 `version` 是编辑器版本的唯一真源，安装包命名、界面显示、用户
+  `config.json` 的迁移纪元都会跟着对齐 —— 不覆盖的话安装包会一直叫 `… 1.0.18.exe`。
+- **发到哪**：产物先 `upload-artifact`，再由单个 `release` job 用 `gh release create`
+  发到 **workflow 所在的仓库**（`${{ github.repository }}`）。
+  **刻意不用 `electron-builder --publish`**：`package.json` 的 `repository` 指向
+  `yami-pro/yami-rpg-editor`，与实际跑 workflow 的仓库不一定相同，
+  用它发布可能打到别处去。
+- **签名**：目前**不签名**（仓库里没有证书 secret）。mac 侧显式
+  `CSC_IDENTITY_AUTO_DISCOVERY: 'false'`，win 侧 electron-builder 自己会
+  `no signing info identified, signing is skipped`。将来要签名，配 `CSC_LINK` /
+  `CSC_KEY_PASSWORD`（mac+win）与 `APPLE_ID` / `APPLE_APP_SPECIFIC_PASSWORD` /
+  `APPLE_TEAM_ID`，**workflow 结构不用改**。
+- **已知噪音**：`extraResources` 里有一条 `node_modules/@typescript/typescript-win32-x64`，
+  本仓没装（它是 `typescript@7` 的可选依赖，`main/services/tsc.ts` 已有回退链）。
+  打包时会打印 `file source doesn't exist` 但**不中断**（实测 `--dir --win` exit=0）。
+  想去掉这条噪音就删那两行 —— 但先确认 tsgo 路径是否还要它。
 
 ## 目录详解
 
@@ -110,7 +163,7 @@ yami-rpg-editor/
 │   ├── export-electron/     # @yami/export-electron 播放器壳子（游戏部署依赖）
 │   └── script/              # 游戏侧脚本模板
 ├── scripts/                 # 迁移台账、门禁与一次性工具（见下）
-├── .github/workflows/       # CI（门禁 / 测试 / 构建三个 job）
+├── .github/workflows/       # ci.yml（门禁 / 测试 / 构建）+ release.yml（tag 触发打安装包并发 Release）
 └── xr.md                    # 重构方案与阶段记录（唯一的总路线图）
 ```
 

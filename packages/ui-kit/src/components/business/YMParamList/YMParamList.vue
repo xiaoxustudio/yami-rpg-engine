@@ -670,6 +670,14 @@ const edit = (): void => {
 	if (self.start !== null) {
 		const elements = self.elements;
 		const element = elements[self.start];
+		// `update()` 重建行时会重置 `elements.count` / `elements.start`，但**不重置**
+		// `self.start` / `self.end`。所以"先选中第 4 行、随后列表只剩 1 行"时，
+		// `self.start` 仍是 3 而 `elements[3]` 已是 `undefined`。
+		// 这里没有"可编辑的行" —— 早退即可，否则双击会报
+		// `Cannot read properties of undefined (reading 'dataItem')`（2026-10-22 实报）。
+		// 注意：只在这里兜住崩溃；`self.start` 变陈旧这件事本身没改
+		// （在 `update()` 里夹回范围会改变"列表更新时选中是否保留"的行为，属另一个决定）。
+		if (!element) return;
 		self.inserting = element.dataItem === null;
 		switch (self.inserting) {
 			case true:

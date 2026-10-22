@@ -441,7 +441,12 @@ Title.loadFromConfig = function (this: TitleShape, config: EditorConfigShape) {
 };
 
 Title.saveToProject = function (this: TitleShape, project: EditorProjectShape) {
-	const items = this.tabBar.data;
+	// 标题栏未初始化时**早退**，不要退化成写空数组 —— 那会把工程里已保存的
+	// `openTabs` / `activeTab` 抹掉（关闭工程时会真的丢标签页状态）。
+	// 同文件其它方法（`windowDirchange` 等）也是这么早退的；这里曾经漏了这层保护，
+	// 表现为关闭工程时报 `Cannot read properties of undefined (reading 'data')`。
+	const items = this.tabBar?.data;
+	if (!items) return;
 	const length = items.length;
 	const tabs = Array.from<string>({ length: length });
 	for (let i = 0; i < length; i++) {

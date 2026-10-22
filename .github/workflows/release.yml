@@ -1,0 +1,163 @@
+# 发布：打了 `v*` tag 就打三平台安装包并创建 GitHub Release。
+#
+# 背景（2026-10-21）：发布此前**完全手动** —— 本地跑 `packages/editor` 的
+# `build:win` / `build:linux` / `build:mac` 等脚本（每条都是 `build:all && electron-builder <target>`，
+# 配置内联在 `packages/editor/package.json` 的 `build` 字段）。CI 里只有门禁/测试/构建三个 job，
+# 没有发布。这个 workflow 把「打什么、发到哪、怎么命名」变成机制。
+#
+# 设计取舍：
+#   1. **不用 `electron-builder --publish`**。`package.json` 的 `repository` 字段指向
+#      `yami-pro/yami-rpg-editor`，而 workflow 实际跑在 `${{ github.repository }}`（两者不一定相同）。
+#      改成「打包 → 传 artifact → 单个 release job 用 `gh` 在真实仓库上建 Release」，
+#      发布目标只取决于 workflow 所在的仓库，不依赖那个字段。
+#   2. **四腿矩阵**：win-x64 / mac-x64 / mac-arm64 / linux-x64。mac 拆两腿而不是打 universal，
+#      因为本机无法验证 universal 组合；两腿各自都是普通构建。
+#   3. **版本号由 tag 驱动**：`packages/editor/package.json` 的 `version` 是编辑器版本的
+#      **唯一真源** —— electron-builder 用它命名安装包，`src/services/updater/updater.ts`
+#      从它派生 `latestEditorVersion`（再写进用户 config 的迁移纪元与 packmeta 的 `Editor`）。
+#      所以这里在打包前把 tag 的 semver 写进 package.json（只在 CI 内生效、不提交），
+#      整个链路一次对齐，安装包文件名与 tag 一致。
+#   4. **不做签名**：没有证书 secret。mac 显式关掉自动发现签名身份（否则会被搜一遍再放弃）；
+#      win 侧 electron-builder 自己会 `no signing info identified, signing is skipped`。
+#      将来要签名，加 `CSC_LINK` / `CSC_KEY_PASSWORD`（mac+win）与 `APPLE_ID` 等 secret 即可，
+#      本文件无需改结构。
+#   5. **不在发布流程里跑全量测试**：editor 全量套件约 11 分钟，而 `ci.yml` 已在每次 push 上跑。
+#      tag 通常指向已通过 CI 的提交，故这里只跑「快且高价值」的三条门禁。
+
+name: Release
+
+on:
+    push:
+        tags: ['v*']
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: '已存在的 tag（形如 v1.2.3）。手动触发时必须填，且该 tag 必须已推送'
+                required: true
+                type: string
+
+permissions:
+    contents: write # 创建 Release 需要
+
+concurrency:
+    group: release-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+    cancel-in-progress: false # 发布绝不自动取消
+
+env:
+    COREPACK_ENABLE_STRICT: '0'
+    # 没有 mac 签名证书；显式关闭自动发现，省掉一次无用的搜索并避免误报
+    CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+jobs:
+    build:
+        name: 打包（${{ matrix.label }}）
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - os: windows-latest
+                      label: win-x64
+                      script: build:winexe
+                    - os: macos-latest
+                      label: mac-x64
+                      script: build:macexe
+                    - os: macos-latest
+                      label: mac-arm64
+                      script: build:macArmexe
+                    - os: ubuntu-latest
+                      label: linux-x64
+                      script: build:linuxexe
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+
+            - uses: pnpm/action-setup@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: pnpm
+
+            - name: 安装依赖
+              run: pnpm install --frozen-lockfile
+
+            # 让安装包版本 = tag 版本（只改 CI 工作区里的 package.json，不提交）。
+            # 校验与写入都在脚本里做：内联 `node -e` 要跨 shell 处理引号，本地 PowerShell 会把
+            # 双引号吃掉，导致静默失败（实测踩过），故单独成脚本、可本地验证。
+            - name: 版本号对齐 tag
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  TAG="${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}"
+                  VER="${TAG#v}"
+                  node scripts/release-sync-version.mjs "$VER"
+                  echo "打包版本：$VER"
+
+            # 只跑快且高价值的：口径自证、棘轮、以及唯一能看见 .vue 类型错误的门禁
+            # （editor 的 `tsc --noEmit` 对 .vue 是假绿，这一点在 CONTRIBUTING 里记过）
+            - name: 快速门禁
+              run: |
+                  pnpm run migration:selftest
+                  pnpm run migration:check
+                  pnpm -F @yami/editor typecheck:vue
+
+            - name: 打包
+              run: pnpm -F @yami/editor run ${{ matrix.script }}
+
+            # electron-builder 的输出目录是 packages/editor/build（见 package.json 的 build.directories.output）。
+            # 只取安装包与它们旁边的元数据（blockmap / latest*.yml 供自动更新用）。
+            - name: 上传安装包
+              uses: actions/upload-artifact@v4
+              with:
+                  name: ${{ matrix.label }}
+                  if-no-files-found: error
+                  path: |
+                      packages/editor/build/*.exe
+                      packages/editor/build/*.dmg
+                      packages/editor/build/*.zip
+                      packages/editor/build/*.AppImage
+                      packages/editor/build/*.deb
+                      packages/editor/build/*.blockmap
+                      packages/editor/build/latest*.yml
+
+    release:
+        name: 创建 Release
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - name: 汇总所有平台的产物
+              # merge-multiple 会把四腿的产物摊平到一个目录。
+              # ⚠️ mac-x64 与 mac-arm64 都会产出 `latest-mac.yml`，摊平后**只剩一份**（后解压的覆盖前者）。
+              # 这不影响安装包本身（dmg/zip 的文件名带 arch 后缀，不会撞），只影响自动更新元数据 ——
+              # 而本仓目前**没有接自动更新**（electron-builder 配置里没有 publish 段），故可接受。
+              # 将来要接自动更新，就得改成按腿分目录、并给 mac 的 yml 起不同名字。
+              uses: actions/download-artifact@v4
+              with:
+                  path: artifacts
+                  merge-multiple: true
+
+            - name: 列出待发布的文件
+              run: ls -lh artifacts
+
+            - name: 创建 GitHub Release
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+              run: |
+                  set -euo pipefail
+                  # tag 带连字符即视为预发布（如 v1.2.3-beta.1）
+                  PRE=""
+                  case "$TAG" in
+                    *-*) PRE="--prerelease" ;;
+                  esac
+                  if gh release view "$TAG" >/dev/null 2>&1; then
+                    echo "Release $TAG 已存在，改为上传/覆盖资产"
+                    gh release upload "$TAG" artifacts/* --clobber
+                  else
+                    gh release create "$TAG" artifacts/* \
+                      --title "$TAG" \
+                      --generate-notes \
+                      $PRE
+                  fi

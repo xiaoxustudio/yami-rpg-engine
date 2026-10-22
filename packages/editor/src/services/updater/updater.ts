@@ -1,4 +1,10 @@
 import type { DataEntryShape } from '@app/stores/data';
+// ⚠️ 必须是**具名导入**，不要写 `import editorPackage from '…/package.json'`：
+// 默认导入在 vitest 下正常，但在**生产构建**里会出问题 —— rolldown 的 JSON 插件会把整份
+// package.json（含 devDependencies、scripts）内联进渲染层包，且 `editorPackage.version`
+// 会退化成**整个对象**（实测 main.js 里出现 `latestEditorVersion:{name:"@yami/editor",…}`，
+// 首页会显示成 [object Object]，包体 738 KB）。具名导入会被 tree-shake 成单个字符串（735 KB）。
+import { version as editorVersion } from '../../../package.json';
 
 export interface UpdaterHooks {
 	getProjectPath: () => string | null;
@@ -40,7 +46,14 @@ interface UpdaterShape {
 }
 
 export const Updater = {
-	latestEditorVersion: '1.0.18',
+	// 编辑器版本**只有一个真源**：`packages/editor/package.json` 的 `version`
+	// （electron-builder 用它命名安装包；发布时由 `scripts/release-sync-version.mjs` 按 tag 改写）。
+	// 这里刻意不写字面量 —— 这个值会被写进用户的 `config.json` 当作**迁移纪元**
+	// （见 `services/project/version.ts` 的 `checkForEditorUpdates`），
+	// 一旦与 package.json 分叉，就会出现"安装包是 1.0.19、界面显示 1.0.18"这种双版本。
+	// `__tests__/version.spec.ts` 会从磁盘独立读 package.json 来守住这一点。
+	// 注意 `latestProjectVersion` 是**项目数据 schema 的纪元**，与编辑器版本无关，故仍是字面量。
+	latestEditorVersion: editorVersion,
 	latestProjectVersion: '1.0.147',
 	getTSVersionWarning: null,
 	updateProject: null,

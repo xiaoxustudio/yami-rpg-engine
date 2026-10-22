@@ -107,6 +107,36 @@ describe('YMParamList', () => {
 		expect(el.dragging).toBe(null);
 	});
 
+	/**
+	 * 回归（2026-10-22 实报）：**列表变短后双击会崩**。
+	 *
+	 * `update()` 重建行时会 `elements.count = 0`、`elements.start = -1`，
+	 * 但**不重置** `self.start` / `self.end`。于是"先选中第 4 行、随后列表只剩 1 行"时，
+	 * `self.start` 仍是 3，`elements[3]` 已是 `undefined`；`edit()` 原先只守 `start !== null`，
+	 * 读 `.dataItem` 就抛 `Cannot read properties of undefined (reading 'dataItem')`。
+	 * 双击是 `attachDoubleclick` 合成 `doubleclick` 事件后走 `edit()`，所以双击必命中。
+	 */
+	it('列表变短后 edit 不崩（start 越界）', async () => {
+		const wrapper = mount(YMParamList, { attachTo: document.body });
+		const el = wrapper.element as unknown as ParamListElement;
+		mockHeight(el);
+		el.bind(makeObject());
+		el.focus();
+		el.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }, { name: 'Four' }]);
+		await nextTick();
+
+		el.select(3);
+		await nextTick();
+		expect(el.start).toBe(3);
+
+		// 列表缩短：`update()` 重建了行，但 `self.start` 仍是 3（越界）
+		el.write([{ name: 'Only' }]);
+		await nextTick();
+		expect(el.start).toBe(3);
+
+		expect(() => el.edit()).not.toThrow();
+	});
+
 	it('bind and write render items', () => {
 		const wrapper = mount(YMParamList);
 		const el = wrapper.element as unknown as ParamListElement;

@@ -35,6 +35,7 @@
 		"!**/*.min.js",
 		"Unused",
 		"packages/editor/src/module/packmeta.json",
+		"packages/editor/packmeta.json",
 		"**/*.md"
 	]
 }
