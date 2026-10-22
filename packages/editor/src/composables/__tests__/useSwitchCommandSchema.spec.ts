@@ -63,6 +63,12 @@ const getList = (id: string): ParamListElement =>
 	document.getElementById(id) as unknown as ParamListElement;
 const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 
+/** 有高度才走 `resize()` 把行真正挂进 DOM（同真实窗口）。 */
+const mockListBox = (list: HTMLElement): void => {
+	Object.defineProperty(list, 'clientHeight', { value: 102, configurable: true });
+	Object.defineProperty(list, 'clientWidth', { value: 300, configurable: true });
+};
+
 const words: string[] = [];
 
 /** 本文件挂载的真实窗口：用例只 unmount 了 commandWrapper，其余会在 beforeEach 里被
@@ -130,6 +136,37 @@ describe('useSwitchCommandSchema (switch command window dynamic rows + insert/ed
 		expect(readBack()[0]).toEqual(makeBranch(3));
 		expect(readBack()[1]).toEqual(makeBranch(1));
 		commandWrapper.unmount();
+	});
+
+	/**
+	 * 回归（与"显示选项"窗口同因，2026-10-22）：`branches` 必须真的经 `v-model` 到达列表。
+	 *
+	 * `load()` 是 `Object.assign(form, { variable, branches, default })`。缺 `branches` 访问器时
+	 * 它只会成为普通对象上的非响应式属性 —— `default` 恰好变化时才会顺带刷新。
+	 */
+	it('第二次 customLoad 只有 branches 变化（variable/default 不变）时列表也立刻刷新', async () => {
+		const { commandWrapper } = await mountAll();
+		const list = getList('switch-branches');
+		mockListBox(list);
+
+		const variable = { type: 'local', key: 'mode' };
+		const defaultCommands = [{ id: 'comment' }];
+		Command.cases.switch.customLoad!({
+			variable,
+			branches: [makeBranch(1)],
+			defaultCommands
+		});
+		await commandWrapper.vm.$nextTick();
+		expect(list.read()).toHaveLength(1);
+
+		Command.cases.switch.customLoad!({
+			variable,
+			branches: [makeBranch(2), makeBranch(3)],
+			defaultCommands
+		});
+		await commandWrapper.vm.$nextTick();
+		expect(list.read()).toHaveLength(2);
+		expect(list.querySelectorAll('.param-item')).toHaveLength(3);
 	});
 
 	it('insert path: CommandSchema.insert opens switch window, new branch saved via switch-condition', async () => {

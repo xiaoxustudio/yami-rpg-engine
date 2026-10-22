@@ -1,4 +1,4 @@
-﻿import { Command } from '@app/commands/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { GameLocal } from '@app/local/local-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -79,7 +79,23 @@ const createDefaultChoices = (): unknown[] => {
 	];
 };
 
+/**
+ * 表单**真源在 store**（`showChoicesForm`），这里只做转发。
+ *
+ * ⚠️ `choices` 必须有访问器：`load()` 用的是 `Object.assign(form, …)`，若这里没有
+ * `choices` 属性，`Object.assign` 会给这个普通对象**新增一个自己的数据属性** ——
+ * 值写进去了，但不是响应式的，`v-model="form.choices"` 永远收不到变更。
+ * 实机表现：打开"显示选项"窗口时选项列表是空的（双击没反应），
+ * 而空列表被 `requestFocus` 聚焦后 `start` 变成 `-1`，右键再读 `.dataItem` 就崩
+ * （2026-10-22 实报）。
+ */
 const form: ShowChoicesForm = {
+	get choices(): ShowChoicesForm['choices'] {
+		return getCommandSchemaFormsStore().showChoicesForm.choices;
+	},
+	set choices(value: ShowChoicesForm['choices']) {
+		getCommandSchemaFormsStore().showChoicesForm.choices = value;
+	},
 	get parameters(): ShowChoicesForm['parameters'] {
 		return getCommandSchemaFormsStore().showChoicesForm.parameters;
 	},

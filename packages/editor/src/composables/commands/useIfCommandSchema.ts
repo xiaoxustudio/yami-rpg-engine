@@ -1,4 +1,4 @@
-﻿import { Command } from '@app/commands/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
 
@@ -57,7 +57,22 @@ Command.cases.if = new CommandSchema({
 	}
 });
 
+/**
+ * 表单**真源在 store**（`ifForm`），这里只做转发。
+ *
+ * ⚠️ `branches` 必须有访问器：`load()` 用 `Object.assign(form, …)` 一次性写入，
+ * 缺访问器时它只会变成普通对象上的**非响应式**自有属性。此时列表能否刷新，取决于
+ * 同一批写入里 `else` 是否恰好变了（变了才会重渲染、`v-model` 才被重新读到）——
+ * 打开一个 `else` 状态没变的"如果"指令，分支列表就会停在上一次的内容或空白。
+ * 与"显示选项"窗口同因（2026-10-22 实报）。
+ */
 const form: IfForm = {
+	get branches(): IfForm['branches'] {
+		return getCommandSchemaFormsStore().ifForm.branches;
+	},
+	set branches(value: IfForm['branches']) {
+		getCommandSchemaFormsStore().ifForm.branches = value;
+	},
 	get else(): IfForm['else'] {
 		return getCommandSchemaFormsStore().ifForm.else;
 	},

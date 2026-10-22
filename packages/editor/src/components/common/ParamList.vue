@@ -5,11 +5,13 @@
 		:filter="props.filter"
 		:group="props.group"
 		:flexible="props.flexible"
+		:model-value="props.modelValue"
 		:history-factory="historyFactory"
 		:menu-popup="menuPopup"
 		:localize="localize"
 		:clipboard="clipboard"
 		:ctrl="ctrl"
+		@update:model-value="emit('update:modelValue', $event)"
 		@change="emit('change', $event)"
 	/>
 </template>
@@ -29,6 +31,14 @@ interface Props {
 	filter?: string;
 	group?: string;
 	flexible?: boolean;
+	/**
+	 * 透传给 ui-kit `YMParamList` 的 `v-model`。
+	 *
+	 * 显式声明而不是靠 `$attrs` 落到根组件上：`@vue/test-utils` 不受影响，但"这个包装层
+	 * 到底透不透 v-model"原先只能靠 Vue 的 fallthrough 推断。缺了这条，`v-model` 在
+	 * 模板里看起来接了、实际值到不了列表（显示选项窗口的选项列表就空过，2026-10-22）。
+	 */
+	modelValue?: unknown;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -46,6 +56,7 @@ const { t } = useI18n();
  */
 const emit = defineEmits<{
 	change: [value: unknown];
+	'update:modelValue': [value: unknown];
 }>();
 
 const historyFactory = (list: unknown): ParamListHistory => new ParamListHistory(list as never);

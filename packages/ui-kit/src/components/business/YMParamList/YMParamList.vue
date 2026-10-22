@@ -429,6 +429,9 @@ const update = (): void => {
 	object.update?.(self);
 
 	resize();
+
+	// 行已重建 ⇒ 旧的 `self.start`/`self.end` 可能越界，收敛回去（见该函数注释）
+	reconcileSelection();
 };
 
 const resize = (): void => {
@@ -533,10 +536,20 @@ const select = (start: number, end: number = start): void => {
 	const self = el!;
 	const elements = self.elements;
 	const range = core.resolveSelectionRange(start, end, elements.count, (index) => {
-		return !!elements[index].dataItem;
+		return !!elements[index]?.dataItem;
 	});
 
 	unselect();
+
+	// 空列表没有可选的行：把选中整体清空，**不要**留下 `start/end = -1` 这种
+	// "看起来有选中、实际没有行"的状态（见 `resolveSelectionRange` 注释）。
+	if (range === null) {
+		self.start = null;
+		self.end = null;
+		self.origin = null;
+		self.active = null;
+		return;
+	}
 
 	self.start = range.start;
 	self.end = range.end;
@@ -586,11 +599,51 @@ const reselect = (): void => {
 		let count = 0;
 		for (let i = start; i <= end!; i++) {
 			const element = elements[i];
+			if (!element) continue; // 行可能已被重建/越界，跳过而不是往 selections 里塞 undefined
 			selections[count++] = element;
 			addClass(element, 'selected');
 		}
 		selections.count = count;
 	}
+};
+
+/**
+ * 列表重建后把选中范围**收敛**到新行集合内（`update()` 末尾调用）。
+ *
+ * 背景：`update()` 会把 `elements.count` 重置并重建全部行，但 `self.start` / `self.end`
+ * 存的是**上一批行**的索引。列表变短后它们就落到范围之外 —— 此时 `elements[i]` 是
+ * `undefined`，任何读它的地方都会炸：`edit()` 读 `.dataItem`（2026-10-22 实报
+ * `reading 'dataItem'`），`reselect()` 给 undefined 调 `addClass` 同理。
+ *
+ * 处置：夹到 `[0, count - 1]` 并保持 `start <= end`；列表变空则整体清空选中。
+ * 注意这里只做"收敛"，**不改**"列表更新时是否保留选中"的语义 ——
+ * 本来会保留的仍然保留，只是不再越界。
+ */
+const reconcileSelection = (): void => {
+	const self = el!;
+	if (self.start === null) return;
+	const { count } = self.elements;
+	if (count === 0) {
+		unselect();
+		self.start = null;
+		self.end = null;
+		self.origin = null;
+		self.active = null;
+		self.inserting = false;
+		return;
+	}
+	const last = count - 1;
+	const start = clamp(self.start, 0, last);
+	const end = clamp(self.end ?? start, 0, last);
+	self.start = Math.min(start, end);
+	self.end = Math.max(start, end);
+	self.origin = clamp(self.origin ?? self.start, self.start, self.end);
+	self.active = clamp(self.active ?? self.start, self.start, self.end);
+	// `update()` 把**行元素整个换掉了**：旧元素上的 `selected` 类随旧节点一起扔掉。
+	// 所以哪怕范围没变也必须按新行重画，否则范围还在、界面上却"看起来没选中"
+	// （用户会再点一次，正好踩上"双击没反应"的错觉）。
+	unselect();
+	reselect();
 };
 
 const selectUp = (): void => {
@@ -670,13 +723,10 @@ const edit = (): void => {
 	if (self.start !== null) {
 		const elements = self.elements;
 		const element = elements[self.start];
-		// `update()` 重建行时会重置 `elements.count` / `elements.start`，但**不重置**
-		// `self.start` / `self.end`。所以"先选中第 4 行、随后列表只剩 1 行"时，
-		// `self.start` 仍是 3 而 `elements[3]` 已是 `undefined`。
-		// 这里没有"可编辑的行" —— 早退即可，否则双击会报
+		// 兜底：正常路径上 `update()` 末尾的 `reconcileSelection()` 已把选中收敛到有效范围，
+		// 但 `edit()` 是元素 API 的公开方法，仍可能被外部以陈旧/边界索引调用 ——
+		// 没有可编辑的行就早退，否则读 `.dataItem` 会抛
 		// `Cannot read properties of undefined (reading 'dataItem')`（2026-10-22 实报）。
-		// 注意：只在这里兜住崩溃；`self.start` 变陈旧这件事本身没改
-		// （在 `update()` 里夹回范围会改变"列表更新时选中是否保留"的行为，属另一个决定）。
 		if (!element) return;
 		self.inserting = element.dataItem === null;
 		switch (self.inserting) {
@@ -992,6 +1042,8 @@ const pointerdown = (event: PointerEvent): void => {
 			}
 			if (index !== undefined && index >= 0) {
 				element = self.elements[index];
+				// 陈旧行（DOM 里还挂着、`elements` 已重建）没有对应槽位：不建拖拽，避免读 undefined。
+				if (!element) break;
 				if (event.shiftKey && self.start !== null) {
 					selectMultiple(index);
 				} else {
@@ -1043,10 +1095,14 @@ const pointerup = (event: PointerEvent): void => {
 			if (self.start !== null && document.activeElement === self) {
 				const elements = self.elements;
 				const element = elements[self.start];
-				const valid = !!element.dataItem;
-				const editable = self.start === self.end;
+				// 选中索引可能指向不存在的行（列表刚重建、空列表被聚焦过等）。
+				// 这里只降级"针对某一项"的菜单项，不能再无条件读 `.dataItem`：
+				// 那正是 2026-10-22 实报的 `reading 'dataItem'`（右键必崩、菜单不弹）。
+				const valid = !!element?.dataItem;
+				const editable = !!element && self.start === self.end;
 				const pastable = !!getClipboard()?.has(self.type!);
-				const allSelectable = self.data!.length > 0;
+				// `write()` 之前 `data` 是 null（空列表）：这里同样不能假设它已经有数组。
+				const allSelectable = (self.data?.length ?? 0) > 0;
 				const undoable = self.history!.canUndo();
 				const redoable = self.history!.canRedo();
 				const get = getLocalize() ?? ((key: string) => key);
@@ -1149,9 +1205,26 @@ const pointerup = (event: PointerEvent): void => {
 	}
 };
 
-const doubleclick = (_event: Event): void => {
+/**
+ * 双击 = 编辑**指针下面那一行**，而不是"编辑当前选中"。
+ *
+ * 早先这里只看 `self.start === self.end` 就调 `edit()`：一旦选中索引陈旧或落在空列表的
+ * `-1` 上，`edit()` 的兜底会直接早退 —— 用户看到的就是"双击没反应"（2026-10-22 实报）。
+ * `doubleclick` 事件由 `attachDoubleclick` 从第二次 `pointerdown` 合成，`target` 就是被点的行。
+ */
+const doubleclick = (event: Event): void => {
 	const self = el!;
-	if (self.start === self.end) {
+	const target = event.target as HTMLElement | null;
+	const row = target?.closest?.('.param-item') as ParamItemElement | null;
+	if (row && self.contains(row)) {
+		const index = readElement(row);
+		if (typeof index === 'number' && index >= 0 && index < self.elements.count) {
+			if (self.start !== index || self.end !== index) select(index);
+			edit();
+			return;
+		}
+	}
+	if (self.start !== null && self.start === self.end) {
 		edit();
 	}
 };

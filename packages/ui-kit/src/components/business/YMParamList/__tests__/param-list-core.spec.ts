@@ -38,6 +38,11 @@ describe('param-list-core', () => {
 		it('单选时不做数据项回退', () => {
 			expect(core.resolveSelectionRange(3, 3, 10, () => false)).toEqual({ start: 3, end: 3 });
 		});
+
+		it('没有任何行时返回 null（不制造 -1 的"选中"）', () => {
+			expect(core.resolveSelectionRange(0, 0, 0, () => false)).toBe(null);
+			expect(core.resolveSelectionRange(0, Infinity, 0, () => true)).toBe(null);
+		});
 	});
 
 	describe('computeVisibleRange', () => {

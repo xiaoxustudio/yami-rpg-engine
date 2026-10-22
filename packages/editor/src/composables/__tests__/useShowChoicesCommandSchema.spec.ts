@@ -40,6 +40,9 @@ interface ParamListElement extends HTMLElement {
 	delete(): void;
 	save(): void;
 	clear(): HTMLElement;
+	start: number | null;
+	end: number | null;
+	elements: { count: number };
 }
 
 interface ControlEl extends HTMLElement {
@@ -54,7 +57,23 @@ const getControl = (id: string): ControlEl => document.getElementById(id) as unk
 
 const makeChoice = (content: string) => ({ content, commands: [] });
 
+/**
+ * 让列表像在真实窗口里那样有可视高度 —— 没有高度时 `resize()` 早退，行只进 `elements`
+ * 不进 DOM，`isInContent()` 也恒为 false（双击合成会因此直接不触发）。
+ */
+const mockListBox = (list: HTMLElement, height = 102): void => {
+	Object.defineProperty(list, 'clientHeight', { value: height, configurable: true });
+	Object.defineProperty(list, 'clientWidth', { value: 300, configurable: true });
+};
+
+const pointer = (type: string, init: PointerEventInit): PointerEvent =>
+	new PointerEvent(type, { bubbles: true, pointerId: 1, ...init });
+
 const mountedWrappers: Array<{ unmount(): void }> = [];
+const isOpen = (id: string): boolean =>
+	(Window.open as unknown as { mock: { calls: unknown[][] } }).mock.calls.some(
+		(call) => call[0] === id
+	);
 
 describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/save paths)', () => {
 	beforeEach(() => {
@@ -106,6 +125,73 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		expect(readBack()[0]).toEqual(makeChoice('Maybe'));
 		expect(readBack()[1]).toEqual(makeChoice('Yes'));
 		commandWrapper.unmount();
+	});
+
+	/**
+	 * 回归（2026-10-22 实报）：**打开"显示选项"窗口，选项列表是空的 / 双击没反应**。
+	 *
+	 * `customLoad` 走的是 `Object.assign(form, { choices, … })`。`form` 若没有 `choices`
+	 * 访问器，`Object.assign` 只会往这个普通对象上加一个**非响应式**的自有属性 ——
+	 * 值确实写进去了，但窗口模板上的 `v-model="form.choices"` 永远收不到变更，
+	 * 列表一次都不会被 `write()`，于是打开窗口看到的是空列表。
+	 *
+	 * 断言"一次 `nextTick` 之后行就在 DOM 里"，不允许靠别的原因（比如改参数触发重渲染）
+	 * 蒙混过去。
+	 */
+	it('customLoad 后选项列表立刻有行（v-model 必须真的到达 ParamList）', async () => {
+		const { commandWrapper } = await mountAll();
+		const list = getList('showChoices-choices');
+		mockListBox(list);
+
+		Command.cases.showChoices.customLoad!({
+			choices: [makeChoice('Yes'), makeChoice('No')],
+			parameters: ''
+		});
+		await commandWrapper.vm.$nextTick();
+
+		expect(list.read()).toEqual([makeChoice('Yes'), makeChoice('No')]);
+		// 两行数据 + 末尾"N items"占位行
+		expect(list.querySelectorAll('.param-item')).toHaveLength(3);
+	});
+
+	it('空选项列表被聚焦后右键不崩（不留下 -1 的选中）', async () => {
+		const { commandWrapper } = await mountAll();
+		const list = getList('showChoices-choices');
+		mockListBox(list);
+		list.focus();
+		await commandWrapper.vm.$nextTick();
+
+		expect(list.start).toBe(null);
+		expect(() =>
+			list.dispatchEvent(
+				pointer('pointerup', { button: 2, clientX: 10, clientY: 10, bubbles: true })
+			)
+		).not.toThrow();
+	});
+
+	it('双击选项行打开选项编辑窗口（2026-10-22 实报：双击没反应）', async () => {
+		const { commandWrapper } = await mountAll();
+		const list = getList('showChoices-choices');
+		mockListBox(list);
+
+		Command.cases.showChoices.customLoad!({
+			choices: [makeChoice('Yes'), makeChoice('No')],
+			parameters: ''
+		});
+		await commandWrapper.vm.$nextTick();
+
+		const row = list.querySelectorAll('.param-item')[0] as HTMLElement;
+		const coords = { clientX: 20, clientY: 10 };
+		row.dispatchEvent(pointer('pointerdown', { button: 0, ...coords }));
+		// window 上的 pointerup 收尾监听由 useEventListener 在 flush: 'post' 挂载
+		await commandWrapper.vm.$nextTick();
+		window.dispatchEvent(pointer('pointerup', { button: 0, ...coords }));
+		await commandWrapper.vm.$nextTick();
+		row.dispatchEvent(pointer('pointerdown', { button: 0, ...coords }));
+		await commandWrapper.vm.$nextTick();
+
+		expect(isOpen('choice')).toBe(true);
+		expect(Choices.form.content).toBe('Yes');
 	});
 
 	it('insert path: CommandSchema.insert opens showChoices with defaults, new choice saved via choice window', async () => {

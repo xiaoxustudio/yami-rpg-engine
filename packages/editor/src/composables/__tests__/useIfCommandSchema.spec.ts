@@ -61,6 +61,12 @@ const getList = (id: string): ParamListElement =>
 	document.getElementById(id) as unknown as ParamListElement;
 const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 
+/** 有高度才走 `resize()` 把行真正挂进 DOM（同真实窗口）。 */
+const mockListBox = (list: HTMLElement): void => {
+	Object.defineProperty(list, 'clientHeight', { value: 102, configurable: true });
+	Object.defineProperty(list, 'clientWidth', { value: 300, configurable: true });
+};
+
 const words: string[] = [];
 
 const makeCondition = (value: number) => ({
@@ -138,6 +144,35 @@ describe('useIfCommandSchema (if command window dynamic rows + insert/edit/save 
 		expect(readBack()[0]).toEqual(makeBranch(3));
 		expect(readBack()[1]).toEqual(makeBranch(1));
 		commandWrapper.unmount();
+	});
+
+	/**
+	 * 回归（与"显示选项"窗口同因，2026-10-22）：`branches` 必须真的经 `v-model` 到达列表。
+	 *
+	 * `load()` 是 `Object.assign(form, { branches, else })`。缺 `branches` 访问器时它只会成为
+	 * 普通对象上的非响应式属性 —— 第一次加载之所以看起来正常，是因为 `else` 同时从 false 变
+	 * true 触发了重渲染。第二次加载 `else` 不变，列表就会停在上一次的内容。
+	 */
+	it('第二次 customLoad 只有 branches 变化（else 不变）时列表也立刻刷新', async () => {
+		const { commandWrapper } = await mountAll();
+		const list = getList('if-branches');
+		mockListBox(list);
+
+		Command.cases.if.customLoad!({
+			branches: [makeBranch(1)],
+			elseCommands: [{ id: 'comment' }]
+		});
+		await commandWrapper.vm.$nextTick();
+		expect(list.read()).toHaveLength(1);
+
+		// else 仍是 true（不触发重渲染），只有 branches 变了
+		Command.cases.if.customLoad!({
+			branches: [makeBranch(2), makeBranch(3)],
+			elseCommands: [{ id: 'comment' }]
+		});
+		await commandWrapper.vm.$nextTick();
+		expect(list.read()).toHaveLength(2);
+		expect(list.querySelectorAll('.param-item')).toHaveLength(3);
 	});
 
 	it('insert path: CommandSchema.insert opens if window, new branch saved via if-condition', async () => {

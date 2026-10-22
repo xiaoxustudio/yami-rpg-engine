@@ -11,18 +11,22 @@ const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
 };
 
+// `open` 是 `ParamObject` 的**必需**成员（`edit()` / `insert()` 都会调它）。
+// 早先的替身漏了它 —— 只在 `edit()` 真走到"占位行 → 新增"那条分支时才会暴露。
 const makeObject = (): {
 	type: string;
 	initialize: () => void;
 	parse: (item: { name: string }) => string;
 	save: () => unknown;
 	onPaste: undefined;
+	open: (data?: unknown) => void;
 } => ({
 	type: 'test',
 	initialize: () => {},
 	parse: (item: { name: string }) => item.name,
 	save: () => undefined,
-	onPaste: undefined
+	onPaste: undefined,
+	open: () => {}
 });
 
 interface ParamListElement extends HTMLElement {
@@ -108,15 +112,20 @@ describe('YMParamList', () => {
 	});
 
 	/**
-	 * 回归（2026-10-22 实报）：**列表变短后双击会崩**。
+	 * 回归（2026-10-22 实报）：**列表变短后双击会崩**，以及对应的行为约定
+	 * 「列表变短时选中自动收敛到最后一行」。
 	 *
-	 * `update()` 重建行时会 `elements.count = 0`、`elements.start = -1`，
-	 * 但**不重置** `self.start` / `self.end`。于是"先选中第 4 行、随后列表只剩 1 行"时，
-	 * `self.start` 仍是 3，`elements[3]` 已是 `undefined`；`edit()` 原先只守 `start !== null`，
-	 * 读 `.dataItem` 就抛 `Cannot read properties of undefined (reading 'dataItem')`。
-	 * 双击是 `attachDoubleclick` 合成 `doubleclick` 事件后走 `edit()`，所以双击必命中。
+	 * `update()` 会重建全部行并重置 `elements.count`，而 `self.start` / `self.end` 存的是
+	 * 上一批行的索引。列表变短后它们越界 ⇒ `elements[i]` 为 `undefined`，
+	 * `edit()` 读 `.dataItem` 就抛 `Cannot read properties of undefined (reading 'dataItem')`。
+	 * 现在 `update()` 末尾的 `reconcileSelection()` 会把范围夹回有效区间。
+	 *
+	 * 注意 `elements.count` **含末尾占位行**（N 项数据 → count = N + 1），
+	 * 所以"最后一行"通常就是那个占位行 —— 选中落在那儿意味着下一次 `edit()` 是"新增"。
 	 */
-	it('列表变短后 edit 不崩（start 越界）', async () => {
+	const rowCount = (el: ParamListElement): number => (el.elements as { count: number }).count;
+
+	it('列表变短时选中收敛到最后一行，且 edit 不崩', async () => {
 		const wrapper = mount(YMParamList, { attachTo: document.body });
 		const el = wrapper.element as unknown as ParamListElement;
 		mockHeight(el);
@@ -129,12 +138,201 @@ describe('YMParamList', () => {
 		await nextTick();
 		expect(el.start).toBe(3);
 
-		// 列表缩短：`update()` 重建了行，但 `self.start` 仍是 3（越界）
-		el.write([{ name: 'Only' }]);
+		// 列表缩到 2 项 ⇒ 选中从 3 收敛到新的最后一行（不再是越界的 3）
+		el.write([{ name: 'Only' }, { name: 'Second' }]);
 		await nextTick();
-		expect(el.start).toBe(3);
+		expect(el.start).toBe(rowCount(el) - 1);
+		expect(el.end).toBe(rowCount(el) - 1);
+		expect(el.start).toBeLessThan(3);
 
 		expect(() => el.edit()).not.toThrow();
+	});
+
+	it('列表被清空时选中收敛到占位行（不会停在越界索引）', async () => {
+		const wrapper = mount(YMParamList, { attachTo: document.body });
+		const el = wrapper.element as unknown as ParamListElement;
+		mockHeight(el);
+		el.bind(makeObject());
+		el.focus();
+		el.write([{ name: 'One' }, { name: 'Two' }]);
+		await nextTick();
+
+		el.select(1);
+		await nextTick();
+		expect(el.start).toBe(1);
+
+		el.write([]);
+		await nextTick();
+		expect(el.start).toBe(rowCount(el) - 1);
+		expect(el.end).toBe(rowCount(el) - 1);
+		expect(() => el.edit()).not.toThrow();
+	});
+
+	it('列表变长时不动选中', async () => {
+		const wrapper = mount(YMParamList, { attachTo: document.body });
+		const el = wrapper.element as unknown as ParamListElement;
+		mockHeight(el);
+		el.bind(makeObject());
+		el.focus();
+		el.write([{ name: 'One' }, { name: 'Two' }]);
+		await nextTick();
+
+		el.select(1);
+		await nextTick();
+		expect(el.start).toBe(1);
+
+		// 变长：选中保持在 index 1，不该被推到最后一行
+		el.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }, { name: 'Four' }]);
+		await nextTick();
+		expect(el.start).toBe(1);
+		expect(el.end).toBe(1);
+	});
+
+	/**
+	 * 回归（2026-10-22 实报）：**空列表被聚焦后右键必崩**。
+	 *
+	 * `listFocus` 对空列表也会 `select(0)`；早先 `resolveSelectionRange` 把 `count === 0`
+	 * 夹成 `last = -1`，于是 `self.start = self.end = -1`。`-1` 能通过所有
+	 * `start !== null` 的检查，右键菜单再读 `elements[-1].dataItem` 就抛
+	 * `Cannot read properties of undefined (reading 'dataItem')`，菜单根本弹不出来。
+	 *
+	 * 约定：**没有行 = 没有选中**（`start/end` 为 null），而不是"选中第 -1 行"。
+	 */
+	it('空列表被聚焦后不产生 -1 的选中，右键不崩', async () => {
+		const wrapper = mount(YMParamList, {
+			attachTo: document.body,
+			props: {
+				localize: (key: string) => key,
+				menuPopup: () => {}
+			}
+		});
+		const el = wrapper.element as unknown as ParamListElement;
+		mockHeight(el);
+		el.bind(makeObject());
+		el.focus();
+		await nextTick();
+
+		expect(el.start).toBe(null);
+		expect(el.end).toBe(null);
+
+		expect(() =>
+			el.dispatchEvent(
+				new PointerEvent('pointerup', {
+					bubbles: true,
+					button: 2,
+					clientX: 10,
+					clientY: 10
+				})
+			)
+		).not.toThrow();
+	});
+
+	/**
+	 * 回归（2026-10-22 实报）：选中索引指向**不存在的行**时右键不能再崩。
+	 *
+	 * 空列表聚焦只是制造陈旧索引的一条路径；列表被外部重建、`update()` 前后错拍等也会留下
+	 * 越界索引。这里直接把它改成越界值来覆盖"读 `.dataItem` 之前没有判空"的写法。
+	 * 菜单必须照常弹出 —— 只把"针对某一项"的项降级为不可用。
+	 */
+	it('选中索引越界时右键仍能弹出菜单，逐项操作降级为不可用', async () => {
+		const wrapper = mount(YMParamList, {
+			attachTo: document.body,
+			props: {
+				localize: (key: string) => key,
+				menuPopup: (_options: unknown, items: unknown[]) => {
+					testWindow.__menuItems = items;
+				}
+			}
+		});
+		const el = wrapper.element as unknown as ParamListElement;
+		mockHeight(el);
+		el.bind(makeObject());
+		el.focus();
+		el.write([{ name: 'One' }, { name: 'Two' }]);
+		await nextTick();
+
+		el.start = 9;
+		el.end = 9;
+		expect(() =>
+			el.dispatchEvent(
+				new PointerEvent('pointerup', {
+					bubbles: true,
+					button: 2,
+					clientX: 10,
+					clientY: 10
+				})
+			)
+		).not.toThrow();
+
+		const items = testWindow.__menuItems as { label: string; enabled?: boolean }[];
+		expect(items).toBeTruthy();
+		const byLabel = (label: string): { label: string; enabled?: boolean } =>
+			items.find((item) => item.label === label)!;
+		expect(byLabel('edit').enabled).toBe(false);
+		expect(byLabel('copy').enabled).toBe(false);
+		delete testWindow.__menuItems;
+	});
+
+	/**
+	 * 回归（2026-10-22 实报）：**双击没反应**。
+	 *
+	 * 双击由 `attachDoubleclick` 从第二次 `pointerdown` 合成 `doubleclick` 事件，
+	 * `target` 就是被点的行。早先处理函数只看 `self.start === self.end` 再 `edit()`，
+	 * 选中索引一旦陈旧/为空，`edit()` 的兜底就静默早退 —— 表现就是双击毫无反应。
+	 * 现在按 `target` 找到那一行并先选中它，双击的语义与"当前选中"解耦。
+	 */
+	it('双击按指针所在行编辑，不依赖旧的选中索引', async () => {
+		const opened: unknown[] = [];
+		const mergeObject = makeObject();
+		const wrapper = mount(YMParamList, { attachTo: document.body });
+		const el = wrapper.element as unknown as ParamListElement;
+		mockHeight(el);
+		mergeObject.open = (data?: unknown) => opened.push(data);
+		el.bind(mergeObject);
+		el.focus();
+		el.write([{ name: 'One' }, { name: 'Two' }]);
+		await nextTick();
+
+		// 制造陈旧选中：指向一个不存在的行
+		el.start = 9;
+		el.end = 9;
+
+		const row = el.querySelectorAll('.param-item')[1] as HTMLElement;
+		row.dispatchEvent(
+			new PointerEvent('doubleclick', { bubbles: true, clientX: 10, clientY: 30 })
+		);
+		await nextTick();
+
+		expect(el.start).toBe(1);
+		expect(el.end).toBe(1);
+		expect(opened).toEqual([(el.data as { name: string }[])[1]]);
+	});
+
+	/**
+	 * `update()` 会把行元素整个换掉（旧节点上的 `selected` 类随之消失），
+	 * 所以"范围没变"也必须按新行重画高亮，否则选中还在、界面却看起来没选中 ——
+	 * 用户会再点一次，正好踩上"双击没反应"的错觉。
+	 */
+	it('列表重建后选中高亮仍在（范围没变也要重画）', async () => {
+		const wrapper = mount(YMParamList, { attachTo: document.body });
+		const el = wrapper.element as unknown as ParamListElement;
+		mockHeight(el);
+		el.bind(makeObject());
+		el.focus();
+		el.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }]);
+		await nextTick();
+
+		el.select(1);
+		await nextTick();
+		expect(el.start).toBe(1);
+
+		// 同长度的新数据：`update()` 重建所有行，选中范围不变
+		el.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }]);
+		await nextTick();
+
+		const rows = el.querySelectorAll('.param-item');
+		expect(rows[1].classList.contains('selected')).toBe(true);
+		expect(rows[0].classList.contains('selected')).toBe(false);
 	});
 
 	it('bind and write render items', () => {
@@ -152,6 +350,13 @@ describe('YMParamList', () => {
 		);
 		expect(texts).toEqual(['One', 'Two', 'Three', '3 items']);
 	});
+
+	/**
+	 * ⚠️ 不要试图在 `bind()` 里补写 `modelValue`（"绑定前就 load 过"的那种时序）：
+	 * 有消费方（项目设置窗口）依赖 `object.update()` **只在数据变更时**被调用，
+	 * 绑定期提前触发会读到尚未初始化的外部状态。列表内容与 `modelValue` 的同步仍由
+	 * 下面的 watch 负责（挂载前的 `modelValue` 属于不支持的上游时序）。
+	 */
 
 	it('select highlights and read returns data', () => {
 		const wrapper = mount(YMParamList, { attachTo: document.body });
