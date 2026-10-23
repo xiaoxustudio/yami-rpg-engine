@@ -67,7 +67,7 @@
 			:is="comp"
 			v-for="(comp, name) in immediateToolComponents"
 			:key="name"
-			@vue:mounted="onComponentMounted"
+			@vue:mounted="onCriticalMounted"
 		/>
 		<CommandSuggestions />
 		<LogMessage />
@@ -79,7 +79,7 @@
 				:is="comp"
 				v-for="(comp, name) in idleToolComponents"
 				:key="name"
-				@vue:mounted="onComponentMounted"
+				@vue:mounted="onToolMounted"
 			/>
 		</Teleport>
 		<Teleport to="body">
@@ -87,11 +87,11 @@
 				:is="comp"
 				v-for="(comp, name) in commandComponents"
 				:key="name"
-				@vue:mounted="onComponentMounted"
+				@vue:mounted="onCommandMounted"
 			/>
 		</Teleport>
 		<Teleport v-for="p in inspectorPageComponents" :key="p.value" :to="p.target">
-			<component :is="p.comp" @vue:mounted="onComponentMounted" />
+			<component :is="p.comp" @vue:mounted="onInspectorMounted" />
 		</Teleport>
 	</template>
 </template>
@@ -108,12 +108,22 @@ import LayoutPanel from './components/layout/LayoutPanel.vue';
 import CommandSuggestions from './components/tools/CommandSuggestions.vue';
 import LogMessage from './components/tools/LogMessage.vue';
 import TextSuggestions from './components/tools/TextSuggestions.vue';
+import Confirmation from './components/tools/Confirmation.vue';
+import NewProject from './components/tools/NewProject.vue';
+import About from './components/tools/About.vue';
+import WindowProgress from './components/tools/WindowProgress.vue';
+import UpdateLog from './components/tools/UpdateLog.vue';
+import Setting from './components/tools/Setting.vue';
+import Deployment from './components/tools/Deployment.vue';
+import CommandWidget from './components/tools/CommandWidget.vue';
+import QrCode from './components/tools/QrCode.vue';
 import { defineAsyncComponent, onMounted, ref } from 'vue';
 import type { Component } from 'vue';
 import { useTitleStore } from '@app/stores/title';
 import { useMenubarStore } from '@app/stores/menubar';
 import { useLocalStore } from '@app/stores/local';
-import { resolveLazyComponentsReady } from '@app/bootstrap';
+import { resolveCriticalComponentsReady, resolveLazyComponentsReady } from '@app/bootstrap';
+import { markBoot } from '@app/utils/boot-timeline';
 import { provideMenuService } from '@app/composables/useMenuService';
 import { Menu } from '@app/components/menu-list';
 import { inspectorPages, inspectorPageCount } from '@app/components/inspector/inspector-pages';
@@ -164,7 +174,16 @@ const toolModules = import.meta.glob([
 	'./components/tools/*.vue',
 	'!**/CommandSuggestions.vue',
 	'!**/LogMessage.vue',
-	'!**/TextSuggestions.vue'
+	'!**/TextSuggestions.vue',
+	'!**/Confirmation.vue',
+	'!**/NewProject.vue',
+	'!**/About.vue',
+	'!**/WindowProgress.vue',
+	'!**/UpdateLog.vue',
+	'!**/Setting.vue',
+	'!**/Deployment.vue',
+	'!**/CommandWidget.vue',
+	'!**/QrCode.vue'
 ]);
 const commandModules = import.meta.glob('./components/commands/*.vue');
 
@@ -176,50 +195,72 @@ const toolWindowEntries = Object.entries(toolModules).filter(
 		!path.endsWith('TextSuggestions.vue')
 );
 
-const lazyTotal =
-	toolWindowEntries.length + Object.keys(commandModules).length + inspectorPageCount;
-let lazyMounted = 0;
-const onComponentMounted = () => {
-	lazyMounted++;
-	if (lazyMounted >= lazyTotal) {
+const toolTotal = toolWindowEntries.length;
+const commandTotal = Object.keys(commandModules).length;
+const inspectorTotal = inspectorPageCount;
+let toolMounted = 0;
+let commandMounted = 0;
+let inspectorMounted = 0;
+const maybeLazyReady = () => {
+	if (
+		toolMounted >= toolTotal &&
+		commandMounted >= commandTotal &&
+		inspectorMounted >= inspectorTotal
+	) {
 		resolveLazyComponentsReady();
 	}
 };
-const onAsyncError = (_error: Error, retry: () => void, fail: () => void, attempts: number) => {
-	if (attempts < 3) {
-		retry();
-		return;
-	}
-	onComponentMounted();
-	fail();
+const onToolMounted = () => {
+	toolMounted++;
+	if (toolMounted >= toolTotal) markBoot('tools-ready');
+	maybeLazyReady();
 };
-const asyncComp = (loader: () => Promise<Component>) =>
-	defineAsyncComponent({ loader, onError: onAsyncError });
-const criticalToolNames = new Set([
-	'Confirmation.vue',
-	'NewProject.vue',
-	'About.vue',
-	'WindowProgress.vue',
-	'UpdateLog.vue',
-	'Setting.vue',
-	'Deployment.vue',
-	'CommandWidget.vue',
-	'QrCode.vue'
-]);
-const criticalToolEntries = toolWindowEntries.filter(([path]) =>
-	criticalToolNames.has(path.split('/').pop()!)
-);
-const idleToolEntries = toolWindowEntries.filter(
-	([path]) => !criticalToolNames.has(path.split('/').pop()!)
-);
-const immediateToolComponents = Object.fromEntries(
-	criticalToolEntries.map(([path, loader]) => [
-		path,
-		asyncComp(loader as () => Promise<Component>)
-	])
-);
+const onCommandMounted = () => {
+	commandMounted++;
+	if (commandMounted >= commandTotal) markBoot('commands-ready');
+	maybeLazyReady();
+};
+const onInspectorMounted = () => {
+	inspectorMounted++;
+	if (inspectorMounted >= inspectorTotal) markBoot('inspectors-ready');
+	maybeLazyReady();
+};
+const onAsyncError =
+	(fallback: () => void) =>
+	(_error: Error, retry: () => void, fail: () => void, attempts: number) => {
+		if (attempts < 3) {
+			retry();
+			return;
+		}
+		fallback();
+		fail();
+	};
+const asyncComp = (loader: () => Promise<Component>, fallback: () => void) =>
+	defineAsyncComponent({ loader, onError: onAsyncError(fallback) });
+const immediateToolComponents = {
+	Confirmation,
+	NewProject,
+	About,
+	WindowProgress,
+	UpdateLog,
+	Setting,
+	Deployment,
+	CommandWidget,
+	QrCode
+};
+const criticalTotal = Object.keys(immediateToolComponents).length;
+let criticalMounted = 0;
+const onCriticalMounted = () => {
+	criticalMounted++;
+	if (criticalMounted >= criticalTotal) {
+		resolveCriticalComponentsReady();
+	}
+};
 const idleToolComponents = Object.fromEntries(
-	idleToolEntries.map(([path, loader]) => [path, asyncComp(loader as () => Promise<Component>)])
+	toolWindowEntries.map(([path, loader]) => [
+		path,
+		asyncComp(loader as () => Promise<Component>, onToolMounted)
+	])
 );
 const idleReady = ref(false);
 onMounted(() => {
@@ -235,13 +276,13 @@ onMounted(() => {
 const commandComponents = Object.fromEntries(
 	Object.entries(commandModules).map(([path, loader]) => [
 		path,
-		asyncComp(loader as () => Promise<Component>)
+		asyncComp(loader as () => Promise<Component>, onCommandMounted)
 	])
 );
 const inspectorPageComponents = inspectorPages.map(({ value, target, loader }) => ({
 	value,
 	target,
-	comp: asyncComp(loader as () => Promise<Component>)
+	comp: asyncComp(loader as () => Promise<Component>, onInspectorMounted)
 }));
 </script>
 

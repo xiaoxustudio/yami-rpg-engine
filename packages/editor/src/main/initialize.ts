@@ -1,5 +1,5 @@
 import { Timer } from '@app/utils/timer';
-import { lazyComponentsReady } from '@app/bootstrap';
+import { criticalComponentsReady, lazyComponentsReady } from '@app/bootstrap';
 import { loadConfigPromise } from '@app/utils/config';
 import { primeWindows } from '@app/tools/window-registry';
 import { Window } from '@app/tools/window-object.ts';
@@ -116,17 +116,22 @@ Editor.initialize = async function (this: typeof Editor) {
 		}
 
 		void Promise.resolve()
-			.then(() =>
-				Promise.race([
-					lazyComponentsReady,
-					new Promise((resolve: (val: unknown) => void) => setTimeout(resolve, 60000))
-				])
-			)
 			.then(async () => {
+				await Promise.race([
+					criticalComponentsReady,
+					new Promise<void>((resolve) => setTimeout(resolve, 5000))
+				]);
 				await loadI18n(Editor.config?.language ?? '').catch(() => undefined);
 				cluster.Title.initialize!();
+				markBoot('title-ready');
+
+				await Promise.race([
+					lazyComponentsReady,
+					new Promise<void>((resolve) => setTimeout(resolve, 60000))
+				]);
 				initEditors(cluster);
 				initTools(cluster);
+				markBoot('editors-ready');
 
 				EventBus.emit('editor_loaded');
 			})
