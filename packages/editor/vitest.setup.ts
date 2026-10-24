@@ -72,11 +72,16 @@ for (const id of ['tooltip', 'window-ambient']) {
 const { initYamiI18n } = await import('@app/i18n');
 
 config.global.plugins = [initYamiI18n()];
-// 这里只注册 v-focus。**不要**在此注册 v-tip：setup 期的 `import` 会先于各 spec 的
+// 这里只注册 v-focus。**不要**在此注册真实 v-tip：setup 期的 `import` 会先于各 spec 的
 // `vi.mock('@app/utils/element-utils')` 实例化 tip.ts（连带的 element-utils 也就定成真身），
 // 使 `directives/__tests__/tip.spec.ts` 的模块 mock 失效（实测 3 例转红 2 例）。
-// 需要 v-tip 的用例在 mount 时自带 `global.directives`。
-config.global.directives = { focus: vFocus };
+// 需要 v-tip 的用例在 mount 时自带 `global.directives`；这里挂 no-op 只消除未注册警告。
+const noopTip = {
+	mounted: () => undefined,
+	updated: () => undefined,
+	unmounted: () => undefined
+};
+config.global.directives = { focus: vFocus, tip: noopTip };
 
 // legacy inspector 页面由 composable/组件顶层侧效应 import 注册挂载点，
 // 测试环境统一 mock 为空模块，避免 IIFE 覆盖各测试文件的 Inspector 挂载点 mock
