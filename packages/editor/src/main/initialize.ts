@@ -13,6 +13,7 @@ import { Editor } from '@app/services/project/editor.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
 import { initI18n, loadI18n } from '@app/i18n';
 import { markBoot, reportBootTimeline } from '@app/utils/boot-timeline';
+import { showBootProgress } from '@app/main/boot-progress';
 import { emitCustom } from '@app/events/custom-events';
 
 type ClusterShape = typeof import('@app/tools/window-cluster');
@@ -133,9 +134,11 @@ Editor.initialize = async function (this: typeof Editor) {
 					lazyComponentsReady,
 					new Promise<void>((resolve) => setTimeout(resolve, 60000))
 				]);
+				showBootProgress('正在初始化编辑器…');
 				initEditors(cluster);
 				initTools(cluster);
 				markBoot('editors-ready');
+				showBootProgress('编辑器已就绪');
 				resolveEditorDomainsReady();
 
 				EventBus.emit('editor_loaded');

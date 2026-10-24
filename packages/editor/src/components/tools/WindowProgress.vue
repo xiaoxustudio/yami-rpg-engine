@@ -8,6 +8,13 @@
 				id="windowProgress-info"
 				:ref="registryRef(titleEls, 'windowProgress-info')"
 			/>
+			<div
+				class="box"
+				id="windowProgress-box"
+				:ref="registryRef(titleEls, 'windowProgress-box')"
+			>
+				<div id="windowProgress-bar" :ref="registryRef(titleEls, 'windowProgress-bar')" />
+			</div>
 		</div>
 	</WindowFrame>
 </template>

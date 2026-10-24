@@ -11,7 +11,7 @@ import { WebServer } from '@app/services/ipc/webserver.ts';
 import { getYamiI18n } from '@app/i18n';
 import { activateWorkspace, editorDomainsReady } from '@app/bootstrap';
 import { Window } from '@app/tools/window-object.ts';
-import { titleEls } from '@app/title/element-registry';
+import { showBootProgress } from '@app/main/boot-progress';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -44,8 +44,7 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 
 	activateWorkspace();
 	Window.open!('windowProgress');
-	const progressInfo = titleEls.get('windowProgress-info') as HTMLElement | undefined;
-	if (progressInfo) progressInfo.textContent = '正在加载编辑器组件…';
+	showBootProgress('正在加载核心组件…', 0, 100);
 	await Promise.race([
 		editorDomainsReady,
 		new Promise<void>((resolve) => setTimeout(resolve, 30000))

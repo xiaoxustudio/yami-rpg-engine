@@ -129,6 +129,7 @@ import {
 	workspaceActivation
 } from '@app/bootstrap';
 import { markBoot } from '@app/utils/boot-timeline';
+import { showBootProgress } from '@app/main/boot-progress';
 import { provideMenuService } from '@app/composables/useMenuService';
 import { Menu } from '@app/components/menu-list';
 import { inspectorPages, inspectorPageCount } from '@app/components/inspector/inspector-pages';
@@ -323,10 +324,20 @@ void workspaceActivation.then(() => preloadToolWindows(deferredToolIds));
 const toolTotal = eagerToolEntries.length;
 const commandTotal = Object.keys(commandModules).length;
 const inspectorTotal = inspectorPageCount;
+const lazyTotal = toolTotal + commandTotal + inspectorTotal;
 let toolMounted = 0;
 let commandMounted = 0;
 let inspectorMounted = 0;
+const reportLazyProgress = () => {
+	showBootProgress(
+		'正在加载核心组件…',
+		toolMounted + commandMounted + inspectorMounted,
+		lazyTotal
+	);
+};
+void workspaceActivation.then(reportLazyProgress);
 const maybeLazyReady = () => {
+	reportLazyProgress();
 	if (
 		toolMounted >= toolTotal &&
 		commandMounted >= commandTotal &&
