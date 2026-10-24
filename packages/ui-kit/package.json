@@ -19,6 +19,9 @@
 		},
 		"./style.css": "./dist/ui-kit.css"
 	},
+	"publishConfig": {
+		"access": "public"
+	},
 	"scripts": {
 		"dev": "vite --config playground/vite.config.ts",
 		"build": "vite build && pnpm run build:types",

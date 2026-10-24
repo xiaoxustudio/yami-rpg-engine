@@ -106,6 +106,8 @@ function assembleAndPackPlugin(): Plugin {
 				path: target.resource,
 				realPath: assembleDir,
 				version: pkg.version,
+				minEditorVersion: pkg.yami?.minEditorVersion ?? '',
+				projectVersion: pkg.yami?.projectVersion ?? '',
 				...hashes
 			};
 			fs.writeFileSync(

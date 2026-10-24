@@ -1,0 +1,91 @@
+name: Release UI Kit
+
+on:
+    push:
+        tags:
+            - 'ui-kit-v*'
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: '已存在的 ui-kit tag（ui-kit-vX.Y.Z）'
+                required: true
+                type: string
+
+permissions:
+    contents: write
+    id-token: write
+
+concurrency:
+    group: release-ui-kit-${{ github.event.inputs.tag || github.ref_name }}
+    cancel-in-progress: false
+
+jobs:
+    publish:
+        name: 测试、构建并发布 ui-kit
+        runs-on: ubuntu-latest
+        environment: release-stable
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.inputs.tag || github.ref }}
+                  fetch-depth: 0
+
+            - uses: pnpm/action-setup@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: pnpm
+                  registry-url: https://registry.npmjs.org
+
+            - name: 安装依赖
+              run: pnpm install --frozen-lockfile
+
+            - name: 校验 tag / 版本 / main 归属
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  TAG="${{ github.event.inputs.tag || github.ref_name }}"
+                  node scripts/release-verify-tag.mjs "$TAG" --package packages/ui-kit --prefix ui-kit
+                  git fetch origin main
+                  git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+
+            - name: 测试与构建
+              run: |
+                  pnpm -F @yami/ui-kit test
+                  pnpm -F @yami/ui-kit build
+
+            - name: 发布 npm
+              shell: bash
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: |
+                  set -euo pipefail
+                  TAG="${{ github.event.inputs.tag || github.ref_name }}"
+                  VER="${TAG#ui-kit-v}"
+                  DIST_TAG=latest
+                  case "$VER" in *-*) DIST_TAG=next ;; esac
+                  pnpm -F @yami/ui-kit publish --access public --provenance --no-git-checks --tag "$DIST_TAG"
+
+            - name: 生成 tgz 与校验和
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  mkdir -p "$RUNNER_TEMP/ui-kit-release"
+                  pnpm -F @yami/ui-kit pack --pack-destination "$RUNNER_TEMP/ui-kit-release"
+                  node scripts/release-checksums.mjs "$RUNNER_TEMP/ui-kit-release"
+
+            - name: 创建 Draft Release
+              shell: bash
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+                  REPO: ${{ github.repository }}
+              run: |
+                  set -euo pipefail
+                  mapfile -d '' FILES < <(find "$RUNNER_TEMP/ui-kit-release" -maxdepth 1 -type f -print0)
+                  gh release create "$TAG" "${FILES[@]}" \
+                    --repo "$REPO" \
+                    --title "$TAG" \
+                    --draft \
+                    --generate-notes

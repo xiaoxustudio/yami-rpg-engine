@@ -1,0 +1,124 @@
+name: Release Resources
+
+on:
+    push:
+        tags:
+            - 'template-v*'
+            - 'script-v*'
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: '已存在的资源 tag（template-vX.Y.Z / script-vX.Y.Z）'
+                required: true
+                type: string
+
+permissions:
+    contents: write
+
+concurrency:
+    group: release-resources-${{ github.event.inputs.tag || github.ref_name }}
+    cancel-in-progress: false
+
+jobs:
+    build:
+        name: 构建资源包
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.inputs.tag || github.ref }}
+                  fetch-depth: 0
+
+            - uses: pnpm/action-setup@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: pnpm
+
+            - name: 安装依赖
+              run: pnpm install --frozen-lockfile
+
+            - name: 识别资源类型
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  TAG="${{ github.event.inputs.tag || github.ref_name }}"
+                  case "$TAG" in
+                    template-v*) COMPONENT=template; PKG_PATH=packages/template-arpg; PKG_NAME=@yami/template-arpg; PREFIX=template; BUILD=build:all; OUT=packages/template-arpg/build ;;
+                    script-v*) COMPONENT=script; PKG_PATH=packages/script; PKG_NAME=@yami/script; PREFIX=script; BUILD=pack; OUT=packages/script/build ;;
+                    *) echo "不支持的资源 tag：$TAG" >&2; exit 1 ;;
+                  esac
+                  echo "COMPONENT=$COMPONENT" >> "$GITHUB_ENV"
+                  echo "PKG_PATH=$PKG_PATH" >> "$GITHUB_ENV"
+                  echo "PKG_NAME=$PKG_NAME" >> "$GITHUB_ENV"
+                  echo "PREFIX=$PREFIX" >> "$GITHUB_ENV"
+                  echo "BUILD=$BUILD" >> "$GITHUB_ENV"
+                  echo "OUT=$OUT" >> "$GITHUB_ENV"
+
+            - name: 校验 tag / 版本 / main 归属
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  TAG="${{ github.event.inputs.tag || github.ref_name }}"
+                  node scripts/release-verify-tag.mjs "$TAG" --package "$PKG_PATH" --prefix "$PREFIX"
+                  git fetch origin main
+                  git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+
+            - name: 构建资源
+              shell: bash
+              run: pnpm -F "$PKG_NAME" run "$BUILD"
+
+            - name: 生成校验和
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  node scripts/release-checksums.mjs "$OUT"
+                  mkdir -p dist-resource
+                  cp "$OUT"/*.zip "$OUT"/*_pack.json "$OUT"/SHA256SUMS.txt dist-resource/
+
+            - name: 上传资源
+              uses: actions/upload-artifact@v4
+              with:
+                  name: resource
+                  if-no-files-found: error
+                  path: dist-resource
+
+    release:
+        name: 创建资源 Draft Release
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - name: 下载资源
+              uses: actions/download-artifact@v4
+              with:
+                  path: artifacts
+                  pattern: 'resource*'
+                  merge-multiple: true
+
+            - name: 创建 Draft Release
+              shell: bash
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+                  REPO: ${{ github.repository }}
+              run: |
+                  set -euo pipefail
+                  VER="${TAG#*-v}"
+                  PRE=""
+                  case "$VER" in *-*) PRE="--prerelease" ;; esac
+                  mapfile -d '' FILES < <(find artifacts -maxdepth 1 -type f -print0)
+                  if [ "${#FILES[@]}" -eq 0 ]; then
+                    echo "没有可发布的资源产物" >&2
+                    exit 1
+                  fi
+                  if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+                    gh release upload "$TAG" "${FILES[@]}" --clobber --repo "$REPO"
+                  else
+                    gh release create "$TAG" "${FILES[@]}" \
+                      --repo "$REPO" \
+                      --title "$TAG" \
+                      --draft \
+                      ${PRE} \
+                      --generate-notes
+                  fi

@@ -155,6 +155,25 @@ const moduleDir = moduleUrl.protocol === 'file:' ? Path.dirname(fileURLToPath(mo
   打包时会打印 `file source doesn't exist` 但**不中断**（实测 `--dir --win` exit=0）。
   想去掉这条噪音就删那两行 —— 但先确认 tsgo 路径是否还要它。
 
+**资源包发版**：`.github/workflows/release-resources.yml`（导出壳见 `release-export.yml`）
+
+模板、脚本、导出壳不单独做安装包，只发 GitHub Release 附件：
+
+| 包 | tag | Release 产物 |
+| --- | --- | --- |
+| `template-arpg` | `template-v1.0.23` | `*_pack.zip` + `*_pack.json` + `SHA256SUMS.txt` |
+| `script` | `script-v1.0.1` | `script_pack.zip` + `script_pack.json` + `SHA256SUMS.txt` |
+| `export-electron` | `export-v1.0.1` | Electron 壳 zip + `manifest-*.json` + `SHA256SUMS.txt` |
+| `ui-kit` | `ui-kit-v0.2.0` | npm tarball + GitHub Release 附件 |
+| 编辑器 | `v1.0.18` | 安装包（仍由 `release.yml` 处理） |
+
+- 资源 tag 不会触发编辑器 Release；`v*` 只匹配编辑器。
+- 资源包发布后，编辑器通过根目录 `resources.lock.json` 锁定版本；
+  `pnpm pack:resources` 会先跑 `scripts/resources-lock.mjs`，版本不一致直接失败。
+- 资源包的 `*_pack.json` 带 `minEditorVersion` / `projectVersion`，用于编辑器启动时做兼容检查。
+- `ui-kit` 由 `release-ui-kit.yml` 发 npm；需要配置 `NPM_TOKEN`，beta 版本发 `next` dist-tag。
+  编辑器在切换为 npm 版本前仍使用 workspace 依赖。
+
 ## 目录详解
 
 ```

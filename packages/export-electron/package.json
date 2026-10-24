@@ -4,6 +4,10 @@
 	"description": "Yami RPG Player 应用壳子包（electron-vite）",
 	"author": "Yami",
 	"main": "./out/main/index.js",
+	"yami": {
+		"minEditorVersion": "1.0.18",
+		"electronVersion": "43.2.0"
+	},
 	"scripts": {
 		"dev": "electron-vite dev --sourcemap",
 		"dev:inspect": "electron-vite dev --sourcemap --inspect",
@@ -15,6 +19,7 @@
 		"build:mac": "electron-vite build && electron-builder --dir --mac --universal",
 		"build:macpkg": "electron-vite build && electron-builder --mac --universal",
 		"install:templates": "node scripts/install-templates.js",
+		"pack:templates": "node scripts/pack-templates.js",
 		"build:template": "electron-vite build && electron-builder --dir --win --x64 && node scripts/install-templates.js",
 		"build:template:mac": "electron-vite build && electron-builder --dir --mac --universal && node scripts/install-templates.js"
 	},
@@ -23,6 +28,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^22.19.19",
+		"archiver": "^8.0.0",
 		"electron": "catalog:",
 		"electron-builder": "^25.1.8",
 		"electron-vite": "^5.0.0",

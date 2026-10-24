@@ -3,6 +3,10 @@
   "version": "1.0.22",
   "description": "ARPG TS 游戏项目模板（多语言）",
   "private": true,
+  "yami": {
+    "minEditorVersion": "1.0.18",
+    "projectVersion": "1.0.147"
+  },
   "scripts": {
     "build": "vite build --mode zh-CN",
     "build:zh-cn": "vite build --mode zh-CN",

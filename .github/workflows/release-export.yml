@@ -1,0 +1,119 @@
+name: Release Export Templates
+
+on:
+    push:
+        tags:
+            - 'export-v*'
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: '已存在的导出壳 tag（export-vX.Y.Z）'
+                required: true
+                type: string
+
+permissions:
+    contents: write
+
+concurrency:
+    group: release-export-${{ github.event.inputs.tag || github.ref_name }}
+    cancel-in-progress: false
+
+jobs:
+    build:
+        name: 构建导出模板（${{ matrix.platform }}）
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - os: windows-latest
+                      platform: win-x64
+                      script: build:template
+                    - os: macos-latest
+                      platform: mac-universal
+                      script: build:template:mac
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.inputs.tag || github.ref }}
+                  fetch-depth: 0
+
+            - uses: pnpm/action-setup@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: pnpm
+
+            - name: 安装依赖
+              run: pnpm install --frozen-lockfile
+
+            - name: 校验 tag / 版本 / main 归属
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  TAG="${{ github.event.inputs.tag || github.ref_name }}"
+                  node scripts/release-verify-tag.mjs "$TAG" --package packages/export-electron --prefix export
+                  git fetch origin main
+                  git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+
+            - name: 构建导出模板
+              run: pnpm -F @yami/export-electron run ${{ matrix.script }}
+
+            - name: 打包模板
+              run: pnpm -F @yami/export-electron run pack:templates -- --platform=${{ matrix.platform }}
+
+            - name: 上传模板
+              uses: actions/upload-artifact@v4
+              with:
+                  name: export-${{ matrix.platform }}
+                  if-no-files-found: error
+                  path: |
+                      packages/export-electron/build/electron-*.zip
+                      packages/export-electron/build/manifest-*.json
+
+    release:
+        name: 创建导出壳 Draft Release
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.inputs.tag || github.ref }}
+
+            - name: 下载模板
+              uses: actions/download-artifact@v4
+              with:
+                  path: artifacts
+                  pattern: 'export-*'
+                  merge-multiple: true
+
+            - name: 生成校验和
+              run: node scripts/release-checksums.mjs artifacts
+
+            - name: 创建 Draft Release
+              shell: bash
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+                  REPO: ${{ github.repository }}
+              run: |
+                  set -euo pipefail
+                  VER="${TAG#export-v}"
+                  PRE=""
+                  case "$VER" in *-*) PRE="--prerelease" ;; esac
+                  mapfile -d '' FILES < <(find artifacts -maxdepth 1 -type f -print0)
+                  if [ "${#FILES[@]}" -eq 0 ]; then
+                    echo "没有可发布的导出模板" >&2
+                    exit 1
+                  fi
+                  if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+                    gh release upload "$TAG" "${FILES[@]}" --clobber --repo "$REPO"
+                  else
+                    gh release create "$TAG" "${FILES[@]}" \
+                      --repo "$REPO" \
+                      --title "$TAG" \
+                      --draft \
+                      ${PRE} \
+                      --generate-notes
+                  fi

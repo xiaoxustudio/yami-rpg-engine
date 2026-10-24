@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Yami 脚本骨架模板",
   "private": true,
+  "yami": {
+    "minEditorVersion": "1.0.18",
+    "projectVersion": "1.0.147"
+  },
   "files": ["template"],
   "scripts": {
     "pack": "node scripts/pack.js"

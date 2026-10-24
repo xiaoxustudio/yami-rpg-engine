@@ -75,6 +75,8 @@ async function packDir(sourceDir, name, version) {
 }
 
 void (async () => {
+	const { validateResourcesLock } = await import('./resources-lock.mjs');
+	validateResourcesLock(repoRoot);
 	const entries = [];
 
 	// 1) template-arpg 多语言模板：vite 驱动构建产出各语言 *_pack.json

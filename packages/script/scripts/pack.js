@@ -52,7 +52,14 @@ function zipFolder(src, out) {
 void (async () => {
 	await zipFolder(sourceDir, zipPath);
 	const hashes = await hashFile(zipPath, ['md5', 'sha1', 'sha256']);
-	const entry = { path: name, realPath: sourceDir, version: manifest.version, ...hashes };
+	const entry = {
+		path: name,
+		realPath: sourceDir,
+		version: manifest.version,
+		minEditorVersion: manifest.yami?.minEditorVersion ?? '',
+		projectVersion: manifest.yami?.projectVersion ?? '',
+		...hashes
+	};
 	fs.writeFileSync(path.join(outDir, `${name}_pack.json`), JSON.stringify(entry, null, 2));
 	console.log(`packed: ${zipPath} v${manifest.version}`);
 })();

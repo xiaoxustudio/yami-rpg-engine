@@ -27,6 +27,7 @@
 		"build:universalexe": "pnpm -F @yami/editor build:universalexe",
 		"start:prod": "pnpm -F @yami/editor start:prod",
 		"pack:resources": "node scripts/pack-resources.js",
+		"resources:check": "node scripts/resources-lock.mjs",
 		"release:verify": "node scripts/release-verify-tag.mjs",
 		"release:notes": "node scripts/release-notes.mjs",
 		"release:checksums": "node scripts/release-checksums.mjs",

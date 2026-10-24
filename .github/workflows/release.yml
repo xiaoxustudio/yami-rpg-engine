@@ -158,6 +158,7 @@ jobs:
                       cp "$file" "release/$name"
                     done
                   done
+                  cp resources.lock.json release/resources.lock.json
                   ls -lh release
 
             - name: 生成 Release Notes

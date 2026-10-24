@@ -3,32 +3,38 @@
     "path": "arpg-ts-chinese",
     "realPath": "F:\\ex\\yami\\yami-rpg-editor\\packages\\template-arpg\\out\\arpg-ts-chinese",
     "version": "1.0.22",
-    "md5": "d021d11b8ee19ace0d254df66ea3af8c",
-    "sha1": "ba6ac9fa9e9ba31cecdff9d70337c9b908f72c57",
-    "sha256": "3359562b436fe9e4eb0df8050665800a999a2527b71f59e16188d3d5f8feef00"
+    "minEditorVersion": "1.0.18",
+    "projectVersion": "1.0.147",
+    "md5": "b153b6644aefa9398af14ab2bbf94198",
+    "sha1": "5cd42cb34483358c6594551cba9907c77769fe40",
+    "sha256": "682b7b22e0fbd39d78fa2c8bb3f67ba7acced35ffe0b022a00c46fd4426cdf74"
   },
   {
     "path": "arpg-ts-english",
     "realPath": "F:\\ex\\yami\\yami-rpg-editor\\packages\\template-arpg\\out\\arpg-ts-english",
     "version": "1.0.22",
-    "md5": "3b6f33cbc8e7cf232784341fec467f9a",
-    "sha1": "ff703e0905e71f8eec2e5b4fad6c6ec51823e284",
-    "sha256": "9f1b84669fd80eba56a2309cb9318566e1e9aa936363225f530a60532431eeef"
+    "minEditorVersion": "1.0.18",
+    "projectVersion": "1.0.147",
+    "md5": "2ff4b80538f4d00dac8dce5cd2e777f5",
+    "sha1": "7b408514c81f4ea537aad52095d8cbe982a17552",
+    "sha256": "ec4b2563739c28bd43048206acb22dadfbd3e8abf16cdb1cc91ddd2e90fd4a8d"
   },
   {
     "path": "script",
     "realPath": "F:\\ex\\yami\\yami-rpg-editor\\packages\\script\\template",
     "version": "1.0.0",
-    "md5": "dbbcfa16dc764296c5749ecb806dbc3a",
-    "sha1": "1889239b729e5d77af2bc163f0b42f086484349f",
-    "sha256": "83577daf4fa43f8fa4d2048619924cd1632d38ec9846b0df54fce05762be2d2e"
+    "minEditorVersion": "1.0.18",
+    "projectVersion": "1.0.147",
+    "md5": "1a6565647784d99452cb116b74510e96",
+    "sha1": "9c99545972d55262e2d6f69d9bafbdd3f2185178",
+    "sha256": "7d1f83c70ecc1379ca0b5bfd7dc8e796fdaf6a04fe3999e914bd44a78370d154"
   },
   {
     "path": "Apk",
     "realPath": "F:\\ex\\yami\\yami-rpg-editor\\packages\\editor\\Project\\Apk",
     "version": "",
-    "md5": "5ea1d2037c87190a6da0ddd1354213fb",
-    "sha1": "1167cf91012a0b2617901d3a979b80295f52ec13",
-    "sha256": "8c473c3ef629c0c729104410044d36039cebbe5402953ed10ac0a7aa061a070e"
+    "md5": "35ee6bca9586d347da4ecbf4e8d81dd7",
+    "sha1": "1427383c901b4c5ba9c9289dd8175277004fe46a",
+    "sha256": "83e0df1fd6f63e69ce495f4c47aed3460bed7e6eae8dfa2a39510063165f27c9"
   }
 ]
