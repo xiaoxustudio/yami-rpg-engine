@@ -27,6 +27,33 @@ export const SettingConfig = new (class {
 	get defaultConfig(): Record<string, unknown> {
 		return buildDefaultConfig(settingSchema);
 	}
+	private get defaultConfigClone(): SettingConfigShape {
+		return JSON.parse(JSON.stringify(this.defaultConfig));
+	}
+
+	// 首次启动 / CI 干净 HOME 下 `.openyami` 目录并不存在，必须先建目录再写文件，
+	// 否则 writeFileSync 直接抛 ENOENT。目录不可写时也只退回默认配置，绝不抛出——
+	// 本模块在 import 期实例化，构造抛出会连带整个依赖它的模块图加载失败。
+	private ensureConfigDir(): boolean {
+		const dir = typeof path.dirname === 'function' ? path.dirname(this.configPath) : '';
+		if (!dir) return false;
+		try {
+			nodeFs.mkdirSync(dir, { recursive: true });
+			return true;
+		} catch {
+			return false;
+		}
+	}
+
+	private writeConfigFile(data: unknown): boolean {
+		if (!this.ensureConfigDir()) return false;
+		try {
+			nodeFs.writeFileSync(this.configPath, JSON.stringify(data), 'utf-8');
+			return true;
+		} catch {
+			return false;
+		}
+	}
 
 	constructor() {
 		this.load();
@@ -76,15 +103,31 @@ export const SettingConfig = new (class {
 
 	load() {
 		if (typeof nodeFs.existsSync !== 'function') {
-			this.config = JSON.parse(JSON.stringify(this.defaultConfig));
+			this.config = this.defaultConfigClone;
+			return;
+		}
+		if (!this.configPath) {
+			this.config = this.defaultConfigClone;
 			return;
 		}
 		if (!nodeFs.existsSync(this.configPath)) {
-			nodeFs.writeFileSync(this.configPath, JSON.stringify(this.defaultConfig), 'utf-8');
-			this.config = JSON.parse(JSON.stringify(this.defaultConfig));
+			this.writeConfigFile(this.defaultConfig);
+			this.config = this.defaultConfigClone;
 			return;
 		}
-		this.config = JSON.parse(nodeFs.readFileSync(this.configPath, 'utf-8'));
+		let stored: unknown;
+		try {
+			stored = JSON.parse(nodeFs.readFileSync(this.configPath, 'utf-8'));
+		} catch {
+			// 文件不可读或 JSON 损坏：退回默认配置，不覆盖用户的文件
+			this.config = this.defaultConfigClone;
+			return;
+		}
+		if (stored === null || typeof stored !== 'object' || Array.isArray(stored)) {
+			this.config = this.defaultConfigClone;
+			return;
+		}
+		this.config = stored as SettingConfigShape;
 		const patch = (
 			_p_obj: Record<string, unknown>,
 			_t_obj: Record<string, unknown>
@@ -123,14 +166,12 @@ export const SettingConfig = new (class {
 			: 9;
 	}
 	save() {
+		if (!this.configPath) return;
 		if (!nodeFs.existsSync(this.configPath)) {
-			return nodeFs.writeFileSync(
-				this.configPath,
-				JSON.stringify(this.defaultConfig),
-				'utf-8'
-			);
+			this.writeConfigFile(this.defaultConfig);
+			return;
 		}
-		nodeFs.writeFileSync(this.configPath, JSON.stringify(this.config), 'utf-8');
+		this.writeConfigFile(this.config);
 		this.apply();
 	}
 	apply() {
