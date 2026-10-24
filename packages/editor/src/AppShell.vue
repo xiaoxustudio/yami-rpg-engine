@@ -117,12 +117,16 @@ import Setting from './components/tools/Setting.vue';
 import Deployment from './components/tools/Deployment.vue';
 import CommandWidget from './components/tools/CommandWidget.vue';
 import QrCode from './components/tools/QrCode.vue';
-import { defineAsyncComponent, onMounted, ref } from 'vue';
+import { defineAsyncComponent, ref } from 'vue';
 import type { Component } from 'vue';
 import { useTitleStore } from '@app/stores/title';
 import { useMenubarStore } from '@app/stores/menubar';
 import { useLocalStore } from '@app/stores/local';
-import { resolveCriticalComponentsReady, resolveLazyComponentsReady } from '@app/bootstrap';
+import {
+	resolveCriticalComponentsReady,
+	resolveLazyComponentsReady,
+	workspaceActivation
+} from '@app/bootstrap';
 import { markBoot } from '@app/utils/boot-timeline';
 import { provideMenuService } from '@app/composables/useMenuService';
 import { Menu } from '@app/components/menu-list';
@@ -263,15 +267,8 @@ const idleToolComponents = Object.fromEntries(
 	])
 );
 const idleReady = ref(false);
-onMounted(() => {
-	const activateIdle = () => {
-		idleReady.value = true;
-	};
-	if (typeof requestIdleCallback === 'function') {
-		requestIdleCallback(() => activateIdle(), { timeout: 3000 });
-	} else {
-		setTimeout(activateIdle, 500);
-	}
+void workspaceActivation.then(() => {
+	idleReady.value = true;
 });
 const commandComponents = Object.fromEntries(
 	Object.entries(commandModules).map(([path, loader]) => [

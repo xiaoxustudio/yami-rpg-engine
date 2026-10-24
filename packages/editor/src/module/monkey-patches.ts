@@ -18,16 +18,16 @@ import { find_dItem } from './tree-utils.ts';
 
 const Clipboard = GlobalClipboard;
 
-EventBus.once('editor_loaded', () => {
-	const checkForProjectUpdatesOrigin = Editor.checkForProjectUpdates;
+const checkForProjectUpdatesOrigin = Editor.checkForProjectUpdates;
+if (checkForProjectUpdatesOrigin) {
 	Editor.checkForProjectUpdates = function (this: typeof Editor, verNum: unknown) {
-		checkForProjectUpdatesOrigin!.call(this, verNum);
+		checkForProjectUpdatesOrigin.call(this, verNum);
 		if (!Data.config.deadzone) {
 			Data.config.deadzone = 0.4;
 			Project.changed = true;
 		}
 	};
-});
+}
 
 EventBus.once('editor_loaded', () => {
 	CommandList.prototype.openEdit = function (this: HTMLElement) {

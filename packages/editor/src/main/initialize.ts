@@ -1,5 +1,9 @@
 import { Timer } from '@app/utils/timer';
-import { criticalComponentsReady, lazyComponentsReady } from '@app/bootstrap';
+import {
+	criticalComponentsReady,
+	lazyComponentsReady,
+	resolveEditorDomainsReady
+} from '@app/bootstrap';
 import { loadConfigPromise } from '@app/utils/config';
 import { primeWindows } from '@app/tools/window-registry';
 import { Window } from '@app/tools/window-object.ts';
@@ -132,6 +136,7 @@ Editor.initialize = async function (this: typeof Editor) {
 				initEditors(cluster);
 				initTools(cluster);
 				markBoot('editors-ready');
+				resolveEditorDomainsReady();
 
 				EventBus.emit('editor_loaded');
 			})

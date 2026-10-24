@@ -9,6 +9,7 @@ import { GameLocal } from '@app/local/local-object.ts';
 import { Editor } from './editor.ts';
 import { WebServer } from '@app/services/ipc/webserver.ts';
 import { getYamiI18n } from '@app/i18n';
+import { activateWorkspace } from '@app/bootstrap';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -179,6 +180,7 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 	this.state = 'open';
 
 	Layout.manager.switch('directory');
+	activateWorkspace();
 
 	this.switchHotkey!(true);
 
