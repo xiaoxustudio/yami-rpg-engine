@@ -117,8 +117,9 @@ import Setting from './components/tools/Setting.vue';
 import Deployment from './components/tools/Deployment.vue';
 import CommandWidget from './components/tools/CommandWidget.vue';
 import QrCode from './components/tools/QrCode.vue';
-import { defineAsyncComponent, ref } from 'vue';
+import { defineAsyncComponent, getCurrentInstance, ref } from 'vue';
 import type { Component } from 'vue';
+import { preloadToolWindows, setToolWindowHostContext } from '@app/tools/tool-window-host';
 import { useTitleStore } from '@app/stores/title';
 import { useMenubarStore } from '@app/stores/menubar';
 import { useLocalStore } from '@app/stores/local';
@@ -133,6 +134,9 @@ import { Menu } from '@app/components/menu-list';
 import { inspectorPages, inspectorPageCount } from '@app/components/inspector/inspector-pages';
 
 const { t } = useI18n();
+
+const instance = getCurrentInstance();
+if (instance) setToolWindowHostContext(instance.appContext);
 
 provideMenuService({ getState: () => Menu.state });
 
@@ -199,7 +203,124 @@ const toolWindowEntries = Object.entries(toolModules).filter(
 		!path.endsWith('TextSuggestions.vue')
 );
 
-const toolTotal = toolWindowEntries.length;
+const deferredToolFiles = new Set([
+	'MoveElementProperty.vue',
+	'MoveLightProperty.vue',
+	'SetAnimationProperty.vue',
+	'SetButtonProperty.vue',
+	'SetDialogBoxProperty.vue',
+	'SetImageProperty.vue',
+	'SetProgressBarProperty.vue',
+	'SetTextProperty.vue',
+	'SetTextBoxProperty.vue',
+	'SetVideoProperty.vue',
+	'SetWindowProperty.vue',
+	'SetNumberOperand.vue',
+	'IfBranch.vue',
+	'IfCondition.vue',
+	'SwitchBranch.vue',
+	'SwitchCondition.vue',
+	'EventSearchString.vue',
+	'ObjectPropertyIndex.vue',
+	'ActorGetter.vue',
+	'AncestorGetter.vue',
+	'AngleGetter.vue',
+	'ElementGetter.vue',
+	'EquipmentGetter.vue',
+	'ItemGetter.vue',
+	'LightGetter.vue',
+	'ObjectGetter.vue',
+	'PositionGetter.vue',
+	'RegionGetter.vue',
+	'SkillGetter.vue',
+	'StateGetter.vue',
+	'TilemapGetter.vue',
+	'TriggerGetter.vue',
+	'VariableGetter.vue',
+	'VariableGetter2.vue',
+	'ExportApk.vue',
+	'Resource.vue',
+	'SceneShift.vue',
+	'ObjectFolder.vue',
+	'EditData.vue',
+	'LocalVariable.vue',
+	'Language.vue',
+	'ImportLanguage.vue',
+	'ExportLanguage.vue',
+	'InsertImage.vue',
+	'CopyProgress.vue',
+	'Choice.vue',
+	'ScriptCommand.vue',
+	'Condition.vue',
+	'Zoom.vue',
+	'Rename.vue',
+	'SetKey.vue',
+	'RequestKeyValue.vue',
+	'ArrayListNumber.vue',
+	'ArrayListString.vue'
+]);
+const deferredToolIds = [
+	'moveElement-property',
+	'moveLight-property',
+	'setAnimation-property',
+	'setButton-property',
+	'setDialogBox-property',
+	'setImage-property',
+	'setProgressBar-property',
+	'setText-property',
+	'setTextBox-property',
+	'setVideo-property',
+	'setWindow-property',
+	'setNumber-operand',
+	'if-branch',
+	'if-condition',
+	'switch-branch',
+	'switch-condition',
+	'event-search-string',
+	'ObjectProperty-index',
+	'actorGetter',
+	'ancestorGetter',
+	'angleGetter',
+	'elementGetter',
+	'equipmentGetter',
+	'itemGetter',
+	'lightGetter',
+	'objectGetter',
+	'positionGetter',
+	'regionGetter',
+	'skillGetter',
+	'stateGetter',
+	'tilemapGetter',
+	'triggerGetter',
+	'variableGetter',
+	'variableGetter2',
+	'export-apk',
+	'resource',
+	'scene-shift',
+	'object-folder',
+	'edit-data',
+	'localVariable',
+	'language',
+	'importLanguage',
+	'exportLanguage',
+	'insertImage',
+	'copyProgress',
+	'choice',
+	'scriptCommand',
+	'condition',
+	'zoom',
+	'rename',
+	'setKey',
+	'request-keyValue',
+	'arrayList-number',
+	'arrayList-string'
+];
+const eagerToolEntries = toolWindowEntries.filter(
+	([path]) => !deferredToolFiles.has(path.split('/').pop()!)
+);
+void workspaceActivation.then(() => preloadToolWindows(deferredToolIds));
+
+const toolTotal = eagerToolEntries.length;
 const commandTotal = Object.keys(commandModules).length;
 const inspectorTotal = inspectorPageCount;
 let toolMounted = 0;
@@ -261,7 +382,7 @@ const onCriticalMounted = () => {
 	}
 };
 const idleToolComponents = Object.fromEntries(
-	toolWindowEntries.map(([path, loader]) => [
+	eagerToolEntries.map(([path, loader]) => [
 		path,
 		asyncComp(loader as () => Promise<Component>, onToolMounted)
 	])

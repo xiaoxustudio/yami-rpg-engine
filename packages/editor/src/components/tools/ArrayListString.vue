@@ -1,5 +1,6 @@
-﻿<template>
+<template>
 	<YMArrayListString
+		:ref="registryRef(windowShellEls, 'arrayList-string')"
 		v-model="form.value"
 		:title="t('components.arrayList-string.title')"
 		@confirm="arrayWindow.confirmString"
@@ -9,6 +10,8 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { useArrayWindow } from '@app/composables/useArrayWindow';
+import { registryRef } from '@app/utils/element-registry';
+import { windowShellEls } from '@app/tools/window-object.ts';
 import { YMArrayListString } from '@ui-kit';
 
 const { t } = useI18n();

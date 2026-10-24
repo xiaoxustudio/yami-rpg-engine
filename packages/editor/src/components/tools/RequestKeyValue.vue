@@ -1,5 +1,6 @@
 <template>
 	<YMRequestKeyValue
+		:ref="registryRef(windowShellEls, 'request-keyValue')"
 		:key-label="t('components.request-keyValue-key.label')"
 		:value-label="t('components.request-keyValue-value.label')"
 		:title="t('components.request-keyValue.title')"
@@ -15,6 +16,8 @@ import {
 	RequestkeyValueBind,
 	requestKeyValueForm
 } from '@app/composables/commands/useRequestURLCommandSchema';
+import { registryRef } from '@app/utils/element-registry';
+import { windowShellEls } from '@app/tools/window-object.ts';
 import { YMRequestKeyValue } from '@ui-kit';
 
 const { t } = useI18n();

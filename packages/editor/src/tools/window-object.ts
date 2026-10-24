@@ -5,6 +5,10 @@ import { getWindowKeydowns } from '@app/tools/window-keydown-registry';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { DynamicShape } from '@app/types/shapes.ts';
 import { getConfirmationStore } from '@app/stores/confirmation';
+import { nextTick } from 'vue';
+import { mountToolWindow } from './tool-window-host';
+
+const pendingToolWindowOpens = new Set<string>();
 
 const Layout = getLazyWindow('layout', () =>
 	import('@app/tools/window-cluster').then((m) => m.Layout)
@@ -76,7 +80,19 @@ Window.initialize = function (this: typeof Window) {
 Window.open = function (this: typeof Window, id: string) {
 	const frames = this.frames;
 	purgeStaleFrames();
-	const element = windowShellEls.get(id) as WindowFrame | undefined;
+	let element = windowShellEls.get(id) as WindowFrame | undefined;
+	if (!element && mountToolWindow(id)) {
+		element = windowShellEls.get(id) as WindowFrame | undefined;
+		if (!element && !pendingToolWindowOpens.has(id)) {
+			pendingToolWindowOpens.add(id);
+			void nextTick().then(() => {
+				pendingToolWindowOpens.delete(id);
+				if (windowShellEls.get(id)) Window.open!(id);
+				else console.warn('[window] open: element not found after mount:', id);
+			});
+			return;
+		}
+	}
 	if (!element) {
 		console.warn('[window] open: element not found:', id);
 		if (modalActive() && frames.length === 0) {

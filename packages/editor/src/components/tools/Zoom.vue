@@ -1,5 +1,6 @@
-﻿<template>
+<template>
 	<YMZoom
+		:ref="registryRef(windowShellEls, 'zoom')"
 		v-model="form.factor"
 		:title="t('components.zoom.title')"
 		:label="t('components.zoom-factor.label')"
@@ -11,6 +12,8 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { useZoomWindow } from '@app/composables/useZoomWindow';
+import { registryRef } from '@app/utils/element-registry';
+import { windowShellEls } from '@app/tools/window-object.ts';
 import { YMZoom } from '@ui-kit';
 
 const { t } = useI18n();
