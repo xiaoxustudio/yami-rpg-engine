@@ -120,27 +120,36 @@ const moduleDir = moduleUrl.protocol === 'file:' ? Path.dirname(fileURLToPath(mo
 
 **发布（已自动化）**：`.github/workflows/release.yml`
 
-- **怎么发**：推一个 `v*` tag —— `git tag v1.2.3 && git push origin v1.2.3`。
-  也可以在 Actions 页面手动 dispatch，填一个**已经推送过**的 tag。
+- **怎么发**：先提交版本号（只改 `packages/editor/package.json`），再从该提交打 annotated tag：
+  `git tag -a v1.2.3 -m v1.2.3 && git push origin v1.2.3`。
+  也可以在 Actions 页面手动 dispatch，填一个**已经推送过**的 tag；勾选 `publish` 会在 Draft 创建后自动发布。
   tag 带连字符（如 `v1.2.3-beta.1`）会自动标记为 prerelease。
+- **版本必须与 tag 一致**：`verify` job 会跑 `scripts/release-verify-tag.mjs`，不一致直接失败；
+  并校验 tag commit 在 `origin/main` 上。发布前会跑完整门禁、ui-kit/editor 测试和 `build:vite`。
 - **打什么**：四腿矩阵 `win-x64` / `mac-x64` / `mac-arm64` / `linux-x64`，分别跑
   `packages/editor` 的 `build:winexe` / `build:macexe` / `build:macArmexe` / `build:linuxexe`
   （每条 = `build:all && electron-builder <target>`，配置内联在 `packages/editor/package.json`
   的 `build` 字段；产物落 `packages/editor/build/`）。
-- **版本号由 tag 驱动**：打包前 `scripts/release-sync-version.mjs` 把 tag 的 semver 写进
-  `packages/editor/package.json`（**只在 CI 工作区生效，不提交**）。
-  因为那个 `version` 是编辑器版本的唯一真源，安装包命名、界面显示、用户
-  `config.json` 的迁移纪元都会跟着对齐 —— 不覆盖的话安装包会一直叫 `… 1.0.18.exe`。
-- **发到哪**：产物先 `upload-artifact`，再由单个 `release` job 用 `gh release create`
-  发到 **workflow 所在的仓库**（`${{ github.repository }}`）。
+  每腿生成 `SHA256SUMS.txt`，以独立 artifact 上传。
+- **发到哪**：`release` job 汇总后创建 **Draft Release**，上传安装包、`.blockmap`、`latest*.yml`
+  和校验和；确认无误后人工 Publish，或 dispatch 时勾选 `publish` 走 `release-stable` 环境审批。
+  mac 两腿的 `latest-mac.yml` 会分别重命名为 `latest-mac-x64.yml` / `latest-mac-arm64.yml`，
+  避免摊平覆盖。
   **刻意不用 `electron-builder --publish`**：`package.json` 的 `repository` 指向
   `yami-pro/yami-rpg-editor`，与实际跑 workflow 的仓库不一定相同，
   用它发布可能打到别处去。
+- **Release Notes**：优先从 `CHANGELOG.md` 中读取对应版本段落（`scripts/release-notes.mjs`）；
+  没有该段落时回退 GitHub 自动生成。
+- **自动更新**：Windows 安装包通过 `electron-updater` 从 GitHub Release 的 `latest.yml` 检查更新；
+  Draft 不会被客户端看到，Publish 后才生效。稳定版只接受正式 Release，版本号带 `-` 的 beta
+  构建允许 prerelease。macOS / Linux 目前仍建议手动下载，
+  因为 mac 双架构元数据、签名与公证尚未就绪；`autoUpdater` 只在 `win32` + `app.isPackaged` 时启动。
 - **签名**：目前**不签名**（仓库里没有证书 secret）。mac 侧显式
   `CSC_IDENTITY_AUTO_DISCOVERY: 'false'`，win 侧 electron-builder 自己会
-  `no signing info identified, signing is skipped`。将来要签名，配 `CSC_LINK` /
-  `CSC_KEY_PASSWORD`（mac+win）与 `APPLE_ID` / `APPLE_APP_SPECIFIC_PASSWORD` /
-  `APPLE_TEAM_ID`，**workflow 结构不用改**。
+  `no signing info identified, signing is skipped`，且 `verifyUpdateCodeSignature` 仍为 `false`。
+  将来要签名，配 `CSC_LINK` / `CSC_KEY_PASSWORD`（mac+win）与 `APPLE_ID` /
+  `APPLE_APP_SPECIFIC_PASSWORD` / `APPLE_TEAM_ID`，再把 win 的
+  `verifyUpdateCodeSignature` 改为 `true`。
 - **已知噪音**：`extraResources` 里有一条 `node_modules/@typescript/typescript-win32-x64`，
   本仓没装（它是 `typescript@7` 的可选依赖，`main/services/tsc.ts` 已有回退链）。
   打包时会打印 `file source doesn't exist` 但**不中断**（实测 `--dir --win` exit=0）。

@@ -5,6 +5,7 @@ import path from 'path';
 import { createEditorWindow } from './window-manager.ts';
 import { promises } from './ipc-handlers.ts';
 import { logBoot, setDebugMode } from './log.ts';
+import { initAutoUpdater } from './updater.ts';
 
 let debug = false;
 let dirname = app.getAppPath();
@@ -64,6 +65,7 @@ app.on('ready', () => {
 	createEditorMenu();
 	createEditorWindow(debug, dirname, useViteDev, VITE_DEV_URL);
 	logBoot('window-created');
+	initAutoUpdater();
 	void loadExtensions(extensionPath).catch((error: unknown) => {
 		console.error(`[extension] 扫描扩展目录失败: ${(error as Error).message}`);
 	});

@@ -31,6 +31,7 @@
 	},
 	"dependencies": {
 		"axios": "^1.19.0",
+		"electron-updater": "^6.8.11",
 		"exceljs": "^4.4.0",
 		"fs-extra": "^11.3.5",
 		"koa": "^3.2.1",
@@ -75,6 +76,7 @@
 	"build": {
 		"appId": "com.open.yami.rpgeditor",
 		"electronVersion": "43.2.0",
+		"artifactName": "Yami-RPG-Editor-${version}-${os}-${arch}.${ext}",
 		"directories": {
 			"buildResources": ".",
 			"output": "./build"
@@ -106,6 +108,13 @@
 		],
 		"asar": false,
 		"extraFiles": [],
+		"publish": [
+			{
+				"provider": "github",
+				"owner": "yami-pro",
+				"repo": "yami-rpg-editor"
+			}
+		],
 		"nsis": {
 			"oneClick": false,
 			"allowElevation": true,
