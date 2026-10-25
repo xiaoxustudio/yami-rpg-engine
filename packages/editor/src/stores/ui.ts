@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { getLazyWindow, loadWindow } from '@app/tools/window-registry';
+import { editorDomainsReady } from '@app/bootstrap';
 import { computed, markRaw, shallowRef } from 'vue';
 import { pinia } from './pinia';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
@@ -171,6 +172,7 @@ export const useUIStore = defineStore('ui', () => {
 
 	async function open(context: UIContextShape) {
 		await initialize();
+		await editorDomainsReady;
 		UI?.open?.(context);
 	}
 
