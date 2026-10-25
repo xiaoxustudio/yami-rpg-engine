@@ -1,8 +1,13 @@
 import { Net } from '@app/services/ipc/net.ts';
 
+// 资源 Release 的归属仓库。**必须**与 `.github/workflows/release-resources.yml` /
+// `release-export.yml` 打 tag 的仓库一致：workflow 只在 tag 所在仓库建 Release，
+// 而这里的地址是编辑器唯一的发现入口，不一致就是「发了但没人看到」。
+// 旧仓库 `xiaoxustudio/yami-rpg-editor` 已 301 到 `Open-Yami-Community/yami-rpg-editor`，
+// 存量客户端仍读旧地址 —— 迁移期两边各发一份，直到存量用户升级完。
 export const RESOURCE_REPO = {
 	owner: 'xiaoxustudio',
-	repo: 'yami-rpg-editor'
+	repo: 'yami-rpg-engine'
 } as const;
 
 export type ResourceKind = 'template' | 'script' | 'export';
