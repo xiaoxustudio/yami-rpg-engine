@@ -171,6 +171,21 @@ const moduleDir = moduleUrl.protocol === 'file:' ? Path.dirname(fileURLToPath(mo
 - 资源包发布后，编辑器通过根目录 `resources.lock.json` 锁定版本；
   `pnpm pack:resources` 会先跑 `scripts/resources-lock.mjs`，版本不一致直接失败。
 - 资源包的 `*_pack.json` 带 `minEditorVersion` / `projectVersion`，用于编辑器启动时做兼容检查。
+- **tag 必须落在编辑器正在读的那个仓库上**：运行时用 `RESOURCE_REPO`
+  （`packages/editor/src/module/resource-release.ts`）拼
+  `api.github.com/repos/<owner>/<repo>/releases`，而 workflow 只在 **tag 所在仓库**建 Release。
+  当前指向 `xiaoxustudio/yami-rpg-engine`；旧地址 `xiaoxustudio/yami-rpg-editor` 已 301 到
+  `Open-Yami-Community/yami-rpg-editor`，存量客户端仍读旧仓库 ⇒ 迁移期两边各发一份，别只发一边。
+- **只有 Published 的正式 Release 生效**：Draft 对客户端不可见；tag 里带 `-`
+  （如 `template-v1.0.23-beta.1`）会被标成 prerelease 并被 `parseResourceReleases()` 跳过
+  ⇒ 资源包不要发 beta。每个 kind 只取 `published_at` 最新的那一个 Release，
+  所以**同一 tag 必须一次带齐该 kind 的全部资产**（模板两语言、导出壳两平台）；
+  发布后再往同一个 Release 补传资产不会生效，得重新发一个版本。
+- **`minEditorVersion` / `projectVersion` 目前不构成拦截**：编辑器下载时只校验 manifest 里的
+  `sha256`，不比对版本号，旧客户端不会被挡住（这个字段只是给将来的兼容检查留的口子）。
+- **导出壳的 `install-templates.js` 与发版无关**：它把壳复制到
+  `packages/editor/Project/Templates/`（在 `.gitignore` 内、运行时也不读那里）；
+  发版用的是打包脚本产出的 `build/electron-*.zip` 与 `manifest-*.json`。
 - `ui-kit` 由 `release-ui-kit.yml` 发 npm；需要配置 `NPM_TOKEN`，beta 版本发 `next` dist-tag。
   编辑器在切换为 npm 版本前仍使用 workspace 依赖。
 
