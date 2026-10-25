@@ -695,7 +695,7 @@ Enum.listPopup = function (event: YamiEvent & { clientX: number; clientY: number
 			label: `ID: ${item.id}`,
 			style: 'id',
 			click: () => {
-				void navigator.clipboard.writeText(item.id);
+				GlobalClipboard.writeText(item.id);
 			}
 		});
 	}

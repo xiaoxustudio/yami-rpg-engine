@@ -47,7 +47,9 @@ export interface YamiSyncApi {
 	getDirPathSync(location: DirLocation): string | undefined;
 	clipboardHas(format: string): boolean;
 	clipboardRead(format: string): unknown;
+	clipboardReadText(): string;
 	clipboardWrite(format: string, object: unknown): void;
+	clipboardWriteText(text: string): void;
 	isBuildingApk(): boolean;
 	getCommandLineSwitch(name: string): string;
 	hasCommandLineSwitch(name: string): boolean;

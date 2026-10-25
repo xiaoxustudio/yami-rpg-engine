@@ -124,7 +124,7 @@ Variable.listPopup = function (event: YamiMouseEvent) {
 			label: `ID: ${item.id}`,
 			style: 'id',
 			click: () => {
-				void navigator.clipboard.writeText(item.id);
+				GlobalClipboard.writeText(item.id);
 			}
 		});
 		items.push({

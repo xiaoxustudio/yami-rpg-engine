@@ -555,7 +555,7 @@ const menuPopup = function (this: UIShape, event: UIPointerEvent) {
 			label: get('copy-id'),
 			enabled: selected,
 			click: () => {
-				void navigator.clipboard.writeText(target!.presetId);
+				GlobalClipboard.writeText(target!.presetId);
 			}
 		},
 		{

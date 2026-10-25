@@ -29,7 +29,9 @@ window.yami = {
 		getDirPathSync: vi.fn(),
 		clipboardHas: vi.fn(),
 		clipboardRead: vi.fn(),
+		clipboardReadText: vi.fn(() => ''),
 		clipboardWrite: vi.fn(),
+		clipboardWriteText: vi.fn(),
 		isBuildingApk: vi.fn(),
 		getCommandLineSwitch: vi.fn(),
 		hasCommandLineSwitch: vi.fn()

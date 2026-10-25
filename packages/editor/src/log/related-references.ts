@@ -1,4 +1,5 @@
 import { elementDataOf } from '@ui-kit';
+import { GlobalClipboard } from '@app/utils/clipboard';
 import { logEls } from '@app/log/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { on, addClass, removeClass, clear, hasClass } from '@app/utils/element-utils.ts';
@@ -842,7 +843,7 @@ Reference.listPopup = function (event: PointerEvent & { value?: ReferenceItem | 
 					label: `ID: ${item.id}`,
 					style: 'id',
 					click: () => {
-						void navigator.clipboard.writeText(item.id!);
+						GlobalClipboard.writeText(item.id!);
 					}
 				}
 			]

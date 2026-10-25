@@ -1,4 +1,5 @@
 import { h } from 'vue';
+import { writeClipboardText } from '../../../utils/clipboard';
 import {
 	relate,
 	addClass,
@@ -1919,7 +1920,7 @@ export const commandListPrototype: Record<
 				}
 				string += '\n';
 			}
-			void navigator.clipboard.writeText(string.trim());
+			writeClipboardText(string.trim());
 		}
 	},
 
@@ -1953,7 +1954,7 @@ export const commandListPrototype: Record<
 			}
 
 			let jsCode = this.generateExecutableCode(commands);
-			void navigator.clipboard.writeText(jsCode);
+			writeClipboardText(jsCode);
 		}
 	},
 

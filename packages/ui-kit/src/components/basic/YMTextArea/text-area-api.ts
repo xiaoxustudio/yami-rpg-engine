@@ -1,6 +1,7 @@
 import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass } from '../../../utils/dom';
+import { readClipboardText } from '../../../utils/clipboard';
 import { TextHistory } from '../../../utils/history';
 import { Timer } from '../../../utils/timer';
 
@@ -44,9 +45,14 @@ const macInputKeydown = (event: KeyboardEvent): void => {
 			case 'KeyC':
 				document.execCommand('copy');
 				break;
-			case 'KeyV':
-				document.execCommand('paste');
+			case 'KeyV': {
+				const text = readClipboardText();
+				if (text) {
+					event.preventDefault();
+					document.execCommand('insertText', false, text);
+				}
 				break;
+			}
 			case 'KeyX':
 				document.execCommand('cut');
 				break;

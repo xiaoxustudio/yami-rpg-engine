@@ -33,8 +33,10 @@ export const YamiIpc: YamiBridgeApi = {
 		getDirPathSync: (location: DirLocation) => bridge.sync.getDirPathSync(location),
 		clipboardHas: (format: string) => bridge.sync.clipboardHas(format),
 		clipboardRead: (format: string) => bridge.sync.clipboardRead(format),
+		clipboardReadText: () => bridge.sync.clipboardReadText(),
 		clipboardWrite: (format: string, object: unknown) =>
 			bridge.sync.clipboardWrite(format, object),
+		clipboardWriteText: (text: string) => bridge.sync.clipboardWriteText(text),
 		isBuildingApk: () => bridge.sync.isBuildingApk(),
 		getCommandLineSwitch: (name: string) => bridge.sync.getCommandLineSwitch(name),
 		hasCommandLineSwitch: (name: string) => bridge.sync.hasCommandLineSwitch(name)

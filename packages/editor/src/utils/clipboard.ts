@@ -5,6 +5,7 @@ export interface GlobalClipboardHost {
 	// oxlint-disable-next-line no-explicit-any
 	read(type: string): any;
 	write(type: string, data: unknown): void;
+	writeText(text: string): void;
 }
 
 export const GlobalClipboard: GlobalClipboardHost = {
@@ -16,5 +17,8 @@ export const GlobalClipboard: GlobalClipboardHost = {
 	},
 	write(format: string, object: unknown): void {
 		YamiIpc.sync.clipboardWrite(format, object);
+	},
+	writeText(text: string): void {
+		YamiIpc.sync.clipboardWriteText(text);
 	}
 };

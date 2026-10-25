@@ -1,4 +1,5 @@
 import { elementDataOf } from '@ui-kit';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
 import { composableEls } from '@app/composables/element-registry';
 import { createElementRegistry } from '@app/utils/element-registry';
@@ -435,7 +436,7 @@ Selection.inputPointerdown = function (this: SelectionShape, event: PointerEvent
 Selection.inputPointerup = function (this: SelectionShape, event: PointerEvent) {
 	switch (event.button) {
 		case 2:
-			void navigator.clipboard.readText().then((clipText: string) => {
+			void Promise.resolve(YamiIpc.sync.clipboardReadText()).then((clipText: string) => {
 				const element = event.target as EventTargetElement;
 				if (document.activeElement === element) {
 					const start = element.selectionStart;
@@ -592,7 +593,7 @@ Selection.inputPointerup = function (this: SelectionShape, event: PointerEvent) 
 											bubbles: true
 										})
 									);
-									document.execCommand('paste');
+									document.execCommand('insertText', false, clipText);
 								}
 							},
 							{

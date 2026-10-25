@@ -364,7 +364,7 @@ Scene.listPopup = function (
 			label: get('copy-id'),
 			enabled: !!item,
 			click: () => {
-				void navigator.clipboard.writeText(item!.presetId!);
+				GlobalClipboard.writeText(item!.presetId!);
 			}
 		}
 	);

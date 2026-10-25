@@ -45,8 +45,11 @@ const sync: YamiSyncApi = {
 		ipcRenderer.sendSync(CHANNELS.on.getDirPathSync, location),
 	clipboardHas: (format: string) => ipcRenderer.sendSync(CHANNELS.on.clipboardHas, format),
 	clipboardRead: (format: string) => ipcRenderer.sendSync(CHANNELS.on.clipboardRead, format),
+	clipboardReadText: () => ipcRenderer.sendSync(CHANNELS.on.clipboardReadText),
 	clipboardWrite: (format: string, object: unknown) =>
 		ipcRenderer.sendSync(CHANNELS.on.clipboardWrite, format, object),
+	clipboardWriteText: (text: string) =>
+		ipcRenderer.sendSync(CHANNELS.on.clipboardWriteText, text),
 	isBuildingApk: () => ipcRenderer.sendSync(CHANNELS.on.isBuildingApk),
 	getCommandLineSwitch: (name: string) =>
 		ipcRenderer.sendSync(CHANNELS.on.getCommandLineSwitch, name),

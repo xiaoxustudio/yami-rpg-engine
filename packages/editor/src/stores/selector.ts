@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { GlobalClipboard } from '@app/utils/clipboard';
 import { storesEls } from '@app/stores/element-registry';
 import type { MenuItem } from '@ui-kit';
 import { getWindowStore } from '@app/stores/window';
@@ -364,7 +365,7 @@ export const useSelectorStore = defineStore('selector', () => {
 						{
 							label: get('copy-id'),
 							click: () => {
-								void navigator.clipboard.writeText(file.meta!.guid);
+								GlobalClipboard.writeText(file.meta!.guid);
 							}
 						},
 						{

@@ -653,7 +653,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 				label: get('copy-id'),
 				enabled: selected,
 				click: () => {
-					void navigator.clipboard.writeText(target.presetId);
+					GlobalClipboard.writeText(target.presetId);
 				}
 			},
 			{

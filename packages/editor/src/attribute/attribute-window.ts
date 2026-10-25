@@ -742,7 +742,7 @@ Attribute.listPopup = function (event: YamiEvent & { clientX: number; clientY: n
 			label: `ID: ${item.id}`,
 			style: 'id',
 			click: () => {
-				void navigator.clipboard.writeText(item.id);
+				GlobalClipboard.writeText(item.id);
 			}
 		});
 	}

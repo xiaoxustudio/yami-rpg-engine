@@ -281,7 +281,7 @@ const listPopup = function (this: UIShape, event: YamiMouseEvent) {
 			label: get('copy-id'),
 			enabled: selected,
 			click: () => {
-				void navigator.clipboard.writeText(item.presetId);
+				GlobalClipboard.writeText(item.presetId);
 			}
 		}
 	);

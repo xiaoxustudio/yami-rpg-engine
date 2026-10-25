@@ -118,6 +118,13 @@ ipcMain.on(CHANNELS.on.clipboardRead, (event, format: string) => {
 		event.returnValue = null;
 	}
 });
+ipcMain.on(CHANNELS.on.clipboardReadText, (event) => {
+	event.returnValue = clipboard.readText();
+});
+ipcMain.on(CHANNELS.on.clipboardWriteText, (event, text: string) => {
+	clipboard.writeText(text);
+	event.returnValue = undefined;
+});
 ipcMain.on(CHANNELS.on.clipboardWrite, (event, format: string, object: unknown) => {
 	const string = JSON.stringify(object);
 	const buffer = Buffer.from(string);
