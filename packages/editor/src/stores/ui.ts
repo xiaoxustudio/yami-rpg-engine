@@ -148,14 +148,29 @@ export const useUIStore = defineStore('ui', () => {
 	const hover = computed<unknown>(() => UI?.hover ?? null);
 
 	const initialized = shallowRef(false);
+	let readyPromise: Promise<void> | null = null;
 
-	function initialize() {
-		if (initialized.value) return;
-		void loadWindow('ui', loadUI).then((u) => u?.initialize?.());
-		initialized.value = true;
+	async function waitForUiElements(): Promise<void> {
+		for (let i = 0; i < 120; i++) {
+			if (uiEls.get('ui-list') && uiEls.get('ui-screen')) return;
+			// oxlint-disable-next-line no-await-in-loop
+			await new Promise<void>((resolve) => setTimeout(resolve, 16));
+		}
 	}
 
-	function open(context: UIContextShape) {
+	function initialize(): Promise<void> {
+		if (readyPromise === null) {
+			readyPromise = loadWindow('ui', loadUI).then(async (u) => {
+				await waitForUiElements();
+				u?.initialize?.();
+				initialized.value = true;
+			});
+		}
+		return readyPromise;
+	}
+
+	async function open(context: UIContextShape) {
+		await initialize();
 		UI?.open?.(context);
 	}
 

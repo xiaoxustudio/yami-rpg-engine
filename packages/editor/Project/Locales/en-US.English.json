@@ -2142,6 +2142,8 @@
 			"next": "Next",
 			"previous": "Previous",
 			"resource-download": "Download",
+			"resource-update": "Update",
+			"resource-latest": "Latest",
 			"resource-decompression": "Decompress",
 			"resource-check-version": "Check for Updates",
 			"resource-open-dir": "Open Template Directory",

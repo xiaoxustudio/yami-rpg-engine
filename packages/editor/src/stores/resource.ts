@@ -8,6 +8,8 @@ export interface ResourceRow {
 	key: string;
 	value: string;
 	version: string;
+	remoteVersion?: string;
+	updateAvailable?: boolean;
 	installed: boolean;
 	hasTemp: boolean;
 	sizeText: string;

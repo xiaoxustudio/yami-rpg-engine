@@ -644,8 +644,10 @@ Title.tabBarSelect = function (this: TitleShape, event: YamiEvent) {
 			break;
 		case 'ui':
 			Layout.manager.switch('ui');
-			getUIStore().open(context);
-			uiEls.get('ui-screen')?.focus();
+			void getUIStore()
+				.open(context)
+				.then(() => uiEls.get('ui-screen')?.focus())
+				.catch((error: unknown) => console.warn('[ui] open failed:', error));
 			break;
 		case 'animation':
 			Layout.manager.switch('animation');

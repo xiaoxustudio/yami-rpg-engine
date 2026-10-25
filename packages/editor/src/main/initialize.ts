@@ -2,7 +2,8 @@ import { Timer } from '@app/utils/timer';
 import {
 	criticalComponentsReady,
 	lazyComponentsReady,
-	resolveEditorDomainsReady
+	resolveEditorDomainsReady,
+	workspaceActivation
 } from '@app/bootstrap';
 import { loadConfigPromise } from '@app/utils/config';
 import { primeWindows } from '@app/tools/window-registry';
@@ -130,6 +131,7 @@ Editor.initialize = async function (this: typeof Editor) {
 				cluster.Title.initialize!();
 				markBoot('title-ready');
 
+				await workspaceActivation;
 				await Promise.race([
 					lazyComponentsReady,
 					new Promise<void>((resolve) => setTimeout(resolve, 60000))

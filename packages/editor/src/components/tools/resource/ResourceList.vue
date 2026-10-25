@@ -16,10 +16,11 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-const downloadLabel = (row: ResourceRow): string =>
-	row.phase === 'decompressing'
-		? t('confirmation.resource-decompression')
-		: t('confirmation.resource-download');
+const downloadLabel = (row: ResourceRow): string => {
+	if (row.phase === 'decompressing') return t('confirmation.resource-decompression');
+	if (row.updateAvailable) return t('confirmation.resource-update');
+	return t('confirmation.resource-download');
+};
 
 const progressBarStyle = (row: ResourceRow) => ({
 	width: `${row.progress}%`,
@@ -53,7 +54,9 @@ const progressBarStyle = (row: ResourceRow) => ({
 			<button
 				:id="`resource-item-${row.value}-download`"
 				name="resource-download"
-				:class="{ disabled: row.installed || row.phase !== 'idle' }"
+				:class="{
+					disabled: (!row.updateAvailable && row.installed) || row.phase !== 'idle'
+				}"
 				@click="emit('download', row.key)"
 			>
 				{{ downloadLabel(row) }}
@@ -119,6 +122,14 @@ const progressBarStyle = (row: ResourceRow) => ({
 			style="font-size: 12px; color: #888; margin-top: 4px"
 		>
 			{{ row.sizeText }}
+		</div>
+		<div
+			v-if="row.remoteVersion && row.updateAvailable"
+			:id="`resource-item-${row.value}-remote`"
+			class="text"
+			style="font-size: 12px; color: #4caf50; margin-top: 2px"
+		>
+			{{ t('confirmation.resource-latest') }}: {{ row.remoteVersion }}
 		</div>
 	</div>
 </template>

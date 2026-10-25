@@ -21,6 +21,10 @@ export function preloadToolWindows(ids: string[]): Promise<void> {
 	).then(() => undefined);
 }
 
+export function hasToolWindowLoader(id: string): boolean {
+	return toolWindowLoaders[id] !== undefined;
+}
+
 export function mountToolWindow(id: string): boolean {
 	if (mounted.has(id)) return true;
 	const component = components.get(id);

@@ -6,7 +6,7 @@ import { getLazyWindow } from '@app/tools/window-registry';
 import { DynamicShape } from '@app/types/shapes.ts';
 import { getConfirmationStore } from '@app/stores/confirmation';
 import { nextTick } from 'vue';
-import { mountToolWindow } from './tool-window-host';
+import { ensureToolWindow, hasToolWindowLoader, mountToolWindow } from './tool-window-host';
 
 const pendingToolWindowOpens = new Set<string>();
 
@@ -94,6 +94,30 @@ Window.open = function (this: typeof Window, id: string) {
 		}
 	}
 	if (!element) {
+		if (hasToolWindowLoader(id) && !pendingToolWindowOpens.has(id)) {
+			pendingToolWindowOpens.add(id);
+			void ensureToolWindow(id)
+				.then((mounted) => {
+					pendingToolWindowOpens.delete(id);
+					if (!mounted) {
+						console.warn('[window] open: tool loader failed:', id);
+						return;
+					}
+					if (windowShellEls.get(id)) {
+						Window.open!(id);
+						return;
+					}
+					void nextTick().then(() => {
+						if (windowShellEls.get(id)) Window.open!(id);
+						else console.warn('[window] open: element not found after load:', id);
+					});
+				})
+				.catch((error: unknown) => {
+					pendingToolWindowOpens.delete(id);
+					console.warn('[window] open: tool load failed:', id, error);
+				});
+			return;
+		}
 		console.warn('[window] open: element not found:', id);
 		if (modalActive() && frames.length === 0) {
 			deactivateModalMode();
