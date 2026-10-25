@@ -2,7 +2,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import fs from 'fs';
 import http from 'http';
-import net from 'net';
 import os from 'os';
 import path from 'path';
 
@@ -36,7 +35,18 @@ const rawGet = (
 	new Promise((resolve, reject) => {
 		const { hostname, port } = new URL(base);
 		const request = http.request(
-			{ hostname, port: Number(port), path: rawPath, method: 'GET', headers },
+			{
+				hostname,
+				port: Number(port),
+				path: rawPath,
+				method: 'GET',
+				// 每条请求独占一条 TCP 连接：`freePort()` 归还的端口会被后面的用例重新绑到
+				// 同一个号上，而 Node 19+ 的全局 agent 默认 keep-alive，会把上一条连接留给
+				// 下一个（已经换了实现的）服务器。CI 上实测过一次 `Parse Error: Expected
+				// HTTP/, RTSP/ or ICE/`——客户端在旧连接上读到了半截残留字节。
+				agent: false,
+				headers: { connection: 'close', ...headers }
+			},
 			(response) => {
 				const chunks: Buffer[] = [];
 				response.on('data', (chunk: Buffer) => chunks.push(chunk));
@@ -53,16 +63,16 @@ const rawGet = (
 		request.end();
 	});
 
-/** 让操作系统分配一个空闲端口，避免用例之间抢端口。 */
-const freePort = (): Promise<number> =>
-	new Promise((resolve, reject) => {
-		const probe = net.createServer();
-		probe.on('error', reject);
-		probe.listen(0, () => {
-			const address = probe.address() as net.AddressInfo;
-			probe.close(() => resolve(address.port));
-		});
-	});
+/**
+ * 每个用例都用**本轮还没用过的**端口。
+ *
+ * 早先的实现是「listen(0) 探一个空闲端口、关掉再绑」，于是相邻用例经常拿到同一个号：
+ * 上一条用例留下的 keep-alive 连接还挂在这个号上，而下一条用例的服务器是全新的 Koa 实例，
+ * 客户端就可能复用旧连接读到半截字节。CI（Linux）上真红过一次——
+ * `Parse Error: Expected HTTP/, RTSP/ or ICE/`。改成单调递增后，同一个端口在整轮测试里
+ * 只会被绑定一次，这类残留连接在结构上就不存在了。
+ */
+let portCursor = 20000 + Math.floor(Math.random() * 20000);
 
 /**
  * 起一个真实的预览服务器，返回基址、`.preview` 根目录与工程目录。
@@ -82,13 +92,13 @@ const serve = async (
 		fs.mkdirSync(path.dirname(target), { recursive: true });
 		fs.writeFileSync(target, content);
 	}
-	const port = await freePort();
 	const startPath = path.join(dir, 'project.yami');
-	for (let attempt = 0; attempt < 5; attempt++) {
+	for (let attempt = 0; attempt < 20; attempt++) {
+		const port = portCursor++;
 		// oxlint-disable-next-line no-await-in-loop
-		const started = await startServer({} as never, { path: startPath, port: port + attempt });
+		const started = await startServer({} as never, { path: startPath, port });
 		if (started) {
-			return { base: `http://127.0.0.1:${port + attempt}`, root, dir };
+			return { base: `http://127.0.0.1:${port}`, root, dir };
 		}
 	}
 	throw new Error('预览服务器未能绑定端口');
