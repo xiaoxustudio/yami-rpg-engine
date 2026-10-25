@@ -1,6 +1,6 @@
 {
   "name": "@yami/template-arpg",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "ARPG TS 游戏项目模板（多语言）",
   "private": true,
   "yami": {

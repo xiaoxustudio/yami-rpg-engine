@@ -2,8 +2,8 @@
 	"editor": "1.0.18",
 	"uiKit": "0.1.0",
 	"templates": {
-		"arpg-ts-chinese": "1.0.22",
-		"arpg-ts-english": "1.0.22"
+		"arpg-ts-chinese": "1.0.23",
+		"arpg-ts-english": "1.0.23"
 	},
 	"script": "1.0.0",
 	"exportElectron": "1.0.0",
