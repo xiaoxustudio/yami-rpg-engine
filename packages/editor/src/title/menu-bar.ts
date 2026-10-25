@@ -830,7 +830,7 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 							} else {
 								enable(titleEls.get('export-apk-button') as YamiElement);
 							}
-							Window.close!('windowProgress');
+							Window.closeById!('windowProgress');
 						});
 					}
 				}

@@ -33,6 +33,7 @@ interface WindowShape extends DynamicShape {
 	initialize: (() => void) | null;
 	open: ((id: string) => void) | null;
 	close: ((id?: string | null) => void) | null;
+	closeById: ((id: string) => void) | null;
 	closeAll: (() => void) | null;
 	isWindowOpen: ((id: string) => boolean) | null;
 	getTopWindow: (() => HTMLElement | undefined) | null;
@@ -61,6 +62,7 @@ export const Window: WindowShape = {
 	initialize: null,
 	open: null,
 	close: null,
+	closeById: null,
 	closeAll: null,
 	isWindowOpen: null,
 	getTopWindow: null,
@@ -204,6 +206,24 @@ Window.close = function (this: typeof Window, id: string | null = null) {
 		}
 		window.scrollTo(0, 0);
 		window.scrollTo(0, 0);
+		if (getWindowStore().overlapRoot === element) {
+			this.setPositionMode!('center');
+		}
+		if (modalActive() && frames.length === 0) {
+			deactivateModalMode();
+		}
+	}
+};
+
+Window.closeById = function (this: typeof Window, id: string) {
+	const frames = this.frames;
+	purgeStaleFrames();
+	const element = frames.find((frame) => frame.id === id) as WindowFrame | undefined;
+	if (!element) return;
+	if (element.close()) {
+		if (element.id === 'confirmation') {
+			getConfirmationStore().clear();
+		}
 		if (getWindowStore().overlapRoot === element) {
 			this.setPositionMode!('center');
 		}

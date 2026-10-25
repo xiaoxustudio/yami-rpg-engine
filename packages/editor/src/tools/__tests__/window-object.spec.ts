@@ -124,6 +124,23 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		expect(enableFocusable).toHaveBeenCalledTimes(1);
 	});
 
+	it('closeById 可关闭非顶层窗口（进度窗在确认框下方时）', () => {
+		const progress = makeFrame('windowProgress');
+		const topModal = makeFrame('top-modal');
+		Window.open!('windowProgress');
+		Window.open!('top-modal');
+
+		Window.closeById!('windowProgress');
+
+		expect(Window.frames).toEqual([topModal]);
+		expect(progress.classList.contains('open')).toBe(false);
+		expect(document.body.style.pointerEvents).toBe('none');
+
+		Window.closeById!('top-modal');
+		expect(Window.frames).toHaveLength(0);
+		expect(document.body.style.pointerEvents).toBe('inherit');
+	});
+
 	it('重复 open 同一窗口不重复入栈', () => {
 		const frame = makeFrame('dup');
 		Window.open!('dup');

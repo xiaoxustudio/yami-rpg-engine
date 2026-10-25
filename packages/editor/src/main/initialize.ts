@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { Timer } from '@app/utils/timer';
 import {
 	criticalComponentsReady,
@@ -136,6 +137,8 @@ Editor.initialize = async function (this: typeof Editor) {
 					lazyComponentsReady,
 					new Promise<void>((resolve) => setTimeout(resolve, 60000))
 				]);
+				await nextTick();
+				await nextTick();
 				showBootProgress('正在初始化编辑器…');
 				initEditors(cluster);
 				initTools(cluster);

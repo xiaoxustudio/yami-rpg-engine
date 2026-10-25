@@ -99,23 +99,33 @@ export function parseResourceReleases(releases: GitHubRelease[]): RemoteResource
 
 let cache: RemoteResource[] | null = null;
 let cacheAt = 0;
+let inFlight: Promise<RemoteResource[]> | null = null;
 const CACHE_TTL = 5 * 60 * 1000;
 
 export async function fetchResourceReleases(force = false): Promise<RemoteResource[]> {
 	if (!force && cache !== null && Date.now() - cacheAt < CACHE_TTL) return cache;
-	const response = await Net.get(
+	if (inFlight !== null) return inFlight;
+	const request = Net.get(
 		`https://api.github.com/repos/${RESOURCE_REPO.owner}/${RESOURCE_REPO.repo}/releases?per_page=100`,
 		{
+			timeout: 15000,
 			headers: {
 				Accept: 'application/vnd.github+json',
 				'X-GitHub-Api-Version': '2022-11-28'
 			}
 		}
-	);
-	if (!Array.isArray(response.data)) {
-		throw new Error('GitHub Releases 返回格式不正确');
+	).then((response) => {
+		if (!Array.isArray(response.data)) {
+			throw new Error('GitHub Releases 返回格式不正确');
+		}
+		cache = parseResourceReleases(response.data as GitHubRelease[]);
+		cacheAt = Date.now();
+		return cache;
+	});
+	inFlight = request;
+	try {
+		return await request;
+	} finally {
+		if (inFlight === request) inFlight = null;
 	}
-	cache = parseResourceReleases(response.data as GitHubRelease[]);
-	cacheAt = Date.now();
-	return cache;
 }

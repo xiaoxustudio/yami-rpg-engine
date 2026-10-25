@@ -75,23 +75,13 @@
 	</Teleport>
 	<template v-if="idleReady">
 		<Teleport to="body">
-			<component
-				:is="comp"
-				v-for="(comp, name) in idleToolComponents"
-				:key="name"
-				@vue:mounted="onToolMounted"
-			/>
+			<component :is="comp" v-for="(comp, name) in idleToolComponents" :key="name" />
 		</Teleport>
 		<Teleport to="body">
-			<component
-				:is="comp"
-				v-for="(comp, name) in commandComponents"
-				:key="name"
-				@vue:mounted="onCommandMounted"
-			/>
+			<component :is="comp" v-for="(comp, name) in commandComponents" :key="name" />
 		</Teleport>
 		<Teleport v-for="p in inspectorPageComponents" :key="p.value" :to="p.target">
-			<component :is="p.comp" @vue:mounted="onInspectorMounted" />
+			<component :is="p.comp" />
 		</Teleport>
 	</template>
 </template>
@@ -132,7 +122,7 @@ import { markBoot } from '@app/utils/boot-timeline';
 import { showBootProgress } from '@app/main/boot-progress';
 import { provideMenuService } from '@app/composables/useMenuService';
 import { Menu } from '@app/components/menu-list';
-import { inspectorPages, inspectorPageCount } from '@app/components/inspector/inspector-pages';
+import { inspectorPages } from '@app/components/inspector/inspector-pages';
 
 const { t } = useI18n();
 
@@ -323,7 +313,8 @@ void workspaceActivation.then(() => preloadToolWindows(deferredToolIds));
 
 const toolTotal = eagerToolEntries.length;
 const commandTotal = Object.keys(commandModules).length;
-const inspectorTotal = inspectorPageCount;
+const inspectorDomainModules = import.meta.glob('./inspector/*-page.ts');
+const inspectorTotal = Object.keys(inspectorDomainModules).length;
 const lazyTotal = toolTotal + commandTotal + inspectorTotal;
 let toolMounted = 0;
 let commandMounted = 0;
@@ -371,8 +362,15 @@ const onAsyncError =
 		fallback();
 		fail();
 	};
-const asyncComp = (loader: () => Promise<Component>, fallback: () => void) =>
-	defineAsyncComponent({ loader, onError: onAsyncError(fallback) });
+const asyncComp = (loader: () => Promise<Component>, onLoaded: () => void) =>
+	defineAsyncComponent({
+		loader: async () => {
+			const component = await loader();
+			onLoaded();
+			return component;
+		},
+		onError: onAsyncError(onLoaded)
+	});
 const immediateToolComponents = {
 	Confirmation,
 	NewProject,
@@ -411,8 +409,20 @@ const commandComponents = Object.fromEntries(
 const inspectorPageComponents = inspectorPages.map(({ value, target, loader }) => ({
 	value,
 	target,
-	comp: asyncComp(loader as () => Promise<Component>, onInspectorMounted)
+	comp: asyncComp(loader as () => Promise<Component>, () => undefined)
 }));
+void workspaceActivation.then(() =>
+	Promise.all(
+		Object.values(inspectorDomainModules).map(async (loader) => {
+			try {
+				await loader();
+				onInspectorMounted();
+			} catch (error: unknown) {
+				console.error('[inspector] preload domain failed:', error);
+			}
+		})
+	)
+);
 </script>
 
 <style>

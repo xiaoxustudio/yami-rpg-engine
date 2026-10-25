@@ -49,7 +49,7 @@ async function open(this: typeof Editor, path: string, agreed = false) {
 		editorDomainsReady,
 		new Promise<void>((resolve) => setTimeout(resolve, 30000))
 	]);
-	Window.close!('windowProgress');
+	Window.closeById!('windowProgress');
 
 	await this.close!();
 
