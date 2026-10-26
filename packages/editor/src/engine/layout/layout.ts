@@ -1518,6 +1518,9 @@ Layout.pageSwitch = function (event: YamiEvent) {
 			case 'particle':
 				addClass(Title.tabBar, 'visible');
 				Layout.loadLayoutScheme!('particle');
+				void awaitVueLayoutLoad().then(() => {
+					(Particle.list as unknown as { update?: () => void }).update?.();
+				});
 				break;
 			default:
 				removeClass(Title.tabBar, 'visible');
