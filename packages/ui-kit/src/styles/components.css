@@ -325,6 +325,12 @@ spacing {
 	outline-offset: -1px;
 }
 
+.text-box-input:focus-visible,
+.number-box-input:focus-visible,
+.text-area-input:focus-visible {
+	outline: none;
+}
+
 ::selection {
 	color: #ffffff;
 	background-color: var(--selection-background);
