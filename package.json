@@ -68,7 +68,7 @@
 		"oxlint": "^1.89.0",
 		"oxlint-tsgolint": "^7.0.2005"
 	},
-	"packageManager": "pnpm@12.9.1",
+	"packageManager": "pnpm@12.15.0",
 	"dependencies": {
 		"cross-env": "^10.1.0"
 	}
