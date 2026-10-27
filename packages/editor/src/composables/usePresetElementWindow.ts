@@ -1,4 +1,3 @@
-import { registryElement } from '@app/utils/element-registry';
 import { treeRowCount, treeRowItemAt, type TreeListRowApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { getWindowStore } from '@app/stores/window';
@@ -77,10 +76,7 @@ function initialize(): void {
 	searcher = composableEls.get('presetElement-searcher') as YamiElement;
 	list.bind(() => nodes);
 	on(searcher, 'keydown', searcherKeydown);
-	registryElement<YamiElement>(composableEls, 'presetElement')?.addEventListener(
-		'closed',
-		windowClosed
-	);
+	(composableEls.get('presetElement') as YamiElement).addEventListener('closed', windowClosed);
 }
 
 function open(openTarget: PresetElementTarget): void {
