@@ -1,4 +1,5 @@
-﻿import { YamiIpc } from '@app/services/ipc/bridge.ts';
+﻿import { registryElement } from '@app/utils/element-registry';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { moduleEls } from '@app/module/element-registry';
 import { titleEls } from '@app/title/element-registry';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
@@ -32,7 +33,10 @@ export const ApkBuilder = new (class {
 		void YamiIpc.invoke.buildApk(config);
 	}
 	notifyLogContent() {
-		(moduleEls.get('export-apk-content') as HTMLElement & { update?: () => void }).update?.();
+		registryElement<HTMLElement & { update?: () => void }>(
+			moduleEls,
+			'export-apk-content'
+		)?.update?.();
 	}
 	apkLog(log: ApkLogEntry) {
 		this.notifyLogContent();

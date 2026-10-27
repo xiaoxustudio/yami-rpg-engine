@@ -435,7 +435,7 @@ const open = (
 	// 操作数窗口是懒挂载的：控件可用后再 save/show/hide 与填冷却键（首次打开也不丢）
 	getWindowStore().openWith('setNumber-operand', () => {
 		if (isFirstOperand) {
-			(composableEls.get('setNumber-operation') as YamiElement).save();
+			registryElement<YamiElement>(composableEls, 'setNumber-operation')?.save();
 			show(composableEls.get('setNumber-operation'));
 			requestFocus('setNumber-operation');
 			hide(composableEls.get('setNumber-operand-operation'));

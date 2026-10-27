@@ -1,3 +1,4 @@
+import { registryElement } from '@app/utils/element-registry';
 import { getWindowStore } from '@app/stores/window';
 import { composableEls } from '@app/composables/element-registry';
 import { read, write } from '@app/utils/element-utils';
@@ -229,10 +230,13 @@ const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): vo
 	// 分支条件窗口是懒挂载的：控件可用后再写键位（首次打开也不会丢）
 	getWindowStore().openWith('switch-condition', () => {
 		write(
-			composableEls.get('switch-condition-keyboard-keycode') as YamiElement,
+			registryElement<YamiElement>(composableEls, 'switch-condition-keyboard-keycode'),
 			keyboardKeycode
 		);
-		write(composableEls.get('switch-condition-gamepad-button') as YamiElement, gamepadButton);
+		write(
+			registryElement<YamiElement>(composableEls, 'switch-condition-gamepad-button'),
+			gamepadButton
+		);
 	});
 	requestFocus('switch-condition-type');
 };
@@ -279,7 +283,7 @@ const save = (): SwitchConditionData | undefined => {
 		}
 		case 'keyboard': {
 			const keycode = read(
-				composableEls.get('switch-condition-keyboard-keycode') as YamiElement
+				registryElement<YamiElement>(composableEls, 'switch-condition-keyboard-keycode')
 			) as string;
 			if (keycode === '') {
 				requestFocus('switch-condition-keyboard-keycode');
@@ -290,7 +294,7 @@ const save = (): SwitchConditionData | undefined => {
 		}
 		case 'gamepad': {
 			const button = read(
-				composableEls.get('switch-condition-gamepad-button') as YamiElement
+				registryElement<YamiElement>(composableEls, 'switch-condition-gamepad-button')
 			) as number;
 			if (button === -1) {
 				requestFocus('switch-condition-gamepad-button');
