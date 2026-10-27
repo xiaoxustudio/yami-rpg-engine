@@ -57,6 +57,15 @@ jobs:
             - name: DOM 迁移矩阵（明细，落盘 scripts/dom-migration-tracker.md）
               run: pnpm run dom:guard:tracker
 
+            # 窗口就绪：工具窗口按需挂载，控件 API 在 onMounted 接线。R1 禁止「打开懒挂载窗口后
+            # 直接写控件」（首次打开必丢/必崩，应走 Window.openWith）；R2 对「注册表取值后非可选
+            # 解引用」做只降不升的棘轮。
+            - name: 窗口就绪门禁自测（门禁自身的口径）
+              run: pnpm run window:guard:selftest
+
+            - name: 窗口就绪（懒挂载窗口 open 后写控件应为 0）
+              run: pnpm run window:guard
+
             # 文档一致性：文档里写的包脚本 / 相对链接 / `node scripts/x` 引用必须真实存在。
             # 2026-09-21 重写前它是「docs/ 不存在 → exit 0」的空门禁；现在的口径与零误报实测
             # 见 scripts/docs-check.mjs 头部。

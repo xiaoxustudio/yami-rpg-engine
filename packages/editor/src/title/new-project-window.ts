@@ -209,11 +209,14 @@ NewProject.copyFilesTo = function (this: typeof NewProject, ...args: unknown[]) 
 	const sPath = args[0] as string;
 	const dPath = args[1] as string;
 	const idFilter = args[2];
-	Window.open!('copyProgress');
-	const progressBar = titleEls.get('copyProgress-bar') as YamiElement;
-	const progressInfo = titleEls.get('copyProgress-info') as YamiElement;
-	progressBar.style.width = '0';
-	progressInfo.textContent = '';
+	// 复制进度窗口是懒挂载的：控件可用后再复位，读取一律按「可能为空」处理
+	const resetProgress = (): void => {
+		const progressBar = titleEls.get('copyProgress-bar') as YamiElement | null;
+		const progressInfo = titleEls.get('copyProgress-info') as YamiElement | null;
+		if (progressBar) progressBar.style.width = '0';
+		if (progressInfo) progressInfo.textContent = '';
+	};
+	Window.openWith!('copyProgress', resetProgress);
 	return this.readFileList!(sPath, idFilter).then(
 		(list: Array<{ folder?: boolean; path: string }>) => {
 			let total = 0;
@@ -243,8 +246,10 @@ NewProject.copyFilesTo = function (this: typeof NewProject, ...args: unknown[]) 
 				duration: Infinity,
 				update: (_timer: Timer) => {
 					const percent = Math.round((count / total) * 100);
-					progressBar.style.width = `${percent}%`;
-					progressInfo.textContent = info;
+					const progressBar = titleEls.get('copyProgress-bar') as YamiElement | null;
+					const progressInfo = titleEls.get('copyProgress-info') as YamiElement | null;
+					if (progressBar) progressBar.style.width = `${percent}%`;
+					if (progressInfo) progressInfo.textContent = info;
 				}
 			}).add();
 			return Promise.all(promises);

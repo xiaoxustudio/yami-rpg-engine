@@ -38,6 +38,8 @@
 		"lint:fix": "oxlint -c ./.oxlintrc.json --fix packages/editor packages/ui-kit scripts",
 		"dom:guard:tracker": "node scripts/dom-guard.mjs tracker",
 		"dom:guard:fix": "node scripts/dom-guard.mjs fix",
+		"window:guard": "node scripts/window-readiness-guard.mjs",
+		"window:guard:selftest": "node scripts/window-readiness-guard.mjs --selftest",
 		"migration:ledger": "node scripts/migration-ledger.mjs",
 		"migration:check": "node scripts/migration-ledger.mjs --check",
 		"migration:baseline": "node scripts/migration-ledger.mjs --update-baseline",
