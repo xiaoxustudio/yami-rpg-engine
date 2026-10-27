@@ -127,6 +127,12 @@ jobs:
     tests:
         name: 测试（editor / ui-kit）
         runs-on: ubuntu-latest
+        # editor 全量 ~290 个文件、单机约 5 分钟；按 vitest --shard 切 3 片并行，
+        # 分片由 vitest 按文件分配，不需要维护分组清单。
+        strategy:
+            fail-fast: false
+            matrix:
+                shard: [1, 2, 3]
         steps:
             - uses: actions/checkout@v4
             - uses: pnpm/action-setup@v4
@@ -137,10 +143,12 @@ jobs:
             - run: pnpm install --frozen-lockfile
 
             - name: ui-kit 测试
+              # ui-kit 体量小（~120 文件），只在第 1 片跑，避免三倍重复
+              if: matrix.shard == 1
               run: pnpm -F @yami/ui-kit test
 
-            - name: editor 测试
-              run: pnpm -F @yami/editor test
+            - name: editor 测试（分片 ${{ matrix.shard }}/3）
+              run: pnpm -F @yami/editor test -- --shard=${{ matrix.shard }}/3
 
     build:
         name: 构建（vite）

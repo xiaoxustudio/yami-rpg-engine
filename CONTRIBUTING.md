@@ -64,6 +64,13 @@ pnpm -F @yami/editor test            # 独占跑
 pnpm run build:vite
 ```
 
+CI 里 editor 全量测试按 `vitest --shard` 切 **3 片并行**（分片由 vitest 按文件分配，无需维护清单）。
+本地想快速验证某一片：
+
+```shell
+pnpm -F @yami/editor exec vitest run --shard=1/3
+```
+
 **写行为测试时的三个坑（2026-10 实测）**
 
 1. **「卸载时调了 `removeEventListener`」不等于「挂载真的发生过」。** 收口到 `useEventListener`
