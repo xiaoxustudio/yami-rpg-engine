@@ -1059,7 +1059,7 @@ getListConfig(Animation.layerList).onDelete = function (
 	}
 } as (item: unknown) => void;
 
-Animation.timeline.updateHead = function (this: typeof Animation) {
+Animation.timeline.updateHead = function (this: typeof Animation & HTMLElement) {
 	const { head } = elementDataOf<{ head?: HTMLElement }>(this);
 	if (head === undefined || this.clientWidth === 0) return;
 
@@ -1067,8 +1067,7 @@ Animation.timeline.updateHead = function (this: typeof Animation) {
 	const list = Animation.outerTimelineList;
 	if (!(ruler instanceof HTMLElement) || !(list instanceof HTMLElement)) return;
 
-	const page = this as unknown as HTMLElement;
-	const frameRect = rect(page);
+	const frameRect = rect(this);
 	const nav = headNavOf(head);
 	const item = lastNavItemOf(nav);
 	const navItemRight = item === null ? null : rect(item).right;
@@ -1077,7 +1076,7 @@ Animation.timeline.updateHead = function (this: typeof Animation) {
 	const toolbar = Animation.toolbar;
 	const toolbarRight =
 		toolbar instanceof HTMLElement && rect(toolbar).width !== 0 ? rect(toolbar).right : null;
-	const naturalLeft = frameRect.left + page.clientWidth * TIMELINE_CONTENT_RATIO;
+	const naturalLeft = frameRect.left + this.clientWidth * TIMELINE_CONTENT_RATIO;
 	const contentLeft = timelineContentLeft(naturalLeft, toolbarRight, frameRect.right);
 	const contentOffset = `${roundTo(contentLeft - frameRect.left, 3)}px`;
 	const layerList = Animation.layerList;

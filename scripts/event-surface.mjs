@@ -1,12 +1,22 @@
 #!/usr/bin/env node
-// 窗口事件面报表：把 `window.addEventListener / dispatchEvent` 的使用面
+// 事件面报表：把 `window.addEventListener / dispatchEvent` 与**元素级自定义事件**的使用面
 // 汇总成可复现的数字——事件名清单、add/remove 计数、自定义事件、死事件、内联匿名监听。
+//
+// 口径由 `scripts/lib/scan.mjs` 单一持有（`windowEventSurfaceOf` / `scanAddListenerCalls` /
+// `ELEMENT_EVENT_RE`），台账的 `window-custom-events` / `unremovable-listeners` 轴与之同源。
 //
 // 用法：node scripts/event-surface.mjs
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { NATIVE_EVENTS } from './lib/scan.mjs';
+import {
+	NATIVE_EVENTS,
+	ELEMENT_EVENT_RE,
+	scanAddListenerCalls,
+	scriptOnly,
+	stripComments,
+	windowEventSurfaceOf
+} from './lib/scan.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SCAN_DIRS = [join('packages', 'editor', 'src'), join('packages', 'ui-kit', 'src')];
@@ -42,44 +52,18 @@ function collectFiles() {
 }
 
 /**
- * 逐条取出 `window.addEventListener(...)` 的整段调用文本（按括号配对），
- * 判断该监听是否是**内联匿名**、以及是否带 `{ once: true }`（浏览器会在首次触发后自动摘除，
- * 因此不算"没有 remove"的生命周期风险——不区分就会把它们误记成风险点）。
+ * 口径全部 import 自 `scripts/lib/scan.mjs`：
+ *   · `scanAddListenerCalls` —— 匿名/具名、once/非 once 的判定（台账 `unremovable-listeners` 同源）
+ *   · `windowEventSurfaceOf` —— window 上的派发/监听集合（台账 `window-custom-events` 同源）
+ *   · `ELEMENT_EVENT_RE` + `scriptOnly` —— 元素级自定义事件（事件名在字符串里，不能用 codeOnly）
+ * 本文件**不再持有第二份正则**：历史教训是同一概念写两份实现，分叉之后没有任何东西会发现。
  */
-function scanAddListenerCalls(rawSrc) {
-	// 先去掉注释：注释与字符串里也会出现 `window.addEventListener(`，按原文扫描会把整段
-	// 无关代码当成一次调用（曾因此把"内联匿名监听"数高估了）。
-	const src = rawSrc.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/[^\n]*/g, ' ');
-	const calls = [];
-	const marker = 'window.addEventListener(';
-	let index = src.indexOf(marker);
-	while (index !== -1) {
-		let depth = 0;
-		let i = index + marker.length - 1;
-		let text = '';
-		for (; i < src.length; i++) {
-			const ch = src[i];
-			text += ch;
-			if (ch === '(') depth++;
-			else if (ch === ')') {
-				depth--;
-				if (depth === 0) break;
-			}
-		}
-		calls.push({
-			once: /\bonce\s*:\s*true\b/.test(text),
-			// text 从调用自身的 `(` 开始 ⇒ 实参要从下标 1 起算
-			inline: /^\s*['"][\w:-]+['"]\s*,\s*(?:\(|function\s*\()/.test(text.slice(1))
-		});
-		index = src.indexOf(marker, i);
-	}
-	return calls;
-}
 
 function main() {
 	const files = collectFiles();
 	const listeners = new Map(); // name -> Set<rel>
 	const dispatchers = new Map();
+	const elementEvents = new Map(); // 元素级自定义事件：name -> 处数
 	let adds = 0;
 	let removes = 0;
 	let inlineAnonymous = 0;
@@ -100,33 +84,18 @@ function main() {
 		const remMatches = src.match(/window\.removeEventListener\(/g) ?? [];
 		adds += addMatches.length;
 		removes += remMatches.length;
-		for (const m of src.matchAll(/window\.addEventListener\(\s*['"]([\w:-]+)['"]/g))
-			add(listeners, m[1], rel);
-		// 派发只统计**落在 window 上**的两种写法：
-		//   ① `window.dispatchEvent(new Event('x'))`
-		//   ② `const e = new Event('x'); …; window.dispatchEvent(e)`（变量形式）
-		for (const m of src.matchAll(
-			/window\.dispatchEvent\(\s*new\s+\w*Event\(\s*['"]([\w:-]+)['"]/g
-		)) {
-			add(dispatchers, m[1], rel);
+		// window 上的派发/监听集合：口径与台账 `window-custom-events` 同源（scan.mjs）。
+		// 它认得三种派发形式（直接 new、变量形式、emitCustom 类型化包装）——漏一种，
+		// 整批已迁移的事件就会被误判成"派发无监听 / 监听无派发"。
+		const surface = windowEventSurfaceOf(src);
+		for (const name of surface.emits) add(dispatchers, name, rel);
+		for (const name of surface.listens) add(listeners, name, rel);
+		// 元素级自定义事件：name 在字符串里 ⇒ 用 scriptOnly + stripComments（不能 codeOnly）。
+		for (const m of stripComments(scriptOnly(src)).matchAll(ELEMENT_EVENT_RE)) {
+			if (!NATIVE_EVENTS.has(m[1])) {
+				elementEvents.set(m[1], (elementEvents.get(m[1]) ?? 0) + 1);
+			}
 		}
-		const constructed = new Map();
-		for (const m of src.matchAll(
-			/(?:const|let|var)\s+([\w$]+)\s*=\s*new\s+\w*Event\(\s*['"]([\w:-]+)['"]/g
-		)) {
-			constructed.set(m[1], m[2]);
-		}
-		for (const m of src.matchAll(/window\.dispatchEvent\(\s*([\w$]+)\s*\)/g)) {
-			const name = constructed.get(m[1]);
-			if (name !== undefined) add(dispatchers, name, rel);
-		}
-		// 自定义事件在 2026-09-12 之后走**类型化通道** `emitCustom` / `onCustom`
-		// （`events/custom-events.ts`：名册 + 载荷形状集中成一张表，内部仍是 window 事件）。
-		// 这两行只是让本报表认得它们——否则整批已迁移的事件会被误判成"派发无监听 / 监听无派发"。
-		for (const m of src.matchAll(/\bemitCustom\(\s*['"]([\w:-]+)['"]/g))
-			add(dispatchers, m[1], rel);
-		for (const m of src.matchAll(/\bonCustom\(\s*['"]([\w:-]+)['"]/g))
-			add(listeners, m[1], rel);
 		const calls = scanAddListenerCalls(src);
 		// 内联匿名 + 非 once 才是真正的"无法 remove"风险（once 由浏览器自动摘除）
 		const inlineRisk = calls.filter((c) => c.inline && !c.once).length;
@@ -170,6 +139,12 @@ function main() {
 		console.log(`    - ${n} 处 ${rel}`);
 	console.log(`  .vue 内 add 有、remove 无：${vueUnpaired.length} 个文件`);
 	for (const [rel, n] of vueUnpaired) console.log(`    - ${n} 处 add ${rel}`);
+	const elementRanked = [...elementEvents.entries()].sort((a, b) => b[1] - a[1]);
+	const elementTotal = elementRanked.reduce((sum, [, n]) => sum + n, 0);
+	console.log(
+		`  元素级自定义事件构造：${elementTotal} 处 / ${elementRanked.length} 个名字（应改 defineEmits / v-model）`
+	);
+	for (const [name, n] of elementRanked.slice(0, 8)) console.log(`    - ${name}: ${n} 处`);
 	console.log(
 		`  替代品使用：mitt( ${mittUse} 处、useEventListener( ${useEventListener} 处、window.on( ${windowOn} 处`
 	);

@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-10-21T12:30:37.687Z",
+	"generatedAt": "2026-10-26T15:35:30.773Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -31,6 +31,22 @@
 				"files": 5
 			}
 		},
+		"dom-class-state": {
+			"label": "class 当状态（classList 增删、hasClass）",
+			"target": "stable",
+			"value": {
+				"total": 342,
+				"files": 84
+			}
+		},
+		"dom-measure-reads": {
+			"label": "布局测量（client*/offset*/getComputedStyle）",
+			"target": "stable",
+			"value": {
+				"total": 154,
+				"files": 42
+			}
+		},
 		"dom-on-exempted": {
 			"label": "DOM 受限 API 命中落在白名单内（设计豁免在用）",
 			"target": "stable",
@@ -45,6 +61,30 @@
 			"value": {
 				"total": 0,
 				"hits": 0
+			}
+		},
+		"dom-style-writes": {
+			"label": "样式直写 .style.X =（应改 :style 绑定）",
+			"target": "stable",
+			"value": {
+				"total": 300,
+				"files": 76
+			}
+		},
+		"dom-text-writes": {
+			"label": "文本直写 .textContent =（应改模板插值）",
+			"target": "stable",
+			"value": {
+				"total": 126,
+				"files": 44
+			}
+		},
+		"dom-tree-walk": {
+			"label": "DOM 结构反查（parentElement/closest/兄弟）",
+			"target": "stable",
+			"value": {
+				"total": 95,
+				"files": 69
 			}
 		},
 		"dom-whitelist-drift": {
@@ -71,6 +111,30 @@
 				"entries": 14
 			}
 		},
+		"element-api-attach": {
+			"label": "元素 API 装配（attachApi / attachElementApi）",
+			"target": "zero",
+			"value": {
+				"total": 122,
+				"files": 122
+			}
+		},
+		"element-custom-events": {
+			"label": "元素级自定义事件构造（new XxxEvent）",
+			"target": "zero",
+			"value": {
+				"total": 108,
+				"files": 56
+			}
+		},
+		"element-registry-lookups": {
+			"label": "元素注册表寻址（*Els.get、registryElement(s)）",
+			"target": "zero",
+			"value": {
+				"total": 1513,
+				"files": 305
+			}
+		},
 		"legacy-ui-lines": {
 			"label": "遗留层 UI 单例目录行数（engine/ui/legacy/*）",
 			"target": "zero",
@@ -94,6 +158,14 @@
 			"value": {
 				"total": 0,
 				"files": 0
+			}
+		},
+		"render-callback-props": {
+			"label": "容器式渲染回调（renderX(… container)）",
+			"target": "zero",
+			"value": {
+				"total": 6,
+				"files": 2
 			}
 		},
 		"stale-exemptions": {
@@ -133,7 +205,7 @@
 			"value": {
 				"total": 0,
 				"declared": 12,
-				"assigned": 132,
+				"assigned": 131,
 				"storeRefs": 41,
 				"engineBacked": 0
 			}
@@ -151,8 +223,8 @@
 			"label": "双重断言 as unknown as",
 			"target": "zero",
 			"value": {
-				"total": 1,
-				"files": 1
+				"total": 0,
+				"files": 0
 			}
 		},
 		"unremovable-listeners": {
@@ -177,6 +249,22 @@
 			"value": {
 				"total": 74,
 				"files": 40
+			}
+		},
+		"window-custom-events": {
+			"label": "window 自定义事件名（生命周期除外）",
+			"target": "zero",
+			"value": {
+				"total": 13,
+				"dead": 4
+			}
+		},
+		"yami-element-refs": {
+			"label": "YamiElement 类型引用（元素契约存量）",
+			"target": "zero",
+			"value": {
+				"total": 597,
+				"files": 114
 			}
 		}
 	}

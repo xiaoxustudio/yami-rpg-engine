@@ -40,7 +40,13 @@ import {
 	NULL_CAST_RE,
 	UNKNOWN_CAST_RE,
 	ANY_HATCH_RE,
-	UI_SINGLETON_RE
+	UI_SINGLETON_RE,
+	DOM_AUX_PATTERNS,
+	ELEMENT_API_PATTERNS,
+	NATIVE_EVENTS,
+	WINDOW_LIFECYCLE_EVENTS,
+	countElementCustomEvents,
+	windowEventSurfaceOf
 } from './lib/scan.mjs';
 import { loadDomWhitelist, readDomWhitelist } from './lib/dom-whitelist.mjs';
 import {
@@ -72,6 +78,33 @@ function countCodeByFile(files, re) {
 	}
 	perFile.sort((a, b) => b.count - a.count || a.rel.localeCompare(b.rel));
 	return { total, fileCount: perFile.length, perFile };
+}
+
+/**
+ * 同 `countCodeByFile`，但计数函数自带口径（事件名在字符串里，不能用 `codeOnly`）。
+ * @param {(src: string) => number} counter
+ */
+function countByCounter(files, counter) {
+	let total = 0;
+	const perFile = [];
+	for (const { full, rel } of files) {
+		const n = counter(readSource(full));
+		if (n === 0) continue;
+		total += n;
+		perFile.push({ rel, count: n });
+	}
+	perFile.sort((a, b) => b.count - a.count || a.rel.localeCompare(b.rel));
+	return { total, fileCount: perFile.length, perFile };
+}
+
+/**
+ * 取共享口径里的某条正则。**缺失即抛错** —— 静默 `undefined` 会让 `countMatches` 直接炸，
+ * 或更糟：被 try/catch 吞掉后轴恒读 0（「仪器瞎了」的经典形态）。口径只在 `scan.mjs` 维护。
+ */
+function reOf(list, key, axisId) {
+	const found = list.find((p) => p.key === key);
+	if (!found) throw new Error(`${axisId}: 口径 ${key} 不在 scripts/lib/scan.mjs 里`);
+	return found.re;
 }
 
 /**
@@ -176,6 +209,218 @@ function buildAxes() {
 				return {
 					value: { total: hits, files: perFile.length },
 					detail: perFile.slice(0, 10)
+				};
+			}
+		},
+		// -------------------------------------------------------------------
+		// Vue 化收尾：元素 API / 命令式 DOM / 事件所有权
+		//
+		// 门禁上的 `dom-pending` / `vue-global-listeners` 归零只说明「document.* 与 .vue 里的
+		// 裸 window 监听」清完了；**状态与事件的所有权**仍大量留在 DOM 上（元素 API 装配、
+		// 字符串注册表寻址、用 Event 当组件事件通道、模块直接改 class/style/文本）。
+		// 下面这组轴把它们变成可下降的数字。
+		//
+		// target 口径（别把「不增」读成「不打算消」）：
+		//   · 元素 API / 注册表 / 类型引用 / 事件构造 / 容器式回调 —— `zero`：没有合法残留，
+		//     按组件族「先试点、再铺开」逐批消除。
+		//   · 直写 style / class / 文本 / 结构反查 / 测量 —— `stable`：这些轴里**含受控缝隙**
+		//     （`utils/dom.ts` 的 measureText、webgl、打印画布、离屏 vnode），终态不是 0。
+		//     把受控缝隙收窄到「白名单 + 逐条理由」之后，可以改回 `zero`。
+		//     这与 `vue-local-listeners` 从 zero 改 stable 是同一条理由：轴的行为不变，变的只是
+		//     报表里那句话是否诚实。
+		// -------------------------------------------------------------------
+		{
+			id: 'dom-style-writes',
+			label: '样式直写 .style.X =（应改 :style 绑定）',
+			target: 'stable',
+			measure() {
+				const r = countCodeByFile(
+					src,
+					reOf(DOM_AUX_PATTERNS, 'styleWrite', 'dom-style-writes')
+				);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'dom-class-state',
+			label: 'class 当状态（classList 增删、hasClass）',
+			target: 'stable',
+			measure() {
+				const r = countCodeByFile(
+					src,
+					reOf(DOM_AUX_PATTERNS, 'classState', 'dom-class-state')
+				);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'dom-text-writes',
+			label: '文本直写 .textContent =（应改模板插值）',
+			target: 'stable',
+			measure() {
+				const r = countCodeByFile(
+					src,
+					reOf(DOM_AUX_PATTERNS, 'textWrite', 'dom-text-writes')
+				);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'dom-tree-walk',
+			label: 'DOM 结构反查（parentElement/closest/兄弟）',
+			target: 'stable',
+			measure() {
+				// `.children` 不在口径里：树数据与 DOM 子节点同形，词法不可区分（见 scan.mjs）。
+				const r = countCodeByFile(
+					src,
+					reOf(DOM_AUX_PATTERNS, 'domTreeWalk', 'dom-tree-walk')
+				);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'dom-measure-reads',
+			label: '布局测量（client*/offset*/getComputedStyle）',
+			target: 'stable',
+			measure() {
+				const r = countCodeByFile(
+					src,
+					reOf(DOM_AUX_PATTERNS, 'measureRead', 'dom-measure-reads')
+				);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'element-api-attach',
+			label: '元素 API 装配（attachApi / attachElementApi）',
+			target: 'zero',
+			measure() {
+				const r = countCodeByFile(
+					src,
+					reOf(ELEMENT_API_PATTERNS, 'attach', 'element-api-attach')
+				);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'element-registry-lookups',
+			label: '元素注册表寻址（*Els.get、registryElement(s)）',
+			target: 'zero',
+			measure() {
+				const r = countCodeByFile(
+					src,
+					reOf(ELEMENT_API_PATTERNS, 'registryLookup', 'element-registry-lookups')
+				);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'yami-element-refs',
+			label: 'YamiElement 类型引用（元素契约存量）',
+			target: 'zero',
+			measure() {
+				const r = countCodeByFile(
+					src,
+					reOf(ELEMENT_API_PATTERNS, 'yamiElementType', 'yami-element-refs')
+				);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'element-custom-events',
+			label: '元素级自定义事件构造（new XxxEvent）',
+			target: 'zero',
+			measure() {
+				// 事件名在字符串里 ⇒ 这一轴必须用 `countElementCustomEvents`（stripComments +
+				// scriptOnly），不能用 `countCodeByFile`（codeOnly 会把事件名一起抹掉，恒读 0）。
+				const r = countByCounter(src, countElementCustomEvents);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
+				};
+			}
+		},
+		{
+			id: 'window-custom-events',
+			label: 'window 自定义事件名（生命周期除外）',
+			target: 'zero',
+			measure() {
+				// 生命周期三条（boot-ready / yami:error / vue-app-mounted）是**保留项**：
+				// 它们跨 Vue 挂载边界与启动顺序，一次性的 window 事件是合适载体。
+				// 其余（datachange / themechange / localize / dprchange…）应改 store 订阅或进程内 bus。
+				//
+				// dead = 只有派发没有监听（或反之）—— 死事件应当直接删，而不是迁移。
+				const byName = new Map();
+				const slotOf = (name) => {
+					let slot = byName.get(name);
+					if (slot === undefined) {
+						slot = { emits: new Set(), listens: new Set() };
+						byName.set(name, slot);
+					}
+					return slot;
+				};
+				for (const { full, rel } of src) {
+					const surface = windowEventSurfaceOf(readSource(full));
+					for (const name of surface.emits) slotOf(name).emits.add(rel);
+					for (const name of surface.listens) slotOf(name).listens.add(rel);
+				}
+				const names = [...byName.entries()]
+					.filter(
+						([name]) => !NATIVE_EVENTS.has(name) && !WINDOW_LIFECYCLE_EVENTS.has(name)
+					)
+					.sort((a, b) => a[0].localeCompare(b[0]));
+				const detail = names.map(([name, v]) => ({
+					rel: name,
+					emits: v.emits.size,
+					listens: v.listens.size
+				}));
+				return {
+					value: {
+						total: names.length,
+						dead: detail.filter((d) => d.emits === 0 || d.listens === 0).length
+					},
+					detail
+				};
+			}
+		},
+		{
+			id: 'render-callback-props',
+			label: '容器式渲染回调（renderX(… container)）',
+			target: 'zero',
+			measure() {
+				// 这是「元素优先」契约里最难用 Vue 表达的一处：组件把**裸容器**交回调用方，
+				// 调用方只能写命令式 DOM。终态是 scoped slot（`#node-extras="{ item }"`）。
+				const r = countCodeByFile(
+					src,
+					reOf(ELEMENT_API_PATTERNS, 'renderCallbackProp', 'render-callback-props')
+				);
+				return {
+					value: { total: r.total, files: r.fileCount },
+					detail: r.perFile.slice(0, 20)
 				};
 			}
 		},

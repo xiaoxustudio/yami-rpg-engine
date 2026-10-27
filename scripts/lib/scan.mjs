@@ -373,6 +373,163 @@ export function unremovableListeners(files, target = 'window') {
 }
 
 // ---------------------------------------------------------------------------
+// Vue 化收尾口径：命令式 DOM / 元素 API / 事件面
+//
+// 这里回答的是「门禁归零之后还剩什么」——2026-10 的实测结论是：受限 API（document.*）
+// 与 `.vue` 里的裸 window 监听都能归零，但**状态与事件的所有权**仍大量留在 DOM 上。
+// 下面三组口径把它们变成可下降的数字（台账新轴），并让 dom-guard / event-surface
+// 与台账共用同一份正则 —— 历史教训：同一个概念写两份实现，分叉之后没有任何东西会发现。
+//
+// 计数一律走 `countCodeMatches`（codeOnly：去注释、去字符串、去 .vue 的 template/style），
+// 但**事件名本身在字符串里**，因此事件面用 `scriptOnly` + `stripComments`（保留字符串）。
+// ---------------------------------------------------------------------------
+
+/**
+ * 命令式 DOM 写法（进台账棘轮的部分）。
+ *
+ * `domTreeWalk` 刻意**不含 `.children`**：树数据（`LayoutTreeNode.children`）与 DOM 子节点
+ * 是同一个形状，词法上不可区分 —— `layout-scheme.ts` 一个文件就能虚报 26 处。宁可少报，
+ * 也不要报一个需要人工逐条排除的数字（本仓对「噪声指标没人核对」已有前车之鉴）。
+ * `.children` 仍在 `DOM_INFO_PATTERNS` 里作为覆盖面信息保留。
+ */
+export const DOM_AUX_PATTERNS = [
+	{ key: 'styleWrite', re: /\.style\.[A-Za-z]+\s*=(?!=)/g },
+	{ key: 'classState', re: /\.classList\.(?:add|remove|toggle)\(|\bhasClass\s*\(/g },
+	{ key: 'textWrite', re: /\.textContent\s*=(?!=)/g },
+	{
+		key: 'domTreeWalk',
+		re: /\.parentElement\b|\.closest\s*\(|\.(?:next|previous)ElementSibling\b/g
+	},
+	{ key: 'measureRead', re: /\.(?:client|offset)(?:Width|Height)\b|getComputedStyle\s*\(/g }
+];
+
+/** 未进门禁、只作覆盖面清单的 DOM 耦合（dom-guard 的「辅助口径」表） */
+export const DOM_INFO_PATTERNS = [
+	{ key: 'childrenWalk', re: /\.children\b/g },
+	{ key: 'attributeAccess', re: /\.(?:get|set|remove)Attribute\(/g },
+	{ key: 'innerHtmlWrite', re: /\.innerHTML\s*=(?!=)/g },
+	{ key: 'scrollTopWrite', re: /\.scrollTop\s*=(?!=)/g },
+	{ key: 'datasetAccess', re: /\.dataset\b/g },
+	{ key: 'appendPrepend', re: /\.(?:append|prepend)\(/g },
+	{ key: 'nodeValueWrite', re: /\.nodeValue\s*=(?!=)/g },
+	{ key: 'replaceChildrenEtc', re: /\.(?:replaceChildren|insertAdjacentHTML|matches)\(/g },
+	{ key: 'customElements', re: /(?:customElements\.define|\.attachShadow)\(/g },
+	// 原型**访问器**定义（`Object.defineProperty(HTMLElement.prototype, field, …)`）：
+	// `DOM_PATTERNS.protoExt` 要求紧贴 `prototype.`，这种"逗号形式"会被漏掉，故单列。
+	{
+		key: 'prototypeAccessor',
+		re: /(?:Object\.defineProperty|Object\.setPrototypeOf)\(\s*(?:HTMLElement|Element|ChildNode|ParentNode)\.prototype/g
+	}
+];
+
+/** 元素优先 API 的装配/消费面（`YamiElement` 契约的存量大头） */
+export const ELEMENT_API_PATTERNS = [
+	{
+		key: 'attach',
+		// 泛型实参在真实写法里很常见：`attachApi<InlineTreeApi>(box, { … })`。
+		// 只写 `name\s*\(` 会把它们整批漏掉（实测 18 处里有一半是泛型写法）。
+		re: /(?:attachApi|attachElementApi)\s*(?:<[^>]*>)?\s*\(/g
+	},
+	{
+		key: 'registryLookup',
+		// 三处都要认全，否则「迁移进度」会对着**写法**变而不是对着状态变：
+		//   `fieldEls.get('x')` / `inspectorEls?.get('x')` / `registryElement<T>(r, 'x')`。
+		// 可选调用 `get?.(` 也一并认（本仓已有 `el.on?.(…)` 这种写法，注册表迟早也会出现）。
+		re: /\b[A-Za-z_$][\w$]*Els\s*\??\.\s*(?:get|set)\s*(?:\?\.)?\s*\(|registryElement(?:s)?\s*(?:<[^>]*>)?\s*(?:\?\.)?\s*\(/g
+	},
+	{ key: 'yamiElementType', re: /\bYamiElement\b/g },
+	{
+		key: 'renderCallbackProp',
+		re: /\brender\w+\??\s*:\s*\([^)]*\bcontainer\s*:\s*HTMLElement/g
+	}
+];
+
+/**
+ * `.vue` 只保留 script（template/style 置空），**保留字符串字面量与注释**。
+ *
+ * 与 `codeOnly` 的区别正是那一半：事件名、注册表 id 都在字符串里，`codeOnly` 会把它们抹掉 ⇒
+ * 用 `countCodeMatches` 数「`window.addEventListener('x')` 里的 x」恒为 0（仪器瞎了且看不见）。
+ */
+export function scriptOnly(src) {
+	let text = src;
+	if (/<template[\s>]/.test(text) || /<style[\s>]/.test(text)) {
+		text = text
+			.replace(/<template[\s\S]*?<\/template>/g, blankOut)
+			.replace(/<style[\s\S]*?<\/style>/g, blankOut);
+	}
+	return text.replace(/<!--[\s\S]*?-->/g, blankOut);
+
+	function blankOut(match) {
+		return match.replace(/[^\n]/g, ' ');
+	}
+}
+
+/** 事件构造：`new Event('x')` / `new CustomEvent('x')` / `new DragEvent('x')`… */
+export const ELEMENT_EVENT_RE = /new\s+\w*Event\s*\(\s*['"]([\w:-]+)['"]/g;
+
+/**
+ * 元素级/全局自定义事件的构造处数（`new XxxEvent('name')`，name 不在 `NATIVE_EVENTS` 里）。
+ *
+ * 排除原生名的理由：`new Event('resize')` 是在**伪造浏览器事件**，虽然也不够 Vue 化，
+ * 但它服务的是原生语义（触发尺寸监听等），与「拿 Event 当组件事件通道」是两件事 ——
+ * 两条混在一条轴里，迁移时会被大量无关命中淹没。
+ */
+export function countElementCustomEvents(src) {
+	ELEMENT_EVENT_RE.lastIndex = 0;
+	let n = 0;
+	// ⚠️ 用 `stripComments(scriptOnly())` 而不是 `codeOnly()`：事件名在**字符串字面量**里，
+	// `codeOnly` 会把字符串整段抹掉 ⇒ 恒读 0（仪器瞎了且自己不会报错）。
+	for (const m of stripComments(scriptOnly(src)).matchAll(ELEMENT_EVENT_RE)) {
+		if (!NATIVE_EVENTS.has(m[1])) n++;
+	}
+	return n;
+}
+
+/**
+ * window 事件面：该文件在 window 上**派发**与**监听**的事件名。
+ *
+ * 只认三种派发（与 event-surface 的历史口径一致）：
+ *   ① `window.dispatchEvent(new Event('x'))`
+ *   ② `const e = new Event('x'); …; window.dispatchEvent(e)`
+ *   ③ `emitCustom('x')`（类型化包装，内部仍是 window 事件）
+ * 监听：`window.addEventListener('x', …)` 与 `onCustom('x', …)`。
+ */
+export function windowEventSurfaceOf(src) {
+	const text = stripComments(scriptOnly(src));
+	const emits = new Set();
+	const listens = new Set();
+	for (const m of text.matchAll(
+		/window\.dispatchEvent\s*\(\s*new\s+\w*Event\s*\(\s*['"]([\w:-]+)['"]/g
+	)) {
+		emits.add(m[1]);
+	}
+	const constructed = new Map();
+	for (const m of text.matchAll(
+		/(?:const|let|var)\s+([\w$]+)\s*=\s*new\s+\w*Event\s*\(\s*['"]([\w:-]+)['"]/g
+	)) {
+		constructed.set(m[1], m[2]);
+	}
+	for (const m of text.matchAll(/window\.dispatchEvent\s*\(\s*([\w$]+)\s*\)/g)) {
+		const name = constructed.get(m[1]);
+		if (name !== undefined) emits.add(name);
+	}
+	for (const m of text.matchAll(/\bemitCustom\s*\(\s*['"]([\w:-]+)['"]/g)) emits.add(m[1]);
+	for (const m of text.matchAll(/\bonCustom\s*\(\s*['"]([\w:-]+)['"]/g)) listens.add(m[1]);
+	for (const m of text.matchAll(/window\.addEventListener\s*\(\s*['"]([\w:-]+)['"]/g)) {
+		listens.add(m[1]);
+	}
+	return { emits, listens };
+}
+
+/**
+ * 生命周期事件：跨 Vue 挂载边界或启动顺序、**一次性**的 window 事件。
+ *
+ * 这三条是 `window-custom-events` 轴的保留项（不在 bus 化的目标里）；其余 window
+ * 自定义事件（datachange / themechange / localize / dprchange…）都应改 store 订阅或进程内 bus。
+ */
+export const WINDOW_LIFECYCLE_EVENTS = new Set(['boot-ready', 'yami:error', 'vue-app-mounted']);
+
+// ---------------------------------------------------------------------------
 // import 语句：运行时 vs 仅类型
 // ---------------------------------------------------------------------------
 

@@ -11,6 +11,7 @@ import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { DOM_PATTERNS, countMatches, countCodeMatches } from './lib/scan.mjs';
+import { DOM_AUX_PATTERNS, DOM_INFO_PATTERNS, ELEMENT_API_PATTERNS } from './lib/scan.mjs';
 import { loadDomWhitelist } from './lib/dom-whitelist.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -60,42 +61,41 @@ const TEMP_WHITELIST_COUNT = 0;
  */
 const PATTERNS = DOM_PATTERNS;
 
-// 辅助口径：同属 DOM 耦合、但既不在 lint 规则内、也不进每模块列（避免表过宽）。
-// 只作「覆盖面清单」报告——2026-09-11 的度量审计显示这类耦合容易被漏记（`$('#id')` 就是这么发现的）。
-const AUX_PATTERNS = [
-	{ key: 'textContent 赋值', re: /\.textContent\s*=/g },
-	{ key: 'classList.add/remove/toggle', re: /\.classList\.(?:add|remove|toggle)\(/g },
-	{ key: 'style.* 赋值', re: /\.style\.[A-Za-z]+\s*=/g },
-	{ key: '.children 遍历', re: /\.children\b/g },
-	{ key: 'clientWidth/Height 读', re: /\.(?:clientWidth|clientHeight)\b/g },
-	{ key: 'scrollTop 写', re: /\.scrollTop\s*=/g },
-	{ key: 'parentElement', re: /\.parentElement\b/g },
-	{ key: 'closest()', re: /\.closest\(/g },
-	{ key: 'next/prevElementSibling', re: /\.(?:next|previous)ElementSibling\b/g },
-	{ key: 'element.append/prepend', re: /\.(?:append|prepend)\(/g },
-	{ key: 'nodeValue 赋值', re: /\.nodeValue\s*=/g },
-	{ key: 'offsetWidth/Height 读', re: /\.(?:offsetWidth|offsetHeight)\b/g },
-	{ key: 'getComputedStyle', re: /getComputedStyle\(/g },
-	{ key: 'innerHTML 赋值', re: /\.innerHTML\s*=/g },
-	{
-		key: 'replaceChildren/insertAdjacentHTML/matches()',
-		re: /\.(?:replaceChildren|insertAdjacentHTML|matches)\(/g
-	},
-	{
-		key: 'customElements.define / attachShadow',
-		re: /(?:customElements\.define|\.attachShadow)\(/g
-	},
-	// 原型**访问器**定义（`Object.defineProperty(HTMLElement.prototype, field, …)`）——
-	// protoExt 列要求 `prototype.`，这种"逗号形式"会被漏掉，故单列（2026-09-11 发现）。
-	{
-		key: 'prototype 访问器定义（逗号形式）',
-		re: /(?:Object\.defineProperty|Object\.setPrototypeOf)\(\s*(?:HTMLElement|Element|ChildNode|ParentNode)\.prototype/g
-	},
-	// 覆盖面审计补充轴（2026-09-11）：class 当状态读、属性当状态、data-* 当状态
-	{ key: 'hasClass() 读 class 当状态', re: /\bhasClass\(/g },
-	{ key: 'get/set/removeAttribute', re: /\.(?:get|set|remove)Attribute\(/g },
-	{ key: 'dataset.* 状态（R-8 监测位）', re: /\.dataset\b/g }
-];
+// 辅助口径：同属 DOM 耦合、但不在 lint 规则内（避免主表过宽）。
+//
+// 2026-10 起**模式统一 import 自 `scripts/lib/scan.mjs`**，本文件不再维护第二份：
+//   · `DOM_AUX_PATTERNS` / `ELEMENT_API_PATTERNS` —— 已进台账棘轮（dom-style-writes、
+//     element-registry-lookups…），这里只补人读明细；
+//   · `DOM_INFO_PATTERNS` —— 仍未门禁，只作覆盖面清单。
+// 计数也从「原文正则」改为 `countCodeMatches`（排除注释/字符串/.vue 的 template+style）——
+// 本仓注释里大量写着「原先 document.getElementById」这类**已迁完**的记录，按原文计数会把
+// 它们当成迁移债（2026-09-17 实测虚高 29 文件 / 34 处）。
+const AUX_PATTERNS = [...DOM_AUX_PATTERNS, ...ELEMENT_API_PATTERNS];
+const INFO_PATTERNS = DOM_INFO_PATTERNS;
+
+/** 共享模式只有英文 key；报表要人读的中文名，标签只在这里维护一份 */
+const PATTERN_LABELS = {
+	styleWrite: 'style.* 赋值',
+	classState: 'classList.add/remove/toggle + hasClass',
+	textWrite: 'textContent 赋值',
+	domTreeWalk: 'parentElement / closest / 兄弟节点',
+	measureRead: 'client*/offset* / getComputedStyle',
+	attach: 'attachApi / attachElementApi',
+	registryLookup: '元素注册表寻址（*Els.get / registryElement）',
+	yamiElementType: 'YamiElement 类型引用',
+	renderCallbackProp: '容器式渲染回调（renderX）',
+	childrenWalk: '.children 遍历（含树数据，口径偏宽）',
+	attributeAccess: 'get/set/removeAttribute',
+	innerHtmlWrite: 'innerHTML 赋值',
+	scrollTopWrite: 'scrollTop 写',
+	datasetAccess: 'dataset.* 状态',
+	appendPrepend: 'element.append/prepend',
+	nodeValueWrite: 'nodeValue 赋值',
+	replaceChildrenEtc: 'replaceChildren/insertAdjacentHTML/matches()',
+	customElements: 'customElements.define / attachShadow',
+	prototypeAccessor: 'prototype 访问器定义（逗号形式）'
+};
+const labelOf = (p) => PATTERN_LABELS[p.key] ?? p.key;
 
 function collectFiles() {
 	const files = [];
@@ -131,7 +131,9 @@ function scan() {
 		const rawCounts = {};
 		for (const p of PATTERNS) rawCounts[p.key] = countMatches(source, p.re);
 		const aux = {};
-		for (const p of AUX_PATTERNS) aux[p.key] = countMatches(source, p.re);
+		for (const p of AUX_PATTERNS) aux[p.key] = countCodeMatches(source, p.re);
+		const info = {};
+		for (const p of INFO_PATTERNS) info[p.key] = countCodeMatches(source, p.re);
 		const lintCount = PATTERNS.filter((p) => p.lint).reduce((sum, p) => sum + counts[p.key], 0);
 		const total = PATTERNS.reduce((sum, p) => sum + counts[p.key], 0);
 		rows.push({
@@ -140,6 +142,7 @@ function scan() {
 			counts,
 			rawCounts,
 			aux,
+			info,
 			lintCount,
 			total,
 			exempt: hasRuleDisabled(source)
@@ -383,7 +386,7 @@ function tracker() {
 	);
 	lines.push(`- 命中落在注释/字符串（oxlint 判为陈旧但正则命中）：**${commentOnlyHits}**`);
 	lines.push(
-		`- **白名单外命中：${missingAnnotation.length} 个文件**——注意这**不是**迁移债。真实命中为 0（见上一条），这 46 个是正则口径下仍匹配到受限 API 的文件，其中绝大多数命中落在注释/字符串里（本仓库的注释大量写有「原先 document.getElementById」这类**已迁完**的记录）。真迁移债的权威口径是 \`scripts/migration-ledger.mjs\` 的 \`dom-pending\` 轴（计数前先剥离注释、字符串与 \`.vue\` 的 template/style），当前为 **0**`
+		`- **白名单外命中：${missingAnnotation.length} 个文件**——注意这**不是**迁移债。真实命中为 0（见上一条），这批文件是正则口径下仍匹配到受限 API 的文件，其中绝大多数命中落在注释/字符串里（本仓库的注释大量写有「原先 document.getElementById」这类**已迁完**的记录）。真迁移债的权威口径是 \`scripts/migration-ledger.mjs\` 的 \`dom-pending\` 轴（计数前先剥离注释、字符串与 \`.vue\` 的 template/style），当前为 **0**`
 	);
 	if (missingAnnotation.length > 0 && missingAnnotation.length <= 10) {
 		for (const rel of missingAnnotation) lines.push(`  - \`${rel}\``);
@@ -394,30 +397,47 @@ function tracker() {
 		`- **P5 轴（不在 lint 规则内，故不进入「待迁移命中」）**：\`$('#…')\` 反查 **${globalCounts.dollarLookup ?? 0}** 处 / **${dollarFiles}** 文件、\`new DOMParser()\` **${globalCounts.domParser ?? 0}** 处——前者是 element-utils 的 jQuery 风格寻址（\`packages/editor/src/utils/dom.ts\`），跟踪口径见 \`scripts/migration-ledger.mjs\``
 	);
 	lines.push('');
-	lines.push('## 辅助口径（未门禁，仅计数）');
+	lines.push('## 口径外的耦合（受控轴 + 覆盖面）');
 	lines.push('');
 	lines.push(
-		"> 同属 DOM 耦合，但既不在 lint 规则内、也不进每模块列（避免表过宽）。**只作覆盖面清单**——2026-09-11 的度量审计表明这类耦合最容易被漏记（`$('#id')` 就是这么发现的）。"
+		"> 同属 DOM 耦合，但不在 `no-restricted-properties` 里。**第一张表已进台账棘轮**（`dom-style-writes`、`element-api-attach` 等轴），这里给人读明细；第二张表仍未门禁，只作覆盖面清单 —— 2026-09-11 的度量审计表明这类耦合最容易被漏记（`$('#id')` 就是这么发现的）。"
 	);
 	lines.push('');
-	lines.push('| 类别 | 处数 | 文件数 |');
-	lines.push('| --- | --- | --- |');
+	lines.push('### 已门禁（台账轴）');
+	lines.push('');
+	lines.push('| 口径键 | 类别 | 处数 | 文件数 |');
+	lines.push('| --- | --- | --- | --- |');
 	const auxRows = AUX_PATTERNS.map((p) => ({
 		key: p.key,
+		label: labelOf(p),
 		count: rows.reduce((sum, row) => sum + (row.aux[p.key] ?? 0), 0),
 		files: rows.filter((row) => (row.aux[p.key] ?? 0) > 0).length
 	})).sort((a, b) => b.count - a.count);
 	for (const row of auxRows) {
-		lines.push(`| ${row.key} | ${row.count} | ${row.files} |`);
+		lines.push(`| ${row.key} | ${row.label} | ${row.count} | ${row.files} |`);
+	}
+	lines.push('');
+	lines.push('### 未门禁（覆盖面）');
+	lines.push('');
+	lines.push('| 口径键 | 类别 | 处数 | 文件数 |');
+	lines.push('| --- | --- | --- | --- |');
+	const infoRows = INFO_PATTERNS.map((p) => ({
+		key: p.key,
+		label: labelOf(p),
+		count: rows.reduce((sum, row) => sum + (row.info[p.key] ?? 0), 0),
+		files: rows.filter((row) => (row.info[p.key] ?? 0) > 0).length
+	})).sort((a, b) => b.count - a.count);
+	for (const row of infoRows) {
+		lines.push(`| ${row.key} | ${row.label} | ${row.count} | ${row.files} |`);
 	}
 	lines.push('');
 	lines.push('## 明细');
 	lines.push('');
-	lines.push('| 文件 | 行数 | 命中 | 豁免注释 |');
-	lines.push('| --- | --- | --- | --- |');
+	lines.push('| 文件 | 模块 | 行数 | 命中 | 豁免注释 |');
+	lines.push('| --- | --- | --- | --- | --- |');
 	for (const row of [...rows].sort((a, b) => b.total - a.total)) {
 		lines.push(
-			`| ${row.rel} | ${readFileSync(row.file, 'utf8').split('\n').length} | ${row.total} | ${row.exempt ? '是' : '-'} |`
+			`| ${row.rel} | ${moduleOf(row.rel)} | ${readFileSync(row.file, 'utf8').split('\n').length} | ${row.total} | ${row.exempt ? '是' : '-'} |`
 		);
 	}
 	const summary =

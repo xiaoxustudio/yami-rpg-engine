@@ -27,6 +27,13 @@ import {
 	NULL_CAST_RE,
 	UNKNOWN_CAST_RE,
 	UI_SINGLETON_RE,
+	DOM_AUX_PATTERNS,
+	DOM_INFO_PATTERNS,
+	ELEMENT_API_PATTERNS,
+	countElementCustomEvents,
+	windowEventSurfaceOf,
+	WINDOW_LIFECYCLE_EVENTS,
+	scriptOnly,
 	readSource,
 	ROOT
 } from './scan.mjs';
@@ -1257,6 +1264,207 @@ test('事件接线：路由器对当前仓库的计数与台账轴一致（防�
 	const sample = "el.addEventListener('click', f);\nwindow.addEventListener('resize', g);";
 	const w = eventWiringOf(sample);
 	ok(w.localListeners === 1 && w.globalListeners === 1, '路由器对混合样本应各计 1');
+});
+
+// ---------------------------------------------------------------------------
+// Vue 化收尾口径（命令式 DOM / 元素 API / 事件所有权）
+//
+// 这组轴回答的是「门禁归零之后还剩什么」。它们比 document.* 那批更容易被**写法**骗：
+//   · 事件名在字符串里 ⇒ 用 codeOnly 会恒读 0；
+//   · `.children` 与树数据同形 ⇒ 混进结构反查会让 `layout-scheme.ts` 一个文件虚报 26 处；
+//   · `.style.x === ''`（比较）与 `.style.x = ''`（赋值）只差一个字符。
+// 下面每条都同时钉「抓得到」与「不误报」两个方向 —— 只钉一个方向的规则等于没写。
+// ---------------------------------------------------------------------------
+
+const auxRe = (key) => {
+	const found = DOM_AUX_PATTERNS.find((p) => p.key === key);
+	if (!found) throw new Error(`DOM_AUX_PATTERNS 缺少 ${key}`);
+	return found.re;
+};
+const infoRe = (key) => {
+	const found = DOM_INFO_PATTERNS.find((p) => p.key === key);
+	if (!found) throw new Error(`DOM_INFO_PATTERNS 缺少 ${key}`);
+	return found.re;
+};
+const apiRe = (key) => {
+	const found = ELEMENT_API_PATTERNS.find((p) => p.key === key);
+	if (!found) throw new Error(`ELEMENT_API_PATTERNS 缺少 ${key}`);
+	return found.re;
+};
+
+process.stdout.write('\nVue 化收尾 —— 命令式 DOM / 元素 API / 事件所有权\n');
+
+test('共享口径的 key 不重复（重复会让两条轴悄悄数同一份命中）', () => {
+	const all = [...DOM_AUX_PATTERNS, ...DOM_INFO_PATTERNS, ...ELEMENT_API_PATTERNS];
+	eq(
+		all.map((p) => p.key).filter((k, i, arr) => arr.indexOf(k) !== i),
+		[],
+		'口径 key 必须唯一'
+	);
+	eq(DOM_AUX_PATTERNS.length, 5, '受控 DOM 轴应为 5 条');
+	eq(ELEMENT_API_PATTERNS.length, 4, '元素 API 轴应为 4 条');
+});
+
+test('styleWrite：赋值命中、比较/字符串/注释/.vue 模板不命中', () => {
+	const re = auxRe('styleWrite');
+	eq(countCodeMatches("el.style.left = '1px';", re), 1);
+	eq(countCodeMatches("if (el.style.left === '1px') {}", re), 0, '比较不是赋值');
+	eq(countCodeMatches('const s = "el.style.left = 1";', re), 0, '字符串里的写法不算');
+	eq(countCodeMatches('// 原先 el.style.left = 1\nconst a = 1;', re), 0, '注释不算');
+	eq(
+		countCodeMatches(
+			'<template><div :style="x" /></template><script>el.style.top = 1;</script>',
+			re
+		),
+		1,
+		'模板里的 :style 不算，script 里的才算'
+	);
+});
+
+test('classState：增删命中、只读不命中', () => {
+	const re = auxRe('classState');
+	eq(
+		countCodeMatches(
+			"el.classList.add('a'); el.classList.remove('b'); el.classList.toggle('c');",
+			re
+		),
+		3
+	);
+	eq(countCodeMatches("hasClass(el, 'hidden');", re), 1);
+	eq(
+		countCodeMatches("if (el.classList.contains('a')) {}", re),
+		0,
+		'contains 是只读，不是当状态写'
+	);
+});
+
+test('textWrite：赋值命中、比较不命中、模板插值不命中', () => {
+	const re = auxRe('textWrite');
+	eq(countCodeMatches("el.textContent = 'x';", re), 1);
+	eq(countCodeMatches("if (el.textContent === 'x') {}", re), 0);
+	eq(
+		countCodeMatches(
+			'<template><span>{{ text }}</span></template><script>el.textContent = 1;</script>',
+			re
+		),
+		1
+	);
+});
+
+test('domTreeWalk：DOM 反查命中，`.children` 不进这条轴（树数据同形）', () => {
+	const re = auxRe('domTreeWalk');
+	eq(countCodeMatches('n.parentElement; n.closest(".a"); n.nextElementSibling;', re), 3);
+	eq(
+		countCodeMatches('node.children; scheme.children;', re),
+		0,
+		'`.children` 不可区分，必须留在覆盖面清单'
+	);
+	eq(countCodeMatches('node.children;', infoRe('childrenWalk')), 1, '它应在未门禁的覆盖面里');
+});
+
+test('measureRead：尺寸/样式读取命中，写 style 不混进来', () => {
+	const re = auxRe('measureRead');
+	eq(countCodeMatches('el.clientWidth; el.offsetHeight; getComputedStyle(el);', re), 3);
+	eq(countCodeMatches('el.style.width = "1px";', re), 0, '写样式归 styleWrite，不重复计');
+});
+
+test('element-api-attach：两种装配写法都要认（含泛型实参）', () => {
+	const re = apiRe('attach');
+	eq(countCodeMatches('attachElementApi(el, {});', re), 1);
+	eq(countCodeMatches('attachApi<InlineTreeApi>(box, { read });', re), 1, '泛型实参不能漏');
+	eq(countCodeMatches('// 原先 attachElementApi(el, {})\nconst a = 1;', re), 0);
+});
+
+test('element-registry-lookups：链式换行、泛型、多种注册表都要认', () => {
+	const re = apiRe('registryLookup');
+	eq(countCodeMatches("fieldEls.get('a');", re), 1);
+	eq(countCodeMatches("fieldEls\n\t\t.get('a');", re), 1, '换行链式是同一个调用');
+	eq(countCodeMatches("inspectorEls?.get('a');", re), 1, '注册表可选链');
+	eq(countCodeMatches("registryElement<HTMLElement>(r, 'a');", re), 1);
+	eq(countCodeMatches("registryElements(r, ['a']);", re), 1);
+	eq(countCodeMatches('someMap.get(key);', re), 0, '普通 Map 不是元素注册表');
+	eq(countCodeMatches('elementDataMap.get(el);', re), 0);
+});
+
+test('yami-element-refs：只认类型名本身，不把 YamiElementApi 算进去', () => {
+	const re = apiRe('yamiElementType');
+	eq(countCodeMatches('const el: YamiElement = x;', re), 1);
+	eq(countCodeMatches('const el: YamiElementApi = x;', re), 0);
+	eq(countCodeMatches('type List = YamiElement[];', re), 1);
+});
+
+test('element-custom-events：构造自定义事件命中，原生名与注释不命中', () => {
+	eq(countElementCustomEvents("new Event('change');"), 1);
+	eq(countElementCustomEvents("new CustomEvent('datachange');"), 1);
+	eq(countElementCustomEvents("new DragEvent('os-dragstart');"), 1);
+	eq(countElementCustomEvents("new Event('click');"), 0, '原生名是在伪造浏览器事件，另作一类');
+	eq(countElementCustomEvents("// new Event('change')\nconst a = 1;"), 0, '注释不算');
+	eq(
+		countElementCustomEvents(
+			'<template>{{ x }}</template><script>new Event("change");</script>'
+		),
+		1
+	);
+});
+
+test('windowEventSurfaceOf：三种派发形式与两种监听形式都要认出', () => {
+	const direct = windowEventSurfaceOf("window.dispatchEvent(new Event('datachange'));");
+	eq([...direct.emits], ['datachange']);
+	const variable = windowEventSurfaceOf(
+		"const e = new Event('datachange'); e.key = 'k'; window.dispatchEvent(e);"
+	);
+	eq([...variable.emits], ['datachange'], '变量形式');
+	const typed = windowEventSurfaceOf("emitCustom('localize'); onCustom('localize', f);");
+	eq([...typed.emits], ['localize']);
+	eq([...typed.listens], ['localize']);
+	const plain = windowEventSurfaceOf("window.addEventListener('resize', f);");
+	eq([...plain.listens], ['resize']);
+	// 只构造不派发不算 window 事件（元素级事件另有一套口径）
+	eq(windowEventSurfaceOf("const e = new Event('x');").emits.size, 0);
+});
+
+test('生命周期事件是保留项：不在 bus 化目标里', () => {
+	ok(WINDOW_LIFECYCLE_EVENTS.has('boot-ready'));
+	ok(WINDOW_LIFECYCLE_EVENTS.has('yami:error'));
+	ok(WINDOW_LIFECYCLE_EVENTS.has('vue-app-mounted'));
+	eq(WINDOW_LIFECYCLE_EVENTS.size, 3);
+});
+
+test('scriptOnly：只保留 script，字符串里的监听写法要留下（否则事件名被抹掉）', () => {
+	const src =
+		'<template><div @click="x">window.addEventListener("x", f)</div></template><script>window.addEventListener("y", f);</script>';
+	const out = scriptOnly(src);
+	ok(!out.includes('@click'), '模板段应被置空');
+	ok(out.includes('window.addEventListener("y", f);'), 'script 段（含字符串）必须保留');
+	eq(
+		countCodeMatches(src, /window\.addEventListener\(\s*['"]y['"]/g),
+		0,
+		'codeOnly 会抹掉事件名 ⇒ 真实调用也读 0；这正是事件面必须走 scriptOnly 的理由'
+	);
+});
+
+test('render-callback-props：容器回调要认，普通回调不认', () => {
+	const re = apiRe('renderCallbackProp');
+	eq(
+		countCodeMatches('renderNodeExtras?: (item: unknown, container: HTMLElement) => void;', re),
+		1
+	);
+	eq(countCodeMatches('onClick?: (item: unknown, el: HTMLElement) => void;', re), 0);
+});
+
+test('真实仓库的读数与台账一致（防「仪器只对手写样本有效」）', () => {
+	// 只锚「非零 + 量级」：具体数字由台账 baseline 守护，这里防止口径被整体改坏成恒 0。
+	const files = collectFiles({ dirs: SCAN_DIRS });
+	const style = files.reduce(
+		(sum, f) => sum + countCodeMatches(readSource(f.full), auxRe('styleWrite')),
+		0
+	);
+	const registry = files.reduce(
+		(sum, f) => sum + countCodeMatches(readSource(f.full), apiRe('registryLookup')),
+		0
+	);
+	ok(style > 100, `真实仓库的 style 直写应在百处量级，实际 ${style}`);
+	ok(registry > 1000, `元素注册表寻址应在千处量级，实际 ${registry}`);
 });
 
 // ---------------------------------------------------------------------------
