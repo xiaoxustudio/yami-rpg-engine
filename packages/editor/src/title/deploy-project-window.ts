@@ -505,14 +505,19 @@ Deployment.readTsOutDir = function (this: typeof Deployment) {
 	return outDir;
 };
 
+/** 复制进度控件（懒挂载窗口，取不到时按空处理）。 */
+const copyProgressEls = (): { bar: HTMLElement | null; info: HTMLElement | null } => ({
+	bar: titleEls.get('copyProgress-bar') as HTMLElement | null,
+	info: titleEls.get('copyProgress-info') as HTMLElement | null
+});
+
 Deployment.copyFilesTo = function (this: typeof Deployment, dirPath: string) {
 	const platform = DeploymentForm.platform;
 	// 复制进度窗口是懒挂载的：控件可用后再复位（读取一律按「可能为空」处理）
 	const resetProgress = (): void => {
-		const progressBar = titleEls.get('copyProgress-bar') as YamiElement | null;
-		const progressInfo = titleEls.get('copyProgress-info') as YamiElement | null;
-		if (progressBar) progressBar.style.width = '0';
-		if (progressInfo) progressInfo.textContent = '';
+		const { bar, info } = copyProgressEls();
+		if (bar) bar.style.width = '0';
+		if (info) info.textContent = '';
 	};
 	Window.openWith!('copyProgress', resetProgress);
 	const { extnameToTypeMap } = FolderItem;
@@ -594,10 +599,9 @@ Deployment.copyFilesTo = function (this: typeof Deployment, dirPath: string) {
 			duration: Infinity,
 			update: () => {
 				const percent = Math.round((count / total) * 100);
-				const progressBar = titleEls.get('copyProgress-bar') as YamiElement | null;
-				const progressInfo = titleEls.get('copyProgress-info') as YamiElement | null;
-				if (progressBar) progressBar.style.width = `${percent}%`;
-				if (progressInfo) progressInfo.textContent = info;
+				const { bar, info: infoEl } = copyProgressEls();
+				if (bar) bar.style.width = `${percent}%`;
+				if (infoEl) infoEl.textContent = info;
 			}
 		}).add();
 		return Promise.all(promises);
