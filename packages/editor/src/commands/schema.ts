@@ -2,7 +2,8 @@
 import { $ } from '@app/utils/dom';
 import { markRaw } from 'vue';
 import { Window } from '@app/tools/window-object.ts';
-import { getFocus, on, read, write } from '@app/utils/element-utils';
+import { onToolWindowMounted } from '@app/tools/tool-window-host';
+import { getFocus, on, read, syncRelatedElements, write } from '@app/utils/element-utils';
 import { reportError } from '@app/utils/safe';
 import { ActorGetter } from '@app/commands/accessors/actor-accessor-window.ts';
 import { AncestorGetter } from '@app/commands/accessors/ancestor-accessor-window.ts';
@@ -281,6 +282,14 @@ export class CommandSchema {
 				console.error(`[initAll] ${name} initialize failed:`, error);
 				retry.push(() => subMap[name].initialize!());
 			}
+			// 访问器窗口按需挂载：initAll 早于窗口挂载时控件取不到，上面的 initialize
+			// 会静默失效（类型下拉项不填、隐藏行关系不装）。挂载完成后再补跑一次。
+			const windowId = name.charAt(0).toLowerCase() + name.slice(1);
+			onToolWindowMounted(windowId, () => {
+				subMap[name].initialize!();
+				// 值往往先于关系写进控件，关系装好后再按当前值补一次显隐同步
+				syncRelatedElements($(`#${windowId}-type`));
+			});
 		}
 		try {
 			Command.custom.initialize();

@@ -2,7 +2,8 @@ import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { elementDataOf, type CustomBoxApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus, on } from '@app/utils/element-utils';
+import { onToolWindowMounted } from '@app/tools/tool-window-host';
+import { getFocus, on, syncRelatedElements } from '@app/utils/element-utils';
 import { getVariable } from '@app/utils/safe';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
@@ -202,9 +203,39 @@ const getTypeItems = (filter: string, prefix: string): VarTypeItem[] => {
 	return types.all;
 };
 
-const initialize = (): void => {
-	const typeEl = composableEls.get('variableGetter-type');
-	if (!typeEl) return;
+/** 已装配的类型下拉。窗口每次挂载都会换新元素，WeakSet 因此天然支持重新装配。 */
+const initializedTypeEls = new WeakSet<Element>();
+
+/** 需要「属性键清单」的变量类型（类型切换或重新打开时按当前类型重填）。 */
+const PRESET_TYPES = new Set(['actor', 'skill', 'state', 'equipment', 'item', 'element']);
+
+/** 关系装好后立刻按当前值同步一次显隐：值往往先于关系写进控件。 */
+const syncRelatedRows = (typeEl: YamiElement): void => syncRelatedElements(typeEl);
+
+/**
+ * 装配一个变量窗口：隐藏行关系、类型项本地化、输入联动。
+ * 窗口是懒挂载的，控件不在注册表时静默返回；挂载完成后由 initialize / open 再跑一次。
+ */
+const initializeWindow = (prefix: string): void => {
+	const typeEl = composableEls.get(`${prefix}-type`);
+	if (!typeEl || initializedTypeEls.has(typeEl)) return;
+	initializedTypeEls.add(typeEl);
+	if (prefix === 'variableGetter2') {
+		typeEl.enableHiddenMode().relate([
+			{ case: 'local', targets: [composableEls.get('variableGetter2-common-key')] },
+			{ case: 'global', targets: [composableEls.get('variableGetter2-global-key')] },
+			{
+				case: 'element',
+				targets: [
+					composableEls.get('variableGetter2-element'),
+					composableEls.get('variableGetter2-preset-key')
+				]
+			}
+		]);
+		syncRelatedRows(typeEl);
+		return;
+	}
+
 	typeEl.enableHiddenMode().relate([
 		{ case: 'local', targets: [composableEls.get('variableGetter-common-key')] },
 		{ case: 'global', targets: [composableEls.get('variableGetter-global-key')] },
@@ -262,21 +293,6 @@ const initialize = (): void => {
 		this.dataItems = backup;
 	};
 
-	const type2El = composableEls.get('variableGetter2-type');
-	if (type2El) {
-		type2El.enableHiddenMode().relate([
-			{ case: 'local', targets: [composableEls.get('variableGetter2-common-key')] },
-			{ case: 'global', targets: [composableEls.get('variableGetter2-global-key')] },
-			{
-				case: 'element',
-				targets: [
-					composableEls.get('variableGetter2-element'),
-					composableEls.get('variableGetter2-preset-key')
-				]
-			}
-		]);
-	}
-
 	const commonKey = composableEls.get('variableGetter-common-key');
 	if (commonKey) {
 		TextSuggestion.listen!(
@@ -286,23 +302,38 @@ const initialize = (): void => {
 	}
 	on(typeEl, 'write', typeWrite);
 	on(typeEl, 'input', typeInput);
+	syncRelatedRows(typeEl);
 };
 
-const open = (
-	target: VariableGetterTarget,
-	defaults?: { filter?: string; prefix?: string }
-): void => {
-	const prefix = defaults?.prefix ?? 'variableGetter';
-	const filter = defaults?.filter ?? target.filter ?? 'all';
-	states[prefix] = { target, filter };
+const initialize = (): void => {
+	initializeWindow('variableGetter');
+	initializeWindow('variableGetter2');
+};
 
-	composableEls.get(`${prefix}-type`)?.loadItems(getTypeItems(filter, prefix));
+/** 控件侧的接线：类型项、隐藏行关系、全局键过滤、属性键清单、焦点。窗口挂载后才有效。 */
+const syncControls = (prefix: string, filter: string): boolean => {
+	const typeEl = composableEls.get(`${prefix}-type`);
+	if (!typeEl) return false;
+	initializeWindow(prefix);
+	typeEl.loadItems(getTypeItems(filter, prefix));
+
 	const globalKeyEl = registryElement<CustomBoxApi>(composableEls, `${prefix}-global-key`);
 	if (globalKeyEl) {
 		globalKeyEl.filter = filter.startsWith('writable-') ? filter.slice(9) : filter;
 	}
-	if (prefix === 'variableGetter') filterState.filter = filter;
+	if (prefix === 'variableGetter2') {
+		composableEls
+			.get(`${prefix}-preset-key`)
+			?.loadItems(Attribute.getAttributeItems('element', filter));
+	} else if (PRESET_TYPES.has(form.type)) {
+		loadPresetKeys(form.type);
+	}
+	getFocus(typeEl);
+	return true;
+};
 
+/** 把 read() 出来的变量解析成表单状态。纯状态，不依赖窗口是否挂载。 */
+const applyForm = (target: VariableGetterTarget, prefix: string, filter: string): void => {
 	const variable = target.read?.() ?? { type: '', key: '' };
 	const type = variable.type;
 	const key = variable.key;
@@ -323,9 +354,6 @@ const open = (
 				presetKey = key;
 				break;
 		}
-		composableEls
-			.get(`${prefix}-preset-key`)
-			?.loadItems(Attribute.getAttributeItems('element', filter));
 		Object.assign(form, { type, element, commonKey, globalKey, presetKey });
 	} else {
 		let commonKey = '';
@@ -345,32 +373,26 @@ const open = (
 				globalKey = key;
 				break;
 			case 'actor':
-				loadPresetKeys(type);
 				actor = variable.actor!;
 				presetKey = key;
 				break;
 			case 'skill':
-				loadPresetKeys(type);
 				skill = variable.skill!;
 				presetKey = key;
 				break;
 			case 'state':
-				loadPresetKeys(type);
 				state = variable.state!;
 				presetKey = key;
 				break;
 			case 'equipment':
-				loadPresetKeys(type);
 				equipment = variable.equipment!;
 				presetKey = key;
 				break;
 			case 'item':
-				loadPresetKeys(type);
 				item = variable.item!;
 				presetKey = key;
 				break;
 			case 'element':
-				loadPresetKeys(type);
 				element = variable.element!;
 				presetKey = key;
 				break;
@@ -388,7 +410,31 @@ const open = (
 			globalKey
 		});
 	}
-	getFocus(composableEls.get(`${prefix}-type`));
+};
+
+const open = (
+	target: VariableGetterTarget,
+	defaults?: { filter?: string; prefix?: string }
+): void => {
+	const prefix = defaults?.prefix ?? 'variableGetter';
+	const filter = defaults?.filter ?? target.filter ?? 'all';
+	states[prefix] = { target, filter };
+	if (prefix === 'variableGetter') filterState.filter = filter;
+
+	applyForm(target, prefix, filter);
+	if (!syncControls(prefix, filter)) {
+		// 窗口是懒挂载的：首次打开时控件注册表还是空的，此时写类型项 / 装隐藏行关系会静默丢失
+		// （类型下拉退回红色原始值、十个字段全挤在 146px 的窗口里）。
+		// 挂载完成后再补一次控件接线。
+		onToolWindowMounted(prefix, () => {
+			if (!syncControls(prefix, filter)) {
+				console.warn(
+					'[variableGetter] open: window mounted but controls are missing:',
+					prefix
+				);
+			}
+		});
+	}
 	getWindowStore().open(prefix);
 };
 

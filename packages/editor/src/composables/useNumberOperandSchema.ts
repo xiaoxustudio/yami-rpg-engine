@@ -1,4 +1,5 @@
 import { getWindowStore } from '@app/stores/window';
+import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { type CustomBoxApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { hide, read, show } from '@app/utils/element-utils';
@@ -433,20 +434,24 @@ const open = (
 ): void => {
 	getWindowStore().open('setNumber-operand');
 
-	if (target!.start === 0) {
-		(composableEls.get('setNumber-operation') as YamiElement).save();
-		show(composableEls.get('setNumber-operation'));
-		requestFocus('setNumber-operation');
-		hide(composableEls.get('setNumber-operand-operation'));
-	} else {
-		hide(composableEls.get('setNumber-operation'));
-		show(composableEls.get('setNumber-operand-operation'));
-		requestFocus('setNumber-operand-operation');
-	}
+	// 操作数窗口是懒挂载的：首次打开时控件还不存在（save/hide/show 都会丢），等挂载后再接线
+	const isFirstOperand = target!.start === 0;
+	runWhenToolWindowReady('setNumber-operand', () => {
+		if (isFirstOperand) {
+			(composableEls.get('setNumber-operation') as YamiElement).save();
+			show(composableEls.get('setNumber-operation'));
+			requestFocus('setNumber-operation');
+			hide(composableEls.get('setNumber-operand-operation'));
+		} else {
+			hide(composableEls.get('setNumber-operation'));
+			show(composableEls.get('setNumber-operand-operation'));
+			requestFocus('setNumber-operand-operation');
+		}
 
-	composableEls
-		.get('setNumber-operand-cooldown-key')
-		?.loadItems?.(Enum.getStringItems!('cooldown-key'));
+		composableEls
+			.get('setNumber-operand-cooldown-key')
+			?.loadItems?.(Enum.getStringItems!('cooldown-key'));
+	});
 
 	let constantValue = 0;
 	let mathMethod: string | undefined = 'round';

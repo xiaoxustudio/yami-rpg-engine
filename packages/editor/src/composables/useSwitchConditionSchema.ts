@@ -1,4 +1,5 @@
 import { getWindowStore } from '@app/stores/window';
+import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { composableEls } from '@app/composables/element-registry';
 import { read, write } from '@app/utils/element-utils';
 import { requestFocus } from '@app/directives/focus';
@@ -227,8 +228,14 @@ const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): vo
 		mouseButton,
 		variable: variableVariable
 	});
-	write(composableEls.get('switch-condition-keyboard-keycode') as YamiElement, keyboardKeycode);
-	write(composableEls.get('switch-condition-gamepad-button') as YamiElement, gamepadButton);
+	// 分支条件窗口是懒挂载的：首次打开时键位控件还不存在，等挂载后再写
+	runWhenToolWindowReady('switch-condition', () => {
+		write(
+			composableEls.get('switch-condition-keyboard-keycode') as YamiElement,
+			keyboardKeycode
+		);
+		write(composableEls.get('switch-condition-gamepad-button') as YamiElement, gamepadButton);
+	});
 	requestFocus('switch-condition-type');
 };
 

@@ -1,4 +1,5 @@
 import { Window } from '@app/tools/window-object.ts';
+import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { localEls } from '@app/local/element-registry';
 import { registryElement } from '@app/utils/element-registry';
 import { Path } from '@app/utils/config';
@@ -52,12 +53,15 @@ ExportLanguage.open = function (this: typeof ExportLanguage) {
 			value: language.name
 		});
 	}
-	localEls.get('exportLanguage-first')?.loadItems?.(items);
-	localEls.get('exportLanguage-second')?.loadItems?.([none, ...items]);
-	const setForm = registryElement<
-		HTMLElement & { setForm?: (data: Partial<ExportLanguageForm>) => void }
-	>(localEls, 'exportLanguage')?.setForm;
-	setForm?.({ first: items[0]?.value ?? '', second: '' });
+	// 导出语言窗口是懒挂载的：首次打开时控件/setForm 还没接上，等挂载后再填（已挂载则立即执行）
+	runWhenToolWindowReady('exportLanguage', () => {
+		localEls.get('exportLanguage-first')?.loadItems?.(items);
+		localEls.get('exportLanguage-second')?.loadItems?.([none, ...items]);
+		const setForm = registryElement<
+			HTMLElement & { setForm?: (data: Partial<ExportLanguageForm>) => void }
+		>(localEls, 'exportLanguage')?.setForm;
+		setForm?.({ first: items[0]?.value ?? '', second: '' });
+	});
 };
 
 ExportLanguage.exportLanguagePack = function (

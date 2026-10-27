@@ -1,5 +1,6 @@
 import { createElementRegistry, registryElement } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
+import { onToolWindowMounted } from '@app/tools/tool-window-host';
 import { clear, getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 
@@ -21,6 +22,9 @@ const t = (key: string, named?: Record<string, unknown>) =>
 const Layout = getLazyWindow('layout', () =>
 	import('@app/tools/window-cluster').then((m) => m.Layout)
 );
+
+/** `initialize` 会因窗口懒挂载而重跑，localize 监听只能挂一次。 */
+let customLocalizeBound = false;
 
 interface CustomParameter {
 	type: string;
@@ -86,7 +90,10 @@ Command.custom = {
 	loadedScript: { id: '', parameters: null } as ScriptObject,
 
 	initialize: function (): void {
-		window.addEventListener('localize', this.windowLocalize);
+		if (!customLocalizeBound) {
+			customLocalizeBound = true;
+			window.addEventListener('localize', this.windowLocalize);
+		}
 
 		this.windowFrame = registryElement<
 			HTMLElement & {
@@ -101,7 +108,11 @@ Command.custom = {
 		)!;
 		this.parameterGrid = scriptCommandEls.get('scriptCommand-parameter-grid') as YamiElement;
 
-		if (!this.parameterPane) return;
+		if (!this.parameterPane) {
+			// 脚本指令窗口是懒挂载的：initAll 时控件还不在注册表里，挂载后再接一次
+			onToolWindowMounted('scriptCommand', () => Command.custom.initialize());
+			return;
+		}
 		const scriptList: ScriptObject[] = [this.loadedScript];
 		this.parameterPane.getData = () => scriptList;
 

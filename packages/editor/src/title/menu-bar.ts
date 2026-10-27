@@ -2,6 +2,7 @@ import { macRedoKey } from '@app/utils/event-accessors';
 import { createDetachedElement } from '@app/utils/dom';
 import { titleEls } from '@app/title/element-registry';
 import { Window } from '@app/tools/window-object.ts';
+import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { SettingConfig } from '@app/services/project/setting-config';
@@ -742,17 +743,20 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 						Window.open!('windowProgress');
 						const progressInfo = titleEls.get('windowProgress-info') as YamiElement;
 						progressInfo.textContent = '加载中...';
-						(titleEls.get('export-apk') as YamiElement)?.addEventListener?.(
-							'closed',
-							() => {
-								if (stopExportApkFormWatch) {
-									stopExportApkFormWatch();
-									stopExportApkFormWatch = null;
-								}
-								ApkBuilder.reset!();
-							},
-							{ once: true }
-						);
+						// 导出 APK 窗口是懒挂载的：首次打开时窗口元素还不存在，等挂载后再挂 closed
+						runWhenToolWindowReady('export-apk', () => {
+							titleEls.get('export-apk')?.addEventListener(
+								'closed',
+								() => {
+									if (stopExportApkFormWatch) {
+										stopExportApkFormWatch();
+										stopExportApkFormWatch = null;
+									}
+									ApkBuilder.reset!();
+								},
+								{ once: true }
+							);
+						});
 						const pConfig = Path.resolve!(
 							Path.dirname!(Editor.config!.project!),
 							'apk',

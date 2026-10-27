@@ -119,6 +119,16 @@ export function hasClass(el: unknown, className: string): boolean {
 	return target.classList.contains(className);
 }
 
+/**
+ * 隐藏行关系装好后，按控件当前值同步一次显隐。
+ *
+ * 控件常常先拿到值（v-model / 表单回填）、后装关系（懒挂载窗口在挂载后才 relate），
+ * 此时不会再有 write 事件，行就永远不会折叠——必须主动同步一次。
+ */
+export function syncRelatedElements(el: unknown): void {
+	(el as { toggleRelatedElements?: () => void } | null | undefined)?.toggleRelatedElements?.();
+}
+
 export function enable(el: unknown): void {
 	removeClass(el, 'disabled');
 }

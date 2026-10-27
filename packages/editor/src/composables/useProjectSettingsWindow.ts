@@ -3,6 +3,7 @@ import { composableEls } from '@app/composables/element-registry';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getWindowStore } from '@app/stores/window';
+import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { removeTextTags, parseFileName } from '@app/composables/useCommandParse.ts';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
@@ -577,12 +578,15 @@ const languages: LanguagesInterface = {
 		];
 	},
 	open: function (language = { name: '', font: '', scale: 1 }) {
-		el('language-name').loadItems(this.createAllItems());
-		el('language-name').write2(language.name);
-		write(composableEls.get('language-font'), language.font);
-		write(composableEls.get('language-scale'), language.scale);
-		requestFocus('language-name');
 		getWindowStore().open('language');
+		// 语言窗口是懒挂载的：首次打开时控件还不存在（loadItems 会直接抛错），等挂载后再写
+		runWhenToolWindowReady('language', () => {
+			el('language-name').loadItems(languages.createAllItems());
+			el('language-name').write2(language.name);
+			write(composableEls.get('language-font'), language.font);
+			write(composableEls.get('language-scale'), language.scale);
+		});
+		requestFocus('language-name');
 	},
 	confirm: function (this: LanguagesInterface) {
 		if (languageList.inserting) {

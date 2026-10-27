@@ -1,5 +1,6 @@
 import { titleEls } from '@app/title/element-registry';
 import { Window } from '@app/tools/window-object.ts';
+import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 
 import { Timer } from '@app/utils/timer';
 import { Codec } from '@app/engine/codec/codec.ts';
@@ -508,11 +509,16 @@ Deployment.readTsOutDir = function (this: typeof Deployment) {
 Deployment.copyFilesTo = function (this: typeof Deployment, dirPath: string) {
 	Window.open!('copyProgress');
 	const platform = DeploymentForm.platform;
-	const progressBar = titleEls.get('copyProgress-bar') as YamiElement;
-	const progressInfo = titleEls.get('copyProgress-info') as YamiElement;
+	// 复制进度窗口是懒挂载的：首次部署时进度控件还不存在，读取一律按「可能为空」处理
+	const resetProgress = (): void => {
+		const progressBar = titleEls.get('copyProgress-bar') as YamiElement | null;
+		const progressInfo = titleEls.get('copyProgress-info') as YamiElement | null;
+		if (progressBar) progressBar.style.width = '0';
+		if (progressInfo) progressInfo.textContent = '';
+	};
+	resetProgress();
+	runWhenToolWindowReady('copyProgress', resetProgress);
 	const { extnameToTypeMap } = FolderItem;
-	progressBar.style.width = '0';
-	progressInfo.textContent = '';
 	return this.readFileList!(platform).then((list: DeploymentFileItem[]) => {
 		let total = 0;
 		let count = 0;
@@ -591,8 +597,10 @@ Deployment.copyFilesTo = function (this: typeof Deployment, dirPath: string) {
 			duration: Infinity,
 			update: () => {
 				const percent = Math.round((count / total) * 100);
-				progressBar.style.width = `${percent}%`;
-				progressInfo.textContent = info;
+				const progressBar = titleEls.get('copyProgress-bar') as YamiElement | null;
+				const progressInfo = titleEls.get('copyProgress-info') as YamiElement | null;
+				if (progressBar) progressBar.style.width = `${percent}%`;
+				if (progressInfo) progressInfo.textContent = info;
 			}
 		}).add();
 		return Promise.all(promises);

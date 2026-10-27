@@ -6,7 +6,8 @@ import { createElementRegistry } from '@app/utils/element-registry';
 import { $ } from '@app/utils/dom';
 import { collect } from '@app/utils/event-scope';
 import type { TextSuggestionTarget } from '@app/commands/text-tip.ts';
-import { getFocus } from '@app/utils/element-utils';
+import { getFocus, syncRelatedElements } from '@app/utils/element-utils';
+import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { ctrl } from '@app/utils/event-accessors';
 import { TextSuggestion } from '@app/commands/text-tip.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
@@ -22,6 +23,10 @@ import { Variable } from '@app/variable/variable.ts';
 import type { YamiElement, YamiElementApi } from '@app/types/element-api';
 
 export const textCaptureEls = createElementRegistry(composableEls);
+
+/** 已装配的控件元素（每个窗口每次挂载都是新元素，WeakSet 天然支持重新装配）。 */
+const initializedImageModes = new WeakSet<Element>();
+const initializedSuggestionKeys = new WeakSet<Element>();
 
 export type {
 	FontForm,
@@ -805,41 +810,48 @@ Selection.textEffect = {
 
 Selection.image = {
 	initialize: function () {
-		const mode = textCaptureEls.get('insertImage-mode');
-		if (!mode) return;
-		mode.loadItems([
-			{ name: 'Image', value: 'image' },
-			{ name: 'Image - Size', value: 'image-size' },
-			{ name: 'Image - Clip', value: 'image-clip' },
-			{ name: 'Image - Clip - Size', value: 'image-clip-size' }
-		]);
-		mode.enableHiddenMode().relate([
-			{ case: 'image', targets: [textCaptureEls.get('insertImage-image')] },
-			{
-				case: 'image-size',
-				targets: [
-					textCaptureEls.get('insertImage-image'),
-					textCaptureEls.get('insertImage-width'),
-					textCaptureEls.get('insertImage-height')
-				]
-			},
-			{
-				case: 'image-clip',
-				targets: [
-					textCaptureEls.get('insertImage-image'),
-					textCaptureEls.get('insertImage-clip')
-				]
-			},
-			{
-				case: 'image-clip-size',
-				targets: [
-					textCaptureEls.get('insertImage-image'),
-					textCaptureEls.get('insertImage-clip'),
-					textCaptureEls.get('insertImage-width'),
-					textCaptureEls.get('insertImage-height')
-				]
-			}
-		]);
+		const apply = (): void => {
+			const mode = textCaptureEls.get('insertImage-mode');
+			if (!mode || initializedImageModes.has(mode)) return;
+			initializedImageModes.add(mode);
+			mode.loadItems([
+				{ name: 'Image', value: 'image' },
+				{ name: 'Image - Size', value: 'image-size' },
+				{ name: 'Image - Clip', value: 'image-clip' },
+				{ name: 'Image - Clip - Size', value: 'image-clip-size' }
+			]);
+			mode.enableHiddenMode().relate([
+				{ case: 'image', targets: [textCaptureEls.get('insertImage-image')] },
+				{
+					case: 'image-size',
+					targets: [
+						textCaptureEls.get('insertImage-image'),
+						textCaptureEls.get('insertImage-width'),
+						textCaptureEls.get('insertImage-height')
+					]
+				},
+				{
+					case: 'image-clip',
+					targets: [
+						textCaptureEls.get('insertImage-image'),
+						textCaptureEls.get('insertImage-clip')
+					]
+				},
+				{
+					case: 'image-clip-size',
+					targets: [
+						textCaptureEls.get('insertImage-image'),
+						textCaptureEls.get('insertImage-clip'),
+						textCaptureEls.get('insertImage-width'),
+						textCaptureEls.get('insertImage-height')
+					]
+				}
+			]);
+			syncRelatedElements(mode);
+		};
+		apply();
+		// 插入图片窗口是懒挂载的：启动期 initialize 时控件还不存在，挂载后再补一次
+		runWhenToolWindowReady('insertImage', apply);
 	},
 	open: function ({
 		mode = 'image',
@@ -882,13 +894,19 @@ Selection.image = {
 
 Selection.localVariable = {
 	filter: 'all',
-	initialize: function (this: { filter: string }) {
-		const key = textCaptureEls.get('localVariable-key');
-		if (!key) return;
-		TextSuggestion.listen!(
-			key as TextSuggestionTarget,
-			VariableGetter.createVarListGenerator!(this as never)
-		);
+	initialize: function () {
+		const apply = (): void => {
+			const key = textCaptureEls.get('localVariable-key');
+			if (!key || initializedSuggestionKeys.has(key)) return;
+			initializedSuggestionKeys.add(key);
+			TextSuggestion.listen!(
+				key as TextSuggestionTarget,
+				VariableGetter.createVarListGenerator!(Selection.localVariable as never)
+			);
+		};
+		apply();
+		// 本地变量窗口是懒挂载的：启动期 initialize 时控件还不存在，挂载后再补一次
+		runWhenToolWindowReady('localVariable', apply);
 	},
 	open: function ({ key = '' } = {}) {
 		useTextCaptureWindow().localVariable.open(key, (form) => {
