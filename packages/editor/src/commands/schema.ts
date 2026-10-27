@@ -3,7 +3,7 @@ import { $ } from '@app/utils/dom';
 import { markRaw } from 'vue';
 import { Window } from '@app/tools/window-object.ts';
 import { onToolWindowMounted } from '@app/tools/tool-window-host';
-import { getFocus, on, read, syncRelatedElements, write } from '@app/utils/element-utils';
+import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { reportError } from '@app/utils/safe';
 import { ActorGetter } from '@app/commands/accessors/actor-accessor-window.ts';
 import { AncestorGetter } from '@app/commands/accessors/ancestor-accessor-window.ts';
@@ -287,8 +287,6 @@ export class CommandSchema {
 			const windowId = name.charAt(0).toLowerCase() + name.slice(1);
 			onToolWindowMounted(windowId, () => {
 				subMap[name].initialize!();
-				// 值往往先于关系写进控件，关系装好后再按当前值补一次显隐同步
-				syncRelatedElements($(`#${windowId}-type`));
 			});
 		}
 		try {

@@ -2,7 +2,7 @@ import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { elementDataOf, type CustomBoxApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus, on, syncRelatedElements } from '@app/utils/element-utils';
+import { getFocus, on } from '@app/utils/element-utils';
 import { getVariable } from '@app/utils/safe';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
@@ -208,9 +208,6 @@ const initializedTypeEls = new WeakSet<Element>();
 /** 需要「属性键清单」的变量类型（类型切换或重新打开时按当前类型重填）。 */
 const PRESET_TYPES = new Set(['actor', 'skill', 'state', 'equipment', 'item', 'element']);
 
-/** 关系装好后立刻按当前值同步一次显隐：值往往先于关系写进控件。 */
-const syncRelatedRows = (typeEl: YamiElement): void => syncRelatedElements(typeEl);
-
 /**
  * 装配一个变量窗口：隐藏行关系、类型项本地化、输入联动。
  * 窗口是懒挂载的，控件不在注册表时静默返回；挂载完成后由 initialize / open 再跑一次。
@@ -231,7 +228,6 @@ const initializeWindow = (prefix: string): void => {
 				]
 			}
 		]);
-		syncRelatedRows(typeEl);
 		return;
 	}
 
@@ -301,7 +297,6 @@ const initializeWindow = (prefix: string): void => {
 	}
 	on(typeEl, 'write', typeWrite);
 	on(typeEl, 'input', typeInput);
-	syncRelatedRows(typeEl);
 };
 
 const initialize = (): void => {

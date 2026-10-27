@@ -225,4 +225,39 @@ describe('createSelectBoxElement', () => {
 		el.restore();
 		expect(el.read()).toBe('a');
 	});
+
+	it('relate 立即按当前值同步显隐（不再依赖之后的 write）', () => {
+		const el = createSelectBoxElement() as unknown as SelectBoxApi;
+		el.loadItems([
+			{ name: 'A', value: 'a' },
+			{ name: 'B', value: 'b' }
+		]);
+		// 值先到：v-model 挂载即写 / 表单回填在关系之前
+		el.write('a');
+		const container = document.createElement('div');
+		const makeLabel = () => {
+			const label = document.createElement('div');
+			label.className = 'text';
+			return label;
+		};
+		const labelA = makeLabel();
+		const targetA = document.createElement('div');
+		const labelB = makeLabel();
+		const targetB = document.createElement('div');
+		container.append(labelA, document.createTextNode(' '), targetA);
+		container.append(labelB, document.createTextNode(' '), targetB);
+		document.body.appendChild(container);
+
+		el.enableHiddenMode();
+		el.relate([
+			{ case: 'a', targets: [targetA] },
+			{ case: 'b', targets: [targetB] }
+		]);
+		// 没有再 write：关系建立时就该按 'a' 折叠
+		expect(targetA.style.display).not.toBe('none');
+		expect(labelA.style.display).not.toBe('none');
+		expect(targetB.style.display).toBe('none');
+		expect(labelB.style.display).toBe('none');
+		container.remove();
+	});
 });

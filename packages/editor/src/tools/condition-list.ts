@@ -4,7 +4,6 @@ import { registryElement } from '@app/utils/element-registry';
 import { treeOwnerListOf, type CustomBoxApi } from '@ui-kit';
 import { Window } from '@app/tools/window-object.ts';
 import { onToolWindowMounted } from '@app/tools/tool-window-host';
-import { syncRelatedElements } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 import { requestFocus } from '@app/directives/focus';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
@@ -315,8 +314,5 @@ export class ConditionListInterface implements IListInterface {
 		applyLocalizedItems('condition-string-operation', ['equal', 'unequal'], (items) =>
 			conditionEls.get('condition-string-operation')?.loadItems?.(items)
 		);
-
-		// 表单值可能早于关系写进控件，装好关系后按当前类型同步一次显隐
-		syncRelatedElements(typeEl);
 	}
 }

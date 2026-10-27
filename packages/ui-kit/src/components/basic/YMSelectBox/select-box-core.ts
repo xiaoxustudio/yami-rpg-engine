@@ -338,6 +338,9 @@ export function createSelectBoxCore(
 
 	const relate = (entries: unknown): void => {
 		state.relations = entries as RelationEntry[];
+		// 关系建立时立即按当前值同步一次显隐：值常常先于关系写进控件
+		// （挂载时 v-model 先写、懒挂载窗口的表单回填在前），否则不会再有 write 事件，行永远不折叠。
+		toggleRelatedElements();
 	};
 
 	const on = (
