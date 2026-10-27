@@ -161,3 +161,15 @@ HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement): typ
 // legacy 原型扩展（RadioBox 等包装层依赖——regexp.ts 未随测试加载）
 // oxlint-disable-next-line no-explicit-any
 (RegExp as any).number = /^-?\d+(?:\.\d+)?$/;
+
+// jsdom 未实现 scrollTo / scrollIntoView：工具窗口挂载后会调用它们（例如导出 APK 面板）
+if (typeof Element.prototype.scrollTo !== 'function') {
+	Element.prototype.scrollTo = function (): void {
+		return undefined;
+	};
+}
+if (typeof Element.prototype.scrollIntoView !== 'function') {
+	Element.prototype.scrollIntoView = function (): void {
+		return undefined;
+	};
+}
