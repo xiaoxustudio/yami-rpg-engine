@@ -73,6 +73,28 @@ CI 里 editor 全量测试按 `vitest --shard` 切 **3 片并行**（分片由 v
 pnpm -F @yami/editor exec vitest run --shard=1/3
 ```
 
+**新增工具窗口检查清单（懒挂载）**
+
+工具窗口是**按需挂载**的（`tools/tool-window-host.ts`）：控件 API 在组件挂载时才接线，
+`Window.open()` 返回 ≠ 控件可写。加新窗口时逐条对一遍，前四条踩中任意一条都会在**首次打开**时炸：
+
+1. **挂载策略**：要按需挂载就把 `.vue` 文件名 + 窗口 id 加进 `AppShell.vue` 的
+   `deferredToolFiles` / `deferredToolIds`；两边名字要能归一化对应（冒烟测试按这个关系找组件）。
+   漏加 → 启动期挂载（更慢），也不进冒烟测试。
+2. **打开后写控件**：一律 `Window.openWith(id, () => { ...loadItems/setForm/写 style... })`，
+   不要在 `Window.open()` 后面接着写（首次打开时控件还不存在：`?.` 静默丢数据、裸调用抛错）。
+3. **启动期初始化**：`Command.initAll()` / `initTools()` 早于挂载，这类 `initialize()` 要用
+   `onToolWindowMounted(id, …)` 在挂载后补跑一次，并且**幂等**（用 WeakSet 按元素去重）。
+4. **隐藏行关系**：`relate()` 在 ui-kit 里会自动 `toggleRelatedElements()`，不要再手工同步；
+   但窗口高度要容得下「最多可见行数 + 标题 + 按钮」，实在多就加 `scrollable`（内容区滚动，
+   否则 `overflow: hidden` 会把字段裁掉、按钮压在上面）。
+5. **监听只挂一次**：宿主窗口挂载后不卸载，`addEventListener`/`on()` 重复挂会双触发；
+   用一次性标记或 `WeakSet` 按元素去重，并在 `closed` 里清掉回调。
+6. **文案 key**：`components.<窗口id>.*` 要同时补进 `Project/Locales/` 的两份语言文件
+   （`pnpm run i18n:guard` 会拦）。
+7. **验证**：`pnpm -F @yami/editor exec vitest run src/tools/__tests__/deferred-window-smoke.spec.ts`
+   —— 它会真实挂载所有 deferred 窗口，断言控件已接线、id 不重复。
+
 **写行为测试时的三个坑（2026-10 实测）**
 
 1. **「卸载时调了 `removeEventListener`」不等于「挂载真的发生过」。** 收口到 `useEventListener`
