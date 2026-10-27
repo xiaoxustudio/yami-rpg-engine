@@ -3,7 +3,6 @@ import { storesEls } from '@app/stores/element-registry';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 import { Window } from '@app/tools/window-object.ts';
-import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { disable, enable, on, read, write } from '@app/utils/element-utils.ts';
 import type { YamiElement } from '@app/types/element-api';
 
@@ -134,11 +133,10 @@ export const SearchString = new (class {
 	}
 
 	open(eventWindow: SearchableList) {
-		Window.open!('event-search-string');
 		this.index = 0;
 		this.current = eventWindow;
-		// 搜索窗口是懒挂载的：首次打开时控件还不存在，绑定/置灰/回填都要等挂载后
-		runWhenToolWindowReady('event-search-string', () => {
+		// 搜索窗口是懒挂载的：控件可用后再绑定/置灰/回填（首次打开也不丢）
+		Window.openWith!('event-search-string', () => {
 			this.bindButtons();
 			disable(storesEls.get('event-search-string-previous') as YamiElement);
 			disable(storesEls.get('event-search-string-next') as YamiElement);

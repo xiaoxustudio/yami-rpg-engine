@@ -1,5 +1,4 @@
 import { getWindowStore } from '@app/stores/window';
-import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { composableEls } from '@app/composables/element-registry';
 import { clear, getFocus, read, write } from '@app/utils/element-utils';
 import { requestFocus } from '@app/directives/focus';
@@ -54,10 +53,9 @@ const open = (branch: SwitchBranchData): void => {
 		SwitchCondition.target = target!;
 		SwitchCondition.open!();
 	} else {
-		getWindowStore().open('switch-branch');
 		const conditions = branch.conditions.slice();
-		// 分支窗口是懒挂载的：首次打开时控件还不存在，写入会丢（条件列表显示为空），等挂载后再写
-		runWhenToolWindowReady('switch-branch', () => {
+		// 分支窗口是懒挂载的：控件可用后再写（首次打开也不会丢条件列表）
+		getWindowStore().openWith('switch-branch', () => {
 			write(composableEls.get('switch-branch-conditions'), conditions);
 		});
 		requestFocus('switch-branch-conditions');

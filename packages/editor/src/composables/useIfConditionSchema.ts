@@ -1,5 +1,4 @@
 import { getWindowStore } from '@app/stores/window';
-import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { type CustomBoxApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
@@ -444,13 +443,6 @@ const open = (
 		operand: { type: 'constant', value: 0 }
 	} as IfConditionData
 ): void => {
-	getWindowStore().open('if-condition');
-	// 条件窗口是懒挂载的：首次打开时控件（含 SFC 挂的 setForm）还不存在，等挂载后再写
-	runWhenToolWindowReady('if-condition', () => {
-		composableEls
-			.get('if-condition-actor-shortcutKey')
-			?.loadItems?.(Enum.getStringItems!('shortcut-key'));
-	});
 	const defaultVariable = { type: 'local', key: '' };
 	let commonVariable = defaultVariable;
 	let booleanOperation: string | undefined = 'equal';
@@ -566,8 +558,11 @@ const open = (
 			otherKey = condition.key;
 			break;
 	}
-	// 窗口可能刚挂载：等 setForm 接线完成再回填（首次打开时元素还没有该方法）
-	runWhenToolWindowReady('if-condition', () => {
+	// 条件窗口是懒挂载的：控件可用后再回填表单、填快捷名称清单（首次打开也不丢）
+	getWindowStore().openWith('if-condition', () => {
+		composableEls
+			.get('if-condition-actor-shortcutKey')
+			?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 		const setForm = registryElement<
 			HTMLElement & { setForm?: (data: Partial<IfConditionForm>) => void }
 		>(composableEls, 'if-condition')?.setForm;

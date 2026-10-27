@@ -2,7 +2,6 @@ import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { elementDataOf, type CustomBoxApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { getWindowStore } from '@app/stores/window';
-import { onToolWindowMounted } from '@app/tools/tool-window-host';
 import { getFocus, on, syncRelatedElements } from '@app/utils/element-utils';
 import { getVariable } from '@app/utils/safe';
 import { Attribute } from '@app/attribute/attribute-window.ts';
@@ -422,20 +421,12 @@ const open = (
 	if (prefix === 'variableGetter') filterState.filter = filter;
 
 	applyForm(target, prefix, filter);
-	if (!syncControls(prefix, filter)) {
-		// 窗口是懒挂载的：首次打开时控件注册表还是空的，此时写类型项 / 装隐藏行关系会静默丢失
-		// （类型下拉退回红色原始值、十个字段全挤在 146px 的窗口里）。
-		// 挂载完成后再补一次控件接线。
-		onToolWindowMounted(prefix, () => {
-			if (!syncControls(prefix, filter)) {
-				console.warn(
-					'[variableGetter] open: window mounted but controls are missing:',
-					prefix
-				);
-			}
-		});
-	}
-	getWindowStore().open(prefix);
+	// 窗口是懒挂载的：控件侧接线交给 openWith，等控件可用后再跑（首次打开也不丢）
+	getWindowStore().openWith(prefix, () => {
+		if (!syncControls(prefix, filter)) {
+			console.warn('[variableGetter] open: window mounted but controls are missing:', prefix);
+		}
+	});
 };
 
 const isNone = (variable: { key: string }): boolean => {

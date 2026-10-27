@@ -1,5 +1,4 @@
 import { getWindowStore } from '@app/stores/window';
-import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { type CustomBoxApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
 import { hide, read, show } from '@app/utils/element-utils';
@@ -432,11 +431,9 @@ const open = (
 		value: 0
 	} as NumberOperandData
 ): void => {
-	getWindowStore().open('setNumber-operand');
-
-	// 操作数窗口是懒挂载的：首次打开时控件还不存在（save/hide/show 都会丢），等挂载后再接线
 	const isFirstOperand = target!.start === 0;
-	runWhenToolWindowReady('setNumber-operand', () => {
+	// 操作数窗口是懒挂载的：控件可用后再 save/show/hide 与填冷却键（首次打开也不丢）
+	getWindowStore().openWith('setNumber-operand', () => {
 		if (isFirstOperand) {
 			(composableEls.get('setNumber-operation') as YamiElement).save();
 			show(composableEls.get('setNumber-operation'));

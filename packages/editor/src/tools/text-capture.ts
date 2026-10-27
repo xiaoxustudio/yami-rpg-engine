@@ -7,7 +7,7 @@ import { $ } from '@app/utils/dom';
 import { collect } from '@app/utils/event-scope';
 import type { TextSuggestionTarget } from '@app/commands/text-tip.ts';
 import { getFocus, syncRelatedElements } from '@app/utils/element-utils';
-import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
+import { onToolWindowMounted } from '@app/tools/tool-window-host';
 import { ctrl } from '@app/utils/event-accessors';
 import { TextSuggestion } from '@app/commands/text-tip.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
@@ -851,7 +851,7 @@ Selection.image = {
 		};
 		apply();
 		// 插入图片窗口是懒挂载的：启动期 initialize 时控件还不存在，挂载后再补一次
-		runWhenToolWindowReady('insertImage', apply);
+		onToolWindowMounted('insertImage', apply);
 	},
 	open: function ({
 		mode = 'image',
@@ -906,7 +906,7 @@ Selection.localVariable = {
 		};
 		apply();
 		// 本地变量窗口是懒挂载的：启动期 initialize 时控件还不存在，挂载后再补一次
-		runWhenToolWindowReady('localVariable', apply);
+		onToolWindowMounted('localVariable', apply);
 	},
 	open: function ({ key = '' } = {}) {
 		useTextCaptureWindow().localVariable.open(key, (form) => {

@@ -1,5 +1,4 @@
 import { getWindowStore } from '@app/stores/window';
-import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { composableEls } from '@app/composables/element-registry';
 import { read, write } from '@app/utils/element-utils';
 import { requestFocus } from '@app/directives/focus';
@@ -177,7 +176,6 @@ const parse = (condition: SwitchConditionData, listData?: boolean): string => {
 };
 
 const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): void => {
-	getWindowStore().open('switch-condition');
 	let booleanValue = false;
 	let numberValue = 0;
 	let stringValue = '';
@@ -228,8 +226,8 @@ const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): vo
 		mouseButton,
 		variable: variableVariable
 	});
-	// 分支条件窗口是懒挂载的：首次打开时键位控件还不存在，等挂载后再写
-	runWhenToolWindowReady('switch-condition', () => {
+	// 分支条件窗口是懒挂载的：控件可用后再写键位（首次打开也不会丢）
+	getWindowStore().openWith('switch-condition', () => {
 		write(
 			composableEls.get('switch-condition-keyboard-keycode') as YamiElement,
 			keyboardKeycode

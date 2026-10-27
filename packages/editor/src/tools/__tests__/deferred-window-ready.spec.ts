@@ -10,7 +10,6 @@ import { toolWindowLoaders } from '@app/tools/tool-window-loaders';
 import {
 	ensureToolWindow,
 	isToolWindowReady,
-	runWhenToolWindowReady,
 	setToolWindowHostContext
 } from '@app/tools/tool-window-host';
 import { conditionEls, ConditionListInterface, form } from '@app/tools/condition-list';
@@ -22,7 +21,8 @@ import { elementDataOf } from '@app/utils/element-data';
  * 同一类回归：工具窗口懒挂载，而**启动期初始化**与**open() 时写控件**都可能在挂载之前跑，
  * 于是下拉项丢失（显示红色原始值）、隐藏行关系不装（字段全铺开压住按钮），甚至取到 undefined。
  *
- * 修复后统一走 `runWhenToolWindowReady`：已就绪立即执行，否则等窗口挂载后再执行一次。
+ * 约定：`open()` 时写控件一律走 `Window.openWith(id, prepare)`；
+ * 启动期初始化则用 `onToolWindowMounted(id, fn)` 在挂载后补跑一次。
  */
 const i18n = initYamiI18n();
 const app = createApp({ render: () => null });
@@ -59,24 +59,28 @@ describe('懒挂载窗口：初始化与 open 后的控件写入', () => {
 		Window.close = vi.fn();
 	});
 
-	it('runWhenToolWindowReady：未挂载时延迟到挂载后执行，已就绪时立即执行', async () => {
-		const calls: string[] = [];
+	it('Window.openWith：控件可用后才执行 prepare，且先 prepare 后显示窗口', async () => {
+		const events: string[] = [];
 		toolWindowLoaders.deferredProbe = () =>
 			Promise.resolve({ default: { render: () => null } as never });
+		Window.open = vi.fn((id: string) => {
+			events.push(`open:${id}`);
+		}) as never;
 
 		expect(isToolWindowReady('deferredProbe')).toBe(false);
-		runWhenToolWindowReady('deferredProbe', () => calls.push('mounted'));
-		expect(calls).toEqual([]);
+		Window.openWith!('deferredProbe', () => events.push('prepare'));
+		// 未就绪：既不执行 prepare，也不显示窗口
+		expect(events).toEqual([]);
 
-		expect(await ensureToolWindow('deferredProbe')).toBe(true);
+		await flushPromises();
 		await nextTick();
-		await nextTick();
+		await flushPromises();
 		expect(isToolWindowReady('deferredProbe')).toBe(true);
-		expect(calls).toEqual(['mounted']);
+		expect(events).toEqual(['prepare', 'open:deferredProbe']);
 
-		// 已就绪：同步执行，不再排队
-		runWhenToolWindowReady('deferredProbe', () => calls.push('ready'));
-		expect(calls).toEqual(['mounted', 'ready']);
+		// 已就绪：同步 prepare → 打开
+		Window.openWith!('deferredProbe', () => events.push('prepare2'));
+		expect(events).toEqual(['prepare', 'open:deferredProbe', 'prepare2', 'open:deferredProbe']);
 	});
 
 	it('插入图片窗口：启动期 initialize 早于挂载，仍要装上 mode 选项与隐藏行关系', async () => {

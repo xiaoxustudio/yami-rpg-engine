@@ -1,5 +1,4 @@
 import { Window } from '@app/tools/window-object.ts';
-import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { localEls } from '@app/local/element-registry';
 import { read } from '@app/utils/element-utils';
 import { Editor } from '@app/services/project/editor.ts';
@@ -45,7 +44,6 @@ ImportLanguage.open = function (this: typeof ImportLanguage) {
 		]
 	}).then(({ filePaths }: { filePaths: string[] }) => {
 		if (filePaths.length === 1) {
-			Window.open!('importLanguage');
 			const items: { name: string; value: string }[] = [];
 			for (const language of Data.config.localization.languages) {
 				items.push({
@@ -57,8 +55,8 @@ ImportLanguage.open = function (this: typeof ImportLanguage) {
 			const basename = Path.basename!(filePath);
 			const extname = Path.extname!(basename);
 			const language = Path.basename!(filePath, extname);
-			// 导入语言窗口是懒挂载的：首次打开时控件还不存在，等挂载后再填
-			runWhenToolWindowReady('importLanguage', () => {
+			// 导入语言窗口是懒挂载的：控件可用后再填（首次打开也不丢）
+			Window.openWith!('importLanguage', () => {
 				localEls.get('importLanguage-language')?.loadItems?.(items);
 				localEls.get('importLanguage-language')?.write2?.(language);
 			});

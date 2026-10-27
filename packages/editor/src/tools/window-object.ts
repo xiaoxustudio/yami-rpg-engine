@@ -6,7 +6,13 @@ import { getLazyWindow } from '@app/tools/window-registry';
 import { DynamicShape } from '@app/types/shapes.ts';
 import { getConfirmationStore } from '@app/stores/confirmation';
 import { nextTick } from 'vue';
-import { ensureToolWindow, hasToolWindowLoader, mountToolWindow } from './tool-window-host';
+import {
+	ensureToolWindow,
+	hasToolWindowLoader,
+	isToolWindowHostActive,
+	isToolWindowReady,
+	mountToolWindow
+} from './tool-window-host';
 
 const pendingToolWindowOpens = new Set<string>();
 
@@ -32,6 +38,7 @@ interface WindowShape extends DynamicShape {
 	};
 	initialize: (() => void) | null;
 	open: ((id: string) => void) | null;
+	openWith: ((id: string, prepare?: (() => void) | null) => void) | null;
 	close: ((id?: string | null) => void) | null;
 	closeById: ((id: string) => void) | null;
 	closeAll: (() => void) | null;
@@ -61,6 +68,7 @@ export const Window: WindowShape = {
 	},
 	initialize: null,
 	open: null,
+	openWith: null,
 	close: null,
 	closeById: null,
 	closeAll: null,
@@ -77,6 +85,38 @@ export const Window: WindowShape = {
 
 Window.initialize = function (this: typeof Window) {
 	void this;
+};
+
+/**
+ * 打开窗口，并在**控件可用之后**执行 `prepare`。
+ *
+ * `Window.open()` 只保证同一 tick 完成 render：控件 API 是组件 `onMounted` 里接线的，
+ * 首次打开时紧接着写控件（`loadItems` / `setForm` / `style`）会静默丢失甚至抛错。
+ * 这里把「懒挂载 → 控件接线 → 写控件 → 显示窗口」串成一条路径，调用方不必再自己等。
+ */
+Window.openWith = function (this: typeof Window, id: string, prepare: (() => void) | null = null) {
+	if (isToolWindowReady(id)) {
+		prepare?.();
+		Window.open!(id);
+		return;
+	}
+	if (!hasToolWindowLoader(id) || !isToolWindowHostActive()) {
+		// 非宿主窗口（模板常驻）或宿主未就绪：没有可等待的挂载，保持「先写后开」的旧顺序
+		prepare?.();
+		Window.open!(id);
+		return;
+	}
+	void ensureToolWindow(id).then(async (mounted) => {
+		if (!mounted) {
+			prepare?.();
+			Window.open!(id);
+			return;
+		}
+		// 等 onMounted 里的控件 API 接线完成
+		await nextTick();
+		prepare?.();
+		Window.open!(id);
+	});
 };
 
 Window.open = function (this: typeof Window, id: string) {

@@ -38,6 +38,17 @@ export const useWindowStore = defineStore('window', () => {
 		Window?.open?.(id);
 	}
 
+	/**
+	 * 打开窗口，并在**控件可用之后**执行 `prepare`（懒挂载窗口会先挂载再执行）。
+	 *
+	 * `open()` 只保证同一 tick 完成 render，控件 API 是组件 `onMounted` 里接线的；
+	 * 首次打开时紧接着写控件（填下拉项、`setForm`、改 style）会静默丢失甚至抛错。
+	 * 所有「打开后要写控件」的地方都应走这里。
+	 */
+	function openWith(id: string, prepare?: (() => void) | null) {
+		Window?.openWith?.(id, prepare ?? null);
+	}
+
 	function close(id?: string) {
 		Window?.close?.(id);
 	}
@@ -92,6 +103,7 @@ export const useWindowStore = defineStore('window', () => {
 		confirm,
 		initialize,
 		open,
+		openWith,
 		close,
 		closeAll,
 		isWindowOpen,

@@ -28,6 +28,11 @@ export function hasToolWindowLoader(id: string): boolean {
 	return toolWindowLoaders[id] !== undefined;
 }
 
+/** 宿主是否已注入 appContext：否则 `ensureToolWindow` 无法真正挂载（单测/未初始化阶段）。 */
+export function isToolWindowHostActive(): boolean {
+	return appContext !== null;
+}
+
 export function isToolWindowMounted(id: string): boolean {
 	return mounted.has(id);
 }
@@ -40,25 +45,6 @@ export function isToolWindowMounted(id: string): boolean {
 export function isToolWindowReady(id: string): boolean {
 	if (mounted.has(id)) return ready.has(id);
 	return Boolean($(`#${id}`));
-}
-
-/**
- * 在「窗口控件可用」时执行一次：已就绪就立即执行，否则等该窗口挂载完成后再执行。
- *
- * 窗口是懒挂载的，控制器常在 `open()` 里顺手写控件（填下拉项、写表单、装隐藏行关系），
- * 首次打开时控件还不存在，这些写入会静默丢失（下拉空、行不隐藏，甚至取到 undefined 崩溃）。
- */
-export function runWhenToolWindowReady(id: string, listener: () => void): void {
-	if (isToolWindowReady(id)) {
-		listener();
-		return;
-	}
-	if (!toolWindowLoaders[id]) {
-		// 不是宿主窗口：等不到挂载回调，直接执行交给调用方自己的兜底
-		listener();
-		return;
-	}
-	onToolWindowMounted(id, listener);
 }
 
 /**

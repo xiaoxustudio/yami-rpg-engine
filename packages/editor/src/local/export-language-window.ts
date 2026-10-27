@@ -1,5 +1,4 @@
 import { Window } from '@app/tools/window-object.ts';
-import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 import { localEls } from '@app/local/element-registry';
 import { registryElement } from '@app/utils/element-registry';
 import { Path } from '@app/utils/config';
@@ -43,8 +42,6 @@ ExportLanguage.initialize = function (this: typeof ExportLanguage) {
 };
 
 ExportLanguage.open = function (this: typeof ExportLanguage) {
-	Window.open!('exportLanguage');
-
 	const items: { name: string; value: string }[] = [];
 	const none = { name: t('common.none'), value: '' };
 	for (const language of Data.config.localization.languages) {
@@ -53,8 +50,8 @@ ExportLanguage.open = function (this: typeof ExportLanguage) {
 			value: language.name
 		});
 	}
-	// 导出语言窗口是懒挂载的：首次打开时控件/setForm 还没接上，等挂载后再填（已挂载则立即执行）
-	runWhenToolWindowReady('exportLanguage', () => {
+	// 导出语言窗口是懒挂载的：控件/setForm 可用后再填（首次打开也不丢）
+	Window.openWith!('exportLanguage', () => {
 		localEls.get('exportLanguage-first')?.loadItems?.(items);
 		localEls.get('exportLanguage-second')?.loadItems?.([none, ...items]);
 		const setForm = registryElement<

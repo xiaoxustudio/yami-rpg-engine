@@ -1,7 +1,7 @@
 import { sceneEls } from '@app/scene/element-registry';
 import { registryElement } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
-import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
+import { onToolWindowMounted } from '@app/tools/tool-window-host';
 import { requestFocus } from '@app/directives/focus';
 import type { YamiElement } from '@app/types/element-api';
 
@@ -28,7 +28,7 @@ export const SceneShift: {
 
 SceneShift.initialize = function () {
 	// 场景平移窗口是懒挂载的：首次注册时窗口可能还没挂载，等挂载后再挂 closed 监听
-	runWhenToolWindowReady('scene-shift', () => {
+	onToolWindowMounted('scene-shift', () => {
 		const shiftEl = sceneEls.get('scene-shift') as YamiElement;
 		if (!shiftEl || shiftEl === boundShiftEl) return;
 		boundShiftEl = shiftEl;
@@ -38,9 +38,8 @@ SceneShift.initialize = function () {
 
 SceneShift.open = function (callback: ((x: number, y: number) => void) | null) {
 	this.callback = callback;
-	Window.open!('scene-shift');
-	// 首次打开时 setForm 还没接上，等挂载后再回填（已挂载则立即执行）
-	runWhenToolWindowReady('scene-shift', () => {
+	// 控件可用后再回填（首次打开时 setForm 还没接上）
+	Window.openWith!('scene-shift', () => {
 		const setForm = registryElement<
 			HTMLElement & { setForm?: (data: Partial<SceneShiftForm>) => void }
 		>(sceneEls, 'scene-shift')?.setForm;

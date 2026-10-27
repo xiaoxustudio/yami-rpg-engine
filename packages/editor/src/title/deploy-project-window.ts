@@ -1,6 +1,5 @@
 import { titleEls } from '@app/title/element-registry';
 import { Window } from '@app/tools/window-object.ts';
-import { runWhenToolWindowReady } from '@app/tools/tool-window-host';
 
 import { Timer } from '@app/utils/timer';
 import { Codec } from '@app/engine/codec/codec.ts';
@@ -507,17 +506,15 @@ Deployment.readTsOutDir = function (this: typeof Deployment) {
 };
 
 Deployment.copyFilesTo = function (this: typeof Deployment, dirPath: string) {
-	Window.open!('copyProgress');
 	const platform = DeploymentForm.platform;
-	// 复制进度窗口是懒挂载的：首次部署时进度控件还不存在，读取一律按「可能为空」处理
+	// 复制进度窗口是懒挂载的：控件可用后再复位（读取一律按「可能为空」处理）
 	const resetProgress = (): void => {
 		const progressBar = titleEls.get('copyProgress-bar') as YamiElement | null;
 		const progressInfo = titleEls.get('copyProgress-info') as YamiElement | null;
 		if (progressBar) progressBar.style.width = '0';
 		if (progressInfo) progressInfo.textContent = '';
 	};
-	resetProgress();
-	runWhenToolWindowReady('copyProgress', resetProgress);
+	Window.openWith!('copyProgress', resetProgress);
 	const { extnameToTypeMap } = FolderItem;
 	return this.readFileList!(platform).then((list: DeploymentFileItem[]) => {
 		let total = 0;
