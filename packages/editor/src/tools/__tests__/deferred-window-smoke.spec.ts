@@ -9,9 +9,11 @@ import { initYamiI18n } from '@app/i18n';
 import { toolWindowLoaders } from '@app/tools/tool-window-loaders';
 import {
 	ensureToolWindow,
+	isToolWindowMounted,
 	isToolWindowReady,
 	mountToolWindow,
 	preloadToolWindows,
+	scheduleIdleToolWindowMounts,
 	setToolWindowHostContext
 } from '@app/tools/tool-window-host';
 import { composableEls } from '@app/composables/element-registry';
@@ -141,6 +143,38 @@ describe('懒挂载工具窗口冒烟', () => {
 		expect(typeof type?.write, 'SelectBox.write 应已可调用').toBe('function');
 		expect(typeof actor?.write, 'CustomBox.write 应已可调用').toBe('function');
 		expect(typeof actor?.input, 'CustomBox.input 应已可调用').toBe('function');
+	});
+
+	it('空闲预挂载：按批挂上窗口，首开前就已就绪', async () => {
+		const ids = ['idleProbeA', 'idleProbeB'];
+		for (const id of ids) {
+			toolWindowLoaders[id] = () =>
+				Promise.resolve({ default: { render: () => null } as never });
+		}
+		const original = window.requestIdleCallback;
+		// 手动驱动空闲回调，才能验证「分批」而不是一次性全挂
+		const pending: Array<(deadline: unknown) => void> = [];
+		window.requestIdleCallback = ((callback: (deadline: unknown) => void) => {
+			pending.push(callback);
+			return pending.length;
+		}) as never;
+		try {
+			scheduleIdleToolWindowMounts(ids, 1);
+			expect(pending.length).toBe(1);
+
+			pending.shift()!({ timeRemaining: () => 10 });
+			await flushPromises();
+			expect(isToolWindowMounted('idleProbeA')).toBe(true);
+			// 每批 1 个：这一批不碰 B，但会把下一批排进空闲队列
+			expect(isToolWindowMounted('idleProbeB')).toBe(false);
+			expect(pending.length).toBe(1);
+
+			pending.shift()!({ timeRemaining: () => 10 });
+			await flushPromises();
+			expect(isToolWindowMounted('idleProbeB')).toBe(true);
+		} finally {
+			window.requestIdleCallback = original;
+		}
 	});
 
 	it('逐个挂载：不抛错、窗口根与 title bar 存在、登记控件已接线、无重复 id', async () => {

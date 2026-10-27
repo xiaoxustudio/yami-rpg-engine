@@ -109,7 +109,11 @@ import CommandWidget from './components/tools/CommandWidget.vue';
 import QrCode from './components/tools/QrCode.vue';
 import { defineAsyncComponent, getCurrentInstance, ref } from 'vue';
 import type { Component } from 'vue';
-import { preloadToolWindows, setToolWindowHostContext } from '@app/tools/tool-window-host';
+import {
+	preloadToolWindows,
+	scheduleIdleToolWindowMounts,
+	setToolWindowHostContext
+} from '@app/tools/tool-window-host';
 import { useTitleStore } from '@app/stores/title';
 import { useMenubarStore } from '@app/stores/menubar';
 import { useLocalStore } from '@app/stores/local';
@@ -309,7 +313,11 @@ const deferredToolIds = [
 const eagerToolEntries = toolWindowEntries.filter(
 	([path]) => !deferredToolFiles.has(path.split('/').pop()!)
 );
-void workspaceActivation.then(() => preloadToolWindows(deferredToolIds));
+void workspaceActivation.then(async () => {
+	// 先只 import（启动期不挂载），等空闲再分批挂载：首开零延迟，也不占启动关键路径
+	await preloadToolWindows(deferredToolIds);
+	scheduleIdleToolWindowMounts(deferredToolIds);
+});
 
 const toolTotal = eagerToolEntries.length;
 const commandTotal = Object.keys(commandModules).length;

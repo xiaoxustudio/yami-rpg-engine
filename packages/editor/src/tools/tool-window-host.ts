@@ -102,3 +102,29 @@ export function ensureToolWindow(id: string): Promise<boolean> {
 		return mountToolWindow(id);
 	});
 }
+
+/**
+ * 空闲时分批预挂载按需窗口（启动期已 import，这里只做 mount）。
+ *
+ * 用途：首开零延迟，同时把「首次打开才挂载」的时序窗口收窄到用户点开之前。
+ * 一定要在启动完成之后调用（AppShell 里排在 workspaceActivation + preload 之后）。
+ */
+export function scheduleIdleToolWindowMounts(ids: string[], batchSize = 6): void {
+	if (typeof requestIdleCallback !== 'function') return;
+	const queue = ids.filter((id) => !mounted.has(id));
+	if (queue.length === 0) return;
+
+	const pump = (deadline?: { timeRemaining?: () => number }): void => {
+		let done = 0;
+		while (queue.length > 0 && done < batchSize) {
+			if (deadline?.timeRemaining && deadline.timeRemaining() <= 2) break;
+			const id = queue.shift()!;
+			void ensureToolWindow(id).catch((error: unknown) => {
+				console.warn('[tool-window] idle mount failed:', id, error);
+			});
+			done++;
+		}
+		if (queue.length > 0) requestIdleCallback(pump, { timeout: 2000 });
+	};
+	requestIdleCallback(pump, { timeout: 2000 });
+}
