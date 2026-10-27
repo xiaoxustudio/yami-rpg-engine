@@ -66,6 +66,14 @@ jobs:
             - name: 窗口就绪（懒挂载窗口 open 后写控件应为 0）
               run: pnpm run window:guard
 
+            # 界面文案：components./properties. 下的静态 key 必须在每一份语言文件里都存在
+            # （缺 zh-CN 会直接把 key 显示在界面上，缺 en-US 会回退成中文）。
+            - name: 文案 key 门禁自测（门禁自身的口径）
+              run: pnpm run i18n:guard:selftest
+
+            - name: 文案 key 完整性（components./properties.）
+              run: pnpm run i18n:guard
+
             # 文档一致性：文档里写的包脚本 / 相对链接 / `node scripts/x` 引用必须真实存在。
             # 2026-09-21 重写前它是「docs/ 不存在 → exit 0」的空门禁；现在的口径与零误报实测
             # 见 scripts/docs-check.mjs 头部。

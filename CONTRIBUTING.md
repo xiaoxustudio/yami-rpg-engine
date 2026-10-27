@@ -53,6 +53,8 @@ pnpm start:prod   # 先构建再以生产模式启动
 pnpm run migration:selftest          # 门禁口径自证（应全绿）
 pnpm run migration:check             # 迁移台账棘轮：任一轴上升即红
 pnpm run text:check                  # 文本污染（控制字符 / 注释被写坏）
+pnpm run window:guard                # 懒挂载窗口 open 后写控件（应为 0）
+pnpm run i18n:guard                  # components./properties. 静态 key 在所有语言里都存在
 pnpm run docs:check                  # 文档里写的包脚本 / 链接 / node 脚本引用真实存在
 pnpm run format:check                # oxfmt（editor + ui-kit，与 lint 同口径）
 pnpm run lint                        # oxlint（一个包都不漏：editor + ui-kit + scripts）
