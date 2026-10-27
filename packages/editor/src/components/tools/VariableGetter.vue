@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame ref="frame" id="variableGetter" @confirm="onConfirm">
+	<WindowFrame ref="frame" id="variableGetter" @confirm="onConfirm" scrollable>
 		<template #title
 			><TitleBar
 				>{{ t('components.variableGetter.title') }}

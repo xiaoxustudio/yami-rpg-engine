@@ -41,6 +41,8 @@ interface Props {
 	buttonsIdPrefix?: string;
 	noButtons?: boolean;
 	confirmDisabled?: boolean;
+	/** 内容超出窗口高度时滚动，而不是被裁掉（字段多的窗口用作兜底）。 */
+	scrollable?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -49,7 +51,8 @@ const props = withDefaults(defineProps<Props>(), {
 	showApply: false,
 	buttonsIdPrefix: '',
 	noButtons: false,
-	confirmDisabled: false
+	confirmDisabled: false,
+	scrollable: false
 });
 
 const emit = defineEmits<{
@@ -456,7 +459,13 @@ onMounted(() => {
 </script>
 
 <template>
-	<div class="window-frame" ref="root" :id="props.id" role="dialog">
+	<div
+		class="window-frame"
+		:class="{ scrollable: props.scrollable }"
+		ref="root"
+		:id="props.id"
+		role="dialog"
+	>
 		<slot name="title" />
 		<div class="content-frame">
 			<slot />
@@ -506,5 +515,10 @@ onMounted(() => {
 	top: 28px;
 	bottom: 0;
 	width: 100%;
+}
+
+/* 字段多的窗口兜底：内容超出时滚动，而不是被 overflow:hidden 裁掉、被按钮压住 */
+:global(:where(.window-frame.scrollable > .content-frame)) {
+	overflow: auto;
 }
 </style>

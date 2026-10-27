@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="insertImage" @confirm="onConfirm">
+	<WindowFrame id="insertImage" @confirm="onConfirm" scrollable>
 		<template #title
 			><TitleBar
 				>{{ t('components.insertImage.title') }}

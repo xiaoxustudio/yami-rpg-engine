@@ -90,6 +90,17 @@ describe('YMWindowFrame', () => {
 		expect(buttons[1].id).toBe('testWin-cancel');
 	});
 
+	it('applies the scrollable class only when opted in', () => {
+		const plain = mount(YMWindowFrame, { slots: { default: '<div>X</div>' } });
+		expect(plain.element.classList.contains('scrollable')).toBe(false);
+
+		const scrolling = mount(YMWindowFrame, {
+			props: { scrollable: true },
+			slots: { default: '<div>X</div>' }
+		});
+		expect(scrolling.element.classList.contains('scrollable')).toBe(true);
+	});
+
 	it('renders apply button when showApply', () => {
 		const wrapper = mount(YMWindowFrame, {
 			props: { id: 'w', showApply: true }

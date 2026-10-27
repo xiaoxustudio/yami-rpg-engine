@@ -2,6 +2,7 @@
 	<WindowFrame
 		id="switch-condition"
 		:ref="registryRef(fieldEls, 'switch-condition')"
+		scrollable
 		@confirm="onConfirm"
 	>
 		<template #title

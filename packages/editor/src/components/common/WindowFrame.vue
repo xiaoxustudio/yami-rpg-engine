@@ -8,6 +8,7 @@
 		:buttons-id-prefix="buttonsIdPrefix"
 		:no-buttons="noButtons"
 		:confirm-disabled="confirmDisabled"
+		:scrollable="scrollable"
 		@open="emit('open')"
 		@closed="emit('closed')"
 		@resize="emit('resize')"
@@ -39,13 +40,16 @@ interface Props {
 	buttonsIdPrefix?: string;
 	noButtons?: boolean;
 	confirmDisabled?: boolean;
+	/** 内容超出时滚动（字段多的窗口兜底）。 */
+	scrollable?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	showApply: false,
 	buttonsIdPrefix: '',
 	noButtons: false,
-	confirmDisabled: false
+	confirmDisabled: false,
+	scrollable: false
 });
 
 const focusableSelector = computed<string>(() => Layout.focusableSelector as string);

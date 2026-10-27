@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame ref="frame" id="setNumber-operand" @confirm="onConfirm">
+	<WindowFrame ref="frame" id="setNumber-operand" @confirm="onConfirm" scrollable>
 		<template #title
 			><TitleBar
 				>{{ t('components.setNumber-operand.title') }}

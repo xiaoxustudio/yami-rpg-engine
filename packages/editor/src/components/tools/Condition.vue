@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="condition" @confirm="onConfirm">
+	<WindowFrame id="condition" @confirm="onConfirm" scrollable>
 		<template #title
 			><TitleBar
 				>{{ t('components.condition.title') }}
