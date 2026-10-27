@@ -10,6 +10,8 @@ import { toolWindowLoaders } from '@app/tools/tool-window-loaders';
 import {
 	ensureToolWindow,
 	isToolWindowReady,
+	mountToolWindow,
+	preloadToolWindows,
 	setToolWindowHostContext
 } from '@app/tools/tool-window-host';
 import { composableEls } from '@app/composables/element-registry';
@@ -113,6 +115,32 @@ describe('懒挂载工具窗口冒烟', () => {
 		expect(deferredIds.length).toBeGreaterThan(50);
 		const missing = deferredIds.filter((id) => !componentByName.has(normalize(id)));
 		expect(missing, `这些 deferred 窗口找不到对应 .vue：${missing.join(', ')}`).toEqual([]);
+	});
+
+	it('同步挂载返回时控件 API 就已就绪（Window.openWith 同步分支的前提）', async () => {
+		// 依据：Vue 3.6 的 `render()` 内部走 flushOnAppMount，会**同步** flush onMounted；
+		// 所以宿主 `mountToolWindow()` 返回时控件 API 已接线，`openWith` 的同步分支才成立。
+		// 若将来升级 Vue 改变这个时序，这条会红——那时才需要把接线提前到 patch 期。
+		const id = 'variableGetter';
+		const component = componentByName.get(normalize(id))!;
+		toolWindowLoaders[id] = () => Promise.resolve({ default: component });
+
+		// 只 import 不挂载，然后**同步**挂载：同一个调用栈里检查
+		await preloadToolWindows([id]);
+		expect(mountToolWindow(id)).toBe(true);
+
+		const type = document.getElementById('variableGetter-type') as unknown as Record<
+			string,
+			unknown
+		> | null;
+		const actor = document.getElementById('variableGetter-actor') as unknown as Record<
+			string,
+			unknown
+		> | null;
+		expect(typeof type?.loadItems, 'SelectBox.loadItems 应已可调用').toBe('function');
+		expect(typeof type?.write, 'SelectBox.write 应已可调用').toBe('function');
+		expect(typeof actor?.write, 'CustomBox.write 应已可调用').toBe('function');
+		expect(typeof actor?.input, 'CustomBox.input 应已可调用').toBe('function');
 	});
 
 	it('逐个挂载：不抛错、窗口根与 title bar 存在、登记控件已接线、无重复 id', async () => {
