@@ -1,0 +1,45 @@
+{
+	"components": {
+		"playAudio": {
+			"title": "Play Audio"
+		},
+		"playAudio-type": {
+			"label": "Type",
+			"tip": "Which channel to play on",
+			"options": {
+				"bgm": {
+					"name": "BGM",
+					"tip": "Stop the playing BGM and play the new audio"
+				},
+				"bgs": {
+					"name": "BGS",
+					"tip": "Stop the playing BGS and play the new audio"
+				},
+				"cv": {
+					"name": "CV",
+					"tip": "Stop the playing CV and play the new audio"
+				},
+				"se": {
+					"name": "SE",
+					"tip": "Multiple sound effects can be played at the same time"
+				},
+				"se-attenuated": {
+					"name": "SE - Attenuated",
+					"tip": "Play the sound effect at the specified position and automatically adjust the volume\nThe farther the sound position is from the center of the camera, the more attenuated it will be\nThe relevant settings can be modified in <Project Settings>"
+				}
+			}
+		},
+		"playAudio-audio": {
+			"label": "Audio",
+			"tip": "Audio file ID to play"
+		},
+		"playAudio-volume": {
+			"label": "Volume",
+			"tip": "Volume level (0 ~ 1)"
+		},
+		"playAudio-location": {
+			"label": "Sound Position",
+			"tip": "Play the sound effect at a specified position, attenuating the volume as it moves away from the center"
+		}
+	}
+}

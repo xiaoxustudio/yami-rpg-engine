@@ -660,17 +660,12 @@ Menubar.popupHelpMenu = function (this: typeof Menubar, target: HTMLElement) {
 						if (winos && bits) osversion += ' ' + bits;
 						if (!osversion) osversion = 'unknown';
 						Window.open!('about');
-						(titleEls.get('editor-version') as YamiElement).textContent =
-							Editor.config!.version!;
-						(titleEls.get('electron-version') as YamiElement).textContent =
-							process.versions.electron;
-						(titleEls.get('chrome-version') as YamiElement).textContent =
-							process.versions.chrome;
-						(titleEls.get('node-version') as YamiElement).textContent =
-							process.versions.node;
-						(titleEls.get('v8-version') as YamiElement).textContent =
-							process.versions.v8;
-						(titleEls.get('os-version') as YamiElement).textContent = osversion;
+						writeTitleText('editor-version', Editor.config!.version!);
+						writeTitleText('electron-version', process.versions.electron);
+						writeTitleText('chrome-version', process.versions.chrome);
+						writeTitleText('node-version', process.versions.node);
+						writeTitleText('v8-version', process.versions.v8);
+						writeTitleText('os-version', osversion);
 					}
 				},
 				{
@@ -1120,6 +1115,12 @@ Menubar.hrefClick = function (this: typeof Menubar, event: MouseEvent) {
 
 import { getMenubarStore } from '@app/stores/menubar';
 import type { YamiElement } from '@app/types/element-api';
+
+/** 关于弹窗里的版本号：元素缺失时静默跳过（不把可能为 null 的元素强转成元素类型）。 */
+const writeTitleText = (id: string, text: string | undefined): void => {
+	const el = titleEls.get(id);
+	if (el) el.textContent = text ?? '';
+};
 
 const menubarBridgeKeys = ['state'] as const;
 

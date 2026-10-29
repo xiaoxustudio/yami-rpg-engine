@@ -1,0 +1,18 @@
+{
+	"components": {
+		"fileScript-info-grid": {
+			"label": "File Info"
+		},
+		"fileScript-name": {
+			"label": "Name",
+			"tip": "File Name"
+		},
+		"fileScript-size": {
+			"label": "Size",
+			"tip": "File Size"
+		},
+		"fileScript-overview": {
+			"label": "Overview"
+		}
+	}
+}

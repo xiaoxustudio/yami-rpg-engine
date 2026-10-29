@@ -1,0 +1,43 @@
+{
+	"components": {
+		"sceneRegion-general-grid": {
+			"label": "General"
+		},
+		"sceneRegion-name": {
+			"label": "Name",
+			"tip": "Region Name (note: this is a label for user reference only)"
+		},
+		"sceneRegion-color": {
+			"label": "Color",
+			"tip": "Region Color"
+		},
+		"sceneRegion-x": {
+			"label": "X",
+			"tip": "Region's initial horizontal coordinates"
+		},
+		"sceneRegion-y": {
+			"label": "Y",
+			"tip": "Region's initial vertical coordinates"
+		},
+		"sceneRegion-width": {
+			"label": "Width",
+			"tip": "Width of the Region (unit:tiles)"
+		},
+		"sceneRegion-height": {
+			"label": "Height",
+			"tip": "Height of the Region (unit:tiles)"
+		},
+		"sceneRegion-conditions": {
+			"label": "Conditions",
+			"tip": "Set a list of conditions for Region to be created: if they aren't met, the Region isn't created"
+		},
+		"sceneRegion-events": {
+			"label": "Events",
+			"tip": "$Region Events\nVisit\"Event Triggered Region\"to set the area\n$Options\nAutorun: Event triggers as soon as the Region appears (including after reading save data)\nPlayer Enter: Event triggers when the Player Actor enters the Region (Player Actor is set in Window -> Project Settings)\nPlayer Leave: Event triggers when the Player Actor leaves the Region (Player Actor is set in Window -> Project Settings)\nActor Enter: Event triggers when any actor enters the Region\nActor Leave: Event triggers when any actor leaves the Region"
+		},
+		"sceneRegion-scripts": {
+			"label": "Scripts",
+			"tip": "Add Script files to extend Region functions"
+		}
+	}
+}

@@ -1,5 +1,5 @@
 import { $ } from '@app/utils/dom';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createElementRegistry, registerElement } from '@app/utils/element-registry';
 import { addClass, removeClass } from '@app/utils/element-utils';
 import { getWindowKeydowns } from '@app/tools/window-keydown-registry';
 import { getLazyWindow } from '@app/tools/window-registry';
@@ -119,17 +119,33 @@ Window.openWith = function (this: typeof Window, id: string, prepare: (() => voi
 	});
 };
 
+/**
+ * 取窗口根元素：优先注册表，回退 DOM（并回填注册表）。
+ *
+ * 注册表只覆盖走 `WindowFrame` / `registryRef` 的窗口；ui-kit 的 `YM*` 窗口（如 `fontSize`、
+ * `font`）由 `YMWindowFrame` 自己把 `open/close/...` 挂到根元素上，不一定有人登记。
+ * 以 DOM 为兜底后，「右键菜单里点字号/字体没反应」这类问题不会再出现。
+ */
+function findWindowElement(id: string): (HTMLElement & WindowFrame) | undefined {
+	const registered = windowShellEls.get(id) as (HTMLElement & WindowFrame) | undefined;
+	if (registered) return registered;
+	const dom: unknown = $(`#${id}` as `#${string}`);
+	if (!(dom instanceof HTMLElement)) return undefined;
+	registerElement(windowShellEls, id, dom);
+	return dom as HTMLElement & WindowFrame;
+}
+
 Window.open = function (this: typeof Window, id: string) {
 	const frames = this.frames;
 	purgeStaleFrames();
-	let element = windowShellEls.get(id) as WindowFrame | undefined;
+	let element = findWindowElement(id);
 	if (!element && mountToolWindow(id)) {
-		element = windowShellEls.get(id) as WindowFrame | undefined;
+		element = findWindowElement(id);
 		if (!element && !pendingToolWindowOpens.has(id)) {
 			pendingToolWindowOpens.add(id);
 			void nextTick().then(() => {
 				pendingToolWindowOpens.delete(id);
-				if (windowShellEls.get(id)) Window.open!(id);
+				if (findWindowElement(id)) Window.open!(id);
 				else console.warn('[window] open: element not found after mount:', id);
 			});
 			return;
@@ -145,12 +161,12 @@ Window.open = function (this: typeof Window, id: string) {
 						console.warn('[window] open: tool loader failed:', id);
 						return;
 					}
-					if (windowShellEls.get(id)) {
+					if (findWindowElement(id)) {
 						Window.open!(id);
 						return;
 					}
 					void nextTick().then(() => {
-						if (windowShellEls.get(id)) Window.open!(id);
+						if (findWindowElement(id)) Window.open!(id);
 						else console.warn('[window] open: element not found after load:', id);
 					});
 				})

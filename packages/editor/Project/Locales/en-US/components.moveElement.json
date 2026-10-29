@@ -1,0 +1,99 @@
+{
+	"components": {
+		"moveElement": {
+			"title": "Move Element"
+		},
+		"moveElement-element": {
+			"label": "Element",
+			"tip": "Specify any type of element"
+		},
+		"moveElement-properties": {
+			"label": "Properties"
+		},
+		"moveElement-property": {
+			"title": "Transform Property"
+		},
+		"moveElement-property-key": {
+			"label": "Property",
+			"options": {
+				"anchorX": "Anchor X",
+				"anchorY": "Anchor Y",
+				"x": "X",
+				"x2": "X2",
+				"y": "Y",
+				"y2": "Y2",
+				"width": "Width",
+				"width2": "Width2",
+				"height": "Height",
+				"height2": "Height2",
+				"rotation": "Rotation",
+				"scaleX": "Scale X",
+				"scaleY": "Scale Y",
+				"skewX": "Skew X",
+				"skewY": "Skew Y",
+				"opacity": "Opacity"
+			}
+		},
+		"moveElement-property-anchorX": {
+			"label": "Anchor X"
+		},
+		"moveElement-property-anchorY": {
+			"label": "Anchor Y"
+		},
+		"moveElement-property-x": {
+			"label": "X"
+		},
+		"moveElement-property-x2": {
+			"label": "X2"
+		},
+		"moveElement-property-y": {
+			"label": "Y"
+		},
+		"moveElement-property-y2": {
+			"label": "Y2"
+		},
+		"moveElement-property-width": {
+			"label": "Width"
+		},
+		"moveElement-property-width2": {
+			"label": "Width2"
+		},
+		"moveElement-property-height": {
+			"label": "Height"
+		},
+		"moveElement-property-height2": {
+			"label": "Height2"
+		},
+		"moveElement-property-rotation": {
+			"label": "Rotation"
+		},
+		"moveElement-property-scaleX": {
+			"label": "Scale X"
+		},
+		"moveElement-property-scaleY": {
+			"label": "Scale Y"
+		},
+		"moveElement-property-skewX": {
+			"label": "Skew X"
+		},
+		"moveElement-property-skewY": {
+			"label": "Skew Y"
+		},
+		"moveElement-property-opacity": {
+			"label": "Opacity"
+		},
+		"moveElement-easingId": {
+			"label": "Easing"
+		},
+		"moveElement-duration": {
+			"label": "Duration"
+		},
+		"moveElement-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

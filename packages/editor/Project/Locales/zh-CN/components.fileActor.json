@@ -1,0 +1,209 @@
+{
+	"components": {
+		"fileActor-general-grid": {
+			"label": "基本设置"
+		},
+		"fileActor-portrait": {
+			"label": "头像",
+			"tip": "初始角色头像\n$相关指令\n改变角色头像、加载图像"
+		},
+		"fileActor-clip": {
+			"label": "裁剪",
+			"tip": "角色头像的裁剪区域\n$相关指令\n改变角色头像、加载图像"
+		},
+		"fileActor-animationId": {
+			"label": "动画",
+			"tip": "初始角色动画\n$相关指令\n改变角色动画"
+		},
+		"fileActor-idleMotion": {
+			"label": "闲置动作",
+			"tip": "角色处于闲置状态时，自动播放的动画动作\n$相关指令\n改变角色动作"
+		},
+		"fileActor-moveMotion": {
+			"label": "移动动作",
+			"tip": "角色处于移动状态时，自动播放的动画动作\n$相关指令\n改变角色动作"
+		},
+		"fileActor-rotatable": {
+			"label": "旋转动画",
+			"tip": "是否自动更新动画旋转角度",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "角色动画受角度影响而旋转"
+				},
+				"false": {
+					"name": "否",
+					"tip": "角色动画始终不会旋转"
+				}
+			}
+		},
+		"fileActor-passage": {
+			"label": "通行区域",
+			"tip": "初始通行区域\n$相关指令\n改变通行区域",
+			"options": {
+				"land": {
+					"name": "地面",
+					"tip": "角色只能在地面移动"
+				},
+				"water": {
+					"name": "水面",
+					"tip": "角色只能在水面移动"
+				},
+				"unrestricted": {
+					"name": "不受限制",
+					"tip": "角色可在地面、水面、墙块中移动"
+				}
+			}
+		},
+		"fileActor-speed": {
+			"label": "移动速度",
+			"tip": "初始移动速度（单位：图块/秒）\n$相关指令\n设置移动速度"
+		},
+		"fileActor-shape": {
+			"label": "碰撞形状",
+			"tip": "形状影响碰撞判定",
+			"options": {
+				"square": {
+					"name": "正方形",
+					"tip": "以角色所在位置为中心的正方形"
+				},
+				"circle": {
+					"name": "圆形",
+					"tip": "以角色所在位置为中心的圆形"
+				}
+			}
+		},
+		"fileActor-size": {
+			"label": "碰撞体积",
+			"tip": "如果形状是正方形，它指的是边长（单位：图块）\n如果形状是圆形，它指的是直径（单位：图块）"
+		},
+		"fileActor-weight": {
+			"label": "碰撞体重",
+			"tip": "影响角色碰撞的推力\n体重 = 0时，该角色不会与其他角色发生碰撞\n角色A的体重 : 角色B的体重 = 1 : 1时，A推B的移动速度变成50%\n角色A的体重 : 角色B的体重 = 1 : 2时，A推B的移动速度为0%，推不动\n角色A的体重 : 角色B的体重 = 2 : 1时，A推B的移动速度为100%，完全没有阻力\n$相关指令\n设置体重"
+		},
+		"fileActor-immovable": {
+			"label": "不可推动",
+			"tip": "是否让这个角色在发生碰撞时无法被其他角色推动",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "该角色在发生碰撞时无法被推动"
+				},
+				"false": {
+					"name": "否",
+					"tip": "该角色在发生碰撞时按体重来计算被推动的距离"
+				}
+			}
+		},
+		"fileActor-scale": {
+			"label": "缩放系数",
+			"tip": "角色动画的缩放系数"
+		},
+		"fileActor-priority": {
+			"label": "优先级",
+			"tip": "角色动画在渲染时的排序优先级\n位置在下方的动画总是会遮挡上方的动画\n优先级 = -1：排序位置向上偏移一个图块的距离\n优先级 = 1：排序位置向下偏移一个图块的距离"
+		},
+		"fileActor-inherit": {
+			"label": "继承",
+			"tip": "继承指定角色的属性、技能、装备、库存、事件、脚本\n如果存在相同的属性，覆盖被继承角色的属性值\n如果存在相同类型的事件，覆盖被继承角色的事件\n通过'调用事件'指令可以触发被覆盖掉的事件\n继承的脚本会叠加而非覆盖"
+		},
+		"fileActor-sprites": {
+			"label": "精灵图",
+			"tip": "替换角色动画的精灵图\n$相关指令\n改变角色精灵图"
+		},
+		"fileActor-attributes": {
+			"label": "属性",
+			"tip": "角色的初始属性列表\n$可选类型\n布尔值、数值、字符串、枚举（字符串）\n$相关指令\n设置布尔值、设置数值、设置字符串"
+		},
+		"fileActor-skills": {
+			"label": "技能",
+			"tip": "角色的初始技能列表\n$相关指令\n改变角色技能、施放技能"
+		},
+		"fileActor-equipments": {
+			"label": "装备",
+			"tip": "角色的初始装备列表\n$相关指令\n改变角色装备"
+		},
+		"fileActor-inventory": {
+			"label": "库存",
+			"tip": "角色的初始库存列表\n$相关指令\n设置库存"
+		},
+		"fileActor-events": {
+			"label": "事件",
+			"tip": "角色事件列表\n在角色未激活或被删除时停止执行\n$可选类型\n创建事件：角色初始化时触发事件（执行一次）\n自动执行：角色出现时立即触发事件（包括读取存档后）\n碰撞事件：角色与其他角色碰撞时触发事件，访问\"目标角色\"获取与本角色碰撞的角色\n击中触发器：角色被触发器击中时触发事件，访问\"事件触发器\"获取与本角色碰撞的触发器\n自定义事件：通过\"调用事件\"指令触发事件"
+		},
+		"fileActor-scripts": {
+			"label": "脚本",
+			"tip": "添加脚本文件来扩展角色"
+		},
+		"fileActor-sprite": {
+			"title": "精灵图"
+		},
+		"fileActor-sprite-id": {
+			"label": "名称",
+			"tip": "选择角色动画的精灵图"
+		},
+		"fileActor-sprite-image": {
+			"label": "图像",
+			"tip": "将精灵图替换为新的图像"
+		},
+		"fileActor-skill": {
+			"title": "技能"
+		},
+		"fileActor-skill-id": {
+			"label": "技能",
+			"tip": "选择一个技能文件"
+		},
+		"fileActor-skill-key": {
+			"label": "快捷键",
+			"tip": "设置此技能的快捷键"
+		},
+		"fileActor-equipment": {
+			"title": "装备"
+		},
+		"fileActor-equipment-id": {
+			"label": "装备",
+			"tip": "选择一个装备文件"
+		},
+		"fileActor-equipment-slot": {
+			"label": "装备槽",
+			"tip": "设置此装备的装备槽"
+		},
+		"fileActor-inventory-goods": {
+			"title": "库存"
+		},
+		"fileActor-inventory-type": {
+			"label": "类型",
+			"tip": "添加哪一类货物",
+			"options": {
+				"item": {
+					"name": "物品",
+					"tip": "在库存中添加物品"
+				},
+				"equipment": {
+					"name": "装备",
+					"tip": "在库存中添加装备"
+				},
+				"money": {
+					"name": "金钱",
+					"tip": "在库存中添加金钱"
+				}
+			}
+		},
+		"fileActor-inventory-item-id": {
+			"label": "物品",
+			"tip": "选择一个物品文件"
+		},
+		"fileActor-inventory-item-quantity": {
+			"label": "数量",
+			"tip": "设置此物品的数量"
+		},
+		"fileActor-inventory-equipment-id": {
+			"label": "装备",
+			"tip": "选择一个装备文件"
+		},
+		"fileActor-inventory-money": {
+			"label": "金钱",
+			"tip": "设置初始金钱的数量"
+		}
+	}
+}

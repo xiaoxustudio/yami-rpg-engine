@@ -1,0 +1,10 @@
+{
+	"components": {
+		"selector": {
+			"title": "Select File"
+		},
+		"selector-search": {
+			"tip": "$Search\nEnter '.' to display all matching files"
+		}
+	}
+}

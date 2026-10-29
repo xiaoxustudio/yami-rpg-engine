@@ -1,0 +1,21 @@
+{
+	"components": {
+		"animSoundLayer-properties-grid": {
+			"label": "音效层"
+		},
+		"animSoundLayer-playbackRate": {
+			"label": "播放速度",
+			"tip": "音效播放速度是否跟动画有关",
+			"options": {
+				"default": {
+					"name": "默认",
+					"tip": "音效播放速度100%"
+				},
+				"inherit": {
+					"name": "继承动画帧",
+					"tip": "设为播放音效时的动画播放速度"
+				}
+			}
+		}
+	}
+}

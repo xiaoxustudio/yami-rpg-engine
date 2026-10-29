@@ -1,0 +1,21 @@
+{
+	"components": {
+		"activateScene": {
+			"title": "Activate Scene"
+		},
+		"activateScene-pointer": {
+			"label": "Scene",
+			"tip": "Activate which scene container",
+			"options": {
+				"0": {
+					"name": "Scene A",
+					"tip": "Switch to the main scene container and pause the activities of the secondary scene container"
+				},
+				"1": {
+					"name": "Scene B",
+					"tip": "Switch to the secondary scene container and pause the activities of the main scene container"
+				}
+			}
+		}
+	}
+}

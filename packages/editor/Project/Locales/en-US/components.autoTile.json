@@ -1,0 +1,87 @@
+{
+	"components": {
+		"autoTile": {
+			"title": "Auto Tile"
+		},
+		"autoTile-general-grid": {
+			"label": "General"
+		},
+		"autoTile-image": {
+			"label": "Image",
+			"tip": "Select the image of the tile sprite sheet"
+		},
+		"autoTile-x": {
+			"label": "Offset X",
+			"tip": "Start fetching tiles from the specified horizontal position"
+		},
+		"autoTile-y": {
+			"label": "Offset Y",
+			"tip": "Start fetching tiles from the specified vertical position"
+		},
+		"autoTile-templates": {
+			"label": "Templates",
+			"tip": "List of templates for the auto tiles"
+		},
+		"autoTile-nodes": {
+			"label": "Tiles",
+			"tip": "List all possible auto tiles\nWhen setting tiles on the tile map, it checks adjacent rules of sub-tiles in sequence and selects the first matching tile\nIf none match, the first tile is selected as the default"
+		},
+		"autoTile-frames": {
+			"label": "Frames",
+			"tip": "If multiple animation frames are set, the animation loops at a fixed frame interval"
+		},
+		"autoTile-canvas": {
+			"label": "View",
+			"tip": "Preview the selected animation frame, click to edit"
+		},
+		"autoTile-rule-grid": {
+			"label": "Neighbors",
+			"tip": "Check if there are adjacent tiles with the same type\nArrow: The adjacent tile in this direction is the same as this tile\nCross: The adjacent tile in this direction is different from this tile\nBlank: The adjacent tile in this direction can be any tile"
+		},
+		"autoTile-rule-0": {
+			"tip": "$Left\nCheck if there is a neighboring tile with the same type"
+		},
+		"autoTile-rule-1": {
+			"tip": "$Top Left\nCheck if there is a neighboring tile with the same type"
+		},
+		"autoTile-rule-2": {
+			"tip": "$Top\nCheck if there is a neighboring tile with the same type"
+		},
+		"autoTile-rule-3": {
+			"tip": "$Top Right\nCheck if there is a neighboring tile with the same type"
+		},
+		"autoTile-rule-4": {
+			"tip": "$Right\nCheck if there is a neighboring tile with the same type"
+		},
+		"autoTile-rule-5": {
+			"tip": "$Bottom Right\nCheck if there is a neighboring tile with the same type"
+		},
+		"autoTile-rule-6": {
+			"tip": "$Bottom\nCheck if there is a neighboring tile with the same type"
+		},
+		"autoTile-rule-7": {
+			"tip": "$Bottom Left\nCheck if there is a neighboring tile with the same type"
+		},
+		"autoTile-generateFrames": {
+			"title": "Generate Frames"
+		},
+		"autoTile-generateFrames-strideX": {
+			"label": "Stride X",
+			"tip": "Horizontal offset of generated frame relative to previous"
+		},
+		"autoTile-generateFrames-strideY": {
+			"label": "Stride Y",
+			"tip": "Vertical offset of generated frame relative to previous"
+		},
+		"autoTile-generateFrames-count": {
+			"label": "Count",
+			"tip": "Total number of animation frames to generate (selected frame as reference)"
+		},
+		"autoTile-frameIndex": {
+			"title": "Frame"
+		},
+		"autoTile-selectNode": {
+			"title": "Tile Node"
+		}
+	}
+}

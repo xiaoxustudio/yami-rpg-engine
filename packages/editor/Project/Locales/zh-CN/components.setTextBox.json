@@ -1,0 +1,51 @@
+{
+	"components": {
+		"setTextBox": {
+			"title": "设置文本框"
+		},
+		"setTextBox-element": {
+			"label": "元素",
+			"tip": "指定一个文本框元素"
+		},
+		"setTextBox-properties": {
+			"label": "设置属性"
+		},
+		"setTextBox-property": {
+			"title": "文本框属性"
+		},
+		"setTextBox-property-key": {
+			"label": "属性",
+			"tip": "文本框元素的属性",
+			"options": {
+				"type": "类型",
+				"text": "文本",
+				"number": "数值",
+				"min": "最小值",
+				"max": "最大值",
+				"decimals": "小数位数",
+				"color": "颜色"
+			}
+		},
+		"setTextBox-property-type": {
+			"label": "类型"
+		},
+		"setTextBox-property-text": {
+			"label": "文本"
+		},
+		"setTextBox-property-number": {
+			"label": "数值"
+		},
+		"setTextBox-property-min": {
+			"label": "最小值"
+		},
+		"setTextBox-property-max": {
+			"label": "最大值"
+		},
+		"setTextBox-property-decimals": {
+			"label": "小数位数"
+		},
+		"setTextBox-property-color": {
+			"label": "颜色"
+		}
+	}
+}

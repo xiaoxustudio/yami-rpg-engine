@@ -1,0 +1,112 @@
+{
+	"components": {
+		"setObjectAnimation": {
+			"title": "设置对象动画"
+		},
+		"setObjectAnimation-sort": {
+			"label": "分类",
+			"tip": "设置哪个动画的属性",
+			"options": {
+				"actor": {
+					"name": "角色动画",
+					"tip": "改变这个角色的人物动画的属性"
+				},
+				"components": {
+					"name": "角色的全部动画组件",
+					"tip": "改变这个角色的全部动画组件的属性，包括人物动画\n但是和\"设置动画组件\"指令的部分操作冲突"
+				},
+				"trigger": {
+					"name": "触发器动画",
+					"tip": "改变这个触发器动画的属性"
+				},
+				"animation": {
+					"name": "场景动画",
+					"tip": "改变这个场景动画的属性"
+				}
+			}
+		},
+		"setObjectAnimation-actor": {
+			"label": "角色",
+			"tip": "指定一个角色对象"
+		},
+		"setObjectAnimation-trigger": {
+			"label": "触发器",
+			"tip": "指定一个触发器对象"
+		},
+		"setObjectAnimation-animation": {
+			"label": "动画",
+			"tip": "指定一个场景动画对象"
+		},
+		"setObjectAnimation-operation": {
+			"label": "操作",
+			"tip": "改变哪些参数",
+			"options": {
+				"set-tint": {
+					"name": "设置色调",
+					"tip": "同时改变RGB和灰度"
+				},
+				"set-rgb": {
+					"name": "设置RGB",
+					"tip": "改变RGB，保留灰度"
+				},
+				"set-gray": {
+					"name": "设置灰度",
+					"tip": "改变灰度，保留RGB"
+				},
+				"set-opacity": {
+					"name": "设置不透明度",
+					"tip": "动画的可见度"
+				},
+				"set-offsetY": {
+					"name": "设置垂直偏移",
+					"tip": "动画相对于锚点的垂直距离"
+				},
+				"set-rotation": {
+					"name": "设置旋转角度",
+					"tip": "动画绕锚点旋转的角度\n对开启了动画旋转开关的触发器无效"
+				}
+			}
+		},
+		"setObjectAnimation-tint-0": {
+			"label": "色调 - 红",
+			"tip": "输入颜色(红) + 色调(红) = 输出颜色(红)"
+		},
+		"setObjectAnimation-tint-1": {
+			"label": "色调 - 绿",
+			"tip": "输入颜色(绿) + 色调(绿) = 输出颜色(绿)"
+		},
+		"setObjectAnimation-tint-2": {
+			"label": "色调 - 蓝",
+			"tip": "输入颜色(蓝) + 色调(蓝) = 输出颜色(蓝)"
+		},
+		"setObjectAnimation-tint-3": {
+			"label": "色调 - 灰",
+			"tip": "灰度与饱和度相反，灰度越高则饱和度越低"
+		},
+		"setObjectAnimation-opacity": {
+			"label": "不透明度",
+			"tip": "动画的可见度"
+		},
+		"setObjectAnimation-offsetY": {
+			"label": "偏移距离",
+			"tip": "动画相对于锚点的垂直距离"
+		},
+		"setObjectAnimation-rotation": {
+			"label": "旋转角度",
+			"tip": "动画绕锚点旋转的角度"
+		},
+		"setObjectAnimation-easingId": {
+			"label": "过渡"
+		},
+		"setObjectAnimation-duration": {
+			"label": "时长"
+		},
+		"setObjectAnimation-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"components": {
+		"deleteVariable": {
+			"title": "Delete Variable"
+		},
+		"deleteVariable-variable": {
+			"label": "Variable",
+			"tip": "Delete this variable"
+		}
+	}
+}

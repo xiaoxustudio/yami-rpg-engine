@@ -1,0 +1,15 @@
+{
+	"components": {
+		"fileUI-foreground-grid": {
+			"label": "Stage Foreground"
+		},
+		"fileUI-width": {
+			"label": "Width",
+			"tip": "UI stage width (preview only)"
+		},
+		"fileUI-height": {
+			"label": "Height",
+			"tip": "UI stage height (preview only)"
+		}
+	}
+}

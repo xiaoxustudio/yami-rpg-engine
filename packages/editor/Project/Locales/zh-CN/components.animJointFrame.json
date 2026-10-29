@@ -1,0 +1,37 @@
+{
+	"components": {
+		"animJointFrame-properties-grid": {
+			"label": "动画帧"
+		},
+		"animJointFrame-position-box": {
+			"label": "位置"
+		},
+		"animJointFrame-x": {
+			"tip": "$X\n水平位置"
+		},
+		"animJointFrame-y": {
+			"tip": "$Y\n垂直位置"
+		},
+		"animJointFrame-rotation-box": {
+			"label": "旋转"
+		},
+		"animJointFrame-rotation": {
+			"tip": "$旋转\n旋转角度，0度 = 正右方，顺时针旋转"
+		},
+		"animJointFrame-scale-box": {
+			"label": "缩放"
+		},
+		"animJointFrame-scaleX": {
+			"tip": "$缩放 X\n水平缩放系数"
+		},
+		"animJointFrame-scaleY": {
+			"tip": "$缩放 Y\n垂直缩放系数"
+		},
+		"animJointFrame-opacity-box": {
+			"label": "不透明度"
+		},
+		"animJointFrame-opacity": {
+			"tip": "$不透明度\n用来调节动画帧的可见度"
+		}
+	}
+}

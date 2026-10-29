@@ -1,0 +1,15 @@
+{
+	"components": {
+		"animSoundFrame-properties-grid": {
+			"label": "Frame"
+		},
+		"animSoundFrame-sound": {
+			"label": "Sound",
+			"tip": "Select an audio file"
+		},
+		"animSoundFrame-volume": {
+			"label": "Volume",
+			"tip": "Adjust the volume of this sound effect"
+		}
+	}
+}

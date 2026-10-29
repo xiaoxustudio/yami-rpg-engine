@@ -1,0 +1,105 @@
+{
+	"components": {
+		"setInventory": {
+			"title": "设置库存"
+		},
+		"setInventory-actor": {
+			"label": "角色",
+			"tip": "设置这个角色的库存"
+		},
+		"setInventory-operation": {
+			"label": "操作",
+			"tip": "执行一个库存操作",
+			"options": {
+				"increase-money": {
+					"name": "增加金钱",
+					"tip": "增加库存中的金钱"
+				},
+				"decrease-money": {
+					"name": "减少金钱",
+					"tip": "减少库存中的金钱（最小值为0）"
+				},
+				"increase-items": {
+					"name": "增加物品",
+					"tip": "创建指定数量的物品，并添加到库存，\n如果已存在相同物品则合并它们，否则插入到最前面的空位置"
+				},
+				"decrease-items": {
+					"name": "减少物品",
+					"tip": "从库存中减少指定数量的物品"
+				},
+				"gain-equipment": {
+					"name": "获得装备",
+					"tip": "创建一个装备，插入到库存最前面的空位置"
+				},
+				"lose-equipment": {
+					"name": "失去装备",
+					"tip": "从库存中移除一个装备"
+				},
+				"gain-equipment-instance": {
+					"name": "获得装备实例",
+					"tip": "从装备访问器中获取装备对象，插入到库存最前面的空位置"
+				},
+				"lose-equipment-instance": {
+					"name": "失去装备实例",
+					"tip": "从装备访问器中获取装备对象，并将它从库存中移除"
+				},
+				"swap": {
+					"name": "交换物品位置",
+					"tip": "交换两个物品位置，或一个物品位置和一个空位置"
+				},
+				"sort": {
+					"name": "简单排序",
+					"tip": "消除物品之间的空位置，使物品紧密排列，但不改变物品顺序"
+				},
+				"sort-by-order": {
+					"name": "按文件名排序",
+					"tip": "消除物品之间的空位置，使物品紧密排列，按文件名升序排列物品"
+				},
+				"reference": {
+					"name": "使用全局角色的库存",
+					"tip": "使用指定的全局角色的库存作为本角色的库存（共享）"
+				},
+				"dereference": {
+					"name": "恢复库存",
+					"tip": "恢复这个角色自己的库存（解除共享）"
+				},
+				"reset": {
+					"name": "重置",
+					"tip": "清空库存中的物品和金钱"
+				}
+			}
+		},
+		"setInventory-money": {
+			"label": "金钱",
+			"tip": "库存中的金钱"
+		},
+		"setInventory-itemId": {
+			"label": "物品",
+			"tip": "物品的文件ID"
+		},
+		"setInventory-quantity": {
+			"label": "数量",
+			"tip": "物品的数量"
+		},
+		"setInventory-equipmentId": {
+			"label": "装备",
+			"tip": "装备的文件ID"
+		},
+		"setInventory-equipment": {
+			"label": "装备",
+			"tip": "从装备访问器中获取已存在的装备对象"
+		},
+		"setInventory-order1": {
+			"label": "物品顺序 A",
+			"tip": "参与位置交换的物品A在库存中的顺序（空槽位置也可用）"
+		},
+		"setInventory-order2": {
+			"label": "物品顺序 B",
+			"tip": "参与位置交换的物品B在库存中的顺序（空槽位置也可用）"
+		},
+		"setInventory-refActor": {
+			"label": "全局角色",
+			"tip": "获取这个全局角色的库存用于共享"
+		}
+	}
+}

@@ -1,0 +1,10 @@
+{
+	"components": {
+		"about": {
+			"title": "Yami RPG Editor"
+		},
+		"about-credits": {
+			"content": "Credits"
+		}
+	}
+}

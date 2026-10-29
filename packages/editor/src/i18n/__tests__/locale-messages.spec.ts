@@ -1,21 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { readdirSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { applyLocaleData, getYamiI18n, initYamiI18n } from '@app/i18n';
 import { convertLocaleData, INTERPOLATION_NAMES, type LocaleData } from '@app/i18n/convert';
-
-const LOCALES_DIR = resolve(process.cwd(), 'Project/Locales');
+import { listLocaleEntryFiles, loadLocaleBundle } from './locale-bundle';
 
 type Locale = { file: string; lang: string; data: LocaleData };
 
 function loadLocales(): Locale[] {
-	return readdirSync(LOCALES_DIR)
-		.filter((name) => name.toLowerCase().endsWith('.json'))
-		.map((file) => ({
-			file,
-			lang: file.split('.')[0],
-			data: JSON.parse(readFileSync(resolve(LOCALES_DIR, file), 'utf8')) as LocaleData
-		}));
+	return listLocaleEntryFiles().map((file) => ({
+		file,
+		lang: file.split('.')[0],
+		data: loadLocaleBundle(file)
+	}));
 }
 
 /** 语言 JSON 里所有 `.tip` 的原始文案（key → raw） */

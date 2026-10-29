@@ -1,0 +1,29 @@
+{
+	"components": {
+		"changePassableTerrain": {
+			"title": "Change Passable Terrain"
+		},
+		"changePassableTerrain-actor": {
+			"label": "Actor",
+			"tip": "Change the passable area for this actor"
+		},
+		"changePassableTerrain-passage": {
+			"label": "Passable Terrain",
+			"tip": "Set a new passable area",
+			"options": {
+				"land": {
+					"name": "Land",
+					"tip": "Actor can only move on land"
+				},
+				"water": {
+					"name": "Water",
+					"tip": "Actor can only move in water"
+				},
+				"unrestricted": {
+					"name": "Unrestricted",
+					"tip": "Actor can move on land, in water, and through walls"
+				}
+			}
+		}
+	}
+}

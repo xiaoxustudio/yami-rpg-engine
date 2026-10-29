@@ -1,0 +1,71 @@
+{
+	"components": {
+		"setDialogBox": {
+			"title": "设置对话框"
+		},
+		"setDialogBox-element": {
+			"label": "元素",
+			"tip": "指定一个对话框元素"
+		},
+		"setDialogBox-properties": {
+			"label": "设置属性"
+		},
+		"setDialogBox-property": {
+			"title": "对话框属性"
+		},
+		"setDialogBox-property-key": {
+			"label": "属性",
+			"tip": "对话框元素的属性",
+			"options": {
+				"content": "内容",
+				"interval": "打印间隔",
+				"size": "字体大小",
+				"lineSpacing": "行间距",
+				"letterSpacing": "字间距",
+				"color": "颜色",
+				"font": "字体",
+				"effect": "文字效果",
+				"blend": "混合模式"
+			}
+		},
+		"setDialogBox-property-content": {
+			"label": "内容"
+		},
+		"setDialogBox-property-interval": {
+			"label": "打印间隔"
+		},
+		"setDialogBox-property-size": {
+			"label": "字体大小"
+		},
+		"setDialogBox-property-lineSpacing": {
+			"label": "行间距"
+		},
+		"setDialogBox-property-letterSpacing": {
+			"label": "字间距"
+		},
+		"setDialogBox-property-color": {
+			"label": "颜色"
+		},
+		"setDialogBox-property-font": {
+			"label": "字体"
+		},
+		"setDialogBox-property-effect-type": {
+			"label": "文字效果"
+		},
+		"setDialogBox-property-effect-shadowOffsetX": {
+			"label": "阴影 X"
+		},
+		"setDialogBox-property-effect-shadowOffsetY": {
+			"label": "阴影 Y"
+		},
+		"setDialogBox-property-effect-strokeWidth": {
+			"label": "描边宽度"
+		},
+		"setDialogBox-property-effect-color": {
+			"label": "效果颜色"
+		},
+		"setDialogBox-property-blend": {
+			"label": "混合模式"
+		}
+	}
+}

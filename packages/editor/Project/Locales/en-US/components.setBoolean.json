@@ -1,0 +1,82 @@
+{
+	"components": {
+		"setBoolean": {
+			"title": "Set Boolean"
+		},
+		"setBoolean-variable": {
+			"label": "Variable",
+			"tip": "Target variable to be written"
+		},
+		"setBoolean-operation": {
+			"label": "Operation",
+			"options": {
+				"set": {
+					"name": "Set",
+					"tip": "Set to the operand"
+				},
+				"not": {
+					"name": "Not",
+					"tip": "Set to the opposite value of the operand"
+				},
+				"and": {
+					"name": "And",
+					"tip": "Set to 'True' when both the target variable and the operand are 'True', otherwise set to 'False'"
+				},
+				"or": {
+					"name": "Or",
+					"tip": "When at least one of the target variable and the operand is 'True', set to 'True', otherwise set to 'False'"
+				},
+				"xor": {
+					"name": "Xor",
+					"tip": "Set to 'True' when the target variable is not the same as the operand, otherwise set to 'False'"
+				}
+			}
+		},
+		"setBoolean-operand-type": {
+			"label": "Type",
+			"tip": "Select the method to get the boolean value",
+			"options": {
+				"constant": {
+					"name": "Constant",
+					"tip": "Constant value"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Read value from the variable"
+				},
+				"list": {
+					"name": "List Item",
+					"tip": "Read the list from the variable, and then read the value from the list at the specified position"
+				},
+				"parameter": {
+					"name": "Parameter",
+					"tip": "Parameters entered in the 'Show Text' or 'Show Choices' command"
+				},
+				"script": {
+					"name": "Script",
+					"tip": "JavaScript return value"
+				}
+			}
+		},
+		"setBoolean-constant-value": {
+			"label": "Constant",
+			"tip": "Fixed value"
+		},
+		"setBoolean-common-variable": {
+			"label": "Variable",
+			"tip": "Read data from the variable"
+		},
+		"setBoolean-list-index": {
+			"label": "Index",
+			"tip": "Read the value from the Nth (0, 1, 2, ...) position in the list"
+		},
+		"setBoolean-parameter-key": {
+			"label": "Param Name",
+			"tip": "Get the value of this parameter"
+		},
+		"setBoolean-script": {
+			"label": "Script",
+			"tip": "Execute JavaScript and get the return value"
+		}
+	}
+}

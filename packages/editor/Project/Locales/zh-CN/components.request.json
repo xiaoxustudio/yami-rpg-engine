@@ -1,0 +1,13 @@
+{
+	"components": {
+		"request-keyValue": {
+			"title": "键值数据组"
+		},
+		"request-keyValue-key": {
+			"label": "键(key)"
+		},
+		"request-keyValue-value": {
+			"label": "值(value)"
+		}
+	}
+}

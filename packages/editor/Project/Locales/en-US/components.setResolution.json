@@ -1,0 +1,23 @@
+{
+	"components": {
+		"setResolution": {
+			"title": "Set Resolution"
+		},
+		"setResolution-width": {
+			"label": "Width",
+			"tip": "Actual game canvas width, auto-scaled by window size (saved after deployment)"
+		},
+		"setResolution-height": {
+			"label": "Height",
+			"tip": "Actual game canvas height, auto-scaled by window size (saved after deployment)"
+		},
+		"setResolution-sceneScale": {
+			"label": "Scene Scale",
+			"tip": "Display scene objects proportionally (automatically saved after deployment)"
+		},
+		"setResolution-uiScale": {
+			"label": "UI Scale",
+			"tip": "Display UI elements proportionally (automatically saved after deployment)"
+		}
+	}
+}

@@ -1,0 +1,29 @@
+{
+	"components": {
+		"changeActorMotion": {
+			"title": "Change Actor Motion"
+		},
+		"changeActorMotion-actor": {
+			"label": "Actor",
+			"tip": "Replace this actor's specific motion"
+		},
+		"changeActorMotion-type": {
+			"label": "Type",
+			"tip": "Specific motion will be automatically switched",
+			"options": {
+				"idle": {
+					"name": "Idle",
+					"tip": "Replace the \"idle\" motion of the actor's animation with a new motion"
+				},
+				"move": {
+					"name": "Move",
+					"tip": "Replace the \"move\" motion of the actor's animation with a new motion"
+				}
+			}
+		},
+		"changeActorMotion-motion": {
+			"label": "Motion",
+			"tip": "New motion to replace"
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"components": {
+		"importLanguage": {
+			"title": "导入语言包"
+		},
+		"importLanguage-language": {
+			"label": "导入文本到",
+			"tip": "选择要覆盖的语言包"
+		}
+	}
+}

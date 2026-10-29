@@ -1,0 +1,35 @@
+{
+	"components": {
+		"webSocketConnect": {
+			"title": "WebSocket连接"
+		},
+		"webSocketConnect-url": {
+			"label": "地址",
+			"tip": "WebSocket服务器地址，默认自动加 ws:// 前缀，s+ 开头自动转为 wss://"
+		},
+		"webSocketConnect-id": {
+			"label": "连接ID",
+			"tip": "用于后续发送/关闭的唯一标识"
+		},
+		"webSocketConnect-protocols": {
+			"label": "协议",
+			"tip": "可选，多个协议用逗号分隔"
+		},
+		"webSocketConnect-onOpen": {
+			"label": "连接回调",
+			"tip": "连接打开时的回调，@event表示事件对象"
+		},
+		"webSocketConnect-onMessage": {
+			"label": "消息回调",
+			"tip": "收到消息时的回调，@event表示消息事件(event.data为数据)"
+		},
+		"webSocketConnect-onError": {
+			"label": "错误回调",
+			"tip": "连接错误时的回调，@event表示事件对象"
+		},
+		"webSocketConnect-onClose": {
+			"label": "关闭回调",
+			"tip": "连接关闭时的回调，@event表示关闭事件"
+		}
+	}
+}

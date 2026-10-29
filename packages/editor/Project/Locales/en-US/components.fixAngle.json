@@ -1,0 +1,25 @@
+{
+	"components": {
+		"fixAngle": {
+			"title": "Fix Angle"
+		},
+		"fixAngle-actor": {
+			"label": "Actor",
+			"tip": "Perform operation on this actor"
+		},
+		"fixAngle-fixed": {
+			"label": "State",
+			"tip": "Toggle the angle lock state",
+			"options": {
+				"true": {
+					"name": "Fixed",
+					"tip": "Lock the actor's angle"
+				},
+				"false": {
+					"name": "Unfixed",
+					"tip": "Unlock the actor's angle"
+				}
+			}
+		}
+	}
+}

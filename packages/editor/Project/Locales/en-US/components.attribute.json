@@ -1,0 +1,53 @@
+{
+	"components": {
+		"attribute": {
+			"title": "Attribute"
+		},
+		"attribute-list": {
+			"label": "List"
+		},
+		"attribute-properties-flex": {
+			"label": "Properties"
+		},
+		"attribute-name": {
+			"label": "Name",
+			"tip": "Attribute name"
+		},
+		"attribute-key": {
+			"label": "Key",
+			"placeholder": "Default",
+			"tip": "Attribute key; defaults to attribute ID"
+		},
+		"attribute-type-boolean": {
+			"label": "Type"
+		},
+		"attribute-type-boolean-label": {
+			"content": "Boolean",
+			"tip": "Can only write boolean values"
+		},
+		"attribute-type-number-label": {
+			"content": "Number",
+			"tip": "Can only write numbers"
+		},
+		"attribute-type-string-label": {
+			"content": "String",
+			"tip": "Can only write strings"
+		},
+		"attribute-type-enum-label": {
+			"content": "String(Enum)",
+			"tip": "Can only write one of the specified enum values"
+		},
+		"attribute-type-object-label": {
+			"content": "Object(For Element)",
+			"tip": "Can only write objects (only for elements)"
+		},
+		"attribute-enum": {
+			"label": "Options",
+			"tip": "Select an enum group"
+		},
+		"attribute-note": {
+			"label": "Note",
+			"tip": "Notes about the attribute"
+		}
+	}
+}

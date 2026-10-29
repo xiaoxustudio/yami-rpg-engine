@@ -1,0 +1,25 @@
+{
+	"components": {
+		"setActive": {
+			"title": "Set Active"
+		},
+		"setActive-actor": {
+			"label": "Actor",
+			"tip": "Change the activation state of this actor"
+		},
+		"setActive-active": {
+			"label": "State",
+			"tip": "Activation operation",
+			"options": {
+				"true": {
+					"name": "Active",
+					"tip": "Return to normal"
+				},
+				"false": {
+					"name": "Inactive",
+					"tip": "Stop executing the actor's events\nThe actor can no longer be detected\nReset the actor's target pool\nRemove this actor from the target pools of related actors"
+				}
+			}
+		}
+	}
+}

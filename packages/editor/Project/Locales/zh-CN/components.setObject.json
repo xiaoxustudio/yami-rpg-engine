@@ -1,0 +1,109 @@
+{
+	"components": {
+		"setObject": {
+			"title": "设置对象"
+		},
+		"setObject-variable": {
+			"label": "变量",
+			"tip": "写入的目标变量"
+		},
+		"setObject-operand-type": {
+			"label": "类型",
+			"tip": "选择获取哪一种对象",
+			"options": {
+				"none": {
+					"name": "空值",
+					"tip": "不存在对象"
+				},
+				"actor": {
+					"name": "角色",
+					"tip": "获取一个角色"
+				},
+				"skill": {
+					"name": "技能",
+					"tip": "获取一个技能"
+				},
+				"state": {
+					"name": "状态",
+					"tip": "获取一个状态"
+				},
+				"equipment": {
+					"name": "装备",
+					"tip": "获取一个装备"
+				},
+				"item": {
+					"name": "物品",
+					"tip": "获取一个物品"
+				},
+				"trigger": {
+					"name": "触发器",
+					"tip": "获取一个触发器"
+				},
+				"light": {
+					"name": "光源",
+					"tip": "获取一个光源"
+				},
+				"object": {
+					"name": "对象",
+					"tip": "获取一个任意类型的场景对象"
+				},
+				"element": {
+					"name": "元素",
+					"tip": "获取一个元素"
+				},
+				"variable": {
+					"name": "变量",
+					"tip": "从变量中读取对象"
+				},
+				"list": {
+					"name": "列表项",
+					"tip": "从变量中读取列表，再读取列表中指定位置的对象"
+				}
+			}
+		},
+		"setObject-operand-actor": {
+			"label": "角色",
+			"tip": "获取这个角色对象"
+		},
+		"setObject-operand-skill": {
+			"label": "技能",
+			"tip": "获取这个技能对象"
+		},
+		"setObject-operand-state": {
+			"label": "状态",
+			"tip": "获取这个状态对象"
+		},
+		"setObject-operand-equipment": {
+			"label": "装备",
+			"tip": "获取这个装备对象"
+		},
+		"setObject-operand-item": {
+			"label": "物品",
+			"tip": "获取这个物品对象"
+		},
+		"setObject-operand-trigger": {
+			"label": "触发器",
+			"tip": "获取这个触发器对象"
+		},
+		"setObject-operand-light": {
+			"label": "光源",
+			"tip": "获取这个光源对象"
+		},
+		"setObject-operand-object": {
+			"label": "对象",
+			"tip": "获取任意的场景对象"
+		},
+		"setObject-operand-element": {
+			"label": "元素",
+			"tip": "获取这个元素对象"
+		},
+		"setObject-operand-variable": {
+			"label": "变量",
+			"tip": "存放列表对象的变量"
+		},
+		"setObject-operand-list-index": {
+			"label": "索引",
+			"tip": "读取列表中第N（0, 1, 2, ...）个位置的值"
+		}
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"components": {
+		"webSocketClose": {
+			"title": "WebSocket Close"
+		},
+		"webSocketClose-id": {
+			"label": "Connection ID",
+			"tip": "must match the ID set in webSocketConnect"
+		},
+		"webSocketClose-code": {
+			"label": "Code",
+			"tip": "optional, 1000~4999, default 1000"
+		},
+		"webSocketClose-reason": {
+			"label": "Reason",
+			"tip": "optional, close reason"
+		}
+	}
+}

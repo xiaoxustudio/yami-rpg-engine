@@ -1,0 +1,57 @@
+{
+	"components": {
+		"animMotion-general-grid": {
+			"label": "Motion"
+		},
+		"animMotion-mode": {
+			"label": "Mode",
+			"tip": "Determines how the animation switches motion directions",
+			"options": {
+				"1-dir": {
+					"name": "1 Directional",
+					"tip": "Right"
+				},
+				"2-dir": {
+					"name": "2 Directional",
+					"tip": "Left, Right"
+				},
+				"4-dir": {
+					"name": "4 Directional",
+					"tip": "Down, Left, Right, Up"
+				},
+				"8-dir": {
+					"name": "8 Directional",
+					"tip": "Down, Left, Right, Up, Down-Left, Down-Right, Up-Left, Up-Right"
+				},
+				"1-dir-mirror": {
+					"name": "1 Directional - Mirror",
+					"tip": "Right, Mirror (Left)"
+				},
+				"2-dir-mirror": {
+					"name": "2 Directional - Mirror",
+					"tip": "Down-Right, Up-Right, Mirror (Down-Left, Up-Left)"
+				},
+				"3-dir-mirror": {
+					"name": "3 Directional - Mirror",
+					"tip": "Down, Right, Up, Mirror (Left)"
+				},
+				"5-dir-mirror": {
+					"name": "5 Directional - Mirror",
+					"tip": "Down, Right, Up, Down-Right, Up-Right, Mirror (Left, Down-Left, Up-Left)"
+				}
+			}
+		},
+		"animMotion-skip": {
+			"label": "Skip Last Frame",
+			"tip": "Skip the last frame when the animation reaches the end (used for looping transition animations)"
+		},
+		"animMotion-loop": {
+			"label": "Loop",
+			"tip": "Automatically returns to the starting frame and continues playing after the animation ends"
+		},
+		"animMotion-loopStart": {
+			"label": "Loop Start",
+			"tip": "Animation loop starting position"
+		}
+	}
+}

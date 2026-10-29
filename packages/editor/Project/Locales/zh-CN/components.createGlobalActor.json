@@ -1,0 +1,15 @@
+{
+	"components": {
+		"createGlobalActor": {
+			"title": "创建全局角色"
+		},
+		"createGlobalActor-actorId": {
+			"label": "角色",
+			"tip": "选择角色文件并创建对应的全局角色（该角色的数据会被保存）"
+		},
+		"createGlobalActor-teamId": {
+			"label": "队伍",
+			"tip": "选择角色的初始队伍"
+		}
+	}
+}

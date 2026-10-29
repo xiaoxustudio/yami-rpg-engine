@@ -1,0 +1,19 @@
+{
+	"components": {
+		"language": {
+			"title": "Language"
+		},
+		"language-name": {
+			"label": "Name",
+			"tip": "Choose a language"
+		},
+		"language-font": {
+			"label": "Font",
+			"tip": "Preferred font for this language"
+		},
+		"language-scale": {
+			"label": "Font Scaling Factor",
+			"tip": "Scale the size of all text"
+		}
+	}
+}

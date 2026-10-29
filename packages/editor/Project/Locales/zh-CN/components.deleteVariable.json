@@ -1,0 +1,11 @@
+{
+	"components": {
+		"deleteVariable": {
+			"title": "删除变量"
+		},
+		"deleteVariable-variable": {
+			"label": "变量",
+			"tip": "删除这个变量"
+		}
+	}
+}

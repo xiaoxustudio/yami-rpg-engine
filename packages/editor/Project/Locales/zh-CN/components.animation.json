@@ -1,0 +1,42 @@
+{
+	"components": {
+		"animation-switch-mark": {
+			"tip": "$标记\n显示关节、粒子标记"
+		},
+		"animation-switch-onionskin": {
+			"tip": "$残像\n显示当前帧的上一帧和下一帧的半透明精灵图"
+		},
+		"animation-switch-mirror": {
+			"tip": "$水平镜像\n以Y轴为对称轴，水平翻转动画"
+		},
+		"animation-switch-settings": {
+			"tip": "$设置\n打开动画设置面板"
+		},
+		"animation-speed": {
+			"tip": "$播放速度\n在舞台中播放动画的速率\n1：正常播放速度\n4：4倍播放速度"
+		},
+		"animation-timeline-previousKey": {
+			"tip": "$上一个关键帧\n跳转到当前帧的上一个关键帧"
+		},
+		"animation-timeline-previous": {
+			"tip": "$上一帧\n跳转到当前帧的上一帧"
+		},
+		"animation-timeline-play": {
+			"tip": "$播放/暂停\n如果动画暂停中，播放动画，否则暂停动画"
+		},
+		"animation-timeline-next": {
+			"tip": "$下一帧\n跳转到当前帧的下一帧"
+		},
+		"animation-timeline-nextKey": {
+			"tip": "$下一个关键帧\n跳转到当前帧的下一个关键帧"
+		},
+		"animation-timeline-loop": {
+			"tip": "$循环\n动画播放结束时跳转到第一帧继续播放（仅在编辑器中生效）"
+		},
+		"animation-easing-id": {
+			"options": {
+				"": "无过渡效果"
+			}
+		}
+	}
+}

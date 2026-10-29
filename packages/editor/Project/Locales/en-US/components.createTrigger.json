@@ -1,0 +1,35 @@
+{
+	"components": {
+		"createTrigger": {
+			"title": "Create Trigger"
+		},
+		"createTrigger-triggerId": {
+			"label": "Trigger",
+			"tip": "Create a trigger object corresponding to the file ID"
+		},
+		"createTrigger-caster": {
+			"label": "Caster",
+			"tip": "This actor can be accessed through \"Skill Caster\" in the trigger events"
+		},
+		"createTrigger-origin": {
+			"label": "Origin",
+			"tip": "Initial position of this trigger"
+		},
+		"createTrigger-angle": {
+			"label": "Angle",
+			"tip": "Initial angle of this trigger, 0 degrees = right, clockwise rotation"
+		},
+		"createTrigger-distance": {
+			"label": "Distance",
+			"tip": "Distance this trigger is offset from initial position along initial angle (actual position)"
+		},
+		"createTrigger-scale": {
+			"label": "Scale",
+			"tip": "Scaling factor for trigger's shape and animation (can be used as attack range)"
+		},
+		"createTrigger-timeScale": {
+			"label": "Global Speed",
+			"tip": "Playback speed for this trigger and animation (can be used as attack speed)"
+		}
+	}
+}

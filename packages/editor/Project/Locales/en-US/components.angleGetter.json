@@ -1,0 +1,41 @@
+{
+	"components": {
+		"angleGetter": {
+			"title": "Angle"
+		},
+		"angleGetter-type": {
+			"label": "Type",
+			"tip": "How to get the angle",
+			"options": {
+				"position": {
+					"name": "Towards Position",
+					"tip": "Calculate the angle of the actor towards the target position"
+				},
+				"absolute": {
+					"name": "Absolute Angle",
+					"tip": "Specify the angle, 0 degrees = right, clockwise rotation"
+				},
+				"relative": {
+					"name": "Relative Angle",
+					"tip": "Relative angle to actor's current angle, -180 = opposite direction"
+				},
+				"direction": {
+					"name": "Relative to Direction",
+					"tip": "Relative angle of actor's animation direction; affected by number of animation directions"
+				},
+				"random": {
+					"name": "Random Angle",
+					"tip": "Randomly generated between 0 ~ 360 degrees"
+				}
+			}
+		},
+		"angleGetter-position-position": {
+			"label": "Position",
+			"tip": "Calculate the angle towards this position"
+		},
+		"angleGetter-common-degrees": {
+			"label": "Degrees",
+			"tip": "360 degrees = a full circle, clockwise rotation"
+		}
+	}
+}

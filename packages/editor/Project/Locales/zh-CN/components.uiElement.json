@@ -1,0 +1,136 @@
+{
+	"components": {
+		"uiElement-general-grid": {
+			"label": "基本设置"
+		},
+		"uiElement-name": {
+			"label": "名称",
+			"tip": "元素的备注名称"
+		},
+		"uiElement-pointerEvents": {
+			"label": "指针事件",
+			"tip": "是否允许触发这个元素的鼠标和触屏事件",
+			"options": {
+				"enabled": {
+					"name": "启用",
+					"tip": "允许触发这个元素和它后代元素的指针事件"
+				},
+				"disabled": {
+					"name": "禁用",
+					"tip": "禁止触发这个元素和它后代元素的指针事件"
+				},
+				"skipped": {
+					"name": "跳过",
+					"tip": "禁止触发这个元素的指针事件，但允许触发它后代元素的指针事件"
+				}
+			}
+		},
+		"uiElement-transform-grid": {
+			"label": "变换"
+		},
+		"uiElement-transform-align-box": {
+			"label": "对齐"
+		},
+		"uiElement-transform-align-left": {
+			"tip": "$左对齐\n元素的左边缘对齐容器的左边缘"
+		},
+		"uiElement-transform-align-center": {
+			"tip": "$水平居中\n元素的水平中点对齐容器的水平中点"
+		},
+		"uiElement-transform-align-right": {
+			"tip": "$右对齐\n元素的右边缘对齐容器的右边缘"
+		},
+		"uiElement-transform-align-top": {
+			"tip": "$顶部对齐\n元素的顶部边缘对齐容器的顶部边缘"
+		},
+		"uiElement-transform-align-middle": {
+			"tip": "$垂直居中\n元素的垂直中点对齐容器的垂直中点"
+		},
+		"uiElement-transform-align-bottom": {
+			"tip": "$底部对齐\n元素的底部边缘对齐容器的底部边缘"
+		},
+		"uiElement-transform-anchor-box": {
+			"label": "锚点"
+		},
+		"uiElement-transform-anchorX": {
+			"tip": "$锚点 X\n元素跟容器连接点的水平位置"
+		},
+		"uiElement-transform-anchorY": {
+			"tip": "$锚点 Y\n元素跟容器连接点的垂直位置"
+		},
+		"uiElement-transform-x-box": {
+			"label": "X"
+		},
+		"uiElement-transform-x": {
+			"tip": "$X\n元素在容器中的水平位置（像素值）"
+		},
+		"uiElement-transform-x2": {
+			"tip": "$X2\n元素在容器中的水平位置（容器宽度的比例值）"
+		},
+		"uiElement-transform-y-box": {
+			"label": "Y"
+		},
+		"uiElement-transform-y": {
+			"tip": "$Y\n元素在容器中的垂直位置（像素值）"
+		},
+		"uiElement-transform-y2": {
+			"tip": "$Y2\n元素在容器中的垂直位置（容器高度的比例值）"
+		},
+		"uiElement-transform-width-box": {
+			"label": "宽度"
+		},
+		"uiElement-transform-width": {
+			"tip": "$宽度\n元素在容器中的宽度（像素值）"
+		},
+		"uiElement-transform-width2": {
+			"tip": "$宽度2\n元素在容器中的宽度（容器宽度的比例值）"
+		},
+		"uiElement-transform-height-box": {
+			"label": "高度"
+		},
+		"uiElement-transform-height": {
+			"tip": "$高度\n元素在容器中的高度（像素值）"
+		},
+		"uiElement-transform-height2": {
+			"tip": "$高度2\n元素在容器中的高度（容器高度的比例值）"
+		},
+		"uiElement-transform-rotation-box": {
+			"label": "旋转"
+		},
+		"uiElement-transform-rotation": {
+			"tip": "$旋转\n元素绕锚点的旋转角度，0度 = 正右方，顺时针旋转"
+		},
+		"uiElement-transform-scale-box": {
+			"label": "缩放"
+		},
+		"uiElement-transform-scaleX": {
+			"tip": "$缩放 X\n元素的水平缩放系数"
+		},
+		"uiElement-transform-scaleY": {
+			"tip": "$缩放 Y\n元素的垂直缩放系数"
+		},
+		"uiElement-transform-skew-box": {
+			"label": "倾斜"
+		},
+		"uiElement-transform-skewX": {
+			"tip": "$倾斜 X\n元素的水平倾斜系数"
+		},
+		"uiElement-transform-skewY": {
+			"tip": "$倾斜 Y\n元素的垂直倾斜系数"
+		},
+		"uiElement-transform-opacity-box": {
+			"label": "不透明度"
+		},
+		"uiElement-transform-opacity": {
+			"tip": "$不透明度\n用来调节元素的可见度"
+		},
+		"uiElement-events": {
+			"label": "事件",
+			"tip": "元素事件列表\n访问\"事件触发元素\"获取这个元素\n$可选类型\n创建事件：元素初始化时触发事件\n自动执行：元素出现后立即触发事件\n左键按下：鼠标左键按下时触发事件\n右键按下：鼠标右键按下时触发事件\n鼠标按下：鼠标任意键按下时触发事件\n左键弹起：鼠标左键弹起时触发事件\n右键弹起：鼠标右键弹起时触发事件\n鼠标弹起：鼠标任意键弹起时触发\n鼠标移动：鼠标在元素中移动时触发事件\n鼠标进入：鼠标进入元素时触发事件\n鼠标离开：鼠标离开元素时触发事件\n鼠标点击：鼠标按下并弹起时触发事件\n鼠标双击：鼠标连续按下两次，在第二次按下时触发事件\n滚轮滑动：鼠标滚轮滑动时触发事件\n选择按钮：选择按钮元素时触发事件\n取消选择：取消选择按钮元素时触发事件\n输入事件：在文本框中输入内容时触发事件\n获得焦点：文本框进入输入状态时触发事件，或通过\"设置焦点\"指令添加焦点来触发事件\n失去焦点：文本框退出输入状态时触发事件，或通过\"设置焦点\"指令移除焦点来触发事件\n销毁事件：在元素销毁前触发事件\n手柄按下：手柄按钮按下时触发事件\n手柄弹起：手柄按钮弹起时触发事件\n左摇杆改变：手柄左摇杆改变时触发事件\n右摇杆改变：手柄右摇杆改变时触发事件\n自定义事件：通过\"调用事件\"指令触发事件"
+		},
+		"uiElement-scripts": {
+			"label": "脚本",
+			"tip": "添加脚本文件来扩展元素"
+		}
+	}
+}

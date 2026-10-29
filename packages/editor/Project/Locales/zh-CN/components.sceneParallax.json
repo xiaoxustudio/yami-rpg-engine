@@ -1,0 +1,164 @@
+{
+	"components": {
+		"sceneParallax-general-grid": {
+			"label": "基本设置"
+		},
+		"sceneParallax-name": {
+			"label": "名称",
+			"tip": "视差图的备注名称"
+		},
+		"sceneParallax-image": {
+			"label": "图像",
+			"tip": "视差图的图像文件"
+		},
+		"sceneParallax-layer": {
+			"label": "图层",
+			"tip": "前景层总是覆盖对象层，对象层总是覆盖背景层\n如果图层相同则按照顺序来排序，顺序大的显示在前面\n如果顺序相同则按照在对象列表中出现的位置排序，位置往后的显示在前面",
+			"options": {
+				"background": {
+					"name": "背景",
+					"tip": "背景层总是显示在对象层和前景层的背面"
+				},
+				"foreground": {
+					"name": "前景",
+					"tip": "前景层总是显示在对象层和背景层的前面"
+				}
+			}
+		},
+		"sceneParallax-order": {
+			"label": "顺序",
+			"tip": "相同图层的视差图和瓦片地图按照顺序来排序，顺序大的显示在前面"
+		},
+		"sceneParallax-light": {
+			"label": "光线采样",
+			"tip": "影响图像的渲染效果",
+			"options": {
+				"raw": {
+					"name": "原始图像",
+					"tip": "不受光照影响"
+				},
+				"anchor": {
+					"name": "锚点采样",
+					"tip": "从图像所在的锚点位置采样光照来合成颜色"
+				},
+				"global": {
+					"name": "全局采样",
+					"tip": "从图像所在的多个像素点位置采样光照来合成颜色"
+				},
+				"ambient": {
+					"name": "环境光",
+					"tip": "使用当前场景的环境光来合成颜色"
+				}
+			}
+		},
+		"sceneParallax-blend": {
+			"label": "混合模式",
+			"tip": "选择一个计算公式将颜色与底层的颜色混合",
+			"options": {
+				"normal": {
+					"name": "正常",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "加法",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "减法",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		},
+		"sceneParallax-opacity": {
+			"label": "不透明度",
+			"tip": "用来调节视差图的可见度"
+		},
+		"sceneParallax-x": {
+			"label": "X",
+			"tip": "视差图的初始水平位置"
+		},
+		"sceneParallax-y": {
+			"label": "Y",
+			"tip": "视差图的初始垂直位置"
+		},
+		"sceneParallax-parallax-grid": {
+			"label": "视差图"
+		},
+		"sceneParallax-scaleX": {
+			"label": "缩放 X",
+			"tip": "视差图的水平缩放系数"
+		},
+		"sceneParallax-scaleY": {
+			"label": "缩放 Y",
+			"tip": "视差图的垂直缩放系数"
+		},
+		"sceneParallax-repeatX": {
+			"label": "重复 X",
+			"tip": "视差图的水平平铺次数"
+		},
+		"sceneParallax-repeatY": {
+			"label": "重复 Y",
+			"tip": "视差图的垂直平铺次数"
+		},
+		"sceneParallax-anchorX": {
+			"label": "锚点 X",
+			"tip": "视差图跟场景的连接点的水平位置"
+		},
+		"sceneParallax-anchorY": {
+			"label": "锚点 Y",
+			"tip": "视差图跟场景的连接点的垂直位置"
+		},
+		"sceneParallax-offsetX": {
+			"label": "偏移 X",
+			"tip": "视差图的水平偏移距离（单位：像素）"
+		},
+		"sceneParallax-offsetY": {
+			"label": "偏移 Y",
+			"tip": "视差图的垂直偏移距离（单位：像素）"
+		},
+		"sceneParallax-parallaxFactorX": {
+			"label": "视差比例 X",
+			"tip": "当场景摄像机移动时，视差图移动的水平距离的系数"
+		},
+		"sceneParallax-parallaxFactorY": {
+			"label": "视差比例 Y",
+			"tip": "当场景摄像机移动时，视差图移动的垂直距离的系数"
+		},
+		"sceneParallax-shiftSpeedX": {
+			"label": "移动速度 X",
+			"tip": "视差图纹理自动滚动的水平速度(单位：像素/秒)"
+		},
+		"sceneParallax-shiftSpeedY": {
+			"label": "移动速度 Y",
+			"tip": "视差图纹理自动滚动的垂直速度(单位：像素/秒)"
+		},
+		"sceneParallax-tint-0-box": {
+			"label": "色调 - 红",
+			"tip": "输入颜色(红) + 色调(红) = 输出颜色(红)"
+		},
+		"sceneParallax-tint-1-box": {
+			"label": "色调 - 绿",
+			"tip": "输入颜色(绿) + 色调(绿) = 输出颜色(绿)"
+		},
+		"sceneParallax-tint-2-box": {
+			"label": "色调 - 蓝",
+			"tip": "输入颜色(蓝) + 色调(蓝) = 输出颜色(蓝)"
+		},
+		"sceneParallax-tint-3-box": {
+			"label": "色调 - 灰",
+			"tip": "灰度与饱和度相反，灰度越高则饱和度越低"
+		},
+		"sceneParallax-conditions": {
+			"label": "条件",
+			"tip": "加载场景时，只有满足条件列表中的所有条件后，该视差图才被创建"
+		},
+		"sceneParallax-events": {
+			"label": "事件",
+			"tip": "视差图事件列表\n$可选类型\n自动执行：视差图出现时立即触发事件（包括读取存档后）\n自定义事件：通过\"调用事件\"指令触发事件"
+		},
+		"sceneParallax-scripts": {
+			"label": "脚本",
+			"tip": "添加脚本文件来扩展视差图"
+		}
+	}
+}

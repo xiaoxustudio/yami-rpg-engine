@@ -1,0 +1,32 @@
+{
+	"components": {
+		"setReverb": {
+			"title": "Set Reverb"
+		},
+		"setReverb-type": {
+			"label": "Type",
+			"tip": "Perform operation on this type of sound"
+		},
+		"setReverb-dry": {
+			"label": "Dry",
+			"tip": "Volume of original sound; smaller means farther from source."
+		},
+		"setReverb-wet": {
+			"label": "Wet",
+			"tip": "Volume of reflected sound; larger means larger enclosed space."
+		},
+		"setReverb-easingId": {
+			"label": "Easing"
+		},
+		"setReverb-duration": {
+			"label": "Duration"
+		},
+		"setReverb-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

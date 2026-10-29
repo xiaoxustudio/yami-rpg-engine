@@ -1,0 +1,7 @@
+{
+	"components": {
+		"title-play": {
+			"tip": "$Run Game\nF10: Show Stats/FPS\nF11: Toggle Fullscreen\nF12: Developer Tools"
+		}
+	}
+}

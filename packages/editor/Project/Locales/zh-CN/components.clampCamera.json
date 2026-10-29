@@ -1,0 +1,23 @@
+{
+	"components": {
+		"clampCamera": {
+			"title": "限制摄像机边界"
+		},
+		"clampCamera-left": {
+			"label": "左",
+			"tip": "场景水平位置"
+		},
+		"clampCamera-top": {
+			"label": "上",
+			"tip": "场景垂直位置"
+		},
+		"clampCamera-right": {
+			"label": "右",
+			"tip": "场景水平位置"
+		},
+		"clampCamera-bottom": {
+			"label": "下",
+			"tip": "场景垂直位置"
+		}
+	}
+}

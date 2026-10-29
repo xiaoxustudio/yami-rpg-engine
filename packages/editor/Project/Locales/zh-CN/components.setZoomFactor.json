@@ -1,0 +1,24 @@
+{
+	"components": {
+		"setZoomFactor": {
+			"title": "设置缩放率"
+		},
+		"setZoomFactor-zoom": {
+			"label": "缩放系数",
+			"tip": "场景的缩放系数"
+		},
+		"setZoomFactor-easingId": {
+			"label": "过渡"
+		},
+		"setZoomFactor-duration": {
+			"label": "时长"
+		},
+		"setZoomFactor-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"components": {
+		"animSoundFrame-properties-grid": {
+			"label": "动画帧"
+		},
+		"animSoundFrame-sound": {
+			"label": "音效",
+			"tip": "选择一个音频文件"
+		},
+		"animSoundFrame-volume": {
+			"label": "音量",
+			"tip": "调整这个音效的音量"
+		}
+	}
+}

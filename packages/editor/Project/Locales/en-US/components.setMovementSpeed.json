@@ -1,0 +1,37 @@
+{
+	"components": {
+		"setMovementSpeed": {
+			"title": "Set Movement Speed"
+		},
+		"setMovementSpeed-actor": {
+			"label": "Actor",
+			"tip": "Change the movement speed of this actor"
+		},
+		"setMovementSpeed-property": {
+			"label": "Property",
+			"tip": "Base Speed * Speed Factor * Speed Factor (Temp) = Final movement speed",
+			"options": {
+				"base": {
+					"name": "Base Speed",
+					"tip": "Distance actor moves per second"
+				},
+				"factor": {
+					"name": "Speed Factor",
+					"tip": "Set the actor's movement speed proportionally"
+				},
+				"factor-temp": {
+					"name": "Speed Factor (Temp)",
+					"tip": "Set the actor's movement speed proportionally, and it will not be written to the save data"
+				}
+			}
+		},
+		"setMovementSpeed-base": {
+			"label": "Base Speed",
+			"tip": "Distance actor moves per second"
+		},
+		"setMovementSpeed-factor": {
+			"label": "Speed Factor",
+			"tip": "Set the actor's movement speed proportionally"
+		}
+	}
+}

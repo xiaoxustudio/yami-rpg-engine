@@ -1,0 +1,28 @@
+{
+	"components": {
+		"deployment": {
+			"title": "Deployment"
+		},
+		"deployment-platform": {
+			"label": "Platform",
+			"tip": "Select a target operating system platform"
+		},
+		"deployment-folder": {
+			"label": "Folder",
+			"tip": "Name of the output folder"
+		},
+		"deployment-location-box": {
+			"label": "Output Location"
+		},
+		"deployment-location": {
+			"tip": "$Output Location\nCreate an output folder at this location"
+		},
+		"deployment-choose": {
+			"tip": "$Choose Folder\nOpen the operating system dialog to select a folder as the path"
+		},
+		"deployment-compress": {
+			"label": "Obfuscation Compression",
+			"tip": "Enable Obfuscation Compression\nAfter enabling, the obfuscated compressed code will be used to reduce the file size, but it will increase the compilation time"
+		}
+	}
+}

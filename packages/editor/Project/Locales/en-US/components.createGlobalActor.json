@@ -1,0 +1,15 @@
+{
+	"components": {
+		"createGlobalActor": {
+			"title": "Create Global Actor"
+		},
+		"createGlobalActor-actorId": {
+			"label": "Actor",
+			"tip": "Select an actor file and create the corresponding global actor (the data of this actor will be saved)"
+		},
+		"createGlobalActor-teamId": {
+			"label": "Team",
+			"tip": "Select an initial team for this actor"
+		}
+	}
+}

@@ -1,0 +1,87 @@
+{
+	"components": {
+		"getTarget": {
+			"title": "获取目标"
+		},
+		"getTarget-actor": {
+			"label": "角色",
+			"tip": "从此角色的目标池中获取一个目标角色"
+		},
+		"getTarget-selector": {
+			"label": "选择器",
+			"tip": "第一次筛选角色",
+			"options": {
+				"enemy": {
+					"name": "敌对角色",
+					"tip": "从目标池中选择此角色的敌对角色"
+				},
+				"friend": {
+					"name": "友好角色",
+					"tip": "从目标池中选择此角色的友好角色"
+				},
+				"team": {
+					"name": "队伍成员",
+					"tip": "从目标池中选择此角色的队伍成员"
+				},
+				"team-except-self": {
+					"name": "除自己外的队伍成员",
+					"tip": "从目标池中选择除了此角色以外的队伍成员"
+				},
+				"any-except-self": {
+					"name": "除自己外的任意角色",
+					"tip": "从目标池中选择除了此角色以外的所有角色"
+				},
+				"any": {
+					"name": "任意角色",
+					"tip": "从目标池中选择所有角色"
+				}
+			}
+		},
+		"getTarget-condition": {
+			"label": "条件",
+			"tip": "第二次筛选角色",
+			"options": {
+				"max-threat": {
+					"name": "最大仇恨值",
+					"tip": "选择对此角色仇恨值最大的角色"
+				},
+				"nearest": {
+					"name": "最近距离",
+					"tip": "选择与此角色距离最近的角色"
+				},
+				"farthest": {
+					"name": "最远距离",
+					"tip": "选择与此角色距离最远的角色"
+				},
+				"min-attribute-value": {
+					"name": "最小属性值",
+					"tip": "选择指定属性最小的角色"
+				},
+				"max-attribute-value": {
+					"name": "最大属性值",
+					"tip": "选择指定属性最大的角色"
+				},
+				"min-attribute-ratio": {
+					"name": "最小属性比率",
+					"tip": "选择指定两个属性比值最小的角色"
+				},
+				"max-attribute-ratio": {
+					"name": "最大属性比率",
+					"tip": "选择指定两个属性比值最大的角色"
+				},
+				"random": {
+					"name": "随机",
+					"tip": "随机选择一个角色"
+				}
+			}
+		},
+		"getTarget-attribute": {
+			"label": "属性",
+			"tip": "目标角色的属性"
+		},
+		"getTarget-divisor": {
+			"label": "属性 2",
+			"tip": "目标角色的属性 2"
+		}
+	}
+}

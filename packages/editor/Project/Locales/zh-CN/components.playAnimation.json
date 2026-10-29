@@ -1,0 +1,74 @@
+{
+	"components": {
+		"playAnimation": {
+			"title": "播放动画"
+		},
+		"playAnimation-mode": {
+			"label": "模式",
+			"tip": "选择动画位置的参照物",
+			"options": {
+				"position": {
+					"name": "指定位置",
+					"tip": "动画放置在固定位置"
+				},
+				"actor": {
+					"name": "绑定角色",
+					"tip": "动画跟随角色一起移动"
+				}
+			}
+		},
+		"playAnimation-position": {
+			"label": "位置",
+			"tip": "动画出现的位置"
+		},
+		"playAnimation-actor": {
+			"label": "角色",
+			"tip": "动画跟随的角色"
+		},
+		"playAnimation-animationId": {
+			"label": "动画",
+			"tip": "指定动画文件ID"
+		},
+		"playAnimation-motion": {
+			"label": "动作",
+			"tip": "播放这个动画动作"
+		},
+		"playAnimation-rotatable": {
+			"label": "可旋转",
+			"tip": "是否自动更新动画旋转角度",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "动画受角度影响而旋转"
+				},
+				"false": {
+					"name": "否",
+					"tip": "动画始终不会旋转"
+				}
+			}
+		},
+		"playAnimation-priority": {
+			"label": "优先级",
+			"tip": "动画在渲染时的排序优先级\n位置在下方的动画总是会遮挡上方的动画\n优先级 = -1：排序位置向上偏移一个图块的距离\n优先级 = 1：排序位置向下偏移一个图块的距离"
+		},
+		"playAnimation-offsetY": {
+			"label": "偏移 Y",
+			"tip": "动画渲染位置的垂直偏移距离（单位：像素）"
+		},
+		"playAnimation-angle": {
+			"label": "角度",
+			"tip": "角度影响动作方向的切换"
+		},
+		"playAnimation-speed": {
+			"label": "播放速度",
+			"tip": "播放速度比率\n0：暂停播放\n1：100%播放速度\n10：1000%播放速度"
+		},
+		"playAnimation-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

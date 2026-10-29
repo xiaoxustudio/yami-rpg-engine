@@ -1,0 +1,401 @@
+{
+	"components": {
+		"if": {
+			"title": "If"
+		},
+		"if-branches": {
+			"label": "Branches"
+		},
+		"if-else-label": {
+			"content": "Else",
+			"tip": "If none of the branch conditions are satisfied, enter the 'Else Branch'"
+		},
+		"if-branch": {
+			"title": "Branch"
+		},
+		"if-branch-mode": {
+			"label": "Mode",
+			"tip": "Condition Mode",
+			"options": {
+				"all": "Meet All",
+				"any": "Meet Any"
+			}
+		},
+		"if-branch-conditions": {
+			"label": "Conditions"
+		},
+		"if-condition": {
+			"title": "Condition"
+		},
+		"if-condition-type": {
+			"label": "Condition Type",
+			"tip": "Select the related condition type",
+			"options": {
+				"boolean": "Boolean",
+				"number": "Number",
+				"string": "String",
+				"object": "Object",
+				"actor": "Actor",
+				"element": "Element",
+				"keyboard": "Keyboard",
+				"gamepad": "Gamepad",
+				"mouse": "Mouse",
+				"list": "List",
+				"other": "Other"
+			}
+		},
+		"if-condition-common-variable": {
+			"label": "Variable",
+			"tip": "Read data from a variable"
+		},
+		"if-condition-boolean-operation": {
+			"label": "Operation",
+			"tip": "Boolean operation",
+			"options": {
+				"equal": {
+					"name": "==",
+					"tip": "Equal"
+				},
+				"unequal": {
+					"name": "!=",
+					"tip": "Not Equal"
+				}
+			}
+		},
+		"if-condition-boolean-operand-type": {
+			"label": "Operand Type",
+			"tip": "Boolean operation target",
+			"options": {
+				"none": {
+					"name": "Null",
+					"tip": "No valid value exists"
+				},
+				"constant": {
+					"name": "Constant",
+					"tip": "Fixed value"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Read boolean value from variable"
+				}
+			}
+		},
+		"if-condition-boolean-constant-value": {
+			"label": "Constant"
+		},
+		"if-condition-number-operation": {
+			"label": "Operation",
+			"tip": "Number operation",
+			"options": {
+				"equal": {
+					"name": "==",
+					"tip": "Equal"
+				},
+				"unequal": {
+					"name": "!=",
+					"tip": "Not Equal"
+				},
+				"greater-or-equal": {
+					"name": ">=",
+					"tip": "Greater than or Equal"
+				},
+				"less-or-equal": {
+					"name": "<=",
+					"tip": "Less than or Equal"
+				},
+				"greater": {
+					"name": ">",
+					"tip": "Greater than"
+				},
+				"less": {
+					"name": "<",
+					"tip": "Less than"
+				}
+			}
+		},
+		"if-condition-number-operand-type": {
+			"label": "Operand Type",
+			"tip": "Number operation target",
+			"options": {
+				"none": {
+					"name": "Null",
+					"tip": "No valid value exists"
+				},
+				"constant": {
+					"name": "Constant",
+					"tip": "Fixed value"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Read number value from variable"
+				}
+			}
+		},
+		"if-condition-number-constant-value": {
+			"label": "Constant",
+			"tip": "Fixed value"
+		},
+		"if-condition-string-operation": {
+			"label": "Operation",
+			"tip": "String operation",
+			"options": {
+				"equal": {
+					"name": "==",
+					"tip": "Equal"
+				},
+				"unequal": {
+					"name": "!=",
+					"tip": "Not Equal"
+				},
+				"include": {
+					"name": "Include",
+					"tip": "Includes specified string"
+				},
+				"exclude": {
+					"name": "Exclude",
+					"tip": "Does not include specified string"
+				}
+			}
+		},
+		"if-condition-string-operand-type": {
+			"label": "Operand Type",
+			"tip": "String operation target",
+			"options": {
+				"none": {
+					"name": "Null",
+					"tip": "No valid value exists"
+				},
+				"constant": "Constant",
+				"variable": "Variable",
+				"enum": "Enumeration"
+			}
+		},
+		"if-condition-string-constant-value": {
+			"label": "Constant",
+			"tip": "Fixed value"
+		},
+		"if-condition-string-enum-stringId": {
+			"label": "Enum String",
+			"tip": "Get the value of this enum"
+		},
+		"if-condition-object-operation": {
+			"label": "Operation",
+			"tip": "Object operation",
+			"options": {
+				"is-actor": "Is Actor",
+				"is-skill": "Is Skill",
+				"is-state": "Is State",
+				"is-equipment": "Is Equipment",
+				"is-item": "Is Item",
+				"is-trigger": "Is Trigger",
+				"is-light": "Is Light",
+				"is-element": "Is Element"
+			}
+		},
+		"if-condition-object-operand-type": {
+			"label": "Operand Type",
+			"tip": "Object operation target",
+			"options": {
+				"none": {
+					"name": "Null",
+					"tip": "No valid value exists"
+				},
+				"actor": "Actor",
+				"skill": "Skill",
+				"state": "State",
+				"equipment": "Equipment",
+				"item": "Item",
+				"trigger": "Trigger",
+				"light": "Light",
+				"element": "Element",
+				"variable": "Variable"
+			}
+		},
+		"if-condition-list-operation": {
+			"label": "Operation",
+			"tip": "List operation",
+			"options": {
+				"include": "Include",
+				"exclude": "Exclude"
+			}
+		},
+		"if-condition-operand-variable": {
+			"label": "Variable",
+			"tip": "Read data from variable"
+		},
+		"if-condition-common-actor": {
+			"label": "Actor",
+			"tip": "Actor accessor"
+		},
+		"if-condition-common-skill": {
+			"label": "Skill",
+			"tip": "Skill accessor"
+		},
+		"if-condition-common-state": {
+			"label": "State",
+			"tip": "State accessor"
+		},
+		"if-condition-common-equipment": {
+			"label": "Equipment",
+			"tip": "Equipment accessor"
+		},
+		"if-condition-common-item": {
+			"label": "Item",
+			"tip": "Item accessor"
+		},
+		"if-condition-common-trigger": {
+			"label": "Trigger",
+			"tip": "Trigger accessor"
+		},
+		"if-condition-common-light": {
+			"label": "Light",
+			"tip": "Light accessor"
+		},
+		"if-condition-common-element": {
+			"label": "Element",
+			"tip": "Element accessor"
+		},
+		"if-condition-actor-operation": {
+			"label": "Operation",
+			"tip": "Actor operation",
+			"options": {
+				"present-active": "Present and Active",
+				"present": "Present",
+				"absent": "Absent",
+				"active": "Active",
+				"inactive": "Inactive",
+				"has-targets": "Has Targets",
+				"has-no-targets": "Has No Targets",
+				"in-screen": "In Screen",
+				"is-player": "Is Player Actor",
+				"is-member": "Is Party Member",
+				"has-skill": "Has Skill",
+				"has-state": "Has State",
+				"has-items": "Has Items",
+				"has-equipments": "Has Equipment",
+				"has-skill-shortcut": "Has Skill Shortcut",
+				"has-item-shortcut": "Has Item Shortcut",
+				"equipped": "Equipped",
+				"is-teammate": "Is a Teammate of Actor ...",
+				"is-friend": "Is a Friend of Actor ...",
+				"is-enemy": "Is an Enemy of Actor ...",
+				"is-team-member": "Is a Member of Team ...",
+				"is-team-friend": "Is a Friend of Team ...",
+				"is-team-enemy": "Is an Enemy of Team ..."
+			}
+		},
+		"if-condition-actor-skillId": {
+			"label": "Skill",
+			"tip": "Specify the skill file ID"
+		},
+		"if-condition-actor-stateId": {
+			"label": "State",
+			"tip": "Specify the state file ID"
+		},
+		"if-condition-actor-itemId": {
+			"label": "Item",
+			"tip": "Specify the item file ID"
+		},
+		"if-condition-actor-equipmentId": {
+			"label": "Equipment",
+			"tip": "Specify the equipment file ID"
+		},
+		"if-condition-actor-quantity": {
+			"label": "Quantity",
+			"tip": "Quantity of the item"
+		},
+		"if-condition-actor-shortcutKey": {
+			"label": "Shortcut Key",
+			"tip": "Shortcut key enumeration"
+		},
+		"if-condition-actor-target": {
+			"label": "Target",
+			"tip": "Get the actor object"
+		},
+		"if-condition-actor-teamId": {
+			"label": "Team",
+			"tip": "Specify the team file ID"
+		},
+		"if-condition-element-operation": {
+			"label": "Operation",
+			"tip": "Element operation",
+			"options": {
+				"present": "Present",
+				"absent": "Absent",
+				"visible": "Visible",
+				"invisible": "Invisible",
+				"is-focus": "Is Focus Element",
+				"dialogbox-is-paused": "Dialog Box - is Paused",
+				"dialogbox-is-updating": "Dialog Box - is Updating",
+				"dialogbox-is-waiting": "Dialog Box - is Waiting",
+				"dialogbox-is-complete": "Dialog Box - is Complete"
+			}
+		},
+		"if-condition-keyboard-keycode": {
+			"label": "Key Code",
+			"tip": "Input keyboard key"
+		},
+		"if-condition-keyboard-state": {
+			"label": "State",
+			"tip": "Key state",
+			"options": {
+				"just-pressed": "Just Pressed",
+				"just-released": "Just Released",
+				"pressed": "Pressed",
+				"released": "Released"
+			}
+		},
+		"if-condition-gamepad-button": {
+			"label": "Button",
+			"tip": "Input gamepad button"
+		},
+		"if-condition-gamepad-state": {
+			"label": "State",
+			"tip": "Button state",
+			"options": {
+				"just-pressed": "Just Pressed",
+				"just-released": "Just Released",
+				"pressed": "Pressed",
+				"released": "Released"
+			}
+		},
+		"if-condition-mouse-button": {
+			"label": "Button",
+			"tip": "Select mouse button",
+			"options": {
+				"0": "Left Button",
+				"1": "Middle Button",
+				"2": "Right Button",
+				"3": "Back Button",
+				"4": "Forward Button"
+			}
+		},
+		"if-condition-mouse-state": {
+			"label": "State",
+			"tip": "Button state",
+			"options": {
+				"just-pressed": "Just Pressed",
+				"just-released": "Just Released",
+				"pressed": "Pressed",
+				"released": "Released"
+			}
+		},
+		"if-condition-other-key": {
+			"label": "Other",
+			"tip": "Other condition options",
+			"options": {
+				"mouse-entered": "Mouse has entered the window",
+				"mouse-left": "Mouse has left the window",
+				"game-is-paused": "Game is paused",
+				"game-is-not-paused": "Game is not paused",
+				"scene-input-is-prevented": "Scene input is prevented",
+				"scene-input-is-not-prevented": "Scene input is not prevented",
+				"status-debugging": "In debugging mode",
+				"status-deployed": "In deployed mode",
+				"platform-windows": "Running on Windows platform",
+				"platform-macos": "Running on macOS platform",
+				"platform-mobile": "Running on a mobile platform"
+			}
+		}
+	}
+}

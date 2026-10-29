@@ -1,0 +1,22 @@
+{
+	"components": {
+		"color": {
+			"title": "Color Picker"
+		},
+		"color-hex": {
+			"tip": "$Hexadecimal\n6 or 8-digit color code"
+		},
+		"color-r": {
+			"tip": "$Red\n0 ~ 255"
+		},
+		"color-g": {
+			"tip": "$Green\n0 ~ 255"
+		},
+		"color-b": {
+			"tip": "$Blue\n0 ~ 255"
+		},
+		"color-a": {
+			"tip": "$Opacity\n0 ~ 255"
+		}
+	}
+}

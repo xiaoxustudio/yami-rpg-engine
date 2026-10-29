@@ -1,0 +1,19 @@
+{
+	"components": {
+		"loadSubscene": {
+			"title": "Load Subscene"
+		},
+		"loadSubscene-sceneId": {
+			"label": "Scene",
+			"tip": "Load all objects in the scene with this ID"
+		},
+		"loadSubscene-shiftX": {
+			"label": "Shift X",
+			"tip": "Horizontal position offset of all loaded objects"
+		},
+		"loadSubscene-shiftY": {
+			"label": "Shift Y",
+			"tip": "Vertical position offset of all loaded objects"
+		}
+	}
+}

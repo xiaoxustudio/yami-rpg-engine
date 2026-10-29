@@ -1,0 +1,70 @@
+{
+	"components": {
+		"variable": {
+			"title": "变量"
+		},
+		"variable-list": {
+			"label": "列表"
+		},
+		"variable-properties-flex": {
+			"label": "属性"
+		},
+		"variable-name": {
+			"label": "名称",
+			"tip": "变量的名称"
+		},
+		"variable-sort-normal": {
+			"label": "分类"
+		},
+		"variable-sort-normal-label": {
+			"content": "保存到单独文件",
+			"tip": "保存游戏时将变量数据写入独立存档"
+		},
+		"variable-sort-shared-label": {
+			"content": "保存到全局文件",
+			"tip": "退出游戏时将变量数据写入公共存档"
+		},
+		"variable-sort-temporary-label": {
+			"content": "临时变量",
+			"tip": "不保存变量数据，重启游戏后重置"
+		},
+		"variable-type-boolean": {
+			"label": "类型"
+		},
+		"variable-type-boolean-label": {
+			"content": "布尔值",
+			"tip": "只能写入布尔值"
+		},
+		"variable-type-number-label": {
+			"content": "数值",
+			"tip": "只能写入字符串"
+		},
+		"variable-type-string-label": {
+			"content": "字符串",
+			"tip": "只能写入字符串"
+		},
+		"variable-type-object-label": {
+			"content": "对象",
+			"tip": "只能写入对象（无法保存）"
+		},
+		"variable-value-manager": {
+			"label": "初始值"
+		},
+		"variable-value-boolean-false": {
+			"tip": "$初始值\nFalse"
+		},
+		"variable-value-boolean-true": {
+			"tip": "$初始值\nTrue"
+		},
+		"variable-value-number": {
+			"tip": "$初始值\n数值"
+		},
+		"variable-value-string": {
+			"tip": "$初始值\n字符串"
+		},
+		"variable-note": {
+			"label": "备注",
+			"tip": "变量的备注说明"
+		}
+	}
+}

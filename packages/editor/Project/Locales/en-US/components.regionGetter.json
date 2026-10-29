@@ -1,0 +1,25 @@
+{
+	"components": {
+		"regionGetter": {
+			"title": "Region"
+		},
+		"regionGetter-type": {
+			"label": "Type",
+			"tip": "How to get a region",
+			"options": {
+				"trigger": {
+					"name": "Event Trigger Region",
+					"tip": "Region that triggered this event"
+				},
+				"by-id": {
+					"name": "By Region ID",
+					"tip": "Get a preset region in the current scene"
+				}
+			}
+		},
+		"regionGetter-presetId": {
+			"label": "Data ID",
+			"tip": "Get the preset region in the scene"
+		}
+	}
+}

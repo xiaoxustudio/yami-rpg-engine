@@ -29,6 +29,10 @@ export const SearchString = new (class {
 	window: HTMLElement | null = null;
 	current: SearchableList | null = null;
 	log: HTMLElement | null = null;
+	/** 首次打开时一次性绑定：搜索窗是懒挂载的，绑定后再用字段读控件，避免反复注册表寻址。 */
+	search: YamiElement | null = null;
+	previousButton: YamiElement | null = null;
+	nextButton: YamiElement | null = null;
 	lastArr: SearchResult[] = [];
 	index = 0;
 	searchMode: SearchMode = { caseInsensitive: false, regex: false, matchLine: false };
@@ -41,25 +45,23 @@ export const SearchString = new (class {
 		this._bound = true;
 		this.window = win;
 		this.log = storesEls.get('event-search-string-log') as YamiElement;
+		this.search = storesEls.get('event-search-string-search') as YamiElement;
+		this.previousButton = storesEls.get('event-search-string-previous') as YamiElement;
+		this.nextButton = storesEls.get('event-search-string-next') as YamiElement;
 		on(win, 'keydown', (e: KeyboardEvent) => {
 			if (e.key == 'Enter' && this.lastArr.length > 0) {
 				this.next();
 			}
 		});
 		on(win, 'closed', () => this.close());
-		on(storesEls.get('event-search-string-previous') as YamiElement, 'click', () =>
-			this.previous()
-		);
-		on(storesEls.get('event-search-string-next') as YamiElement, 'click', () => this.next());
-		on(storesEls.get('event-search-string-search') as YamiElement, 'input', (e: Event) =>
-			this.input(e)
-		);
+		if (this.previousButton) on(this.previousButton, 'click', () => this.previous());
+		if (this.nextButton) on(this.nextButton, 'click', () => this.next());
+		if (this.search) on(this.search, 'input', (e: Event) => this.input(e));
 	}
 	refresh() {
-		if (read(storesEls.get('event-search-string-search') as YamiElement))
-			this.input({
-				target: { value: read(storesEls.get('event-search-string-search') as YamiElement) }
-			});
+		if (!this.search) return;
+		const value = read(this.search);
+		if (value) this.input({ target: { value } });
 	}
 	locationLine() {
 		const arr = this.lastArr;
@@ -81,14 +83,14 @@ export const SearchString = new (class {
 		});
 	}
 	clearHistory() {
-		write(storesEls.get('event-search-string-search') as YamiElement, '');
+		if (this.search) write(this.search, '');
 	}
 	input(e: { target?: { value?: unknown } } | Event) {
 		const val = (e.target as { value?: unknown })?.value as string;
 		if (val.trim() == '') {
 			this.clear();
 			this.lastArr = [];
-			this.log!.textContent = String(this.lastArr.length);
+			if (this.log) this.log.textContent = String(this.lastArr.length);
 			return;
 		}
 		this.clear();
@@ -98,13 +100,13 @@ export const SearchString = new (class {
 		findArr.forEach((element) => {
 			element.node.classList.add('event-search-string-active');
 		});
-		this.log!.textContent = String(findArr.length);
+		if (this.log) this.log.textContent = String(findArr.length);
 		if (this.lastArr.length == 0) {
-			disable(storesEls.get('event-search-string-previous') as YamiElement);
-			disable(storesEls.get('event-search-string-next') as YamiElement);
+			if (this.previousButton) disable(this.previousButton);
+			if (this.nextButton) disable(this.nextButton);
 		} else {
-			enable(storesEls.get('event-search-string-previous') as YamiElement);
-			enable(storesEls.get('event-search-string-next') as YamiElement);
+			if (this.previousButton) enable(this.previousButton);
+			if (this.nextButton) enable(this.nextButton);
 		}
 	}
 	clearCurrentHighlight() {
@@ -138,15 +140,11 @@ export const SearchString = new (class {
 		// 搜索窗口是懒挂载的：控件可用后再绑定/置灰/回填（首次打开也不丢）
 		Window.openWith!('event-search-string', () => {
 			this.bindButtons();
-			disable(storesEls.get('event-search-string-previous') as YamiElement);
-			disable(storesEls.get('event-search-string-next') as YamiElement);
-			storesEls.get('event-search-string-search')?.focus?.();
-			if (read(storesEls.get('event-search-string-search') as YamiElement))
-				this.input({
-					target: {
-						value: read(storesEls.get('event-search-string-search') as YamiElement)
-					}
-				});
+			if (this.previousButton) disable(this.previousButton);
+			if (this.nextButton) disable(this.nextButton);
+			this.search?.focus?.();
+			const value = this.search ? read(this.search) : '';
+			if (value) this.input({ target: { value } });
 		});
 	}
 	close() {

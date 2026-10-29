@@ -1,0 +1,11 @@
+{
+	"components": {
+		"label": {
+			"title": "Label"
+		},
+		"label-name": {
+			"label": "Label Name",
+			"tip": "Create a label for jumping"
+		}
+	}
+}

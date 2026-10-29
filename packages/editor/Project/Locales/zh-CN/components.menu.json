@@ -1,0 +1,22 @@
+{
+	"components": {
+		"menu-file": {
+			"content": "文件"
+		},
+		"menu-edit": {
+			"content": "编辑"
+		},
+		"menu-view": {
+			"content": "视图"
+		},
+		"menu-window": {
+			"content": "窗口"
+		},
+		"menu-help": {
+			"content": "帮助"
+		},
+		"menu-open-yami": {
+			"content": "Open Yami"
+		}
+	}
+}

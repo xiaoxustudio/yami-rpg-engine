@@ -1,0 +1,25 @@
+{
+	"components": {
+		"transition": {
+			"title": "Transition"
+		},
+		"transition-variable": {
+			"label": "Write to Variable",
+			"tip": "Write the transition interpolation to this variable"
+		},
+		"transition-start": {
+			"label": "Start Value",
+			"tip": "Starting value for interpolation calculation"
+		},
+		"transition-end": {
+			"label": "End Value",
+			"tip": "Ending value for interpolation calculation"
+		},
+		"transition-easingId": {
+			"label": "Easing"
+		},
+		"transition-duration": {
+			"label": "Duration"
+		}
+	}
+}

@@ -1,0 +1,115 @@
+{
+	"components": {
+		"sceneLight-general-grid": {
+			"label": "General"
+		},
+		"sceneLight-name": {
+			"label": "Name",
+			"tip": "Light Name (note: this is a label for user reference only)"
+		},
+		"sceneLight-type": {
+			"label": "Type",
+			"tip": "Light Parameters",
+			"options": {
+				"point": {
+					"name": "Point",
+					"tip": "Light that spreads around a point and has attenuation"
+				},
+				"area": {
+					"name": "Area",
+					"tip": "Use the area's lighting"
+				}
+			}
+		},
+		"sceneLight-blend": {
+			"label": "Blend",
+			"tip": "Choose a formula to blend the color with the underlying color",
+			"options": {
+				"screen": {
+					"name": "Screen",
+					"tip": "C = 255 - (255 - A) * (255 - B) / 255"
+				},
+				"additive": {
+					"name": "Additive",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "Subtract",
+					"tip": "C = max(0, A - B)"
+				},
+				"max": {
+					"name": "Max",
+					"tip": "C = max(A, B)"
+				}
+			}
+		},
+		"sceneLight-x": {
+			"label": "X",
+			"tip": "Light's initial horizontal coordinates"
+		},
+		"sceneLight-y": {
+			"label": "Y",
+			"tip": "Light's initial vertical coordinates"
+		},
+		"sceneLight-range-box": {
+			"label": "Range",
+			"tip": "Light's diameter （0 ~ 128）"
+		},
+		"sceneLight-intensity-box": {
+			"label": "Intensity",
+			"tip": "Greater Intensity = smaller & brighter internal attenuation of Light"
+		},
+		"sceneLight-mask": {
+			"label": "Mask",
+			"tip": "Light cast through a mask image; if not set, defaults to a rectangle"
+		},
+		"sceneLight-anchorX-box": {
+			"label": "Anchor X",
+			"tip": "Horizontal position of rectangular area connection point between Light and Scene"
+		},
+		"sceneLight-anchorY-box": {
+			"label": "Anchor Y",
+			"tip": "Vertical position of rectangular area connection point between Light and Scene"
+		},
+		"sceneLight-width-box": {
+			"label": "Width",
+			"tip": "Width of the rectangular area"
+		},
+		"sceneLight-height-box": {
+			"label": "Height",
+			"tip": "Height of the rectangular area"
+		},
+		"sceneLight-angle-box": {
+			"label": "Angle",
+			"tip": "Rotation angle of the rectangular area"
+		},
+		"sceneLight-red-box": {
+			"label": "Red",
+			"tip": "Point Light Mode: Red component in the center of light source\nArea Light Mode: Input Color (red) * Mask Color (red) / 255 * Red / 255 = Output Color (red)"
+		},
+		"sceneLight-green-box": {
+			"label": "Green",
+			"tip": "Point Light Mode: Green component in the center of light source\nArea Light Mode: Input Color (green) * Mask Color (green) / 255 * Green / 255 = Output Color (green)"
+		},
+		"sceneLight-blue-box": {
+			"label": "Blue",
+			"tip": "Point Light Mode: Blue component in the center of light source\nArea Light Mode: Input Color (blue) * Mask Color (blue) / 255 * Blue / 255 = Output Color (blue)"
+		},
+		"sceneLight-direct-box": {
+			"label": "Direct Light Ratio",
+			"tip": "Adjusts how much direct light affects the final rendered color"
+		},
+		"sceneLight-conditions": {
+			"label": "Conditions",
+			"tip": "Set a list of conditions for Light to be created; if they aren't met, the Light isn't created"
+		},
+		"sceneLight-events": {
+			"label": "Events",
+			"tip": "$Light Events\nVisit\"Event Triggered Light\"to set the Light\n$Options\nAutorun: Event triggers as soon as the Light appears (including after reading save data)\nCustom: triggered using the 'Call Event' command"
+		},
+		"sceneLight-scripts": {
+			"label": "Scripts",
+			"tip": "Add Script files to extend Light functions"
+		}
+	}
+}

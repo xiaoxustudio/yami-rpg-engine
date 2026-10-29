@@ -1,0 +1,55 @@
+{
+	"components": {
+		"setWindow": {
+			"title": "设置窗口"
+		},
+		"setWindow-element": {
+			"label": "元素",
+			"tip": "指定一个窗口元素"
+		},
+		"setWindow-properties": {
+			"label": "属性"
+		},
+		"setWindow-property": {
+			"title": "窗口属性"
+		},
+		"setWindow-property-key": {
+			"label": "属性",
+			"tip": "窗口元素的属性",
+			"options": {
+				"scrollX": "滚动 X",
+				"scrollY": "滚动 Y",
+				"gridWidth": "网格宽度",
+				"gridHeight": "网格高度",
+				"gridGapX": "水平间距",
+				"gridGapY": "垂直间距",
+				"paddingX": "水平边距",
+				"paddingY": "垂直边距"
+			}
+		},
+		"setWindow-property-scrollX": {
+			"label": "滚动 X"
+		},
+		"setWindow-property-scrollY": {
+			"label": "滚动 Y"
+		},
+		"setWindow-property-gridWidth": {
+			"label": "网格宽度"
+		},
+		"setWindow-property-gridHeight": {
+			"label": "网格高度"
+		},
+		"setWindow-property-gridGapX": {
+			"label": "水平间距"
+		},
+		"setWindow-property-gridGapY": {
+			"label": "垂直间距"
+		},
+		"setWindow-property-paddingX": {
+			"label": "水平边距"
+		},
+		"setWindow-property-paddingY": {
+			"label": "垂直边距"
+		}
+	}
+}

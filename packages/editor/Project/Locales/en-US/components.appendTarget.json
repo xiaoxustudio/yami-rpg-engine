@@ -1,0 +1,15 @@
+{
+	"components": {
+		"appendTarget": {
+			"title": "Append Target"
+		},
+		"appendTarget-actor": {
+			"label": "Actor",
+			"tip": "Add an actor to this actor's target pool"
+		},
+		"appendTarget-target": {
+			"label": "Target",
+			"tip": "Specify a target actor and add him to the target pool"
+		}
+	}
+}

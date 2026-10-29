@@ -1,0 +1,61 @@
+{
+	"components": {
+		"sceneActor-general-grid": {
+			"label": "General"
+		},
+		"sceneActor-name": {
+			"label": "Name",
+			"tip": "Actor Name (note: this is a label for user reference only)"
+		},
+		"sceneActor-type": {
+			"label": "Type",
+			"tip": "Choose whether to create a temporary or permanent actor",
+			"options": {
+				"local": {
+					"name": "Local Actor",
+					"tip": "Temporary actor automatically destroyed when scene unloads"
+				},
+				"global": {
+					"name": "Global Actor",
+					"tip": "Permanent actor; if exists, it is transported to current scene"
+				}
+			}
+		},
+		"sceneActor-actorId": {
+			"label": "Actor",
+			"tip": "Selected Actor file"
+		},
+		"sceneActor-teamId": {
+			"label": "Team",
+			"tip": "Actor's initial Team"
+		},
+		"sceneActor-x": {
+			"label": "X",
+			"tip": "Actor's initial horizontal coordinates"
+		},
+		"sceneActor-y": {
+			"label": "Y",
+			"tip": "Actor's initial vertical coordinates"
+		},
+		"sceneActor-angle-box": {
+			"label": "Angle",
+			"tip": "Actor's initial angle; affects animation orientation\nShortcut keys (Ctrl+↑/↓/←/→) set angle quickly for selected Actor"
+		},
+		"sceneActor-scale-box": {
+			"label": "Scale",
+			"tip": "Actor scaling; affects size of Actor animations and Animation Components"
+		},
+		"sceneActor-conditions": {
+			"label": "Conditions",
+			"tip": "Set conditions for Actor creation; if unmet, Actor isn't created"
+		},
+		"sceneActor-events": {
+			"label": "Events",
+			"tip": "$Actor Events\nThese events do not run if Actor isn't active (is 'dead') or if deleted\nEvents here override those in the Actor file\n$Event Types\nCreate: Triggered at Actor initialization (once)\nAutorun: Triggered when Actor appears (including after reading save data)\nCollision: Triggered when Actor collides with another Actor\nHit Trigger: Triggered when Actor collides with a Trigger\nCustom: triggered via 'Call Event'"
+		},
+		"sceneActor-scripts": {
+			"label": "Scripts",
+			"tip": "Add Script files to extend Actor functions"
+		}
+	}
+}

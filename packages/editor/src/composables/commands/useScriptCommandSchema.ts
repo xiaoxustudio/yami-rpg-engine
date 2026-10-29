@@ -33,9 +33,10 @@ Command.cases.script = new CommandSchema({
 	},
 	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
-		const text = (composableEls.get('script-text-template') as YamiElement).cloneNode(
-			true
-		) as HTMLElement;
+		const text = composableEls.get('script-text-template')?.cloneNode(true) as
+			| HTMLElement
+			| undefined;
+		if (!text) return;
 		text.textContent = code;
 		const options = this.colorOptions;
 		options.theme = Title.theme;

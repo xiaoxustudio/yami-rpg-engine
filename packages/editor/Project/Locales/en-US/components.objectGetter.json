@@ -1,0 +1,37 @@
+{
+	"components": {
+		"objectGetter": {
+			"title": "Scene Object"
+		},
+		"objectGetter-type": {
+			"label": "Type",
+			"tip": "How to get the scene object",
+			"options": {
+				"trigger": {
+					"name": "Event Trigger Object",
+					"tip": "Scene object that triggered this event"
+				},
+				"latest": {
+					"name": "Latest Created Object",
+					"tip": "Gets the most recently created scene object, refreshed when the 'Create Object' command is called"
+				},
+				"by-id": {
+					"name": "Specified Object ID",
+					"tip": "Gets a predefined object in the scene"
+				},
+				"variable": {
+					"name": "Object Variable",
+					"tip": "Gets a scene object stored in a variable"
+				}
+			}
+		},
+		"objectGetter-presetId": {
+			"label": "Data ID",
+			"tip": "Gets a predefined object in the scene"
+		},
+		"objectGetter-variable": {
+			"label": "Variable",
+			"tip": "Gets a scene object stored in a variable"
+		}
+	}
+}

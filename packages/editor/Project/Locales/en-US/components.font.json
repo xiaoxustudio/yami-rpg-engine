@@ -1,0 +1,11 @@
+{
+	"components": {
+		"font": {
+			"title": "Set Font"
+		},
+		"font-font": {
+			"label": "Font Family",
+			"tip": "Enter the font name. If multiple fonts are specified, separate them with commas and list them in order of priority from left to right"
+		}
+	}
+}

@@ -1,0 +1,41 @@
+{
+	"components": {
+		"textEffect": {
+			"title": "Set Text Effect"
+		},
+		"textEffect-type": {
+			"label": "Effect",
+			"tip": "Choose a text effect",
+			"options": {
+				"shadow": {
+					"name": "Shadow",
+					"tip": "Render the text as a shadow at the specified offset position"
+				},
+				"stroke": {
+					"name": "Stroke",
+					"tip": "Render the text outline with the specified width, half of which is covered by the text"
+				},
+				"outline": {
+					"name": "Outline",
+					"tip": "Render the text outline by offsetting in four directions by 1 pixel"
+				}
+			}
+		},
+		"textEffect-shadowOffsetX": {
+			"label": "Shadow X",
+			"tip": "Horizontal offset of text shadow"
+		},
+		"textEffect-shadowOffsetY": {
+			"label": "Shadow Y",
+			"tip": "Vertical offset of text shadow"
+		},
+		"textEffect-strokeWidth": {
+			"label": "Stroke Width",
+			"tip": "Width of text stroke"
+		},
+		"textEffect-color": {
+			"label": "Effect Color",
+			"tip": "Text effect color"
+		}
+	}
+}

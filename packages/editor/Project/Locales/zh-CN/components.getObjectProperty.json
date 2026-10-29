@@ -1,0 +1,19 @@
+{
+	"components": {
+		"getObjectProperty": {
+			"title": "获取对象属性"
+		},
+		"getObjectProperty-variable": {
+			"label": "变量",
+			"tip": "获取这个变量"
+		},
+		"getObjectProperty-save-variable": {
+			"label": "保存到",
+			"tip": "将获取到的值保存到这个变量"
+		},
+		"getObjectProperty-list": {
+			"label": "索引列表",
+			"tip": "从上到下依次获取"
+		}
+	}
+}

@@ -1,0 +1,29 @@
+{
+	"components": {
+		"setTerrain": {
+			"title": "Set Terrain"
+		},
+		"setTerrain-position": {
+			"label": "Position",
+			"tip": "Select a position in the scene"
+		},
+		"setTerrain-terrain": {
+			"label": "Terrain",
+			"tip": "Which type of terrain to replace with",
+			"options": {
+				"land": {
+					"name": "Land",
+					"tip": "Replace with ground (actual terrain is influenced by the tile at this position)"
+				},
+				"water": {
+					"name": "Water",
+					"tip": "Replace with water surface"
+				},
+				"wall": {
+					"name": "Wall",
+					"tip": "Replace with wall block"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,89 @@
+{
+	"components": {
+		"stopEvent": {
+			"title": "Stop Event"
+		},
+		"stopEvent-type": {
+			"label": "Type",
+			"tip": "Which event to stop",
+			"options": {
+				"current": {
+					"name": "Current Event",
+					"tip": "Stop the currently executing event and its parent events that called it"
+				},
+				"global": {
+					"name": "Global",
+					"tip": "Stop all instances of the specified global event"
+				},
+				"scene": {
+					"name": "Scene",
+					"tip": "Stop all instances of the specified scene event type"
+				},
+				"actor": {
+					"name": "Actor",
+					"tip": "Stop all instances of the specified actor event type"
+				},
+				"skill": {
+					"name": "Skill",
+					"tip": "Stop all instances of the specified skill event type"
+				},
+				"state": {
+					"name": "State",
+					"tip": "Stop all instances of the specified state event type"
+				},
+				"equipment": {
+					"name": "Equipment",
+					"tip": "Stop all instances of the specified equipment event type\nOperation is invalid when the equipment no longer belongs to the actor"
+				},
+				"item": {
+					"name": "Item",
+					"tip": "Stop all instances of the specified item event type\nOperation is invalid when the item no longer belongs to the actor"
+				},
+				"light": {
+					"name": "Light",
+					"tip": "Stop all instances of the specified light source event type"
+				},
+				"element": {
+					"name": "Element",
+					"tip": "Stop all instances of the specified element event type"
+				}
+			}
+		},
+		"stopEvent-actor": {
+			"label": "Actor",
+			"tip": "Stop events for this actor"
+		},
+		"stopEvent-skill": {
+			"label": "Skill",
+			"tip": "Stop events for this skill"
+		},
+		"stopEvent-state": {
+			"label": "State",
+			"tip": "Stop events for this state"
+		},
+		"stopEvent-equipment": {
+			"label": "Equipment",
+			"tip": "Stop events for this equipment"
+		},
+		"stopEvent-item": {
+			"label": "Item",
+			"tip": "Stop events for this item"
+		},
+		"stopEvent-light": {
+			"label": "Light Source",
+			"tip": "Stop events for this light source"
+		},
+		"stopEvent-element": {
+			"label": "Element",
+			"tip": "Stop events for this element"
+		},
+		"stopEvent-eventId": {
+			"label": "Event",
+			"tip": "Specify event file ID"
+		},
+		"stopEvent-eventType": {
+			"label": "Event",
+			"tip": "Choose the event type for the object"
+		}
+	}
+}

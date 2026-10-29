@@ -153,8 +153,10 @@ import { registryElement } from '@app/utils/element-registry';
 				if (node.decimals !== value) {
 					node.decimals = value as number;
 					node.instances.setProperty(key, value);
-					(inspectorEls.get('uiTextBox-number') as NumberBoxHostElement).decimals =
-						value as number;
+					const decimalsEl = inspectorEls.get(
+						'uiTextBox-number'
+					) as NumberBoxHostElement | null;
+					if (decimalsEl) decimalsEl.decimals = value as number;
 				}
 				break;
 		}

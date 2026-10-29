@@ -1,0 +1,23 @@
+{
+	"components": {
+		"createActor": {
+			"title": "创建角色"
+		},
+		"createActor-actorId": {
+			"label": "角色",
+			"tip": "创建这个角色到场景中"
+		},
+		"createActor-teamId": {
+			"label": "队伍",
+			"tip": "角色的初始队伍"
+		},
+		"createActor-position": {
+			"label": "位置",
+			"tip": "角色的初始位置"
+		},
+		"createActor-angle": {
+			"label": "角度",
+			"tip": "角色的初始角度"
+		}
+	}
+}

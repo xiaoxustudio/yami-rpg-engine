@@ -1,0 +1,55 @@
+{
+	"components": {
+		"addAnimationComponent": {
+			"title": "Add Animation Component"
+		},
+		"addAnimationComponent-actor": {
+			"label": "Actor",
+			"tip": "Add the animation component to this actor"
+		},
+		"addAnimationComponent-animationId": {
+			"label": "Animation",
+			"tip": "Select an animation file"
+		},
+		"addAnimationComponent-motion": {
+			"label": "Motion",
+			"tip": "Select a motion of the animation.\nThe animation ID plus the motion ID form the ID of the animation component.\nTherefore, components with the same animation and motion cannot be added repeatedly."
+		},
+		"addAnimationComponent-rotatable": {
+			"label": "Rotatable",
+			"tip": "Whether to automatically update the animation rotation angle",
+			"options": {
+				"true": {
+					"name": "Yes",
+					"tip": "Animation rotates due to its angle"
+				},
+				"false": {
+					"name": "No",
+					"tip": "Animation never rotates"
+				}
+			}
+		},
+		"addAnimationComponent-syncAngle": {
+			"label": "Sync Angle",
+			"tip": "Whether to synchronize the animation with the actor's angle",
+			"options": {
+				"true": {
+					"name": "Yes",
+					"tip": "Animation angle is set to actor's current angle.\nAnimation angle affects motion direction switching."
+				},
+				"false": {
+					"name": "No",
+					"tip": "Animation angle does not change automatically."
+				}
+			}
+		},
+		"addAnimationComponent-priority": {
+			"label": "Priority",
+			"tip": "Sorting priority of the animation component\n - Less than 0: The animation component is displayed below actor animation\n - Greater than or equal to 0: The animation component is displayed above actor animation"
+		},
+		"addAnimationComponent-offsetY": {
+			"label": "Offset Y",
+			"tip": "Vertical offset distance of the animation rendering position (unit: pixel)"
+		}
+	}
+}

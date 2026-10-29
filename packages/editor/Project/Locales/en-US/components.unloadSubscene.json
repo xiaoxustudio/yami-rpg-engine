@@ -1,0 +1,11 @@
+{
+	"components": {
+		"unloadSubscene": {
+			"title": "Unload Subscene"
+		},
+		"unloadSubscene-sceneId": {
+			"label": "Scene",
+			"tip": "Delete all objects related to the scene with this ID"
+		}
+	}
+}

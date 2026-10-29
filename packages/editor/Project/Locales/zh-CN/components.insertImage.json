@@ -1,0 +1,45 @@
+{
+	"components": {
+		"insertImage": {
+			"title": "插入图像"
+		},
+		"insertImage-mode": {
+			"label": "模式",
+			"tip": "选择用到的图像参数",
+			"options": {
+				"image": {
+					"name": "图像",
+					"tip": "插入图像并拉伸显示为当前字体大小的尺寸"
+				},
+				"image-size": {
+					"name": "图像 - 尺寸",
+					"tip": "插入图像并指定尺寸"
+				},
+				"image-clip": {
+					"name": "图像 - 裁剪区域",
+					"tip": "插入图像并指定裁剪区域"
+				},
+				"image-clip-size": {
+					"name": "图像 - 裁剪区域 - 尺寸",
+					"tip": "插入图像并指定裁剪区域和尺寸"
+				}
+			}
+		},
+		"insertImage-image": {
+			"label": "图像",
+			"tip": "选择插入的图像文件"
+		},
+		"insertImage-clip": {
+			"label": "裁剪",
+			"tip": "图像的裁剪区域"
+		},
+		"insertImage-width": {
+			"label": "宽度",
+			"tip": "图像的显示宽度"
+		},
+		"insertImage-height": {
+			"label": "高度",
+			"tip": "图像的显示高度"
+		}
+	}
+}

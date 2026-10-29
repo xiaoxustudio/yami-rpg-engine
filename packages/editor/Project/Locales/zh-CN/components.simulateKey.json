@@ -1,0 +1,29 @@
+{
+	"components": {
+		"simulateKey": {
+			"title": "模拟按键"
+		},
+		"simulateKey-operation": {
+			"label": "操作",
+			"tip": "模拟一个按键行为",
+			"options": {
+				"click": {
+					"name": "点击",
+					"tip": "模拟指定按键的按下和弹起行为"
+				},
+				"press": {
+					"name": "按下",
+					"tip": "如果指定按键处于弹起状态，则模拟按下行为，触发\"键盘按下\"事件"
+				},
+				"release": {
+					"name": "弹起",
+					"tip": "如果指定按键处于按下状态，则模拟弹起行为，触发\"键盘弹起\"事件"
+				}
+			}
+		},
+		"simulateKey-keycode": {
+			"label": "按键",
+			"tip": "按下任意键可输入按键码"
+		}
+	}
+}

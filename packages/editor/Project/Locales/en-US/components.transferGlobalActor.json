@@ -1,0 +1,15 @@
+{
+	"components": {
+		"transferGlobalActor": {
+			"title": "Transfer Global Actor"
+		},
+		"transferGlobalActor-actor": {
+			"label": "Actor",
+			"tip": "Get this global actor from the background and transfer him to the scene"
+		},
+		"transferGlobalActor-position": {
+			"label": "Position",
+			"tip": "Set a location in the current scene where this actor will appear"
+		}
+	}
+}

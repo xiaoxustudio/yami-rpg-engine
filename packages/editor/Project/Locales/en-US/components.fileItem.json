@@ -1,0 +1,31 @@
+{
+	"components": {
+		"fileItem-general-grid": {
+			"label": "General"
+		},
+		"fileItem-icon": {
+			"label": "Icon",
+			"tip": "Item Icon\n$Related command\nLoad Image"
+		},
+		"fileItem-clip": {
+			"label": "Clip",
+			"tip": "Clip area of icon\n$Related command\nLoad Image"
+		},
+		"fileItem-inherit": {
+			"label": "Inherit",
+			"tip": "Inherits specified item's attributes, events, and scripts\nIf the same attribute exists, it overrides the inherited item's attribute value\nIf the same type of event exists, it overrides the inherited item's event\nOverridden events can still be triggered using the 'Call Event' command\nHowever, inherited scripts will stack instead of being overridden"
+		},
+		"fileItem-attributes": {
+			"label": "Attributes",
+			"tip": "Attribute list (readonly)\n$Optional types\nBoolean, Number, String, Enumeration(String)\n$Related commands\nSet Boolean, Set Number, Set String"
+		},
+		"fileItem-events": {
+			"label": "Events",
+			"tip": "A list of item events\nAccess \"Event Trigger Actor\" to get the actor that uses this item\nAccess \"Event Trigger Item\" to get this item\n$Optional types\nUse Item: Triggered when the actor uses this item\nCustom: Triggered by the \"Call Event\" command"
+		},
+		"fileItem-scripts": {
+			"label": "Scripts",
+			"tip": "Add script files to extend this item"
+		}
+	}
+}

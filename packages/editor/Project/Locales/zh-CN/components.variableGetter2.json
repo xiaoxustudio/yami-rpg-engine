@@ -1,0 +1,27 @@
+{
+	"components": {
+		"variableGetter2": {
+			"title": "变量"
+		},
+		"variableGetter2-type": {
+			"label": "类型",
+			"tip": "如何获取变量"
+		},
+		"variableGetter2-element": {
+			"label": "元素",
+			"tip": "访问这个元素的属性"
+		},
+		"variableGetter2-common-key": {
+			"label": "键",
+			"tip": "本地变量"
+		},
+		"variableGetter2-preset-key": {
+			"label": "键",
+			"tip": "对象属性"
+		},
+		"variableGetter2-global-key": {
+			"label": "键",
+			"tip": "全局变量"
+		}
+	}
+}

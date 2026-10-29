@@ -1,0 +1,33 @@
+{
+	"components": {
+		"changeThreat": {
+			"title": "增减仇恨值"
+		},
+		"changeThreat-actor": {
+			"label": "角色",
+			"tip": "改变这个角色对目标角色的仇恨值"
+		},
+		"changeThreat-target": {
+			"label": "目标",
+			"tip": "目标角色"
+		},
+		"changeThreat-operation": {
+			"label": "操作",
+			"tip": "仇恨值设置操作",
+			"options": {
+				"increase": {
+					"name": "增加",
+					"tip": "增加对目标角色的仇恨值，同时自动将目标角色加入到角色的目标池中"
+				},
+				"decrease": {
+					"name": "减少",
+					"tip": "减少对目标角色的仇恨值"
+				}
+			}
+		},
+		"changeThreat-threat": {
+			"label": "仇恨值",
+			"tip": "可通过\"获取目标\"指令获取\"最大仇恨值\"角色"
+		}
+	}
+}

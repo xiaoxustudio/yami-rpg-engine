@@ -1,0 +1,37 @@
+{
+	"components": {
+		"changeActorState": {
+			"title": "改变角色状态"
+		},
+		"changeActorState-actor": {
+			"label": "角色",
+			"tip": "改变这个角色的状态"
+		},
+		"changeActorState-operation": {
+			"label": "操作",
+			"tip": "角色状态操作",
+			"options": {
+				"add": {
+					"name": "添加",
+					"tip": "创建指定ID的状态，添加到角色状态列表中（如果已经存在相同状态，先移除它）"
+				},
+				"remove": {
+					"name": "移除",
+					"tip": "从角色状态列表中移除指定ID的状态"
+				},
+				"remove-instance": {
+					"name": "移除实例",
+					"tip": "读取状态访问器，从角色状态列表中移除它"
+				}
+			}
+		},
+		"changeActorState-stateId": {
+			"label": "状态",
+			"tip": "指定状态文件ID"
+		},
+		"changeActorState-state": {
+			"label": "状态",
+			"tip": "状态访问器"
+		}
+	}
+}

@@ -1,0 +1,31 @@
+{
+	"components": {
+		"setTile": {
+			"title": "设置图块"
+		},
+		"setTile-tilemap": {
+			"label": "瓦片地图",
+			"tip": "要替换图块的瓦片地图"
+		},
+		"setTile-tilemapX": {
+			"label": "瓦片地图 X",
+			"tip": "要替换图块的水平位置"
+		},
+		"setTile-tilemapY": {
+			"label": "瓦片地图 Y",
+			"tip": "要替换图块的垂直位置"
+		},
+		"setTile-tilesetId": {
+			"label": "图块组",
+			"tip": "从这个文件中获取图块"
+		},
+		"setTile-tilesetX": {
+			"label": "图块组 X",
+			"tip": "新图块的水平位置"
+		},
+		"setTile-tilesetY": {
+			"label": "图块组 Y",
+			"tip": "新图块的垂直位置"
+		}
+	}
+}

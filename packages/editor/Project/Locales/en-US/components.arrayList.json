@@ -1,0 +1,10 @@
+{
+	"components": {
+		"arrayList-number": {
+			"title": "Number"
+		},
+		"arrayList-string": {
+			"title": "String"
+		}
+	}
+}

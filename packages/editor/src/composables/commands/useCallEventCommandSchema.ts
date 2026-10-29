@@ -321,9 +321,10 @@ export function useCallEventCommandSchema() {
 	const createParameterElements = (parameter: CallEventArg): void => {
 		const { type, key, note } = parameter;
 		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
-		const labelEl = (composableEls.get('callEvent-label-template') as YamiElement).cloneNode(
-			true
-		) as HTMLElement;
+		const labelEl = composableEls.get('callEvent-label-template')?.cloneNode(true) as
+			| HTMLElement
+			| undefined;
+		if (!labelEl) return;
 		labelEl.textContent = name;
 		let input: HTMLElement & CallEventInputApi;
 		switch (type) {
@@ -443,9 +444,10 @@ export function useCallEventCommandSchema() {
 		write(input, { type: 'local', key: '' });
 		const text = t('command.callEvent.return');
 		const tip = t('command.callEvent.return.tip');
-		const labelEl = (composableEls.get('callEvent-label-template') as YamiElement).cloneNode(
-			true
-		) as HTMLElement;
+		const labelEl = composableEls.get('callEvent-label-template')?.cloneNode(true) as
+			| HTMLElement
+			| undefined;
+		if (!labelEl) return;
 		labelEl.textContent = text;
 		setTooltip(input, `<b>${text}</b>\n${tip}`);
 		addClass(input, 'call-event-component');

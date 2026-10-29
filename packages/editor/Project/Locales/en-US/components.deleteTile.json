@@ -1,0 +1,19 @@
+{
+	"components": {
+		"deleteTile": {
+			"title": "Delete Tile"
+		},
+		"deleteTile-tilemap": {
+			"label": "Tilemap",
+			"tip": "Tilemap to delete tile from"
+		},
+		"deleteTile-tilemapX": {
+			"label": "Tilemap X",
+			"tip": "Horizontal position of tile to be deleted"
+		},
+		"deleteTile-tilemapY": {
+			"label": "Tilemap Y",
+			"tip": "Vertical position of tile to be deleted"
+		}
+	}
+}

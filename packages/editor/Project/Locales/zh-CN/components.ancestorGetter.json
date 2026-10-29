@@ -1,0 +1,20 @@
+{
+	"components": {
+		"ancestorGetter": {
+			"title": "祖先元素"
+		},
+		"ancestorGetter-type": {
+			"label": "类型",
+			"tip": "如何获取元素",
+			"options": {}
+		},
+		"ancestorGetter-presetId": {
+			"label": "数据ID",
+			"tip": "获取预设的元素"
+		},
+		"ancestorGetter-variable": {
+			"label": "变量",
+			"tip": "获取变量中的元素对象"
+		}
+	}
+}

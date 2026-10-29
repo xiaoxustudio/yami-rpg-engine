@@ -1,0 +1,36 @@
+{
+	"components": {
+		"tintScreen": {
+			"title": "改变画面色调"
+		},
+		"tintScreen-tint-0": {
+			"label": "色调 - 红",
+			"tip": "输入颜色(红) + 色调(红) = 输出颜色(红)"
+		},
+		"tintScreen-tint-1": {
+			"label": "色调 - 绿",
+			"tip": "输入颜色(绿) + 色调(绿) = 输出颜色(绿)"
+		},
+		"tintScreen-tint-2": {
+			"label": "色调 - 蓝",
+			"tip": "输入颜色(蓝) + 色调(蓝) = 输出颜色(蓝)"
+		},
+		"tintScreen-tint-3": {
+			"label": "色调 - 灰",
+			"tip": "灰度与饱和度相反，灰度越高则饱和度越低"
+		},
+		"tintScreen-easingId": {
+			"label": "过渡"
+		},
+		"tintScreen-duration": {
+			"label": "时长"
+		},
+		"tintScreen-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

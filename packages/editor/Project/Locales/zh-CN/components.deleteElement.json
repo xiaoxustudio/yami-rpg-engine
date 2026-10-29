@@ -1,0 +1,29 @@
+{
+	"components": {
+		"deleteElement": {
+			"title": "删除元素"
+		},
+		"deleteElement-operation": {
+			"label": "操作",
+			"tip": "执行一个删除操作",
+			"options": {
+				"delete-element": {
+					"name": "删除元素",
+					"tip": "删除指定的单个元素"
+				},
+				"delete-children": {
+					"name": "删除子元素",
+					"tip": "删除指定元素的所有子元素"
+				},
+				"delete-all": {
+					"name": "删除所有元素",
+					"tip": "删除所有元素（重置UI）"
+				}
+			}
+		},
+		"deleteElement-element": {
+			"label": "元素",
+			"tip": "对这个元素执行操作"
+		}
+	}
+}

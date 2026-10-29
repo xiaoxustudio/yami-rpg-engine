@@ -1,0 +1,57 @@
+{
+	"components": {
+		"setButton": {
+			"title": "设置按钮"
+		},
+		"setButton-element": {
+			"label": "元素",
+			"tip": "指定一个按钮元素"
+		},
+		"setButton-properties": {
+			"label": "属性"
+		},
+		"setButton-property": {
+			"title": "按钮属性"
+		},
+		"setButton-property-key": {
+			"label": "属性",
+			"tip": "按钮元素的属性",
+			"options": {
+				"normalImage": "正常图像",
+				"hoverImage": "选中图像",
+				"activeImage": "按下图像",
+				"normalClip": "正常裁剪区域",
+				"hoverClip": "选中裁剪区域",
+				"activeClip": "按下裁剪区域",
+				"normalTint": "正常色调",
+				"hoverTint": "选中色调",
+				"activeTint": "按下色调",
+				"imageOpacity": "图像不透明度",
+				"content": "内容",
+				"size": "大小",
+				"letterSpacing": "字间距"
+			}
+		},
+		"setButton-property-image": {
+			"label": "图像"
+		},
+		"setButton-property-clip-box": {
+			"label": "裁剪区域"
+		},
+		"setButton-property-tint-box": {
+			"label": "色调"
+		},
+		"setButton-property-imageOpacity": {
+			"label": "不透明度"
+		},
+		"setButton-property-content": {
+			"label": "内容"
+		},
+		"setButton-property-size": {
+			"label": "大小"
+		},
+		"setButton-property-letterSpacing": {
+			"label": "字间距"
+		}
+	}
+}

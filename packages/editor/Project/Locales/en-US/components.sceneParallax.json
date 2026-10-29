@@ -1,0 +1,164 @@
+{
+	"components": {
+		"sceneParallax-general-grid": {
+			"label": "General"
+		},
+		"sceneParallax-name": {
+			"label": "Name",
+			"tip": "Parallax Name (note: this is a label for user reference only)"
+		},
+		"sceneParallax-image": {
+			"label": "Image",
+			"tip": "Selected Parallax File"
+		},
+		"sceneParallax-layer": {
+			"label": "Layer",
+			"tip": "Foreground layer always overlaps Background layer, Object layer always overlaps Background layer\nIf layers are the same type, sorting goes in order with the highest value displayed first\nIf the order is the same, sorting goes by Object list position",
+			"options": {
+				"background": {
+					"name": "Background",
+					"tip": "Background layer is always displayed behind (or 'under') Object layer and/or Foreground layer"
+				},
+				"foreground": {
+					"name": "Foreground",
+					"tip": "Foreground layer is always displayed in front of (or 'on top of') Object layer and/or Background layer"
+				}
+			}
+		},
+		"sceneParallax-order": {
+			"label": "Order",
+			"tip": "Parallax images and tile maps on the same layer are sorted in order, with higher values displayed in front"
+		},
+		"sceneParallax-light": {
+			"label": "Light",
+			"tip": "Affects the rendering of the selected image (or 'lights & shadows')",
+			"options": {
+				"raw": {
+					"name": "Raw",
+					"tip": "Image is unaffected by lighting"
+				},
+				"anchor": {
+					"name": "Anchor Sampling",
+					"tip": "Color is synthesized by sampling light relative to the image's anchor point"
+				},
+				"global": {
+					"name": "Global Sampling",
+					"tip": "Color is synthesized by sampling multi-pixel locations relative to the image's location"
+				},
+				"ambient": {
+					"name": "Ambient Light",
+					"tip": "Color is a composite of the current Scene's existing lighting"
+				}
+			}
+		},
+		"sceneParallax-blend": {
+			"label": "Blend",
+			"tip": "Choose a formula to blend the color with the underlying color",
+			"options": {
+				"normal": {
+					"name": "Normal",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "Additive",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "Subtract",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		},
+		"sceneParallax-opacity": {
+			"label": "Opacity",
+			"tip": "Parallax image's visibility (transparency adjustment)"
+		},
+		"sceneParallax-x": {
+			"label": "X",
+			"tip": "Parallax's initial horizontal coordinates"
+		},
+		"sceneParallax-y": {
+			"label": "Y",
+			"tip": "Parallax's initial vertical coordinates"
+		},
+		"sceneParallax-parallax-grid": {
+			"label": "Parallax"
+		},
+		"sceneParallax-scaleX": {
+			"label": "Scale X",
+			"tip": "Parallax's horizontal scaling factor"
+		},
+		"sceneParallax-scaleY": {
+			"label": "Scale Y",
+			"tip": "Parallax's vertical scaling factor"
+		},
+		"sceneParallax-repeatX": {
+			"label": "Repeat X",
+			"tip": "Parallax's horizontal tile count"
+		},
+		"sceneParallax-repeatY": {
+			"label": "Repeat Y",
+			"tip": "Parallax's vertical tile count"
+		},
+		"sceneParallax-anchorX": {
+			"label": "Anchor X",
+			"tip": "Horizontal position of rectangular area connection point between Parallax and Scene"
+		},
+		"sceneParallax-anchorY": {
+			"label": "Anchor Y",
+			"tip": "Vertical position of rectangular area connection point between Parallax and Scene"
+		},
+		"sceneParallax-offsetX": {
+			"label": "Offset X",
+			"tip": "Parallax's horizontal offset distance (in pixels)"
+		},
+		"sceneParallax-offsetY": {
+			"label": "Offset Y",
+			"tip": "Parallax's vertical offset distance (in pixels)"
+		},
+		"sceneParallax-parallaxFactorX": {
+			"label": "Parallax Factor X",
+			"tip": "Coefficient for horizontal parallax movement when camera moves"
+		},
+		"sceneParallax-parallaxFactorY": {
+			"label": "Parallax Factor Y",
+			"tip": "Coefficient for vertical parallax movement when camera moves"
+		},
+		"sceneParallax-shiftSpeedX": {
+			"label": "Shift Speed X",
+			"tip": "Parallax's horizontal auto-scroll speed (in pixels per second)"
+		},
+		"sceneParallax-shiftSpeedY": {
+			"label": "Shift Speed Y",
+			"tip": "Parallax's vertical auto-scroll speed (in pixels per second)"
+		},
+		"sceneParallax-tint-0-box": {
+			"label": "Tint - Red",
+			"tip": "Input color (red) + Hue (red) = Output Color (red)"
+		},
+		"sceneParallax-tint-1-box": {
+			"label": "Tint - Green",
+			"tip": "Input color (green) + Hue (green) = Output Color (green)"
+		},
+		"sceneParallax-tint-2-box": {
+			"label": "Tint - Blue",
+			"tip": "Input color (blue) + Hue (blue) = Output Color (blue)"
+		},
+		"sceneParallax-tint-3-box": {
+			"label": "Tint - Grayscale",
+			"tip": "Reduces color saturation (to black & white if high enough)"
+		},
+		"sceneParallax-conditions": {
+			"label": "Conditions",
+			"tip": "Set a list of conditions for the Parallax to be created; if they aren't met, the Parallax isn't created"
+		},
+		"sceneParallax-events": {
+			"label": "Events",
+			"tip": "$Parallax Events\n$Options\nAutorun: Event triggers as soon as the Parallax appears (including after reading save data)\nCustom: triggered using the 'Call Event' command"
+		},
+		"sceneParallax-scripts": {
+			"label": "Scripts",
+			"tip": "Add Script files to extend Parallax functions"
+		}
+	}
+}

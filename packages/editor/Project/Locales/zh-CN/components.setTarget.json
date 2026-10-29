@@ -1,0 +1,11 @@
+{
+	"components": {
+		"setTarget": {
+			"title": "设置目标"
+		},
+		"setTarget-actor": {
+			"label": "角色",
+			"tip": "将指定角色设置到角色访问器中的\"目标角色\""
+		}
+	}
+}

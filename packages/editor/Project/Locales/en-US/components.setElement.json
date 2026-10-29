@@ -1,0 +1,45 @@
+{
+	"components": {
+		"setElement": {
+			"title": "Set Element"
+		},
+		"setElement-element": {
+			"label": "Element",
+			"tip": "Specify any type of element"
+		},
+		"setElement-operation": {
+			"label": "Operation",
+			"tip": "Perform an element operation",
+			"options": {
+				"hide": {
+					"name": "Hide",
+					"tip": "When an element is hidden, it and its descendant elements (which actually still exist) will no longer be rendered."
+				},
+				"show": {
+					"name": "Show",
+					"tip": "Unhide the element."
+				},
+				"disable-pointer-events": {
+					"name": "Disable Pointer Events",
+					"tip": "Disable automatic triggering of all pointer events (including mouse-down events) for this element and its descendant elements."
+				},
+				"enable-pointer-events": {
+					"name": "Enable Pointer Events",
+					"tip": "Restore automatic triggering of element pointer events."
+				},
+				"skip-pointer-events": {
+					"name": "Skip Pointer Events",
+					"tip": "Disable automatic triggering of all pointer events for this element, but not for its descendant elements."
+				},
+				"move-to-first": {
+					"name": "Move to First",
+					"tip": "Move the element to the first position in the list of its parent's child elements (always obscured by other child elements, equivalent to being placed at the bottom)."
+				},
+				"move-to-last": {
+					"name": "Move to Last",
+					"tip": "Move the element to the last position in the list of its parent's child elements (always obscuring other children, equivalent to being placed on top)."
+				}
+			}
+		}
+	}
+}

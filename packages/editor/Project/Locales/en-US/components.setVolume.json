@@ -1,0 +1,28 @@
+{
+	"components": {
+		"setVolume": {
+			"title": "Set Volume"
+		},
+		"setVolume-type": {
+			"label": "Type",
+			"tip": "Perform operation on this type of sound"
+		},
+		"setVolume-volume": {
+			"label": "Volume",
+			"tip": "Volume level (0 ~ 1)"
+		},
+		"setVolume-easingId": {
+			"label": "Easing"
+		},
+		"setVolume-duration": {
+			"label": "Duration"
+		},
+		"setVolume-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

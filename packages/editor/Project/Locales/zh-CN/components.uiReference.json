@@ -1,0 +1,15 @@
+{
+	"components": {
+		"uiReference-properties-grid": {
+			"label": "引用属性"
+		},
+		"uiReference-prefabId": {
+			"label": "预制件",
+			"tip": "将自身替换成这个元素"
+		},
+		"uiReference-synchronous": {
+			"label": "同步",
+			"tip": "在编辑时自动更新到被引用元素的大小，但是可以设置不同的位置"
+		}
+	}
+}

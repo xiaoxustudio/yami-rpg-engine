@@ -5,7 +5,7 @@ import {
 	type LocaleData,
 	type FlatMessages
 } from './convert';
-import { loadLanguage, loadLanguageList, resolveLanguage } from './loader';
+import { loadLanguageBundle, loadLanguageList, resolveLanguage } from './loader';
 import { localizeDomComponents, type LocalComponentItem } from '@app/localize/dom-localizer';
 import { getLocalStore } from '@app/stores/local';
 import { Editor } from '@app/services/project/editor';
@@ -15,6 +15,14 @@ const flatMessages: Record<string, FlatMessages> = {};
 const loadedLocaleData: Record<string, LocaleData> = {};
 let loadPromise: Promise<string> | null = null;
 
+/**
+ * 语言包按组件命名空间拆分（`Project/Locales/<lang>/components.<ns>.json`），但**加载时一次性合并**。
+ *
+ * 为什么不做逐片懒加载：vue-i18n 的消息表是全局响应式的，任何一次 `mergeLocaleMessage` 都会让
+ * 所有调用过 `t()` 的组件重渲染。项目打开后同时挂着 250+ 窗口，逐命名空间合并（哪怕攒成小批）
+ * 会变成上百轮全量重渲染——实测把渲染进程 CPU 跑满且界面无响应。分片的收益在**文件布局**
+ * （按组件收敛、diff 小），不在运行期；加载时并行读盘、在内存里合并一次，与单文件语言包等价。
+ */
 function resolveFlat(messages: unknown, key: string): unknown {
 	const table = (messages ?? {}) as FlatMessages;
 	if (key in table) return table[key];
@@ -92,7 +100,8 @@ export async function loadI18n(language?: string): Promise<string> {
 			const entry = languages.find((l) => l.key === key);
 			if (!entry) return '';
 			if (!flatMessages[key]) {
-				const data = await loadLanguage(entry.filename);
+				// 入口 + 全部分片一次读完（并行），只 set 一次消息表：避免任何运行期二次 merge。
+				const data = await loadLanguageBundle(entry.filename, entry.key);
 				applyLocaleData(entry.key, data);
 			} else {
 				i18n.global.locale.value = entry.key;

@@ -1,0 +1,11 @@
+{
+	"components": {
+		"rename": {
+			"title": "重命名"
+		},
+		"rename-name": {
+			"label": "名称",
+			"tip": "输入新的名称"
+		}
+	}
+}

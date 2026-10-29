@@ -1,0 +1,263 @@
+{
+	"components": {
+		"uiButton-image-properties-grid": {
+			"label": "Image Properties"
+		},
+		"uiButton-display": {
+			"label": "Display",
+			"tip": "How to display this image",
+			"options": {
+				"stretch": {
+					"name": "Stretch",
+					"tip": "Stretch the image to fill the element"
+				},
+				"tile": {
+					"name": "Tile",
+					"tip": "Tile the image to fill the element"
+				},
+				"clip": {
+					"name": "Clip",
+					"tip": "Crop the image and stretch to fill the element"
+				},
+				"slice": {
+					"name": "Slice",
+					"tip": "Slice the image into 9 parts and tile to fill the element"
+				}
+			}
+		},
+		"uiButton-normalImage": {
+			"label": "Normal Image",
+			"tip": "Image shown in button's normal state"
+		},
+		"uiButton-normalClip": {
+			"label": "Normal Clip",
+			"tip": "Cropping area of normal image"
+		},
+		"uiButton-hoverImage": {
+			"label": "Hover Image",
+			"tip": "Image shown when button is hovered"
+		},
+		"uiButton-hoverClip": {
+			"label": "Hover Clip",
+			"tip": "Cropping area of hovered image"
+		},
+		"uiButton-activeImage": {
+			"label": "Active Image",
+			"tip": "Image shown when button is pressed"
+		},
+		"uiButton-activeClip": {
+			"label": "Active Clip",
+			"tip": "Cropping area of pressed image"
+		},
+		"uiButton-flip": {
+			"label": "Flip",
+			"tip": "How to flip the button image",
+			"options": {
+				"none": {
+					"name": "None",
+					"tip": "Display the image normally"
+				},
+				"horizontal": {
+					"name": "Horizontal",
+					"tip": "Flip the image 180 degrees horizontally"
+				},
+				"vertical": {
+					"name": "Vertical",
+					"tip": "Flip the image 180 degrees vertically"
+				},
+				"both": {
+					"name": "Both",
+					"tip": "Flip the image horizontally and vertically"
+				}
+			}
+		},
+		"uiButton-border": {
+			"label": "Border",
+			"tip": "Image sliced into 9 parts (4 corners, 4 edges, 1 center). Border size is corner side length"
+		},
+		"uiButton-imagePadding-box": {
+			"label": "Padding",
+			"tip": "Space between image and element border"
+		},
+		"uiButton-imageOpacity-box": {
+			"label": "Opacity",
+			"tip": "Used to adjust the image's visibility"
+		},
+		"uiButton-imageEffect": {
+			"label": "Effect",
+			"tip": "Select the effect for the image",
+			"options": {
+				"none": {
+					"name": "None",
+					"tip": "Display the original image"
+				},
+				"tint-1": {
+					"name": "Tint",
+					"tip": "Set the tint for the normal image, with the hover and active images inheriting the normal image's tint"
+				},
+				"tint-2": {
+					"name": "Tint (Normal, Hover)",
+					"tip": "Set separate tints for the normal and hover images, with the active image inheriting the hover image's tint"
+				},
+				"tint-3": {
+					"name": "Tint (Normal, Hover, Active)",
+					"tip": "Set separate tints for the normal, hover, and active images"
+				}
+			}
+		},
+		"uiButton-normalTint-box": {
+			"label": "Normal Tint",
+			"tip": "Tint for button in normal state"
+		},
+		"uiButton-hoverTint-box": {
+			"label": "Hover Tint",
+			"tip": "Tint for button in hover state"
+		},
+		"uiButton-activeTint-box": {
+			"label": "Active Tint",
+			"tip": "Tint for button in active state"
+		},
+		"uiButton-text-properties-grid": {
+			"label": "Text Properties"
+		},
+		"uiButton-direction": {
+			"label": "Direction",
+			"tip": "Choose the text layout direction",
+			"options": {
+				"horizontal-tb": {
+					"name": "Horizontal",
+					"tip": "Content flows horizontally from left to right"
+				},
+				"vertical-lr": {
+					"name": "Vertical",
+					"tip": "Content flows vertically from top to bottom"
+				}
+			}
+		},
+		"uiButton-align-box": {
+			"label": "Align"
+		},
+		"uiButton-align-left": {
+			"tip": "$Left\nAlign the left edge of the text with the left edge of the element"
+		},
+		"uiButton-align-center": {
+			"tip": "$Center\nAlign the horizontal midpoint of the text with the horizontal midpoint of the element"
+		},
+		"uiButton-align-right": {
+			"tip": "$Right\nAlign the right edge of the text with the right edge of the element"
+		},
+		"uiButton-align-top": {
+			"tip": "$Top\nAlign the top edge of the text with the top edge of the element"
+		},
+		"uiButton-align-middle": {
+			"tip": "$Middle\nAlign the vertical midpoint of the text with the vertical midpoint of the element"
+		},
+		"uiButton-align-bottom": {
+			"tip": "$Bottom\nAlign the bottom edge of the text with the bottom edge of the element"
+		},
+		"uiButton-content": {
+			"label": "Content",
+			"tip": "Text content of the element"
+		},
+		"uiButton-size-box": {
+			"label": "Size",
+			"tip": "Text size (10 ~ 400)"
+		},
+		"uiButton-letterSpacing-box": {
+			"label": "Letter Spacing",
+			"tip": "Spacing between each letter on the same line"
+		},
+		"uiButton-textPadding-box": {
+			"label": "Padding",
+			"tip": "Space between text and element border"
+		},
+		"uiButton-font": {
+			"label": "Font",
+			"placeholder": "Default",
+			"tip": "Enter the font name. If there are multiple fonts, separate them with commas in left-to-right priority order"
+		},
+		"uiButton-typeface": {
+			"label": "Typeface",
+			"tip": "Select the text style",
+			"options": {
+				"regular": {
+					"name": "Regular",
+					"tip": "Default text style"
+				},
+				"bold": {
+					"name": "Bold",
+					"tip": "Bold for emphasis"
+				},
+				"italic": {
+					"name": "Italic",
+					"tip": "Italicized to simulate cursive"
+				},
+				"bold-italic": {
+					"name": "Bold Italic",
+					"tip": "Enable both bold and italic"
+				}
+			}
+		},
+		"uiButton-textEffect-type": {
+			"label": "Effect",
+			"tip": "Select a text effect",
+			"options": {
+				"none": {
+					"name": "None",
+					"tip": "No effect."
+				},
+				"shadow": {
+					"name": "Shadow",
+					"tip": "Render text as shadow at the specified offset position"
+				},
+				"stroke": {
+					"name": "Stroke",
+					"tip": "Render the specified width of the text outline, with half the width covered by the text"
+				},
+				"outline": {
+					"name": "Outline",
+					"tip": "Render the text as an outline by offsetting 1 pixel in each direction (top, bottom, left, right)"
+				}
+			}
+		},
+		"uiButton-textEffect-shadowOffsetX": {
+			"label": "Shadow X",
+			"tip": "Horizontal offset of the text shadow"
+		},
+		"uiButton-textEffect-shadowOffsetY": {
+			"label": "Shadow Y",
+			"tip": "Vertical offset of the text shadow"
+		},
+		"uiButton-textEffect-strokeWidth": {
+			"label": "Stroke Width",
+			"tip": "Width of the text outline stroke"
+		},
+		"uiButton-textEffect-color": {
+			"label": "Effect Color",
+			"tip": "Color of the background text"
+		},
+		"uiButton-normalColor": {
+			"label": "Normal Color",
+			"tip": "Text color in the button's normal state"
+		},
+		"uiButton-hoverColor": {
+			"label": "Hover Color",
+			"tip": "Text color in the button's hover state"
+		},
+		"uiButton-activeColor": {
+			"label": "Active Color",
+			"tip": "Text color in the button's active state"
+		},
+		"uiButton-sound-effects-grid": {
+			"label": "Sound Effects"
+		},
+		"uiButton-hoverSound": {
+			"label": "Hover SE",
+			"tip": "Sound effect when the button is hovered (must be manually triggered by the user)"
+		},
+		"uiButton-clickSound": {
+			"label": "Click SE",
+			"tip": "Sound effect when the button is clicked"
+		}
+	}
+}

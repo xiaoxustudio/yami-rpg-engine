@@ -1,0 +1,93 @@
+{
+	"components": {
+		"forEach": {
+			"title": "For Each"
+		},
+		"forEach-data": {
+			"label": "Data",
+			"tip": "Which data to get one by one",
+			"options": {
+				"list": {
+					"name": "List Item",
+					"tip": "Read the value in the list one by one"
+				},
+				"skill": {
+					"name": "Skill",
+					"tip": "Read all skills of the actor"
+				},
+				"state": {
+					"name": "State",
+					"tip": "Read all states of the actor"
+				},
+				"equipment": {
+					"name": "Equipment Slot",
+					"tip": "Read all equipment in the actor's slots"
+				},
+				"inventory": {
+					"name": "Inventory",
+					"tip": "Read all items and equipment in the actor's inventory"
+				},
+				"element": {
+					"name": "Element",
+					"tip": "Read all child elements of the specified element"
+				},
+				"member": {
+					"name": "Party Member",
+					"tip": "Read all members of the player party"
+				},
+				"attribute": {
+					"name": "Attribute Key",
+					"tip": "Read all attribute keys in the attribute group"
+				},
+				"enum": {
+					"name": "Enumeration Value",
+					"tip": "Read all enumeration values in the enumeration group"
+				},
+				"save": {
+					"name": "Save Data",
+					"tip": "Read indexes (0, 1, 2, ...) and read local variables from save data"
+				},
+				"touch": {
+					"name": "Touch Point",
+					"tip": "Read all existing touch point IDs (excluding ended touch points) from the touch event"
+				},
+				"changed-touch": {
+					"name": "Changed Touch Point",
+					"tip": "Read all touch point IDs that triggered the event from the touch event"
+				}
+			}
+		},
+		"forEach-list": {
+			"label": "List Variable",
+			"tip": "Get data from this list one by one"
+		},
+		"forEach-actor": {
+			"label": "Actor",
+			"tip": "Actor accessor"
+		},
+		"forEach-element": {
+			"label": "Parent Element",
+			"tip": "Get the child elements of this element one by one"
+		},
+		"forEach-attribute-groupId": {
+			"label": "Attribute Group",
+			"tip": "Get data from this attribute group one by one"
+		},
+		"forEach-enum-groupId": {
+			"label": "Enum Group",
+			"tip": "Get data from this enum group one by one"
+		},
+		"forEach-variable": {
+			"label": "Write to Variable",
+			"tip": "Write the read data to the specified variable"
+		},
+		"forEach-saveIndex": {
+			"label": "Write Save Index",
+			"tip": "Write the save index to the specified variable"
+		},
+		"forEach-touchId": {
+			"label": "Write Touch Id",
+			"tip": "Write the touch id to the specified variable"
+		}
+	}
+}

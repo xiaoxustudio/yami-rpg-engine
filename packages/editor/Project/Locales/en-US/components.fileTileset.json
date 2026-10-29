@@ -1,0 +1,39 @@
+{
+	"components": {
+		"fileTileset-general-grid": {
+			"label": "Tileset"
+		},
+		"fileTileset-image": {
+			"label": "Image",
+			"tip": "Sprite image for normal tiles"
+		},
+		"fileTileset-width": {
+			"label": "Width",
+			"tip": "Number of horizontal tiles in tileset (1 ~ 256)"
+		},
+		"fileTileset-height": {
+			"label": "Height",
+			"tip": "Number of vertical tiles in tileset (1 ~ 256)"
+		},
+		"fileTileset-tileWidth": {
+			"label": "Tile Width",
+			"tip": "Horizontal pixels per tile (16 ~ 256)"
+		},
+		"fileTileset-tileHeight": {
+			"label": "Tile Height",
+			"tip": "Vertical pixels per tile (16 ~ 256)"
+		},
+		"fileTileset-globalOffsetX": {
+			"label": "Tile Offset X",
+			"tip": "Horizontal offset of tiles in scene"
+		},
+		"fileTileset-globalOffsetY": {
+			"label": "Tile Offset Y",
+			"tip": "Vertical offset of tiles in scene"
+		},
+		"fileTileset-globalPriority": {
+			"label": "Tile Priority",
+			"tip": "Sorting priority of tiles when rendering on the object layer.\nTiles below always overlay those above.\nPriority = -1: shift sort up by one tile.\nPriority = 1: shift sort down by one tile."
+		}
+	}
+}

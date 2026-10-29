@@ -1,0 +1,26 @@
+{
+	"components": {
+		"enum": {
+			"title": "枚举"
+		},
+		"enum-list": {
+			"label": "列表"
+		},
+		"enum-properties-flex": {
+			"label": "属性"
+		},
+		"enum-name": {
+			"label": "名称",
+			"tip": "枚举的名称"
+		},
+		"enum-value": {
+			"label": "值",
+			"placeholder": "默认",
+			"tip": "枚举的值，默认使用枚举ID作为值"
+		},
+		"enum-note": {
+			"label": "备注",
+			"tip": "枚举的备注说明"
+		}
+	}
+}

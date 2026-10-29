@@ -1,0 +1,25 @@
+{
+	"components": {
+		"regionGetter": {
+			"title": "区域"
+		},
+		"regionGetter-type": {
+			"label": "类型",
+			"tip": "如何获取区域",
+			"options": {
+				"trigger": {
+					"name": "事件触发区域",
+					"tip": "触发这个事件的区域"
+				},
+				"by-id": {
+					"name": "指定区域ID",
+					"tip": "获取场景中预设的区域"
+				}
+			}
+		},
+		"regionGetter-presetId": {
+			"label": "数据ID",
+			"tip": "获取场景中预设的区域"
+		}
+	}
+}

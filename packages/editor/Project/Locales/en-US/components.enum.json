@@ -1,0 +1,26 @@
+{
+	"components": {
+		"enum": {
+			"title": "Enumeration"
+		},
+		"enum-list": {
+			"label": "List"
+		},
+		"enum-properties-flex": {
+			"label": "Properties"
+		},
+		"enum-name": {
+			"label": "Name",
+			"tip": "Enumeration name"
+		},
+		"enum-value": {
+			"label": "Value",
+			"placeholder": "Default",
+			"tip": "Enumeration value; defaults to enumeration ID"
+		},
+		"enum-note": {
+			"label": "Note",
+			"tip": "Notes about the enum"
+		}
+	}
+}

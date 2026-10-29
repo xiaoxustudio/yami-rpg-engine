@@ -1,0 +1,37 @@
+{
+	"components": {
+		"changeActorPortrait": {
+			"title": "改变角色头像"
+		},
+		"changeActorPortrait-actor": {
+			"label": "角色",
+			"tip": "改变这个角色的头像"
+		},
+		"changeActorPortrait-mode": {
+			"label": "模式",
+			"tip": "改变哪些参数",
+			"options": {
+				"full": {
+					"name": "完全模式",
+					"tip": "同时改变图像和裁剪区域"
+				},
+				"portrait": {
+					"name": "图像模式",
+					"tip": "只改变图像"
+				},
+				"clip": {
+					"name": "裁剪模式",
+					"tip": "只改变裁剪区域"
+				}
+			}
+		},
+		"changeActorPortrait-portrait": {
+			"label": "头像",
+			"tip": "指定图像文件ID"
+		},
+		"changeActorPortrait-clip": {
+			"label": "裁剪区域",
+			"tip": "头像的裁剪区域"
+		}
+	}
+}

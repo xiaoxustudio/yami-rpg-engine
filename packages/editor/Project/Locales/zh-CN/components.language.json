@@ -1,0 +1,19 @@
+{
+	"components": {
+		"language": {
+			"title": "语言"
+		},
+		"language-name": {
+			"label": "名称",
+			"tip": "选择一个语言"
+		},
+		"language-font": {
+			"label": "字体",
+			"tip": "该语言的首选字体"
+		},
+		"language-scale": {
+			"label": "字体缩放系数",
+			"tip": "缩放所有文字的大小"
+		}
+	}
+}

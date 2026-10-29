@@ -1,0 +1,13 @@
+{
+	"components": {
+		"request-keyValue": {
+			"title": "Key Value Data Group"
+		},
+		"request-keyValue-key": {
+			"label": "Key"
+		},
+		"request-keyValue-value": {
+			"label": "Value"
+		}
+	}
+}

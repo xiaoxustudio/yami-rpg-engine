@@ -1,0 +1,47 @@
+{
+	"components": {
+		"animSpriteLayer-properties-grid": {
+			"label": "精灵层"
+		},
+		"animSpriteLayer-sprite": {
+			"label": "精灵图",
+			"tip": "选择一个预设的精灵图（在动画设置面板Alt+S）"
+		},
+		"animSpriteLayer-blend": {
+			"label": "混合模式",
+			"tip": "选择一个计算公式将颜色与底层的颜色混合",
+			"options": {
+				"normal": {
+					"name": "正常",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "加法",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "减法",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		},
+		"animSpriteLayer-light": {
+			"label": "光线采样",
+			"tip": "影响图像的渲染效果",
+			"options": {
+				"raw": {
+					"name": "原始图像",
+					"tip": "不受光照影响"
+				},
+				"anchor": {
+					"name": "锚点采样",
+					"tip": "从动画所在的锚点位置采样光照来合成颜色"
+				},
+				"global": {
+					"name": "全局采样",
+					"tip": "从动画所在的多个像素点位置采样光照来合成颜色"
+				}
+			}
+		}
+	}
+}

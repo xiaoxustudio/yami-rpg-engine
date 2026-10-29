@@ -1,0 +1,15 @@
+{
+	"components": {
+		"changeActorAnimation": {
+			"title": "Change Actor Animation"
+		},
+		"changeActorAnimation-actor": {
+			"label": "Actor",
+			"tip": "Change this actor's animation"
+		},
+		"changeActorAnimation-animationId": {
+			"label": "Animation",
+			"tip": "Specify the animation file ID"
+		}
+	}
+}

@@ -1,0 +1,24 @@
+{
+	"components": {
+		"setZoomFactor": {
+			"title": "Set Zoom Factor"
+		},
+		"setZoomFactor-zoom": {
+			"label": "Zoom Factor",
+			"tip": "Scene zoom factor"
+		},
+		"setZoomFactor-easingId": {
+			"label": "Easing"
+		},
+		"setZoomFactor-duration": {
+			"label": "Duration"
+		},
+		"setZoomFactor-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

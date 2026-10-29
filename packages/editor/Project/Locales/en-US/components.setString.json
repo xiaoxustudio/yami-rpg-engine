@@ -1,0 +1,308 @@
+{
+	"components": {
+		"setString": {
+			"title": "Set String"
+		},
+		"setString-variable": {
+			"label": "Variable"
+		},
+		"setString-operation": {
+			"label": "Operation",
+			"tip": "String operation",
+			"options": {
+				"set": {
+					"name": "Set",
+					"tip": "Set to operation value"
+				},
+				"add": {
+					"name": "Add",
+					"tip": "Add operation value to the end"
+				}
+			}
+		},
+		"setString-operand-type": {
+			"label": "Type",
+			"tip": "Select method to get the string",
+			"options": {
+				"constant": {
+					"name": "Constant",
+					"tip": "Fixed value"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Read data from a variable"
+				},
+				"template": {
+					"name": "Template String",
+					"tip": "Can insert variable tags"
+				},
+				"string": {
+					"name": "String Method",
+					"tip": "String method"
+				},
+				"attribute": {
+					"name": "Attribute Key",
+					"tip": "Get the key of a specified attribute"
+				},
+				"enum": {
+					"name": "Enumeration",
+					"tip": "Get the value of a specified enum"
+				},
+				"object": {
+					"name": "Object",
+					"tip": "Object method"
+				},
+				"element": {
+					"name": "Element",
+					"tip": "Element method"
+				},
+				"list": {
+					"name": "List Item",
+					"tip": "Read list from a variable and fetch the boolean value at the specified position in the list"
+				},
+				"parameter": {
+					"name": "Parameter",
+					"tip": "Parameters input in 'Display Text' and 'Display Options' commands"
+				},
+				"script": {
+					"name": "Script",
+					"tip": "Execute JavaScript and get the return value"
+				},
+				"other": {
+					"name": "Other",
+					"tip": "Other methods"
+				}
+			}
+		},
+		"setString-operand-common-value": {
+			"label": "String"
+		},
+		"setString-operand-string-method": {
+			"label": "String Method",
+			"tip": "Choose a string method to get the value",
+			"options": {
+				"char": {
+					"name": "Char",
+					"tip": "Get the character at the specified position from the string (the first character is at position 0)"
+				},
+				"slice": {
+					"name": "Slice",
+					"tip": "Get the substring from the string at the specified position"
+				},
+				"pad-start": {
+					"name": "Pad Start",
+					"tip": "Pad a number or string to a specified length, e.g., pad the number 1 with '0' to length 2, and return '01'"
+				},
+				"replace": {
+					"name": "Replace",
+					"tip": "Replace the first matching string content\n'ab' in 'abcdabcd' with '1' to return '1cdabcd'"
+				},
+				"replace-all": {
+					"name": "Replace All",
+					"tip": "Replace all matching string contents\n'ab' in 'abcdabcd' with '1' to return '1cd1cd'"
+				}
+			}
+		},
+		"setString-operand-common-variable": {
+			"label": "Variable",
+			"tip": "Read data from a variable"
+		},
+		"setString-operand-string-char-index": {
+			"label": "Index",
+			"tip": "Position of the target character"
+		},
+		"setString-operand-string-slice-begin": {
+			"label": "Begin Index",
+			"tip": "Starting position of the substring"
+		},
+		"setString-operand-string-slice-end": {
+			"label": "End Index",
+			"tip": "Ending position of the substring"
+		},
+		"setString-operand-string-pad-start-length": {
+			"label": "Target Length",
+			"tip": "Length of the padded string"
+		},
+		"setString-operand-string-pad-start-pad": {
+			"label": "Pad String",
+			"tip": "Character to pad on the left side of the string with insufficient length"
+		},
+		"setString-operand-string-replace-pattern": {
+			"label": "Substring",
+			"tip": "Content of the substring to search for"
+		},
+		"setString-operand-string-replace-replacement": {
+			"label": "Replacement",
+			"tip": "Content to replace the found substring"
+		},
+		"setString-operand-attribute-attributeId": {
+			"label": "Attribute Key",
+			"tip": "Get the key of this attribute"
+		},
+		"setString-operand-enum-stringId": {
+			"label": "Enum String",
+			"tip": "Get the value of this enum"
+		},
+		"setString-operand-object-property": {
+			"label": "Property",
+			"tip": "Get data related to the object",
+			"options": {
+				"actor-team-id": {
+					"name": "Actor - Team ID",
+					"tip": "ID of the team the actor is in (16 chars)"
+				},
+				"actor-file-id": {
+					"name": "Actor - File ID",
+					"tip": "Actor file ID, 16 characters"
+				},
+				"actor-animation-motion-name": {
+					"name": "Actor - Anim Motion Name",
+					"tip": "Enumeration value of the current motion of the actor animation"
+				},
+				"skill-file-id": {
+					"name": "Skill - File ID",
+					"tip": "Skill file ID, 16 characters"
+				},
+				"trigger-file-id": {
+					"name": "Trigger - File ID",
+					"tip": "Trigger file ID, 16 characters"
+				},
+				"state-file-id": {
+					"name": "State - File ID",
+					"tip": "State file ID, 16 characters"
+				},
+				"equipment-file-id": {
+					"name": "Equipment - File ID",
+					"tip": "Equipment file ID, 16 characters"
+				},
+				"equipment-slot": {
+					"name": "Equipment - Slot",
+					"tip": "Enumeration value of equipment slot"
+				},
+				"item-file-id": {
+					"name": "Item - File ID",
+					"tip": "Item file ID, 16 characters"
+				},
+				"file-id": {
+					"name": "File - ID",
+					"tip": "ID of any specified file, 16 characters"
+				}
+			}
+		},
+		"setString-operand-element-property": {
+			"label": "Property",
+			"tip": "Get the attributes of the element",
+			"options": {
+				"text-content": {
+					"name": "Text - Content",
+					"tip": "Content of the text element"
+				},
+				"textBox-text": {
+					"name": "Text Box - Text",
+					"tip": "Text content of the text box element"
+				},
+				"dialogBox-content": {
+					"name": "Dialog Box - Content",
+					"tip": "Content of the dialog box element"
+				}
+			}
+		},
+		"setString-operand-element-element": {
+			"label": "Element",
+			"tip": "Get data related to this element"
+		},
+		"setString-operand-common-actor": {
+			"label": "Actor",
+			"tip": "Get data related to this actor"
+		},
+		"setString-operand-common-skill": {
+			"label": "Skill",
+			"tip": "Get data related to this skill"
+		},
+		"setString-operand-common-trigger": {
+			"label": "Trigger",
+			"tip": "Get data related to this trigger"
+		},
+		"setString-operand-common-state": {
+			"label": "State",
+			"tip": "Get data related to this state"
+		},
+		"setString-operand-common-equipment": {
+			"label": "Equipment",
+			"tip": "Get data related to this equipment"
+		},
+		"setString-operand-common-item": {
+			"label": "Item",
+			"tip": "Get data related to this item"
+		},
+		"setString-operand-object-fileId": {
+			"label": "File",
+			"tip": "Get the ID of this file"
+		},
+		"setString-operand-list-index": {
+			"label": "Index",
+			"tip": "Read the value at the Nth position in the list (0, 1, 2, ...)"
+		},
+		"setString-operand-parameter-key": {
+			"label": "Param Name"
+		},
+		"setString-operand-script": {
+			"label": "Script",
+			"tip": "Execute JavaScript and get the return value"
+		},
+		"setString-operand-other-data": {
+			"label": "Data",
+			"tip": "Other game data",
+			"options": {
+				"trigger-key": {
+					"name": "Event Trigger Key",
+					"tip": "Get the key code of the currently triggered 'keyboard event'"
+				},
+				"start-position-scene-id": {
+					"name": "Start Position - Scene ID",
+					"tip": "ID of initial scene file (16 chars)\nScene Stage -> Context Menu -> Set Initial Position"
+				},
+				"showText-content": {
+					"name": "Show Text - Content",
+					"tip": "After calling the <Show Text> command, you can read the content of the command"
+				},
+				"showChoices-content": {
+					"name": "Show Choices - Content",
+					"tip": "After calling the <Show Choices> command, you can read the content of the command"
+				},
+				"parse-timestamp": {
+					"name": "Parse Timestamp",
+					"tip": "Parse the timestamp obtained from <Set Number> into a date string in the specified format"
+				},
+				"screenshot": {
+					"name": "Screenshot(Base64)",
+					"tip": "Capture the current game screen, convert it to Base64 string format.\nLoad it into the image element by calling <Load Image> command"
+				},
+				"game-language": {
+					"name": "GameLanguage",
+					"tip": "Get the current game language"
+				}
+			}
+		},
+		"setString-operand-showChoices-content-choiceIndex": {
+			"label": "Choice Index",
+			"tip": "Read the content of the Nth (0, 1, 2, ...) option"
+		},
+		"setString-operand-parse-timestamp-variable": {
+			"label": "Timestamp",
+			"tip": "Read timestamp from variable"
+		},
+		"setString-operand-parse-timestamp-format": {
+			"label": "Date Format",
+			"tip": "{Y}: Year\n{M}: Month\n{D}: Day\n{h}: Hour\n{m}: Minute\n{s}: Second"
+		},
+		"setString-operand-screenshot-width": {
+			"label": "Image Width",
+			"tip": "Width of the screenshot"
+		},
+		"setString-operand-screenshot-height": {
+			"label": "Image Height",
+			"tip": "Height of the screenshot"
+		}
+	}
+}

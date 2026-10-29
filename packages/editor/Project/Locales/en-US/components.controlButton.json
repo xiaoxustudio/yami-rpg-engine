@@ -1,0 +1,37 @@
+{
+	"components": {
+		"controlButton": {
+			"title": "Control Button"
+		},
+		"controlButton-operation": {
+			"label": "Operation",
+			"tip": "Perform a button operation",
+			"options": {
+				"select-default": {
+					"name": "Select Default Button",
+					"tip": "Select the first button element among the descendant elements of the currently focused element"
+				},
+				"select": {
+					"name": "Select Button",
+					"tip": "Select the specified button element"
+				},
+				"hover-mode": {
+					"name": "Display Hover Mode",
+					"tip": "Set this button element to \"hover\" mode"
+				},
+				"active-mode": {
+					"name": "Display Active Mode",
+					"tip": "Set this button element to \"active\" mode"
+				},
+				"normal-mode": {
+					"name": "Restore Display Mode",
+					"tip": "Set this button element to \"normal\" mode"
+				}
+			}
+		},
+		"controlButton-element": {
+			"label": "Element",
+			"tip": "Specify a button element"
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"components": {
+		"wait": {
+			"title": "等待"
+		},
+		"wait-duration": {
+			"label": "持续时间",
+			"tip": "等待时间将自动换算为帧数\n不足1帧的时间变为1帧"
+		}
+	}
+}

@@ -1,0 +1,58 @@
+{
+	"components": {
+		"object-folder": {
+			"title": "Default Object Folders"
+		},
+		"object-folder-tilemap": {
+			"label": "Tilemap",
+			"tip": "This folder is automatically created when a new scene is created\nTilemaps created via the stage context menu will be automatically placed in this folder"
+		},
+		"object-folder-actor": {
+			"label": "Actor",
+			"tip": "This folder is automatically created when a new scene is created\nActors created via the stage context menu will be automatically placed in this folder"
+		},
+		"object-folder-region": {
+			"label": "Region",
+			"tip": "This folder is automatically created when a new scene is created\nRegions created via the stage context menu will be automatically placed in this folder"
+		},
+		"object-folder-light": {
+			"label": "Light",
+			"tip": "This folder is automatically created when a new scene is created\nLights created via the stage context menu will be automatically placed in this folder"
+		},
+		"object-folder-animation": {
+			"label": "Animation",
+			"tip": "This folder is automatically created when a new scene is created\nAnimations created via the stage context menu will be automatically placed in this folder"
+		},
+		"object-folder-particle": {
+			"label": "Particle",
+			"tip": "This folder is automatically created when a new scene is created\nParticles created via the stage context menu will be automatically placed in this folder"
+		},
+		"object-folder-parallax": {
+			"label": "Parallax",
+			"tip": "This folder is automatically created when a new scene is created\nParallax backgrounds created via the stage context menu will be automatically placed in this folder"
+		},
+		"object-attribute": {
+			"title": "Attribute"
+		},
+		"object-attribute-key": {
+			"label": "Key",
+			"tip": "Name of the attribute"
+		},
+		"object-attribute-boolean-value": {
+			"label": "Boolean",
+			"tip": "Attribute value (Boolean)"
+		},
+		"object-attribute-number-value": {
+			"label": "Number",
+			"tip": "Attribute value (Number)"
+		},
+		"object-attribute-string-value": {
+			"label": "String",
+			"tip": "Attribute value (String)"
+		},
+		"object-attribute-enum-value": {
+			"label": "Option",
+			"tip": "Attribute value (Option)"
+		}
+	}
+}

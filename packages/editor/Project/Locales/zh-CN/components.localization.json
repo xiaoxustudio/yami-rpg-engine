@@ -1,0 +1,10 @@
+{
+	"components": {
+		"localization": {
+			"title": "本地化"
+		},
+		"localization-list": {
+			"label": "列表"
+		}
+	}
+}

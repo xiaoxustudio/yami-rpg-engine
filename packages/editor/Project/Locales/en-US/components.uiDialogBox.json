@@ -1,0 +1,114 @@
+{
+	"components": {
+		"uiDialogBox-properties-grid": {
+			"label": "DialogBox Properties"
+		},
+		"uiDialogBox-content": {
+			"label": "Content",
+			"tip": "Text content of the element."
+		},
+		"uiDialogBox-interval": {
+			"label": "Print Interval",
+			"tip": "If set to 0, all text will be printed at once. Otherwise, the text will be printed continuously at intervals until finished or the current page is filled."
+		},
+		"uiDialogBox-size-box": {
+			"label": "Size",
+			"tip": "Text size (10 ~ 400)."
+		},
+		"uiDialogBox-lineSpacing-box": {
+			"label": "Line Spacing",
+			"tip": "Line spacing for the text."
+		},
+		"uiDialogBox-letterSpacing-box": {
+			"label": "Letter Spacing",
+			"tip": "Letter spacing on the same line."
+		},
+		"uiDialogBox-color": {
+			"label": "Color",
+			"tip": "Text color."
+		},
+		"uiDialogBox-font": {
+			"label": "Font",
+			"placeholder": "Default",
+			"tip": "Enter the font name. If there are multiple fonts, separate them with commas in order of preference."
+		},
+		"uiDialogBox-typeface": {
+			"label": "Typeface",
+			"tip": "Select the style of the text.",
+			"options": {
+				"regular": {
+					"name": "Regular",
+					"tip": "Default text style."
+				},
+				"bold": {
+					"name": "Bold",
+					"tip": "Bold for emphasis."
+				},
+				"italic": {
+					"name": "Italic",
+					"tip": "Italic to simulate cursive."
+				},
+				"bold-italic": {
+					"name": "Bold Italic",
+					"tip": "Both bold and italic are applied."
+				}
+			}
+		},
+		"uiDialogBox-effect-type": {
+			"label": "Effect",
+			"tip": "Choose a text effect.",
+			"options": {
+				"none": {
+					"name": "None",
+					"tip": "No effect."
+				},
+				"shadow": {
+					"name": "Shadow",
+					"tip": "Render the text as a shadow at a specified offset position."
+				},
+				"stroke": {
+					"name": "Stroke",
+					"tip": "Render the text outline with a specified width, with half the width hidden by the text."
+				},
+				"outline": {
+					"name": "Outline",
+					"tip": "Render the text outline four times at a 1-pixel offset in all directions."
+				}
+			}
+		},
+		"uiDialogBox-effect-shadowOffsetX": {
+			"label": "Shadow X",
+			"tip": "Horizontal offset for text shadow."
+		},
+		"uiDialogBox-effect-shadowOffsetY": {
+			"label": "Shadow Y",
+			"tip": "Vertical offset for text shadow."
+		},
+		"uiDialogBox-effect-strokeWidth": {
+			"label": "Stroke Width",
+			"tip": "Text outline width."
+		},
+		"uiDialogBox-effect-color": {
+			"label": "Effect Color",
+			"tip": "Text effect color."
+		},
+		"uiDialogBox-blend": {
+			"label": "Blend",
+			"tip": "Choose a blending mode to combine the color with the underlying color.",
+			"options": {
+				"normal": {
+					"name": "Normal",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "Additive",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "Subtract",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		}
+	}
+}

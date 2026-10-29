@@ -1,0 +1,18 @@
+{
+	"components": {
+		"loop": {
+			"title": "循环"
+		},
+		"loop-mode": {
+			"label": "模式",
+			"tip": "条件模式",
+			"options": {
+				"all": "满足全部条件",
+				"any": "满足任意条件"
+			}
+		},
+		"loop-conditions": {
+			"label": "条件"
+		}
+	}
+}

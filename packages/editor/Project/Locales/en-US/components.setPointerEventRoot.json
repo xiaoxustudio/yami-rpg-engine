@@ -1,0 +1,33 @@
+{
+	"components": {
+		"setPointerEventRoot": {
+			"title": "Set Pointer Event Root"
+		},
+		"setPointerEventRoot-operation": {
+			"label": "Operation",
+			"tip": "Operations related to root element",
+			"options": {
+				"add": {
+					"name": "Add Root Element",
+					"tip": "Set an element as the root, only it and its descendant elements can trigger pointer events"
+				},
+				"remove": {
+					"name": "Remove Root Element",
+					"tip": "Remove the specified pointer event root element"
+				},
+				"remove-latest": {
+					"name": "Remove The Latest Root Element",
+					"tip": "Remove the latest pointer event root element"
+				},
+				"reset": {
+					"name": "Reset",
+					"tip": "Remove all pointer event root elements"
+				}
+			}
+		},
+		"setPointerEventRoot-element": {
+			"label": "Element",
+			"tip": "Perform operation on this element"
+		}
+	}
+}

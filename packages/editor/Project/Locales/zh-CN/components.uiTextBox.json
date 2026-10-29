@@ -1,0 +1,88 @@
+{
+	"components": {
+		"uiTextBox-properties-grid": {
+			"label": "文本框属性"
+		},
+		"uiTextBox-type": {
+			"label": "类型",
+			"tip": "文本框内容类型",
+			"options": {
+				"text": {
+					"name": "文本",
+					"tip": "可通过\"设置字符串\"读取内容"
+				},
+				"number": {
+					"name": "数值",
+					"tip": "可通过\"设置数值\"读取内容"
+				}
+			}
+		},
+		"uiTextBox-align": {
+			"label": "对齐",
+			"tip": "文本内容的对齐方式",
+			"options": {
+				"left": {
+					"name": "左对齐",
+					"tip": "文本的左边缘对齐输入区域的左边缘"
+				},
+				"center": {
+					"name": "居中",
+					"tip": "文本的水平中点对齐输入区域的水平中点"
+				},
+				"right": {
+					"name": "右对齐",
+					"tip": "文本的右边缘对齐输入区域的右边缘"
+				}
+			}
+		},
+		"uiTextBox-text": {
+			"label": "文本",
+			"tip": "文本框的初始字符串内容"
+		},
+		"uiTextBox-maxLength": {
+			"label": "最大长度",
+			"tip": "字符的最大数量"
+		},
+		"uiTextBox-number": {
+			"label": "数值",
+			"tip": "文本框的初始数值内容"
+		},
+		"uiTextBox-min": {
+			"label": "最小值",
+			"tip": "允许的最小数值"
+		},
+		"uiTextBox-max": {
+			"label": "最大值",
+			"tip": "允许的最大数值"
+		},
+		"uiTextBox-decimals": {
+			"label": "小数位数",
+			"tip": "保留的最多小数位数"
+		},
+		"uiTextBox-padding": {
+			"label": "内边距",
+			"tip": "内容输入区域距离左右两边的距离"
+		},
+		"uiTextBox-size": {
+			"label": "字体大小",
+			"tip": "文字的大小（10 ~ 400）"
+		},
+		"uiTextBox-font": {
+			"label": "字体",
+			"placeholder": "默认",
+			"tip": "输入字体名称，如果有多个字体，用逗号隔开，按从左到右的优先顺序排列"
+		},
+		"uiTextBox-color": {
+			"label": "颜色",
+			"tip": "文字的颜色"
+		},
+		"uiTextBox-selectionColor": {
+			"label": "选中颜色",
+			"tip": "被选中文字的颜色"
+		},
+		"uiTextBox-selectionBgColor": {
+			"label": "选中背景颜色",
+			"tip": "被选中文字的背景颜色"
+		}
+	}
+}

@@ -1,0 +1,85 @@
+{
+	"components": {
+		"getMultipleActors": {
+			"title": "获取多个角色"
+		},
+		"getMultipleActors-variable": {
+			"label": "写入列表",
+			"tip": "把生成的角色列表写入到该变量"
+		},
+		"getMultipleActors-position": {
+			"label": "位置",
+			"tip": "在这个位置查找角色"
+		},
+		"getMultipleActors-area": {
+			"label": "选择区域",
+			"tip": "搜索这个形状的区域中的角色",
+			"options": {
+				"rectangle": {
+					"name": "矩形",
+					"tip": "查找以指定位置为中心的矩形区域内的角色"
+				},
+				"circle": {
+					"name": "圆形",
+					"tip": "查找以指定位置为中心的圆形区域内的角色"
+				}
+			}
+		},
+		"getMultipleActors-width": {
+			"label": "宽度",
+			"tip": "矩形区域的宽度"
+		},
+		"getMultipleActors-height": {
+			"label": "高度",
+			"tip": "矩形区域的高度"
+		},
+		"getMultipleActors-radius": {
+			"label": "半径",
+			"tip": "圆形区域的半径"
+		},
+		"getMultipleActors-selector": {
+			"label": "选择器",
+			"tip": "第一次筛选角色",
+			"options": {
+				"enemy": {
+					"name": "敌对角色",
+					"tip": "选择指定队伍的敌对角色"
+				},
+				"friend": {
+					"name": "友好角色",
+					"tip": "选择指定队伍的友好角色"
+				},
+				"team": {
+					"name": "队伍成员",
+					"tip": "选择指定队伍的成员"
+				},
+				"any": {
+					"name": "任意角色",
+					"tip": "选择任意角色"
+				}
+			}
+		},
+		"getMultipleActors-teamId": {
+			"label": "队伍",
+			"tip": "角色的队伍"
+		},
+		"getMultipleActors-activation": {
+			"label": "激活状态",
+			"tip": "目标角色的激活状态",
+			"options": {
+				"active": {
+					"name": "已激活",
+					"tip": "要求角色必须已激活"
+				},
+				"inactive": {
+					"name": "未激活",
+					"tip": "要求角色必须未激活"
+				},
+				"either": {
+					"name": "任意状态",
+					"tip": "不检查激活状态"
+				}
+			}
+		}
+	}
+}

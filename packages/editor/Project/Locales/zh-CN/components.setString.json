@@ -1,0 +1,310 @@
+{
+	"components": {
+		"setString": {
+			"title": "设置字符串"
+		},
+		"setString-variable": {
+			"label": "变量",
+			"tip": "写入的目标变量"
+		},
+		"setString-operation": {
+			"label": "操作",
+			"tip": "字符串操作",
+			"options": {
+				"set": {
+					"name": "赋值",
+					"tip": "设置为操作值"
+				},
+				"add": {
+					"name": "加法",
+					"tip": "添加操作值到尾部"
+				}
+			}
+		},
+		"setString-operand-type": {
+			"label": "类型",
+			"tip": "选择获取字符串的方法",
+			"options": {
+				"constant": {
+					"name": "常量",
+					"tip": "固定的值"
+				},
+				"variable": {
+					"name": "变量",
+					"tip": "从变量中读取数据"
+				},
+				"template": {
+					"name": "模板字符串",
+					"tip": "可以插入变量标签"
+				},
+				"string": {
+					"name": "字符串方法",
+					"tip": "调用字符串方法"
+				},
+				"attribute": {
+					"name": "属性键",
+					"tip": "获取一个指定属性的键"
+				},
+				"enum": {
+					"name": "枚举",
+					"tip": "获取一个指定枚举的值"
+				},
+				"object": {
+					"name": "对象",
+					"tip": "对象相关数据"
+				},
+				"element": {
+					"name": "元素",
+					"tip": "元素相关数据"
+				},
+				"list": {
+					"name": "列表项",
+					"tip": "从变量中读取列表，再读取列表中指定位置的字符串"
+				},
+				"parameter": {
+					"name": "参数",
+					"tip": "\"显示文本\"、\"显示选项\"指令中输入的参数"
+				},
+				"script": {
+					"name": "脚本",
+					"tip": "执行Javascript并获取返回值"
+				},
+				"other": {
+					"name": "其他",
+					"tip": "其他数据"
+				}
+			}
+		},
+		"setString-operand-common-value": {
+			"label": "字符串"
+		},
+		"setString-operand-string-method": {
+			"label": "字符串方法",
+			"tip": "选择一个字符串方法来获取数值",
+			"options": {
+				"char": {
+					"name": "截取单个字符",
+					"tip": "从字符串中截取指定位置的字符（第一个字符的位置是0）"
+				},
+				"slice": {
+					"name": "截取部分内容",
+					"tip": "从字符串中截取指定位置的多个字符"
+				},
+				"pad-start": {
+					"name": "填充左侧内容",
+					"tip": "将一个数值或字符串填充到指定的长度\n比如将数字1用\"0\"填充到2个长度，返回结果是\"01\""
+				},
+				"replace": {
+					"name": "替换指定内容",
+					"tip": "替换匹配的第一个字符串内容\n比如\"abcdabcd\"替换\"ab\"为\"1\"，返回结果是\"1cdabcd\""
+				},
+				"replace-all": {
+					"name": "替换全部",
+					"tip": "替换匹配的全部字符串内容\n比如\"abcdabcd\"替换\"ab\"为\"1\"，返回结果是\"1cd1cd\""
+				}
+			}
+		},
+		"setString-operand-common-variable": {
+			"label": "变量",
+			"tip": "从变量中读取数据"
+		},
+		"setString-operand-string-char-index": {
+			"label": "索引",
+			"tip": "目标字符的位置"
+		},
+		"setString-operand-string-slice-begin": {
+			"label": "开始索引",
+			"tip": "子字符串的开始位置"
+		},
+		"setString-operand-string-slice-end": {
+			"label": "结束索引",
+			"tip": "子字符串的结束位置"
+		},
+		"setString-operand-string-pad-start-length": {
+			"label": "目标长度",
+			"tip": "填充后的字符串长度"
+		},
+		"setString-operand-string-pad-start-pad": {
+			"label": "填充字符",
+			"tip": "向长度不足的字符串的左侧填充该字符"
+		},
+		"setString-operand-string-replace-pattern": {
+			"label": "搜索内容",
+			"tip": "搜索的子字符串内容"
+		},
+		"setString-operand-string-replace-replacement": {
+			"label": "替换内容",
+			"tip": "替换搜索到的子字符串内容"
+		},
+		"setString-operand-attribute-attributeId": {
+			"label": "属性键",
+			"tip": "获取这个属性的键"
+		},
+		"setString-operand-enum-stringId": {
+			"label": "枚举字符串",
+			"tip": "获取这个枚举的值"
+		},
+		"setString-operand-object-property": {
+			"label": "属性",
+			"tip": "获取对象相关数据",
+			"options": {
+				"actor-team-id": {
+					"name": "角色 - 队伍ID",
+					"tip": "角色所在队伍的ID，16个字符"
+				},
+				"actor-file-id": {
+					"name": "角色 - 文件ID",
+					"tip": "角色文件的ID，16个字符"
+				},
+				"actor-animation-motion-name": {
+					"name": "角色 - 动画动作名称",
+					"tip": "角色动画当前动作的枚举值"
+				},
+				"skill-file-id": {
+					"name": "技能 - 文件ID",
+					"tip": "技能文件的ID，16个字符"
+				},
+				"trigger-file-id": {
+					"name": "触发器 - 文件ID",
+					"tip": "触发器文件的ID，16个字符"
+				},
+				"state-file-id": {
+					"name": "状态 - 文件ID",
+					"tip": "状态文件的ID，16个字符"
+				},
+				"equipment-file-id": {
+					"name": "装备 - 文件ID",
+					"tip": "装备文件的ID，16个字符"
+				},
+				"equipment-slot": {
+					"name": "装备 - 装备槽",
+					"tip": "装备槽的枚举值"
+				},
+				"item-file-id": {
+					"name": "物品 - 文件ID",
+					"tip": "物品文件的ID，16个字符"
+				},
+				"file-id": {
+					"name": "文件 - ID",
+					"tip": "任意指定文件的ID，16个字符"
+				}
+			}
+		},
+		"setString-operand-element-property": {
+			"label": "属性",
+			"tip": "获取元素的属性",
+			"options": {
+				"text-content": {
+					"name": "文本 - 内容",
+					"tip": "文本元素的内容"
+				},
+				"textBox-text": {
+					"name": "文本框 - 文本",
+					"tip": "文本框元素的文本内容"
+				},
+				"dialogBox-content": {
+					"name": "对话框 - 内容",
+					"tip": "对话框元素的内容"
+				}
+			}
+		},
+		"setString-operand-element-element": {
+			"label": "元素",
+			"tip": "获取这个元素的相关数据"
+		},
+		"setString-operand-common-actor": {
+			"label": "角色",
+			"tip": "获取这个角色的相关数据"
+		},
+		"setString-operand-common-skill": {
+			"label": "技能",
+			"tip": "获取这个技能的相关数据"
+		},
+		"setString-operand-common-trigger": {
+			"label": "触发器",
+			"tip": "获取这个触发器的相关数据"
+		},
+		"setString-operand-common-state": {
+			"label": "状态",
+			"tip": "获取这个状态的相关数据"
+		},
+		"setString-operand-common-equipment": {
+			"label": "装备",
+			"tip": "获取这个装备的相关数据"
+		},
+		"setString-operand-common-item": {
+			"label": "物品",
+			"tip": "获取这个物品的相关数据"
+		},
+		"setString-operand-object-fileId": {
+			"label": "文件",
+			"tip": "获取这个文件的ID"
+		},
+		"setString-operand-list-index": {
+			"label": "索引",
+			"tip": "读取列表中第N（0, 1, 2, ...）个位置的值"
+		},
+		"setString-operand-parameter-key": {
+			"label": "参数名称",
+			"tip": "获取这个参数的值"
+		},
+		"setString-operand-script": {
+			"label": "脚本",
+			"tip": "执行Javascript并获取返回值"
+		},
+		"setString-operand-other-data": {
+			"label": "数据",
+			"tip": "其他游戏数据",
+			"options": {
+				"trigger-key": {
+					"name": "事件触发键盘按键",
+					"tip": "获取当前触发的\"键盘事件\"的按键码"
+				},
+				"start-position-scene-id": {
+					"name": "初始位置 - 场景ID",
+					"tip": "初始场景文件的ID，16个字符\n场景舞台->上下文菜单->设置初始位置"
+				},
+				"showText-content": {
+					"name": "显示文本 - 内容",
+					"tip": "调用\"显示文本\"指令后，可以读取到指令中的内容"
+				},
+				"showChoices-content": {
+					"name": "显示选项 - 内容",
+					"tip": "调用\"显示选项\"指令后，可以读取到指令中的内容"
+				},
+				"parse-timestamp": {
+					"name": "解析时间戳",
+					"tip": "将\"设置数值\"获取到的时间戳解析为指定格式的日期字符串"
+				},
+				"screenshot": {
+					"name": "屏幕截图(Base64)",
+					"tip": "截取当前游戏画面，转换为Base64字符串格式\n可调用\"加载图像\"指令加载到图像元素中"
+				},
+				"game-language": {
+					"name": "游戏语言",
+					"tip": "获取当前的游戏语言"
+				}
+			}
+		},
+		"setString-operand-showChoices-content-choiceIndex": {
+			"label": "选项索引",
+			"tip": "读取第N（0, 1, 2, ...）个选项中的内容"
+		},
+		"setString-operand-parse-timestamp-variable": {
+			"label": "时间戳",
+			"tip": "从变量中读取时间戳"
+		},
+		"setString-operand-parse-timestamp-format": {
+			"label": "日期格式",
+			"tip": "{Y}：年\n{M}：月\n{D}：日\n{h}：小时\n{m}：分\n{s}：秒"
+		},
+		"setString-operand-screenshot-width": {
+			"label": "图像宽度",
+			"tip": "屏幕截图的宽度"
+		},
+		"setString-operand-screenshot-height": {
+			"label": "图像高度",
+			"tip": "屏幕截图的高度"
+		}
+	}
+}

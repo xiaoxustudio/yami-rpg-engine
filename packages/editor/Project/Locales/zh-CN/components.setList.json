@@ -1,0 +1,125 @@
+{
+	"components": {
+		"setList": {
+			"title": "设置列表"
+		},
+		"setList-variable": {
+			"label": "变量",
+			"tip": "写入的目标变量"
+		},
+		"setList-operation": {
+			"label": "操作",
+			"tip": "如何写入数据到列表",
+			"options": {
+				"set-empty": {
+					"name": "设置为空列表",
+					"tip": "初始化一个不包含任何值的列表"
+				},
+				"set-numbers": {
+					"name": "设置数值列表",
+					"tip": "初始化一个包含数值的列表"
+				},
+				"set-strings": {
+					"name": "设置字符串列表",
+					"tip": "初始化一个包含字符串的列表"
+				},
+				"set-boolean": {
+					"name": "设置布尔值",
+					"tip": "将指定位置的列表项设置为布尔值"
+				},
+				"set-number": {
+					"name": "设置数值",
+					"tip": "将指定位置的列表项设置为数值"
+				},
+				"set-string": {
+					"name": "设置字符串",
+					"tip": "将指定位置的列表项设置为字符串"
+				},
+				"set-variable": {
+					"name": "设置变量值",
+					"tip": "将指定位置的列表项设置为从变量中读取的值"
+				},
+				"split-string": {
+					"name": "分割字符串",
+					"tip": "将一个字符串按指定分隔符分割，生成列表"
+				},
+				"push": {
+					"name": "添加列表项",
+					"tip": "添加从变量中读取的值到列表的末尾"
+				},
+				"remove": {
+					"name": "移除列表项",
+					"tip": "从列表中移除从变量中读取的值"
+				},
+				"get-attribute-names": {
+					"name": "获取属性名称",
+					"tip": "获取属性群组中的所有名称，生成列表"
+				},
+				"get-attribute-keys": {
+					"name": "获取属性键",
+					"tip": "获取属性群组中的所有键，生成列表"
+				},
+				"get-enum-names": {
+					"name": "获取枚举名称",
+					"tip": "获取枚举群组中的所有名称，生成列表"
+				},
+				"get-enum-values": {
+					"name": "获取枚举值",
+					"tip": "获取枚举群组中的所有值，生成列表"
+				},
+				"get-actor-targets": {
+					"name": "获取角色目标池",
+					"tip": "获取角色的目标池中的所有目标角色，生成列表"
+				}
+			}
+		},
+		"setList-numbers": {
+			"label": "数值列表",
+			"tip": "初始化一个数值列表"
+		},
+		"setList-strings": {
+			"label": "字符串列表",
+			"tip": "初始化一个字符串列表"
+		},
+		"setList-index": {
+			"label": "索引",
+			"tip": "从目标变量中读取列表，在这个位置写入一个数据"
+		},
+		"setList-boolean": {
+			"label": "布尔值",
+			"tip": "写入列表的布尔值"
+		},
+		"setList-number": {
+			"label": "数值",
+			"tip": "写入列表的数值"
+		},
+		"setList-string": {
+			"label": "字符串",
+			"tip": "写入列表的字符串"
+		},
+		"setList-operand": {
+			"label": "变量",
+			"tip": "从变量中读取数据"
+		},
+		"setList-separator": {
+			"label": "分隔符",
+			"tip": "将读取的字符串按分隔符分割，生成列表"
+		},
+		"setList-attribute-groupId": {
+			"label": "属性群组",
+			"tip": "选择一个属性群组"
+		},
+		"setList-enum-groupId": {
+			"label": "枚举群组",
+			"tip": "选择一个枚举群组"
+		},
+		"setList-actor": {
+			"label": "角色",
+			"tip": "选择一个角色对象"
+		},
+		"setList-index-skip-check": {
+			"label": "边界限制",
+			"tip": "开启后如果[列表].length < index，则不会添加内容"
+		}
+	}
+}

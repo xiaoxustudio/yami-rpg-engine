@@ -1,0 +1,11 @@
+{
+	"components": {
+		"localVariable": {
+			"title": "Set Local Variable"
+		},
+		"localVariable-key": {
+			"label": "Local Variable",
+			"tip": "Enter the name of a local variable in the current event"
+		}
+	}
+}

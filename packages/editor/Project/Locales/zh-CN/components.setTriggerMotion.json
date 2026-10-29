@@ -1,0 +1,15 @@
+{
+	"components": {
+		"setTriggerMotion": {
+			"title": "设置触发器动作"
+		},
+		"setTriggerMotion-trigger": {
+			"label": "触发器",
+			"tip": "设置这个触发器"
+		},
+		"setTriggerMotion-motion": {
+			"label": "动作",
+			"tip": "让触发器的动画切换到这个动作"
+		}
+	}
+}

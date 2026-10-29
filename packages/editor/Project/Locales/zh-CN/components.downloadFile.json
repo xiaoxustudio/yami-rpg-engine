@@ -1,0 +1,39 @@
+{
+	"components": {
+		"downloadFile": {
+			"title": "下载文件"
+		},
+		"downloadFile-url": {
+			"label": "地址",
+			"tip": "下载文件的URL地址，支持变量"
+		},
+		"downloadFile-header": {
+			"label": "请求头",
+			"tip": "headers请求头"
+		},
+		"downloadFile-method": {
+			"label": "方法",
+			"tip": "请求方法"
+		},
+		"downloadFile-data": {
+			"label": "请求体",
+			"tip": "请求体数据"
+		},
+		"downloadFile-callback": {
+			"label": "回调",
+			"tip": "请求完成后的回调函数，@code表示返回值(错误为-1),@response表示响应Blob数据,@download函数表示下载函数(可传入文件名)"
+		},
+		"downloadFile-rateCallback": {
+			"label": "进度回调",
+			"tip": "下载进度回调函数，@event表示进度事件对象"
+		},
+		"downloadFile-isBackground": {
+			"label": "后台存储",
+			"tip": "是否在后台下载存储文件"
+		},
+		"downloadFile-isBackground-path": {
+			"label": "文件路径",
+			"tip": "后台下载存储的文件路径"
+		}
+	}
+}

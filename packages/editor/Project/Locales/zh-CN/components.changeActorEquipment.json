@@ -1,0 +1,49 @@
+{
+	"components": {
+		"changeActorEquipment": {
+			"title": "改变角色装备"
+		},
+		"changeActorEquipment-actor": {
+			"label": "角色",
+			"tip": "改变这个角色的装备"
+		},
+		"changeActorEquipment-operation": {
+			"label": "操作",
+			"tip": "角色装备操作",
+			"options": {
+				"add": {
+					"name": "添加",
+					"tip": "创建指定ID的装备，添加到角色装备槽（如果装备槽中存在装备，先移除它）"
+				},
+				"remove": {
+					"name": "移除",
+					"tip": "从角色装备槽中移除指定ID的装备"
+				},
+				"add-instance": {
+					"name": "添加实例",
+					"tip": "读取装备访问器，添加到角色装备槽"
+				},
+				"remove-instance": {
+					"name": "移除实例",
+					"tip": "读取装备访问器，从角色装备槽中移除它"
+				},
+				"remove-slot": {
+					"name": "移除装备槽",
+					"tip": "从角色装备槽中移除指定部位的装备"
+				}
+			}
+		},
+		"changeActorEquipment-slot": {
+			"label": "装备槽",
+			"tip": "指定装备槽"
+		},
+		"changeActorEquipment-equipmentId": {
+			"label": "装备",
+			"tip": "指定装备文件ID"
+		},
+		"changeActorEquipment-equipment": {
+			"label": "装备",
+			"tip": "装备访问器"
+		}
+	}
+}

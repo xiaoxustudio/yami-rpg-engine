@@ -103,8 +103,8 @@ import { encodeURL } from '@app/utils/css';
 		const dpr = window.devicePixelRatio;
 		if (previews.dpr !== dpr) {
 			previews.dpr = dpr;
-			(inspectorEls.get('fileFont-font-grid') as YamiElement).style.fontSize =
-				`${12 / dpr}px`;
+			const gridEl = inspectorEls.get('fileFont-font-grid');
+			if (gridEl) gridEl.style.fontSize = `${12 / dpr}px`;
 		}
 	};
 

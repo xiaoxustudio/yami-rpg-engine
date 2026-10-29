@@ -1,0 +1,15 @@
+{
+	"components": {
+		"removeTarget": {
+			"title": "移除目标"
+		},
+		"removeTarget-actor": {
+			"label": "角色",
+			"tip": "从这个角色的目标池中移除一个角色"
+		},
+		"removeTarget-target": {
+			"label": "目标",
+			"tip": "指定一个目标角色，从目标池中移除他"
+		}
+	}
+}

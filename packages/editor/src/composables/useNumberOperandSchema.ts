@@ -29,7 +29,6 @@ import { VariableGetter } from '@app/commands/accessors/variable-accessor-window
 import { Data } from '@app/data/data-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { getYamiI18n } from '@app/i18n';
-import type { YamiElement } from '@app/types/element-api';
 import { registryElement } from '@app/utils/element-registry';
 
 const t = (key: string, named?: Record<string, unknown>) =>
@@ -435,7 +434,7 @@ const open = (
 	// 操作数窗口是懒挂载的：控件可用后再 save/show/hide 与填冷却键（首次打开也不丢）
 	getWindowStore().openWith('setNumber-operand', () => {
 		if (isFirstOperand) {
-			(composableEls.get('setNumber-operation') as YamiElement).save();
+			composableEls.get('setNumber-operation')?.save();
 			show(composableEls.get('setNumber-operation'));
 			requestFocus('setNumber-operation');
 			hide(composableEls.get('setNumber-operand-operation'));
@@ -851,7 +850,7 @@ const save = (): unknown => {
 			break;
 		}
 	}
-	(composableEls.get('setNumber-operation') as YamiElement).save();
+	composableEls.get('setNumber-operation')?.save();
 	getWindowStore().close('setNumber-operand');
 	return operand;
 };

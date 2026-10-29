@@ -1,0 +1,30 @@
+{
+	"components": {
+		"newProject": {
+			"title": "New Project"
+		},
+		"newProject-template": {
+			"label": "Template",
+			"tip": "Select a game template for the new project",
+			"options": {
+				"minimized-project": {
+					"name": "Minimized Current Project",
+					"tip": "Minimized Current Project\n - Export the currently open project to another location and discard unused files to reduce space usage"
+				}
+			}
+		},
+		"newProject-folder": {
+			"label": "Folder",
+			"tip": "Name of the new project folder"
+		},
+		"newProject-location-box": {
+			"label": "Location"
+		},
+		"newProject-location": {
+			"tip": "$Location\nCreate a new project folder at this location"
+		},
+		"newProject-choose": {
+			"tip": "$Choose Folder\nOpen the operating system dialog to select a folder as the path"
+		}
+	}
+}

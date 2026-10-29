@@ -1,0 +1,41 @@
+{
+	"components": {
+		"textEffect": {
+			"title": "设置文字效果"
+		},
+		"textEffect-type": {
+			"label": "文字效果",
+			"tip": "选择一种文字效果",
+			"options": {
+				"shadow": {
+					"name": "阴影",
+					"tip": "在指定的偏移位置渲染文字作为阴影"
+				},
+				"stroke": {
+					"name": "描边",
+					"tip": "渲染指定宽度的字形轮廓，其中有一半宽度被文字遮挡"
+				},
+				"outline": {
+					"name": "轮廓",
+					"tip": "分别在上下左右偏离1像素距离的位置渲染4次文字作为轮廓"
+				}
+			}
+		},
+		"textEffect-shadowOffsetX": {
+			"label": "阴影 X",
+			"tip": "文字阴影的水平偏移距离"
+		},
+		"textEffect-shadowOffsetY": {
+			"label": "阴影 Y",
+			"tip": "文字阴影的垂直偏移距离"
+		},
+		"textEffect-strokeWidth": {
+			"label": "描边宽度",
+			"tip": "文字描边线条的宽度"
+		},
+		"textEffect-color": {
+			"label": "效果颜色",
+			"tip": "背景文字的颜色"
+		}
+	}
+}

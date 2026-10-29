@@ -1,0 +1,11 @@
+{
+	"components": {
+		"deleteGlobalActor": {
+			"title": "删除全局角色"
+		},
+		"deleteGlobalActor-actorId": {
+			"label": "角色",
+			"tip": "将指定的全局角色从后台中彻底删除"
+		}
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"components": {
+		"fileFont-info-grid": {
+			"label": "文件信息"
+		},
+		"fileFont-name": {
+			"label": "名称",
+			"tip": "文件名称"
+		},
+		"fileFont-size": {
+			"label": "大小",
+			"tip": "文件大小"
+		},
+		"fileFont-font-grid": {
+			"label": "字体预览"
+		}
+	}
+}

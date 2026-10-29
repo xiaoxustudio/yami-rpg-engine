@@ -1,0 +1,37 @@
+{
+	"components": {
+		"animJointFrame-properties-grid": {
+			"label": "Frame"
+		},
+		"animJointFrame-position-box": {
+			"label": "Position"
+		},
+		"animJointFrame-x": {
+			"tip": "$X\nHorizontal position"
+		},
+		"animJointFrame-y": {
+			"tip": "$Y\nVertical position"
+		},
+		"animJointFrame-rotation-box": {
+			"label": "Rotation"
+		},
+		"animJointFrame-rotation": {
+			"tip": "$Rotation\nRotation angle, 0 degrees = Right, clockwise rotation"
+		},
+		"animJointFrame-scale-box": {
+			"label": "Scale"
+		},
+		"animJointFrame-scaleX": {
+			"tip": "$Scale X\nHorizontal scale factor"
+		},
+		"animJointFrame-scaleY": {
+			"tip": "$Scale Y\nVertical scale factor"
+		},
+		"animJointFrame-opacity-box": {
+			"label": "Opacity"
+		},
+		"animJointFrame-opacity": {
+			"tip": "$Opacity\nAdjusts the visibility of the animation frame"
+		}
+	}
+}

@@ -1,0 +1,45 @@
+{
+	"components": {
+		"animParticleFrame-properties-grid": {
+			"label": "动画帧"
+		},
+		"animParticleFrame-position-box": {
+			"label": "位置"
+		},
+		"animParticleFrame-x": {
+			"tip": "$X\n水平位置"
+		},
+		"animParticleFrame-y": {
+			"tip": "$Y\n垂直位置"
+		},
+		"animParticleFrame-rotation-box": {
+			"label": "旋转"
+		},
+		"animParticleFrame-rotation": {
+			"tip": "$旋转\n旋转角度，0度 = 正右方，顺时针旋转"
+		},
+		"animParticleFrame-scale-box": {
+			"label": "缩放"
+		},
+		"animParticleFrame-scaleX": {
+			"tip": "$缩放 X\n发射区域的水平缩放系数"
+		},
+		"animParticleFrame-scaleY": {
+			"tip": "$缩放 Y\n发射区域的垂直缩放系数"
+		},
+		"animParticleFrame-opacity-box": {
+			"label": "不透明度"
+		},
+		"animParticleFrame-opacity": {
+			"tip": "$不透明度\n用来调节动画帧的可见度"
+		},
+		"animParticleFrame-scale": {
+			"label": "粒子缩放",
+			"tip": "粒子元素的缩放系数"
+		},
+		"animParticleFrame-speed": {
+			"label": "播放速度",
+			"tip": "粒子的整体播放速度"
+		}
+	}
+}

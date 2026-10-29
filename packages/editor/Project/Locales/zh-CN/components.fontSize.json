@@ -1,0 +1,11 @@
+{
+	"components": {
+		"fontSize": {
+			"title": "设置字体大小"
+		},
+		"fontSize-size": {
+			"label": "字体大小",
+			"tip": "改变文字的大小（10 ~ 400）"
+		}
+	}
+}

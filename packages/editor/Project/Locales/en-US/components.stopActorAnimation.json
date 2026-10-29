@@ -1,0 +1,11 @@
+{
+	"components": {
+		"stopActorAnimation": {
+			"title": "Stop Actor Animation"
+		},
+		"stopActorAnimation-actor": {
+			"label": "Actor",
+			"tip": "Stop playing the current animation of this actor"
+		}
+	}
+}

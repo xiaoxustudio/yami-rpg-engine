@@ -1,0 +1,19 @@
+{
+	"components": {
+		"deleteTile": {
+			"title": "删除图块"
+		},
+		"deleteTile-tilemap": {
+			"label": "瓦片地图",
+			"tip": "要删除图块的瓦片地图"
+		},
+		"deleteTile-tilemapX": {
+			"label": "瓦片地图 X",
+			"tip": "被删除图块的水平位置"
+		},
+		"deleteTile-tilemapY": {
+			"label": "瓦片地图 Y",
+			"tip": "被删除图块的垂直位置"
+		}
+	}
+}

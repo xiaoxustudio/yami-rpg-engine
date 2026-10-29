@@ -1,0 +1,209 @@
+{
+	"components": {
+		"fileActor-general-grid": {
+			"label": "General"
+		},
+		"fileActor-portrait": {
+			"label": "Portrait",
+			"tip": "Initial actor portrait\n$Related commands\nChange Actor Portrait, Load Image"
+		},
+		"fileActor-clip": {
+			"label": "Clip",
+			"tip": "Clip area of portrait\n$Related commands\nChange Actor Portrait, Load Image"
+		},
+		"fileActor-animationId": {
+			"label": "Animation",
+			"tip": "Initial actor animation\n$Related command\nChange Actor Animation"
+		},
+		"fileActor-idleMotion": {
+			"label": "Idle Motion",
+			"tip": "Animation motion that plays when actor is idle\n$Related command\nChange Actor Motion"
+		},
+		"fileActor-moveMotion": {
+			"label": "Move Motion",
+			"tip": "Animation motion that plays when actor is moving\n$Related command\nChange Actor Motion"
+		},
+		"fileActor-rotatable": {
+			"label": "Rotatable",
+			"tip": "Whether to automatically update the animation rotation angle",
+			"options": {
+				"true": {
+					"name": "Yes",
+					"tip": "Animation rotates due to angle"
+				},
+				"false": {
+					"name": "No",
+					"tip": "Animation never rotates"
+				}
+			}
+		},
+		"fileActor-passage": {
+			"label": "Passable Terrain",
+			"tip": "Initial passable terrain\n$Related command\nChange Passable Terrain",
+			"options": {
+				"land": {
+					"name": "Land",
+					"tip": "Actor can only move on land"
+				},
+				"water": {
+					"name": "Water",
+					"tip": "Actor can only move in water"
+				},
+				"unrestricted": {
+					"name": "Unrestricted",
+					"tip": "Actor can move on land, in water, or through walls"
+				}
+			}
+		},
+		"fileActor-speed": {
+			"label": "Movement Speed",
+			"tip": "Initial movement speed (tiles/second)\n$Related command\nSet Movement Speed"
+		},
+		"fileActor-shape": {
+			"label": "Collision Shape",
+			"tip": "Shape affects collision determination",
+			"options": {
+				"square": {
+					"name": "Square",
+					"tip": "A square centered on the actor's location"
+				},
+				"circle": {
+					"name": "Circle",
+					"tip": "A circle centered on the actor's location"
+				}
+			}
+		},
+		"fileActor-size": {
+			"label": "Collision Size",
+			"tip": "If the shape is a square, this refers to its side length (unit: tiles).\nIf the shape is a circle, this refers to its diameter (unit: tiles)."
+		},
+		"fileActor-weight": {
+			"label": "Collision Weight",
+			"tip": "Affects the pushing force in actor collisions.\nWeight = 0: This actor will not collide with others.\nIf Actor A's weight : Actor B's weight = 1 : 1, A pushes B at 50% of its movement speed.\nIf Actor A's weight : Actor B's weight = 1 : 2, A cannot push B at all (0% movement).\nIf Actor A's weight : Actor B's weight = 2 : 1, A pushes B at full speed (100%) with no resistance.\n$Related Command: Set Weight"
+		},
+		"fileActor-immovable": {
+			"label": "Immovable",
+			"tip": "Determines whether this actor can be pushed by others during a collision.",
+			"options": {
+				"true": {
+					"name": "Yes",
+					"tip": "This actor cannot be pushed during collisions."
+				},
+				"false": {
+					"name": "No",
+					"tip": "This actor's push distance will be calculated based on its weight."
+				}
+			}
+		},
+		"fileActor-scale": {
+			"label": "Scale",
+			"tip": "Scaling factor for actor animation."
+		},
+		"fileActor-priority": {
+			"label": "Priority",
+			"tip": "Determines rendering order of actor animations.\nAnimations positioned lower always cover those above.\nPriority = -1: shift sort up by one tile.\nPriority = 1: shift sort down by one tile."
+		},
+		"fileActor-inherit": {
+			"label": "Inherit",
+			"tip": "Inherits specified actor's attributes, skills, equipment, inventory, events, and scripts\nIf the same attribute exists, it overrides the inherited actor's attribute value\nIf the same type of event exists, it overrides the inherited actor's event\nOverridden events can still be triggered using the 'Call Event' command\nHowever, inherited scripts will stack instead of being overridden"
+		},
+		"fileActor-sprites": {
+			"label": "Sprites",
+			"tip": "Replaced spritesheets of actor animation\n$Related command\nChange Actor Sprite"
+		},
+		"fileActor-attributes": {
+			"label": "Attributes",
+			"tip": "Initial attribute list\n$Optional types\nBoolean, Number, String, Enumeration(String)\n$Related commands\nSet Boolean, Set Number, Set String"
+		},
+		"fileActor-skills": {
+			"label": "Skills",
+			"tip": "Initial skill list\n$Related commands\nChange Actor Skill, Cast Skill"
+		},
+		"fileActor-equipments": {
+			"label": "Equipment",
+			"tip": "Initial equipment list\n$Related command\nChange Actor Equipment"
+		},
+		"fileActor-inventory": {
+			"label": "Inventory",
+			"tip": "Initial inventory list\n$Related command\nSet Inventory"
+		},
+		"fileActor-events": {
+			"label": "Events",
+			"tip": "A list of actor events\nEvents stop executing when the actor is inactive or destroyed\n$Optional types\nCreate: Triggered at actor initialization (once)\nAutorun: Triggered when the actor appears in a scene (including after loading save data)\nCollision: Triggered when the actor collides with another. Access \"Target Actor\" to get the actor that collided with this actor\nHit Trigger: Triggered when the actor is hit by a trigger. Access \"Event Trigger\" to get the trigger that collided with this actor\nCustom: Triggered by the \"Call Event\" command"
+		},
+		"fileActor-scripts": {
+			"label": "Scripts",
+			"tip": "Add script files to extend this actor"
+		},
+		"fileActor-sprite": {
+			"title": "Sprite"
+		},
+		"fileActor-sprite-id": {
+			"label": "Name",
+			"tip": "Select the sprite image for the actor animation"
+		},
+		"fileActor-sprite-image": {
+			"label": "Image",
+			"tip": "Replace the sprite image with a new one"
+		},
+		"fileActor-skill": {
+			"title": "Skill"
+		},
+		"fileActor-skill-id": {
+			"label": "Skill",
+			"tip": "Select a skill file"
+		},
+		"fileActor-skill-key": {
+			"label": "Shortcut Key",
+			"tip": "Set the shortcut key for this skill"
+		},
+		"fileActor-equipment": {
+			"title": "Equipment"
+		},
+		"fileActor-equipment-id": {
+			"label": "Equipment",
+			"tip": "Select an equipment file"
+		},
+		"fileActor-equipment-slot": {
+			"label": "Equipment Slot",
+			"tip": "Set the equipment slot for this equipment"
+		},
+		"fileActor-inventory-goods": {
+			"title": "Inventory"
+		},
+		"fileActor-inventory-type": {
+			"label": "Type",
+			"tip": "Add which type of goods",
+			"options": {
+				"item": {
+					"name": "Item",
+					"tip": "Add an item to the inventory"
+				},
+				"equipment": {
+					"name": "Equipment",
+					"tip": "Add equipment to the inventory"
+				},
+				"money": {
+					"name": "Money",
+					"tip": "Add money to the inventory"
+				}
+			}
+		},
+		"fileActor-inventory-item-id": {
+			"label": "Item",
+			"tip": "Select an item file"
+		},
+		"fileActor-inventory-item-quantity": {
+			"label": "Quantity",
+			"tip": "Set the quantity of this item"
+		},
+		"fileActor-inventory-equipment-id": {
+			"label": "Equipment",
+			"tip": "Select an equipment file"
+		},
+		"fileActor-inventory-money": {
+			"label": "Money",
+			"tip": "Set the initial amount of money"
+		}
+	}
+}

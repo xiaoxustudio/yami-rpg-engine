@@ -1,0 +1,40 @@
+{
+	"components": {
+		"uiAnimation-properties-grid": {
+			"label": "Animation Properties"
+		},
+		"uiAnimation-animation": {
+			"label": "Animation",
+			"tip": "Select an animation file"
+		},
+		"uiAnimation-motion": {
+			"label": "Motion",
+			"tip": "Select a motion from the animation"
+		},
+		"uiAnimation-autoplay": {
+			"label": "Autoplay",
+			"tip": "Whether the animation plays automatically"
+		},
+		"uiAnimation-rotatable": {
+			"label": "Rotatable",
+			"tip": "Whether the animation rotates based on angle"
+		},
+		"uiAnimation-angle": {
+			"label": "Angle",
+			"tip": "Initial angle of the animation"
+		},
+		"uiAnimation-frame": {
+			"label": "Frame",
+			"tip": "Initial frame of the animation"
+		},
+		"uiAnimation-offset-box": {
+			"label": "Offset"
+		},
+		"uiAnimation-offsetX": {
+			"tip": "$Offset X\nHorizontal offset distance of the animation"
+		},
+		"uiAnimation-offsetY": {
+			"tip": "$Offset Y\nVertical offset distance of the animation"
+		}
+	}
+}

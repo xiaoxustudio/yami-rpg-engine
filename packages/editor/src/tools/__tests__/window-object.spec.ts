@@ -99,6 +99,29 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		expect(document.body.style.pointerEvents).toBe('');
 	});
 
+	it('DOM 已挂载但未登记的窗口（ui-kit YM* 窗口）能打开并回填注册表', () => {
+		const el = document.createElement('div');
+		el.id = 'dom-only-window';
+		const frame = el as unknown as TestFrame;
+		frame.open = vi.fn(() => {
+			Window.frames.append(frame);
+			frame.classList.add('open');
+			return true;
+		});
+		frame.close = vi.fn(() => true);
+		frame.closeEventEnabled = true;
+		frame.enableAmbient = false;
+		document.body.appendChild(el);
+		createdFrames.push(frame);
+		expect(windowShellEls.get('dom-only-window')).toBeUndefined();
+
+		Window.open!('dom-only-window');
+
+		expect(windowShellEls.get('dom-only-window')).toBe(frame);
+		expect(frame.open).toHaveBeenCalledTimes(1);
+		expect(Window.frames).toContain(frame);
+	});
+
 	it('首个窗口打开：入栈 + 模态 + 焦点让渡 + 键盘接管，关闭后恢复', () => {
 		const frame = makeFrame('modal-1');
 		const pointermove = vi.fn();

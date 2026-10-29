@@ -1,0 +1,15 @@
+{
+	"components": {
+		"changeActorTeam": {
+			"title": "改变角色队伍"
+		},
+		"changeActorTeam-actor": {
+			"label": "角色",
+			"tip": "改变这个角色的队伍"
+		},
+		"changeActorTeam-teamId": {
+			"label": "队伍",
+			"tip": "指定一个新的角色队伍"
+		}
+	}
+}

@@ -1,0 +1,27 @@
+{
+	"components": {
+		"fileAnimation-sprites": {
+			"label": "Sprites",
+			"tip": "Set spritesheets of this animation for sprite layers"
+		},
+		"fileAnimation-sprite": {
+			"title": "Sprite"
+		},
+		"fileAnimation-sprite-name": {
+			"label": "Name",
+			"tip": "Sprite image name"
+		},
+		"fileAnimation-sprite-image": {
+			"label": "Image",
+			"tip": "Select an image file"
+		},
+		"fileAnimation-sprite-hframes": {
+			"label": "Horiz Frames",
+			"tip": "Number of horizontal divisions in the sprite sheet; frame width rounded down"
+		},
+		"fileAnimation-sprite-vframes": {
+			"label": "Vert Frames",
+			"tip": "Number of vertical divisions in the sprite sheet; frame height rounded down"
+		}
+	}
+}

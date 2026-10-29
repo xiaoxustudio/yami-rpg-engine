@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { localizeDomComponents } from '../dom-localizer.ts';
@@ -39,12 +39,29 @@ const readModules = (): { f: string; src: string }[] => {
 
 const esc = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+/** 入口 + 命名空间分片聚合后的组件表（语言包按 `components.<ns>.json` 拆分）。 */
+const loadLocaleComponents = (entryName: string): Record<string, Record<string, unknown>> => {
+	const localesDir = join(ROOT, 'Project/Locales');
+	const entry = JSON.parse(readFileSync(join(localesDir, entryName), 'utf8')) as {
+		components?: Record<string, Record<string, unknown>>;
+	};
+	const components = { ...entry.components };
+	const chunkDir = join(localesDir, entryName.split('.')[0]);
+	if (existsSync(chunkDir)) {
+		for (const name of readdirSync(chunkDir).filter((n) => n.endsWith('.json'))) {
+			const chunk = JSON.parse(readFileSync(join(chunkDir, name), 'utf8')) as {
+				components?: Record<string, Record<string, unknown>>;
+			};
+			Object.assign(components, chunk.components ?? {});
+		}
+	}
+	return components;
+};
+
 const deriveKeys = (): string[] => {
 	const vues = readVues();
 	const modules = readModules();
-	const components = JSON.parse(
-		readFileSync(join(ROOT, 'Project/Locales/en-US.English.json'), 'utf8')
-	).components as Record<string, Record<string, unknown>>;
+	const components = loadLocaleComponents('en-US.English.json');
 	const selectBoxSrc = readFileSync(join(SRC, 'components/common/SelectBox.vue'), 'utf8');
 	const selectBoxGeneric = selectBoxSrc.includes('components.${id}.options');
 

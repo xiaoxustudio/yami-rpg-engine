@@ -1,0 +1,19 @@
+{
+	"components": {
+		"particle-view-wireframe": {
+			"tip": "$线框\n渲染粒子元素的矩形线框"
+		},
+		"particle-view-anchor": {
+			"tip": "$锚点\n渲染粒子元素的锚点（红十字），以及锚点到粒子中心的连线（绿线）"
+		},
+		"particle-control-restart": {
+			"tip": "$重新开始\n清除所有粒子元素"
+		},
+		"particle-control-pause": {
+			"tip": "$暂停\n暂停播放粒子动画"
+		},
+		"particle-speed": {
+			"tip": "$播放速度\n在舞台中播放粒子动画的速率\n1：正常播放速度\n4：4倍播放速度"
+		}
+	}
+}

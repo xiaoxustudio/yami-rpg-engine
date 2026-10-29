@@ -1,0 +1,11 @@
+{
+	"components": {
+		"label": {
+			"title": "标签"
+		},
+		"label-name": {
+			"label": "标签名称",
+			"tip": "创建一个标签用于跳转"
+		}
+	}
+}

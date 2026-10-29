@@ -1,0 +1,73 @@
+{
+	"components": {
+		"sceneAnimation-general-grid": {
+			"label": "General"
+		},
+		"sceneAnimation-name": {
+			"label": "Name",
+			"tip": "Animation Name (note: this is a label for user reference only)"
+		},
+		"sceneAnimation-animationId": {
+			"label": "Animation",
+			"tip": "Selected Animation File"
+		},
+		"sceneAnimation-motion": {
+			"label": "Motion",
+			"tip": "Select an Action in the Animation"
+		},
+		"sceneAnimation-rotatable": {
+			"label": "Rotatable",
+			"tip": "Set to automatically update the Animation's rotation angle",
+			"options": {
+				"true": {
+					"name": "Yes",
+					"tip": "Animation rotates with angle changes"
+				},
+				"false": {
+					"name": "No",
+					"tip": "Animation doesn't rotate"
+				}
+			}
+		},
+		"sceneAnimation-x": {
+			"label": "X",
+			"tip": "Animation's initial horizontal coordinates"
+		},
+		"sceneAnimation-y": {
+			"label": "Y",
+			"tip": "Animation's initial vertical coordinates"
+		},
+		"sceneAnimation-angle-box": {
+			"label": "Angle",
+			"tip": "Animation's initial angle, affects direction of the action"
+		},
+		"sceneAnimation-scale-box": {
+			"label": "Scale",
+			"tip": "Animation scaling, affects the size of the Animation"
+		},
+		"sceneAnimation-speed-box": {
+			"label": "Speed",
+			"tip": "Animation playback speed"
+		},
+		"sceneAnimation-opacity-box": {
+			"label": "Opacity",
+			"tip": "Animation's visibility (transparency adjustment)"
+		},
+		"sceneAnimation-priority-box": {
+			"label": "Priority",
+			"tip": "Sorting priority of Animation at render time (render layers)\nAnimations with lower Priority will overlap those with higher Priority\nPriority = -1: render position is offset up by one tile\nPriority = 1: render position is offset down by one tile"
+		},
+		"sceneAnimation-conditions": {
+			"label": "Conditions",
+			"tip": "Set a list of conditions for the Animation to be created; if they aren't met, the Animation isn't created"
+		},
+		"sceneAnimation-events": {
+			"label": "Events",
+			"tip": "$Animation Events\n$Options\nAutorun: Event triggers as soon as the Animation appears (including after reading save data)\nCustom: triggered using the 'Call Event' command"
+		},
+		"sceneAnimation-scripts": {
+			"label": "Scripts",
+			"tip": "Add Script files to extend Animation functions"
+		}
+	}
+}

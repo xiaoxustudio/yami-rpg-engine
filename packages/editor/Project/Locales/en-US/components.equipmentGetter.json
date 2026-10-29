@@ -1,0 +1,53 @@
+{
+	"components": {
+		"equipmentGetter": {
+			"title": "Equipment"
+		},
+		"equipmentGetter-type": {
+			"label": "Type",
+			"tip": "How to obtain the equipment",
+			"options": {
+				"trigger": {
+					"name": "Event Trigger Equipment",
+					"tip": "Equipment that triggered this event"
+				},
+				"latest": {
+					"name": "Latest Equipment",
+					"tip": "Get the most recently created equipment, which refreshes when the 'Change Actor Equipment' command is called"
+				},
+				"by-slot": {
+					"name": "By Equipment Slot",
+					"tip": "Get the equipment from the specified actor's equipment slot"
+				},
+				"by-id-equipped": {
+					"name": "By Equipment ID (Equipped)",
+					"tip": "Get the equipment in the slot associated with the actor and the equipment file ID"
+				},
+				"by-id-inventory": {
+					"name": "By Equipment ID (Inventory)",
+					"tip": "Get the equipment in the inventory associated with the actor and the equipment file ID"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Get the equipment from the specified variable"
+				}
+			}
+		},
+		"equipmentGetter-actor": {
+			"label": "Actor",
+			"tip": "Get the equipment from this actor"
+		},
+		"equipmentGetter-slot": {
+			"label": "Equipment Slot",
+			"tip": "Get the equipment from this equipment slot"
+		},
+		"equipmentGetter-equipmentId": {
+			"label": "Equipment",
+			"tip": "Get the equipment associated with this equipment file ID"
+		},
+		"equipmentGetter-variable": {
+			"label": "Variable",
+			"tip": "Get the equipment object from the variable"
+		}
+	}
+}

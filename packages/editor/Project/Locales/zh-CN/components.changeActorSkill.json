@@ -1,0 +1,41 @@
+{
+	"components": {
+		"changeActorSkill": {
+			"title": "改变角色技能"
+		},
+		"changeActorSkill-actor": {
+			"label": "角色",
+			"tip": "改变这个角色的技能"
+		},
+		"changeActorSkill-operation": {
+			"label": "操作",
+			"tip": "角色技能列表操作",
+			"options": {
+				"add": {
+					"name": "添加",
+					"tip": "创建指定ID的技能，添加到角色技能列表中（如果已经存在相同技能，跳过）"
+				},
+				"remove": {
+					"name": "移除",
+					"tip": "从角色技能列表中移除指定ID的状态"
+				},
+				"remove-instance": {
+					"name": "移除实例",
+					"tip": "读取技能访问器，从角色技能列表中移除它"
+				},
+				"sort-by-order": {
+					"name": "按文件名排序",
+					"tip": "按文件名重新排序角色的所有技能"
+				}
+			}
+		},
+		"changeActorSkill-skillId": {
+			"label": "技能",
+			"tip": "指定技能文件ID"
+		},
+		"changeActorSkill-skill": {
+			"label": "技能",
+			"tip": "技能访问器"
+		}
+	}
+}

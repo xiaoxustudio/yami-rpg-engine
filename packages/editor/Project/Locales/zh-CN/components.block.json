@@ -1,0 +1,15 @@
+{
+	"components": {
+		"block": {
+			"title": "指令块"
+		},
+		"block-note": {
+			"placeholder": "备注",
+			"tip": "描述这个指令块的作用"
+		},
+		"block-asynchronous-label": {
+			"content": "异步执行",
+			"tip": "开启：创建新的执行分支，不堵塞后续指令的执行\n关闭：同步执行块中的指令，没有任何多余的额外操作"
+		}
+	}
+}

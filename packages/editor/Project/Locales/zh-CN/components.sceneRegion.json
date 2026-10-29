@@ -1,0 +1,43 @@
+{
+	"components": {
+		"sceneRegion-general-grid": {
+			"label": "基本设置"
+		},
+		"sceneRegion-name": {
+			"label": "名称",
+			"tip": "区域的备注名称"
+		},
+		"sceneRegion-color": {
+			"label": "颜色",
+			"tip": "区域的颜色"
+		},
+		"sceneRegion-x": {
+			"label": "X",
+			"tip": "区域的初始水平位置"
+		},
+		"sceneRegion-y": {
+			"label": "Y",
+			"tip": "区域的初始垂直位置"
+		},
+		"sceneRegion-width": {
+			"label": "宽度",
+			"tip": "区域的宽度"
+		},
+		"sceneRegion-height": {
+			"label": "高度",
+			"tip": "区域的高度"
+		},
+		"sceneRegion-conditions": {
+			"label": "条件",
+			"tip": "加载场景时，只有满足条件列表中的所有条件后，该区域才被创建"
+		},
+		"sceneRegion-events": {
+			"label": "事件",
+			"tip": "区域事件列表\n访问\"事件触发区域\"获取这个区域\n$可选类型\n自动执行：区域出现时立即触发事件（包括读取存档后）\n玩家进入：玩家角色进入区域时触发事件，访问\"事件触发角色\"获取这个角色\n玩家离开：玩家角色离开区域时触发事件，访问\"事件触发角色\"获取这个角色\n角色进入：任意角色进入区域时触发事件，访问\"事件触发角色\"获取这个角色\n角色离开：任意角色离开区域时触发事件，访问\"事件触发角色\"获取这个角色\n自定义事件：通过\"调用事件\"指令触发事件"
+		},
+		"sceneRegion-scripts": {
+			"label": "脚本",
+			"tip": "添加脚本文件来扩展区域"
+		}
+	}
+}

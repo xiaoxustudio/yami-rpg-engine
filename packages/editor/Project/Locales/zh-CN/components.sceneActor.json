@@ -1,0 +1,61 @@
+{
+	"components": {
+		"sceneActor-general-grid": {
+			"label": "基本设置"
+		},
+		"sceneActor-name": {
+			"label": "名称",
+			"tip": "角色的备注名称"
+		},
+		"sceneActor-type": {
+			"label": "类型",
+			"tip": "选择创建临时还是永久角色",
+			"options": {
+				"local": {
+					"name": "本地角色",
+					"tip": "临时角色，销毁场景时自动销毁"
+				},
+				"global": {
+					"name": "全局角色",
+					"tip": "永久角色，如果已经存在，则把他传送到当前场景"
+				}
+			}
+		},
+		"sceneActor-actorId": {
+			"label": "角色",
+			"tip": "选择一个角色文件"
+		},
+		"sceneActor-teamId": {
+			"label": "队伍",
+			"tip": "角色的初始队伍"
+		},
+		"sceneActor-x": {
+			"label": "X",
+			"tip": "角色的初始水平位置"
+		},
+		"sceneActor-y": {
+			"label": "Y",
+			"tip": "角色的初始垂直位置"
+		},
+		"sceneActor-angle-box": {
+			"label": "角度",
+			"tip": "角色的初始角度，影响角色动画朝向\n使用快捷键（Ctrl+上/下/左/右）快速设置选中角色的角度"
+		},
+		"sceneActor-scale-box": {
+			"label": "缩放系数",
+			"tip": "整体缩放系数，与角色文件中的缩放系数相乘，影响角色动画和动画组件的大小"
+		},
+		"sceneActor-conditions": {
+			"label": "条件",
+			"tip": "加载场景时，只有满足条件列表中的所有条件后，该角色才被创建"
+		},
+		"sceneActor-events": {
+			"label": "事件",
+			"tip": "角色事件列表\n在角色未激活或被删除时停止执行\n这里的事件会覆盖角色文件中的同类型事件\n$可选类型\n创建事件：角色初始化时触发事件（执行一次）\n自动执行：角色出现时立即触发事件（包括读取存档后）\n碰撞事件：角色与其他角色碰撞时触发事件，访问\"目标角色\"获取与本角色碰撞的角色\n击中触发器：角色被触发器击中时触发事件，访问\"事件触发器\"获取与本角色碰撞的触发器\n自定义事件：通过\"调用事件\"指令触发事件"
+		},
+		"sceneActor-scripts": {
+			"label": "脚本",
+			"tip": "添加脚本文件来扩展角色"
+		}
+	}
+}

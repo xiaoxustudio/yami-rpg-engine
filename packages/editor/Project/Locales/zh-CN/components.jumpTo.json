@@ -1,0 +1,29 @@
+{
+	"components": {
+		"jumpTo": {
+			"title": "跳转到"
+		},
+		"jumpTo-operation": {
+			"label": "操作",
+			"tip": "跳转操作",
+			"options": {
+				"jump": {
+					"name": "跳转到标签",
+					"tip": "跳转到指定的标签继续执行"
+				},
+				"save-jump": {
+					"name": "保存并跳转到标签",
+					"tip": "保存当前的位置，跳转到指定的标签"
+				},
+				"return": {
+					"name": "返回保存的位置",
+					"tip": "跳转到上一次保存的位置"
+				}
+			}
+		},
+		"jumpTo-label": {
+			"label": "标签名称",
+			"tip": "跳转到这个标签"
+		}
+	}
+}

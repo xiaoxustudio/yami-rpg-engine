@@ -1,0 +1,51 @@
+{
+	"components": {
+		"setTextBox": {
+			"title": "Set Text Box"
+		},
+		"setTextBox-element": {
+			"label": "Element",
+			"tip": "Specify a text box element"
+		},
+		"setTextBox-properties": {
+			"label": "Properties"
+		},
+		"setTextBox-property": {
+			"title": "Text Box Property"
+		},
+		"setTextBox-property-key": {
+			"label": "Property",
+			"tip": "Text box element's property",
+			"options": {
+				"type": "Type",
+				"text": "Text",
+				"number": "Number",
+				"min": "Min",
+				"max": "Max",
+				"decimals": "Decimal Places",
+				"color": "Color"
+			}
+		},
+		"setTextBox-property-type": {
+			"label": "Type"
+		},
+		"setTextBox-property-text": {
+			"label": "Text"
+		},
+		"setTextBox-property-number": {
+			"label": "Number"
+		},
+		"setTextBox-property-min": {
+			"label": "Min"
+		},
+		"setTextBox-property-max": {
+			"label": "Max"
+		},
+		"setTextBox-property-decimals": {
+			"label": "Decimal Places"
+		},
+		"setTextBox-property-color": {
+			"label": "Color"
+		}
+	}
+}

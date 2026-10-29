@@ -1,0 +1,55 @@
+{
+	"components": {
+		"sceneParticle-general-grid": {
+			"label": "基本设置"
+		},
+		"sceneParticle-name": {
+			"label": "名称",
+			"tip": "粒子的备注名称"
+		},
+		"sceneParticle-particleId": {
+			"label": "粒子",
+			"tip": "选择一个粒子文件"
+		},
+		"sceneParticle-x": {
+			"label": "X",
+			"tip": "粒子的初始水平位置"
+		},
+		"sceneParticle-y": {
+			"label": "Y",
+			"tip": "粒子的初始垂直位置"
+		},
+		"sceneParticle-angle-box": {
+			"label": "角度",
+			"tip": "粒子发射器的角度"
+		},
+		"sceneParticle-scale-box": {
+			"label": "缩放系数",
+			"tip": "粒子的整体缩放系数"
+		},
+		"sceneParticle-speed-box": {
+			"label": "播放速度",
+			"tip": "粒子的播放速度"
+		},
+		"sceneParticle-opacity-box": {
+			"label": "不透明度",
+			"tip": "用来调节粒子的可见度"
+		},
+		"sceneParticle-priority-box": {
+			"label": "优先级",
+			"tip": "粒子动画在渲染时的排序优先级\n位置在下方的动画总是会遮挡上方的动画\n优先级 = -1：排序位置向上偏移一个图块的距离\n优先级 = 1：排序位置向下偏移一个图块的距离"
+		},
+		"sceneParticle-conditions": {
+			"label": "条件",
+			"tip": "加载场景时，只有满足条件列表中的所有条件后，该粒子才被创建"
+		},
+		"sceneParticle-events": {
+			"label": "事件",
+			"tip": "粒子事件列表\n$可选类型\n自动执行：粒子出现时立即触发事件（包括读取存档后）\n自定义事件：通过\"调用事件\"指令触发事件"
+		},
+		"sceneParticle-scripts": {
+			"label": "脚本",
+			"tip": "添加脚本文件来扩展粒子"
+		}
+	}
+}

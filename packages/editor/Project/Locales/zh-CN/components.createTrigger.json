@@ -1,0 +1,35 @@
+{
+	"components": {
+		"createTrigger": {
+			"title": "创建触发器"
+		},
+		"createTrigger-triggerId": {
+			"label": "触发器",
+			"tip": "创建文件ID对应的触发器对象"
+		},
+		"createTrigger-caster": {
+			"label": "施放角色",
+			"tip": "在触发器事件中可以通过\"技能施放角色\"获取这个角色"
+		},
+		"createTrigger-origin": {
+			"label": "初始位置",
+			"tip": "触发器的初始位置"
+		},
+		"createTrigger-angle": {
+			"label": "旋转角度",
+			"tip": "触发器的初始角度，0度 = 正右方，顺时针旋转"
+		},
+		"createTrigger-distance": {
+			"label": "相对距离",
+			"tip": "触发器在初始位置的基础上向初始角度偏移的距离（实际位置）"
+		},
+		"createTrigger-scale": {
+			"label": "缩放系数",
+			"tip": "整体缩放触发器的形状和动画（可以当作攻击范围）"
+		},
+		"createTrigger-timeScale": {
+			"label": "总体速度",
+			"tip": "整体改变触发器的速度（可以当作攻击速度）"
+		}
+	}
+}

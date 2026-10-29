@@ -1,0 +1,28 @@
+{
+	"components": {
+		"setVolume": {
+			"title": "设置音量"
+		},
+		"setVolume-type": {
+			"label": "类型",
+			"tip": "对这个类型的声音执行操作"
+		},
+		"setVolume-volume": {
+			"label": "音量",
+			"tip": "声音的大小（0 ~ 1）"
+		},
+		"setVolume-easingId": {
+			"label": "过渡"
+		},
+		"setVolume-duration": {
+			"label": "时长"
+		},
+		"setVolume-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

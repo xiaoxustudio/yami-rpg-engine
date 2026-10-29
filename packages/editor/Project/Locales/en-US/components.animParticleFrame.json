@@ -1,0 +1,45 @@
+{
+	"components": {
+		"animParticleFrame-properties-grid": {
+			"label": "Frame"
+		},
+		"animParticleFrame-position-box": {
+			"label": "Position"
+		},
+		"animParticleFrame-x": {
+			"tip": "$X\nHorizontal position"
+		},
+		"animParticleFrame-y": {
+			"tip": "$Y\nVertical position"
+		},
+		"animParticleFrame-rotation-box": {
+			"label": "Rotation"
+		},
+		"animParticleFrame-rotation": {
+			"tip": "$Rotation\nRotation angle, 0 degrees = right, clockwise rotation"
+		},
+		"animParticleFrame-scale-box": {
+			"label": "Scale"
+		},
+		"animParticleFrame-scaleX": {
+			"tip": "$Scale X\nHorizontal scaling factor of the emission area"
+		},
+		"animParticleFrame-scaleY": {
+			"tip": "$Scale Y\nVertical scaling factor of the emission area"
+		},
+		"animParticleFrame-opacity-box": {
+			"label": "Opacity"
+		},
+		"animParticleFrame-opacity": {
+			"tip": "$Opacity\nUsed to adjust the visibility of the animation frame"
+		},
+		"animParticleFrame-scale": {
+			"label": "Particle Scale",
+			"tip": "Scaling factor of the particle elements"
+		},
+		"animParticleFrame-speed": {
+			"label": "Speed",
+			"tip": "Overall playback speed of the particles"
+		}
+	}
+}

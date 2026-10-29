@@ -1,0 +1,32 @@
+{
+	"components": {
+		"setAmbientLight": {
+			"title": "设置环境光"
+		},
+		"setAmbientLight-red": {
+			"label": "红",
+			"tip": "输入颜色(红) * 环境光(红) / 255 = 输出颜色(红)"
+		},
+		"setAmbientLight-green": {
+			"label": "绿",
+			"tip": "输入颜色(绿) * 环境光(绿) / 255 = 输出颜色(绿)"
+		},
+		"setAmbientLight-blue": {
+			"label": "蓝",
+			"tip": "输入颜色(蓝) * 环境光(蓝) / 255 = 输出颜色(蓝)"
+		},
+		"setAmbientLight-easingId": {
+			"label": "过渡"
+		},
+		"setAmbientLight-duration": {
+			"label": "时长"
+		},
+		"setAmbientLight-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

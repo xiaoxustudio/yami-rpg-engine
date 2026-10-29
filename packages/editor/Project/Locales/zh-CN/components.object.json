@@ -1,0 +1,58 @@
+{
+	"components": {
+		"object-folder": {
+			"title": "默认对象文件夹"
+		},
+		"object-folder-tilemap": {
+			"label": "瓦片地图",
+			"tip": "新建场景时自动创建此文件夹\n通过舞台上下文菜单创建的瓦片地图会被自动放入此文件夹"
+		},
+		"object-folder-actor": {
+			"label": "角色",
+			"tip": "新建场景时自动创建此文件夹\n通过舞台上下文菜单创建的角色会被自动放入此文件夹"
+		},
+		"object-folder-region": {
+			"label": "区域",
+			"tip": "新建场景时自动创建此文件夹\n通过舞台上下文菜单创建的区域会被自动放入此文件夹"
+		},
+		"object-folder-light": {
+			"label": "光源",
+			"tip": "新建场景时自动创建此文件夹\n通过舞台上下文菜单创建的光源会被自动放入此文件夹"
+		},
+		"object-folder-animation": {
+			"label": "动画",
+			"tip": "新建场景时自动创建此文件夹\n通过舞台上下文菜单创建的动画会被自动放入此文件夹"
+		},
+		"object-folder-particle": {
+			"label": "粒子",
+			"tip": "新建场景时自动创建此文件夹\n通过舞台上下文菜单创建的粒子会被自动放入此文件夹"
+		},
+		"object-folder-parallax": {
+			"label": "视差图",
+			"tip": "新建场景时自动创建此文件夹\n通过舞台上下文菜单创建的视差图会被自动放入此文件夹"
+		},
+		"object-attribute": {
+			"title": "属性"
+		},
+		"object-attribute-key": {
+			"label": "键",
+			"tip": "属性的名称"
+		},
+		"object-attribute-boolean-value": {
+			"label": "布尔值",
+			"tip": "属性的值"
+		},
+		"object-attribute-number-value": {
+			"label": "数值",
+			"tip": "属性的值"
+		},
+		"object-attribute-string-value": {
+			"label": "字符串",
+			"tip": "属性的值"
+		},
+		"object-attribute-enum-value": {
+			"label": "选项",
+			"tip": "属性的值"
+		}
+	}
+}

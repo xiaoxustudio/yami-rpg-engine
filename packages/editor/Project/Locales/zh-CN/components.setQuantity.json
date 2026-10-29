@@ -1,0 +1,11 @@
+{
+	"components": {
+		"setQuantity": {
+			"title": "设置数量"
+		},
+		"setQuantity-quantity": {
+			"label": "数量",
+			"tip": "输入项目数量"
+		}
+	}
+}

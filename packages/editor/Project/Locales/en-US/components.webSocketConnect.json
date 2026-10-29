@@ -1,0 +1,35 @@
+{
+	"components": {
+		"webSocketConnect": {
+			"title": "WebSocket Connect"
+		},
+		"webSocketConnect-url": {
+			"label": "Address",
+			"tip": "WebSocket server URL, auto-prefixes ws:// (or wss:// if starts with s+)"
+		},
+		"webSocketConnect-id": {
+			"label": "Connection ID",
+			"tip": "unique identifier for send/close commands"
+		},
+		"webSocketConnect-protocols": {
+			"label": "Protocols",
+			"tip": "optional, comma-separated"
+		},
+		"webSocketConnect-onOpen": {
+			"label": "OnOpen",
+			"tip": "callback when connection opens, @event represents the event object"
+		},
+		"webSocketConnect-onMessage": {
+			"label": "OnMessage",
+			"tip": "callback when message received, @event.data contains the data"
+		},
+		"webSocketConnect-onError": {
+			"label": "OnError",
+			"tip": "callback on connection error, @event represents the event object"
+		},
+		"webSocketConnect-onClose": {
+			"label": "OnClose",
+			"tip": "callback when connection closes, @event represents the close event"
+		}
+	}
+}

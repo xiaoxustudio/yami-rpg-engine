@@ -1,0 +1,69 @@
+{
+	"components": {
+		"elementGetter": {
+			"title": "元素"
+		},
+		"elementGetter-type": {
+			"label": "类型",
+			"tip": "如何获取元素",
+			"options": {
+				"trigger": {
+					"name": "事件触发元素",
+					"tip": "触发这个事件的元素"
+				},
+				"latest": {
+					"name": "最新创建元素",
+					"tip": "获取最新创建的元素对象，在调用\"创建元素\"指令时刷新"
+				},
+				"by-id": {
+					"name": "指定元素ID",
+					"tip": "获取最新创建的指定ID的元素"
+				},
+				"by-ancestor-and-id": {
+					"name": "指定祖先元素和ID",
+					"tip": "在指定元素的后代元素中获取第一个指定ID的元素"
+				},
+				"by-index": {
+					"name": "指定父元素和索引",
+					"tip": "在指定元素的子元素列表中获取一个元素"
+				},
+				"by-button-index": {
+					"name": "指定焦点元素和按钮索引",
+					"tip": "获取指定焦点元素的按钮列表中的一个按钮"
+				},
+				"selected-button": {
+					"name": "获取焦点元素选中的按钮",
+					"tip": "获取当前焦点元素中被选择的按钮"
+				},
+				"focus": {
+					"name": "获取最新的焦点元素",
+					"tip": "获取最近被设置为焦点的元素"
+				},
+				"parent": {
+					"name": "获取父元素",
+					"tip": "获取变量元素的父元素"
+				},
+				"variable": {
+					"name": "元素变量",
+					"tip": "获取变量中的元素对象"
+				}
+			}
+		},
+		"elementGetter-ancestor": {
+			"label": "元素",
+			"tip": "选择目标的祖先元素"
+		},
+		"elementGetter-presetId": {
+			"label": "数据ID",
+			"tip": "获取预设的元素"
+		},
+		"elementGetter-index": {
+			"label": "索引",
+			"tip": "目标元素在子元素列表中的位置\n0 = 第一个元素\n1 = 第二个元素\n......"
+		},
+		"elementGetter-variable": {
+			"label": "变量",
+			"tip": "获取变量中的元素对象"
+		}
+	}
+}

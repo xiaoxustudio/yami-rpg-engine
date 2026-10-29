@@ -1,0 +1,11 @@
+{
+	"components": {
+		"stopAudio": {
+			"title": "Stop Audio"
+		},
+		"stopAudio-type": {
+			"label": "Type",
+			"tip": "Immediately stop playing this type of sound"
+		}
+	}
+}

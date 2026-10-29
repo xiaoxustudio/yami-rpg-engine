@@ -1,0 +1,55 @@
+{
+	"components": {
+		"sceneParticle-general-grid": {
+			"label": "General"
+		},
+		"sceneParticle-name": {
+			"label": "Name",
+			"tip": "Particle Name (note: this is a label for user reference only)"
+		},
+		"sceneParticle-particleId": {
+			"label": "Particle",
+			"tip": "Selected Particle File"
+		},
+		"sceneParticle-x": {
+			"label": "X",
+			"tip": "Particle's initial horizontal coordinates"
+		},
+		"sceneParticle-y": {
+			"label": "Y",
+			"tip": "Particle's initial vertical coordinates"
+		},
+		"sceneParticle-angle-box": {
+			"label": "Angle",
+			"tip": "Particle emitter's initial angle"
+		},
+		"sceneParticle-scale-box": {
+			"label": "Scale",
+			"tip": "Particle's overall scaling factor"
+		},
+		"sceneParticle-speed-box": {
+			"label": "Speed",
+			"tip": "Particle's playback speed"
+		},
+		"sceneParticle-opacity-box": {
+			"label": "Opacity",
+			"tip": "Partcile's visibility (transparency adjustment)"
+		},
+		"sceneParticle-priority-box": {
+			"label": "Priority",
+			"tip": "Sorting priority of Particle at render time (render layers)\nParticles with lower Priority will overlap those with higher Priority\nPriority = -1: render position is offset up by one tile\nPriority = 1: render position is offset down by one tile"
+		},
+		"sceneParticle-conditions": {
+			"label": "Conditions",
+			"tip": "Set a list of conditions for the Particle to be created; if they aren't met, the Particle isn't created"
+		},
+		"sceneParticle-events": {
+			"label": "Events",
+			"tip": "$Particle Events\n$Options\nAutorun: Event triggers as soon as the Particle appears (including after reading save data)\nCustom: triggered using the 'Call Event' command"
+		},
+		"sceneParticle-scripts": {
+			"label": "Scripts",
+			"tip": "Add Script files to extend Particle functions"
+		}
+	}
+}

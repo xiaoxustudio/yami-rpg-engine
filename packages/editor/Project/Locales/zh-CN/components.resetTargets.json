@@ -1,0 +1,11 @@
+{
+	"components": {
+		"resetTargets": {
+			"title": "重置目标列表"
+		},
+		"resetTargets-actor": {
+			"label": "角色",
+			"tip": "清空这个角色的目标池"
+		}
+	}
+}

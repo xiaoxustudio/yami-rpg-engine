@@ -1,0 +1,16 @@
+{
+	"components": {
+		"plugin": {
+			"title": "插件"
+		},
+		"plugin-list": {
+			"label": "列表"
+		},
+		"plugin-overview": {
+			"label": "概述"
+		},
+		"plugin-parameter-grid": {
+			"label": "参数"
+		}
+	}
+}

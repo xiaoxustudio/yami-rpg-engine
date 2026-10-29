@@ -1,0 +1,33 @@
+{
+	"components": {
+		"renderOutline": {
+			"title": "Render Outline"
+		},
+		"renderOutline-operation": {
+			"label": "Operation",
+			"tip": "Whether to render the outline of the actor animation sprite",
+			"options": {
+				"add": {
+					"name": "Add",
+					"tip": "Render the outline of the specified actor"
+				},
+				"remove": {
+					"name": "Remove",
+					"tip": "Cancel rendering the outline of the specified actor"
+				},
+				"reset": {
+					"name": "Reset",
+					"tip": "Do not render the outline of any actor"
+				}
+			}
+		},
+		"renderOutline-actor": {
+			"label": "Actor",
+			"tip": "Perform operation on this actor"
+		},
+		"renderOutline-color": {
+			"label": "Color",
+			"tip": "Color of the outline stroke"
+		}
+	}
+}

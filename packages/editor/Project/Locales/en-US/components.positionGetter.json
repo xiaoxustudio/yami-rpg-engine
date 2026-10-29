@@ -1,0 +1,99 @@
+{
+	"components": {
+		"positionGetter": {
+			"title": "Position"
+		},
+		"positionGetter-type": {
+			"label": "Type",
+			"tip": "How to obtain the position",
+			"options": {
+				"absolute": {
+					"name": "Absolute Coordinates",
+					"tip": "Specify the scene coordinates (X, Y)"
+				},
+				"relative": {
+					"name": "Relative Coordinates",
+					"tip": "Specify the relative coordinates (X, Y) of the current object position, valid only in some cases"
+				},
+				"actor": {
+					"name": "Position of Actor",
+					"tip": "Get the position of the actor"
+				},
+				"trigger": {
+					"name": "Position of Trigger",
+					"tip": "Get the position of the trigger"
+				},
+				"light": {
+					"name": "Position of Light",
+					"tip": "Get the position of the light"
+				},
+				"region": {
+					"name": "Position of Region",
+					"tip": "Get the position of the region"
+				},
+				"object": {
+					"name": "Position of Object",
+					"tip": "Get the position of a preset scene object"
+				},
+				"mouse": {
+					"name": "Position of Mouse",
+					"tip": "Get the position of the mouse pointer"
+				}
+			}
+		},
+		"positionGetter-common-x": {
+			"label": "X",
+			"tip": "Horizontal position in the scene"
+		},
+		"positionGetter-common-y": {
+			"label": "Y",
+			"tip": "Vertical position in the scene"
+		},
+		"positionGetter-actor": {
+			"label": "Actor",
+			"tip": "Get the current position of this actor"
+		},
+		"positionGetter-trigger": {
+			"label": "Trigger",
+			"tip": "Get the current position of this trigger"
+		},
+		"positionGetter-light": {
+			"label": "Light",
+			"tip": "Get the current position of this light"
+		},
+		"positionGetter-region": {
+			"label": "Region",
+			"tip": "Get a position within this region"
+		},
+		"positionGetter-region-mode": {
+			"label": "Mode",
+			"tip": "Which position to get within this region",
+			"options": {
+				"center": {
+					"name": "Center",
+					"tip": "Get the center point of the region"
+				},
+				"random": {
+					"name": "Random",
+					"tip": "Get a random position within the region"
+				},
+				"random-land": {
+					"name": "Random - Land",
+					"tip": "Get a random ground position within the region"
+				},
+				"random-water": {
+					"name": "Random - Water",
+					"tip": "Get a random water surface position within the region"
+				},
+				"random-wall": {
+					"name": "Random - Wall",
+					"tip": "Get a random wall position within the region"
+				}
+			}
+		},
+		"positionGetter-objectId": {
+			"label": "Object",
+			"tip": "Get the current position of a preset scene object"
+		}
+	}
+}

@@ -1,0 +1,43 @@
+{
+	"components": {
+		"setVideo": {
+			"title": "Set Video"
+		},
+		"setVideo-element": {
+			"label": "Element",
+			"tip": "Specify a video element"
+		},
+		"setVideo-properties": {
+			"label": "Properties"
+		},
+		"setVideo-property": {
+			"title": "Video Property"
+		},
+		"setVideo-property-key": {
+			"label": "Property",
+			"tip": "Property of the video element",
+			"options": {
+				"video": "Video",
+				"playbackRate": "Playback Rate",
+				"loop": "Loop",
+				"flip": "Flip",
+				"blend": "Blend"
+			}
+		},
+		"setVideo-property-video": {
+			"label": "Video"
+		},
+		"setVideo-property-playbackRate": {
+			"label": "Playback Rate"
+		},
+		"setVideo-property-loop": {
+			"label": "Loop"
+		},
+		"setVideo-property-flip": {
+			"label": "Flip"
+		},
+		"setVideo-property-blend": {
+			"label": "Blend"
+		}
+	}
+}

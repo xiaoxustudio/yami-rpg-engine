@@ -1,0 +1,29 @@
+{
+	"components": {
+		"deleteElement": {
+			"title": "Delete Element"
+		},
+		"deleteElement-operation": {
+			"label": "Operation",
+			"tip": "Perform a delete operation",
+			"options": {
+				"delete-element": {
+					"name": "Delete Element",
+					"tip": "Delete the specified element"
+				},
+				"delete-children": {
+					"name": "Delete Children",
+					"tip": "Delete all child elements of the specified element"
+				},
+				"delete-all": {
+					"name": "Delete All",
+					"tip": "Delete all elements (reset UI)"
+				}
+			}
+		},
+		"deleteElement-element": {
+			"label": "Element",
+			"tip": "Perform operation on this element"
+		}
+	}
+}

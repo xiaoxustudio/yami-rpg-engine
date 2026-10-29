@@ -1,0 +1,56 @@
+{
+	"components": {
+		"moveActor": {
+			"title": "移动角色"
+		},
+		"moveActor-actor": {
+			"label": "角色",
+			"tip": "移动这个角色"
+		},
+		"moveActor-mode": {
+			"label": "移动模式",
+			"tip": "对角色执行的移动操作",
+			"options": {
+				"stop": {
+					"name": "停止移动",
+					"tip": "停止角色的移动包括跟随行为"
+				},
+				"keep": {
+					"name": "持续移动",
+					"tip": "朝指定角度持续移动"
+				},
+				"straight": {
+					"name": "直线移动",
+					"tip": "直线移动到目标位置"
+				},
+				"navigate": {
+					"name": "计算路径",
+					"tip": "自动寻路到目标位置"
+				},
+				"navigate-bypass": {
+					"name": "计算路径 - 绕过角色",
+					"tip": "自动寻路到目标位置，并绕过其他角色"
+				},
+				"teleport": {
+					"name": "传送",
+					"tip": "立即移动到目标位置"
+				}
+			}
+		},
+		"moveActor-angle": {
+			"label": "角度",
+			"tip": "角色朝这个角度移动"
+		},
+		"moveActor-destination": {
+			"label": "目的地",
+			"tip": "角色移动到这个位置"
+		},
+		"moveActor-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

@@ -1,0 +1,58 @@
+{
+	"components": {
+		"tintImage": {
+			"title": "Tint Image"
+		},
+		"tintImage-element": {
+			"label": "Element",
+			"tip": "Specify an image element"
+		},
+		"tintImage-mode": {
+			"label": "Mode",
+			"tip": "Which parameters to change",
+			"options": {
+				"full": {
+					"name": "Full Mode",
+					"tip": "Change both RGB and grayscale"
+				},
+				"rgb": {
+					"name": "RGB Mode",
+					"tip": "Change RGB, keep grayscale"
+				},
+				"gray": {
+					"name": "Grayscale Mode",
+					"tip": "Change grayscale, keep RGB"
+				}
+			}
+		},
+		"tintImage-tint-0": {
+			"label": "Tint - Red",
+			"tip": "Input color (Red) + Hue (Red) = Output color (Red)"
+		},
+		"tintImage-tint-1": {
+			"label": "Tint - Green",
+			"tip": "Input color (Green) + Hue (Green) = Output color (Green)"
+		},
+		"tintImage-tint-2": {
+			"label": "Tint - Blue",
+			"tip": "Input color (Blue) + Hue (Blue) = Output color (Blue)"
+		},
+		"tintImage-tint-3": {
+			"label": "Tint - Grayscale",
+			"tip": "Grayscale is opposite to saturation; the higher the grayscale, the lower the saturation"
+		},
+		"tintImage-easingId": {
+			"label": "Easing"
+		},
+		"tintImage-duration": {
+			"label": "Duration"
+		},
+		"tintImage-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

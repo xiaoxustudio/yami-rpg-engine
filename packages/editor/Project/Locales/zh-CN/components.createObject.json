@@ -1,0 +1,13 @@
+{
+	"components": {
+		"createObject": {
+			"title": "创建对象"
+		},
+		"createObject-presetId": {
+			"label": "对象"
+		},
+		"createObject-position": {
+			"label": "位置"
+		}
+	}
+}

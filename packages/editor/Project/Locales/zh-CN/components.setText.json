@@ -1,0 +1,67 @@
+{
+	"components": {
+		"setText": {
+			"title": "设置文本"
+		},
+		"setText-element": {
+			"label": "元素",
+			"tip": "指定一个文本元素"
+		},
+		"setText-properties": {
+			"label": "设置属性"
+		},
+		"setText-property": {
+			"title": "文本属性"
+		},
+		"setText-property-key": {
+			"label": "属性",
+			"tip": "文本元素的属性",
+			"options": {
+				"content": "内容",
+				"size": "字体大小",
+				"lineSpacing": "行间距",
+				"letterSpacing": "字间距",
+				"color": "颜色",
+				"font": "字体",
+				"effect": "文字效果",
+				"blend": "混合模式"
+			}
+		},
+		"setText-property-content": {
+			"label": "内容"
+		},
+		"setText-property-size": {
+			"label": "字体大小"
+		},
+		"setText-property-lineSpacing": {
+			"label": "行间距"
+		},
+		"setText-property-letterSpacing": {
+			"label": "字间距"
+		},
+		"setText-property-color": {
+			"label": "颜色"
+		},
+		"setText-property-font": {
+			"label": "字体"
+		},
+		"setText-property-effect-type": {
+			"label": "文字效果"
+		},
+		"setText-property-effect-shadowOffsetX": {
+			"label": "阴影 X"
+		},
+		"setText-property-effect-shadowOffsetY": {
+			"label": "阴影 Y"
+		},
+		"setText-property-effect-strokeWidth": {
+			"label": "描边宽度"
+		},
+		"setText-property-effect-color": {
+			"label": "效果颜色"
+		},
+		"setText-property-blend": {
+			"label": "混合模式"
+		}
+	}
+}

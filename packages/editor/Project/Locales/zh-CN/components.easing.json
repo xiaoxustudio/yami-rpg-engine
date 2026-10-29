@@ -1,0 +1,131 @@
+{
+	"components": {
+		"easing": {
+			"title": "过渡"
+		},
+		"easing-list": {
+			"label": "列表"
+		},
+		"easing-points-grid": {
+			"label": "控制点"
+		},
+		"easing-mode": {
+			"label": "模式",
+			"tip": "选择曲线控制点的数量",
+			"options": {
+				"2": {
+					"name": "使用2个控制点",
+					"tip": "生成简单的曲线"
+				},
+				"5": {
+					"name": "使用5个控制点",
+					"tip": "生成稍微复杂的曲线"
+				},
+				"8": {
+					"name": "使用8个控制点",
+					"tip": "生成更加复杂的曲线"
+				}
+			}
+		},
+		"easing-points-0": {
+			"content": "点 1"
+		},
+		"easing-points-1": {
+			"content": "点 2"
+		},
+		"easing-points-2": {
+			"content": "点 3"
+		},
+		"easing-points-3": {
+			"content": "点 4"
+		},
+		"easing-points-4": {
+			"content": "点 5"
+		},
+		"easing-points-5": {
+			"content": "点 6"
+		},
+		"easing-points-6": {
+			"content": "点 7"
+		},
+		"easing-points-7": {
+			"content": "点 8"
+		},
+		"easing-points-0-x": {
+			"tip": "$X1\n控制点1的水平位置"
+		},
+		"easing-points-0-y": {
+			"tip": "$Y1\n控制点1的垂直位置"
+		},
+		"easing-points-1-x": {
+			"tip": "$X2\n控制点2的水平位置"
+		},
+		"easing-points-1-y": {
+			"tip": "$Y2\n控制点2的垂直位置"
+		},
+		"easing-points-2-x": {
+			"tip": "$X3\n控制点3的水平位置"
+		},
+		"easing-points-2-y": {
+			"tip": "$Y3\n控制点3的垂直位置"
+		},
+		"easing-points-3-x": {
+			"tip": "$X4\n控制点4的水平位置"
+		},
+		"easing-points-3-y": {
+			"tip": "$Y4\n控制点4的垂直位置"
+		},
+		"easing-points-4-x": {
+			"tip": "$X5\n控制点5的水平位置"
+		},
+		"easing-points-4-y": {
+			"tip": "$Y5\n控制点5的垂直位置"
+		},
+		"easing-points-5-x": {
+			"tip": "$X6\n控制点6的水平位置"
+		},
+		"easing-points-5-y": {
+			"tip": "$Y6\n控制点6的垂直位置"
+		},
+		"easing-points-6-x": {
+			"tip": "$X7\n控制点7的水平位置"
+		},
+		"easing-points-6-y": {
+			"tip": "$Y7\n控制点7的垂直位置"
+		},
+		"easing-points-7-x": {
+			"tip": "$X8\n控制点8的水平位置"
+		},
+		"easing-points-7-y": {
+			"tip": "$Y8\n控制点8的垂直位置"
+		},
+		"easing-curve-canvas": {
+			"label": "曲线"
+		},
+		"easing-preview-canvas": {
+			"label": "预览"
+		},
+		"easing-preview-reverse": {
+			"label": "回放",
+			"tip": "预览时是否反向播放动画",
+			"options": {
+				"true": {
+					"name": "ON",
+					"tip": "结束时反向播放动画"
+				},
+				"false": {
+					"name": "OFF",
+					"tip": "结束时重新播放动画"
+				}
+			}
+		},
+		"easing-preview-duration": {
+			"label": "持续",
+			"tip": "预览过渡的持续时间"
+		},
+		"easing-preview-delay": {
+			"label": "等待",
+			"tip": "过渡结束后的等待时间"
+		}
+	}
+}

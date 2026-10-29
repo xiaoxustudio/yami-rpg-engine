@@ -1,0 +1,34 @@
+{
+	"components": {
+		"gameData": {
+			"title": "Game Data"
+		},
+		"gameData-operation": {
+			"label": "Operation",
+			"tip": "Perform a save-related operation",
+			"options": {
+				"save": {
+					"name": "Save",
+					"tip": "Save the current game data to the save file at the specified index\nYou can also save some simple local variables (boolean, number, string) in the current event\nAutomatically read them when reading each save data by the \"For Each\" command into local variables of the same name"
+				},
+				"load": {
+					"name": "Load",
+					"tip": "Read game data from the save file at the specified index"
+				},
+				"delete": {
+					"name": "Delete",
+					"tip": "Delete the save file of the specified index"
+				}
+			}
+		},
+		"gameData-index": {
+			"label": "Save Index",
+			"tip": "Save file index matching the number in the filename"
+		},
+		"gameData-variables": {
+			"label": "Save Variables",
+			"placeholder": "Separated by Commas",
+			"tip": "Save some simple local variables (boolean, number, string) in the current event\nAutomatically read them when reading each save data by the \"For Each\" command into local variables of the same name"
+		}
+	}
+}

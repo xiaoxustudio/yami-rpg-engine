@@ -1,0 +1,37 @@
+{
+	"components": {
+		"setCooldown": {
+			"title": "Set Cooldown"
+		},
+		"setCooldown-actor": {
+			"label": "Actor",
+			"tip": "Set a global cooldown for this actor"
+		},
+		"setCooldown-operation": {
+			"label": "Operation",
+			"tip": "Perform a global cooldown operation",
+			"options": {
+				"set": {
+					"name": "Set",
+					"tip": "Set the cooldown time of this cooldown key and start the cooldown timer"
+				},
+				"increase": {
+					"name": "Increase",
+					"tip": "Increase the cooldown time of this cooldown key and start the cooldown timer"
+				},
+				"decrease": {
+					"name": "Decrease",
+					"tip": "Reduce the cooldown time of this cooldown key (minimum is 0)"
+				}
+			}
+		},
+		"setCooldown-key": {
+			"label": "Cooldown Key",
+			"tip": "Get the actor's global cooldown object by this cooldown key"
+		},
+		"setCooldown-cooldown": {
+			"label": "Cooldown Time",
+			"tip": "Global cooldown time"
+		}
+	}
+}

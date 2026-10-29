@@ -1,0 +1,111 @@
+{
+	"components": {
+		"condition": {
+			"title": "Condition"
+		},
+		"condition-type": {
+			"label": "Condition Type",
+			"tip": "Select the type of the condition variable",
+			"options": {
+				"global-boolean": {
+					"name": "Global - Boolean",
+					"tip": "Select global variable (Boolean)"
+				},
+				"global-number": {
+					"name": "Global - Number",
+					"tip": "Select global variable (Number)"
+				},
+				"global-string": {
+					"name": "Global - String",
+					"tip": "Select global variable (String)"
+				},
+				"self-boolean": {
+					"name": "Self - Boolean",
+					"tip": "Select self variable (Boolean)"
+				},
+				"self-number": {
+					"name": "Self - Number",
+					"tip": "Select self variable (Number)"
+				},
+				"self-string": {
+					"name": "Self - String",
+					"tip": "Select self variable (String)"
+				}
+			}
+		},
+		"condition-key": {
+			"label": "Variable",
+			"tip": "Select the correct type of global variable"
+		},
+		"condition-boolean-operation": {
+			"label": "Operation",
+			"tip": "Boolean operation",
+			"options": {
+				"equal": {
+					"name": "==",
+					"tip": "Equal to"
+				},
+				"unequal": {
+					"name": "!=",
+					"tip": "Not equal to"
+				}
+			}
+		},
+		"condition-boolean-value": {
+			"label": "Boolean",
+			"tip": "Operand"
+		},
+		"condition-number-operation": {
+			"label": "Operation",
+			"tip": "Number operation",
+			"options": {
+				"equal": {
+					"name": "==",
+					"tip": "Equal to"
+				},
+				"unequal": {
+					"name": "!=",
+					"tip": "Not equal to"
+				},
+				"greater-or-equal": {
+					"name": ">=",
+					"tip": "Greater than or equal to"
+				},
+				"less-or-equal": {
+					"name": "<=",
+					"tip": "Less than or equal to"
+				},
+				"greater": {
+					"name": ">",
+					"tip": "Greater than"
+				},
+				"less": {
+					"name": "<",
+					"tip": "Less than"
+				}
+			}
+		},
+		"condition-number-value": {
+			"label": "Number",
+			"tip": "Operand"
+		},
+		"condition-string-operation": {
+			"label": "Operation",
+			"tip": "String operation",
+			"options": {
+				"equal": {
+					"name": "==",
+					"tip": "Equal to"
+				},
+				"unequal": {
+					"name": "!=",
+					"tip": "Not equal to"
+				}
+			}
+		},
+		"condition-string-value": {
+			"label": "String",
+			"tip": "Operand"
+		}
+	}
+}

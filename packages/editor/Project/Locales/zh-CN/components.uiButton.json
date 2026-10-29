@@ -1,0 +1,263 @@
+{
+	"components": {
+		"uiButton-image-properties-grid": {
+			"label": "图像属性"
+		},
+		"uiButton-display": {
+			"label": "显示",
+			"tip": "如何显示这个图像",
+			"options": {
+				"stretch": {
+					"name": "拉伸",
+					"tip": "拉伸图像以填充元素"
+				},
+				"tile": {
+					"name": "平铺",
+					"tip": "平铺图像以填充元素"
+				},
+				"clip": {
+					"name": "裁剪",
+					"tip": "裁剪图像并拉伸以填充元素"
+				},
+				"slice": {
+					"name": "切片",
+					"tip": "将图像切成9份平铺以填充元素"
+				}
+			}
+		},
+		"uiButton-normalImage": {
+			"label": "正常图像",
+			"tip": "按钮正常状态下显示的图像"
+		},
+		"uiButton-normalClip": {
+			"label": "正常裁剪区域",
+			"tip": "按钮正常图像的裁剪区域"
+		},
+		"uiButton-hoverImage": {
+			"label": "选中图像",
+			"tip": "按钮选中状态下显示的图像"
+		},
+		"uiButton-hoverClip": {
+			"label": "选中裁剪区域",
+			"tip": "按钮选中图像的裁剪区域"
+		},
+		"uiButton-activeImage": {
+			"label": "按下图像",
+			"tip": "按钮按下状态下显示的图像"
+		},
+		"uiButton-activeClip": {
+			"label": "按下裁剪区域",
+			"tip": "按钮按下图像的裁剪区域"
+		},
+		"uiButton-flip": {
+			"label": "翻转",
+			"tip": "如何翻转按钮图像",
+			"options": {
+				"none": {
+					"name": "不翻转",
+					"tip": "正常显示图像"
+				},
+				"horizontal": {
+					"name": "水平翻转",
+					"tip": "从左向右翻转180度"
+				},
+				"vertical": {
+					"name": "垂直翻转",
+					"tip": "从上向下翻转180度"
+				},
+				"both": {
+					"name": "水平垂直翻转",
+					"tip": "先水平翻转再垂直翻转"
+				}
+			}
+		},
+		"uiButton-border": {
+			"label": "边框",
+			"tip": "根据边框大小将图像切成9份(4个角，4条边，中间1个矩形)，平铺以填充元素，边框大小就是4个角的正方形边长"
+		},
+		"uiButton-imagePadding-box": {
+			"label": "内边距",
+			"tip": "图像到元素边框之间保留的空隙"
+		},
+		"uiButton-imageOpacity-box": {
+			"label": "不透明度",
+			"tip": "用来调节图像的可见度"
+		},
+		"uiButton-imageEffect": {
+			"label": "效果",
+			"tip": "选择图像的效果",
+			"options": {
+				"none": {
+					"name": "无",
+					"tip": "显示原始图像"
+				},
+				"tint-1": {
+					"name": "色调",
+					"tip": "设置正常图像的色调，选中和按下图像继承正常图像的色调"
+				},
+				"tint-2": {
+					"name": "色调 (正常, 选中)",
+					"tip": "分别设置正常和选中图像的色调，按下图像继承选中图像的色调"
+				},
+				"tint-3": {
+					"name": "色调 (正常, 选中, 按下)",
+					"tip": "分别设置正常、选中和按下图像的色调"
+				}
+			}
+		},
+		"uiButton-normalTint-box": {
+			"label": "正常色调",
+			"tip": "按钮正常状态下显示的图像"
+		},
+		"uiButton-hoverTint-box": {
+			"label": "选中色调",
+			"tip": "按钮选中状态下显示的图像"
+		},
+		"uiButton-activeTint-box": {
+			"label": "按下色调",
+			"tip": "按钮按下状态下显示的图像"
+		},
+		"uiButton-text-properties-grid": {
+			"label": "文本属性"
+		},
+		"uiButton-direction": {
+			"label": "方向",
+			"tip": "选择文本排版方向",
+			"options": {
+				"horizontal-tb": {
+					"name": "水平",
+					"tip": "内容从左到右水平流动"
+				},
+				"vertical-lr": {
+					"name": "垂直",
+					"tip": "内容从上到下垂直流动"
+				}
+			}
+		},
+		"uiButton-align-box": {
+			"label": "对齐"
+		},
+		"uiButton-align-left": {
+			"tip": "$左对齐\n文本的左边缘对齐元素的左边缘"
+		},
+		"uiButton-align-center": {
+			"tip": "$水平居中\n文本的水平中点对齐元素的水平中点"
+		},
+		"uiButton-align-right": {
+			"tip": "$右对齐\n文本的右边缘对齐元素的右边缘"
+		},
+		"uiButton-align-top": {
+			"tip": "$顶部对齐\n文本的顶部边缘对齐元素的顶部边缘"
+		},
+		"uiButton-align-middle": {
+			"tip": "$垂直居中\n文本的垂直中点对齐元素的垂直中点"
+		},
+		"uiButton-align-bottom": {
+			"tip": "$底部对齐\n文本的底部边缘对齐元素的底部边缘"
+		},
+		"uiButton-content": {
+			"label": "内容",
+			"tip": "元素的文本内容"
+		},
+		"uiButton-size-box": {
+			"label": "字体大小",
+			"tip": "文字的大小（10 ~ 400）"
+		},
+		"uiButton-letterSpacing-box": {
+			"label": "字间距",
+			"tip": "同一行每个文字的间隔距离"
+		},
+		"uiButton-textPadding-box": {
+			"label": "内边距",
+			"tip": "文本到元素边框之间保留的空隙"
+		},
+		"uiButton-font": {
+			"label": "字体",
+			"placeholder": "默认",
+			"tip": "输入字体名称，如果有多个字体，用逗号隔开，按从左到右的优先顺序排列"
+		},
+		"uiButton-typeface": {
+			"label": "字型",
+			"tip": "选择文字的样式",
+			"options": {
+				"regular": {
+					"name": "正常",
+					"tip": "默认文字样式"
+				},
+				"bold": {
+					"name": "加粗",
+					"tip": "加粗以重点突出"
+				},
+				"italic": {
+					"name": "倾斜",
+					"tip": "倾斜以模拟草书"
+				},
+				"bold-italic": {
+					"name": "加粗 倾斜",
+					"tip": "同时启用加粗和倾斜"
+				}
+			}
+		},
+		"uiButton-textEffect-type": {
+			"label": "文字效果",
+			"tip": "选择一种文字效果",
+			"options": {
+				"none": {
+					"name": "无",
+					"tip": "无描边"
+				},
+				"shadow": {
+					"name": "阴影",
+					"tip": "在指定的偏移位置渲染文字作为阴影"
+				},
+				"stroke": {
+					"name": "描边",
+					"tip": "渲染指定宽度的字形轮廓，其中有一半宽度被文字遮挡"
+				},
+				"outline": {
+					"name": "轮廓",
+					"tip": "分别在上下左右偏离1像素距离的位置渲染4次文字作为轮廓"
+				}
+			}
+		},
+		"uiButton-textEffect-shadowOffsetX": {
+			"label": "阴影 X",
+			"tip": "文字阴影的水平偏移距离"
+		},
+		"uiButton-textEffect-shadowOffsetY": {
+			"label": "阴影 Y",
+			"tip": "文字阴影的垂直偏移距离"
+		},
+		"uiButton-textEffect-strokeWidth": {
+			"label": "描边宽度",
+			"tip": "文字描边线条的宽度"
+		},
+		"uiButton-textEffect-color": {
+			"label": "效果颜色",
+			"tip": "背景文字的颜色"
+		},
+		"uiButton-normalColor": {
+			"label": "正常颜色",
+			"tip": "按钮正常状态下文字的颜色"
+		},
+		"uiButton-hoverColor": {
+			"label": "选中颜色",
+			"tip": "按钮选中状态下文字的颜色"
+		},
+		"uiButton-activeColor": {
+			"label": "按下颜色",
+			"tip": "按钮按下状态下文字的颜色"
+		},
+		"uiButton-sound-effects-grid": {
+			"label": "音效"
+		},
+		"uiButton-hoverSound": {
+			"label": "选中音效",
+			"tip": "选中按钮的音效（必须是用户手动触发）"
+		},
+		"uiButton-clickSound": {
+			"label": "点击音效",
+			"tip": "点击按钮的音效"
+		}
+	}
+}

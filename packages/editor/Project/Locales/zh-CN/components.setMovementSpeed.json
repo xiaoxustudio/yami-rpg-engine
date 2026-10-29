@@ -1,0 +1,37 @@
+{
+	"components": {
+		"setMovementSpeed": {
+			"title": "设置移动速度"
+		},
+		"setMovementSpeed-actor": {
+			"label": "角色",
+			"tip": "改变这个角色的移动速度"
+		},
+		"setMovementSpeed-property": {
+			"label": "属性",
+			"tip": "基础速度 * 速度系数 * 速度系数(临时) = 最终移动速度",
+			"options": {
+				"base": {
+					"name": "基础速度",
+					"tip": "角色每秒移动的距离"
+				},
+				"factor": {
+					"name": "速度系数",
+					"tip": "按比例设置角色移动速度"
+				},
+				"factor-temp": {
+					"name": "速度系数(临时)",
+					"tip": "按比例设置角色移动速度，不被写入存档"
+				}
+			}
+		},
+		"setMovementSpeed-base": {
+			"label": "基础速度",
+			"tip": "角色每秒移动的距离"
+		},
+		"setMovementSpeed-factor": {
+			"label": "速度系数",
+			"tip": "按比例设置角色移动速度"
+		}
+	}
+}

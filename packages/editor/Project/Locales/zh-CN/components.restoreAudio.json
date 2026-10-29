@@ -1,0 +1,11 @@
+{
+	"components": {
+		"restoreAudio": {
+			"title": "恢复音频"
+		},
+		"restoreAudio-type": {
+			"label": "类型",
+			"tip": "对这个类型的声音执行操作"
+		}
+	}
+}

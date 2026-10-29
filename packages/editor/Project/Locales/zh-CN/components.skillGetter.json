@@ -1,0 +1,49 @@
+{
+	"components": {
+		"skillGetter": {
+			"title": "技能"
+		},
+		"skillGetter-type": {
+			"label": "类型",
+			"tip": "如何获取技能",
+			"options": {
+				"trigger": {
+					"name": "事件触发技能",
+					"tip": "触发这个事件的技能"
+				},
+				"latest": {
+					"name": "最近创建技能",
+					"tip": "获取最新创建的技能，在调用\"改变角色技能\"指令添加技能时刷新"
+				},
+				"by-key": {
+					"name": "指定快捷键",
+					"tip": "获取指定角色和快捷键对应的技能"
+				},
+				"by-id": {
+					"name": "指定技能ID",
+					"tip": "获取指定角色和技能文件ID对应的技能"
+				},
+				"variable": {
+					"name": "技能变量",
+					"tip": "获取变量中的技能对象"
+				}
+			}
+		},
+		"skillGetter-actor": {
+			"label": "角色",
+			"tip": "从这个角色身上获取技能"
+		},
+		"skillGetter-key": {
+			"label": "快捷键",
+			"tip": "获取设置了这个快捷键的技能"
+		},
+		"skillGetter-skillId": {
+			"label": "技能",
+			"tip": "获取这个技能文件ID对应的技能"
+		},
+		"skillGetter-variable": {
+			"label": "变量",
+			"tip": "获取变量中的技能对象"
+		}
+	}
+}

@@ -3,10 +3,16 @@
  * 界面文案 key 完整性门禁（i18n-key-guard）
  *
  * 编辑器里 `t('components.x.y')` / `t('properties.x.y')` 这类**静态字面量** key 必须同时存在于
- * `packages/editor/Project/Locales/` 下的**每一份**语言文件里：
+ * `packages/editor/Project/Locales/` 下的**每一种**语言里：
  *   - 缺席 zh-CN → 界面上直接显示 key（或空标签）；
  *   - 缺席 en-US → 英文环境回退成中文/原始 key。
  * 动态拼接（`t('prefix.' + x)`、模板字符串）不在扫描面内——它们的前缀以 `.` 结尾，自动跳过。
+ *
+ * 语言包已按组件命名空间拆分（见 `scripts/oneoff/i18n-split-locales.mjs`）：
+ *   `Locales/<lang>.<alias>.json`     入口：properties + 静态键（本地化器需要的 `[confirm]` 之类）
+ *   `Locales/<lang>/components.<ns>.json`  分片：组件文案（运行时懒加载）
+ * 因此本门禁按**语言**聚合入口 + 全部分片后再比对静态 key，并顺带校验分片布局：
+ * 文件名与内部 id 的命名空间一致、id 不重复、入口带 `format: 2`。
  *
  * 用法：
  *   node scripts/i18n-key-guard.mjs              校验（失败退出码 1）
@@ -22,6 +28,8 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(ROOT, 'packages/editor/src');
 const LOCALES_DIR = join(ROOT, 'packages/editor/Project/Locales');
 const NAMESPACES = ['components.', 'properties.'];
+const CHUNK_FILE_RE = /^components\.([A-Za-z0-9_]+)\.json$/;
+const ENTRY_FORMAT = 2;
 
 const ARGV = new Set(process.argv.slice(2));
 const AS_JSON = ARGV.has('--json');
@@ -39,6 +47,16 @@ export function flattenKeys(value, prefix = '', out = new Set()) {
 		}
 	}
 	return out;
+}
+
+/** 组件 id → 分片命名空间。必须与 `src/i18n/loader.ts` 的 `componentNamespaceOf` 一致。 */
+export function namespaceOf(id) {
+	return id.split('-')[0];
+}
+
+/** `components.setList.json` → `setList`；不符合分片命名规则返回 null。 */
+export function parseChunkNamespace(filename) {
+	return CHUNK_FILE_RE.exec(filename)?.[1] ?? null;
 }
 
 /** 抓 `t('literal')` / `t("literal")`。 */
@@ -71,13 +89,76 @@ function listSourceFiles(dir) {
 	return files;
 }
 
-function loadLocales() {
-	return readdirSync(LOCALES_DIR)
-		.filter((name) => name.endsWith('.json'))
-		.map((name) => ({
-			name,
-			keys: flattenKeys(JSON.parse(readFileSync(join(LOCALES_DIR, name), 'utf8')))
-		}));
+const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
+
+/**
+ * 读一种语言：入口 + 分片按 key 聚合；同时收集布局问题。
+ * @returns {{ name: string, langKey: string, keys: Set<string>, chunks: number }}
+ */
+export function loadLocaleBundle(localesDir, entryName) {
+	const layout = [];
+	const langKey = entryName.split('.')[0];
+	const entryPath = join(localesDir, entryName);
+	const entry = readJson(entryPath);
+	const components = { ...entry.components };
+	const keys = flattenKeys({ properties: entry.properties ?? {} });
+	for (const key of flattenKeys({ components })) keys.add(key);
+
+	if (entry.format !== ENTRY_FORMAT) {
+		layout.push({
+			locale: entryName,
+			kind: 'format',
+			message: `入口缺少 format: ${ENTRY_FORMAT}（旧单文件语言包？）`
+		});
+	}
+
+	const chunkDir = join(localesDir, langKey);
+	let chunks = 0;
+	if (existsSync(chunkDir)) {
+		const chunkFiles = readdirSync(chunkDir)
+			.filter((name) => name.endsWith('.json'))
+			.sort();
+		for (const chunkName of chunkFiles) {
+			chunks++;
+			const namespace = parseChunkNamespace(chunkName);
+			if (!namespace) {
+				layout.push({
+					locale: entryName,
+					kind: 'chunk-name',
+					message: `分片文件名不合法：${chunkName}（应为 components.<ns>.json）`
+				});
+				continue;
+			}
+			const chunk = readJson(join(chunkDir, chunkName));
+			for (const [id, item] of Object.entries(chunk.components ?? {})) {
+				if (namespaceOf(id) !== namespace) {
+					layout.push({
+						locale: entryName,
+						kind: 'chunk-id',
+						message: `${chunkName} 里的 ${id} 属于命名空间 ${namespaceOf(id)}`
+					});
+				}
+				if (id in components) {
+					layout.push({
+						locale: entryName,
+						kind: 'duplicate-id',
+						message: `组件 ${id} 同时出现在入口/多个分片里`
+					});
+					continue;
+				}
+				components[id] = item;
+			}
+		}
+	} else {
+		layout.push({
+			locale: entryName,
+			kind: 'missing-chunk-dir',
+			message: `缺少分片目录 ${langKey}/（语言包未拆分）`
+		});
+	}
+
+	for (const key of flattenKeys({ components })) keys.add(key);
+	return { name: entryName, langKey, keys, chunks, layout };
 }
 
 export function scanSources(files) {
@@ -124,6 +205,24 @@ const SELFTEST_CASES = [
 	}
 ];
 
+const SELFTEST_LAYOUT_CASES = [
+	{
+		name: '分片文件名 → 命名空间',
+		run: () => parseChunkNamespace('components.setList.json'),
+		expect: 'setList'
+	},
+	{
+		name: '非分片文件名不认',
+		run: () => parseChunkNamespace('zh-CN.简体中文.json'),
+		expect: null
+	},
+	{
+		name: '组件 id → 命名空间（按 - 前段）',
+		run: () => namespaceOf('setList-operand-object-property'),
+		expect: 'setList'
+	}
+];
+
 function runSelftest() {
 	let failed = 0;
 	for (const testCase of SELFTEST_CASES) {
@@ -133,6 +232,12 @@ function runSelftest() {
 		const ok = missing === testCase.expect;
 		if (!ok) failed++;
 		console.log(`${ok ? '✓' : '✗'} ${testCase.name}（缺失 ${missing}/${testCase.expect}）`);
+	}
+	for (const testCase of SELFTEST_LAYOUT_CASES) {
+		const actual = testCase.run();
+		const ok = actual === testCase.expect;
+		if (!ok) failed++;
+		console.log(`${ok ? '✓' : '✗'} ${testCase.name}（${actual} / ${testCase.expect}）`);
 	}
 	if (failed > 0) {
 		console.error(`\n门禁口径自测失败：${failed} 例`);
@@ -153,13 +258,20 @@ if (!existsSync(LOCALES_DIR)) {
 
 const files = listSourceFiles(SRC);
 const used = scanSources(files);
-const locales = loadLocales();
+const locales = readdirSync(LOCALES_DIR)
+	.filter((name) => name.endsWith('.json'))
+	.sort()
+	.map((name) => loadLocaleBundle(LOCALES_DIR, name));
 const findings = [];
+const layoutFindings = locales.flatMap((locale) => locale.layout);
 for (const locale of locales) {
 	for (const [key, file] of used) {
 		if (!locale.keys.has(key)) findings.push({ locale: locale.name, key, file });
 	}
 }
+const totalKeys = locales.reduce((sum, locale) => sum + locale.keys.size, 0);
+const totalChunks = locales.reduce((sum, locale) => sum + locale.chunks, 0);
+const ok = findings.length === 0 && layoutFindings.length === 0;
 
 if (AS_JSON) {
 	console.log(
@@ -168,10 +280,13 @@ if (AS_JSON) {
 				scan: {
 					sourceFiles: files.length,
 					locales: locales.map((item) => item.name),
-					usedKeys: used.size
+					usedKeys: used.size,
+					totalKeys,
+					totalChunks
 				},
 				missing: findings,
-				ok: findings.length === 0
+				layout: layoutFindings,
+				ok
 			},
 			null,
 			2
@@ -180,25 +295,38 @@ if (AS_JSON) {
 } else {
 	console.log('界面文案 key 门禁（i18n-key-guard）');
 	console.log(
-		`  扫描：${files.length} 个源文件 / ${used.size} 个静态 key / ${locales.length} 份语言文件`
+		`  扫描：${files.length} 个源文件 / ${used.size} 个静态 key / ${locales.length} 份语言（${totalKeys} 个 key，${totalChunks} 个分片）`
 	);
 	if (VERBOSE) {
 		for (const locale of locales)
-			console.log(`    - ${locale.name}: ${locale.keys.size} 个 key`);
+			console.log(
+				`    - ${locale.name}: ${locale.keys.size} 个 key / ${locale.chunks} 个分片`
+			);
 	}
 	console.log('');
+	if (layoutFindings.length === 0) {
+		console.log('  ✓ 语言包布局：入口 + 分片命名空间一致，无重复 id');
+	} else {
+		console.log(`  ✗ 语言包布局：${layoutFindings.length} 处问题`);
+		for (const item of layoutFindings.slice(0, 20)) {
+			console.log(`      [${item.locale}] ${item.message}`);
+		}
+	}
 	if (findings.length === 0) {
 		console.log('  ✓ components./properties. 静态 key 在所有语言里都存在');
-		console.log('\n✓ 全部通过。\n');
 	} else {
 		console.log(`  ✗ 缺 key：${findings.length} 处`);
 		for (const item of findings.slice(0, 40)) {
 			console.log(`      ${item.locale}  ${item.key}  （${item.file}）`);
 		}
 		if (findings.length > 40) console.log(`      …还有 ${findings.length - 40} 处`);
-		console.error('\n✗ 门禁未通过：补齐语言文件后重跑。\n');
+	}
+	if (ok) {
+		console.log('\n✓ 全部通过。\n');
+	} else {
+		console.error('\n✗ 门禁未通过：补齐语言文件 / 重新生成分片后重跑。\n');
 		process.exit(1);
 	}
 }
 
-if (findings.length !== 0) process.exit(1);
+if (!ok) process.exit(1);

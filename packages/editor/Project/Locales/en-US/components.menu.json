@@ -1,0 +1,22 @@
+{
+	"components": {
+		"menu-file": {
+			"content": "File"
+		},
+		"menu-edit": {
+			"content": "Edit"
+		},
+		"menu-view": {
+			"content": "View"
+		},
+		"menu-window": {
+			"content": "Window"
+		},
+		"menu-help": {
+			"content": "Help"
+		},
+		"menu-open-yami": {
+			"content": "Open Yami"
+		}
+	}
+}

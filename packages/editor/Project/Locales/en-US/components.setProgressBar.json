@@ -1,0 +1,71 @@
+{
+	"components": {
+		"setProgressBar": {
+			"title": "Set Progress Bar"
+		},
+		"setProgressBar-element": {
+			"label": "Element",
+			"tip": "Specify a progress bar element"
+		},
+		"setProgressBar-properties": {
+			"label": "Properties"
+		},
+		"setProgressBar-property": {
+			"title": "Progress Bar Property"
+		},
+		"setProgressBar-property-key": {
+			"label": "Property",
+			"tip": "Property of the progress bar element",
+			"options": {
+				"image": "Image",
+				"display": "Display",
+				"blend": "Blend",
+				"progress": "Progress",
+				"clip-0": "Clip - X",
+				"clip-1": "Clip - Y",
+				"clip-2": "Clip - Width",
+				"clip-3": "Clip - Height",
+				"color-0": "Color - Red",
+				"color-1": "Color - Green",
+				"color-2": "Color - Blue",
+				"color-3": "Color - Alpha"
+			}
+		},
+		"setProgressBar-property-image": {
+			"label": "Image"
+		},
+		"setProgressBar-property-display": {
+			"label": "Display"
+		},
+		"setProgressBar-property-blend": {
+			"label": "Blend"
+		},
+		"setProgressBar-property-progress": {
+			"label": "Progress"
+		},
+		"setProgressBar-property-clip-0": {
+			"label": "Clip - X"
+		},
+		"setProgressBar-property-clip-1": {
+			"label": "Clip - Y"
+		},
+		"setProgressBar-property-clip-2": {
+			"label": "Clip - Width"
+		},
+		"setProgressBar-property-clip-3": {
+			"label": "Clip - Height"
+		},
+		"setProgressBar-property-color-0": {
+			"label": "Color - Red"
+		},
+		"setProgressBar-property-color-1": {
+			"label": "Color - Green"
+		},
+		"setProgressBar-property-color-2": {
+			"label": "Color - Blue"
+		},
+		"setProgressBar-property-color-3": {
+			"label": "Color - Alpha"
+		}
+	}
+}

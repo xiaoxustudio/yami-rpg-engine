@@ -1,0 +1,28 @@
+{
+	"components": {
+		"deployment": {
+			"title": "部署"
+		},
+		"deployment-platform": {
+			"label": "平台",
+			"tip": "选择一个目标操作系统平台"
+		},
+		"deployment-folder": {
+			"label": "文件夹",
+			"tip": "输出文件夹的名称"
+		},
+		"deployment-location-box": {
+			"label": "输出位置"
+		},
+		"deployment-location": {
+			"tip": "$输出位置\n在这个位置新建一个输出文件夹"
+		},
+		"deployment-choose": {
+			"tip": "$选择文件夹\n打开操作系统的会话框，选择一个文件夹作为路径"
+		},
+		"deployment-compress": {
+			"label": "混淆压缩",
+			"tip": "开启混淆压缩\n开启后，将使用混淆压缩代码，减小体积，但会增加编译时间"
+		}
+	}
+}

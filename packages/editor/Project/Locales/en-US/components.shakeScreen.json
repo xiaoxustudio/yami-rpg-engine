@@ -1,0 +1,36 @@
+{
+	"components": {
+		"shakeScreen": {
+			"title": "Shake Screen"
+		},
+		"shakeScreen-mode": {
+			"label": "Shake Mode",
+			"options": {
+				"random": "Random",
+				"horizontal": "Horizontal",
+				"vertical": "Vertical"
+			}
+		},
+		"shakeScreen-power": {
+			"label": "Power",
+			"tip": "Amplitude of the shake"
+		},
+		"shakeScreen-speed": {
+			"label": "Speed",
+			"tip": "Speed of the shake"
+		},
+		"shakeScreen-easingId": {
+			"label": "Easing"
+		},
+		"shakeScreen-duration": {
+			"label": "Duration"
+		},
+		"shakeScreen-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

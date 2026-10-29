@@ -1,0 +1,15 @@
+{
+	"components": {
+		"exportLanguage": {
+			"title": "Export Language Pack"
+		},
+		"exportLanguage-first": {
+			"label": "First Lang",
+			"tip": "Prioritize exporting text from this language pack"
+		},
+		"exportLanguage-second": {
+			"label": "Second Lang",
+			"tip": "Use the second language to fill in missing content from the first language"
+		}
+	}
+}

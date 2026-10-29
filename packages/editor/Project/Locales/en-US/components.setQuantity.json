@@ -1,0 +1,11 @@
+{
+	"components": {
+		"setQuantity": {
+			"title": "Set Quantity"
+		},
+		"setQuantity-quantity": {
+			"label": "Quantity",
+			"tip": "Enter the item quantity"
+		}
+	}
+}

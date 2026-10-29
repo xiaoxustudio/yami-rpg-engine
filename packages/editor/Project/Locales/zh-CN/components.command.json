@@ -1,0 +1,26 @@
+{
+	"components": {
+		"command": {
+			"title": "自定义指令"
+		},
+		"command-list": {
+			"label": "列表"
+		},
+		"command-overview": {
+			"label": "概述"
+		},
+		"command-settings-grid": {
+			"label": "设置"
+		},
+		"command-alias": {
+			"label": "别名",
+			"placeholder": "默认使用插件名称",
+			"tip": "重命名指令名称"
+		},
+		"command-keywords": {
+			"label": "关键字",
+			"placeholder": "关键字用逗号分隔",
+			"tip": "添加搜索关键字，用逗号分隔"
+		}
+	}
+}

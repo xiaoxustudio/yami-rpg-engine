@@ -1,0 +1,39 @@
+{
+	"components": {
+		"fileTileset-general-grid": {
+			"label": "图块组"
+		},
+		"fileTileset-image": {
+			"label": "图像",
+			"tip": "普通图块的精灵图"
+		},
+		"fileTileset-width": {
+			"label": "宽度",
+			"tip": "水平图块数量（1 ~ 256）"
+		},
+		"fileTileset-height": {
+			"label": "高度",
+			"tip": "垂直图块数量（1 ~ 256）"
+		},
+		"fileTileset-tileWidth": {
+			"label": "图块宽度",
+			"tip": "单个图块的水平像素数量（16 ~ 256）"
+		},
+		"fileTileset-tileHeight": {
+			"label": "图块高度",
+			"tip": "单个图块的垂直像素数量（16 ~ 256）"
+		},
+		"fileTileset-globalOffsetX": {
+			"label": "图块偏移 X",
+			"tip": "图块在场景中的水平位置偏移量"
+		},
+		"fileTileset-globalOffsetY": {
+			"label": "图块偏移 Y",
+			"tip": "图块在场景中的垂直位置偏移量"
+		},
+		"fileTileset-globalPriority": {
+			"label": "图块优先级",
+			"tip": "图块在瓦片地图对象层渲染时的排序优先级，\n位置在下方的图块总是会遮挡上方的图块。\n优先级 = -1：排序位置向上偏移一个图块的距离\n优先级 = 1：排序位置向下偏移一个图块的距离"
+		}
+	}
+}

@@ -1,6 +1,7 @@
 <template>
 	<YMFontSize
 		id="fontSize"
+		:ref="registryRef(windowShellEls, 'fontSize')"
 		:model-value="form.size"
 		:label="t('components.fontSize-size.label')"
 		v-tip="t('components.fontSize-size.tip')"
@@ -12,7 +13,9 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import { registryRef } from '@app/utils/element-registry';
 import { Selection } from '@app/tools/text-capture.ts';
+import { windowShellEls } from '@app/tools/window-object.ts';
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
 import { YMFontSize } from '@ui-kit';
 

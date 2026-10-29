@@ -1,12 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { applyLocaleData, initYamiI18n, getYamiI18n } from '@app/i18n';
 import type { LocaleData } from '@app/i18n/convert';
+import { loadLocaleBundle } from './locale-bundle';
 
 function loadLocale(filename: string): LocaleData {
-	const p = resolve(process.cwd(), 'Project/Locales', filename);
-	return JSON.parse(readFileSync(p, 'utf8')) as LocaleData;
+	return loadLocaleBundle(filename);
 }
 
 describe('i18n 唯一真源', () => {

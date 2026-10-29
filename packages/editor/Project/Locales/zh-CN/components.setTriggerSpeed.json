@@ -1,0 +1,15 @@
+{
+	"components": {
+		"setTriggerSpeed": {
+			"title": "设置触发器速度"
+		},
+		"setTriggerSpeed-trigger": {
+			"label": "触发器",
+			"tip": "设置这个触发器"
+		},
+		"setTriggerSpeed-speed": {
+			"label": "速度",
+			"tip": "触发器的移动速度（单位：图块/秒）"
+		}
+	}
+}

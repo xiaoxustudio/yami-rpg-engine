@@ -1,0 +1,29 @@
+{
+	"components": {
+		"triggerGetter": {
+			"title": "触发器"
+		},
+		"triggerGetter-type": {
+			"label": "类型",
+			"tip": "如何获取触发器",
+			"options": {
+				"trigger": {
+					"name": "事件触发器",
+					"tip": "触发器对象的事件被触发时，通过访问<事件触发器>获取这个触发器"
+				},
+				"latest": {
+					"name": "最新创建触发器",
+					"tip": "获取最新创建的触发器对象，在调用<创建触发器>指令时刷新"
+				},
+				"variable": {
+					"name": "触发器变量",
+					"tip": "获取变量中的触发器对象"
+				}
+			}
+		},
+		"triggerGetter-variable": {
+			"label": "变量",
+			"tip": "获取变量中的触发器对象"
+		}
+	}
+}

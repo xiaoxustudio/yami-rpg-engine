@@ -1,0 +1,11 @@
+{
+	"components": {
+		"restoreAudio": {
+			"title": "Restore Audio"
+		},
+		"restoreAudio-type": {
+			"label": "Type",
+			"tip": "Perform operation on this type of sound"
+		}
+	}
+}

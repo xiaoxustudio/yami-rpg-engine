@@ -1,0 +1,29 @@
+{
+	"components": {
+		"setTerrain": {
+			"title": "设置地形"
+		},
+		"setTerrain-position": {
+			"label": "位置",
+			"tip": "选择一个场景位置"
+		},
+		"setTerrain-terrain": {
+			"label": "地形",
+			"tip": "替换为哪种地形",
+			"options": {
+				"land": {
+					"name": "地面",
+					"tip": "替换为地面（实际地形受该位置的图块影响）"
+				},
+				"water": {
+					"name": "水面",
+					"tip": "替换为水面"
+				},
+				"wall": {
+					"name": "墙块",
+					"tip": "替换为墙块"
+				}
+			}
+		}
+	}
+}

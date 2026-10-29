@@ -1,0 +1,105 @@
+{
+	"components": {
+		"setInventory": {
+			"title": "Set Inventory"
+		},
+		"setInventory-actor": {
+			"label": "Actor",
+			"tip": "Set the inventory of this actor"
+		},
+		"setInventory-operation": {
+			"label": "Operation",
+			"tip": "Perform an inventory operation",
+			"options": {
+				"increase-money": {
+					"name": "Increase Money",
+					"tip": "Increase inventory money"
+				},
+				"decrease-money": {
+					"name": "Decrease Money",
+					"tip": "Reduce inventory money (minimum is 0)"
+				},
+				"increase-items": {
+					"name": "Increase Items",
+					"tip": "Create a specified number of items and add them to the inventory,\nmerge them if the same item already exists, otherwise insert them into the frontmost empty position"
+				},
+				"decrease-items": {
+					"name": "Decrease Items",
+					"tip": "Remove a specified number of items from the inventory"
+				},
+				"gain-equipment": {
+					"name": "Gain Equipment",
+					"tip": "Create an equipment and insert it into the frontmost empty slot of the inventory"
+				},
+				"lose-equipment": {
+					"name": "Lose Equipment",
+					"tip": "Remove an item from the inventory"
+				},
+				"gain-equipment-instance": {
+					"name": "Gain Equipment Instance",
+					"tip": "Get the equipment from the equipment accessor and insert it into the frontmost empty slot of the inventory"
+				},
+				"lose-equipment-instance": {
+					"name": "Lose Equipment Instance",
+					"tip": "Get the equipment from the equipment accessor and remove it from the inventory"
+				},
+				"swap": {
+					"name": "Swap Order of Items",
+					"tip": "Swap two item slots, or an item slot and an empty slot"
+				},
+				"sort": {
+					"name": "Sort Simply",
+					"tip": "Remove empty slots between items so that items are closely packed but do not change the order of items"
+				},
+				"sort-by-order": {
+					"name": "Sort by Filename",
+					"tip": "Remove empty slots between items so that items are closely packed and sort items in ascending order by file name"
+				},
+				"reference": {
+					"name": "Use Global Actor's Inventory",
+					"tip": "Set the specified global actor's inventory to this actor's inventory (shared)"
+				},
+				"dereference": {
+					"name": "Restore Inventory",
+					"tip": "Restore this actor's own inventory (unshared)"
+				},
+				"reset": {
+					"name": "Reset",
+					"tip": "Clear items and money from the inventory"
+				}
+			}
+		},
+		"setInventory-money": {
+			"label": "Money",
+			"tip": "Money in inventory"
+		},
+		"setInventory-itemId": {
+			"label": "Item",
+			"tip": "File ID of the item"
+		},
+		"setInventory-quantity": {
+			"label": "Quantity",
+			"tip": "Quantity of this item"
+		},
+		"setInventory-equipmentId": {
+			"label": "Equipment",
+			"tip": "File ID of the equipment"
+		},
+		"setInventory-equipment": {
+			"label": "Equipment",
+			"tip": "Get an existing equipment from the equipment accessor"
+		},
+		"setInventory-order1": {
+			"label": "Order A",
+			"tip": "Order of item A in inventory (empty slot allowed)"
+		},
+		"setInventory-order2": {
+			"label": "Order B",
+			"tip": "Order of item B in inventory (empty slot allowed)"
+		},
+		"setInventory-refActor": {
+			"label": "Global Actor",
+			"tip": "Get the inventory of this global actor for sharing"
+		}
+	}
+}

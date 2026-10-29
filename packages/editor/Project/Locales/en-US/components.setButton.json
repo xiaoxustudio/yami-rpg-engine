@@ -1,0 +1,57 @@
+{
+	"components": {
+		"setButton": {
+			"title": "Set Button"
+		},
+		"setButton-element": {
+			"label": "Element",
+			"tip": "Specify a button element"
+		},
+		"setButton-properties": {
+			"label": "Properties"
+		},
+		"setButton-property": {
+			"title": "Button Property"
+		},
+		"setButton-property-key": {
+			"label": "Property",
+			"tip": "Property of the button element",
+			"options": {
+				"normalImage": "NormalImage",
+				"hoverImage": "HoverImage",
+				"activeImage": "ActiveImage",
+				"normalClip": "NormalClip",
+				"hoverClip": "HoverClip",
+				"activeClip": "ActiveClip",
+				"normalTint": "NormalTint",
+				"hoverTint": "HoverTint",
+				"activeTint": "ActiveTint",
+				"imageOpacity": "ImageOpacity",
+				"content": "Content",
+				"size": "Size",
+				"letterSpacing": "Letter Spacing"
+			}
+		},
+		"setButton-property-image": {
+			"label": "Image"
+		},
+		"setButton-property-clip-box": {
+			"label": "Clip"
+		},
+		"setButton-property-tint-box": {
+			"label": "Tint"
+		},
+		"setButton-property-imageOpacity": {
+			"label": "Opacity"
+		},
+		"setButton-property-content": {
+			"label": "Content"
+		},
+		"setButton-property-size": {
+			"label": "Size"
+		},
+		"setButton-property-letterSpacing": {
+			"label": "Letter Spacing"
+		}
+	}
+}

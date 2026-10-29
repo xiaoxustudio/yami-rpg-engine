@@ -1,0 +1,48 @@
+{
+	"components": {
+		"useItem": {
+			"title": "Use Item"
+		},
+		"useItem-actor": {
+			"label": "Actor",
+			"tip": "Use the item of this actor"
+		},
+		"useItem-mode": {
+			"label": "Mode",
+			"tip": "How to obtain the item",
+			"options": {
+				"by-key": {
+					"name": "By Shortcut Key",
+					"tip": "Get the item in the actor's inventory by a shortcut key"
+				},
+				"by-id": {
+					"name": "By Item ID",
+					"tip": "Get the item in the actor's inventory by item ID"
+				},
+				"by-item": {
+					"name": "By Item Instance",
+					"tip": "Get the item object by the item accessor (It must be in this actor's inventory to take effect)"
+				}
+			}
+		},
+		"useItem-key": {
+			"label": "Shortcut Key",
+			"tip": "Get the item registered with this shortcut key from the inventory"
+		},
+		"useItem-itemId": {
+			"label": "Item",
+			"tip": "Get the item whose item ID matches from the inventory"
+		},
+		"useItem-item": {
+			"label": "Item",
+			"tip": "Get the item from the item accessor"
+		},
+		"useItem-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

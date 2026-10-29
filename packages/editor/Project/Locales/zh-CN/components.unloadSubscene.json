@@ -1,0 +1,11 @@
+{
+	"components": {
+		"unloadSubscene": {
+			"title": "卸载子场景"
+		},
+		"unloadSubscene-sceneId": {
+			"label": "场景",
+			"tip": "删除与这个ID的场景相关的所有对象"
+		}
+	}
+}

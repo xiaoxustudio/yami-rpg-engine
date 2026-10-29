@@ -1,0 +1,19 @@
+{
+	"components": {
+		"getObjectProperty": {
+			"title": "Get Object Property"
+		},
+		"getObjectProperty-variable": {
+			"label": "Variable",
+			"tip": "Get this variable"
+		},
+		"getObjectProperty-save-variable": {
+			"label": "Save to",
+			"tip": "Save the obtained value to this variable"
+		},
+		"getObjectProperty-list": {
+			"label": "Index List",
+			"tip": "Get from top to bottom in sequence"
+		}
+	}
+}

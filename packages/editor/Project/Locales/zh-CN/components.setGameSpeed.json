@@ -1,0 +1,24 @@
+{
+	"components": {
+		"setGameSpeed": {
+			"title": "设置游戏速度"
+		},
+		"setGameSpeed-speed": {
+			"label": "速度",
+			"tip": "游戏速度比率，影响每一帧的时间增量"
+		},
+		"setGameSpeed-easingId": {
+			"label": "过渡"
+		},
+		"setGameSpeed-duration": {
+			"label": "时长"
+		},
+		"setGameSpeed-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

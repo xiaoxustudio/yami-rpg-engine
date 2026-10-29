@@ -1,0 +1,11 @@
+{
+	"components": {
+		"choice": {
+			"title": "Choice"
+		},
+		"choice-content": {
+			"label": "Content",
+			"tip": "Option content; readable via \"Set String\""
+		}
+	}
+}

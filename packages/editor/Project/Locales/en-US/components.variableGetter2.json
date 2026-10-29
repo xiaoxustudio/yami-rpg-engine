@@ -1,0 +1,27 @@
+{
+	"components": {
+		"variableGetter2": {
+			"title": "Variable"
+		},
+		"variableGetter2-type": {
+			"label": "Type",
+			"tip": "How to access the variable"
+		},
+		"variableGetter2-element": {
+			"label": "Element",
+			"tip": "Access this element's properties"
+		},
+		"variableGetter2-common-key": {
+			"label": "Key",
+			"tip": "Local variable"
+		},
+		"variableGetter2-preset-key": {
+			"label": "Key",
+			"tip": "Object property"
+		},
+		"variableGetter2-global-key": {
+			"label": "Key",
+			"tip": "Global variable"
+		}
+	}
+}

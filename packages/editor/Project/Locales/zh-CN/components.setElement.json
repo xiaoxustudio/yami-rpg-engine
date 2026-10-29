@@ -1,0 +1,45 @@
+{
+	"components": {
+		"setElement": {
+			"title": "设置元素"
+		},
+		"setElement-element": {
+			"label": "元素",
+			"tip": "指定一个任意类型的元素"
+		},
+		"setElement-operation": {
+			"label": "操作",
+			"tip": "执行一个元素操作",
+			"options": {
+				"hide": {
+					"name": "隐藏",
+					"tip": "隐藏元素后，不再渲染它和它的后代元素（实际上仍然存在）"
+				},
+				"show": {
+					"name": "显示",
+					"tip": "解除元素的隐藏状态"
+				},
+				"disable-pointer-events": {
+					"name": "禁用指针事件",
+					"tip": "禁止自动触发该元素和它的后代元素的所有指针事件（包括鼠标按下这类事件）"
+				},
+				"enable-pointer-events": {
+					"name": "启用指针事件",
+					"tip": "恢复元素指针事件的自动触发"
+				},
+				"skip-pointer-events": {
+					"name": "跳过指针事件",
+					"tip": "禁止自动触发该元素的所有指针事件，但是不禁止它的后代元素"
+				},
+				"move-to-first": {
+					"name": "移动到头部",
+					"tip": "将该元素从它父元素的子元素列表中，移动到第一个位置（总是被其他子元素遮挡，相等于置于底部）"
+				},
+				"move-to-last": {
+					"name": "移动到末尾",
+					"tip": "将该元素从它父元素的子元素列表中，移动到最后一个位置（总是遮挡其他子元素，相当于置于顶部）"
+				}
+			}
+		}
+	}
+}

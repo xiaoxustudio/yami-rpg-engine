@@ -1,0 +1,98 @@
+{
+	"components": {
+		"followActor": {
+			"title": "跟随角色"
+		},
+		"followActor-actor": {
+			"label": "角色",
+			"tip": "让这个角色跟随目标角色"
+		},
+		"followActor-target": {
+			"label": "跟随目标",
+			"tip": "被跟随的角色"
+		},
+		"followActor-mode": {
+			"label": "跟随模式",
+			"tip": "目标区域的形状",
+			"options": {
+				"circle": {
+					"name": "圆形",
+					"tip": "角色A在一个圆形范围内跟随角色B"
+				},
+				"rectangle": {
+					"name": "矩形",
+					"tip": "角色A在一个矩形范围内跟随角色B"
+				}
+			}
+		},
+		"followActor-minDist": {
+			"label": "最小距离",
+			"tip": "圆形模式：当距离小于最小距离时，角色A会远离角色B\n矩形模式：当水平距离小于最小距离时，角色A会远离角色B"
+		},
+		"followActor-maxDist": {
+			"label": "最大距离",
+			"tip": "圆形模式：当距离大于最大距离时，角色A会接近角色B\n矩形模式：当水平距离大于最大距离时，角色A会接近角色B"
+		},
+		"followActor-offset": {
+			"label": "偏移",
+			"tip": "如果有多名角色跟随一个角色，并且是相同的跟随距离时，可以分别设置不同的偏移值，避免重叠\n有效范围：[-0.8, 0.8]"
+		},
+		"followActor-vertDist": {
+			"label": "垂直距离",
+			"tip": "当角色之间的Y轴距离大于\"垂直距离\"时，角色A会在Y轴上接近角色B"
+		},
+		"followActor-bufferDist": {
+			"label": "缓冲距离",
+			"tip": "当角色接近目标时，额外多接近一段距离\n当角色远离目标时，额外多远离一段距离\n以减少频繁的启停次数"
+		},
+		"followActor-navigate": {
+			"label": "计算路径",
+			"tip": "自动寻路到目标位置",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "每隔一段时间计算最新路径"
+				},
+				"false": {
+					"name": "否",
+					"tip": "朝目标位置直线移动"
+				}
+			}
+		},
+		"followActor-bypass": {
+			"label": "绕过角色",
+			"tip": "绕过其他角色",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "绕开体重不为0的其他角色占据的场景格子"
+				},
+				"false": {
+					"name": "否",
+					"tip": "忽略其他角色"
+				}
+			}
+		},
+		"followActor-once": {
+			"label": "跟随一次",
+			"tip": "到达目的地时停止跟随",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "进入跟随的目标区域后停止跟随"
+				},
+				"false": {
+					"name": "否",
+					"tip": "持续跟随目标角色"
+				}
+			}
+		},
+		"followActor-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

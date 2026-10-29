@@ -1,0 +1,23 @@
+{
+	"components": {
+		"changeActorSprite": {
+			"title": "改变角色精灵图"
+		},
+		"changeActorSprite-actor": {
+			"label": "角色",
+			"tip": "替换这个角色动画的一个精灵图"
+		},
+		"changeActorSprite-animationId": {
+			"label": "动画",
+			"tip": "选择一个动画文件，用来生成精灵图列表"
+		},
+		"changeActorSprite-spriteId": {
+			"label": "精灵图名称",
+			"tip": "选择需要更改的精灵图"
+		},
+		"changeActorSprite-image": {
+			"label": "图像",
+			"tip": "选择新的精灵图像"
+		}
+	}
+}

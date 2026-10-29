@@ -1,0 +1,15 @@
+{
+	"components": {
+		"changeActorAnimation": {
+			"title": "改变角色动画"
+		},
+		"changeActorAnimation-actor": {
+			"label": "角色",
+			"tip": "改变这个角色的动画"
+		},
+		"changeActorAnimation-animationId": {
+			"label": "动画",
+			"tip": "指定动画文件ID"
+		}
+	}
+}

@@ -1,0 +1,73 @@
+{
+	"components": {
+		"sceneAnimation-general-grid": {
+			"label": "基本设置"
+		},
+		"sceneAnimation-name": {
+			"label": "名称",
+			"tip": "动画的备注名称"
+		},
+		"sceneAnimation-animationId": {
+			"label": "动画",
+			"tip": "选择一个动画文件"
+		},
+		"sceneAnimation-motion": {
+			"label": "动作",
+			"tip": "选择动画中的一个动作"
+		},
+		"sceneAnimation-rotatable": {
+			"label": "可旋转",
+			"tip": "是否自动更新动画旋转角度",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "动画受角度影响而旋转"
+				},
+				"false": {
+					"name": "否",
+					"tip": "动画始终不会旋转"
+				}
+			}
+		},
+		"sceneAnimation-x": {
+			"label": "X",
+			"tip": "动画的初始水平位置"
+		},
+		"sceneAnimation-y": {
+			"label": "Y",
+			"tip": "动画的初始垂直位置"
+		},
+		"sceneAnimation-angle-box": {
+			"label": "角度",
+			"tip": "动画的初始角度，影响动作方向"
+		},
+		"sceneAnimation-scale-box": {
+			"label": "缩放系数",
+			"tip": "动画的缩放系数"
+		},
+		"sceneAnimation-speed-box": {
+			"label": "播放速度",
+			"tip": "动画的播放速度"
+		},
+		"sceneAnimation-opacity-box": {
+			"label": "不透明度",
+			"tip": "用来调节动画的可见度"
+		},
+		"sceneAnimation-priority-box": {
+			"label": "优先级",
+			"tip": "动画在渲染时的排序优先级\n位置在下方的动画总是会遮挡上方的动画\n优先级 = -1：排序位置向上偏移一个图块的距离\n优先级 = 1：排序位置向下偏移一个图块的距离"
+		},
+		"sceneAnimation-conditions": {
+			"label": "条件",
+			"tip": "加载场景时，只有满足条件列表中的所有条件后，该动画才被创建"
+		},
+		"sceneAnimation-events": {
+			"label": "事件",
+			"tip": "动画事件列表\n$可选类型\n自动执行：动画出现时立即触发事件（包括读取存档后）\n自定义事件：通过\"调用事件\"指令触发事件"
+		},
+		"sceneAnimation-scripts": {
+			"label": "脚本",
+			"tip": "添加脚本文件来扩展动画"
+		}
+	}
+}

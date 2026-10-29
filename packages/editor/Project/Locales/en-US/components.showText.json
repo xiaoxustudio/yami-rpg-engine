@@ -1,0 +1,14 @@
+{
+	"components": {
+		"showText": {
+			"title": "Show Text"
+		},
+		"showText-target": {
+			"tip": "Target Actor\nThis actor will be set as the target actor"
+		},
+		"showText-parameters": {
+			"placeholder": "Parameters",
+			"tip": "Parameter Format\nbool1, bool2: true, num: 0, str: hello world, ...\nRead parameters by 'Set Boolean', 'Set Number' and 'Set String' commands"
+		}
+	}
+}

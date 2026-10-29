@@ -1,0 +1,15 @@
+{
+	"components": {
+		"changeActorTeam": {
+			"title": "Change Actor Team"
+		},
+		"changeActorTeam-actor": {
+			"label": "Actor",
+			"tip": "Change the team of this actor"
+		},
+		"changeActorTeam-teamId": {
+			"label": "Team",
+			"tip": "Specify a new team for the actor"
+		}
+	}
+}

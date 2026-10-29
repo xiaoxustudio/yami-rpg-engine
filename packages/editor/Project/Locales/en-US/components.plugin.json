@@ -1,0 +1,16 @@
+{
+	"components": {
+		"plugin": {
+			"title": "Plugin"
+		},
+		"plugin-list": {
+			"label": "List"
+		},
+		"plugin-overview": {
+			"label": "Overview"
+		},
+		"plugin-parameter-grid": {
+			"label": "Parameters"
+		}
+	}
+}

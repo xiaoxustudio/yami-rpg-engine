@@ -1,0 +1,89 @@
+{
+	"components": {
+		"stopEvent": {
+			"title": "停止事件"
+		},
+		"stopEvent-type": {
+			"label": "类型",
+			"tip": "想要停止哪个事件",
+			"options": {
+				"current": {
+					"name": "当前事件",
+					"tip": "停止正在执行的事件以及调用它的父级事件"
+				},
+				"global": {
+					"name": "全局事件",
+					"tip": "停止执行指定全局事件的所有实例"
+				},
+				"scene": {
+					"name": "场景事件",
+					"tip": "停止执行指定场景事件类型的所有实例"
+				},
+				"actor": {
+					"name": "角色",
+					"tip": "停止执行指定角色事件类型的所有实例"
+				},
+				"skill": {
+					"name": "技能",
+					"tip": "停止执行指定技能事件类型的所有实例"
+				},
+				"state": {
+					"name": "状态",
+					"tip": "停止执行指定状态事件类型的所有实例"
+				},
+				"equipment": {
+					"name": "装备",
+					"tip": "停止执行指定装备事件类型的所有实例\n当装备不再属于角色时，操作无效"
+				},
+				"item": {
+					"name": "物品",
+					"tip": "停止执行指定物品事件类型的所有实例\n当物品不再属于角色时，操作无效"
+				},
+				"light": {
+					"name": "光源",
+					"tip": "停止执行指定光源事件类型的所有实例"
+				},
+				"element": {
+					"name": "元素",
+					"tip": "停止执行指定元素事件类型的所有实例"
+				}
+			}
+		},
+		"stopEvent-actor": {
+			"label": "角色",
+			"tip": "停止这个角色的事件"
+		},
+		"stopEvent-skill": {
+			"label": "技能",
+			"tip": "停止这个技能的事件"
+		},
+		"stopEvent-state": {
+			"label": "状态",
+			"tip": "停止这个状态的事件"
+		},
+		"stopEvent-equipment": {
+			"label": "装备",
+			"tip": "停止这个装备的事件"
+		},
+		"stopEvent-item": {
+			"label": "物品",
+			"tip": "停止这个物品的事件"
+		},
+		"stopEvent-light": {
+			"label": "光源",
+			"tip": "停止这个光源的事件"
+		},
+		"stopEvent-element": {
+			"label": "元素",
+			"tip": "停止这个元素的事件"
+		},
+		"stopEvent-eventId": {
+			"label": "事件",
+			"tip": "指定事件文件ID"
+		},
+		"stopEvent-eventType": {
+			"label": "事件",
+			"tip": "选择对象的事件类型"
+		}
+	}
+}

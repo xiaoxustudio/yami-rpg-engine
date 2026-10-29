@@ -1,0 +1,42 @@
+{
+	"components": {
+		"animation-switch-mark": {
+			"tip": "$Mark\nShow joint and particle markers"
+		},
+		"animation-switch-onionskin": {
+			"tip": "$Onionskin\nDisplay semi-transparent sprites for the previous and next frames of the current frame"
+		},
+		"animation-switch-mirror": {
+			"tip": "$Mirror\nFlip the animation horizontally with the Y axis as the axis of symmetry"
+		},
+		"animation-switch-settings": {
+			"tip": "$Settings\nOpen the animation settings panel"
+		},
+		"animation-speed": {
+			"tip": "$Playback Speed\nThe speed of playing animation on the stage\n1: Normal playback speed\n4: 4 times playback speed"
+		},
+		"animation-timeline-previousKey": {
+			"tip": "$Previous Key Frame\nJump to the previous keyframe of the current frame"
+		},
+		"animation-timeline-previous": {
+			"tip": "$Previous Frame\nJump to the previous frame of the current frame"
+		},
+		"animation-timeline-play": {
+			"tip": "$Play/Pause\nIf the animation is paused, play the animation, otherwise pause the animation"
+		},
+		"animation-timeline-next": {
+			"tip": "$Next Frame\nJump to the next frame of the current frame"
+		},
+		"animation-timeline-nextKey": {
+			"tip": "$Next Key Frame\nJump to the next keyframe of the current frame"
+		},
+		"animation-timeline-loop": {
+			"tip": "$Loop\nWhen the animation ends, jump to the first frame and continue playing (only effective in the editor)"
+		},
+		"animation-easing-id": {
+			"options": {
+				"": "No Easing"
+			}
+		}
+	}
+}

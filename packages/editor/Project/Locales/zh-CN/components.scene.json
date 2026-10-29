@@ -1,0 +1,48 @@
+{
+	"components": {
+		"scene-switch-grid": {
+			"tip": "$网格\n渲染场景网格线"
+		},
+		"scene-switch-light": {
+			"tip": "$灯光\n渲染环境光和光源对象"
+		},
+		"scene-switch-animation": {
+			"tip": "$动画\n播放动画和粒子"
+		},
+		"scene-switch-settings": {
+			"tip": "$设置\n打开场景设置面板"
+		},
+		"scene-layer-object": {
+			"tip": "$对象层\n在这个模式下可选中场景对象"
+		},
+		"scene-layer-terrain": {
+			"tip": "$地形层\n设置可通行的区域\n地面：通行区域为\"地面\"或\"不受限制\"的角色可以在这里移动\n水面：通行区域为\"水面\"或\"不受限制\"的角色可以在这里移动\n墙块：通行区域为\"不受限制\"的角色可以在这里移动，可以阻挡\"触发器\"对象穿过"
+		},
+		"scene-brush-eraser": {
+			"tip": "$橡皮擦\n擦除瓦片地图中的一个图块"
+		},
+		"scene-brush-pencil": {
+			"tip": "$铅笔\n将选中的图块绘制到瓦片地图中"
+		},
+		"scene-brush-rect": {
+			"tip": "$矩形工具\n通过拖拽将选中的图块填充到矩形区域中"
+		},
+		"scene-brush-oval": {
+			"tip": "$椭圆工具\n通过拖拽将选中的图块填充到椭圆区域中"
+		},
+		"scene-brush-fill": {
+			"tip": "$填充\n将选中的图块填充到瓦片地图的连续且相同的图块中"
+		},
+		"scene-shift": {
+			"title": "移动"
+		},
+		"scene-shift-x": {
+			"label": "偏移 X",
+			"tip": "场景对象的水平偏移距离"
+		},
+		"scene-shift-y": {
+			"label": "偏移 Y",
+			"tip": "场景对象的垂直偏移距离"
+		}
+	}
+}

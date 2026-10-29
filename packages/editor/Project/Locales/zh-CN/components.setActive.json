@@ -1,0 +1,25 @@
+{
+	"components": {
+		"setActive": {
+			"title": "设置激活状态"
+		},
+		"setActive-actor": {
+			"label": "角色",
+			"tip": "改变这个角色的激活状态"
+		},
+		"setActive-active": {
+			"label": "状态",
+			"tip": "激活操作",
+			"options": {
+				"true": {
+					"name": "激活",
+					"tip": "恢复正常"
+				},
+				"false": {
+					"name": "取消激活",
+					"tip": "停止执行角色的事件\n角色不再被检测到\n重置角色的目标池\n从相关角色的目标池中移除这个角色"
+				}
+			}
+		}
+	}
+}

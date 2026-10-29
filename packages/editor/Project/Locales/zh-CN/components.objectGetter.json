@@ -1,0 +1,37 @@
+{
+	"components": {
+		"objectGetter": {
+			"title": "场景对象"
+		},
+		"objectGetter-type": {
+			"label": "类型",
+			"tip": "如何获取场景对象",
+			"options": {
+				"trigger": {
+					"name": "事件触发对象",
+					"tip": "触发这个事件的场景对象"
+				},
+				"latest": {
+					"name": "最新创建对象",
+					"tip": "获取最新创建的场景对象，在调用\"创建对象\"指令时刷新"
+				},
+				"by-id": {
+					"name": "指定对象ID",
+					"tip": "获取场景中预设的对象"
+				},
+				"variable": {
+					"name": "对象变量",
+					"tip": "获取变量中的场景对象"
+				}
+			}
+		},
+		"objectGetter-presetId": {
+			"label": "数据ID",
+			"tip": "获取场景中预设的对象"
+		},
+		"objectGetter-variable": {
+			"label": "变量",
+			"tip": "获取变量中的场景对象"
+		}
+	}
+}

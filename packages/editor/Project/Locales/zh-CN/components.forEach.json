@@ -1,0 +1,93 @@
+{
+	"components": {
+		"forEach": {
+			"title": "遍历"
+		},
+		"forEach-data": {
+			"label": "数据",
+			"tip": "逐个获取哪些数据",
+			"options": {
+				"list": {
+					"name": "列表项",
+					"tip": "读取列表中的所有数据"
+				},
+				"skill": {
+					"name": "技能",
+					"tip": "读取角色的所有技能"
+				},
+				"state": {
+					"name": "状态",
+					"tip": "读取角色的所有状态"
+				},
+				"equipment": {
+					"name": "装备槽",
+					"tip": "读取角色装备槽中的所有装备"
+				},
+				"inventory": {
+					"name": "库存",
+					"tip": "读取角色库存中的所有物品和装备"
+				},
+				"element": {
+					"name": "元素",
+					"tip": "读取指定元素的所有子元素"
+				},
+				"member": {
+					"name": "队伍成员",
+					"tip": "读取玩家队伍的所有成员"
+				},
+				"attribute": {
+					"name": "属性键",
+					"tip": "读取指定属性群组中的所有属性键"
+				},
+				"enum": {
+					"name": "枚举值",
+					"tip": "读取指定枚举群组中的所有枚举值"
+				},
+				"save": {
+					"name": "存档数据",
+					"tip": "读取所有存档索引（0, 1, 2, ...），并读取存档中的本地变量"
+				},
+				"touch": {
+					"name": "触摸点",
+					"tip": "从触摸事件中读取所有已经存在的触摸点ID(不包含结束的触摸点)"
+				},
+				"changed-touch": {
+					"name": "变化的触摸点",
+					"tip": "从触摸事件中读取所有触发了该事件的触摸点ID"
+				}
+			}
+		},
+		"forEach-list": {
+			"label": "列表变量",
+			"tip": "逐个获取这个列表中的数据"
+		},
+		"forEach-actor": {
+			"label": "角色",
+			"tip": "角色访问器"
+		},
+		"forEach-element": {
+			"label": "父元素",
+			"tip": "逐个获取这个元素的子元素"
+		},
+		"forEach-attribute-groupId": {
+			"label": "属性群组",
+			"tip": "逐个获取这个属性群组的数据"
+		},
+		"forEach-enum-groupId": {
+			"label": "枚举群组",
+			"tip": "逐个获取这个枚举群组的数据"
+		},
+		"forEach-variable": {
+			"label": "写入变量",
+			"tip": "将读取到的数据写入指定变量"
+		},
+		"forEach-saveIndex": {
+			"label": "写入存档索引",
+			"tip": "将存档索引写入指定变量"
+		},
+		"forEach-touchId": {
+			"label": "写入触摸点ID",
+			"tip": "将触摸点ID写入指定变量"
+		}
+	}
+}

@@ -1,0 +1,23 @@
+{
+	"components": {
+		"createActor": {
+			"title": "Create Actor"
+		},
+		"createActor-actorId": {
+			"label": "Actor",
+			"tip": "Create this actor in the scene"
+		},
+		"createActor-teamId": {
+			"label": "Team",
+			"tip": "Initial team of the actor"
+		},
+		"createActor-position": {
+			"label": "Position",
+			"tip": "Initial position of the actor"
+		},
+		"createActor-angle": {
+			"label": "Angle",
+			"tip": "Initial angle of the actor"
+		}
+	}
+}

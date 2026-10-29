@@ -1,0 +1,85 @@
+{
+	"components": {
+		"getMultipleActors": {
+			"title": "Get Multiple Actors"
+		},
+		"getMultipleActors-variable": {
+			"label": "Write to List",
+			"tip": "Write the generated actor list to this variable"
+		},
+		"getMultipleActors-position": {
+			"label": "Position",
+			"tip": "Find actors at this location"
+		},
+		"getMultipleActors-area": {
+			"label": "Select Area",
+			"tip": "Search for actors within this shaped area",
+			"options": {
+				"rectangle": {
+					"name": "Rectangle",
+					"tip": "Find actors within a rectangular area centered at the specified position"
+				},
+				"circle": {
+					"name": "Circle",
+					"tip": "Find actors within a circular area centered at the specified position"
+				}
+			}
+		},
+		"getMultipleActors-width": {
+			"label": "Width",
+			"tip": "Width of the rectangular area"
+		},
+		"getMultipleActors-height": {
+			"label": "Height",
+			"tip": "Height of the rectangular area"
+		},
+		"getMultipleActors-radius": {
+			"label": "Radius",
+			"tip": "Radius of the circular area"
+		},
+		"getMultipleActors-selector": {
+			"label": "Selector",
+			"tip": "First filter of actors",
+			"options": {
+				"enemy": {
+					"name": "Team Enemy",
+					"tip": "Select hostile actors from the specified team"
+				},
+				"friend": {
+					"name": "Team Friend",
+					"tip": "Select friendly actors from the specified team"
+				},
+				"team": {
+					"name": "Team Member",
+					"tip": "Select members from the specified team"
+				},
+				"any": {
+					"name": "Any",
+					"tip": "Select any actor"
+				}
+			}
+		},
+		"getMultipleActors-teamId": {
+			"label": "Team",
+			"tip": "Actor's team"
+		},
+		"getMultipleActors-activation": {
+			"label": "Activation",
+			"tip": "Target actor's activation status",
+			"options": {
+				"active": {
+					"name": "Active",
+					"tip": "Require the actor to be active"
+				},
+				"inactive": {
+					"name": "Inactive",
+					"tip": "Require the actor to be inactive"
+				},
+				"either": {
+					"name": "Either",
+					"tip": "Do not check activation status"
+				}
+			}
+		}
+	}
+}

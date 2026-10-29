@@ -1,0 +1,11 @@
+{
+	"components": {
+		"waitForVideo": {
+			"title": "Wait For Video"
+		},
+		"waitForVideo-element": {
+			"label": "Element",
+			"tip": "Specify a video element"
+		}
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"components": {
+		"setWeight": {
+			"title": "Set Weight"
+		},
+		"setWeight-actor": {
+			"label": "Actor",
+			"tip": "Change the weight of this actor"
+		},
+		"setWeight-weight": {
+			"label": "Weight",
+			"tip": "It affects the push force during collision\nWhen weight = 0, the actor will not collide with other actors\nWhen the weight of actor A : the weight of actor B = 1 : 1, the movement speed of A pushing B is 50%\nWhen the weight of actor A : the weight of actor B = 1 : 2, the movement speed of A pushing B is 0%, unable to push\nWhen the weight of actor A : the weight of actor B = 2 : 1, the movement speed of A pushing B is 100%, there is no resistance at all\n$Related command\nSet Weight"
+		}
+	}
+}

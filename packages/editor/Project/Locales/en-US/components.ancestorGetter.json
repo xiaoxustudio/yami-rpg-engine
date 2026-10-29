@@ -1,0 +1,20 @@
+{
+	"components": {
+		"ancestorGetter": {
+			"title": "Ancestor Element"
+		},
+		"ancestorGetter-type": {
+			"label": "Type",
+			"tip": "How to get an element",
+			"options": {}
+		},
+		"ancestorGetter-presetId": {
+			"label": "Data ID",
+			"tip": "Get the preset element"
+		},
+		"ancestorGetter-variable": {
+			"label": "Variable",
+			"tip": "Get the element object from the variable"
+		}
+	}
+}

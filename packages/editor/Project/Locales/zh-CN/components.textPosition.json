@@ -1,0 +1,39 @@
+{
+	"components": {
+		"textPosition": {
+			"title": "设置文字位置"
+		},
+		"textPosition-axis": {
+			"label": "坐标",
+			"tip": "选择想要改变的坐标",
+			"options": {
+				"x": {
+					"name": "X",
+					"tip": "设置水平位置"
+				},
+				"y": {
+					"name": "Y",
+					"tip": "设置垂直位置"
+				}
+			}
+		},
+		"textPosition-operation": {
+			"label": "操作",
+			"tip": "选择对坐标的操作",
+			"options": {
+				"set": {
+					"name": "赋值",
+					"tip": "设为绝对位置"
+				},
+				"add": {
+					"name": "增加",
+					"tip": "偏移一段距离"
+				}
+			}
+		},
+		"textPosition-value": {
+			"label": "数值",
+			"tip": "坐标的位置"
+		}
+	}
+}

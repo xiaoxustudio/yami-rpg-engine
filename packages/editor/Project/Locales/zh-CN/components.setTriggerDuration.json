@@ -1,0 +1,33 @@
+{
+	"components": {
+		"setTriggerDuration": {
+			"title": "设置触发器持续时间"
+		},
+		"setTriggerDuration-trigger": {
+			"label": "触发器",
+			"tip": "设置这个触发器"
+		},
+		"setTriggerDuration-operation": {
+			"label": "操作",
+			"tip": "执行一个触发器操作",
+			"options": {
+				"set": {
+					"name": "设置",
+					"tip": "设置这个触发器的持续时间"
+				},
+				"increase": {
+					"name": "增加",
+					"tip": "增加这个触发器的持续时间"
+				},
+				"decrease": {
+					"name": "减少",
+					"tip": "减少这个触发器的持续时间（最小值为0）"
+				}
+			}
+		},
+		"setTriggerDuration-duration": {
+			"label": "时间",
+			"tip": "触发器的持续时间"
+		}
+	}
+}

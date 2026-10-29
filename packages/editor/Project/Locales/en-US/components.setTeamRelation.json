@@ -1,0 +1,29 @@
+{
+	"components": {
+		"setTeamRelation": {
+			"title": "Set Team Relation"
+		},
+		"setTeamRelation-teamId1": {
+			"label": "Team A",
+			"tip": "Specify the ID of team A"
+		},
+		"setTeamRelation-teamId2": {
+			"label": "Team B",
+			"tip": "Specify the ID of team B"
+		},
+		"setTeamRelation-relation": {
+			"label": "Relation",
+			"tip": "Set the relation between the two teams",
+			"options": {
+				"0": {
+					"name": "Enemy",
+					"tip": "Set two teams to be hostile"
+				},
+				"1": {
+					"name": "Friend",
+					"tip": "Set two teams to be friendly"
+				}
+			}
+		}
+	}
+}

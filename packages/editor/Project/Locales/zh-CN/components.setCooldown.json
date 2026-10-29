@@ -1,0 +1,37 @@
+{
+	"components": {
+		"setCooldown": {
+			"title": "设置冷却时间"
+		},
+		"setCooldown-actor": {
+			"label": "角色",
+			"tip": "设置这个角色的一个公共冷却时间"
+		},
+		"setCooldown-operation": {
+			"label": "操作",
+			"tip": "执行公共冷却操作",
+			"options": {
+				"set": {
+					"name": "设置",
+					"tip": "设置这个冷却键的冷却时间，开始冷却计时"
+				},
+				"increase": {
+					"name": "增加",
+					"tip": "增加这个冷却键的冷却时间，开始冷却计时"
+				},
+				"decrease": {
+					"name": "减少",
+					"tip": "减少这个冷却键的冷却时间（最小值为0）"
+				}
+			}
+		},
+		"setCooldown-key": {
+			"label": "冷却键",
+			"tip": "通过冷却键获取角色的公共冷却对象"
+		},
+		"setCooldown-cooldown": {
+			"label": "冷却时间",
+			"tip": "公共冷却时间"
+		}
+	}
+}

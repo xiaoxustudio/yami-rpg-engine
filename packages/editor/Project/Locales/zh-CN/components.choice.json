@@ -1,0 +1,11 @@
+{
+	"components": {
+		"choice": {
+			"title": "选项"
+		},
+		"choice-content": {
+			"label": "内容",
+			"tip": "选项的内容，可通过\"设置字符串\"读取"
+		}
+	}
+}

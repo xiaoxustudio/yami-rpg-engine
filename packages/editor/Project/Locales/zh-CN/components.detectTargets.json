@@ -1,0 +1,59 @@
+{
+	"components": {
+		"detectTargets": {
+			"title": "探测目标"
+		},
+		"detectTargets-actor": {
+			"label": "角色",
+			"tip": "在这个角色的位置探测他附近的其他角色，并添加到目标池中"
+		},
+		"detectTargets-distance": {
+			"label": "探测距离",
+			"tip": "选择指定半径的圆形范围内的角色"
+		},
+		"detectTargets-selector": {
+			"label": "获取目标",
+			"tip": "从附近角色中筛选目标角色",
+			"options": {
+				"enemy": {
+					"name": "敌对角色",
+					"tip": "从目标池中选择此角色的敌对角色"
+				},
+				"friend": {
+					"name": "友好角色",
+					"tip": "从目标池中选择此角色的友好角色"
+				},
+				"team": {
+					"name": "队伍成员",
+					"tip": "从目标池中选择此角色的队伍成员"
+				},
+				"team-except-self": {
+					"name": "除自己外的队伍成员",
+					"tip": "从目标池中选择除了此角色以外的队伍成员"
+				},
+				"any-except-self": {
+					"name": "除自己外的任意角色",
+					"tip": "从目标池中选择除了此角色以外的所有角色"
+				},
+				"any": {
+					"name": "任意角色",
+					"tip": "从目标池中选择所有角色"
+				}
+			}
+		},
+		"detectTargets-inSight": {
+			"label": "视线判断",
+			"tip": "是否要求目标角色可见",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "排除被墙块挡住，不在视线中的目标角色"
+				},
+				"false": {
+					"name": "否",
+					"tip": "即使目标角色不在视线中，也将其选中"
+				}
+			}
+		}
+	}
+}

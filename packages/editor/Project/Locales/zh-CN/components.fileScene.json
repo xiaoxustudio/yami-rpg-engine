@@ -1,0 +1,50 @@
+{
+	"components": {
+		"fileScene-general-grid": {
+			"label": "场景"
+		},
+		"fileScene-width": {
+			"label": "宽度",
+			"tip": "场景的水平网格数量（0 ~ 512）"
+		},
+		"fileScene-height": {
+			"label": "高度",
+			"tip": "场景的垂直网格数量（0 ~ 512）"
+		},
+		"fileScene-tileWidth": {
+			"label": "图块宽度",
+			"tip": "场景网格的宽度（16 ~ 256）"
+		},
+		"fileScene-tileHeight": {
+			"label": "图块高度",
+			"tip": "场景网格的高度（16 ~ 256）"
+		},
+		"fileScene-ambient-grid": {
+			"label": "环境光"
+		},
+		"fileScene-ambient-red-box": {
+			"label": "红",
+			"tip": "输入颜色(红) * 环境光(红) / 255 = 输出颜色(红)"
+		},
+		"fileScene-ambient-green-box": {
+			"label": "绿",
+			"tip": "输入颜色(绿) * 环境光(绿) / 255 = 输出颜色(绿)"
+		},
+		"fileScene-ambient-blue-box": {
+			"label": "蓝",
+			"tip": "输入颜色(蓝) * 环境光(蓝) / 255 = 输出颜色(蓝)"
+		},
+		"fileScene-ambient-direct-box": {
+			"label": "直射率",
+			"tip": "直射光的颜色将直接渲染在屏幕上"
+		},
+		"fileScene-events": {
+			"label": "事件",
+			"tip": "场景事件列表，在销毁场景时停止执行\n$可选类型\n创建事件：场景初始化时触发事件（执行一次）\n自动执行：场景加载完成时立即触发事件（读取存档时再次执行）"
+		},
+		"fileScene-scripts": {
+			"label": "脚本",
+			"tip": "添加脚本文件来扩展场景"
+		}
+	}
+}

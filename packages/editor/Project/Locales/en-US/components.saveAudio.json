@@ -1,0 +1,11 @@
+{
+	"components": {
+		"saveAudio": {
+			"title": "Save Audio"
+		},
+		"saveAudio-type": {
+			"label": "Type",
+			"tip": "Perform operation on this type of sound"
+		}
+	}
+}

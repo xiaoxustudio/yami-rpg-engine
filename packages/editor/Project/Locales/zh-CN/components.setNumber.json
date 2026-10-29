@@ -1,0 +1,800 @@
+{
+	"components": {
+		"setNumber": {
+			"title": "设置数值"
+		},
+		"setNumber-variable": {
+			"label": "变量",
+			"tip": "写入的目标变量"
+		},
+		"setNumber-operands": {
+			"label": "表达式"
+		},
+		"setNumber-operand": {
+			"title": "操作数"
+		},
+		"setNumber-operation": {
+			"label": "操作",
+			"tip": "表达式操作",
+			"options": {
+				"set": {
+					"name": "赋值",
+					"tip": "目标变量设置成表达式的值"
+				},
+				"add": {
+					"name": "加法",
+					"tip": "目标变量的值加上表达式的值"
+				},
+				"sub": {
+					"name": "减法",
+					"tip": "目标变量的值减去表达式的值"
+				},
+				"mul": {
+					"name": "乘法",
+					"tip": "目标变量的值乘以表达式的值"
+				},
+				"div": {
+					"name": "除法",
+					"tip": "目标变量的值除以表达式的值"
+				},
+				"mod": {
+					"name": "取余",
+					"tip": "目标变量的值除以表达式的值取余数"
+				}
+			}
+		},
+		"setNumber-operand-operation": {
+			"tip": "$操作\n数值操作",
+			"options": {
+				"add": {
+					"name": "加法",
+					"tip": "操作数相加"
+				},
+				"sub": {
+					"name": "减法",
+					"tip": "操作数相减"
+				},
+				"mul": {
+					"name": "乘法",
+					"tip": "操作数相乘"
+				},
+				"div": {
+					"name": "除法",
+					"tip": "操作数相除"
+				},
+				"mod": {
+					"name": "取余",
+					"tip": "操作数相除取余数"
+				},
+				"add()": {
+					"name": "(加法)",
+					"tip": "操作数相加（高优先级）"
+				},
+				"sub()": {
+					"name": "(减法)",
+					"tip": "操作数相减（高优先级）"
+				},
+				"mul()": {
+					"name": "(乘法)",
+					"tip": "操作数相乘（高优先级）"
+				},
+				"div()": {
+					"name": "(除法)",
+					"tip": "操作数相除（高优先级）"
+				},
+				"mod()": {
+					"name": "(取余)",
+					"tip": "操作数相除取余数（高优先级）"
+				}
+			}
+		},
+		"setNumber-operand-type": {
+			"label": "类型",
+			"tip": "选择获取数值的方法",
+			"options": {
+				"constant": {
+					"name": "常量",
+					"tip": "固定的值"
+				},
+				"variable": {
+					"name": "变量",
+					"tip": "从变量中读取数据"
+				},
+				"math": {
+					"name": "数学",
+					"tip": "调用数学方法"
+				},
+				"string": {
+					"name": "字符串",
+					"tip": "调用字符串方法"
+				},
+				"object": {
+					"name": "对象",
+					"tip": "对象相关数据"
+				},
+				"element": {
+					"name": "元素",
+					"tip": "元素相关数据"
+				},
+				"list": {
+					"name": "列表项",
+					"tip": "从变量中读取列表，再读取列表中指定位置的数值"
+				},
+				"parameter": {
+					"name": "参数",
+					"tip": "\"显示文本\"、\"显示选项\"指令中输入的参数"
+				},
+				"script": {
+					"name": "脚本",
+					"tip": "执行Javascript并获取返回值"
+				},
+				"other": {
+					"name": "其他",
+					"tip": "其他数据"
+				}
+			}
+		},
+		"setNumber-operand-constant-value": {
+			"label": "常量",
+			"tip": "固定的值"
+		},
+		"setNumber-operand-math-method": {
+			"label": "数学方法",
+			"tip": "选择一个数学方法来获取数值",
+			"options": {
+				"round": {
+					"name": "四舍五入",
+					"tip": "读取变量值，返回四舍五入后最接近的整数"
+				},
+				"floor": {
+					"name": "向下取整",
+					"tip": "读取变量值，返回小于或等于这个数字的最大整数"
+				},
+				"ceil": {
+					"name": "向上取整",
+					"tip": "读取变量值，返回大于或等于这个数字的最小整数"
+				},
+				"sqrt": {
+					"name": "开平方根",
+					"tip": "读取变量值，返回这个数字的平方根"
+				},
+				"abs": {
+					"name": "取绝对值",
+					"tip": "读取变量值，返回这个数字的绝对值"
+				},
+				"cos": {
+					"name": "取余弦值",
+					"tip": "读取变量值，返回这个角度的余弦值"
+				},
+				"sin": {
+					"name": "取正弦值",
+					"tip": "读取变量值，返回这个角度的正弦值"
+				},
+				"tan": {
+					"name": "取正切值",
+					"tip": "读取变量值，返回这个角度的正切值"
+				},
+				"random": {
+					"name": "取随机数[0,1)",
+					"tip": "返回一个0到小于1之间的随机数"
+				},
+				"random-int": {
+					"name": "随机整数",
+					"tip": "返回指定的最小值和最大值之间的随机整数"
+				},
+				"distance": {
+					"name": "距离",
+					"tip": "返回两个位置之间的距离"
+				},
+				"distance-x": {
+					"name": "水平距离",
+					"tip": "返回两个位置之间的水平距离"
+				},
+				"distance-y": {
+					"name": "垂直距离",
+					"tip": "返回两个位置之间的垂直距离"
+				},
+				"relative-angle": {
+					"name": "相对角度",
+					"tip": "返回两个位置之间的相对角度"
+				}
+			}
+		},
+		"setNumber-operand-string-method": {
+			"label": "字符串方法",
+			"tip": "选择一个字符串方法来获取数值",
+			"options": {
+				"length": {
+					"name": "获取长度",
+					"tip": "获取字符串中有几个字符。\n比如：\"abcd\"的返回结果是4"
+				},
+				"parse": {
+					"name": "解析数值",
+					"tip": "把一个字符串解析为数值。\n比如：\"12.34\"的返回结果是12.34"
+				},
+				"search": {
+					"name": "获取搜索字符串的索引",
+					"tip": "在字符串中搜索子字符串的位置\n比如：在\"abcdefg\"中\n搜索\"abc\"，返回结果是0（首个字符的位置是0）\n搜索\"cdef\"，返回结果是2\n搜索\"h\"，返回结果是-1，表示不存在"
+				}
+			}
+		},
+		"setNumber-operand-object-property": {
+			"label": "属性",
+			"tip": "获取对象属性值",
+			"options": {
+				"actor-x": {
+					"name": "角色 - X",
+					"tip": "角色在场景中的水平位置"
+				},
+				"actor-y": {
+					"name": "角色 - Y",
+					"tip": "角色在场景中的垂直位置"
+				},
+				"actor-ui-x": {
+					"name": "角色 - 界面 X",
+					"tip": "将角色的场景坐标X转换为根元素中的坐标X（单位：像素）\n角色界面 X = 角色屏幕 X / 界面缩放系数"
+				},
+				"actor-ui-y": {
+					"name": "角色 - 界面 Y",
+					"tip": "将角色的场景坐标Y转换为根元素中的坐标Y（单位：像素）\n角色界面 Y = 角色屏幕 Y / 界面缩放系数"
+				},
+				"actor-screen-x": {
+					"name": "角色 - 屏幕 X",
+					"tip": "将角色的场景坐标X转换为屏幕坐标X（单位：像素）"
+				},
+				"actor-screen-y": {
+					"name": "角色 - 屏幕 Y",
+					"tip": "将角色的场景坐标Y转换为屏幕坐标Y（单位：像素）"
+				},
+				"actor-angle": {
+					"name": "角色 - 角度",
+					"tip": "角色的角度"
+				},
+				"actor-direction": {
+					"name": "角色 - 方向角度",
+					"tip": "角色动画动作的方向对应的角度\n单方向始终为0\n二方向可能是0/180\n四方向可能是0/90/180/270"
+				},
+				"actor-movement-speed": {
+					"name": "角色 - 移动速度",
+					"tip": "角色的移动速度"
+				},
+				"actor-collision-size": {
+					"name": "角色 - 碰撞体积",
+					"tip": "角色的碰撞体积"
+				},
+				"actor-collision-weight": {
+					"name": "角色 - 碰撞体重",
+					"tip": "角色的碰撞体重"
+				},
+				"actor-scaling-factor": {
+					"name": "角色 - 缩放系数",
+					"tip": "角色的缩放系数"
+				},
+				"actor-inventory-item-quantity": {
+					"name": "角色 - 物品数量",
+					"tip": "库存中物品的数量"
+				},
+				"actor-inventory-equipment-quantity": {
+					"name": "角色 - 装备数量",
+					"tip": "库存中装备的数量"
+				},
+				"actor-inventory-money": {
+					"name": "角色 - 库存金钱",
+					"tip": "库存中金钱的数量"
+				},
+				"actor-inventory-used-space": {
+					"name": "角色 - 库存已用空间",
+					"tip": "库存中被物品和装备占用的格子数量"
+				},
+				"actor-inventory-version": {
+					"name": "角色 - 库存版本号",
+					"tip": "角色的库存增减物品或装备时，版本号递增"
+				},
+				"actor-skill-version": {
+					"name": "角色 - 技能版本号",
+					"tip": "角色的技能列表发生改变时，版本号递增"
+				},
+				"actor-state-version": {
+					"name": "角色 - 状态版本号",
+					"tip": "角色的状态列表发生改变时，版本号递增"
+				},
+				"actor-equipment-version": {
+					"name": "角色 - 装备版本号",
+					"tip": "角色的装备槽发生改变时，版本号递增"
+				},
+				"actor-shortcut-version": {
+					"name": "角色 - 快捷栏版本号",
+					"tip": "角色的快捷栏发生改变时，版本号递增"
+				},
+				"actor-animation-current-time": {
+					"name": "角色 - 动画当前时间",
+					"tip": "角色动画的已播放时间"
+				},
+				"actor-animation-duration": {
+					"name": "角色 - 动画持续时间",
+					"tip": "角色动画的持续时间"
+				},
+				"actor-animation-progress": {
+					"name": "角色 - 动画播放进度",
+					"tip": "当前时间和持续时间的比值"
+				},
+				"actor-cooldown-time": {
+					"name": "角色 - 当前冷却时间",
+					"tip": "获取\"冷却键\"对应的当前冷却时间"
+				},
+				"actor-cooldown-duration": {
+					"name": "角色 - 最大冷却时间",
+					"tip": "获取\"冷却键\"对应的最大冷却时间"
+				},
+				"actor-cooldown-progress": {
+					"name": "角色 - 冷却进度",
+					"tip": "当前冷却时间和最大冷却时间的比值"
+				},
+				"skill-cooldown-time": {
+					"name": "技能 - 当前冷却时间",
+					"tip": "技能的当前冷却时间"
+				},
+				"skill-cooldown-duration": {
+					"name": "技能 - 最大冷却时间",
+					"tip": "技能的最大冷却时间"
+				},
+				"skill-cooldown-progress": {
+					"name": "技能 - 冷却进度",
+					"tip": "当前冷却时间和最大冷却时间的比值"
+				},
+				"state-current-time": {
+					"name": "状态 - 当前时间",
+					"tip": "状态的当前时间"
+				},
+				"state-duration": {
+					"name": "状态 - 最大时间",
+					"tip": "状态的最大时间"
+				},
+				"state-progress": {
+					"name": "状态 - 进度",
+					"tip": "当前时间和最大时间的比值"
+				},
+				"equipment-order": {
+					"name": "装备 - 在库存中的顺序",
+					"tip": "获取装备在库存中的顺序"
+				},
+				"item-order": {
+					"name": "物品 - 在库存中的顺序",
+					"tip": "获取物品在库存中的顺序"
+				},
+				"item-quantity": {
+					"name": "物品 - 数量",
+					"tip": "获取物品的数量"
+				},
+				"trigger-speed": {
+					"name": "触发器 - 速度",
+					"tip": "获取触发器的速度"
+				},
+				"trigger-angle": {
+					"name": "触发器 - 角度",
+					"tip": "获取触发器的角度"
+				},
+				"tilemap-width": {
+					"name": "瓦片地图 - 宽度",
+					"tip": "获取瓦片地图的宽度"
+				},
+				"tilemap-height": {
+					"name": "瓦片地图 - 高度",
+					"tip": "获取瓦片地图的高度"
+				},
+				"tilemap-tag": {
+					"name": "瓦片地图 - 图块标签",
+					"tip": "获取指定瓦片地图位置的图块标签值(0-99999)"
+				},
+				"list-length": {
+					"name": "列表 - 长度",
+					"tip": "获取列表中数据的数量"
+				}
+			}
+		},
+		"setNumber-operand-element-property": {
+			"label": "属性",
+			"tip": "获取元素属性值",
+			"options": {
+				"element-x": {
+					"name": "元素 - X",
+					"tip": "元素的水平位置（计算值）"
+				},
+				"element-y": {
+					"name": "元素 - Y",
+					"tip": "元素的垂直位置（计算值）"
+				},
+				"element-width": {
+					"name": "元素 - 宽度",
+					"tip": "元素的宽度（计算值）"
+				},
+				"element-height": {
+					"name": "元素 - 高度",
+					"tip": "元素的高度（计算值）"
+				},
+				"element-children-count": {
+					"name": "元素 - 子元素的数量",
+					"tip": "获取该元素的子元素的数量"
+				},
+				"element-index-of-selected-button": {
+					"name": "元素 - 选中按钮的索引",
+					"tip": "获取该焦点元素的选中按钮的位置\n-1 = 不存在\n0 = 第一个按钮\n1 = 第二个按钮\n......"
+				},
+				"transform-anchorX": {
+					"name": "变换 - 锚点 X",
+					"tip": "元素跟容器连接点的水平位置"
+				},
+				"transform-anchorY": {
+					"name": "变换 - 锚点 Y",
+					"tip": "元素跟容器连接点的垂直位置"
+				},
+				"transform-x": {
+					"name": "变换 - X",
+					"tip": "元素在容器中的水平位置（像素值）"
+				},
+				"transform-x2": {
+					"name": "变换 - X2",
+					"tip": "元素在容器中的水平位置（容器宽度的比例值）"
+				},
+				"transform-y": {
+					"name": "变换 - Y",
+					"tip": "元素在容器中的垂直位置（像素值）"
+				},
+				"transform-y2": {
+					"name": "变换 - Y2",
+					"tip": "元素在容器中的垂直位置（容器高度的比例值）"
+				},
+				"transform-width": {
+					"name": "变换 - 宽度",
+					"tip": "元素在容器中的宽度（像素值）"
+				},
+				"transform-width2": {
+					"name": "变换 - 宽度2",
+					"tip": "元素在容器中的宽度（容器宽度的比例值）"
+				},
+				"transform-height": {
+					"name": "变换 - 高度",
+					"tip": "元素在容器中的高度（像素值）"
+				},
+				"transform-height2": {
+					"name": "变换 - 高度2",
+					"tip": "元素在容器中的高度（容器高度的比例值）"
+				},
+				"transform-rotation": {
+					"name": "变换 - 旋转",
+					"tip": "元素绕锚点的旋转角度，0度 = 正右方，顺时针旋转"
+				},
+				"transform-scaleX": {
+					"name": "变换 - 缩放 X",
+					"tip": "元素的水平缩放系数"
+				},
+				"transform-scaleY": {
+					"name": "变换 - 缩放 Y",
+					"tip": "元素的垂直缩放系数"
+				},
+				"transform-skewX": {
+					"name": "变换 - 倾斜 X",
+					"tip": "元素的水平倾斜系数"
+				},
+				"transform-skewY": {
+					"name": "变换 - 倾斜 Y",
+					"tip": "元素的垂直倾斜系数"
+				},
+				"transform-opacity": {
+					"name": "变换 - 不透明度",
+					"tip": "用来调节元素的可见度"
+				},
+				"window-visibleGridColumns": {
+					"name": "窗口 - 可见的网格列数",
+					"tip": "未隐藏的网格列数"
+				},
+				"window-visibleGridRows": {
+					"name": "窗口 - 可见的网格行数",
+					"tip": "未隐藏的网格行数"
+				},
+				"text-textWidth": {
+					"name": "文本 - 文本宽度",
+					"tip": "已渲染文本的实际宽度"
+				},
+				"text-textHeight": {
+					"name": "文本 - 文本高度",
+					"tip": "已渲染文本的实际高度"
+				},
+				"textBox-number": {
+					"name": "文本框 - 数值",
+					"tip": "读取文本框的数值内容"
+				},
+				"dialogBox-printEndX": {
+					"name": "对话框 - 打印结束位置 X",
+					"tip": "文本打印结束时的水平位置"
+				},
+				"dialogBox-printEndY": {
+					"name": "对话框 - 打印结束位置 Y",
+					"tip": "文本打印结束时的垂直位置"
+				}
+			}
+		},
+		"setNumber-operand-element-element": {
+			"label": "元素",
+			"tip": "获取这个元素的相关数据"
+		},
+		"setNumber-operand-common-variable": {
+			"label": "变量",
+			"tip": "从变量中读取数据"
+		},
+		"setNumber-operand-common-actor": {
+			"label": "角色",
+			"tip": "获取这个角色的相关数据"
+		},
+		"setNumber-operand-common-skill": {
+			"label": "技能",
+			"tip": "获取这个技能的相关数据"
+		},
+		"setNumber-operand-common-state": {
+			"label": "状态",
+			"tip": "获取这个状态的相关数据"
+		},
+		"setNumber-operand-common-equipment": {
+			"label": "装备",
+			"tip": "获取这个装备的相关数据"
+		},
+		"setNumber-operand-common-item": {
+			"label": "物品",
+			"tip": "获取这个物品的相关数据"
+		},
+		"setNumber-operand-common-trigger": {
+			"label": "触发器",
+			"tip": "获取这个触发器的相关数据"
+		},
+		"setNumber-operand-common-tilemap": {
+			"label": "瓦片地图",
+			"tip": "获取这个瓦片地图的相关数据"
+		},
+		"setNumber-operand-tilemapPosition": {
+			"label": "瓦片地图坐标",
+			"tip": "瓦片的坐标"
+		},
+		"setNumber-operand-object-itemId": {
+			"label": "物品",
+			"tip": "输入物品文件ID"
+		},
+		"setNumber-operand-object-equipmentId": {
+			"label": "装备",
+			"tip": "输入装备文件ID"
+		},
+		"setNumber-operand-string-search": {
+			"label": "搜索字符串",
+			"tip": "要搜索位置的目标字符串"
+		},
+		"setNumber-operand-math-decimals": {
+			"label": "保留小数位",
+			"tip": "如果是0，四舍五入到整数，否则四舍五入到指定位数的小数"
+		},
+		"setNumber-operand-math-min": {
+			"label": "最小值",
+			"tip": "生成的随机整数大于或等于这个数值"
+		},
+		"setNumber-operand-math-max": {
+			"label": "最大值",
+			"tip": "生成的随机整数小于或等于这个数值"
+		},
+		"setNumber-operand-math-startPosition": {
+			"label": "起点",
+			"tip": "获取起点位置"
+		},
+		"setNumber-operand-math-endPosition": {
+			"label": "终点",
+			"tip": "获取终点位置"
+		},
+		"setNumber-operand-cooldown-key": {
+			"label": "冷却键",
+			"tip": "选择一个冷却键"
+		},
+		"setNumber-operand-list-index": {
+			"label": "索引",
+			"tip": "读取列表中第N（0, 1, 2, ...）个位置的值"
+		},
+		"setNumber-operand-parameter-key": {
+			"label": "参数名称",
+			"tip": "获取这个参数的值"
+		},
+		"setNumber-operand-script": {
+			"label": "脚本",
+			"tip": "执行Javascript并获取返回值"
+		},
+		"setNumber-operand-other-data": {
+			"label": "数据",
+			"tip": "获取其他数值类型的数据",
+			"options": {
+				"trigger-button": {
+					"name": "事件触发鼠标按键",
+					"tip": "获取当前触发的\"鼠标事件\"的按键码\n0：左键\n1：中键\n2：右键\n3：后退键\n4：前进键"
+				},
+				"trigger-wheel-y": {
+					"name": "事件触发鼠标滚轮Delta",
+					"tip": "获取当前触发的\"滚轮滑动事件\"的DeltaY值\n小于0：向上滑动\n大于0：向下滑动"
+				},
+				"trigger-gamepad-button": {
+					"name": "事件触发手柄按键",
+					"tip": "获取当前触发的\"手柄事件\"的按键码\n有效值：{0, 1, 2, 3, ...}\n无效值：-1"
+				},
+				"gamepad-left-stick-angle": {
+					"name": "手柄左摇杆角度",
+					"tip": "获取当前触发的\"手柄事件\"的左摇杆角度\n0度 = 正右方，顺时针旋转\n有效值：[0, 360)\n无效值：-1"
+				},
+				"gamepad-right-stick-angle": {
+					"name": "手柄右摇杆角度",
+					"tip": "获取当前触发的\"手柄事件\"的右摇杆角度\n0度 = 正右方，顺时针旋转\n有效值：[0, 360)\n无效值：-1"
+				},
+				"mouse-screen-x": {
+					"name": "鼠标屏幕 X",
+					"tip": "鼠标在屏幕中的水平位置（单位：像素）"
+				},
+				"mouse-screen-y": {
+					"name": "鼠标屏幕 Y",
+					"tip": "鼠标在屏幕中的垂直位置（单位：像素）"
+				},
+				"mouse-ui-x": {
+					"name": "鼠标界面 X",
+					"tip": "鼠标在用户界面根元素中的水平位置（单位：像素）\n鼠标界面 X = 鼠标屏幕 X / 界面缩放系数"
+				},
+				"mouse-ui-y": {
+					"name": "鼠标界面 Y",
+					"tip": "鼠标在用户界面根元素中的垂直位置（单位：像素）\n鼠标界面 Y = 鼠标屏幕 Y / 界面缩放系数"
+				},
+				"mouse-scene-x": {
+					"name": "鼠标场景 X",
+					"tip": "鼠标在场景中的水平位置"
+				},
+				"mouse-scene-y": {
+					"name": "鼠标场景 Y",
+					"tip": "鼠标在场景中的垂直位置"
+				},
+				"touch-screen-x": {
+					"name": "触摸点屏幕 X",
+					"tip": "触摸点在屏幕中的水平位置（单位：像素）"
+				},
+				"touch-screen-y": {
+					"name": "触摸点屏幕 Y",
+					"tip": "触摸点在屏幕中的垂直位置（单位：像素）"
+				},
+				"touch-ui-x": {
+					"name": "触摸点界面 X",
+					"tip": "触摸点在用户界面根元素中的水平位置（单位：像素）\n触摸点界面 X = 触摸点屏幕 X / 界面缩放系数"
+				},
+				"touch-ui-y": {
+					"name": "触摸点界面 Y",
+					"tip": "触摸点在用户界面根元素中的垂直位置（单位：像素）\n触摸点界面 Y = 触摸点屏幕 Y / 界面缩放系数"
+				},
+				"touch-scene-x": {
+					"name": "触摸点场景 X",
+					"tip": "触摸点在场景中的水平位置"
+				},
+				"touch-scene-y": {
+					"name": "触摸点场景 Y",
+					"tip": "触摸点在场景中的垂直位置"
+				},
+				"virtual-axis-x": {
+					"name": "虚拟轴 X",
+					"tip": "半径为1的圆形内一个点到轴心的水平距离\n受左右方向键影响\n取值范围：[-1, 1]"
+				},
+				"virtual-axis-y": {
+					"name": "虚拟轴 Y",
+					"tip": "半径为1的圆形内一个点到轴心的垂直距离\n受上下方向键影响\n取值范围：[-1, 1]"
+				},
+				"virtual-axis-angle": {
+					"name": "虚拟轴角度",
+					"tip": "轴心到虚拟轴(X, Y)的角度\n当进入死区后设为无效值\n0度 = 正右方，顺时针旋转\n有效值：[0, 360)\n无效值：-1"
+				},
+				"start-position-x": {
+					"name": "初始位置 X",
+					"tip": "场景舞台->上下文菜单->设置初始位置"
+				},
+				"start-position-y": {
+					"name": "初始位置 Y",
+					"tip": "场景舞台->上下文菜单->设置初始位置"
+				},
+				"camera-x": {
+					"name": "摄像机 X",
+					"tip": "摄像机的中心在场景中的水平位置"
+				},
+				"camera-y": {
+					"name": "摄像机 Y",
+					"tip": "摄像机的中心在场景中的垂直位置"
+				},
+				"camera-zoom": {
+					"name": "摄像机缩放率",
+					"tip": "摄像机的最终缩放率（原始缩放率 * 场景缩放系数）"
+				},
+				"raw-camera-zoom": {
+					"name": "摄像机原始缩放率",
+					"tip": "摄像机自己的缩放率，不受场景缩放系数影响"
+				},
+				"screen-width": {
+					"name": "屏幕宽度",
+					"tip": "当前游戏分辨率的宽度"
+				},
+				"screen-height": {
+					"name": "屏幕高度",
+					"tip": "当前游戏分辨率的高度"
+				},
+				"scene-width": {
+					"name": "场景宽度",
+					"tip": "场景水平网格数量"
+				},
+				"scene-height": {
+					"name": "场景高度",
+					"tip": "场景垂直网格数量"
+				},
+				"scene-scale": {
+					"name": "场景缩放系数",
+					"tip": "当前场景缩放比例"
+				},
+				"ui-scale": {
+					"name": "界面缩放系数",
+					"tip": "当前界面缩放比例"
+				},
+				"play-time": {
+					"name": "累计游戏时间",
+					"tip": "玩家当前的游玩时间，记录到存档中，重置游戏时清零"
+				},
+				"elapsed-time": {
+					"name": "游戏运行时间",
+					"tip": "从打开应用到现在运行的时间，退出游戏后清零"
+				},
+				"delta-time": {
+					"name": "当前帧的时间增量",
+					"tip": "从上一帧结束到当前帧开始经过的时间（单位：毫秒）\n60FPS时可能为16.66，如果游戏速度是2，则时间增量也缩放到2倍，为33.33ms"
+				},
+				"raw-delta-time": {
+					"name": "当前帧的原始时间增量",
+					"tip": "从上一帧结束到当前帧开始经过的时间（单位：毫秒），不受游戏速度影响"
+				},
+				"timestamp": {
+					"name": "获取时间戳",
+					"tip": "生成一个用于记录计算机当前日期的数字"
+				},
+				"party-version": {
+					"name": "队伍版本号",
+					"tip": "队伍成员发生改变时，版本号递增"
+				},
+				"party-member-count": {
+					"name": "队伍成员数量",
+					"tip": "玩家队伍的成员数量"
+				},
+				"actor-count": {
+					"name": "场景角色数量",
+					"tip": "当前场景中指定队伍的角色数量"
+				},
+				"latest-item-increment": {
+					"name": "最新获得物品的增量",
+					"tip": "任意角色获得物品时刷新，用于读取获得的物品数量"
+				},
+				"latest-money-increment": {
+					"name": "最新获得金钱的增量",
+					"tip": "任意角色获得金钱时刷新，用于读取获得的金钱数量"
+				},
+				"loader-loaded-bytes": {
+					"name": "文件加载 - 已读取字节数",
+					"tip": "统计所有正在后台加载的文件，计算已读取字节数"
+				},
+				"loader-total-bytes": {
+					"name": "文件加载 - 总字节数",
+					"tip": "统计所有正在后台加载的文件，计算总字节数"
+				},
+				"loader-completion-progress": {
+					"name": "文件加载 - 完成进度",
+					"tip": "加载完成进度 = 已读取字节数 / 总字节数"
+				}
+			}
+		},
+		"setNumber-operand-other-touchId": {
+			"label": "触摸点Id",
+			"tip": "输入触摸点ID"
+		},
+		"setNumber-operand-other-teamId": {
+			"label": "队伍",
+			"tip": "输入队伍ID"
+		}
+	}
+}

@@ -1,0 +1,37 @@
+{
+	"components": {
+		"lightGetter": {
+			"title": "Light"
+		},
+		"lightGetter-type": {
+			"label": "Type",
+			"tip": "How to get a light source",
+			"options": {
+				"trigger": {
+					"name": "Event Trigger Light",
+					"tip": "Light that triggered this event"
+				},
+				"latest": {
+					"name": "Latest Light",
+					"tip": "Get the latest created light, which refreshes when the 'Create Light' command is called"
+				},
+				"by-id": {
+					"name": "By Light ID",
+					"tip": "Get a preset scene light"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Get the light from the specified variable"
+				}
+			}
+		},
+		"lightGetter-presetId": {
+			"label": "Data ID",
+			"tip": "Select a light source from the scene object list"
+		},
+		"lightGetter-variable": {
+			"label": "Variable",
+			"tip": "Get the light object from the variable"
+		}
+	}
+}

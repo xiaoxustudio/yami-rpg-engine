@@ -1,0 +1,11 @@
+{
+	"components": {
+		"deleteActor": {
+			"title": "删除角色"
+		},
+		"deleteActor-actor": {
+			"label": "角色",
+			"tip": "删除场景中的一个角色，如果是全局角色，会被移入后台"
+		}
+	}
+}

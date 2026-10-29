@@ -1,0 +1,47 @@
+{
+	"components": {
+		"httpRequest": {
+			"title": "通用请求"
+		},
+		"httpRequest-url": {
+			"label": "地址",
+			"tip": "请求的URL地址，支持变量"
+		},
+		"httpRequest-method": {
+			"label": "方法",
+			"tip": "请求方法"
+		},
+		"httpRequest-header": {
+			"label": "请求头",
+			"tip": "headers请求头"
+		},
+		"httpRequest-data": {
+			"label": "请求体",
+			"tip": "请求体数据"
+		},
+		"httpRequest-timeout": {
+			"label": "超时(ms)",
+			"tip": "请求超时时间，单位毫秒，留空为默认"
+		},
+		"httpRequest-responseType": {
+			"label": "响应类型",
+			"tip": "期望的响应数据类型"
+		},
+		"httpRequest-withCredentials": {
+			"label": "跨域凭证",
+			"tip": "是否携带跨域凭证(cookie)"
+		},
+		"httpRequest-authUser": {
+			"label": "认证用户",
+			"tip": "HTTP Basic 认证用户名"
+		},
+		"httpRequest-authPass": {
+			"label": "认证密码",
+			"tip": "HTTP Basic 认证密码"
+		},
+		"httpRequest-callback": {
+			"label": "回调",
+			"tip": "请求完成后的回调函数，@code表示返回值(错误为-1),@response表示响应数据"
+		}
+	}
+}

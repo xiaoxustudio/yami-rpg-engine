@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { applyLocaleData, getYamiI18n } from '@app/i18n';
-import data from '../../../Project/Locales/zh-CN.简体中文.json';
+import { loadLocaleBundle } from '@app/i18n/__tests__/locale-bundle';
+
+/** 入口 + 命名空间分片聚合后的完整语言包（运行时按窗口懒加载分片）。 */
+const data = loadLocaleBundle('zh-CN.简体中文.json');
 
 describe('localize keys', () => {
 	it('resolves property keys（经 i18n 唯一真源）', () => {

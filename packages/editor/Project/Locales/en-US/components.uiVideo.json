@@ -1,0 +1,69 @@
+{
+	"components": {
+		"uiVideo-properties-grid": {
+			"label": "Video Properties"
+		},
+		"uiVideo-video": {
+			"label": "Video",
+			"tip": "Select a video file"
+		},
+		"uiVideo-playbackRate": {
+			"label": "Playback Rate",
+			"tip": "Playback speed ratio of the video"
+		},
+		"uiVideo-loop": {
+			"label": "Loop",
+			"tip": "Whether the video loops",
+			"options": {
+				"false": {
+					"name": "Once",
+					"tip": "Stop playing when it ends"
+				},
+				"true": {
+					"name": "Loop",
+					"tip": "Replay when it ends"
+				}
+			}
+		},
+		"uiVideo-flip": {
+			"label": "Flip",
+			"tip": "How to flip the video",
+			"options": {
+				"none": {
+					"name": "None",
+					"tip": "Display the image normally"
+				},
+				"horizontal": {
+					"name": "Horizontal",
+					"tip": "Flip 180 degrees horizontally from left to right"
+				},
+				"vertical": {
+					"name": "Vertical",
+					"tip": "Flip 180 degrees vertically from top to bottom"
+				},
+				"both": {
+					"name": "Both",
+					"tip": "Flip horizontally first, then vertically"
+				}
+			}
+		},
+		"uiVideo-blend": {
+			"label": "Blend",
+			"tip": "Choose a formula to blend the color with the underlying color",
+			"options": {
+				"normal": {
+					"name": "Normal",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "Additive",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "Subtract",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		}
+	}
+}

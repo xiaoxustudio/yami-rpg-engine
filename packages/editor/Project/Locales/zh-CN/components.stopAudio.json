@@ -1,0 +1,11 @@
+{
+	"components": {
+		"stopAudio": {
+			"title": "停止播放"
+		},
+		"stopAudio-type": {
+			"label": "类型",
+			"tip": "立即停止播放这个类型的声音"
+		}
+	}
+}

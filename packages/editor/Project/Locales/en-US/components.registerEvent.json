@@ -1,0 +1,67 @@
+{
+	"components": {
+		"registerEvent": {
+			"title": "Register Event"
+		},
+		"registerEvent-target": {
+			"label": "Target",
+			"tip": "Target object for register/unload operations",
+			"options": {
+				"global": {
+					"name": "Global Event",
+					"tip": "Newly registered global event is appended to the existing event list\nIt overwrites any previously registered event with the same key and stops the currently running instance of that event"
+				},
+				"actor": {
+					"name": "Actor Event",
+					"tip": "Newly registered actor event overwrites the existing event of the same type\nIt also stops the currently running instance of that event\nOverridden events can still be triggered using the 'Call Event' command"
+				},
+				"element": {
+					"name": "Element Event",
+					"tip": "Newly registered element event overwrites the existing event of the same type\nIt also stops the currently running instance of that event\nOverridden events can still be triggered using the 'Call Event' command"
+				}
+			}
+		},
+		"registerEvent-actor": {
+			"label": "Actor",
+			"tip": "Actor for registering/unloading the event"
+		},
+		"registerEvent-element": {
+			"label": "Element",
+			"tip": "Element for registering/unloading the event"
+		},
+		"registerEvent-operation": {
+			"label": "Operation",
+			"tip": "Choose whether to register or unload the event",
+			"options": {
+				"register": {
+					"name": "Register",
+					"tip": "Package the commands in the block below into a temporary event and add it to the object"
+				},
+				"unregister": {
+					"name": "Unregister",
+					"tip": "After unloading the registered event, it will no longer trigger and will stop execution"
+				},
+				"reset": {
+					"name": "Reset",
+					"tip": "Unload all registered events and stop any currently executing tasks"
+				}
+			}
+		},
+		"registerEvent-type": {
+			"label": "Event",
+			"tip": "Choose the event type for the object"
+		},
+		"registerEvent-priority": {
+			"label": "Priority",
+			"tip": "Trigger before element events, unaffected by \"Pause Game\" and \"Prevent Scene Input\" commands"
+		},
+		"registerEvent-namespace": {
+			"label": "Namespace",
+			"tip": "Enable: use an independent variable scope\nDisable: share variable scope with the current event"
+		},
+		"registerEvent-tag": {
+			"label": "Tag",
+			"tip": "A label for unloading this event later"
+		}
+	}
+}

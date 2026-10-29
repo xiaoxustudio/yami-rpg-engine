@@ -1,0 +1,11 @@
+{
+	"components": {
+		"setLanguage": {
+			"title": "Set Language"
+		},
+		"setLanguage-language": {
+			"label": "Language",
+			"tip": "Switch to this language and refresh localized content (after deployment, the language settings will be automatically saved when exiting the game)"
+		}
+	}
+}

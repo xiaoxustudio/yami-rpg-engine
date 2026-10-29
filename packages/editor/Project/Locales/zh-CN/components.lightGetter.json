@@ -1,0 +1,37 @@
+{
+	"components": {
+		"lightGetter": {
+			"title": "光源"
+		},
+		"lightGetter-type": {
+			"label": "类型",
+			"tip": "如何获取光源",
+			"options": {
+				"trigger": {
+					"name": "事件触发光源",
+					"tip": "触发这个事件的光源"
+				},
+				"latest": {
+					"name": "最新创建光源",
+					"tip": "获取最新创建的光源对象，在调用\"创建光源\"指令时刷新"
+				},
+				"by-id": {
+					"name": "指定光源ID",
+					"tip": "获取场景中预设的光源"
+				},
+				"variable": {
+					"name": "光源变量",
+					"tip": "获取变量中的光源对象"
+				}
+			}
+		},
+		"lightGetter-presetId": {
+			"label": "数据ID",
+			"tip": "获取场景中预设的光源"
+		},
+		"lightGetter-variable": {
+			"label": "变量",
+			"tip": "获取变量中的光源对象"
+		}
+	}
+}

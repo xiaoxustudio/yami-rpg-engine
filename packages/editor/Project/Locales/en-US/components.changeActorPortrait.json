@@ -1,0 +1,37 @@
+{
+	"components": {
+		"changeActorPortrait": {
+			"title": "Change Actor Portrait"
+		},
+		"changeActorPortrait-actor": {
+			"label": "Actor",
+			"tip": "Change this actor's portrait"
+		},
+		"changeActorPortrait-mode": {
+			"label": "Mode",
+			"tip": "Change which parameters",
+			"options": {
+				"full": {
+					"name": "Full Mode",
+					"tip": "Change the image and the clip area"
+				},
+				"portrait": {
+					"name": "Image Mode",
+					"tip": "Only change the image"
+				},
+				"clip": {
+					"name": "Clip Mode",
+					"tip": "Only change the clip area"
+				}
+			}
+		},
+		"changeActorPortrait-portrait": {
+			"label": "Portrait",
+			"tip": "Specify the image file ID"
+		},
+		"changeActorPortrait-clip": {
+			"label": "Clip",
+			"tip": "Clip area of the portrait"
+		}
+	}
+}

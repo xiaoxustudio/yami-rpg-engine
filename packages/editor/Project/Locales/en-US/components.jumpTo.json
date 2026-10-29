@@ -1,0 +1,29 @@
+{
+	"components": {
+		"jumpTo": {
+			"title": "Jump to"
+		},
+		"jumpTo-operation": {
+			"label": "Operation",
+			"tip": "Jump operation",
+			"options": {
+				"jump": {
+					"name": "Jump to Label",
+					"tip": "Jump to the specified label to continue execution"
+				},
+				"save-jump": {
+					"name": "Save and Jump to Label",
+					"tip": "Save the current position and jump to the specified label"
+				},
+				"return": {
+					"name": "Return to the Saved Location",
+					"tip": "Jump to the last saved location"
+				}
+			}
+		},
+		"jumpTo-label": {
+			"label": "Label Name",
+			"tip": "Jump to this label"
+		}
+	}
+}

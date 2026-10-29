@@ -1,0 +1,35 @@
+{
+	"components": {
+		"event-search-string": {
+			"title": "Search String"
+		},
+		"event-search-string-search": {
+			"label": "Content：",
+			"tip": "Enter the search content"
+		},
+		"event-search-string-case-insensitive": {
+			"label": "Case-insensitive",
+			"tip": "Search without considering case differences"
+		},
+		"event-search-string-regex": {
+			"label": "Regex",
+			"tip": "Use regular expressions to search"
+		},
+		"event-search-string-match-line": {
+			"label": "Match by row",
+			"tip": "Search for the entire row"
+		},
+		"event": {
+			"title": "Event"
+		},
+		"event-open-list": {
+			"label": "Event"
+		},
+		"event-commands-gutter-background": {
+			"label": "Content"
+		},
+		"event-type": {
+			"tip": "$Type\nCertain specific actions will automatically trigger related types of events"
+		}
+	}
+}

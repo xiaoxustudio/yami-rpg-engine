@@ -1,0 +1,25 @@
+{
+	"components": {
+		"fixAngle": {
+			"title": "固定角度"
+		},
+		"fixAngle-actor": {
+			"label": "角色",
+			"tip": "对这个角色执行操作"
+		},
+		"fixAngle-fixed": {
+			"label": "状态",
+			"tip": "切换角色角度的锁定状态",
+			"options": {
+				"true": {
+					"name": "固定",
+					"tip": "锁定角色角度，不会发生改变"
+				},
+				"false": {
+					"name": "解除固定",
+					"tip": "解除角色角度的锁定"
+				}
+			}
+		}
+	}
+}

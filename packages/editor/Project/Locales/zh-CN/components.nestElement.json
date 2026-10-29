@@ -1,0 +1,15 @@
+{
+	"components": {
+		"nestElement": {
+			"title": "嵌套元素"
+		},
+		"nestElement-parent": {
+			"label": "父元素",
+			"tip": "指定一个元素作为父元素"
+		},
+		"nestElement-child": {
+			"label": "子元素",
+			"tip": "将这个元素添加到父元素中，作为子元素"
+		}
+	}
+}

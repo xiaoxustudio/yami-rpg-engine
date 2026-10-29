@@ -1,0 +1,33 @@
+{
+	"components": {
+		"setState": {
+			"title": "Set State"
+		},
+		"setState-state": {
+			"label": "State",
+			"tip": "Specify a state object"
+		},
+		"setState-operation": {
+			"label": "Operation",
+			"tip": "Perform a state operation",
+			"options": {
+				"set-time": {
+					"name": "Set Time",
+					"tip": "Set both the current time and maximum time of the state"
+				},
+				"increase-time": {
+					"name": "Increase Time",
+					"tip": "Increase the current time of the state and update the maximum time"
+				},
+				"decrease-time": {
+					"name": "Decrease Time",
+					"tip": "Decrease the current time of the state"
+				}
+			}
+		},
+		"setState-time": {
+			"label": "Time",
+			"tip": "State time"
+		}
+	}
+}

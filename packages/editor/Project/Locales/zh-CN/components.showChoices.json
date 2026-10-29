@@ -1,0 +1,15 @@
+{
+	"components": {
+		"showChoices": {
+			"title": "显示选项"
+		},
+		"showChoices-choices": {
+			"label": "选项",
+			"tip": "通过\"设置字符串\"指令，读取选项内容"
+		},
+		"showChoices-parameters": {
+			"label": "参数",
+			"tip": "参数格式\nbool1, bool2: true, num: 0, str: hello world, ...\n通过\"设置布尔值\"、\"设置数值\"、\"设置字符串\"指令，读取对应类型的参数"
+		}
+	}
+}

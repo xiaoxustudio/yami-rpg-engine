@@ -1,0 +1,10 @@
+{
+	"components": {
+		"copyProgress": {
+			"title": "复制进度"
+		},
+		"copyProgress-box": {
+			"label": "正在复制文件..."
+		}
+	}
+}

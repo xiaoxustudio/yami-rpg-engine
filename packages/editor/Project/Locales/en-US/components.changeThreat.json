@@ -1,0 +1,33 @@
+{
+	"components": {
+		"changeThreat": {
+			"title": "Change Threat"
+		},
+		"changeThreat-actor": {
+			"label": "Actor",
+			"tip": "Change this actor's threat level to the target actor"
+		},
+		"changeThreat-target": {
+			"label": "Target",
+			"tip": "Target actor"
+		},
+		"changeThreat-operation": {
+			"label": "Operation",
+			"tip": "Threat value adjustment",
+			"options": {
+				"increase": {
+					"name": "Increase",
+					"tip": "Increase the threat value to the target actor, while automatically adding the target actor to the target pool"
+				},
+				"decrease": {
+					"name": "Decrease",
+					"tip": "Decrease the threat value to the target actor"
+				}
+			}
+		},
+		"changeThreat-threat": {
+			"label": "Threat",
+			"tip": "You can get the \"Max Threat\" actor with the \"Get Target\" command"
+		}
+	}
+}

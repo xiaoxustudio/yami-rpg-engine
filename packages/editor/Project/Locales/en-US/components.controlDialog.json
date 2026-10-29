@@ -1,0 +1,33 @@
+{
+	"components": {
+		"controlDialog": {
+			"title": "Control Dialog"
+		},
+		"controlDialog-element": {
+			"label": "Element",
+			"tip": "Specify a dialog element"
+		},
+		"controlDialog-operation": {
+			"label": "Operation",
+			"tip": "Perform a dialog operation",
+			"options": {
+				"pause": {
+					"name": "Pause Printing",
+					"tip": "Pause if printing is in progress"
+				},
+				"continue": {
+					"name": "Continue Printing",
+					"tip": "Continue if printing is paused"
+				},
+				"print-immediately": {
+					"name": "Print Immediately",
+					"tip": "Print text until the current page is filled, or all characters are printed"
+				},
+				"print-next-page": {
+					"name": "Print Next Page",
+					"tip": "Erase the text on the current page and start printing the text on the next page"
+				}
+			}
+		}
+	}
+}

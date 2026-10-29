@@ -1,0 +1,28 @@
+{
+	"components": {
+		"setPan": {
+			"title": "Set Pan"
+		},
+		"setPan-type": {
+			"label": "Type",
+			"tip": "Perform operation on this type of sound"
+		},
+		"setPan-pan": {
+			"label": "Pan",
+			"tip": "Affects volume placement from Left/Right channels (-1 ~ 1)\n0: Balance\n-1: Only left channel\n1: Only right channel"
+		},
+		"setPan-easingId": {
+			"label": "Easing"
+		},
+		"setPan-duration": {
+			"label": "Duration"
+		},
+		"setPan-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

@@ -1,0 +1,89 @@
+{
+	"components": {
+		"switch": {
+			"title": "条件分支"
+		},
+		"switch-variable": {
+			"label": "变量",
+			"tip": "用于比较的目标变量"
+		},
+		"switch-branches": {
+			"label": "分支"
+		},
+		"switch-default-label": {
+			"content": "创建默认分支",
+			"tip": "当所有分支的条件都不满足，则进入\"默认分支\""
+		},
+		"switch-branch": {
+			"title": "分支"
+		},
+		"switch-branch-conditions": {
+			"label": "满足任意条件"
+		},
+		"switch-condition": {
+			"title": "条件"
+		},
+		"switch-condition-type": {
+			"label": "类型",
+			"tip": "按分类选择相关条件",
+			"options": {
+				"none": {
+					"name": "空值",
+					"tip": "不存在有效值"
+				},
+				"boolean": "布尔值",
+				"number": "数值",
+				"string": "字符串",
+				"attribute": "属性键",
+				"enum": "枚举",
+				"keyboard": "键盘",
+				"gamepad": "手柄",
+				"mouse": "鼠标",
+				"variable": "变量"
+			}
+		},
+		"switch-condition-boolean-value": {
+			"label": "布尔值",
+			"tip": "固定的值"
+		},
+		"switch-condition-number-value": {
+			"label": "数值",
+			"tip": "固定的值"
+		},
+		"switch-condition-string-value": {
+			"label": "字符串",
+			"tip": "固定的值"
+		},
+		"switch-condition-attribute-attributeId": {
+			"label": "属性键",
+			"tip": "获取这个属性的键"
+		},
+		"switch-condition-enum-stringId": {
+			"label": "枚举字符串",
+			"tip": "获取这个枚举的值"
+		},
+		"switch-condition-keyboard-keycode": {
+			"label": "按键",
+			"tip": "输入键盘按键"
+		},
+		"switch-condition-gamepad-button": {
+			"label": "按键",
+			"tip": "输入手柄按键"
+		},
+		"switch-condition-mouse-button": {
+			"label": "按键",
+			"tip": "选择鼠标按键",
+			"options": {
+				"0": "左键",
+				"1": "中键",
+				"2": "右键",
+				"3": "后退键",
+				"4": "前进键"
+			}
+		},
+		"switch-condition-variable-variable": {
+			"label": "变量",
+			"tip": "从变量中读取数据"
+		}
+	}
+}

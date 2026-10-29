@@ -1,0 +1,50 @@
+{
+	"components": {
+		"fileScene-general-grid": {
+			"label": "Scene"
+		},
+		"fileScene-width": {
+			"label": "Width",
+			"tip": "Number of horizontal grids in the scene (0 ~ 512)"
+		},
+		"fileScene-height": {
+			"label": "Height",
+			"tip": "Number of vertical grids in the scene (0 ~ 512)"
+		},
+		"fileScene-tileWidth": {
+			"label": "Tile Width",
+			"tip": "Width of scene grid (16 ~ 256)"
+		},
+		"fileScene-tileHeight": {
+			"label": "Tile Height",
+			"tip": "Height of scene grid (16 ~ 256)"
+		},
+		"fileScene-ambient-grid": {
+			"label": "Ambient Light"
+		},
+		"fileScene-ambient-red-box": {
+			"label": "Red",
+			"tip": "Input Color (red) * Ambient Light (red) / 255 = Output Color (red)"
+		},
+		"fileScene-ambient-green-box": {
+			"label": "Green",
+			"tip": "Input color (green) * Ambient Light (green) / 255 = Output Color (green)"
+		},
+		"fileScene-ambient-blue-box": {
+			"label": "Blue",
+			"tip": "Input color (blue) * Ambient Light (blue) / 255 = Output Color (blue)"
+		},
+		"fileScene-ambient-direct-box": {
+			"label": "Direct Light Ratio",
+			"tip": "Adjusts how much direct light affects the final rendered color"
+		},
+		"fileScene-events": {
+			"label": "Events",
+			"tip": "A list of scene events that stop execution when the scene is destroyed\n$Optional types\nCreate: Triggered at scene initialization (once)\nAutorun: Triggered when the scene is loaded (including after loading save data)"
+		},
+		"fileScene-scripts": {
+			"label": "Scripts",
+			"tip": "Add script files to extend this scene"
+		}
+	}
+}

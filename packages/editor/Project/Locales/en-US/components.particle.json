@@ -1,0 +1,19 @@
+{
+	"components": {
+		"particle-view-wireframe": {
+			"tip": "$Wireframe\nRender the wireframe of the particle element"
+		},
+		"particle-view-anchor": {
+			"tip": "$Anchor\nRender the anchor point of the particle element (red cross), and the line from the anchor point to the center of the particle (green line)"
+		},
+		"particle-control-restart": {
+			"tip": "$Restart\nClear all particle elements"
+		},
+		"particle-control-pause": {
+			"tip": "$Pause\nPause the particle animation"
+		},
+		"particle-speed": {
+			"tip": "$Playback Speed\nSpeed of particle animation on stage\n1: Normal playback speed\n4: 4x playback speed"
+		}
+	}
+}

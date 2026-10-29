@@ -1,0 +1,104 @@
+{
+	"components": {
+		"setAnimationComponent": {
+			"title": "设置动画组件"
+		},
+		"setAnimationComponent-actor": {
+			"label": "角色",
+			"tip": "设置此角色的动画组件"
+		},
+		"setAnimationComponent-animationId": {
+			"label": "动画",
+			"tip": "选择一个动画文件"
+		},
+		"setAnimationComponent-motion": {
+			"label": "动作",
+			"tip": "选择该动画的一个动作\n动画ID加上动作ID组成这个动画组件的ID"
+		},
+		"setAnimationComponent-operation": {
+			"label": "操作",
+			"tip": "动画组件操作",
+			"options": {
+				"set-angle": {
+					"name": "设置角度",
+					"tip": "角度影响动作方向的切换"
+				},
+				"set-scale": {
+					"name": "设置缩放系数",
+					"tip": "动画缩放系数"
+				},
+				"set-speed": {
+					"name": "设置播放速度",
+					"tip": "播放速度比率"
+				},
+				"set-opacity": {
+					"name": "设置不透明度",
+					"tip": "不透明度影响动画的能见度"
+				},
+				"set-priority": {
+					"name": "设置优先级",
+					"tip": "动画组件的排序优先级"
+				},
+				"set-offsetY": {
+					"name": "设置偏移Y",
+					"tip": "动画渲染位置的垂直偏移距离"
+				},
+				"set-sprite": {
+					"name": "设置精灵图",
+					"tip": "替换动画组件的精灵图"
+				},
+				"play-motion": {
+					"name": "播放动作",
+					"tip": "播放一个指定的动作"
+				},
+				"stop-motion": {
+					"name": "停止动作",
+					"tip": "停止播放当前动作"
+				}
+			}
+		},
+		"setAnimationComponent-angle": {
+			"label": "角度",
+			"tip": "角度影响动作方向的切换"
+		},
+		"setAnimationComponent-scale": {
+			"label": "缩放系数",
+			"tip": "动画缩放系数（0 ~ 10）"
+		},
+		"setAnimationComponent-speed": {
+			"label": "播放速度",
+			"tip": "播放速度比率（0 ~ 10）"
+		},
+		"setAnimationComponent-opacity": {
+			"label": "不透明度",
+			"tip": "不透明度影响动画的能见度（0 ~ 1）"
+		},
+		"setAnimationComponent-priority": {
+			"label": "优先级",
+			"tip": "动画组件的排序优先级\n小于0：动画组件显示在角色动画下面\n大于或等于0：动画组件显示在角色动画上面"
+		},
+		"setAnimationComponent-offsetY": {
+			"label": "偏移 Y",
+			"tip": "动画渲染位置的垂直偏移距离（单位：像素）"
+		},
+		"setAnimationComponent-spriteId": {
+			"label": "精灵图名称",
+			"tip": "选择需要改变的精灵图"
+		},
+		"setAnimationComponent-image": {
+			"label": "图像",
+			"tip": "选择一个新的图像作为精灵图"
+		},
+		"setAnimationComponent-playMotion": {
+			"label": "播放动作",
+			"tip": "选择要播放的动作"
+		},
+		"setAnimationComponent-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

@@ -1,0 +1,85 @@
+{
+	"components": {
+		"variableGetter": {
+			"title": "变量"
+		},
+		"variableGetter-type": {
+			"label": "类型",
+			"tip": "如何获取变量",
+			"options": {
+				"local": {
+					"name": "本地变量",
+					"tip": "存放在事件中的临时变量，当事件执行结束就被销毁"
+				},
+				"global": {
+					"name": "全局变量",
+					"tip": "用户预设的变量，永久保存在游戏存档中"
+				},
+				"self": {
+					"name": "独立变量",
+					"tip": "只有场景中的预设对象才拥有的属性，永久保存在游戏存档中"
+				},
+				"actor": {
+					"name": "角色属性",
+					"tip": "可自定义的角色属性，在属性管理器[F6]中编辑"
+				},
+				"skill": {
+					"name": "技能属性",
+					"tip": "可自定义的技能属性，在属性管理器[F6]中编辑"
+				},
+				"state": {
+					"name": "状态属性",
+					"tip": "可自定义的状态属性，在属性管理器[F6]中编辑"
+				},
+				"equipment": {
+					"name": "装备属性",
+					"tip": "可自定义的装备属性，在属性管理器[F6]中编辑"
+				},
+				"item": {
+					"name": "物品属性",
+					"tip": "可自定义的物品属性，在属性管理器[F6]中编辑"
+				},
+				"element": {
+					"name": "元素属性",
+					"tip": "可自定义的元素属性，在属性管理器[F6]中编辑，支持对象类型"
+				}
+			}
+		},
+		"variableGetter-actor": {
+			"label": "角色",
+			"tip": "访问这个角色的属性"
+		},
+		"variableGetter-skill": {
+			"label": "技能",
+			"tip": "访问这个技能的属性"
+		},
+		"variableGetter-state": {
+			"label": "状态",
+			"tip": "访问这个状态的属性"
+		},
+		"variableGetter-equipment": {
+			"label": "装备",
+			"tip": "访问这个装备的属性"
+		},
+		"variableGetter-item": {
+			"label": "物品",
+			"tip": "访问这个物品的属性"
+		},
+		"variableGetter-element": {
+			"label": "元素",
+			"tip": "访问这个元素的属性"
+		},
+		"variableGetter-common-key": {
+			"label": "键",
+			"tip": "本地变量"
+		},
+		"variableGetter-preset-key": {
+			"label": "键",
+			"tip": "对象属性"
+		},
+		"variableGetter-global-key": {
+			"label": "键",
+			"tip": "全局变量"
+		}
+	}
+}

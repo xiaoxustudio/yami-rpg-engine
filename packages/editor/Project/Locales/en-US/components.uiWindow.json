@@ -1,0 +1,71 @@
+{
+	"components": {
+		"uiWindow-properties-grid": {
+			"label": "Window Properties"
+		},
+		"uiWindow-layout": {
+			"label": "Layout",
+			"tip": "Layout style for window's child elements",
+			"options": {
+				"normal": {
+					"name": "Normal",
+					"tip": "Window acts as a normal container"
+				},
+				"horizontal-grid": {
+					"name": "Horizontal Grid",
+					"tip": "Grid arranges from left to right, wraps down, aligns child elements into the grid"
+				},
+				"vertical-grid": {
+					"name": "Vertical Grid",
+					"tip": "Grid arranges from top to bottom, wraps right, aligns child elements into the grid"
+				}
+			}
+		},
+		"uiWindow-scrollX": {
+			"label": "Scroll X",
+			"tip": "Initial horizontal scroll position of the window, active when the content width exceeds the window width"
+		},
+		"uiWindow-scrollY": {
+			"label": "Scroll Y",
+			"tip": "Initial vertical scroll position of the window, active when the content height exceeds the window height"
+		},
+		"uiWindow-gridWidth": {
+			"label": "Grid Width",
+			"tip": "Width of each grid cell"
+		},
+		"uiWindow-gridHeight": {
+			"label": "Grid Height",
+			"tip": "Height of each grid cell"
+		},
+		"uiWindow-gridGapX": {
+			"label": "Grid Gap X",
+			"tip": "Horizontal spacing between grid cells"
+		},
+		"uiWindow-gridGapY": {
+			"label": "Grid Gap Y",
+			"tip": "Vertical spacing between grid cells"
+		},
+		"uiWindow-paddingX": {
+			"label": "Padding X",
+			"tip": "Minimum distance between window's left and right edges and the nearest grid"
+		},
+		"uiWindow-paddingY": {
+			"label": "Padding Y",
+			"tip": "Minimum distance between window's top and bottom edges and the nearest grid"
+		},
+		"uiWindow-overflow": {
+			"label": "Overflow",
+			"tip": "Handling of content that exceeds the window edges",
+			"options": {
+				"visible": {
+					"name": "Visible",
+					"tip": "Allow content to appear outside the window"
+				},
+				"hidden": {
+					"name": "Hidden",
+					"tip": "Hide content that exceeds the window edges"
+				}
+			}
+		}
+	}
+}

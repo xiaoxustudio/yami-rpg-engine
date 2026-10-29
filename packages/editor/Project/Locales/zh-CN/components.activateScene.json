@@ -1,0 +1,21 @@
+{
+	"components": {
+		"activateScene": {
+			"title": "激活场景"
+		},
+		"activateScene-pointer": {
+			"label": "场景",
+			"tip": "激活哪个场景容器",
+			"options": {
+				"0": {
+					"name": "场景 A",
+					"tip": "切换到主场景容器，暂停副场景容器的活动"
+				},
+				"1": {
+					"name": "场景 B",
+					"tip": "切换到副场景容器，暂停主场景容器的活动"
+				}
+			}
+		}
+	}
+}

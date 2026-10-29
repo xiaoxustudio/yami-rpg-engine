@@ -1,0 +1,11 @@
+{
+	"components": {
+		"deleteActor": {
+			"title": "Delete Actor"
+		},
+		"deleteActor-actor": {
+			"label": "Actor",
+			"tip": "Delete an actor from the scene, if it is a global actor, it will be removed and put into the background"
+		}
+	}
+}

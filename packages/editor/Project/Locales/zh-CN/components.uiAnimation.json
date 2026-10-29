@@ -1,0 +1,40 @@
+{
+	"components": {
+		"uiAnimation-properties-grid": {
+			"label": "动画属性"
+		},
+		"uiAnimation-animation": {
+			"label": "动画",
+			"tip": "选择一个动画文件"
+		},
+		"uiAnimation-motion": {
+			"label": "动作",
+			"tip": "选择动画中的一个动作"
+		},
+		"uiAnimation-autoplay": {
+			"label": "自动播放",
+			"tip": "是否自动播放动画"
+		},
+		"uiAnimation-rotatable": {
+			"label": "可旋转",
+			"tip": "动画受角度影响而旋转"
+		},
+		"uiAnimation-angle": {
+			"label": "角度",
+			"tip": "动画的初始角度"
+		},
+		"uiAnimation-frame": {
+			"label": "动画帧",
+			"tip": "动画的初始帧"
+		},
+		"uiAnimation-offset-box": {
+			"label": "偏移"
+		},
+		"uiAnimation-offsetX": {
+			"tip": "$偏移 X\n动画的水平偏移距离"
+		},
+		"uiAnimation-offsetY": {
+			"tip": "$偏移 Y\n动画的垂直偏移距离"
+		}
+	}
+}

@@ -1,0 +1,51 @@
+{
+	"components": {
+		"setFocus": {
+			"title": "Set Focus"
+		},
+		"setFocus-operation": {
+			"label": "Operation",
+			"tip": "Operations related to focus element",
+			"options": {
+				"add": {
+					"name": "Add Focus",
+					"tip": "Set an element as the focus element, and its descendant button elements can be switched with the arrow keys and confirmed with the Enter key."
+				},
+				"remove": {
+					"name": "Remove Focus",
+					"tip": "Remove the specified focus element"
+				},
+				"remove-latest": {
+					"name": "Remove The Latest Focus",
+					"tip": "Remove the latest focus element"
+				},
+				"reset": {
+					"name": "Reset",
+					"tip": "Remove all focus elements"
+				}
+			}
+		},
+		"setFocus-element": {
+			"label": "Element",
+			"tip": "Perform operation on this element"
+		},
+		"setFocus-mode": {
+			"label": "Mode",
+			"tip": "How to create the button list",
+			"options": {
+				"control-child-buttons": {
+					"name": "Control Child Buttons",
+					"tip": "Use shortcut keys to control buttons in child elements"
+				},
+				"control-descendant-buttons": {
+					"name": "Control Descendant Buttons",
+					"tip": "Use shortcut keys to control buttons in descendant elements"
+				}
+			}
+		},
+		"setFocus-cancelable": {
+			"label": "Cancelable",
+			"tip": "Press the Esc key to remove the current focus"
+		}
+	}
+}

@@ -1,0 +1,89 @@
+{
+	"components": {
+		"callEvent": {
+			"title": "Call Event"
+		},
+		"callEvent-type": {
+			"label": "Type",
+			"tip": "Which event do you want to call",
+			"options": {
+				"global": {
+					"name": "Global",
+					"tip": "Synchronously call the specified global event\nExecution will wait for the called event to finish before proceeding\nParameters can be passed and return values can be received"
+				},
+				"inherited": {
+					"name": "Inherited",
+					"tip": "Synchronously call the same type of event of the object being overridden during execution of this event.\nIf A inherits B, B inherits C, and they all have the same 'XX' event, only A's event is triggered.\nExecuting 'Call Inherited Event' in A will call B's event,\nexecuting in B will call C's event,\nif B lacks the event, A will directly call C's event.\nInheritance chain:\nA's registered event > A's scene event > A's event > B's event > C's event..."
+				},
+				"scene": {
+					"name": "Scene",
+					"tip": "Asynchronously call an event for the current scene"
+				},
+				"actor": {
+					"name": "Actor",
+					"tip": "Asynchronously call an event for the specified actor"
+				},
+				"skill": {
+					"name": "Skill",
+					"tip": "Asynchronously call an event for the specified skill"
+				},
+				"state": {
+					"name": "State",
+					"tip": "Asynchronously call an event for the specified state"
+				},
+				"equipment": {
+					"name": "Equipment",
+					"tip": "Asynchronously call an event for the specified equipment"
+				},
+				"item": {
+					"name": "Item",
+					"tip": "Asynchronously call an event for the specified item"
+				},
+				"light": {
+					"name": "Light Source",
+					"tip": "Asynchronously call an event for the specified light source"
+				},
+				"element": {
+					"name": "Element",
+					"tip": "Asynchronously call an event for the specified element"
+				}
+			}
+		},
+		"callEvent-actor": {
+			"label": "Actor",
+			"tip": "Call an event for this actor"
+		},
+		"callEvent-skill": {
+			"label": "Skill",
+			"tip": "Call an event for this skill"
+		},
+		"callEvent-state": {
+			"label": "State",
+			"tip": "Call an event for this state"
+		},
+		"callEvent-equipment": {
+			"label": "Equipment",
+			"tip": "Call an event for this equipment"
+		},
+		"callEvent-item": {
+			"label": "Item",
+			"tip": "Call an event for this item"
+		},
+		"callEvent-light": {
+			"label": "Light Source",
+			"tip": "Call an event for this light source"
+		},
+		"callEvent-element": {
+			"label": "Element",
+			"tip": "Call an event for this element"
+		},
+		"callEvent-eventId": {
+			"label": "Event",
+			"tip": "Specify event file ID"
+		},
+		"callEvent-eventType": {
+			"label": "Event",
+			"tip": "Choose the event type for the object"
+		}
+	}
+}

@@ -1,0 +1,29 @@
+{
+	"components": {
+		"setItem": {
+			"title": "设置物品"
+		},
+		"setItem-item": {
+			"label": "物品",
+			"tip": "设置这个物品"
+		},
+		"setItem-operation": {
+			"label": "操作",
+			"tip": "执行一个物品操作",
+			"options": {
+				"increase": {
+					"name": "增加",
+					"tip": "增加这个物品堆叠的数量"
+				},
+				"decrease": {
+					"name": "减少",
+					"tip": "减少这个物品堆叠的数量（如果数量不足，会删除该物品）"
+				}
+			}
+		},
+		"setItem-quantity": {
+			"label": "数量",
+			"tip": "物品的数量"
+		}
+	}
+}

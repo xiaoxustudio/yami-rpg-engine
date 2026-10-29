@@ -1,0 +1,511 @@
+{
+	"components": {
+		"particleLayer-general-grid": {
+			"label": "基本设置"
+		},
+		"particleLayer-name": {
+			"label": "名称",
+			"tip": "图层的备注名称"
+		},
+		"particleLayer-area-type": {
+			"label": "发射区域",
+			"tip": "在哪个区域生成粒子",
+			"options": {
+				"point": {
+					"name": "点",
+					"tip": "在一个固定点发射粒子"
+				},
+				"rectangle": {
+					"name": "矩形",
+					"tip": "在矩形内部的随机位置发射粒子"
+				},
+				"circle": {
+					"name": "圆形",
+					"tip": "在圆形内部的随机位置发射粒子"
+				},
+				"edge": {
+					"name": "屏幕边缘",
+					"tip": "在屏幕边缘的随机位置发射粒子\n发射位置跟初始移动角度有关"
+				}
+			}
+		},
+		"particleLayer-area-x": {
+			"label": "X",
+			"tip": "发射区域中心的水平位置"
+		},
+		"particleLayer-area-y": {
+			"label": "Y",
+			"tip": "发射区域中心的垂直位置"
+		},
+		"particleLayer-area-width": {
+			"label": "宽度",
+			"tip": "发射区域的宽度"
+		},
+		"particleLayer-area-height": {
+			"label": "高度",
+			"tip": "发射区域的高度"
+		},
+		"particleLayer-area-radius": {
+			"label": "半径",
+			"tip": "发射区域的半径"
+		},
+		"particleLayer-count": {
+			"label": "发射数量",
+			"tip": "总共发射的粒子数量，如果设置为0则不限制数量"
+		},
+		"particleLayer-delay": {
+			"label": "初始延时",
+			"tip": "多久后开始发射第一个粒子"
+		},
+		"particleLayer-interval": {
+			"label": "发射间隔",
+			"tip": "每次发射粒子的间隔时间"
+		},
+		"particleLayer-lifetime": {
+			"label": "生存时间",
+			"tip": "粒子从生成到销毁的生命周期"
+		},
+		"particleLayer-lifetimeDev": {
+			"label": "生存时间偏差",
+			"tip": "生存时间的最大误差范围\n实际生存时间为随机值\n最小值 = 生存时间 - 偏差值\n最大值 = 生存时间 + 偏差值"
+		},
+		"particleLayer-fadeout": {
+			"label": "渐出时间",
+			"tip": "粒子在销毁前过渡到完全透明的时间"
+		},
+		"particleLayer-anchor-grid": {
+			"label": "锚点"
+		},
+		"particleLayer-anchor-x-box": {
+			"label": "锚点 X"
+		},
+		"particleLayer-anchor-x-0": {
+			"tip": "$锚点 X\n锚点的水平偏移距离\n0：锚点在粒子水平方向的中点\n-1：向左偏移一个粒子宽度的距离\n1：向右偏移一个粒子宽度的距离"
+		},
+		"particleLayer-anchor-x-1": {
+			"tip": "$偏差值\n为参数生成一个随机值\n最小值 = 标准值 - 偏差值\n最大值 = 标准值 + 偏差值",
+			"save": "deviation"
+		},
+		"particleLayer-anchor-y-box": {
+			"label": "锚点 Y"
+		},
+		"particleLayer-anchor-y-0": {
+			"tip": "$锚点 Y\n锚点的垂直偏移距离\n0：锚点在粒子垂直方向的中点\n-1：向上偏移一个粒子高度的距离\n1：向下偏移一个粒子高度的距离"
+		},
+		"particleLayer-anchor-y-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-anchor-speedX-box": {
+			"label": "锚点速度 X"
+		},
+		"particleLayer-anchor-speedX-0": {
+			"tip": "$锚点速度 X\n每秒钟\"锚点 X\"的改变量"
+		},
+		"particleLayer-anchor-speedX-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-anchor-speedY-box": {
+			"label": "锚点速度 Y"
+		},
+		"particleLayer-anchor-speedY-0": {
+			"tip": "$锚点速度 Y\n每秒钟\"锚点 Y\"的改变量"
+		},
+		"particleLayer-anchor-speedY-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-movement-grid": {
+			"label": "移动"
+		},
+		"particleLayer-movement-angle-box": {
+			"label": "移动角度"
+		},
+		"particleLayer-movement-angle-0": {
+			"tip": "$移动角度\n粒子初速度的角度"
+		},
+		"particleLayer-movement-angle-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-movement-speed-box": {
+			"label": "移动速度"
+		},
+		"particleLayer-movement-speed-0": {
+			"tip": "$移动速度\n粒子初速度的大小"
+		},
+		"particleLayer-movement-speed-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-movement-accelAngle-box": {
+			"label": "加速角度"
+		},
+		"particleLayer-movement-accelAngle-0": {
+			"tip": "$加速角度\n每秒钟\"移动角度\"的改变量"
+		},
+		"particleLayer-movement-accelAngle-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-movement-accel-box": {
+			"label": "加速度"
+		},
+		"particleLayer-movement-accel-0": {
+			"tip": "$加速度\n每秒钟\"移动速度\"的改变量"
+		},
+		"particleLayer-movement-accel-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-rotation-grid": {
+			"label": "旋转"
+		},
+		"particleLayer-rotation-angle-box": {
+			"label": "旋转角度"
+		},
+		"particleLayer-rotation-angle-0": {
+			"tip": "$旋转角度\n粒子初始角度"
+		},
+		"particleLayer-rotation-angle-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-rotation-speed-box": {
+			"label": "旋转速度"
+		},
+		"particleLayer-rotation-speed-0": {
+			"tip": "$旋转速度\n每秒钟\"旋转角度\"的改变量"
+		},
+		"particleLayer-rotation-speed-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-rotation-accel-box": {
+			"label": "旋转加速度"
+		},
+		"particleLayer-rotation-accel-0": {
+			"tip": "$旋转加速度\n每秒钟\"旋转速度\"的改变量"
+		},
+		"particleLayer-rotation-accel-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-grid": {
+			"label": "水平旋转"
+		},
+		"particleLayer-hRotation-radius-box": {
+			"label": "半径"
+		},
+		"particleLayer-hRotation-radius-0": {
+			"tip": "$半径\n粒子左右来回运动的振幅，用于模拟绕Y轴旋转"
+		},
+		"particleLayer-hRotation-radius-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-expansionSpeed-box": {
+			"label": "扩张速度"
+		},
+		"particleLayer-hRotation-expansionSpeed-0": {
+			"tip": "$扩张速度\n每秒钟\"半径\"的改变量"
+		},
+		"particleLayer-hRotation-expansionSpeed-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-expansionAccel-box": {
+			"label": "扩张加速度"
+		},
+		"particleLayer-hRotation-expansionAccel-0": {
+			"tip": "$扩张加速度\n每秒钟\"扩张速度\"的改变量"
+		},
+		"particleLayer-hRotation-expansionAccel-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-angle-box": {
+			"label": "旋转角度"
+		},
+		"particleLayer-hRotation-angle-0": {
+			"tip": "$旋转角度\n粒子绕Y轴水平旋转的初始角度\n0度 = 正右方，顺时针旋转"
+		},
+		"particleLayer-hRotation-angle-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-angularSpeed-box": {
+			"label": "旋转速度"
+		},
+		"particleLayer-hRotation-angularSpeed-0": {
+			"tip": "$旋转速度\n每秒钟\"旋转角度\"的改变量"
+		},
+		"particleLayer-hRotation-angularSpeed-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-angularAccel-box": {
+			"label": "旋转加速度"
+		},
+		"particleLayer-hRotation-angularAccel-0": {
+			"tip": "$旋转加速度\n每秒钟\"旋转速度\"的改变量"
+		},
+		"particleLayer-hRotation-angularAccel-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-scale-grid": {
+			"label": "缩放"
+		},
+		"particleLayer-scale-factor-box": {
+			"label": "缩放系数"
+		},
+		"particleLayer-scale-factor-0": {
+			"tip": "$缩放系数\n粒子大小的缩放系数，1 = 100%"
+		},
+		"particleLayer-scale-factor-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-scale-speed-box": {
+			"label": "缩放速度"
+		},
+		"particleLayer-scale-speed-0": {
+			"tip": "$缩放速度\n每秒钟\"缩放系数\"的改变量"
+		},
+		"particleLayer-scale-speed-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-scale-accel-box": {
+			"label": "缩放加速度"
+		},
+		"particleLayer-scale-accel-0": {
+			"tip": "$缩放加速度\n每秒钟\"缩放速度\"的改变量"
+		},
+		"particleLayer-scale-accel-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-rendering-grid": {
+			"label": "渲染"
+		},
+		"particleLayer-image": {
+			"label": "图像",
+			"tip": "粒子元素的精灵图"
+		},
+		"particleLayer-blend": {
+			"label": "混合模式",
+			"tip": "选择一个计算公式将颜色与底层的颜色混合",
+			"options": {
+				"normal": {
+					"name": "正常",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "加法",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "减法",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		},
+		"particleLayer-light": {
+			"label": "光线采样",
+			"tip": "影响图像的渲染效果",
+			"options": {
+				"raw": {
+					"name": "原始图像",
+					"tip": "不受光照影响"
+				},
+				"global": {
+					"name": "全局采样",
+					"tip": "从图像所在的多个像素点位置采样光照来合成颜色"
+				},
+				"ambient": {
+					"name": "环境光",
+					"tip": "使用当前场景的环境光来合成颜色"
+				}
+			}
+		},
+		"particleLayer-sort": {
+			"label": "排序模式",
+			"tip": "选择这个图层的粒子排序模式",
+			"options": {
+				"youngest-in-front": {
+					"name": "最新的在前面",
+					"tip": "新的粒子显示在旧的粒子前面"
+				},
+				"oldest-in-front": {
+					"name": "最旧的在前面",
+					"tip": "旧的粒子显示在新的粒子前面"
+				},
+				"by-scale-factor": {
+					"name": "近大远小",
+					"tip": "缩放系数大的粒子显示在前面"
+				}
+			}
+		},
+		"particleLayer-sprite-mode": {
+			"label": "精灵模式",
+			"tip": "选择精灵的显示模式",
+			"options": {
+				"random": {
+					"name": "随机",
+					"tip": "从划分的精灵图中随机选择一个显示"
+				},
+				"animation": {
+					"name": "动画",
+					"tip": "按顺序播放精灵图，从左到右选择，从上到下换行"
+				},
+				"animation-loop": {
+					"name": "动画(循环)",
+					"tip": "按顺序播放精灵图，结束后重新开始播放"
+				}
+			}
+		},
+		"particleLayer-sprite-hframes": {
+			"label": "水平划分",
+			"tip": "水平等分切割粒子精灵图，生成粒子时自动选择一列"
+		},
+		"particleLayer-sprite-vframes": {
+			"label": "垂直划分",
+			"tip": "垂直等分切割粒子精灵图，生成粒子时自动选择一行"
+		},
+		"particleLayer-sprite-interval": {
+			"label": "动画间隔",
+			"tip": "每一帧动画精灵的停留时间"
+		},
+		"particleLayer-color-mode": {
+			"label": "颜色模式",
+			"tip": "选择一种模式来填充粒子颜色",
+			"options": {
+				"fixed": {
+					"name": "固定",
+					"tip": "指定一个固定颜色"
+				},
+				"random": {
+					"name": "随机",
+					"tip": "指定颜色范围，随机生成一个颜色"
+				},
+				"easing": {
+					"name": "过渡",
+					"tip": "指定过渡曲线，初始颜色范围和结束颜色范围，持续计算插值颜色"
+				},
+				"texture": {
+					"name": "纹理采样",
+					"tip": "使用粒子精灵图中的像素颜色"
+				}
+			}
+		},
+		"particleLayer-color-rgba-box": {
+			"label": "颜色"
+		},
+		"particleLayer-color-rgba-0": {
+			"tip": "$红\n0 ~ 255"
+		},
+		"particleLayer-color-rgba-1": {
+			"tip": "$绿\n0 ~ 255"
+		},
+		"particleLayer-color-rgba-2": {
+			"tip": "$蓝\n0 ~ 255"
+		},
+		"particleLayer-color-rgba-3": {
+			"tip": "$不透明度\n0 ~ 255"
+		},
+		"particleLayer-color-min-box": {
+			"label": "颜色最小值"
+		},
+		"particleLayer-color-min-0": {
+			"tip": "$红\n0 ~ 255"
+		},
+		"particleLayer-color-min-1": {
+			"tip": "$绿\n0 ~ 255"
+		},
+		"particleLayer-color-min-2": {
+			"tip": "$蓝\n0 ~ 255"
+		},
+		"particleLayer-color-min-3": {
+			"tip": "$不透明度\n0 ~ 255"
+		},
+		"particleLayer-color-max-box": {
+			"label": "颜色最大值"
+		},
+		"particleLayer-color-max-0": {
+			"tip": "$红\n0 ~ 255"
+		},
+		"particleLayer-color-max-1": {
+			"tip": "$绿\n0 ~ 255"
+		},
+		"particleLayer-color-max-2": {
+			"tip": "$蓝\n0 ~ 255"
+		},
+		"particleLayer-color-max-3": {
+			"tip": "$不透明度\n0 ~ 255"
+		},
+		"particleLayer-color-easingId": {
+			"label": "过渡方式",
+			"tip": "用来计算插值颜色"
+		},
+		"particleLayer-color-startMin-box": {
+			"label": "初始颜色最小值"
+		},
+		"particleLayer-color-startMin-0": {
+			"tip": "$红\n0 ~ 255"
+		},
+		"particleLayer-color-startMin-1": {
+			"tip": "$绿\n0 ~ 255"
+		},
+		"particleLayer-color-startMin-2": {
+			"tip": "$蓝\n0 ~ 255"
+		},
+		"particleLayer-color-startMin-3": {
+			"tip": "$不透明度\n0 ~ 255"
+		},
+		"particleLayer-color-startMax-box": {
+			"label": "初始颜色最大值"
+		},
+		"particleLayer-color-startMax-0": {
+			"tip": "$红\n0 ~ 255"
+		},
+		"particleLayer-color-startMax-1": {
+			"tip": "$绿\n0 ~ 255"
+		},
+		"particleLayer-color-startMax-2": {
+			"tip": "$蓝\n0 ~ 255"
+		},
+		"particleLayer-color-startMax-3": {
+			"tip": "$不透明度\n0 ~ 255"
+		},
+		"particleLayer-color-endMin-box": {
+			"label": "结束颜色最小值"
+		},
+		"particleLayer-color-endMin-0": {
+			"tip": "$红\n0 ~ 255"
+		},
+		"particleLayer-color-endMin-1": {
+			"tip": "$绿\n0 ~ 255"
+		},
+		"particleLayer-color-endMin-2": {
+			"tip": "$蓝\n0 ~ 255"
+		},
+		"particleLayer-color-endMin-3": {
+			"tip": "$不透明度\n0 ~ 255"
+		},
+		"particleLayer-color-endMax-box": {
+			"label": "结束颜色最大值"
+		},
+		"particleLayer-color-endMax-0": {
+			"tip": "$红\n0 ~ 255"
+		},
+		"particleLayer-color-endMax-1": {
+			"tip": "$绿\n0 ~ 255"
+		},
+		"particleLayer-color-endMax-2": {
+			"tip": "$蓝\n0 ~ 255"
+		},
+		"particleLayer-color-endMax-3": {
+			"tip": "$不透明度\n0 ~ 255"
+		},
+		"particleLayer-color-tint-0-box": {
+			"label": "色调 - 红",
+			"tip": "输入颜色(红) + 色调(红) = 输出颜色(红)"
+		},
+		"particleLayer-color-tint-1-box": {
+			"label": "色调 - 绿",
+			"tip": "输入颜色(绿) + 色调(绿) = 输出颜色(绿)"
+		},
+		"particleLayer-color-tint-2-box": {
+			"label": "色调 - 蓝",
+			"tip": "输入颜色(蓝) + 色调(蓝) = 输出颜色(蓝)"
+		},
+		"particleLayer-color-tint-3-box": {
+			"label": "色调 - 灰",
+			"tip": "灰度与饱和度相反，灰度越高则饱和度越低"
+		}
+	}
+}

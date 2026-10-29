@@ -1,0 +1,15 @@
+{
+	"components": {
+		"appendTarget": {
+			"title": "添加目标"
+		},
+		"appendTarget-actor": {
+			"label": "角色",
+			"tip": "在这个角色的目标池中添加一个角色"
+		},
+		"appendTarget-target": {
+			"label": "目标",
+			"tip": "指定一个目标角色，将其添加到目标池"
+		}
+	}
+}

@@ -1,0 +1,84 @@
+{
+	"components": {
+		"moveLight": {
+			"title": "移动光源"
+		},
+		"moveLight-light": {
+			"label": "光源",
+			"tip": "指定一个光源对象"
+		},
+		"moveLight-properties": {
+			"label": "设置属性"
+		},
+		"moveLight-property": {
+			"title": "光源属性"
+		},
+		"moveLight-property-key": {
+			"label": "属性",
+			"tip": "光源的属性",
+			"options": {
+				"x": "X",
+				"y": "Y",
+				"range": "范围",
+				"intensity": "强度",
+				"anchorX": "锚点 X",
+				"anchorY": "锚点 Y",
+				"width": "宽度",
+				"height": "高度",
+				"angle": "角度",
+				"red": "红",
+				"green": "绿",
+				"blue": "蓝"
+			}
+		},
+		"moveLight-property-x": {
+			"label": "X"
+		},
+		"moveLight-property-y": {
+			"label": "Y"
+		},
+		"moveLight-property-range": {
+			"label": "范围"
+		},
+		"moveLight-property-intensity": {
+			"label": "强度"
+		},
+		"moveLight-property-anchorX": {
+			"label": "锚点 X"
+		},
+		"moveLight-property-anchorY": {
+			"label": "锚点 Y"
+		},
+		"moveLight-property-width": {
+			"label": "宽度"
+		},
+		"moveLight-property-height": {
+			"label": "高度"
+		},
+		"moveLight-property-angle": {
+			"label": "角度"
+		},
+		"moveLight-property-red": {
+			"label": "红"
+		},
+		"moveLight-property-green": {
+			"label": "绿"
+		},
+		"moveLight-property-blue": {
+			"label": "蓝"
+		},
+		"moveLight-easingId": {
+			"label": "过渡"
+		},
+		"moveLight-duration": {
+			"label": "时长"
+		},
+		"moveLight-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

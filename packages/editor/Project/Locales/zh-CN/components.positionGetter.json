@@ -1,0 +1,99 @@
+{
+	"components": {
+		"positionGetter": {
+			"title": "位置"
+		},
+		"positionGetter-type": {
+			"label": "类型",
+			"tip": "如何获取位置",
+			"options": {
+				"absolute": {
+					"name": "绝对坐标",
+					"tip": "指定场景坐标(X, Y)"
+				},
+				"relative": {
+					"name": "相对坐标",
+					"tip": "指定当前对象位置的相对坐标(X, Y)，只有部分情况下有效"
+				},
+				"actor": {
+					"name": "角色位置",
+					"tip": "获取角色所在的位置"
+				},
+				"trigger": {
+					"name": "触发器位置",
+					"tip": "获取触发器所在的位置"
+				},
+				"light": {
+					"name": "光源位置",
+					"tip": "获取光源所在的位置"
+				},
+				"region": {
+					"name": "区域位置",
+					"tip": "获取区域所在的位置"
+				},
+				"object": {
+					"name": "对象位置",
+					"tip": "获取预设场景对象所在的位置"
+				},
+				"mouse": {
+					"name": "鼠标位置",
+					"tip": "获取鼠标指针所在的场景位置"
+				}
+			}
+		},
+		"positionGetter-common-x": {
+			"label": "X",
+			"tip": "场景水平位置"
+		},
+		"positionGetter-common-y": {
+			"label": "Y",
+			"tip": "场景垂直位置"
+		},
+		"positionGetter-actor": {
+			"label": "角色",
+			"tip": "获取这个角色当前的位置"
+		},
+		"positionGetter-trigger": {
+			"label": "触发器",
+			"tip": "获取这个触发器当前的位置"
+		},
+		"positionGetter-light": {
+			"label": "光源",
+			"tip": "获取这个光源当前的位置"
+		},
+		"positionGetter-region": {
+			"label": "区域",
+			"tip": "获取这个区域中的一个位置"
+		},
+		"positionGetter-region-mode": {
+			"label": "模式",
+			"tip": "获取这个区域中的哪个位置",
+			"options": {
+				"center": {
+					"name": "中心",
+					"tip": "获取区域的中心点"
+				},
+				"random": {
+					"name": "随机",
+					"tip": "获取区域的随机位置"
+				},
+				"random-land": {
+					"name": "随机 - 地面",
+					"tip": "获取区域的随机地面位置"
+				},
+				"random-water": {
+					"name": "随机 - 水面",
+					"tip": "获取区域的随机水面位置"
+				},
+				"random-wall": {
+					"name": "随机 - 墙块",
+					"tip": "获取区域的随机墙块位置"
+				}
+			}
+		},
+		"positionGetter-objectId": {
+			"label": "对象",
+			"tip": "获取预设场景对象当前的位置"
+		}
+	}
+}

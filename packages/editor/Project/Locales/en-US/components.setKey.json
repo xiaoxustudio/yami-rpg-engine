@@ -1,0 +1,11 @@
+{
+	"components": {
+		"setKey": {
+			"title": "Set Key"
+		},
+		"setKey-key": {
+			"label": "Key",
+			"tip": "Set the key for the transition curve, for access via JavaScript"
+		}
+	}
+}

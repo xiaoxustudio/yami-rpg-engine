@@ -1,0 +1,29 @@
+{
+	"components": {
+		"triggerGetter": {
+			"title": "Trigger"
+		},
+		"triggerGetter-type": {
+			"label": "Type",
+			"tip": "How to get a trigger",
+			"options": {
+				"trigger": {
+					"name": "Event Trigger",
+					"tip": "Trigger that triggered this event"
+				},
+				"latest": {
+					"name": "Latest Trigger",
+					"tip": "Get the latest created trigger, which refreshes when the 'Create Trigger' command is called"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Get the trigger from the specified variable"
+				}
+			}
+		},
+		"triggerGetter-variable": {
+			"label": "Variable",
+			"tip": "Get the trigger object from the variable"
+		}
+	}
+}

@@ -1,0 +1,32 @@
+{
+	"components": {
+		"translateActor": {
+			"title": "Translate Actor"
+		},
+		"translateActor-actor": {
+			"label": "Actor",
+			"tip": "Translate this actor"
+		},
+		"translateActor-angle": {
+			"label": "Angle",
+			"tip": "Translate towards this angle"
+		},
+		"translateActor-distance": {
+			"label": "Distance",
+			"tip": "Distance to translate"
+		},
+		"translateActor-easingId": {
+			"label": "Easing"
+		},
+		"translateActor-duration": {
+			"label": "Duration"
+		},
+		"translateActor-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"components": {
+		"setTileTag": {
+			"title": "Set Tile Tag"
+		},
+		"setTileTag-tag": {
+			"label": "Tag",
+			"tip": "Enter the tile tag (0-99999)"
+		}
+	}
+}

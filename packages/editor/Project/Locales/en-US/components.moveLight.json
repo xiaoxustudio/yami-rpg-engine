@@ -1,0 +1,82 @@
+{
+	"components": {
+		"moveLight": {
+			"title": "Move Light"
+		},
+		"moveLight-light": {
+			"label": "Light"
+		},
+		"moveLight-properties": {
+			"label": "Properties"
+		},
+		"moveLight-property": {
+			"title": "Light Property"
+		},
+		"moveLight-property-key": {
+			"label": "Property",
+			"options": {
+				"x": "X",
+				"y": "Y",
+				"range": "Range",
+				"intensity": "Intensity",
+				"anchorX": "Anchor X",
+				"anchorY": "Anchor Y",
+				"width": "Width",
+				"height": "Height",
+				"angle": "Angle",
+				"red": "Red",
+				"green": "Green",
+				"blue": "Blue"
+			}
+		},
+		"moveLight-property-x": {
+			"label": "X"
+		},
+		"moveLight-property-y": {
+			"label": "Y"
+		},
+		"moveLight-property-range": {
+			"label": "Range"
+		},
+		"moveLight-property-intensity": {
+			"label": "Intensity"
+		},
+		"moveLight-property-anchorX": {
+			"label": "Anchor X"
+		},
+		"moveLight-property-anchorY": {
+			"label": "Anchor Y"
+		},
+		"moveLight-property-width": {
+			"label": "Width"
+		},
+		"moveLight-property-height": {
+			"label": "Height"
+		},
+		"moveLight-property-angle": {
+			"label": "Angle"
+		},
+		"moveLight-property-red": {
+			"label": "Red"
+		},
+		"moveLight-property-green": {
+			"label": "Green"
+		},
+		"moveLight-property-blue": {
+			"label": "Blue"
+		},
+		"moveLight-easingId": {
+			"label": "Easing"
+		},
+		"moveLight-duration": {
+			"label": "Duration"
+		},
+		"moveLight-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

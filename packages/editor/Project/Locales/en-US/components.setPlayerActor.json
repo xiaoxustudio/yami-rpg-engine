@@ -1,0 +1,11 @@
+{
+	"components": {
+		"setPlayerActor": {
+			"title": "Set Player Actor"
+		},
+		"setPlayerActor-actor": {
+			"label": "Global Actor",
+			"tip": "Set a global actor as the player actor, then you can access the actor through \"Actor Getter -> Player Actor\""
+		}
+	}
+}

@@ -1,0 +1,33 @@
+{
+	"components": {
+		"loadScene": {
+			"title": "Load Scene"
+		},
+		"loadScene-sceneId": {
+			"label": "Scene",
+			"tip": "Reset the scene container and load the scene with this ID"
+		},
+		"loadScene-transfer": {
+			"label": "Transfer Player",
+			"tip": "Whether to transfer the player actor after the scene is loaded",
+			"options": {
+				"true": {
+					"name": "Yes",
+					"tip": "Transfer the player actor to the specified location"
+				},
+				"false": {
+					"name": "No",
+					"tip": "Does not transfer the player actor"
+				}
+			}
+		},
+		"loadScene-x": {
+			"label": "X",
+			"tip": "Move the player actor to this horizontal position"
+		},
+		"loadScene-y": {
+			"label": "Y",
+			"tip": "Move the player actor to this vertical position"
+		}
+	}
+}

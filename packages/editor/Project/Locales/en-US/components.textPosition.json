@@ -1,0 +1,39 @@
+{
+	"components": {
+		"textPosition": {
+			"title": "Set Text Position"
+		},
+		"textPosition-axis": {
+			"label": "Axis",
+			"tip": "Choose the coordinate you want to change",
+			"options": {
+				"x": {
+					"name": "X",
+					"tip": "Set the horizontal position"
+				},
+				"y": {
+					"name": "Y",
+					"tip": "Set the vertical position"
+				}
+			}
+		},
+		"textPosition-operation": {
+			"label": "Operation",
+			"tip": "Choose the operation for the coordinate",
+			"options": {
+				"set": {
+					"name": "Set",
+					"tip": "Set to absolute position"
+				},
+				"add": {
+					"name": "Add",
+					"tip": "Offset by a certain distance"
+				}
+			}
+		},
+		"textPosition-value": {
+			"label": "Value",
+			"tip": "Coordinate position"
+		}
+	}
+}

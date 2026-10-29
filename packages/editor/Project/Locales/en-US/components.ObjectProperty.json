@@ -1,0 +1,11 @@
+{
+	"components": {
+		"ObjectProperty-index": {
+			"title": "Index"
+		},
+		"ObjectProperty-index-name": {
+			"label": "Property Name",
+			"tip": "The name of the property to be retrieved"
+		}
+	}
+}

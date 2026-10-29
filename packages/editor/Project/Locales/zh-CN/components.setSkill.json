@@ -1,0 +1,33 @@
+{
+	"components": {
+		"setSkill": {
+			"title": "设置技能"
+		},
+		"setSkill-skill": {
+			"label": "技能",
+			"tip": "从技能访问器中获取技能，对其进行设置"
+		},
+		"setSkill-operation": {
+			"label": "操作",
+			"tip": "执行一个技能操作",
+			"options": {
+				"set-cooldown": {
+					"name": "设置冷却时间",
+					"tip": "设置这个技能的冷却时间，开始冷却计时"
+				},
+				"increase-cooldown": {
+					"name": "增加冷却时间",
+					"tip": "增加这个技能的冷却时间，开始冷却计时"
+				},
+				"decrease-cooldown": {
+					"name": "减少冷却时间",
+					"tip": "减少这个技能的冷却时间（最小值为0）"
+				}
+			}
+		},
+		"setSkill-cooldown": {
+			"label": "时间",
+			"tip": "技能的冷却时间"
+		}
+	}
+}

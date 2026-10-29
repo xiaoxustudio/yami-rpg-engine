@@ -1,0 +1,49 @@
+{
+	"components": {
+		"setShortcut": {
+			"title": "设置快捷键"
+		},
+		"setShortcut-actor": {
+			"label": "角色",
+			"tip": "为这个角色设置快捷键"
+		},
+		"setShortcut-operation": {
+			"label": "操作",
+			"tip": "执行快捷键操作",
+			"options": {
+				"set-item-shortcut": {
+					"name": "设置物品快捷键",
+					"tip": "将指定ID的物品与快捷键绑定"
+				},
+				"set-skill-shortcut": {
+					"name": "设置技能快捷键",
+					"tip": "将指定ID的技能与快捷键绑定"
+				},
+				"delete-shortcut": {
+					"name": "删除快捷键",
+					"tip": "解除快捷键与对应的物品或技能的绑定"
+				},
+				"swap-shortcuts": {
+					"name": "交换快捷键",
+					"tip": "交换两个快捷键绑定的内容（空的也可以）"
+				}
+			}
+		},
+		"setShortcut-key": {
+			"label": "快捷键",
+			"tip": "物品或技能的快捷键"
+		},
+		"setShortcut-key2": {
+			"label": "快捷键 2",
+			"tip": "物品或技能的快捷键 2"
+		},
+		"setShortcut-itemId": {
+			"label": "物品",
+			"tip": "将这个物品与快捷键绑定"
+		},
+		"setShortcut-skillId": {
+			"label": "技能",
+			"tip": "将这个技能与快捷键绑定"
+		}
+	}
+}

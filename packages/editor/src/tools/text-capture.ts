@@ -1,4 +1,3 @@
-import { elementDataOf } from '@ui-kit';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
 import { composableEls } from '@app/composables/element-registry';
@@ -154,6 +153,7 @@ for (const key of selectionBridgeKeys) {
 }
 
 const listenerScopes = new WeakMap<EventListenerElement, { off(): void }>();
+let lateInputBindingInstalled = false;
 
 Selection.initialize = function (this: SelectionShape) {
 	if (!textCaptureEls.get('font')) return;
@@ -163,18 +163,45 @@ Selection.initialize = function (this: SelectionShape) {
 		'command-searcher': true
 	};
 
-	for (const textbox of $('text-box')) {
-		if (!exclusions[textbox.id]) {
-			this.addEventListeners!(textbox.input! as EventListenerElement);
-		}
-	}
+	const isExcluded = (target: HTMLInputElement | HTMLTextAreaElement): boolean =>
+		target.matches('#color-hex input, #command-searcher input');
 
-	for (const textbox of $('text-area-var')) {
-		this.addEventListeners!(elementDataOf<{ strBox?: HTMLElement }>(textbox).strBox!);
+	// 输入框是 Vue 组件（`.text-box` / `.text-area`），不是遗留的 `<text-box>` / `<text-area-var>` 标签。
+	// 旧的标签选择器在 Vue 里恒为空集 —— 表现就是「大部分输入框右键没菜单」。
+	for (const textbox of $('.text-box')) {
+		if (!(textbox instanceof HTMLElement)) continue;
+		const box = textbox as HTMLElement & { input?: HTMLElement };
+		if (exclusions[box.id]) continue;
+		const input = box.input ?? box.querySelector('input');
+		if (input) this.addEventListeners!(input as EventListenerElement);
 	}
 
 	for (const textarea of $('textarea')) {
-		this.addEventListeners!(textarea);
+		this.addEventListeners!(textarea as EventListenerElement);
+	}
+
+	// 懒挂载窗口 / 动态表单里的输入框在 initialize 时还不存在：右键按下的那一刻补绑，
+	// 同一次右键的 pointerup 就会命中处理器（pointerup 是后续独立事件）。
+	// 只补绑原来会被 initialize 扫到的两类目标（.text-box 里的 input、textarea）——
+	// 数字框等其它 input 没有文本标记语义，不能套上这套菜单。
+	if (!lateInputBindingInstalled) {
+		lateInputBindingInstalled = true;
+		document.addEventListener(
+			'pointerdown',
+			(event: PointerEvent) => {
+				const target = event.target;
+				const isTextArea = target instanceof HTMLTextAreaElement;
+				const isTextBoxInput =
+					target instanceof HTMLInputElement && target.matches('.text-box input');
+				if (!isTextArea && !isTextBoxInput) return;
+				const element = target as HTMLInputElement | HTMLTextAreaElement;
+				if (isExcluded(element) || listenerScopes.has(element as EventListenerElement)) {
+					return;
+				}
+				Selection.addEventListeners!(element as EventListenerElement);
+			},
+			true
+		);
 	}
 
 	this.textPosition.initialize!();
@@ -198,6 +225,8 @@ Selection.restoreContext = function (this: SelectionShape) {
 };
 
 Selection.addEventListeners = function (this: SelectionShape, element: EventListenerElement) {
+	// 幂等：initialize 的全量扫描与「右键补绑」可能先后命中同一个输入框。
+	if (listenerScopes.has(element)) return;
 	const scope = collect(element as EventTarget);
 	scope.on('keydown', this.inputKeydown as EventListener);
 	scope.on('keyup', this.inputKeyup as EventListener);
@@ -449,8 +478,8 @@ Selection.inputPointerup = function (this: SelectionShape, event: PointerEvent) 
 					const editable = !!this.match!();
 					const selected = start !== end;
 					const pastable = !!clipText;
-					const undoable = element.history.canUndo();
-					const redoable = element.history.canRedo();
+					const undoable = element.history?.canUndo?.() ?? false;
+					const redoable = element.history?.canRedo?.() ?? false;
 					const get = (key: string) => t('menuTextBox.' + key);
 					const wrap = element.parentNode as HTMLElement;
 					const menu = wrap.getAttribute('menu') ?? 'tag';
@@ -620,7 +649,7 @@ Selection.inputPointerup = function (this: SelectionShape, event: PointerEvent) 
 								accelerator: ctrl('Z'),
 								enabled: undoable,
 								click: () => {
-									element.history.restore('undo');
+									element.history?.restore('undo');
 								}
 							},
 							{
@@ -628,7 +657,7 @@ Selection.inputPointerup = function (this: SelectionShape, event: PointerEvent) 
 								accelerator: ctrl('Y'),
 								enabled: redoable,
 								click: () => {
-									element.history.restore('redo');
+									element.history?.restore('redo');
 								}
 							}
 						]

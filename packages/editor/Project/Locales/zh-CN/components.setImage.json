@@ -1,0 +1,63 @@
+{
+	"components": {
+		"setImage": {
+			"title": "设置图像"
+		},
+		"setImage-element": {
+			"label": "元素",
+			"tip": "指定一个图像元素"
+		},
+		"setImage-properties": {
+			"label": "设置属性"
+		},
+		"setImage-property": {
+			"title": "图像属性"
+		},
+		"setImage-property-key": {
+			"label": "属性",
+			"tip": "图像元素的属性",
+			"options": {
+				"image": "图像",
+				"display": "显示",
+				"flip": "翻转",
+				"blend": "混合模式",
+				"shiftX": "偏移 X",
+				"shiftY": "偏移 Y",
+				"clip-0": "裁剪 - X",
+				"clip-1": "裁剪 - Y",
+				"clip-2": "裁剪 - 宽度",
+				"clip-3": "裁剪 - 高度"
+			}
+		},
+		"setImage-property-image": {
+			"label": "图像"
+		},
+		"setImage-property-display": {
+			"label": "显示"
+		},
+		"setImage-property-flip": {
+			"label": "翻转"
+		},
+		"setImage-property-blend": {
+			"label": "混合模式"
+		},
+		"setImage-property-shiftX": {
+			"label": "偏移 X"
+		},
+		"setImage-property-shiftY": {
+			"label": "偏移 Y"
+		},
+		"setImage-property-clip-0": {
+			"label": "裁剪 - X"
+		},
+		"setImage-property-clip-1": {
+			"label": "裁剪 - Y"
+		},
+		"setImage-property-clip-2": {
+			"label": "裁剪 - 宽度"
+		},
+		"setImage-property-clip-3": {
+			"label": "裁剪 - 高度"
+		}
+	}
+}

@@ -1,0 +1,23 @@
+{
+	"components": {
+		"clampCamera": {
+			"title": "Clamp Camera"
+		},
+		"clampCamera-left": {
+			"label": "Left",
+			"tip": "Scene's horizontal position"
+		},
+		"clampCamera-top": {
+			"label": "Top",
+			"tip": "Scene's vertical position"
+		},
+		"clampCamera-right": {
+			"label": "Right",
+			"tip": "Scene's horizontal position"
+		},
+		"clampCamera-bottom": {
+			"label": "Bottom",
+			"tip": "Scene's vertical position"
+		}
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"components": {
+		"home-start-label": {
+			"content": "开始"
+		},
+		"home-start-new": {
+			"content": "新建项目"
+		},
+		"home-start-open": {
+			"content": "打开项目"
+		},
+		"home-recent-label": {
+			"content": "打开最近的项目"
+		}
+	}
+}

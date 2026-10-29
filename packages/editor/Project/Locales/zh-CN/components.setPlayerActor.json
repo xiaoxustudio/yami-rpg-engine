@@ -1,0 +1,11 @@
+{
+	"components": {
+		"setPlayerActor": {
+			"title": "设置玩家角色"
+		},
+		"setPlayerActor-actor": {
+			"label": "全局角色",
+			"tip": "设置一个全局角色作为玩家角色，然后可通过\"角色访问器->玩家角色\"访问该角色"
+		}
+	}
+}

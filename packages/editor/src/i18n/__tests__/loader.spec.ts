@@ -2,7 +2,14 @@ import { describe, expect, it, vi, afterEach } from 'vitest';
 import { resolve } from 'node:path';
 import type { Dirent } from 'node:fs';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
-import { loadLanguage, loadLanguageList, resolveLanguage, type LanguageEntry } from '../loader';
+import {
+	componentNamespaceOf,
+	loadComponentNamespace,
+	loadLanguage,
+	loadLanguageList,
+	resolveLanguage,
+	type LanguageEntry
+} from '../loader';
 
 const dirent = (name: string, isFile: boolean) =>
 	({
@@ -58,6 +65,32 @@ describe('i18n loader 独立加载语言文件', () => {
 	it('loadLanguageList 目录读取失败返回空列表', async () => {
 		vi.spyOn(FSP, 'readdir').mockRejectedValue(new Error('no such dir'));
 		await expect(loadLanguageList()).resolves.toEqual([]);
+	});
+
+	it('componentNamespaceOf 按第一个 - 切命名空间', () => {
+		expect(componentNamespaceOf('setList-operand-object-property')).toBe('setList');
+		expect(componentNamespaceOf('resource')).toBe('resource');
+	});
+
+	it('loadComponentNamespace 读取命名空间分片（路径带语言目录）', async () => {
+		const read = vi.spyOn(FSP, 'readFile').mockResolvedValue(
+			JSON.stringify({
+				components: { 'setList-operation': { label: '操作' } }
+			})
+		);
+		const components = await loadComponentNamespace('zh-CN', 'setList');
+		expect(components?.['setList-operation'].label).toBe('操作');
+		const absPath = read.mock.calls[0][0] as string;
+		expect(absPath).toContain('zh-CN');
+		expect(absPath.endsWith('components.setList.json')).toBe(true);
+	});
+
+	it('loadComponentNamespace 分片缺失 → null；非法命名空间不读盘', async () => {
+		const read = vi.spyOn(FSP, 'readFile').mockRejectedValue(new Error('ENOENT'));
+		await expect(loadComponentNamespace('zh-CN', 'setList')).resolves.toBeNull();
+		read.mockClear();
+		await expect(loadComponentNamespace('zh-CN', '../escape')).resolves.toBeNull();
+		expect(read).not.toHaveBeenCalled();
 	});
 
 	it('resolveLanguage 请求语言匹配 / 自动匹配导航语言 / 回退 en-US', () => {

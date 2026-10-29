@@ -1,0 +1,511 @@
+{
+	"components": {
+		"particleLayer-general-grid": {
+			"label": "General"
+		},
+		"particleLayer-name": {
+			"label": "Name",
+			"tip": "Layer label"
+		},
+		"particleLayer-area-type": {
+			"label": "Emission Area",
+			"tip": "Where the particles are emitted",
+			"options": {
+				"point": {
+					"name": "Point",
+					"tip": "Emit particles from a fixed point"
+				},
+				"rectangle": {
+					"name": "Rectangle",
+					"tip": "Emit particles from random positions within a rectangle"
+				},
+				"circle": {
+					"name": "Circle",
+					"tip": "Emit particles from random positions within a circle"
+				},
+				"edge": {
+					"name": "Screen Edge",
+					"tip": "Emit particles from random positions on the screen edge\nEmission position is related to the initial movement angle"
+				}
+			}
+		},
+		"particleLayer-area-x": {
+			"label": "X",
+			"tip": "Horizontal position of the emission area center"
+		},
+		"particleLayer-area-y": {
+			"label": "Y",
+			"tip": "Vertical position of the emission area center"
+		},
+		"particleLayer-area-width": {
+			"label": "Width",
+			"tip": "Width of the emission area"
+		},
+		"particleLayer-area-height": {
+			"label": "Height",
+			"tip": "Height of the emission area"
+		},
+		"particleLayer-area-radius": {
+			"label": "Radius",
+			"tip": "Radius of the emission area"
+		},
+		"particleLayer-count": {
+			"label": "Emission Count",
+			"tip": "Total number of particles to emit. Set to 0 to have no limit on the number"
+		},
+		"particleLayer-delay": {
+			"label": "Initial Delay",
+			"tip": "Time before the first particle is emitted"
+		},
+		"particleLayer-interval": {
+			"label": "Interval",
+			"tip": "Time interval between emitting each particle"
+		},
+		"particleLayer-lifetime": {
+			"label": "Lifetime",
+			"tip": "Particle lifetime from creation to destruction"
+		},
+		"particleLayer-lifetimeDev": {
+			"label": "Lifetime Dev",
+			"tip": "Maximum deviation range for the lifetime\nActual lifetime is a random value\nMin = Lifetime - Deviation\nMax = Lifetime + Deviation"
+		},
+		"particleLayer-fadeout": {
+			"label": "Fadeout",
+			"tip": "Time for the particle to transition to complete transparency before destruction"
+		},
+		"particleLayer-anchor-grid": {
+			"label": "Anchor"
+		},
+		"particleLayer-anchor-x-box": {
+			"label": "Anchor X"
+		},
+		"particleLayer-anchor-x-0": {
+			"tip": "$Anchor X\nHorizontal offset distance of the anchor\n0: Anchor is at the midpoint of the particle's horizontal direction\n-1: Shifted left by one particle width\n1: Shifted right by one particle width"
+		},
+		"particleLayer-anchor-x-1": {
+			"tip": "$Deviation\nGenerates a random value for the parameter\nMin = Standard value - Deviation\nMax = Standard value + Deviation",
+			"save": "deviation"
+		},
+		"particleLayer-anchor-y-box": {
+			"label": "Anchor Y"
+		},
+		"particleLayer-anchor-y-0": {
+			"tip": "$Anchor Y\nVertical offset distance of the anchor\n0: Anchor is at the midpoint of the particle's vertical direction\n-1: Shifted up by one particle height\n1: Shifted down by one particle height"
+		},
+		"particleLayer-anchor-y-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-anchor-speedX-box": {
+			"label": "Anchor Speed X"
+		},
+		"particleLayer-anchor-speedX-0": {
+			"tip": "$Anchor Speed X\nThe rate of change of 'Anchor X' per second"
+		},
+		"particleLayer-anchor-speedX-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-anchor-speedY-box": {
+			"label": "Anchor Speed Y"
+		},
+		"particleLayer-anchor-speedY-0": {
+			"tip": "$Anchor Speed Y\nThe rate of change of 'Anchor Y' per second"
+		},
+		"particleLayer-anchor-speedY-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-movement-grid": {
+			"label": "Movement"
+		},
+		"particleLayer-movement-angle-box": {
+			"label": "Movement Angle"
+		},
+		"particleLayer-movement-angle-0": {
+			"tip": "$Movement Angle\nThe angle of the particle's initial velocity"
+		},
+		"particleLayer-movement-angle-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-movement-speed-box": {
+			"label": "Movement Speed"
+		},
+		"particleLayer-movement-speed-0": {
+			"tip": "$Movement Speed\nThe magnitude of the particle's initial velocity"
+		},
+		"particleLayer-movement-speed-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-movement-accelAngle-box": {
+			"label": "Accel Angle"
+		},
+		"particleLayer-movement-accelAngle-0": {
+			"tip": "$Acceleration Angle\nThe rate of change of 'Movement Angle' per second"
+		},
+		"particleLayer-movement-accelAngle-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-movement-accel-box": {
+			"label": "Accel"
+		},
+		"particleLayer-movement-accel-0": {
+			"tip": "$Acceleration\nThe rate of change of 'Movement Speed' per second"
+		},
+		"particleLayer-movement-accel-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-rotation-grid": {
+			"label": "Rotation"
+		},
+		"particleLayer-rotation-angle-box": {
+			"label": "Rotation Angle"
+		},
+		"particleLayer-rotation-angle-0": {
+			"tip": "$Rotation Angle\nThe particle's initial angle"
+		},
+		"particleLayer-rotation-angle-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-rotation-speed-box": {
+			"label": "Angular Velocity"
+		},
+		"particleLayer-rotation-speed-0": {
+			"tip": "$Rotation Speed\nThe rate of change of 'Rotation Angle' per second"
+		},
+		"particleLayer-rotation-speed-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-rotation-accel-box": {
+			"label": "Angular Accel"
+		},
+		"particleLayer-rotation-accel-0": {
+			"tip": "$Angular Acceleration\nThe rate of change of 'Rotation Speed' per second"
+		},
+		"particleLayer-rotation-accel-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-grid": {
+			"label": "Horizontal Rotation"
+		},
+		"particleLayer-hRotation-radius-box": {
+			"label": "Radius"
+		},
+		"particleLayer-hRotation-radius-0": {
+			"tip": "$Radius\nThe amplitude of the particle's back-and-forth horizontal movement, used to simulate rotation around the Y-axis"
+		},
+		"particleLayer-hRotation-radius-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-expansionSpeed-box": {
+			"label": "Expansion Speed"
+		},
+		"particleLayer-hRotation-expansionSpeed-0": {
+			"tip": "$Expansion Speed\nThe rate of change of 'Radius' per second"
+		},
+		"particleLayer-hRotation-expansionSpeed-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-expansionAccel-box": {
+			"label": "Expansion Accel"
+		},
+		"particleLayer-hRotation-expansionAccel-0": {
+			"tip": "$Expansion Acceleration\nThe rate of change of 'Expansion Speed' per second"
+		},
+		"particleLayer-hRotation-expansionAccel-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-angle-box": {
+			"label": "Rotation Angle"
+		},
+		"particleLayer-hRotation-angle-0": {
+			"tip": "$Rotation Angle\nThe particle's initial angle of rotation around the Y-axis\n0 degrees = right, clockwise rotation"
+		},
+		"particleLayer-hRotation-angle-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-angularSpeed-box": {
+			"label": "Angular Velocity"
+		},
+		"particleLayer-hRotation-angularSpeed-0": {
+			"tip": "$Rotation Speed\nThe rate of change of 'Rotation Angle' per second"
+		},
+		"particleLayer-hRotation-angularSpeed-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-hRotation-angularAccel-box": {
+			"label": "Angular Accel"
+		},
+		"particleLayer-hRotation-angularAccel-0": {
+			"tip": "$Angular Acceleration\nThe rate of change of 'Rotation Speed' per second"
+		},
+		"particleLayer-hRotation-angularAccel-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-scale-grid": {
+			"label": "Scale"
+		},
+		"particleLayer-scale-factor-box": {
+			"label": "Scale Factor"
+		},
+		"particleLayer-scale-factor-0": {
+			"tip": "$Scale Factor\nThe scaling factor for particle size, 1 = 100%"
+		},
+		"particleLayer-scale-factor-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-scale-speed-box": {
+			"label": "Expansion Speed"
+		},
+		"particleLayer-scale-speed-0": {
+			"tip": "$Scaling Speed\nThe rate of change of 'Scale Factor' per second"
+		},
+		"particleLayer-scale-speed-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-scale-accel-box": {
+			"label": "Expansion Accel"
+		},
+		"particleLayer-scale-accel-0": {
+			"tip": "$Scaling Acceleration\nThe rate of change of 'Scaling Speed' per second"
+		},
+		"particleLayer-scale-accel-1": {
+			"tip": "#deviation"
+		},
+		"particleLayer-rendering-grid": {
+			"label": "Rendering"
+		},
+		"particleLayer-image": {
+			"label": "Image",
+			"tip": "Sprite image for particle element"
+		},
+		"particleLayer-blend": {
+			"label": "Blend",
+			"tip": "Select a formula to blend the color with the underlying color",
+			"options": {
+				"normal": {
+					"name": "Normal",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "Additive",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "Subtract",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		},
+		"particleLayer-light": {
+			"label": "Light",
+			"tip": "Affects the rendering of the image",
+			"options": {
+				"raw": {
+					"name": "Raw",
+					"tip": "Not affected by lighting"
+				},
+				"global": {
+					"name": "Global Sampling",
+					"tip": "Samples lighting from multiple pixel positions in the image to combine colors"
+				},
+				"ambient": {
+					"name": "Ambient Light",
+					"tip": "Uses the current scene's ambient light to combine colors"
+				}
+			}
+		},
+		"particleLayer-sort": {
+			"label": "Sort",
+			"tip": "Select the particle sorting mode for this layer",
+			"options": {
+				"youngest-in-front": {
+					"name": "Youngest in Front",
+					"tip": "New particles are displayed in front of old particles"
+				},
+				"oldest-in-front": {
+					"name": "Oldest in Front",
+					"tip": "Old particles are displayed in front of new particles"
+				},
+				"by-scale-factor": {
+					"name": "By Scale Factor",
+					"tip": "Particles with a larger scale factor are displayed in front"
+				}
+			}
+		},
+		"particleLayer-sprite-mode": {
+			"label": "Sprite Mode",
+			"tip": "Select the display mode of the sprite",
+			"options": {
+				"random": {
+					"name": "Random",
+					"tip": "Randomly select a sprite from the divided sprite sheet to display"
+				},
+				"animation": {
+					"name": "Animation",
+					"tip": "Play the sprite sheet in order, selecting from left to right and wrapping to the next row"
+				},
+				"animation-loop": {
+					"name": "Animation(Loop)",
+					"tip": "Play the sprite sheet in order and restart from the beginning after finishing"
+				}
+			}
+		},
+		"particleLayer-sprite-hframes": {
+			"label": "Horiz Frames",
+			"tip": "Divide the particle sprite sheet into equal horizontal sections"
+		},
+		"particleLayer-sprite-vframes": {
+			"label": "Vert Frames",
+			"tip": "Divide the particle sprite sheet into equal vertical sections"
+		},
+		"particleLayer-sprite-interval": {
+			"label": "Animation Interval",
+			"tip": "Duration each animation frame sprite stays on screen"
+		},
+		"particleLayer-color-mode": {
+			"label": "Color Mode",
+			"tip": "Choose a mode to fill the particle color",
+			"options": {
+				"fixed": {
+					"name": "Fixed",
+					"tip": "Specify a fixed color"
+				},
+				"random": {
+					"name": "Random",
+					"tip": "Specify a color range, randomly generate a color"
+				},
+				"easing": {
+					"name": "Easing",
+					"tip": "Specify a transition curve, with an initial color range and an ending color range, and compute interpolated colors continuously"
+				},
+				"texture": {
+					"name": "Texture Sampling",
+					"tip": "Use pixel colors from the particle sprite"
+				}
+			}
+		},
+		"particleLayer-color-rgba-box": {
+			"label": "Color"
+		},
+		"particleLayer-color-rgba-0": {
+			"tip": "$Red\n0 ~ 255"
+		},
+		"particleLayer-color-rgba-1": {
+			"tip": "$Green\n0 ~ 255"
+		},
+		"particleLayer-color-rgba-2": {
+			"tip": "$Blue\n0 ~ 255"
+		},
+		"particleLayer-color-rgba-3": {
+			"tip": "$Opacity\n0 ~ 255"
+		},
+		"particleLayer-color-min-box": {
+			"label": "Color Min"
+		},
+		"particleLayer-color-min-0": {
+			"tip": "$Red\n0 ~ 255"
+		},
+		"particleLayer-color-min-1": {
+			"tip": "$Green\n0 ~ 255"
+		},
+		"particleLayer-color-min-2": {
+			"tip": "$Blue\n0 ~ 255"
+		},
+		"particleLayer-color-min-3": {
+			"tip": "$Opacity\n0 ~ 255"
+		},
+		"particleLayer-color-max-box": {
+			"label": "Color Max"
+		},
+		"particleLayer-color-max-0": {
+			"tip": "$Red\n0 ~ 255"
+		},
+		"particleLayer-color-max-1": {
+			"tip": "$Green\n0 ~ 255"
+		},
+		"particleLayer-color-max-2": {
+			"tip": "$Blue\n0 ~ 255"
+		},
+		"particleLayer-color-max-3": {
+			"tip": "$Opacity\n0 ~ 255"
+		},
+		"particleLayer-color-easingId": {
+			"label": "Color Easing",
+			"tip": "Used to calculate the interpolation color"
+		},
+		"particleLayer-color-startMin-box": {
+			"label": "Color Start Min"
+		},
+		"particleLayer-color-startMin-0": {
+			"tip": "$Red\n0 ~ 255"
+		},
+		"particleLayer-color-startMin-1": {
+			"tip": "$Green\n0 ~ 255"
+		},
+		"particleLayer-color-startMin-2": {
+			"tip": "$Blue\n0 ~ 255"
+		},
+		"particleLayer-color-startMin-3": {
+			"tip": "$Opacity\n0 ~ 255"
+		},
+		"particleLayer-color-startMax-box": {
+			"label": "Color Start Max"
+		},
+		"particleLayer-color-startMax-0": {
+			"tip": "$Red\n0 ~ 255"
+		},
+		"particleLayer-color-startMax-1": {
+			"tip": "$Green\n0 ~ 255"
+		},
+		"particleLayer-color-startMax-2": {
+			"tip": "$Blue\n0 ~ 255"
+		},
+		"particleLayer-color-startMax-3": {
+			"tip": "$Opacity\n0 ~ 255"
+		},
+		"particleLayer-color-endMin-box": {
+			"label": "Color End Min"
+		},
+		"particleLayer-color-endMin-0": {
+			"tip": "$Red\n0 ~ 255"
+		},
+		"particleLayer-color-endMin-1": {
+			"tip": "$Green\n0 ~ 255"
+		},
+		"particleLayer-color-endMin-2": {
+			"tip": "$Blue\n0 ~ 255"
+		},
+		"particleLayer-color-endMin-3": {
+			"tip": "$Opacity\n0 ~ 255"
+		},
+		"particleLayer-color-endMax-box": {
+			"label": "Color End Max"
+		},
+		"particleLayer-color-endMax-0": {
+			"tip": "$Red\n0 ~ 255"
+		},
+		"particleLayer-color-endMax-1": {
+			"tip": "$Green\n0 ~ 255"
+		},
+		"particleLayer-color-endMax-2": {
+			"tip": "$Blue\n0 ~ 255"
+		},
+		"particleLayer-color-endMax-3": {
+			"tip": "$Opacity\n0 ~ 255"
+		},
+		"particleLayer-color-tint-0-box": {
+			"label": "Tint - Red",
+			"tip": "Input color (Red) + Hue (Red) = Output color (Red)"
+		},
+		"particleLayer-color-tint-1-box": {
+			"label": "Tint - Green",
+			"tip": "Input color (Green) + Hue (Green) = Output color (Green)"
+		},
+		"particleLayer-color-tint-2-box": {
+			"label": "Tint - Blue",
+			"tip": "Input color (Blue) + Hue (Blue) = Output color (Blue)"
+		},
+		"particleLayer-color-tint-3-box": {
+			"label": "Tint - Grayscale",
+			"tip": "Grayscale is the opposite of saturation; higher grayscale means lower saturation"
+		}
+	}
+}

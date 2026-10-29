@@ -1,0 +1,28 @@
+{
+	"components": {
+		"setPan": {
+			"title": "设置声像"
+		},
+		"setPan-type": {
+			"label": "类型",
+			"tip": "对这个类型的声音执行操作"
+		},
+		"setPan-pan": {
+			"label": "声像",
+			"tip": "影响左右声道的音量（-1 ~ 1）\n0：左右声道均衡\n-1：仅左声道\n1：仅右声道"
+		},
+		"setPan-easingId": {
+			"label": "过渡"
+		},
+		"setPan-duration": {
+			"label": "时长"
+		},
+		"setPan-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

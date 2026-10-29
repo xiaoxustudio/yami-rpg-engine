@@ -1,0 +1,85 @@
+{
+	"components": {
+		"variableGetter": {
+			"title": "Variable"
+		},
+		"variableGetter-type": {
+			"label": "Type",
+			"tip": "How to access the variable",
+			"options": {
+				"local": {
+					"name": "Local",
+					"tip": "Temporary variable stored in the event, destroyed when the event ends"
+				},
+				"global": {
+					"name": "Global",
+					"tip": "User-defined variable, permanently stored in the game save file"
+				},
+				"self": {
+					"name": "Self Variable",
+					"tip": "Property owned only by preset objects in the scene, permanently stored in the game save file"
+				},
+				"actor": {
+					"name": "Actor Attribute",
+					"tip": "Customizable actor properties, editable in the 'Object Attribute' Manager [F6]"
+				},
+				"skill": {
+					"name": "Skill Attribute",
+					"tip": "Customizable skill properties, editable in the 'Object Attribute' Manager [F6]"
+				},
+				"state": {
+					"name": "State Attribute",
+					"tip": "Customizable state properties, editable in the 'Object Attribute' Manager [F6]"
+				},
+				"equipment": {
+					"name": "Equipment Attribute",
+					"tip": "Customizable equipment properties, editable in the 'Object Attribute' Manager [F6]"
+				},
+				"item": {
+					"name": "Item Attribute",
+					"tip": "Customizable item properties, editable in the 'Object Attribute' Manager [F6]"
+				},
+				"element": {
+					"name": "Element Attribute",
+					"tip": "Customizable element properties, editable in the 'Object Attribute' Manager [F6], supports object types"
+				}
+			}
+		},
+		"variableGetter-actor": {
+			"label": "Actor",
+			"tip": "Access this actor's properties"
+		},
+		"variableGetter-skill": {
+			"label": "Skill",
+			"tip": "Access this skill's properties"
+		},
+		"variableGetter-state": {
+			"label": "State",
+			"tip": "Access this state's properties"
+		},
+		"variableGetter-equipment": {
+			"label": "Equipment",
+			"tip": "Access this equipment's properties"
+		},
+		"variableGetter-item": {
+			"label": "Item",
+			"tip": "Access this item's properties"
+		},
+		"variableGetter-element": {
+			"label": "Element",
+			"tip": "Access this element's properties"
+		},
+		"variableGetter-common-key": {
+			"label": "Key",
+			"tip": "Local variable"
+		},
+		"variableGetter-preset-key": {
+			"label": "Key",
+			"tip": "Object property"
+		},
+		"variableGetter-global-key": {
+			"label": "Key",
+			"tip": "Global variable"
+		}
+	}
+}

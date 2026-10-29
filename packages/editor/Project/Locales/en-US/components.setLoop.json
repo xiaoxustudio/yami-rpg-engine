@@ -1,0 +1,25 @@
+{
+	"components": {
+		"setLoop": {
+			"title": "Set Loop"
+		},
+		"setLoop-type": {
+			"label": "Type",
+			"tip": "Perform operation on this type of sound"
+		},
+		"setLoop-loop": {
+			"label": "Loop",
+			"tip": "Whether the sound should loop",
+			"options": {
+				"false": {
+					"name": "Once",
+					"tip": "Stop playback when finished"
+				},
+				"true": {
+					"name": "Loop",
+					"tip": "Replay when finished"
+				}
+			}
+		}
+	}
+}

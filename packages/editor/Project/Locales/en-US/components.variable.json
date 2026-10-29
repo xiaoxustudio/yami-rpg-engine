@@ -1,0 +1,70 @@
+{
+	"components": {
+		"variable": {
+			"title": "Variable"
+		},
+		"variable-list": {
+			"label": "List"
+		},
+		"variable-properties-flex": {
+			"label": "Properties"
+		},
+		"variable-name": {
+			"label": "Name",
+			"tip": "Variable name"
+		},
+		"variable-sort-normal": {
+			"label": "Sort"
+		},
+		"variable-sort-normal-label": {
+			"content": "Save to Separate File",
+			"tip": "Write the variable data to a separate save file when saving the game"
+		},
+		"variable-sort-shared-label": {
+			"content": "Save to Global File",
+			"tip": "Write the variable data to a global save file when quitting the game"
+		},
+		"variable-sort-temporary-label": {
+			"content": "Temporary",
+			"tip": "Do not save the variable data; it resets after restarting the game"
+		},
+		"variable-type-boolean": {
+			"label": "Type"
+		},
+		"variable-type-boolean-label": {
+			"content": "Boolean",
+			"tip": "Can only write boolean values"
+		},
+		"variable-type-number-label": {
+			"content": "Number",
+			"tip": "Can only write numbers"
+		},
+		"variable-type-string-label": {
+			"content": "String",
+			"tip": "Can only write strings"
+		},
+		"variable-type-object-label": {
+			"content": "Object",
+			"tip": "Can only write objects (cannot be saved)"
+		},
+		"variable-value-manager": {
+			"label": "Value"
+		},
+		"variable-value-boolean-false": {
+			"tip": "$Initial Value\nFalse"
+		},
+		"variable-value-boolean-true": {
+			"tip": "$Initial Value\nTrue"
+		},
+		"variable-value-number": {
+			"tip": "$Initial Value\nNumber"
+		},
+		"variable-value-string": {
+			"tip": "$Initial Value\nString"
+		},
+		"variable-note": {
+			"label": "Note",
+			"tip": "Notes about the variable"
+		}
+	}
+}

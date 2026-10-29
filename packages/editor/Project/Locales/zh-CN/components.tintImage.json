@@ -1,0 +1,58 @@
+{
+	"components": {
+		"tintImage": {
+			"title": "改变图像色调"
+		},
+		"tintImage-element": {
+			"label": "元素",
+			"tip": "指定一个图像元素"
+		},
+		"tintImage-mode": {
+			"label": "模式",
+			"tip": "改变哪些参数",
+			"options": {
+				"full": {
+					"name": "完全模式",
+					"tip": "同时改变RGB和灰度"
+				},
+				"rgb": {
+					"name": "RGB模式",
+					"tip": "改变RGB，保留灰度"
+				},
+				"gray": {
+					"name": "灰度模式",
+					"tip": "改变灰度，保留RGB"
+				}
+			}
+		},
+		"tintImage-tint-0": {
+			"label": "色调 - 红",
+			"tip": "输入颜色(红) + 色调(红) = 输出颜色(红)"
+		},
+		"tintImage-tint-1": {
+			"label": "色调 - 绿",
+			"tip": "输入颜色(绿) + 色调(绿) = 输出颜色(绿)"
+		},
+		"tintImage-tint-2": {
+			"label": "色调 - 蓝",
+			"tip": "输入颜色(蓝) + 色调(蓝) = 输出颜色(蓝)"
+		},
+		"tintImage-tint-3": {
+			"label": "色调 - 灰",
+			"tip": "灰度与饱和度相反，灰度越高则饱和度越低"
+		},
+		"tintImage-easingId": {
+			"label": "过渡"
+		},
+		"tintImage-duration": {
+			"label": "时长"
+		},
+		"tintImage-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"components": {
+		"home-start-label": {
+			"content": "Start"
+		},
+		"home-start-new": {
+			"content": "New Project"
+		},
+		"home-start-open": {
+			"content": "Open Project"
+		},
+		"home-recent-label": {
+			"content": "Recent"
+		}
+	}
+}

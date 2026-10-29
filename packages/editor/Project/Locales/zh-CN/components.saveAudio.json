@@ -1,0 +1,11 @@
+{
+	"components": {
+		"saveAudio": {
+			"title": "保存音频"
+		},
+		"saveAudio-type": {
+			"label": "类型",
+			"tip": "对这个类型的声音执行操作"
+		}
+	}
+}

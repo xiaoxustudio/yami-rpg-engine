@@ -1,0 +1,15 @@
+{
+	"components": {
+		"webSocketSend": {
+			"title": "WebSocket Send"
+		},
+		"webSocketSend-id": {
+			"label": "Connection ID",
+			"tip": "must match the ID set in webSocketConnect"
+		},
+		"webSocketSend-data": {
+			"label": "Data",
+			"tip": "data to send"
+		}
+	}
+}

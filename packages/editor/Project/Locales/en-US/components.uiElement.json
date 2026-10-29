@@ -1,0 +1,136 @@
+{
+	"components": {
+		"uiElement-general-grid": {
+			"label": "General"
+		},
+		"uiElement-name": {
+			"label": "Name",
+			"tip": "Element remark name"
+		},
+		"uiElement-pointerEvents": {
+			"label": "Pointer Events",
+			"tip": "Whether to allow triggering mouse and touch events for this element",
+			"options": {
+				"enabled": {
+					"name": "Enabled",
+					"tip": "Allows triggering pointer events for this element and its descendants"
+				},
+				"disabled": {
+					"name": "Disabled",
+					"tip": "Disables triggering pointer events for this element and its descendants"
+				},
+				"skipped": {
+					"name": "Skipped",
+					"tip": "Disables triggering pointer events for this element but allows triggering pointer events for its descendants"
+				}
+			}
+		},
+		"uiElement-transform-grid": {
+			"label": "Transform"
+		},
+		"uiElement-transform-align-box": {
+			"label": "Align"
+		},
+		"uiElement-transform-align-left": {
+			"tip": "$Left\nAlign the left edge of the element with the left edge of the container"
+		},
+		"uiElement-transform-align-center": {
+			"tip": "$Center\nAlign the horizontal midpoint of the element with the horizontal midpoint of the container"
+		},
+		"uiElement-transform-align-right": {
+			"tip": "$Right\nAlign the right edge of the element with the right edge of the container"
+		},
+		"uiElement-transform-align-top": {
+			"tip": "$Top\nAlign the top edge of the element with the top edge of the container"
+		},
+		"uiElement-transform-align-middle": {
+			"tip": "$Middle\nAlign the vertical midpoint of the element with the vertical midpoint of the container"
+		},
+		"uiElement-transform-align-bottom": {
+			"tip": "$Bottom\nAlign the bottom edge of the element with the bottom edge of the container"
+		},
+		"uiElement-transform-anchor-box": {
+			"label": "Anchor"
+		},
+		"uiElement-transform-anchorX": {
+			"tip": "$Anchor X\nThe horizontal position of the element relative to the container's anchor point"
+		},
+		"uiElement-transform-anchorY": {
+			"tip": "$Anchor Y\nThe vertical position of the element relative to the container's anchor point"
+		},
+		"uiElement-transform-x-box": {
+			"label": "X"
+		},
+		"uiElement-transform-x": {
+			"tip": "$X\nThe horizontal position of the element within the container (in pixels)"
+		},
+		"uiElement-transform-x2": {
+			"tip": "$X2\nThe horizontal position of the element within the container (as a percentage of container width)"
+		},
+		"uiElement-transform-y-box": {
+			"label": "Y"
+		},
+		"uiElement-transform-y": {
+			"tip": "$Y\nThe vertical position of the element within the container (in pixels)"
+		},
+		"uiElement-transform-y2": {
+			"tip": "$Y2\nThe vertical position of the element within the container (as a percentage of container height)"
+		},
+		"uiElement-transform-width-box": {
+			"label": "Width"
+		},
+		"uiElement-transform-width": {
+			"tip": "$Width\nThe width of the element within the container (in pixels)"
+		},
+		"uiElement-transform-width2": {
+			"tip": "$Width2\nThe width of the element within the container (as a percentage of container width)"
+		},
+		"uiElement-transform-height-box": {
+			"label": "Height"
+		},
+		"uiElement-transform-height": {
+			"tip": "$Height\nThe height of the element within the container (in pixels)"
+		},
+		"uiElement-transform-height2": {
+			"tip": "$Height2\nThe height of the element within the container (as a percentage of container height)"
+		},
+		"uiElement-transform-rotation-box": {
+			"label": "Rotation"
+		},
+		"uiElement-transform-rotation": {
+			"tip": "$Rotation\nThe rotation angle of the element around the anchor point, 0 degrees = right, clockwise rotation"
+		},
+		"uiElement-transform-scale-box": {
+			"label": "Scale"
+		},
+		"uiElement-transform-scaleX": {
+			"tip": "$Scale X\nThe horizontal scaling factor of the element"
+		},
+		"uiElement-transform-scaleY": {
+			"tip": "$Scale Y\nThe vertical scaling factor of the element"
+		},
+		"uiElement-transform-skew-box": {
+			"label": "Skew"
+		},
+		"uiElement-transform-skewX": {
+			"tip": "$Skew X\nThe horizontal skew factor of the element"
+		},
+		"uiElement-transform-skewY": {
+			"tip": "$Skew Y\nThe vertical skew factor of the element"
+		},
+		"uiElement-transform-opacity-box": {
+			"label": "Opacity"
+		},
+		"uiElement-transform-opacity": {
+			"tip": "$Opacity\nAdjusts the visibility of the element"
+		},
+		"uiElement-events": {
+			"label": "Events",
+			"tip": "$Element Events\nVisit\"Event Triggered Light\"to set the Element\n$Options\nCreate: Event triggers when Element is initialized (executed once)\nAutorun: Event triggers as soon as the Element appears (including after reading save data)\nMouse Down LB: Event triggers when left mouse button is pressed\nMouse Down RB: Event triggers when right mouse button is pressed\nMouse Down: Event triggers when ANY mouse button is pressed\nMouse Up LB: Event triggers when left mouse button is released\nMouse Up RB:  Event triggers when right mouse button is released\nMouse Up: Event triggers when ANY mouse button is released\nMouse Move: Event triggers when mouse moves within an Element\nMouse Enter: Event triggers when mouse enters an Element\nMouse Leave: Event triggers when mouse leaves an Element\nClick: Event triggers when the mouse is clicked and released\nDouble Click: Event triggers when the mouse is clicked & released twice, triggering on the second release\nWheel: Event triggers when the mouse wheel is moved\nKey Down: Event is triggered when a button Element is selected\nKey Up: Event is triggered when a button Element is deselected\nInput: Event triggers when when something is entered in a text box Element\nFocus: Event is triggered when a text box enters the input state, or through a 'Set Focus' event command\nBlur: Event triggers when a text box exits the input state, or through a 'Set Focus' event command\nEvent triggers just as (before) an Element is destroyed\nGamepad Button Press: Event triggers when a gamepad button is pressed \nGamepad Button Release: Event triggers when a gamepad button is released\nLeft Stick Change: Event triggers when the left stick of the gamepad changes (moves)\nRight Stick Change: Event triggers when the right stick of the gamepad changes (moves)\nCustom: triggered using the 'Call Event' command"
+		},
+		"uiElement-scripts": {
+			"label": "Scripts",
+			"tip": "Add Script files to extend Element functions"
+		}
+	}
+}

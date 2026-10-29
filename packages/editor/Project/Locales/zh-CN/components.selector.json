@@ -1,0 +1,10 @@
+{
+	"components": {
+		"selector": {
+			"title": "选择文件"
+		},
+		"selector-search": {
+			"tip": "$查找\n输入\".\"可显示所有符合条件的文件"
+		}
+	}
+}

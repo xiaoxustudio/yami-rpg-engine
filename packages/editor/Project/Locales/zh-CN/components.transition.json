@@ -1,0 +1,25 @@
+{
+	"components": {
+		"transition": {
+			"title": "过渡"
+		},
+		"transition-variable": {
+			"label": "写入变量",
+			"tip": "写入过渡插值到这个变量"
+		},
+		"transition-start": {
+			"label": "起始值",
+			"tip": "插值计算的起始值"
+		},
+		"transition-end": {
+			"label": "结束值",
+			"tip": "插值计算的结束值"
+		},
+		"transition-easingId": {
+			"label": "过渡"
+		},
+		"transition-duration": {
+			"label": "时长"
+		}
+	}
+}

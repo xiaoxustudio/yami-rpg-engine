@@ -1,0 +1,69 @@
+{
+	"components": {
+		"uiVideo-properties-grid": {
+			"label": "视频属性"
+		},
+		"uiVideo-video": {
+			"label": "视频",
+			"tip": "选择一个视频文件"
+		},
+		"uiVideo-playbackRate": {
+			"label": "播放速度",
+			"tip": "视频的播放速度比例"
+		},
+		"uiVideo-loop": {
+			"label": "循环",
+			"tip": "是否循环播放视频",
+			"options": {
+				"false": {
+					"name": "播放一次",
+					"tip": "结束时停止播放"
+				},
+				"true": {
+					"name": "重复播放",
+					"tip": "结束时重新播放"
+				}
+			}
+		},
+		"uiVideo-flip": {
+			"label": "翻转",
+			"tip": "如何翻转视频画面",
+			"options": {
+				"none": {
+					"name": "不翻转",
+					"tip": "正常显示图像"
+				},
+				"horizontal": {
+					"name": "水平翻转",
+					"tip": "从左向右翻转180度"
+				},
+				"vertical": {
+					"name": "垂直翻转",
+					"tip": "从上向下翻转180度"
+				},
+				"both": {
+					"name": "水平垂直翻转",
+					"tip": "先水平翻转再垂直翻转"
+				}
+			}
+		},
+		"uiVideo-blend": {
+			"label": "混合模式",
+			"tip": "选择一个计算公式将颜色与底层的颜色混合",
+			"options": {
+				"normal": {
+					"name": "正常",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "加法",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "减法",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		}
+	}
+}

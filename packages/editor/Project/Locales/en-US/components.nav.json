@@ -1,0 +1,40 @@
+{
+	"components": {
+		"nav-project": {
+			"content": "Project"
+		},
+		"nav-scene": {
+			"content": "Scene"
+		},
+		"nav-scene-object": {
+			"content": "Object"
+		},
+		"nav-ui": {
+			"content": "UI"
+		},
+		"nav-ui-element": {
+			"content": "Element"
+		},
+		"nav-animation": {
+			"content": "Animation"
+		},
+		"nav-animation-motion": {
+			"content": "Motion"
+		},
+		"nav-animation-timeline": {
+			"content": "Timeline"
+		},
+		"nav-animation-easing": {
+			"content": "Easing"
+		},
+		"nav-particle": {
+			"content": "Particle"
+		},
+		"nav-particle-layer": {
+			"content": "Layer"
+		},
+		"nav-inspector": {
+			"content": "Inspector"
+		}
+	}
+}

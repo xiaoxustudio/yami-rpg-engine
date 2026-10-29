@@ -1,0 +1,15 @@
+{
+	"components": {
+		"setTriggerAngle": {
+			"title": "设置触发器角度"
+		},
+		"setTriggerAngle-trigger": {
+			"label": "触发器",
+			"tip": "设置这个触发器"
+		},
+		"setTriggerAngle-angle": {
+			"label": "角度",
+			"tip": "触发器的角度，0度 = 正右方，顺时针旋转"
+		}
+	}
+}

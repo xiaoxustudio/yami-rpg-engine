@@ -1,0 +1,67 @@
+{
+	"components": {
+		"registerEvent": {
+			"title": "注册事件"
+		},
+		"registerEvent-target": {
+			"label": "目标对象",
+			"tip": "注册/卸载操作的目标对象",
+			"options": {
+				"global": {
+					"name": "全局事件",
+					"tip": "新注册的全局事件将追加到已有的事件列表中\n会覆盖相同键名的已注册事件，并且停止正在执行的该事件"
+				},
+				"actor": {
+					"name": "角色事件",
+					"tip": "新注册的角色事件会覆盖已有的同类型事件\n并停止正在执行的该事件\n通过'调用事件'指令可以触发被覆盖的事件"
+				},
+				"element": {
+					"name": "元素事件",
+					"tip": "新注册的元素事件会覆盖已有的同类型事件\n并停止正在执行的该事件\n通过'调用事件'指令可以触发被覆盖的事件"
+				}
+			}
+		},
+		"registerEvent-actor": {
+			"label": "角色",
+			"tip": "注册/卸载事件的角色"
+		},
+		"registerEvent-element": {
+			"label": "元素",
+			"tip": "注册/卸载事件的元素"
+		},
+		"registerEvent-operation": {
+			"label": "操作",
+			"tip": "选择注册或卸载事件",
+			"options": {
+				"register": {
+					"name": "注册",
+					"tip": "把下面块中的指令封装成一个临时事件，添加给对象"
+				},
+				"unregister": {
+					"name": "卸载",
+					"tip": "卸载已注册的事件后，该事件不再触发，并且停止执行"
+				},
+				"reset": {
+					"name": "重置",
+					"tip": "卸载所有已注册的事件，并停止正在执行的任务"
+				}
+			}
+		},
+		"registerEvent-type": {
+			"label": "事件",
+			"tip": "选择对象的事件类型"
+		},
+		"registerEvent-priority": {
+			"label": "优先级",
+			"tip": "提前到元素事件之前触发，不受\"暂停游戏\"和\"阻止场景输入事件\"指令的影响"
+		},
+		"registerEvent-namespace": {
+			"label": "命名空间",
+			"tip": "开启：使用独立的变量环境\n关闭：与当前事件共享变量环境"
+		},
+		"registerEvent-tag": {
+			"label": "标签",
+			"tip": "以后用来卸载该事件的标记"
+		}
+	}
+}

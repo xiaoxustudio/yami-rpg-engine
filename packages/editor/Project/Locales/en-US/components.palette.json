@@ -1,0 +1,22 @@
+{
+	"components": {
+		"palette-scroll": {
+			"tip": "$Vertical Scroll Mode\nOn: Slide the mouse wheel to scroll up and down the tileset\nOff: Slide the mouse wheel to zoom in and out the tileset"
+		},
+		"palette-priority": {
+			"tip": "$Priority\nSorting priority of tiles when rendering on the object layer.\nTiles below always overlay those above.\nPriority = -1: shift sort up by one tile.\nPriority = 1: shift sort down by one tile."
+		},
+		"palette-tag": {
+			"tip": "$Tile Tag\nEdit tile tags by double-clicking tiles"
+		},
+		"palette-terrain": {
+			"tip": "$Terrain\nLand: Actors with \"land\" or \"unrestricted\" passage terrain can move here\nWater: Actors with \"water\" or \"unrestricted\" passage terrain can move here\nWall: Actors with \"unrestricted\" passage terrain can move here, it can also prevent triggers from passing"
+		},
+		"palette-edit": {
+			"tip": "$Edit Auto Tiles\nIf a file of auto tile is open, switch to edit mode and enable the context menu for tiles"
+		},
+		"palette-flip": {
+			"tip": "$Flip normal tiles\nFlip selected normal tiles horizontally (does not change auto tiles)"
+		}
+	}
+}

@@ -1,0 +1,365 @@
+{
+	"components": {
+		"config-window-summary": {
+			"content": "应用窗口"
+		},
+		"config-window-title": {
+			"label": "标题",
+			"tip": "游戏窗口的标题"
+		},
+		"config-window-width": {
+			"label": "宽度",
+			"tip": "游戏窗口的宽度，窗口最大化和全屏模式不受影响"
+		},
+		"config-window-height": {
+			"label": "高度",
+			"tip": "游戏窗口的高度，窗口最大化和全屏模式不受影响"
+		},
+		"config-window-display": {
+			"label": "显示模式",
+			"tip": "选择一个窗口模式\n等比例缩放游戏画面",
+			"options": {
+				"windowed": {
+					"name": "窗口模式",
+					"tip": "以窗口模式运行游戏"
+				},
+				"maximized": {
+					"name": "窗口最大化",
+					"tip": "以窗口最大化模式运行游戏"
+				},
+				"fullscreen": {
+					"name": "全屏显示",
+					"tip": "以全屏模式运行游戏"
+				}
+			}
+		},
+		"config-resolution-summary": {
+			"content": "游戏分辨率"
+		},
+		"config-resolution-width": {
+			"label": "宽度",
+			"tip": "游戏画布的实际宽度，受到窗口大小影响会自动缩放画布（部署后自动保存）"
+		},
+		"config-resolution-height": {
+			"label": "高度",
+			"tip": "游戏画布的实际高度，受到窗口大小影响会自动缩放画布（部署后自动保存）"
+		},
+		"config-resolution-sceneScale": {
+			"label": "场景缩放系数",
+			"tip": "按比例缩放显示场景对象（部署后自动保存）"
+		},
+		"config-resolution-uiScale": {
+			"label": "界面缩放系数",
+			"tip": "按比例缩放显示用户界面（部署后自动保存）"
+		},
+		"config-scene-summary": {
+			"content": "场景"
+		},
+		"config-scene-padding": {
+			"label": "边距",
+			"tip": "允许摄像机超出场景的最大距离，如果设置为0，则摄像机始终锁定在场景内部"
+		},
+		"config-scene-animationInterval": {
+			"label": "图块动画播放间隔",
+			"tip": "自动图块动画帧的播放间隔时间"
+		},
+		"config-tileArea-summary": {
+			"content": "图块渲染区域"
+		},
+		"config-tileArea-expansionTop": {
+			"label": "上边距",
+			"tip": "渲染屏幕外上边缘外指定距离内的图块"
+		},
+		"config-tileArea-expansionLeft": {
+			"label": "左边距",
+			"tip": "渲染屏幕外左边缘外指定距离内的图块"
+		},
+		"config-tileArea-expansionRight": {
+			"label": "右边距",
+			"tip": "渲染屏幕外右边缘外指定距离内的图块"
+		},
+		"config-tileArea-expansionBottom": {
+			"label": "下边距",
+			"tip": "渲染屏幕外下边缘外指定距离内的图块"
+		},
+		"config-animationArea-summary": {
+			"content": "动画渲染区域"
+		},
+		"config-animationArea-expansionTop": {
+			"label": "上边距",
+			"tip": "渲染屏幕外上边缘外指定距离内的动画"
+		},
+		"config-animationArea-expansionLeft": {
+			"label": "左边距",
+			"tip": "渲染屏幕外左边缘外指定距离内的动画"
+		},
+		"config-animationArea-expansionRight": {
+			"label": "右边距",
+			"tip": "渲染屏幕外右边缘外指定距离内的动画"
+		},
+		"config-animationArea-expansionBottom": {
+			"label": "下边距",
+			"tip": "渲染屏幕外下边缘外指定距离内的动画"
+		},
+		"config-lightArea-summary": {
+			"content": "光影渲染区域"
+		},
+		"config-lightArea-expansionTop": {
+			"label": "上边距",
+			"tip": "渲染屏幕外上边缘外指定距离内的光源"
+		},
+		"config-lightArea-expansionLeft": {
+			"label": "左边距",
+			"tip": "渲染屏幕外左边缘外指定距离内的光源"
+		},
+		"config-lightArea-expansionRight": {
+			"label": "右边距",
+			"tip": "渲染屏幕外右边缘外指定距离内的光源"
+		},
+		"config-lightArea-expansionBottom": {
+			"label": "下边距",
+			"tip": "渲染屏幕外下边缘外指定距离内的光源"
+		},
+		"config-virtualAxis-summary": {
+			"content": "虚拟轴"
+		},
+		"config-virtualAxis-up": {
+			"label": "上",
+			"tip": "单独按下该键让轴点向上移动\nY = -1，角度 = 270"
+		},
+		"config-virtualAxis-down": {
+			"label": "下",
+			"tip": "单独按下该键让轴点向下移动\nY = 1，角度 = 90"
+		},
+		"config-virtualAxis-left": {
+			"label": "左",
+			"tip": "单独按下该键让轴点向左移动\nX = -1，角度 = 180"
+		},
+		"config-virtualAxis-right": {
+			"label": "右",
+			"tip": "单独按下该键让轴点向右移动\nX = 1，角度 = 0"
+		},
+		"config-collision-summary": {
+			"content": "碰撞系统"
+		},
+		"config-collision-actor-enabled": {
+			"label": "角色碰撞",
+			"tip": "开关角色与角色的碰撞系统",
+			"options": {
+				"true": {
+					"name": "启用",
+					"tip": "根据角色碰撞体积自动分离场景角色"
+				},
+				"false": {
+					"name": "禁用",
+					"tip": "关闭碰撞系统以换取性能"
+				}
+			}
+		},
+		"config-collision-scene-enabled": {
+			"label": "场景碰撞",
+			"tip": "开关角色与场景的碰撞系统",
+			"options": {
+				"true": {
+					"name": "启用",
+					"tip": "角色无法进入不能通过的地形区域"
+				},
+				"false": {
+					"name": "禁用",
+					"tip": "关闭碰撞系统以换取性能"
+				}
+			}
+		},
+		"config-collision-scene-actorSize": {
+			"label": "场景碰撞角色体积",
+			"tip": "与场景碰撞时，角色是一个以此碰撞体积为直径的圆球"
+		},
+		"config-collision-trigger-collideWithActorShape": {
+			"label": "触发器碰撞模式",
+			"tip": "选择触发器对角色的碰撞检测模式",
+			"options": {
+				"true": {
+					"name": "与角色的形状发生碰撞",
+					"tip": "角色的形状与触发器的形状重叠时，判定为发生了碰撞。\n更准确的碰撞判定"
+				},
+				"false": {
+					"name": "与角色的锚点发生碰撞",
+					"tip": "角色的锚点在触发器的形状内部时，判定为发生了碰撞。\n拥有更好的性能"
+				}
+			}
+		},
+		"config-text-summary": {
+			"content": "文本"
+		},
+		"config-text-importedFonts": {
+			"label": "导入字体",
+			"tip": "导入外部字体，字体名称就是文件名（不含扩展名）\n导入过多字体会延长初始加载时间"
+		},
+		"config-text-fontFamily": {
+			"label": "默认使用字体",
+			"tip": "文本、文本框、对话框元素默认使用的字体\n如果有多个字体，用逗号隔开，按从左到右的优先顺序排列"
+		},
+		"config-text-highDefinition": {
+			"label": "高清渲染",
+			"tip": "是否渲染高清文本贴图",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "渲染更大号的文本贴图，放大和旋转文本依旧有锐利的边缘，占用更多的GPU内存"
+				},
+				"false": {
+					"name": "否",
+					"tip": "渲染正常大小的文本贴图，放大和旋转文本看起来比较模糊，它有更好的GPU性能"
+				}
+			}
+		},
+		"config-actor-summary": {
+			"content": "角色"
+		},
+		"config-actor-tempAttributes": {
+			"label": "角色临时属性",
+			"tip": "所有角色初始化时自动添加预设的临时属性，这些属性无法被保存，读取存档后重置"
+		},
+		"config-animation-summary": {
+			"content": "动画"
+		},
+		"config-animation-frameRate": {
+			"label": "动画帧率",
+			"tip": "每秒钟播放的动画时间轴帧数，而实际渲染的动画帧是基于FPS进行插值的"
+		},
+		"config-soundAttenuation-summary": {
+			"content": "音效衰减"
+		},
+		"config-soundAttenuation-distance": {
+			"label": "衰减距离",
+			"tip": "播放\"衰减音效\"时\n当摄像机中心与音效位置一样时，音量为1\n当摄像机中心距离音效位置大于或等于衰减距离时，音量为0"
+		},
+		"config-soundAttenuation-easingId": {
+			"label": "衰减过渡",
+			"tip": "音量从1到0的插值曲线"
+		},
+		"config-webgl-summary": {
+			"content": "WebGL"
+		},
+		"config-webgl-desynchronized": {
+			"label": "低延时模式",
+			"tip": "WebGL上下文可选参数",
+			"options": {
+				"true": {
+					"name": "启用",
+					"tip": "减少输入延时，提高交互响应速度，\n但可能会导致轻微的视觉撕裂。\n在一些AMD硬件的PC上全屏运行可能发生崩溃。"
+				},
+				"false": {
+					"name": "禁用",
+					"tip": "使用标准同步渲染，略微增加输入延迟，但画面更稳定。"
+				}
+			}
+		},
+		"config-webgl-textureMagFilter": {
+			"label": "纹理放大滤波器",
+			"tip": "WebGL纹理放大采样插值算法",
+			"options": {
+				"nearest": {
+					"name": "最邻近采样",
+					"tip": "直接选择最接近的像素颜色，不进行插值计算。\n纹理会显得像素化，适用于像素艺术或低分辨率复古游戏。"
+				},
+				"linear": {
+					"name": "线性采样",
+					"tip": "使用双线性插值计算像素值，使得纹理在缩放时更加平滑。\n纹理更柔和、平滑，不会有明显的像素块感，适用于高清或写实风格的游戏。"
+				}
+			}
+		},
+		"config-webgl-textureMinFilter": {
+			"label": "纹理缩小滤波器",
+			"tip": "WebGL纹理缩小采样插值算法",
+			"options": {
+				"nearest": {
+					"name": "最邻近采样",
+					"tip": "直接选择最接近的像素颜色，不进行插值计算。\n纹理会显得像素化，适用于像素艺术或低分辨率复古游戏。"
+				},
+				"linear": {
+					"name": "线性采样",
+					"tip": "使用双线性插值计算像素值，使得纹理在缩放时更加平滑。\n纹理更柔和、平滑，不会有明显的像素块感，适用于高清或写实风格的游戏。"
+				}
+			}
+		},
+		"config-script-summary": {
+			"content": "脚本"
+		},
+		"config-script-autoCompile": {
+			"label": "自动编译",
+			"tip": "是否在后台自动编译脚本文件",
+			"options": {
+				"true": {
+					"name": "启用",
+					"tip": "监视项目中的TypeScript文件，自动编译为JavaScript"
+				},
+				"false": {
+					"name": "禁用",
+					"tip": "关闭自动编译，使用代码编辑器提供的编译功能"
+				}
+			}
+		},
+		"config-save-summary": {
+			"content": "存档"
+		},
+		"config-save-location": {
+			"label": "存档位置",
+			"tip": "保存游戏数据时写入文件位置的父目录",
+			"options": {
+				"app-data": {
+					"name": "用户数据目录",
+					"tip": "该目录在不同平台上是用户的应用数据目录\nWindows: C:\\Users\\UserName\\AppData\\Roaming\\\nmacOS: /Users/UserName/Library/Application Support/\nLinux: /home/UserName/.config/"
+				},
+				"documents": {
+					"name": "用户文档目录",
+					"tip": "如果你希望存档放在'文档文件夹'，用户可以直接访问\nWindows: C:\\Users\\UserName\\Documents\\\nmacOS: /Users/UserName/Documents/\nLinux: /home/UserName/Documents/"
+				},
+				"local": {
+					"name": "应用本地目录",
+					"tip": "存档放在本地目录，方便开发时查看存档数据，\n但更新时存在因误操作覆盖用户存档文件的风险。"
+				}
+			}
+		},
+		"config-save-subdir": {
+			"label": "子目录",
+			"tip": "相对于存档位置的路径，设置一个独特的目录名可以避免与其他应用的数据发生冲突\n"
+		},
+		"config-localization-summary": {
+			"content": "本地化"
+		},
+		"config-localization-languages": {
+			"label": "语言",
+			"tip": "游戏本地化语言列表，在\"本地化\"窗口中编辑详细内容"
+		},
+		"config-localization-default": {
+			"label": "默认游戏语言",
+			"tip": "进入游戏时选择的语言，部署后语言改变会自动保存"
+		},
+		"config-other-summary": {
+			"content": "其他选项"
+		},
+		"config-preload": {
+			"label": "预加载文件",
+			"tip": "是否在启动游戏时预先加载媒体文件",
+			"options": {
+				"never": {
+					"name": "禁用",
+					"tip": "快速启动游戏，按需即时加载图像和声音文件。"
+				},
+				"always": {
+					"name": "启用",
+					"tip": "预先加载媒体文件到内存，避免首次显示图像时闪烁，减少声音播放延时。"
+				},
+				"deployed": {
+					"name": "仅在部署后预加载",
+					"tip": "调试的时候禁用，仅在部署后启用预加载。"
+				}
+			}
+		},
+		"config-deadzone": {
+			"label": "自定义死区",
+			"tip": "手柄自定义死区，范围(0-1)"
+		}
+	}
+}

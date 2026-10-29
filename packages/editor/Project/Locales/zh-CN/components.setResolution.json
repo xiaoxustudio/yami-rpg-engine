@@ -1,0 +1,23 @@
+{
+	"components": {
+		"setResolution": {
+			"title": "设置分辨率"
+		},
+		"setResolution-width": {
+			"label": "宽度",
+			"tip": "游戏画布的实际宽度，受到窗口大小影响会自动缩放画布（部署后自动保存）"
+		},
+		"setResolution-height": {
+			"label": "高度",
+			"tip": "游戏画布的实际高度，受到窗口大小影响会自动缩放画布（部署后自动保存）"
+		},
+		"setResolution-sceneScale": {
+			"label": "场景缩放系数",
+			"tip": "按比例缩放显示场景对象（部署后自动保存）"
+		},
+		"setResolution-uiScale": {
+			"label": "界面缩放系数",
+			"tip": "按比例缩放显示用户界面（部署后自动保存）"
+		}
+	}
+}

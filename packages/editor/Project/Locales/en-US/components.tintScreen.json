@@ -1,0 +1,36 @@
+{
+	"components": {
+		"tintScreen": {
+			"title": "Tint Screen"
+		},
+		"tintScreen-tint-0": {
+			"label": "Tint - Red",
+			"tip": "Input color (Red) + Hue (Red) = Output color (Red)"
+		},
+		"tintScreen-tint-1": {
+			"label": "Tint - Green",
+			"tip": "Input color (Green) + Hue (Green) = Output color (Green)"
+		},
+		"tintScreen-tint-2": {
+			"label": "Tint - Blue",
+			"tip": "Input color (Blue) + Hue (Blue) = Output color (Blue)"
+		},
+		"tintScreen-tint-3": {
+			"label": "Tint - Grayscale",
+			"tip": "Grayscale is opposite to saturation, the higher the grayscale, the lower the saturation"
+		},
+		"tintScreen-easingId": {
+			"label": "Easing"
+		},
+		"tintScreen-duration": {
+			"label": "Duration"
+		},
+		"tintScreen-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

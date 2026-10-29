@@ -1,0 +1,11 @@
+{
+	"components": {
+		"resetTargets": {
+			"title": "Reset Targets"
+		},
+		"resetTargets-actor": {
+			"label": "Actor",
+			"tip": "Clear this actor's target pool"
+		}
+	}
+}

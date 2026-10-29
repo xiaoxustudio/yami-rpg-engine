@@ -1,0 +1,30 @@
+{
+	"components": {
+		"newProject": {
+			"title": "新建项目"
+		},
+		"newProject-template": {
+			"label": "游戏模板",
+			"tip": "选择一个游戏模板作为新的项目",
+			"options": {
+				"minimized-project": {
+					"name": "最小化当前项目",
+					"tip": "将当前打开的项目，导出到另一个位置，同时去除未用到的文件以减少占用空间"
+				}
+			}
+		},
+		"newProject-folder": {
+			"label": "文件夹",
+			"tip": "新建项目文件夹的名称"
+		},
+		"newProject-location-box": {
+			"label": "位置"
+		},
+		"newProject-location": {
+			"tip": "$位置\n在这个位置新建一个项目文件夹"
+		},
+		"newProject-choose": {
+			"tip": "$选择文件夹\n打开操作系统的会话框，选择一个文件夹作为路径"
+		}
+	}
+}

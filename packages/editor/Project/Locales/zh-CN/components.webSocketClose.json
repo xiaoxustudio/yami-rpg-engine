@@ -1,0 +1,19 @@
+{
+	"components": {
+		"webSocketClose": {
+			"title": "WebSocket关闭"
+		},
+		"webSocketClose-id": {
+			"label": "连接ID",
+			"tip": "与webSocketConnect时设置的连接ID一致"
+		},
+		"webSocketClose-code": {
+			"label": "状态码",
+			"tip": "可选，1000~4999，默认1000"
+		},
+		"webSocketClose-reason": {
+			"label": "原因",
+			"tip": "可选，关闭原因"
+		}
+	}
+}

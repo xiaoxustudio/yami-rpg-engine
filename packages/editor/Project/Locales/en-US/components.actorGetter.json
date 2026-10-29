@@ -1,0 +1,65 @@
+{
+	"components": {
+		"actorGetter": {
+			"title": "Actor"
+		},
+		"actorGetter-type": {
+			"label": "Type",
+			"tip": "如何获取角色",
+			"options": {
+				"trigger": {
+					"name": "Event Trigger Actor",
+					"tip": "Actor that triggered this event, it may be:\nActor who owns this event\nActor who used the item\nActor who added the equipment\nActor who cast the skill\nActor who got the state"
+				},
+				"caster": {
+					"name": "Skill Caster",
+					"tip": "Accessible in the 'Cast Skill' event, as well as in trigger and state events"
+				},
+				"latest": {
+					"name": "Latest Actor",
+					"tip": "Get the latest created actor, which refreshes when the 'Create Actor' or 'Create Global Actor' command is called"
+				},
+				"target": {
+					"name": "Target Actor",
+					"tip": "A temporary container for storing an actor.\nIn an actor 'Collision' event, it refers to the other actor that collided with the 'Trigger Actor'.\nWhen executing the 'Set Target' command, the specified actor is set as the target actor.\nWhen executing the 'Detect Targets' command, a qualifying actor is retrieved from the actor's target pool as the target actor, which may not always exist.\nWhen executing the 'Show Text' command, it is set to the actor obtained from the 'Actor Accessor' in the command, which may not always exist."
+				},
+				"player": {
+					"name": "Player Actor",
+					"tip": "Set the initial player actor via 'Project Settings -> Actor -> Player Actor'. Replace the current player actor via 'Set Player Actor' command"
+				},
+				"member": {
+					"name": "Party Member",
+					"tip": "Get the actor in the player's party"
+				},
+				"global": {
+					"name": "Global Actor",
+					"tip": "Get the existing global actor by actor file id"
+				},
+				"by-id": {
+					"name": "By Actor ID",
+					"tip": "Get a preset scene actor"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Get the actor from the specified variable"
+				}
+			}
+		},
+		"actorGetter-memberId": {
+			"label": "Member ID",
+			"tip": "0 = First member\n1 = Second member\n......"
+		},
+		"actorGetter-actorId": {
+			"label": "Actor",
+			"tip": "Actor file id"
+		},
+		"actorGetter-presetId": {
+			"label": "Data ID",
+			"tip": "Preset actor id in the scene"
+		},
+		"actorGetter-variable": {
+			"label": "Variable",
+			"tip": "Object variable that stores the actor"
+		}
+	}
+}

@@ -1,0 +1,29 @@
+{
+	"components": {
+		"switchCollisionSystem": {
+			"title": "开关碰撞系统"
+		},
+		"switchCollisionSystem-operation": {
+			"label": "操作",
+			"tip": "执行碰撞系统操作",
+			"options": {
+				"enable-actor-collision": {
+					"name": "启用角色碰撞",
+					"tip": "启用内置的角色与角色的碰撞系统"
+				},
+				"disable-actor-collision": {
+					"name": "禁用角色碰撞",
+					"tip": "禁用内置的角色与角色的碰撞系统"
+				},
+				"enable-scene-collision": {
+					"name": "启用场景碰撞",
+					"tip": "启用内置的角色与场景的碰撞系统"
+				},
+				"disable-scene-collision": {
+					"name": "禁用场景碰撞",
+					"tip": "禁用内置的角色与场景的碰撞系统"
+				}
+			}
+		}
+	}
+}

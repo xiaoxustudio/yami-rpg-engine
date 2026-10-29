@@ -43,6 +43,13 @@ pnpm start:prod   # 先构建再以生产模式启动
 
 社区版维护 `中文` 与 `english` 两个版本：改动涉及文案时，请同时确认 `packages/template-arpg/languages/zh-CN`、`packages/template-arpg/languages/en-US` 与编辑器语言包都正确。
 
+编辑器语言包按组件命名空间拆分（每种语言两份数据）：
+
+- `Project/Locales/<lang>.<alias>.json`：入口，放 `properties` 与**不能延迟到完整加载**的组件键（`[confirm]` 这类不在 `template-localized.ts` 里的静态本地化键）；
+- `Project/Locales/<lang>/components.<ns>.json`：组件文案分片。`ns` = 组件 id 的第一个 `-` 前段（`setList-operand` → `setList`）。加载语言时并行读入口 + 全部分片、在内存里**一次合并**，运行期不再 `mergeLocaleMessage`（逐片 merge 会让所有 `t()` 消费者重渲染，250+ 窗口时直接卡死渲染进程；分片收益在文件布局与 diff，不在运行期懒加载）。
+
+新增/修改文案时，键写进对应 `components.<ns>.json`（入口键才写入口文件）；`pnpm run i18n:guard` 会把**入口 + 全部分片**聚合成每种语言的 key 集合再比对，并校验分片文件名与内部 id 的命名空间一致、id 不重复。需要从旧单文件语言包重新拆分时跑 `node scripts/oneoff/i18n-split-locales.mjs`（加 `--check` 只校验不写盘）。
+
 **模板资源**
 
 改动了 `packages/template-arpg` 下的模板内容后，需要 `pnpm pack:resources` 重新打包资源再提交。
@@ -73,6 +80,22 @@ CI 里 editor 全量测试按 `vitest --shard` 切 **3 片并行**（分片由 v
 pnpm -F @yami/editor exec vitest run --shard=1/3
 ```
 
+**端到端（E2E）与截图对比：当前不进 CI**
+
+本机与 CI 都没有 `@playwright/test` 与浏览器二进制，**不要**把 Playwright 加进必跑门禁（装不上会把整条流水线拖红）：
+
+- 崩溃 / 接线 / 窗口内重复 id 这类回归由 `src/tools/__tests__/deferred-window-smoke.spec.ts` 的 jsdom 冒烟兜底：真实挂载全部 deferred 窗口，断言控件 API 已接线、id 不重复；
+- 截图对比等有网络环境再补，做法是单独的 job（不进 `ci.yml` 必跑门禁）：`pnpm add -D @playwright/test` → `pnpm exec playwright install chromium` → `playwright.config.ts` 用 `webServer` 起 `pnpm dev`（或指向 `start:prod`）+ golden 图目录；
+- **不要**用 `@vitest/browser-playwright` 顶替：它同样要浏览器二进制。
+
+**迁移台账的批次推进（注册表寻址等「归零」轴）**
+
+`element-registry-lookups`、`yami-element-refs` 这类轴的终态是 0，但存量分散在数百个文件里，只能按批下降：
+
+- 每批只挑**同构、能靠 typecheck / 单测自证**的站点。例：同一个 store 里反复查同一批控件 → 首次打开时一次性绑定成字段（`stores/search-string.ts` 就是这种批次）；
+- 批次改完跑 `pnpm migration:check` 看目标轴是否下降，再用 `pnpm migration:baseline` 写回新数字。基线**只许降**：别为了让 check 变绿把不相关的轴一起抬上去；
+- 提交信息里写「轴名：旧值 → 新值」，下一批用 `node scripts/migration-ledger.mjs --axis <轴>` 的明细挑下一个大头。
+
 **新增工具窗口检查清单（懒挂载）**
 
 工具窗口是**按需挂载**的（`tools/tool-window-host.ts`）：控件 API 在组件挂载时才接线，
@@ -90,8 +113,8 @@ pnpm -F @yami/editor exec vitest run --shard=1/3
    否则 `overflow: hidden` 会把字段裁掉、按钮压在上面）。
 5. **监听只挂一次**：宿主窗口挂载后不卸载，`addEventListener`/`on()` 重复挂会双触发；
    用一次性标记或 `WeakSet` 按元素去重，并在 `closed` 里清掉回调。
-6. **文案 key**：`components.<窗口id>.*` 要同时补进 `Project/Locales/` 的两份语言文件
-   （`pnpm run i18n:guard` 会拦）。
+6. **文案 key**：`components.<窗口id>.*` 要同时补进两份**对应命名空间分片**
+   `Project/Locales/<lang>/components.<窗口id>.json`（`pnpm run i18n:guard` 会拦）。
 7. **验证**：`pnpm -F @yami/editor exec vitest run src/tools/__tests__/deferred-window-smoke.spec.ts`
    —— 它会真实挂载所有 deferred 窗口，断言控件已接线、id 不重复。
 

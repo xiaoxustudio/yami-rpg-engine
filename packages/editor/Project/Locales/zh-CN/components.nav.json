@@ -1,0 +1,40 @@
+{
+	"components": {
+		"nav-project": {
+			"content": "项目"
+		},
+		"nav-scene": {
+			"content": "场景"
+		},
+		"nav-scene-object": {
+			"content": "对象"
+		},
+		"nav-ui": {
+			"content": "界面"
+		},
+		"nav-ui-element": {
+			"content": "元素"
+		},
+		"nav-animation": {
+			"content": "动画"
+		},
+		"nav-animation-motion": {
+			"content": "动作"
+		},
+		"nav-animation-timeline": {
+			"content": "时间轴"
+		},
+		"nav-animation-easing": {
+			"content": "过渡"
+		},
+		"nav-particle": {
+			"content": "粒子"
+		},
+		"nav-particle-layer": {
+			"content": "图层"
+		},
+		"nav-inspector": {
+			"content": "检查器"
+		}
+	}
+}

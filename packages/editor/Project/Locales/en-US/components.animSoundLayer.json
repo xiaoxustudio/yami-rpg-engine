@@ -1,0 +1,21 @@
+{
+	"components": {
+		"animSoundLayer-properties-grid": {
+			"label": "Sound Layer"
+		},
+		"animSoundLayer-playbackRate": {
+			"label": "Playback Rate",
+			"tip": "Whether the sound effect playback speed is related to the animation",
+			"options": {
+				"default": {
+					"name": "Default",
+					"tip": "Sound effect playback speed 100%"
+				},
+				"inherit": {
+					"name": "Inherit",
+					"tip": "Set to the animation playback speed during sound effect playback"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"components": {
+		"stopActorAnimation": {
+			"title": "停止角色动画"
+		},
+		"stopActorAnimation-actor": {
+			"label": "角色",
+			"tip": "停止播放这个角色正在播放的动画"
+		}
+	}
+}

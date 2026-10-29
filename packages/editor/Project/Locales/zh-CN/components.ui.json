@@ -1,0 +1,40 @@
+{
+	"components": {
+		"ui-switch-settings": {
+			"tip": "$设置\n打开界面设置面板"
+		},
+		"ui-element-image": {
+			"tip": "$图像\n创建图像元素"
+		},
+		"ui-element-text": {
+			"tip": "$文本\n创建文本元素"
+		},
+		"ui-element-textbox": {
+			"tip": "$文本框\n创建文本框元素"
+		},
+		"ui-element-dialogbox": {
+			"tip": "$对话框\n创建对话框元素"
+		},
+		"ui-element-progressbar": {
+			"tip": "$进度条\n创建进度条元素"
+		},
+		"ui-element-button": {
+			"tip": "$按钮\n创建按钮元素"
+		},
+		"ui-element-animation": {
+			"tip": "$动画\n创建动画元素"
+		},
+		"ui-element-video": {
+			"tip": "$视频\n创建视频元素"
+		},
+		"ui-element-window": {
+			"tip": "$窗口\n创建窗口元素"
+		},
+		"ui-element-container": {
+			"tip": "$容器\n创建容器元素"
+		},
+		"ui-element-reference": {
+			"tip": "$引用\n创建引用元素"
+		}
+	}
+}

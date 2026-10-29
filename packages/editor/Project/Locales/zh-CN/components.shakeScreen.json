@@ -1,0 +1,37 @@
+{
+	"components": {
+		"shakeScreen": {
+			"title": "震动屏幕"
+		},
+		"shakeScreen-mode": {
+			"label": "震动模式",
+			"tip": "摄像机摇晃的方向",
+			"options": {
+				"random": "随机",
+				"horizontal": "左右摇晃",
+				"vertical": "上下摇晃"
+			}
+		},
+		"shakeScreen-power": {
+			"label": "强度",
+			"tip": "摄像机摇晃的幅度"
+		},
+		"shakeScreen-speed": {
+			"label": "速度",
+			"tip": "摄像机摇晃的速度"
+		},
+		"shakeScreen-easingId": {
+			"label": "过渡"
+		},
+		"shakeScreen-duration": {
+			"label": "时长"
+		},
+		"shakeScreen-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

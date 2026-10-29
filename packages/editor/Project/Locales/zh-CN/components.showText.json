@@ -1,0 +1,14 @@
+{
+	"components": {
+		"showText": {
+			"title": "显示文本"
+		},
+		"showText-target": {
+			"tip": "$目标角色\n该角色会被设置为目标角色"
+		},
+		"showText-parameters": {
+			"placeholder": "参数",
+			"tip": "$参数格式\nbool1, bool2: true, num: 0, str: hello world, ...\n通过\"设置布尔值\"、\"设置数值\"、\"设置字符串\"指令，读取对应类型的参数"
+		}
+	}
+}

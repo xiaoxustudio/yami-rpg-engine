@@ -1,0 +1,53 @@
+{
+	"components": {
+		"animParticleLayer-properties-grid": {
+			"label": "Particle Layer"
+		},
+		"animParticleLayer-particleId": {
+			"label": "Particle",
+			"tip": "Select a particle file"
+		},
+		"animParticleLayer-position": {
+			"label": "Position",
+			"tip": "Is the reference for particle movement based on the scene or the animation",
+			"options": {
+				"absolute": {
+					"name": "Absolute",
+					"tip": "Emitted particles' position not affected by animation"
+				},
+				"relative": {
+					"name": "Relative",
+					"tip": "Emitted particles follow animation movement"
+				}
+			}
+		},
+		"animParticleLayer-angle": {
+			"label": "Angle",
+			"tip": "Should the particle's emission and movement angle be adjusted",
+			"options": {
+				"default": {
+					"name": "Default",
+					"tip": "Particle emission and movement angles follow preset behavior"
+				},
+				"inherit": {
+					"name": "Inherit",
+					"tip": "Particle emission and movement angles affected by animation and parent rotation"
+				}
+			}
+		},
+		"animParticleLayer-order": {
+			"label": "Order",
+			"tip": "Rendering order of particles vs animation sprites",
+			"options": {
+				"before": {
+					"name": "Below Sprites",
+					"tip": "Particles are rendered earlier than sprites"
+				},
+				"after": {
+					"name": "Above Sprites",
+					"tip": "Particles are rendered later than sprites"
+				}
+			}
+		}
+	}
+}

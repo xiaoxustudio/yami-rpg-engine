@@ -1,0 +1,56 @@
+{
+	"components": {
+		"moveActor": {
+			"title": "Move Actor"
+		},
+		"moveActor-actor": {
+			"label": "Actor",
+			"tip": "Move this actor"
+		},
+		"moveActor-mode": {
+			"label": "Mode",
+			"tip": "Movement operation for the actor",
+			"options": {
+				"stop": {
+					"name": "Stop",
+					"tip": "Stop actor movement, including the following behavior"
+				},
+				"keep": {
+					"name": "Keep",
+					"tip": "Keep moving towards an angle"
+				},
+				"straight": {
+					"name": "Straight",
+					"tip": "Move straight to the target location"
+				},
+				"navigate": {
+					"name": "Navigate",
+					"tip": "Auto pathfinding"
+				},
+				"navigate-bypass": {
+					"name": "Navigate - Bypass Actors",
+					"tip": "Navigate to the target location and bypass other actors"
+				},
+				"teleport": {
+					"name": "Teleport",
+					"tip": "Move immediately to the target location"
+				}
+			}
+		},
+		"moveActor-angle": {
+			"label": "Angle",
+			"tip": "Move the actor towards this angle"
+		},
+		"moveActor-destination": {
+			"label": "Destination",
+			"tip": "Move the actor to this position"
+		},
+		"moveActor-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

@@ -1,0 +1,98 @@
+{
+	"components": {
+		"followActor": {
+			"title": "Follow Actor"
+		},
+		"followActor-actor": {
+			"label": "Actor",
+			"tip": "Make this actor follow the target actor"
+		},
+		"followActor-target": {
+			"label": "Target",
+			"tip": "Actor being followed"
+		},
+		"followActor-mode": {
+			"label": "Mode",
+			"tip": "Shape of the target area",
+			"options": {
+				"circle": {
+					"name": "Circle",
+					"tip": "Actor A follows Actor B within a circle"
+				},
+				"rectangle": {
+					"name": "Rectangle",
+					"tip": "Actor A follows Actor B within a rectangle"
+				}
+			}
+		},
+		"followActor-minDist": {
+			"label": "Min Distance",
+			"tip": "Circle mode: When the distance is less than the minimum distance, actor A will move away from actor B\nRectangle mode: When the horizontal distance is less than the minimum distance, actor A will move away from actor B"
+		},
+		"followActor-maxDist": {
+			"label": "Max Distance",
+			"tip": "Circle mode: When the distance is greater than the maximum distance, actor A will approach actor B\nRectangle mode: When the horizontal distance is greater than the maximum distance, actor A will approach actor B"
+		},
+		"followActor-offset": {
+			"label": "Offset Ratio",
+			"tip": "If there are multiple actors following the same actor and the following distance is the same, you can set different offset ratios separately to avoid overlap\nValid range: [-0.8, 0.8]"
+		},
+		"followActor-vertDist": {
+			"label": "Vert Distance",
+			"tip": "When the Y-axis distance between actors is greater than the \"vertical distance\", actor A will approach actor B on the Y-axis"
+		},
+		"followActor-bufferDist": {
+			"label": "Buffer Distance",
+			"tip": "When the actor approaches the target, it moves slightly closer.\nWhen the actor moves away from the target, it moves slightly farther.\nThis helps reduce frequent start-stop actions."
+		},
+		"followActor-navigate": {
+			"label": "Navigate",
+			"tip": "Auto pathfinding to target location",
+			"options": {
+				"true": {
+					"name": "Yes",
+					"tip": "Recalculate the latest path every interval"
+				},
+				"false": {
+					"name": "No",
+					"tip": "Move directly to the target location"
+				}
+			}
+		},
+		"followActor-bypass": {
+			"label": "Bypass Actors",
+			"tip": "Bypass other actors",
+			"options": {
+				"true": {
+					"name": "Yes",
+					"tip": "Bypass scene grid cells occupied by other actors with non-zero weight"
+				},
+				"false": {
+					"name": "No",
+					"tip": "Ignore other actors"
+				}
+			}
+		},
+		"followActor-once": {
+			"label": "Once",
+			"tip": "Stop following upon reaching destination",
+			"options": {
+				"true": {
+					"name": "Yes",
+					"tip": "Stop following when entering the target area"
+				},
+				"false": {
+					"name": "No",
+					"tip": "Continue following the target actor"
+				}
+			}
+		},
+		"followActor-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

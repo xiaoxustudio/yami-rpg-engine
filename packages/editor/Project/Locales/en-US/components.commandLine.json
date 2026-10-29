@@ -1,0 +1,40 @@
+{
+	"components": {
+		"commandLine": {
+			"title": "Startup Parameters"
+		},
+		"commandLine-type": {
+			"label": "Operation",
+			"options": {
+				"get": {
+					"name": "Get Startup Parameters",
+					"tip": "Retrieve the value of the startup parameters"
+				},
+				"rm": {
+					"name": "Remove Startup Parameter",
+					"tip": "Remove Startup Parameter"
+				},
+				"set": {
+					"name": "Set Startup Parameters",
+					"tip": "Set the value of the startup parameters"
+				},
+				"has": {
+					"name": "Check for Existence of Startup Parameters",
+					"tip": "Verify if there are any startup parameters"
+				}
+			}
+		},
+		"commandLine-key": {
+			"label": "Parameter Name",
+			"tip": "Start Parameter Name"
+		},
+		"commandLine-value": {
+			"label": "Parameter Value",
+			"tip": "Start Parameter Value"
+		},
+		"commandLine-variable": {
+			"label": "Saved To",
+			"tip": "Return Value Saved in Variable"
+		}
+	}
+}

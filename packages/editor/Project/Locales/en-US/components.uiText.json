@@ -1,0 +1,171 @@
+{
+	"components": {
+		"uiText-properties-grid": {
+			"label": "Text Properties"
+		},
+		"uiText-direction": {
+			"label": "Direction",
+			"tip": "Choose the text layout direction.",
+			"options": {
+				"horizontal-tb": {
+					"name": "Horizontal - TB",
+					"tip": "Content flows horizontally from left to right, wrapping to the next line."
+				},
+				"vertical-lr": {
+					"name": "Vertical - LR",
+					"tip": "Content flows vertically from top to bottom, wrapping to the right."
+				},
+				"vertical-rl": {
+					"name": "Vertical - RL",
+					"tip": "Content flows vertically from top to bottom, wrapping to the left."
+				}
+			}
+		},
+		"uiText-align-box": {
+			"label": "Align"
+		},
+		"uiText-align-left": {
+			"tip": "$Left\nAlign the left edge of the text with the left edge of the element."
+		},
+		"uiText-align-center": {
+			"tip": "$Center\nAlign the horizontal midpoint of the text with the horizontal midpoint of the element."
+		},
+		"uiText-align-right": {
+			"tip": "$Right\nAlign the right edge of the text with the right edge of the element."
+		},
+		"uiText-align-top": {
+			"tip": "$Top\nAlign the top edge of the text with the top edge of the element."
+		},
+		"uiText-align-middle": {
+			"tip": "$Middle\nAlign the vertical midpoint of the text with the vertical midpoint of the element."
+		},
+		"uiText-align-bottom": {
+			"tip": "$Bottom\nAlign the bottom edge of the text with the bottom edge of the element."
+		},
+		"uiText-content": {
+			"label": "Content",
+			"tip": "Text content of the element."
+		},
+		"uiText-size-box": {
+			"label": "Size",
+			"tip": "Initial text size (10 ~ 400)."
+		},
+		"uiText-lineSpacing-box": {
+			"label": "Line Spacing",
+			"tip": "Spacing between text lines (pixels)"
+		},
+		"uiText-letterSpacing-box": {
+			"label": "Letter Spacing",
+			"tip": "Spacing between characters on the same line (pixels)"
+		},
+		"uiText-color": {
+			"label": "Color",
+			"tip": "Text color"
+		},
+		"uiText-font": {
+			"label": "Font",
+			"placeholder": "Default",
+			"tip": "Enter the font name. If there are multiple fonts, separate them with commas, listed from left to right in order of priority."
+		},
+		"uiText-typeface": {
+			"label": "Typeface",
+			"tip": "Choose the text style.",
+			"options": {
+				"regular": {
+					"name": "Regular",
+					"tip": "Default text style."
+				},
+				"bold": {
+					"name": "Bold",
+					"tip": "Bold to emphasize."
+				},
+				"italic": {
+					"name": "Italic",
+					"tip": "Slanted to simulate cursive writing."
+				},
+				"bold-italic": {
+					"name": "Bold Italic",
+					"tip": "Both bold and italic enabled."
+				}
+			}
+		},
+		"uiText-effect-type": {
+			"label": "Effect",
+			"tip": "Choose a text effect.",
+			"options": {
+				"none": {
+					"name": "None",
+					"tip": "No effect."
+				},
+				"shadow": {
+					"name": "Shadow",
+					"tip": "Render text as a shadow at the specified offset."
+				},
+				"stroke": {
+					"name": "Stroke",
+					"tip": "Render an outline with a specified width, with half the width covered by the text."
+				},
+				"outline": {
+					"name": "Outline",
+					"tip": "Render the text four times as an outline, displaced by 1 pixel up, down, left, and right."
+				}
+			}
+		},
+		"uiText-effect-shadowOffsetX": {
+			"label": "Shadow X",
+			"tip": "Horizontal offset of text shadow (pixels)"
+		},
+		"uiText-effect-shadowOffsetY": {
+			"label": "Shadow Y",
+			"tip": "Vertical offset of text shadow (pixels)"
+		},
+		"uiText-effect-strokeWidth": {
+			"label": "Stroke Width",
+			"tip": "Text outline width"
+		},
+		"uiText-effect-color": {
+			"label": "Effect Color",
+			"tip": "Background text color"
+		},
+		"uiText-overflow": {
+			"label": "Overflow",
+			"tip": "How to handle text that overflows the element's borders.",
+			"options": {
+				"visible": {
+					"name": "Visible",
+					"tip": "Allow text to appear outside the element."
+				},
+				"wrap": {
+					"name": "Wrap",
+					"tip": "Wrap the text to the next line when it reaches the edge of the element."
+				},
+				"truncate": {
+					"name": "Truncate",
+					"tip": "Stop rendering text when it overflows the element after wrapping."
+				},
+				"wrap-truncate": {
+					"name": "Wrap Truncate",
+					"tip": "Both wrap and truncate features are enabled."
+				}
+			}
+		},
+		"uiText-blend": {
+			"label": "Blend",
+			"tip": "Choose a blending mode to combine the color with the underlying color.",
+			"options": {
+				"normal": {
+					"name": "Normal",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "Additive",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "Subtract",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		}
+	}
+}

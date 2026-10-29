@@ -1,0 +1,61 @@
+{
+	"components": {
+		"setImage": {
+			"title": "Set Image"
+		},
+		"setImage-element": {
+			"label": "Element"
+		},
+		"setImage-properties": {
+			"label": "Properties"
+		},
+		"setImage-property": {
+			"title": "Image Property"
+		},
+		"setImage-property-key": {
+			"label": "Property",
+			"options": {
+				"image": "Image",
+				"display": "Display",
+				"flip": "Flip",
+				"blend": "Blend",
+				"shiftX": "Shift X",
+				"shiftY": "Shift Y",
+				"clip-0": "Clip - X",
+				"clip-1": "Clip - Y",
+				"clip-2": "Clip - Width",
+				"clip-3": "Clip - Height"
+			}
+		},
+		"setImage-property-image": {
+			"label": "Image"
+		},
+		"setImage-property-display": {
+			"label": "Display"
+		},
+		"setImage-property-flip": {
+			"label": "Flip"
+		},
+		"setImage-property-blend": {
+			"label": "Blend"
+		},
+		"setImage-property-shiftX": {
+			"label": "Shift X"
+		},
+		"setImage-property-shiftY": {
+			"label": "Shift Y"
+		},
+		"setImage-property-clip-0": {
+			"label": "Clip - X"
+		},
+		"setImage-property-clip-1": {
+			"label": "Clip - Y"
+		},
+		"setImage-property-clip-2": {
+			"label": "Clip - Width"
+		},
+		"setImage-property-clip-3": {
+			"label": "Clip - Height"
+		}
+	}
+}

@@ -1,0 +1,45 @@
+{
+	"components": {
+		"insertImage": {
+			"title": "Insert Image"
+		},
+		"insertImage-mode": {
+			"label": "Mode",
+			"tip": "Choose the image parameter to use",
+			"options": {
+				"image": {
+					"name": "Image",
+					"tip": "Insert an image and stretch it to the current font size"
+				},
+				"image-size": {
+					"name": "Image - Size",
+					"tip": "Insert an image and specify its size"
+				},
+				"image-clip": {
+					"name": "Image - Clip",
+					"tip": "Insert an image and specify the clipping area"
+				},
+				"image-clip-size": {
+					"name": "Image - Clip - Size",
+					"tip": "Insert an image and specify the clipping area and size"
+				}
+			}
+		},
+		"insertImage-image": {
+			"label": "Image",
+			"tip": "Select the image file to insert"
+		},
+		"insertImage-clip": {
+			"label": "Clip",
+			"tip": "Image clipping area"
+		},
+		"insertImage-width": {
+			"label": "Width",
+			"tip": "Display width of the image"
+		},
+		"insertImage-height": {
+			"label": "Height",
+			"tip": "Display height of the image"
+		}
+	}
+}

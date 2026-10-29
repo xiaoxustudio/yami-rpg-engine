@@ -1,0 +1,29 @@
+{
+	"components": {
+		"changeActorMotion": {
+			"title": "改变角色动作"
+		},
+		"changeActorMotion-actor": {
+			"label": "角色",
+			"tip": "替换这个角色的特定动作"
+		},
+		"changeActorMotion-type": {
+			"label": "类型",
+			"tip": "特定动作会被自动切换",
+			"options": {
+				"idle": {
+					"name": "闲置",
+					"tip": "将角色动画的\"闲置\"动作替换为新动作"
+				},
+				"move": {
+					"name": "移动",
+					"tip": "将角色动画的\"移动\"动作替换为新动作"
+				}
+			}
+		},
+		"changeActorMotion-motion": {
+			"label": "动作",
+			"tip": "替换后的新动作"
+		}
+	}
+}

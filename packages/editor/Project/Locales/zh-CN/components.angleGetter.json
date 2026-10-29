@@ -1,0 +1,41 @@
+{
+	"components": {
+		"angleGetter": {
+			"title": "角度"
+		},
+		"angleGetter-type": {
+			"label": "类型",
+			"tip": "如何获取角度",
+			"options": {
+				"position": {
+					"name": "朝向指定位置",
+					"tip": "计算角色朝向目标位置的角度"
+				},
+				"absolute": {
+					"name": "绝对角度",
+					"tip": "指定角度，0度 = 正右方，顺时针旋转"
+				},
+				"relative": {
+					"name": "相对角度",
+					"tip": "角色当前角度的相对角度，-180度 = 相反方向"
+				},
+				"direction": {
+					"name": "相对方向角度",
+					"tip": "角色当前动画方向的相对角度，受动画方向数量影响"
+				},
+				"random": {
+					"name": "随机角度",
+					"tip": "随机生成0 ~ 360度"
+				}
+			}
+		},
+		"angleGetter-position-position": {
+			"label": "位置",
+			"tip": "计算朝向这个位置的角度"
+		},
+		"angleGetter-common-degrees": {
+			"label": "角度",
+			"tip": "360度 = 一圈，顺时针旋转"
+		}
+	}
+}

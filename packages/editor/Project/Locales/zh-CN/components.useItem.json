@@ -1,0 +1,48 @@
+{
+	"components": {
+		"useItem": {
+			"title": "使用物品"
+		},
+		"useItem-actor": {
+			"label": "角色",
+			"tip": "使用这个角色的物品"
+		},
+		"useItem-mode": {
+			"label": "模式",
+			"tip": "如何获取物品",
+			"options": {
+				"by-key": {
+					"name": "指定快捷键",
+					"tip": "通过快捷键获取角色库存中的物品"
+				},
+				"by-id": {
+					"name": "指定物品ID",
+					"tip": "通过物品ID获取角色库存中的物品"
+				},
+				"by-item": {
+					"name": "指定物品实例",
+					"tip": "通过物品访问器获取物品（它必须在这个角色的库存中才会生效）"
+				}
+			}
+		},
+		"useItem-key": {
+			"label": "快捷键",
+			"tip": "从库存中获取注册了这个快捷键的物品"
+		},
+		"useItem-itemId": {
+			"label": "物品",
+			"tip": "从库存中获取ID匹配的物品"
+		},
+		"useItem-item": {
+			"label": "物品",
+			"tip": "从物品访问器中获取物品"
+		},
+		"useItem-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

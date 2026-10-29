@@ -1,0 +1,87 @@
+{
+	"components": {
+		"getTarget": {
+			"title": "Get Target"
+		},
+		"getTarget-actor": {
+			"label": "Actor",
+			"tip": "Gets a target actor from this actor's target pool"
+		},
+		"getTarget-selector": {
+			"label": "Selector",
+			"tip": "First actor screening",
+			"options": {
+				"enemy": {
+					"name": "Enemy",
+					"tip": "Select enemy actors from the target pool"
+				},
+				"friend": {
+					"name": "Friend",
+					"tip": "Select friendly actors from the target pool"
+				},
+				"team": {
+					"name": "Team Member",
+					"tip": "Select team members from the target pool"
+				},
+				"team-except-self": {
+					"name": "Team Member Except Self",
+					"tip": "Select team members except this actor from the target pool"
+				},
+				"any-except-self": {
+					"name": "Any Except Self",
+					"tip": "Select all actors except this actor from the target pool"
+				},
+				"any": {
+					"name": "Any",
+					"tip": "Select all actors from the target pool"
+				}
+			}
+		},
+		"getTarget-condition": {
+			"label": "Condition",
+			"tip": "Second actor screening",
+			"options": {
+				"max-threat": {
+					"name": "Max Threat",
+					"tip": "Select the actor with the greatest threat for this actor"
+				},
+				"nearest": {
+					"name": "Nearest",
+					"tip": "Select the actor closest to this actor"
+				},
+				"farthest": {
+					"name": "Farthest",
+					"tip": "Select the actor furthest from this actor"
+				},
+				"min-attribute-value": {
+					"name": "Min Attribute Value",
+					"tip": "Select the actor with the smallest specified attribute"
+				},
+				"max-attribute-value": {
+					"name": "Max Attribute Value",
+					"tip": "Select the actor with the largest specified attribute"
+				},
+				"min-attribute-ratio": {
+					"name": "Min Attribute Ratio",
+					"tip": "Select the actor with the smallest ratio between the two specified attributes"
+				},
+				"max-attribute-ratio": {
+					"name": "Max Attribute Ratio",
+					"tip": "Select the actor with the largest ratio between the two specified attributes"
+				},
+				"random": {
+					"name": "Random",
+					"tip": "Select an actor randomly"
+				}
+			}
+		},
+		"getTarget-attribute": {
+			"label": "Attribute",
+			"tip": "Attribute of target actor"
+		},
+		"getTarget-divisor": {
+			"label": "Attribute 2",
+			"tip": "Second attribute of target actor"
+		}
+	}
+}

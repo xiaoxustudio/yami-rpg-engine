@@ -1,0 +1,89 @@
+{
+	"components": {
+		"switch": {
+			"title": "Switch"
+		},
+		"switch-variable": {
+			"label": "Variable",
+			"tip": "Target variable for comparison"
+		},
+		"switch-branches": {
+			"label": "Branches"
+		},
+		"switch-default-label": {
+			"content": "Default",
+			"tip": "If no conditions are met, it enters the 'default branch'"
+		},
+		"switch-branch": {
+			"title": "Branch"
+		},
+		"switch-branch-conditions": {
+			"label": "Cases"
+		},
+		"switch-condition": {
+			"title": "Condition"
+		},
+		"switch-condition-type": {
+			"label": "Condition Type",
+			"tip": "Select the related condition by category",
+			"options": {
+				"none": {
+					"name": "Null",
+					"tip": "No valid value exists"
+				},
+				"boolean": "Boolean",
+				"number": "Number",
+				"string": "String",
+				"attribute": "Attribute Key",
+				"enum": "Enumeration",
+				"keyboard": "Keyboard",
+				"gamepad": "Gamepad",
+				"mouse": "Mouse",
+				"variable": "Variable"
+			}
+		},
+		"switch-condition-boolean-value": {
+			"label": "Boolean",
+			"tip": "Fixed value"
+		},
+		"switch-condition-number-value": {
+			"label": "Number",
+			"tip": "Fixed value"
+		},
+		"switch-condition-string-value": {
+			"label": "String",
+			"tip": "Fixed value"
+		},
+		"switch-condition-attribute-attributeId": {
+			"label": "Attribute Key",
+			"tip": "Get the key of this attribute"
+		},
+		"switch-condition-enum-stringId": {
+			"label": "Enum String",
+			"tip": "Get the value of this enum"
+		},
+		"switch-condition-keyboard-keycode": {
+			"label": "Key",
+			"tip": "Input keyboard key"
+		},
+		"switch-condition-gamepad-button": {
+			"label": "Button",
+			"tip": "Input gamepad button"
+		},
+		"switch-condition-mouse-button": {
+			"label": "Button",
+			"tip": "Select mouse button",
+			"options": {
+				"0": "Left Button",
+				"1": "Middle Button",
+				"2": "Right Button",
+				"3": "Back Button",
+				"4": "Forward Button"
+			}
+		},
+		"switch-condition-variable-variable": {
+			"label": "Variable",
+			"tip": "Read data from a variable"
+		}
+	}
+}

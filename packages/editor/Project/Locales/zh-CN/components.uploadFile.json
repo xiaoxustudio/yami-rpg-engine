@@ -1,0 +1,35 @@
+{
+	"components": {
+		"uploadFile": {
+			"title": "上传文件"
+		},
+		"uploadFile-url": {
+			"label": "地址",
+			"tip": "上传目标的URL地址，支持变量"
+		},
+		"uploadFile-path": {
+			"label": "本地路径",
+			"tip": "要上传的本地文件路径"
+		},
+		"uploadFile-method": {
+			"label": "方法",
+			"tip": "请求方法"
+		},
+		"uploadFile-field": {
+			"label": "字段名",
+			"tip": "表单字段名，默认file"
+		},
+		"uploadFile-header": {
+			"label": "请求头",
+			"tip": "headers请求头"
+		},
+		"uploadFile-callback": {
+			"label": "回调",
+			"tip": "上传完成后的回调函数，@code表示返回值(错误为-1),@response表示响应数据"
+		},
+		"uploadFile-rateCallback": {
+			"label": "进度回调",
+			"tip": "上传进度回调函数，@event表示进度事件对象"
+		}
+	}
+}

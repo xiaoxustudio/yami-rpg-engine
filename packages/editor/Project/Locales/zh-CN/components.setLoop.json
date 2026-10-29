@@ -1,0 +1,25 @@
+{
+	"components": {
+		"setLoop": {
+			"title": "设置循环"
+		},
+		"setLoop-type": {
+			"label": "类型",
+			"tip": "对这个类型的声音执行操作"
+		},
+		"setLoop-loop": {
+			"label": "循环",
+			"tip": "是否循环播放声音",
+			"options": {
+				"false": {
+					"name": "播放一次",
+					"tip": "结束时停止播放"
+				},
+				"true": {
+					"name": "重复播放",
+					"tip": "结束时重新播放"
+				}
+			}
+		}
+	}
+}

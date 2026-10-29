@@ -1,0 +1,194 @@
+{
+	"components": {
+		"fileTrigger-general-grid": {
+			"label": "基本设置"
+		},
+		"fileTrigger-selector": {
+			"label": "目标对象",
+			"tip": "触发器与目标角色碰撞时触发\"击中角色\"事件",
+			"options": {
+				"enemy": {
+					"name": "敌对角色",
+					"tip": "选择技能施放角色的敌对角色"
+				},
+				"friend": {
+					"name": "友好角色",
+					"tip": "选择技能施放角色的友好角色"
+				},
+				"team": {
+					"name": "队伍成员",
+					"tip": "选择技能施放角色的队伍成员"
+				},
+				"team-except-self": {
+					"name": "除自己外的队伍成员",
+					"tip": "选择除了技能施放角色以外的队伍成员"
+				},
+				"any-except-self": {
+					"name": "除自己外的任意角色",
+					"tip": "选择除了技能施放角色以外的任意角色"
+				},
+				"any": {
+					"name": "任意角色",
+					"tip": "选择任意角色"
+				}
+			}
+		},
+		"fileTrigger-onHitWalls": {
+			"label": "与墙块碰撞时",
+			"tip": "触发器与墙块碰撞时的执行策略",
+			"options": {
+				"penetrate": {
+					"name": "穿透",
+					"tip": "当触发器的锚点进入墙块内部时，不受影响"
+				},
+				"destroy": {
+					"name": "销毁",
+					"tip": "当触发器的锚点进入墙块内部时，销毁触发器"
+				}
+			}
+		},
+		"fileTrigger-onHitActors": {
+			"label": "与角色碰撞时",
+			"tip": "触发器与角色碰撞时的执行策略",
+			"options": {
+				"penetrate": {
+					"name": "穿透",
+					"tip": "触发器击中角色时，不受影响"
+				},
+				"destroy": {
+					"name": "销毁",
+					"tip": "触发器击中角色时，销毁触发器"
+				},
+				"penetrate-destroy": {
+					"name": "多次命中后销毁",
+					"tip": "触发器击中角色一定次数后，销毁触发器"
+				}
+			}
+		},
+		"fileTrigger-hitCount": {
+			"label": "击中次数",
+			"tip": "允许触发器击中角色的最大次数"
+		},
+		"fileTrigger-shape-type": {
+			"label": "形状",
+			"tip": "触发器用于碰撞检测的形状",
+			"options": {
+				"rectangle": {
+					"name": "矩形",
+					"tip": "指定宽度、高度、锚点的矩形"
+				},
+				"circle": {
+					"name": "圆形",
+					"tip": "以触发器为圆心，指定半径的圆形"
+				},
+				"sector": {
+					"name": "扇形",
+					"tip": "以触发器为圆心，指定半径和圆心角的扇形"
+				}
+			}
+		},
+		"fileTrigger-shape-width": {
+			"label": "宽度",
+			"tip": "当触发器朝向右边时（0度），触发器形状的水平长度"
+		},
+		"fileTrigger-shape-height": {
+			"label": "高度",
+			"tip": "当触发器朝向右边时（0度），触发器形状的垂直长度"
+		},
+		"fileTrigger-shape-anchor": {
+			"label": "锚点",
+			"tip": "当触发器朝向右边时（0度），触发器跟场景的连接点的水平位置\n0 = 左边\n0.5 = 中心\n1 = 右边"
+		},
+		"fileTrigger-shape-radius": {
+			"label": "半径",
+			"tip": "触发器形状的半径"
+		},
+		"fileTrigger-shape-centralAngle": {
+			"label": "圆心角",
+			"tip": "扇形的夹角"
+		},
+		"fileTrigger-speed": {
+			"label": "速度",
+			"tip": "触发器的初始移动速度（单位：图块/秒）"
+		},
+		"fileTrigger-hitMode": {
+			"label": "触发模式",
+			"tip": "设置触发器与角色碰撞的触发频率",
+			"options": {
+				"once": {
+					"name": "触发一次",
+					"tip": "对一个角色只击中一次"
+				},
+				"once-on-overlap": {
+					"name": "重叠期间触发一次",
+					"tip": "对一个角色重叠期间只击中一次\n当触发器与角色分离后，可再次击中"
+				},
+				"repeat": {
+					"name": "重复触发",
+					"tip": "对一个角色击中多次，可指定间隔时间"
+				}
+			}
+		},
+		"fileTrigger-hitInterval": {
+			"label": "触发间隔",
+			"tip": "多次击中同一个角色的间隔时间"
+		},
+		"fileTrigger-initialDelay": {
+			"label": "初始延时",
+			"tip": "触发器延迟激活，之后它才能击中角色"
+		},
+		"fileTrigger-effectiveTime": {
+			"label": "有效时间",
+			"tip": "触发器激活状态的持续时间，超时后不再击中角色\n如果设置为0，表示永久激活"
+		},
+		"fileTrigger-duration": {
+			"label": "持续时间",
+			"tip": "触发器存在的时间，超时后自动被销毁\n如果设置为0，表示使用触发器动画的持续时间，当动画播放结束时，销毁触发器"
+		},
+		"fileTrigger-inherit": {
+			"label": "继承",
+			"tip": "继承指定触发器的事件、脚本\n如果存在相同类型的事件，覆盖被继承触发器的事件\n通过'调用事件'指令可以触发被覆盖掉的事件\n继承的脚本会叠加而非覆盖"
+		},
+		"fileTrigger-animation-grid": {
+			"label": "动画"
+		},
+		"fileTrigger-animationId": {
+			"label": "动画",
+			"tip": "触发器动画"
+		},
+		"fileTrigger-motion": {
+			"label": "动作",
+			"tip": "选择触发器动画的一个动作"
+		},
+		"fileTrigger-priority": {
+			"label": "优先级",
+			"tip": "触发器动画在渲染时的排序优先级，位置在下方的动画总是会遮挡上方的动画\n优先级 = -1：排序位置向上偏移一个图块的距离\n优先级 = 1：排序位置向下偏移一个图块的距离"
+		},
+		"fileTrigger-offsetY": {
+			"label": "偏移 Y",
+			"tip": "触发器动画的垂直位置偏移量（单位：像素）"
+		},
+		"fileTrigger-rotatable": {
+			"label": "可旋转",
+			"tip": "是否自动更新动画旋转角度",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "动画受角度影响而旋转"
+				},
+				"false": {
+					"name": "否",
+					"tip": "动画始终不会旋转"
+				}
+			}
+		},
+		"fileTrigger-events": {
+			"label": "事件",
+			"tip": "触发器事件列表\n访问\"技能施放角色\"获取正在施放技能的角色\n访问\"事件触发角色\"获取正在施放技能的角色\n访问\"事件触发技能\"获取创建了这个触发器的技能\n$可选类型\n自动执行：触发器出现时立即触发事件\n击中角色：与目标角色碰撞时触发事件，访问\"事件触发角色\"获取被击中的角色\n销毁事件：在触发器销毁之前触发事件（击中角色或墙块，超时）"
+		},
+		"fileTrigger-scripts": {
+			"label": "脚本",
+			"tip": "添加脚本文件来扩展触发器"
+		}
+	}
+}

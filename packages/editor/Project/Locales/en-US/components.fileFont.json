@@ -1,0 +1,18 @@
+{
+	"components": {
+		"fileFont-info-grid": {
+			"label": "File Info"
+		},
+		"fileFont-name": {
+			"label": "Name",
+			"tip": "File Name"
+		},
+		"fileFont-size": {
+			"label": "Size",
+			"tip": "File Size"
+		},
+		"fileFont-font-grid": {
+			"label": "Font Preview"
+		}
+	}
+}

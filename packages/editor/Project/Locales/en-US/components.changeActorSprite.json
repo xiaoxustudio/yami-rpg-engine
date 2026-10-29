@@ -1,0 +1,23 @@
+{
+	"components": {
+		"changeActorSprite": {
+			"title": "Change Actor Sprite"
+		},
+		"changeActorSprite-actor": {
+			"label": "Actor",
+			"tip": "Replace a sprite in this actor's animation"
+		},
+		"changeActorSprite-animationId": {
+			"label": "Animation",
+			"tip": "Select an animation file used to generate the sprite list"
+		},
+		"changeActorSprite-spriteId": {
+			"label": "Sprite Name",
+			"tip": "Select the sprite that needs to be changed"
+		},
+		"changeActorSprite-image": {
+			"label": "Image",
+			"tip": "Select a new sprite image"
+		}
+	}
+}

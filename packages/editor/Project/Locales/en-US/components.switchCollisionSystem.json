@@ -1,0 +1,29 @@
+{
+	"components": {
+		"switchCollisionSystem": {
+			"title": "Switch Collision System"
+		},
+		"switchCollisionSystem-operation": {
+			"label": "Operation",
+			"tip": "Perform collision system operation",
+			"options": {
+				"enable-actor-collision": {
+					"name": "Enable Actor Collision",
+					"tip": "Enable the built-in actor-to-actor collision system"
+				},
+				"disable-actor-collision": {
+					"name": "Disable Actor Collision",
+					"tip": "Disable the built-in actor-to-actor collision system"
+				},
+				"enable-scene-collision": {
+					"name": "Enable Scene Collision",
+					"tip": "Enable the built-in actor-to-scene collision system"
+				},
+				"disable-scene-collision": {
+					"name": "Disable Scene Collision",
+					"tip": "Disable the built-in actor-to-scene collision system"
+				}
+			}
+		}
+	}
+}

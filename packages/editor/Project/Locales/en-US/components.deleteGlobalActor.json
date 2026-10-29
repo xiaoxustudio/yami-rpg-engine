@@ -1,0 +1,11 @@
+{
+	"components": {
+		"deleteGlobalActor": {
+			"title": "Delete Global Actor"
+		},
+		"deleteGlobalActor-actorId": {
+			"label": "Actor",
+			"tip": "Completely delete the specified global actor from the background"
+		}
+	}
+}

@@ -1,0 +1,37 @@
+{
+	"components": {
+		"changeActorSkill": {
+			"title": "Change Actor Skill"
+		},
+		"changeActorSkill-actor": {
+			"label": "Actor"
+		},
+		"changeActorSkill-operation": {
+			"label": "Operation",
+			"options": {
+				"add": {
+					"name": "Add",
+					"tip": "Create a skill with the specified ID and add it to the actor's skill list (if the same skill already exists, skip)"
+				},
+				"remove": {
+					"name": "Remove",
+					"tip": "Remove the skill with the specified ID from the actor's skill list"
+				},
+				"remove-instance": {
+					"name": "Remove Instance",
+					"tip": "Read a skill from the skill getter and remove it from the actor's skill list"
+				},
+				"sort-by-order": {
+					"name": "Sort by Filename",
+					"tip": "Sort all skills of the actor by filename"
+				}
+			}
+		},
+		"changeActorSkill-skillId": {
+			"label": "Skill"
+		},
+		"changeActorSkill-skill": {
+			"label": "Skill"
+		}
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"components": {
+		"removeTarget": {
+			"title": "Remove Target"
+		},
+		"removeTarget-actor": {
+			"label": "Actor",
+			"tip": "Remove an actor from this actor's target pool"
+		},
+		"removeTarget-target": {
+			"label": "Target",
+			"tip": "Specify a target actor and remove him from the target pool"
+		}
+	}
+}

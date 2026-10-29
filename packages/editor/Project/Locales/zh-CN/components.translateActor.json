@@ -1,0 +1,32 @@
+{
+	"components": {
+		"translateActor": {
+			"title": "平移角色"
+		},
+		"translateActor-actor": {
+			"label": "角色",
+			"tip": "平移这个角色"
+		},
+		"translateActor-angle": {
+			"label": "角度",
+			"tip": "朝这个角度平移"
+		},
+		"translateActor-distance": {
+			"label": "距离",
+			"tip": "平移的距离"
+		},
+		"translateActor-easingId": {
+			"label": "过渡"
+		},
+		"translateActor-duration": {
+			"label": "时长"
+		},
+		"translateActor-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

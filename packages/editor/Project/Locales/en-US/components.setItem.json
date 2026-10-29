@@ -1,0 +1,29 @@
+{
+	"components": {
+		"setItem": {
+			"title": "Set Item"
+		},
+		"setItem-item": {
+			"label": "Item",
+			"tip": "Set this item"
+		},
+		"setItem-operation": {
+			"label": "Operation",
+			"tip": "Perform an item operation",
+			"options": {
+				"increase": {
+					"name": "Increase",
+					"tip": "Increase the stack size of this item"
+				},
+				"decrease": {
+					"name": "Decrease",
+					"tip": "Reduce the stack size of this item (If the quantity of this item is insufficient, it will be deleted)"
+				}
+			}
+		},
+		"setItem-quantity": {
+			"label": "Quantity",
+			"tip": "Quantity of this item"
+		}
+	}
+}

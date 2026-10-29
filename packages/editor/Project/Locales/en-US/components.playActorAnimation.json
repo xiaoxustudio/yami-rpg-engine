@@ -1,0 +1,26 @@
+{
+	"components": {
+		"playActorAnimation": {
+			"title": "Play Actor Animation"
+		},
+		"playActorAnimation-actor": {
+			"label": "Actor",
+			"tip": "Play this actor's animation"
+		},
+		"playActorAnimation-motion": {
+			"label": "Motion",
+			"tip": "Select a valid motion included in the current actor's animation"
+		},
+		"playActorAnimation-speed": {
+			"label": "Speed",
+			"tip": "Set the animation playback speed\n1: Normal speed\n0.1: 10% playback speed\n10: 10 times playback speed\nValid range: [0.1, 10]"
+		},
+		"playActorAnimation-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

@@ -1,0 +1,32 @@
+{
+	"components": {
+		"setReverb": {
+			"title": "设置混响"
+		},
+		"setReverb-type": {
+			"label": "类型",
+			"tip": "对这个类型的声音执行操作"
+		},
+		"setReverb-dry": {
+			"label": "干声",
+			"tip": "原始声音的音量，越小代表距离声音源越远"
+		},
+		"setReverb-wet": {
+			"label": "湿声",
+			"tip": "反射声音的音量，越大代表封闭空间越大"
+		},
+		"setReverb-easingId": {
+			"label": "过渡"
+		},
+		"setReverb-duration": {
+			"label": "时长"
+		},
+		"setReverb-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

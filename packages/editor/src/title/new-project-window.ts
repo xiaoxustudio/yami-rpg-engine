@@ -22,6 +22,12 @@ import { getYamiI18n } from '@app/i18n';
 import { Path } from '@app/utils/config';
 import type { YamiElement } from '@app/types/element-api';
 
+/** 弹窗警告文案（元素缺失时静默跳过）。 */
+const setWarning = (text: string): void => {
+	const el = titleEls.get('newProject-warning');
+	if (el) el.textContent = text;
+};
+
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 
@@ -138,23 +144,19 @@ NewProject.check = function (this: typeof NewProject) {
 	if (!folder) {
 		if (this.state !== 'unnamed') {
 			this.state = 'unnamed';
-			(titleEls.get('newProject-warning') as YamiElement).textContent = t(
-				'confirmation.enterFolderName'
-			);
+			setWarning(t('confirmation.enterFolderName'));
 		}
 		newProjectConfirmDisabled.value = true;
 	} else if (FS.existsSync!(Path.resolve!(location, folder))) {
 		if (this.state !== 'existing') {
 			this.state = 'existing';
-			(titleEls.get('newProject-warning') as YamiElement).textContent = t(
-				'confirmation.folderAlreadyExists'
-			);
+			setWarning(t('confirmation.folderAlreadyExists'));
 		}
 		newProjectConfirmDisabled.value = true;
 	} else {
 		if (this.state !== 'passed') {
 			this.state = 'passed';
-			(titleEls.get('newProject-warning') as YamiElement).textContent = '';
+			setWarning('');
 		}
 		newProjectConfirmDisabled.value =
 			form.template === 'minimized-project' && Editor.state === 'closed';

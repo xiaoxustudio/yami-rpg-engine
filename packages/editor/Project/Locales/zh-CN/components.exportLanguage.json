@@ -1,0 +1,15 @@
+{
+	"components": {
+		"exportLanguage": {
+			"title": "导出语言包"
+		},
+		"exportLanguage-first": {
+			"label": "第一语言",
+			"tip": "优先导出这个语言包中的文本内容"
+		},
+		"exportLanguage-second": {
+			"label": "第二语言",
+			"tip": "第一语言内容空缺的部分使用第二语言替补"
+		}
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"components": {
+		"setTriggerAngle": {
+			"title": "Set Trigger Angle"
+		},
+		"setTriggerAngle-trigger": {
+			"label": "Trigger",
+			"tip": "Set this trigger"
+		},
+		"setTriggerAngle-angle": {
+			"label": "Angle",
+			"tip": "Trigger angle, 0 degrees = right, clockwise rotation"
+		}
+	}
+}

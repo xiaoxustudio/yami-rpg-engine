@@ -1,0 +1,115 @@
+{
+	"components": {
+		"sceneLight-general-grid": {
+			"label": "基本设置"
+		},
+		"sceneLight-name": {
+			"label": "名称",
+			"tip": "光源的备注名称"
+		},
+		"sceneLight-type": {
+			"label": "类型",
+			"tip": "影响光源的可用参数",
+			"options": {
+				"point": {
+					"name": "点光",
+					"tip": "以一个点为中心向周围扩散并带有衰减的光源"
+				},
+				"area": {
+					"name": "区域光",
+					"tip": "使用一个贴图作为光源"
+				}
+			}
+		},
+		"sceneLight-blend": {
+			"label": "混合模式",
+			"tip": "选择一个计算公式将颜色与底层的颜色混合",
+			"options": {
+				"screen": {
+					"name": "滤色",
+					"tip": "C = 255 - (255 - A) * (255 - B) / 255"
+				},
+				"additive": {
+					"name": "加法",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "减法",
+					"tip": "C = max(0, A - B)"
+				},
+				"max": {
+					"name": "最大值",
+					"tip": "C = max(A, B)"
+				}
+			}
+		},
+		"sceneLight-x": {
+			"label": "X",
+			"tip": "光源的初始水平位置"
+		},
+		"sceneLight-y": {
+			"label": "Y",
+			"tip": "光源的初始垂直位置"
+		},
+		"sceneLight-range-box": {
+			"label": "范围",
+			"tip": "光源的直径大小（0 ~ 128）"
+		},
+		"sceneLight-intensity-box": {
+			"label": "强度",
+			"tip": "强度越大，光源内部衰减越小，更加明亮"
+		},
+		"sceneLight-mask": {
+			"label": "蒙版",
+			"tip": "光线透过蒙版图像投射到场景中，如果未设置，则显示为一个矩形"
+		},
+		"sceneLight-anchorX-box": {
+			"label": "锚点 X",
+			"tip": "矩形区域连接点的水平位置"
+		},
+		"sceneLight-anchorY-box": {
+			"label": "锚点 Y",
+			"tip": "矩形区域连接点的垂直位置"
+		},
+		"sceneLight-width-box": {
+			"label": "宽度",
+			"tip": "矩形区域的宽度"
+		},
+		"sceneLight-height-box": {
+			"label": "高度",
+			"tip": "矩形区域的高度"
+		},
+		"sceneLight-angle-box": {
+			"label": "角度",
+			"tip": "矩形区域的旋转角度"
+		},
+		"sceneLight-red-box": {
+			"label": "红",
+			"tip": "点光模式：点光源中心的红色分量\n区域光模式：输入颜色(红) * 蒙版颜色(红) / 255 * 红 / 255 = 输出颜色(红)"
+		},
+		"sceneLight-green-box": {
+			"label": "绿",
+			"tip": "点光模式：点光源中心的绿色分量\n区域光模式：输入颜色(绿) * 蒙版颜色(绿) / 255 * 绿 / 255 = 输出颜色(绿)"
+		},
+		"sceneLight-blue-box": {
+			"label": "蓝",
+			"tip": "点光模式：点光源中心的蓝色分量\n区域光模式：输入颜色(蓝) * 蒙版颜色(蓝) / 255 * 蓝 / 255 = 输出颜色(蓝)"
+		},
+		"sceneLight-direct-box": {
+			"label": "直射率",
+			"tip": "直射光的颜色将直接渲染在屏幕上"
+		},
+		"sceneLight-conditions": {
+			"label": "条件",
+			"tip": "加载场景时，只有满足条件列表中的所有条件后，该光源才被创建"
+		},
+		"sceneLight-events": {
+			"label": "事件",
+			"tip": "光源事件列表\n访问\"事件触发光源\"获取这个光源\n$可选类型\n自动执行：光源出现时立即触发事件（包括读取存档后）\n自定义事件：通过\"调用事件\"指令触发事件"
+		},
+		"sceneLight-scripts": {
+			"label": "脚本",
+			"tip": "添加脚本文件来扩展光源"
+		}
+	}
+}

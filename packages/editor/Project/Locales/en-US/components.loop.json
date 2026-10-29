@@ -1,0 +1,18 @@
+{
+	"components": {
+		"loop": {
+			"title": "Loop"
+		},
+		"loop-mode": {
+			"label": "Mode",
+			"tip": "Condition mode",
+			"options": {
+				"all": "Meet All",
+				"any": "Meet Any"
+			}
+		},
+		"loop-conditions": {
+			"label": "Conditions"
+		}
+	}
+}

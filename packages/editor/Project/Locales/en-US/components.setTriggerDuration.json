@@ -1,0 +1,33 @@
+{
+	"components": {
+		"setTriggerDuration": {
+			"title": "Set Trigger Duration"
+		},
+		"setTriggerDuration-trigger": {
+			"label": "Trigger",
+			"tip": "Set this trigger"
+		},
+		"setTriggerDuration-operation": {
+			"label": "Operation",
+			"tip": "Perform a trigger operation",
+			"options": {
+				"set": {
+					"name": "Set",
+					"tip": "Set the duration of this trigger"
+				},
+				"increase": {
+					"name": "Increase",
+					"tip": "Increase the duration of this trigger"
+				},
+				"decrease": {
+					"name": "Decrease",
+					"tip": "Reduce the duration of this trigger (minimum is 0)"
+				}
+			}
+		},
+		"setTriggerDuration-duration": {
+			"label": "Duration",
+			"tip": "Trigger duration"
+		}
+	}
+}

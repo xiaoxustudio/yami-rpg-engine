@@ -1,0 +1,55 @@
+{
+	"components": {
+		"setWindow": {
+			"title": "Set Window"
+		},
+		"setWindow-element": {
+			"label": "Element",
+			"tip": "Specify a window element"
+		},
+		"setWindow-properties": {
+			"label": "Properties"
+		},
+		"setWindow-property": {
+			"title": "Window Property"
+		},
+		"setWindow-property-key": {
+			"label": "Property",
+			"tip": "Property of the window element",
+			"options": {
+				"scrollX": "Scroll X",
+				"scrollY": "Scroll Y",
+				"gridWidth": "Grid Width",
+				"gridHeight": "Grid Height",
+				"gridGapX": "Grid Gap X",
+				"gridGapY": "Grid Gap Y",
+				"paddingX": "Padding X",
+				"paddingY": "Padding Y"
+			}
+		},
+		"setWindow-property-scrollX": {
+			"label": "Scroll X"
+		},
+		"setWindow-property-scrollY": {
+			"label": "Scroll Y"
+		},
+		"setWindow-property-gridWidth": {
+			"label": "Grid Width"
+		},
+		"setWindow-property-gridHeight": {
+			"label": "Grid Height"
+		},
+		"setWindow-property-gridGapX": {
+			"label": "Grid Gap X"
+		},
+		"setWindow-property-gridGapY": {
+			"label": "Grid Gap Y"
+		},
+		"setWindow-property-paddingX": {
+			"label": "Padding X"
+		},
+		"setWindow-property-paddingY": {
+			"label": "Padding Y"
+		}
+	}
+}

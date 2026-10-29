@@ -1,0 +1,149 @@
+{
+	"components": {
+		"getActor": {
+			"title": "获取角色"
+		},
+		"getActor-variable": {
+			"label": "写入变量",
+			"tip": "把获取的角色写入到该变量"
+		},
+		"getActor-position": {
+			"label": "位置",
+			"tip": "在这个位置查找角色"
+		},
+		"getActor-area": {
+			"label": "选择区域",
+			"tip": "搜索这个形状的区域中的角色",
+			"options": {
+				"square": {
+					"name": "正方形",
+					"tip": "查找以指定位置为中心的正方形区域内的角色"
+				},
+				"circle": {
+					"name": "圆形",
+					"tip": "查找以指定位置为中心的圆形区域内的角色"
+				}
+			}
+		},
+		"getActor-size": {
+			"label": "大小",
+			"tip": "正方形区域的边长"
+		},
+		"getActor-radius": {
+			"label": "半径",
+			"tip": "圆形区域的半径"
+		},
+		"getActor-selector": {
+			"label": "选择器",
+			"tip": "第一次筛选角色",
+			"options": {
+				"enemy": {
+					"name": "敌对角色",
+					"tip": "选择指定队伍的敌对角色"
+				},
+				"friend": {
+					"name": "友好角色",
+					"tip": "选择指定队伍的友好角色"
+				},
+				"team": {
+					"name": "队伍成员",
+					"tip": "选择指定队伍的成员"
+				},
+				"any": {
+					"name": "任意角色",
+					"tip": "选择任意角色"
+				}
+			}
+		},
+		"getActor-teamId": {
+			"label": "队伍",
+			"tip": "角色的队伍"
+		},
+		"getActor-condition": {
+			"label": "条件",
+			"tip": "第二次筛选角色",
+			"options": {
+				"nearest": {
+					"name": "最近距离",
+					"tip": "选择距离区域中心最近的角色"
+				},
+				"farthest": {
+					"name": "最远距离",
+					"tip": "选择距离区域中心最远的角色"
+				},
+				"min-attribute-value": {
+					"name": "最小属性值",
+					"tip": "选择指定属性最小的角色"
+				},
+				"max-attribute-value": {
+					"name": "最大属性值",
+					"tip": "选择指定属性最大的角色"
+				},
+				"min-attribute-ratio": {
+					"name": "最小属性比率",
+					"tip": "选择指定两个属性比值最小的角色"
+				},
+				"max-attribute-ratio": {
+					"name": "最大属性比率",
+					"tip": "选择指定两个属性比值最大的角色"
+				},
+				"random": {
+					"name": "随机",
+					"tip": "随机选择一个角色"
+				}
+			}
+		},
+		"getActor-attribute": {
+			"label": "属性",
+			"tip": "目标角色的属性"
+		},
+		"getActor-divisor": {
+			"label": "属性 2",
+			"tip": "目标角色的属性 2"
+		},
+		"getActor-activation": {
+			"label": "激活状态",
+			"tip": "目标角色的激活状态",
+			"options": {
+				"active": {
+					"name": "已激活",
+					"tip": "要求角色必须已激活"
+				},
+				"inactive": {
+					"name": "未激活",
+					"tip": "要求角色必须未激活"
+				},
+				"either": {
+					"name": "任意状态",
+					"tip": "不检查激活状态"
+				}
+			}
+		},
+		"getActor-exclusion": {
+			"label": "排除模式",
+			"tip": "排除符合条件的角色",
+			"options": {
+				"none": {
+					"name": "关闭",
+					"tip": "可以是任意角色"
+				},
+				"actor": {
+					"name": "排除角色",
+					"tip": "不能是指定角色"
+				},
+				"team": {
+					"name": "排除队伍",
+					"tip": "不能是指定队伍的角色"
+				}
+			}
+		},
+		"getActor-exclusionActor": {
+			"label": "排除角色",
+			"tip": "目标不能是这个角色"
+		},
+		"getActor-exclusionTeamId": {
+			"label": "排除队伍",
+			"tip": "目标不能是这个队伍的角色"
+		}
+	}
+}

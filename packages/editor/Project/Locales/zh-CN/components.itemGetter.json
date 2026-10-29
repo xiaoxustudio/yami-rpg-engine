@@ -1,0 +1,49 @@
+{
+	"components": {
+		"itemGetter": {
+			"title": "物品"
+		},
+		"itemGetter-type": {
+			"label": "类型",
+			"tip": "如何获取物品",
+			"options": {
+				"trigger": {
+					"name": "事件触发物品",
+					"tip": "触发这个事件的物品"
+				},
+				"latest": {
+					"name": "最新获得物品",
+					"tip": "获取最新获得的物品，在调用\"设置库存\"指令添加物品时刷新"
+				},
+				"by-key": {
+					"name": "指定快捷键",
+					"tip": "获取指定角色和快捷键对应的物品"
+				},
+				"by-id": {
+					"name": "指定物品ID",
+					"tip": "获取指定角色的物品文件ID对应的物品"
+				},
+				"variable": {
+					"name": "物品变量",
+					"tip": "获取变量中的物品对象"
+				}
+			}
+		},
+		"itemGetter-actor": {
+			"label": "角色",
+			"tip": "从这个角色身上获取物品"
+		},
+		"itemGetter-key": {
+			"label": "快捷键",
+			"tip": "获取设置了这个快捷键的物品"
+		},
+		"itemGetter-itemId": {
+			"label": "物品",
+			"tip": "获取指定角色和物品文件ID对应的物品"
+		},
+		"itemGetter-variable": {
+			"label": "变量",
+			"tip": "获取变量中的物品对象"
+		}
+	}
+}

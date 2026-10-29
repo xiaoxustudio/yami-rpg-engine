@@ -1,0 +1,53 @@
+{
+	"components": {
+		"animParticleLayer-properties-grid": {
+			"label": "粒子层"
+		},
+		"animParticleLayer-particleId": {
+			"label": "粒子",
+			"tip": "选择一个粒子文件"
+		},
+		"animParticleLayer-position": {
+			"label": "位置",
+			"tip": "粒子运动的参照物是场景还是动画",
+			"options": {
+				"absolute": {
+					"name": "绝对位置",
+					"tip": "已发射的粒子，位置不受动画影响"
+				},
+				"relative": {
+					"name": "锁定跟动画的相对位置",
+					"tip": "已发射的粒子，跟随动画一起移动"
+				}
+			}
+		},
+		"animParticleLayer-angle": {
+			"label": "角度",
+			"tip": "是否调整粒子的发射和运动角度",
+			"options": {
+				"default": {
+					"name": "默认",
+					"tip": "粒子的发射和运动角度按照自身预设的运行"
+				},
+				"inherit": {
+					"name": "继承动画帧",
+					"tip": "粒子的发射和运动角度受动画和父级图层的旋转角度影响"
+				}
+			}
+		},
+		"animParticleLayer-order": {
+			"label": "顺序",
+			"tip": "粒子相对于动画精灵的渲染顺序",
+			"options": {
+				"before": {
+					"name": "精灵下面",
+					"tip": "粒子比精灵更早被渲染"
+				},
+				"after": {
+					"name": "精灵上面",
+					"tip": "粒子比精灵更晚被渲染"
+				}
+			}
+		}
+	}
+}

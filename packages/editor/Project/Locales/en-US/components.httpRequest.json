@@ -1,0 +1,47 @@
+{
+	"components": {
+		"httpRequest": {
+			"title": "HTTP Request"
+		},
+		"httpRequest-url": {
+			"label": "Address",
+			"tip": "URL of the request, supports variables"
+		},
+		"httpRequest-method": {
+			"label": "Method",
+			"tip": "request method"
+		},
+		"httpRequest-header": {
+			"label": "Request Header",
+			"tip": "headers request header"
+		},
+		"httpRequest-data": {
+			"label": "Request Body",
+			"tip": "request body data"
+		},
+		"httpRequest-timeout": {
+			"label": "Timeout(ms)",
+			"tip": "request timeout in milliseconds, empty for default"
+		},
+		"httpRequest-responseType": {
+			"label": "Response Type",
+			"tip": "expected response data type"
+		},
+		"httpRequest-withCredentials": {
+			"label": "With Credentials",
+			"tip": "whether to send cross-site credentials (cookies)"
+		},
+		"httpRequest-authUser": {
+			"label": "Auth User",
+			"tip": "HTTP Basic auth username"
+		},
+		"httpRequest-authPass": {
+			"label": "Auth Pass",
+			"tip": "HTTP Basic auth password"
+		},
+		"httpRequest-callback": {
+			"label": "Callback",
+			"tip": "callback function after request completion, @code represents the return value (error is -1), @response represents the response data"
+		}
+	}
+}

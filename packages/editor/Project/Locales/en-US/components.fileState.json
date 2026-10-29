@@ -1,0 +1,31 @@
+{
+	"components": {
+		"fileState-general-grid": {
+			"label": "General"
+		},
+		"fileState-icon": {
+			"label": "Icon",
+			"tip": "State Icon\n$Related command\nLoad Image"
+		},
+		"fileState-clip": {
+			"label": "Clip",
+			"tip": "Clip area of icon\n$Related command\nLoad Image"
+		},
+		"fileState-inherit": {
+			"label": "Inherit",
+			"tip": "Inherits specified state's attributes, events, and scripts\nIf the same attribute exists, it overrides the inherited state's attribute value\nIf the same type of event exists, it overrides the inherited state's event\nOverridden events can still be triggered using the 'Call Event' command\nHowever, inherited scripts will stack instead of being overridden"
+		},
+		"fileState-attributes": {
+			"label": "Attributes",
+			"tip": "Initial attribute list\n$Optional types\nBoolean, Number, String, Enumeration(String)\n$Related commands\nSet Boolean, Set Number, Set String"
+		},
+		"fileState-events": {
+			"label": "Events",
+			"tip": "A list of state events\nAccess \"Skill Caster\" to get the actor who cast the skill to create this state\nAccess \"Event Trigger Actor\" to get the actor with this state\nAccess \"Event Trigger State\" to get this state\n$Optional types\nAdd State: Triggered when the actor adds this state\nRemove State: Triggered when the actor removes this state\nCustom: Triggered by the \"Call Event\" command"
+		},
+		"fileState-scripts": {
+			"label": "Scripts",
+			"tip": "Add script files to extend this state"
+		}
+	}
+}

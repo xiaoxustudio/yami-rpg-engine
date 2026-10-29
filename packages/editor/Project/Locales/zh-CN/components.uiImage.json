@@ -1,0 +1,110 @@
+{
+	"components": {
+		"uiImage-properties-grid": {
+			"label": "图像属性"
+		},
+		"uiImage-image": {
+			"label": "图像",
+			"tip": "元素的图像文件"
+		},
+		"uiImage-display": {
+			"label": "显示",
+			"tip": "如何显示这个图像",
+			"options": {
+				"stretch": {
+					"name": "拉伸",
+					"tip": "拉伸图像以填充元素"
+				},
+				"tile": {
+					"name": "平铺",
+					"tip": "平铺图像以填充元素"
+				},
+				"clip": {
+					"name": "裁剪",
+					"tip": "裁剪图像并拉伸以填充元素"
+				},
+				"slice": {
+					"name": "切片",
+					"tip": "将图像切成9份平铺以填充元素"
+				}
+			}
+		},
+		"uiImage-flip": {
+			"label": "翻转",
+			"tip": "如何翻转这个图像",
+			"options": {
+				"none": {
+					"name": "不翻转",
+					"tip": "正常显示图像"
+				},
+				"horizontal": {
+					"name": "水平翻转",
+					"tip": "从左向右翻转180度"
+				},
+				"vertical": {
+					"name": "垂直翻转",
+					"tip": "从上向下翻转180度"
+				},
+				"both": {
+					"name": "水平垂直翻转",
+					"tip": "先水平翻转再垂直翻转"
+				}
+			}
+		},
+		"uiImage-blend": {
+			"label": "混合模式",
+			"tip": "选择一个计算公式将颜色与底层的颜色混合",
+			"options": {
+				"normal": {
+					"name": "正常",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "加法",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "减法",
+					"tip": "C = max(0, A - B)"
+				},
+				"mask": {
+					"name": "遮罩",
+					"tip": "后代元素只显示在图像内部，并按图像像素点的RGB值对渲染颜色进行过滤"
+				}
+			}
+		},
+		"uiImage-shift-box": {
+			"label": "偏移"
+		},
+		"uiImage-shiftX": {
+			"tip": "$偏移 X\n图像纹理的水平偏移距离（单位：像素）"
+		},
+		"uiImage-shiftY": {
+			"tip": "$偏移 Y\n图像纹理的垂直偏移距离（单位：像素）"
+		},
+		"uiImage-clip": {
+			"label": "裁剪",
+			"tip": "图像的裁剪区域"
+		},
+		"uiImage-border": {
+			"label": "边框",
+			"tip": "根据边框大小将图像切成9份(4个角，4条边，中间1个矩形)，平铺以填充元素，边框大小就是4个角的正方形边长"
+		},
+		"uiImage-tint-0-box": {
+			"label": "色调 - 红",
+			"tip": "输入颜色(红) + 色调(红) = 输出颜色(红)"
+		},
+		"uiImage-tint-1-box": {
+			"label": "色调 - 绿",
+			"tip": "输入颜色(绿) + 色调(绿) = 输出颜色(绿)"
+		},
+		"uiImage-tint-2-box": {
+			"label": "色调 - 蓝",
+			"tip": "输入颜色(蓝) + 色调(蓝) = 输出颜色(蓝)"
+		},
+		"uiImage-tint-3-box": {
+			"label": "色调 - 灰",
+			"tip": "灰度与饱和度相反，灰度越高则饱和度越低"
+		}
+	}
+}

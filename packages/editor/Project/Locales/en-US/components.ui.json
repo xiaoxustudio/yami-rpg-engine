@@ -1,0 +1,40 @@
+{
+	"components": {
+		"ui-switch-settings": {
+			"tip": "$Settings\nOpen the UI settings panel"
+		},
+		"ui-element-image": {
+			"tip": "$Image\nCreate an image element"
+		},
+		"ui-element-text": {
+			"tip": "$Text\nCreate a text element"
+		},
+		"ui-element-textbox": {
+			"tip": "$Text Box\nCreate a text box element"
+		},
+		"ui-element-dialogbox": {
+			"tip": "$Dialog Box\nCreate a dialog box element"
+		},
+		"ui-element-progressbar": {
+			"tip": "$Progress Bar\nCreate a progress bar element"
+		},
+		"ui-element-button": {
+			"tip": "$Button\nCreate a button element"
+		},
+		"ui-element-animation": {
+			"tip": "$Animation\nCreate an animation element"
+		},
+		"ui-element-video": {
+			"tip": "$Video\nCreate a video element"
+		},
+		"ui-element-window": {
+			"tip": "$Window\nCreate a window element"
+		},
+		"ui-element-container": {
+			"tip": "$Container\nCreate a container element"
+		},
+		"ui-element-reference": {
+			"tip": "$Reference\nCreate a reference element"
+		}
+	}
+}

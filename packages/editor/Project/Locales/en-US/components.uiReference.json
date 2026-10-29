@@ -1,0 +1,15 @@
+{
+	"components": {
+		"uiReference-properties-grid": {
+			"label": "Reference Properties"
+		},
+		"uiReference-prefabId": {
+			"label": "Prefab",
+			"tip": "Replace itself with this element"
+		},
+		"uiReference-synchronous": {
+			"label": "Synchronous",
+			"tip": "Automatically updates to match the referenced element's size in edit mode, but allows a different position setting"
+		}
+	}
+}

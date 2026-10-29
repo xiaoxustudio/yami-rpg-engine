@@ -1,0 +1,109 @@
+{
+	"components": {
+		"setObject": {
+			"title": "Set Object"
+		},
+		"setObject-variable": {
+			"label": "Variable",
+			"tip": "Target variable to write to"
+		},
+		"setObject-operand-type": {
+			"label": "Type",
+			"tip": "Choose which object to retrieve",
+			"options": {
+				"none": {
+					"name": "Null",
+					"tip": "Nonexistent object"
+				},
+				"actor": {
+					"name": "Actor",
+					"tip": "Get an actor"
+				},
+				"skill": {
+					"name": "Skill",
+					"tip": "Get a skill"
+				},
+				"state": {
+					"name": "State",
+					"tip": "Get a state"
+				},
+				"equipment": {
+					"name": "Equipment",
+					"tip": "Get an equipment"
+				},
+				"item": {
+					"name": "Item",
+					"tip": "Get an item"
+				},
+				"trigger": {
+					"name": "Trigger",
+					"tip": "Get a trigger"
+				},
+				"light": {
+					"name": "Light",
+					"tip": "Get a light source"
+				},
+				"object": {
+					"name": "Object",
+					"tip": "Get a scene object of any type"
+				},
+				"element": {
+					"name": "Element",
+					"tip": "Get an element"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Read an object from a variable"
+				},
+				"list": {
+					"name": "List Item",
+					"tip": "Read a list from a variable and fetch the object at a specified position"
+				}
+			}
+		},
+		"setObject-operand-actor": {
+			"label": "Actor",
+			"tip": "Get this actor object"
+		},
+		"setObject-operand-skill": {
+			"label": "Skill",
+			"tip": "Get this skill object"
+		},
+		"setObject-operand-state": {
+			"label": "State",
+			"tip": "Get this state object"
+		},
+		"setObject-operand-equipment": {
+			"label": "Equipment",
+			"tip": "Get this equipment object"
+		},
+		"setObject-operand-item": {
+			"label": "Item",
+			"tip": "Get this item object"
+		},
+		"setObject-operand-trigger": {
+			"label": "Trigger",
+			"tip": "Get this trigger object"
+		},
+		"setObject-operand-light": {
+			"label": "Light",
+			"tip": "Get this light source object"
+		},
+		"setObject-operand-object": {
+			"label": "Object",
+			"tip": "Get any scene object"
+		},
+		"setObject-operand-element": {
+			"label": "Element",
+			"tip": "Get this element object"
+		},
+		"setObject-operand-variable": {
+			"label": "Variable",
+			"tip": "Read an object from a variable"
+		},
+		"setObject-operand-list-index": {
+			"label": "Index",
+			"tip": "Read the Nth (0, 1, 2, ...) object in the list"
+		}
+	}
+}

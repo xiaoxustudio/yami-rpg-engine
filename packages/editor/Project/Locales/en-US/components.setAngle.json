@@ -1,0 +1,28 @@
+{
+	"components": {
+		"setAngle": {
+			"title": "Set Angle"
+		},
+		"setAngle-actor": {
+			"label": "Actor",
+			"tip": "Change the angle of this actor"
+		},
+		"setAngle-angle": {
+			"label": "Angle",
+			"tip": "Actor angle"
+		},
+		"setAngle-easingId": {
+			"label": "Easing"
+		},
+		"setAngle-duration": {
+			"label": "Duration"
+		},
+		"setAngle-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

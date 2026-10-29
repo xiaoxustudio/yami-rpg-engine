@@ -1,0 +1,37 @@
+{
+	"components": {
+		"changeActorState": {
+			"title": "Change Actor State"
+		},
+		"changeActorState-actor": {
+			"label": "Actor",
+			"tip": "Change the state of this actor"
+		},
+		"changeActorState-operation": {
+			"label": "Operation",
+			"tip": "Actor state operation",
+			"options": {
+				"add": {
+					"name": "Add",
+					"tip": "Create a state with the specified ID and add it to the actor's state list (If the same state already exists, remove it first)"
+				},
+				"remove": {
+					"name": "Remove",
+					"tip": "Remove the state with the specified ID from the actor's state list"
+				},
+				"remove-instance": {
+					"name": "Remove Instance",
+					"tip": "Read a state from the state getter and remove it from the actor's state list"
+				}
+			}
+		},
+		"changeActorState-stateId": {
+			"label": "State",
+			"tip": "Specify the state file ID"
+		},
+		"changeActorState-state": {
+			"label": "State",
+			"tip": "State accessor"
+		}
+	}
+}

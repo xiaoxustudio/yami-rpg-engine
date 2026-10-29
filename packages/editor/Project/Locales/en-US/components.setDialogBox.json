@@ -1,0 +1,71 @@
+{
+	"components": {
+		"setDialogBox": {
+			"title": "Set Dialog Box"
+		},
+		"setDialogBox-element": {
+			"label": "Element",
+			"tip": "Specify a dialog box element"
+		},
+		"setDialogBox-properties": {
+			"label": "Properties"
+		},
+		"setDialogBox-property": {
+			"title": "Dialog Box Property"
+		},
+		"setDialogBox-property-key": {
+			"label": "Property",
+			"tip": "Dialog box element's property",
+			"options": {
+				"content": "Content",
+				"interval": "Print Interval",
+				"size": "Size",
+				"lineSpacing": "Line Spacing",
+				"letterSpacing": "Letter Spacing",
+				"color": "Color",
+				"font": "Font",
+				"effect": "Effect",
+				"blend": "Blend"
+			}
+		},
+		"setDialogBox-property-content": {
+			"label": "Content"
+		},
+		"setDialogBox-property-interval": {
+			"label": "Print Interval"
+		},
+		"setDialogBox-property-size": {
+			"label": "Size"
+		},
+		"setDialogBox-property-lineSpacing": {
+			"label": "Line Spacing"
+		},
+		"setDialogBox-property-letterSpacing": {
+			"label": "Letter Spacing"
+		},
+		"setDialogBox-property-color": {
+			"label": "Color"
+		},
+		"setDialogBox-property-font": {
+			"label": "Font"
+		},
+		"setDialogBox-property-effect-type": {
+			"label": "Effect"
+		},
+		"setDialogBox-property-effect-shadowOffsetX": {
+			"label": "Shadow X"
+		},
+		"setDialogBox-property-effect-shadowOffsetY": {
+			"label": "Shadow Y"
+		},
+		"setDialogBox-property-effect-strokeWidth": {
+			"label": "Stroke Width"
+		},
+		"setDialogBox-property-effect-color": {
+			"label": "Effect Color"
+		},
+		"setDialogBox-property-blend": {
+			"label": "Blend"
+		}
+	}
+}

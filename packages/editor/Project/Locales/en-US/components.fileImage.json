@@ -1,0 +1,22 @@
+{
+	"components": {
+		"fileImage-info-grid": {
+			"label": "File Info"
+		},
+		"fileImage-name": {
+			"label": "Name",
+			"tip": "File Name"
+		},
+		"fileImage-size": {
+			"label": "Size",
+			"tip": "File Size"
+		},
+		"fileImage-resolution": {
+			"label": "Resolution",
+			"tip": "Image resolution"
+		},
+		"fileImage-image-viewer": {
+			"label": "Image"
+		}
+	}
+}

@@ -1,0 +1,35 @@
+{
+	"components": {
+		"uploadFile": {
+			"title": "Upload File"
+		},
+		"uploadFile-url": {
+			"label": "Address",
+			"tip": "URL of the upload target, supports variables"
+		},
+		"uploadFile-path": {
+			"label": "Local Path",
+			"tip": "local file path to upload"
+		},
+		"uploadFile-method": {
+			"label": "Method",
+			"tip": "request method"
+		},
+		"uploadFile-field": {
+			"label": "Field",
+			"tip": "form field name, default file"
+		},
+		"uploadFile-header": {
+			"label": "Request Header",
+			"tip": "headers request header"
+		},
+		"uploadFile-callback": {
+			"label": "Callback",
+			"tip": "callback function after upload completion, @code represents the return value (error is -1), @response represents the response data"
+		},
+		"uploadFile-rateCallback": {
+			"label": "Progress Callback",
+			"tip": "upload progress callback function, @event represents the progress event object"
+		}
+	}
+}

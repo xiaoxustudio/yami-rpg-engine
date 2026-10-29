@@ -1,0 +1,43 @@
+{
+	"components": {
+		"setAnimation": {
+			"title": "Set Animation"
+		},
+		"setAnimation-element": {
+			"label": "Element",
+			"tip": "Specify an animation element"
+		},
+		"setAnimation-properties": {
+			"label": "Properties"
+		},
+		"setAnimation-property": {
+			"title": "Animation Property"
+		},
+		"setAnimation-property-key": {
+			"label": "Property",
+			"tip": "Property of the animation element",
+			"options": {
+				"animation": "Animation",
+				"animation-from-actor": "Animation(from actor)",
+				"motion": "Motion",
+				"angle": "Angle",
+				"frame": "Frame"
+			}
+		},
+		"setAnimation-property-animation": {
+			"label": "Animation"
+		},
+		"setAnimation-property-actor": {
+			"label": "Actor"
+		},
+		"setAnimation-property-motion": {
+			"label": "Motion"
+		},
+		"setAnimation-property-angle": {
+			"label": "Angle"
+		},
+		"setAnimation-property-frame": {
+			"label": "Frame"
+		}
+	}
+}

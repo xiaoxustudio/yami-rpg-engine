@@ -1,0 +1,27 @@
+{
+	"components": {
+		"requestURL": {
+			"title": "Request URL"
+		},
+		"requestURL-url": {
+			"label": "Address",
+			"tip": "URL of the request, supports variables"
+		},
+		"requestURL-header": {
+			"label": "Request Header",
+			"tip": "headers request header"
+		},
+		"requestURL-method": {
+			"label": "Method",
+			"tip": "request method"
+		},
+		"requestURL-data": {
+			"label": "Request Body",
+			"tip": "request body data"
+		},
+		"requestURL-callback": {
+			"label": "Callback",
+			"tip": "callback function after request completion, @code represents the return value (error is -1), @response represents the response data"
+		}
+	}
+}

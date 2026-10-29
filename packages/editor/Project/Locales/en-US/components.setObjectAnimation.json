@@ -1,0 +1,112 @@
+{
+	"components": {
+		"setObjectAnimation": {
+			"title": "Set Object Animation"
+		},
+		"setObjectAnimation-sort": {
+			"label": "Sort",
+			"tip": "Which animation's property would you like to modify?",
+			"options": {
+				"actor": {
+					"name": "Actor Animation",
+					"tip": "Change the properties of this actor's main animation"
+				},
+				"components": {
+					"name": "Animation Components",
+					"tip": "Change the properties of all animation components of this actor, including actor animation\nHowever, some operations conflict with the 'Set Animation Component' command"
+				},
+				"trigger": {
+					"name": "Trigger Animation",
+					"tip": "Change the properties of this trigger's animation"
+				},
+				"animation": {
+					"name": "Scene Animation",
+					"tip": "Change the properties of this scene animation"
+				}
+			}
+		},
+		"setObjectAnimation-actor": {
+			"label": "Actor",
+			"tip": "Specify an actor object"
+		},
+		"setObjectAnimation-trigger": {
+			"label": "Trigger",
+			"tip": "Specify a trigger object"
+		},
+		"setObjectAnimation-animation": {
+			"label": "Animation",
+			"tip": "Specify a scene animation object"
+		},
+		"setObjectAnimation-operation": {
+			"label": "Operation",
+			"tip": "Modify which properties",
+			"options": {
+				"set-tint": {
+					"name": "Set Tint",
+					"tip": "Modify both RGB and grayscale"
+				},
+				"set-rgb": {
+					"name": "Set RGB",
+					"tip": "Modify RGB while keeping grayscale unchanged"
+				},
+				"set-gray": {
+					"name": "Set Grayscale",
+					"tip": "Modify grayscale while keeping RGB unchanged"
+				},
+				"set-opacity": {
+					"name": "Set Opacity",
+					"tip": "Adjust the visibility of the animation"
+				},
+				"set-offsetY": {
+					"name": "Set OffsetY",
+					"tip": "Vertical distance of the animation relative to the anchor point"
+				},
+				"set-rotation": {
+					"name": "Set Rotation",
+					"tip": "Rotation angle of the animation around the anchor point\nNot effective for triggers with animation rotation enabled"
+				}
+			}
+		},
+		"setObjectAnimation-tint-0": {
+			"label": "Tint - Red",
+			"tip": "Input color (Red) + Hue (Red) = Output color (Red)"
+		},
+		"setObjectAnimation-tint-1": {
+			"label": "Tint - Green",
+			"tip": "Input color (Green) + Hue (Green) = Output color (Green)"
+		},
+		"setObjectAnimation-tint-2": {
+			"label": "Tint - Blue",
+			"tip": "Input color (Blue) + Hue (Blue) = Output color (Blue)"
+		},
+		"setObjectAnimation-tint-3": {
+			"label": "Tint - Grayscale",
+			"tip": "Grayscale is opposite to saturation; the higher the grayscale, the lower the saturation"
+		},
+		"setObjectAnimation-opacity": {
+			"label": "Opacity",
+			"tip": "Adjust the visibility of the animation"
+		},
+		"setObjectAnimation-offsetY": {
+			"label": "OffsetY",
+			"tip": "Vertical distance of the animation relative to the anchor point"
+		},
+		"setObjectAnimation-rotation": {
+			"label": "Rotation",
+			"tip": "Rotation angle of the animation around the anchor point"
+		},
+		"setObjectAnimation-easingId": {
+			"label": "Easing"
+		},
+		"setObjectAnimation-duration": {
+			"label": "Duration"
+		},
+		"setObjectAnimation-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

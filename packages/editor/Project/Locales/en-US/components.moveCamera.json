@@ -1,0 +1,42 @@
+{
+	"components": {
+		"moveCamera": {
+			"title": "Move Camera"
+		},
+		"moveCamera-mode": {
+			"label": "Mode",
+			"tip": "Choose the reference object for the camera position",
+			"options": {
+				"position": {
+					"name": "Move to Position",
+					"tip": "Move the camera to a specified position in the scene"
+				},
+				"actor": {
+					"name": "Follow Actor",
+					"tip": "Lock the camera to a specified actor's position"
+				}
+			}
+		},
+		"moveCamera-position": {
+			"label": "Position",
+			"tip": "Move the camera to this position"
+		},
+		"moveCamera-actor": {
+			"label": "Actor",
+			"tip": "Lock the camera to this actor's position"
+		},
+		"moveCamera-easingId": {
+			"label": "Easing"
+		},
+		"moveCamera-duration": {
+			"label": "Duration"
+		},
+		"moveCamera-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

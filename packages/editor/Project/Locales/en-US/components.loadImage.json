@@ -1,0 +1,73 @@
+{
+	"components": {
+		"loadImage": {
+			"title": "Load Image"
+		},
+		"loadImage-element": {
+			"label": "Element",
+			"tip": "Specify an image element"
+		},
+		"loadImage-type": {
+			"label": "Type",
+			"tip": "How to load the image",
+			"options": {
+				"actor-portrait": {
+					"name": "Actor Portrait",
+					"tip": "Load the actor's portrait into the element"
+				},
+				"skill-icon": {
+					"name": "Skill Icon",
+					"tip": "Load the skill's icon into the element"
+				},
+				"state-icon": {
+					"name": "State Icon",
+					"tip": "Load the state icon into the element"
+				},
+				"equipment-icon": {
+					"name": "Equipment Icon",
+					"tip": "Load the equipment's icon into the element"
+				},
+				"item-icon": {
+					"name": "Item Icon",
+					"tip": "Load the item's icon into the element"
+				},
+				"shortcut-icon": {
+					"name": "Shortcut Icon",
+					"tip": "Load the shortcut's icon into the element"
+				},
+				"base64": {
+					"name": "Base64 Image",
+					"tip": "Decode Base64 string to generate and load the image into the element"
+				}
+			}
+		},
+		"loadImage-actor": {
+			"label": "Actor",
+			"tip": "Load this actor's portrait"
+		},
+		"loadImage-skill": {
+			"label": "Skill",
+			"tip": "Load this skill's icon"
+		},
+		"loadImage-state": {
+			"label": "State",
+			"tip": "Load this state's icon"
+		},
+		"loadImage-equipment": {
+			"label": "Equipment",
+			"tip": "Load this equipment's icon"
+		},
+		"loadImage-item": {
+			"label": "Item",
+			"tip": "Load this item's icon"
+		},
+		"loadImage-key": {
+			"label": "Shortcut Key",
+			"tip": "Load this shortcut's icon"
+		},
+		"loadImage-variable": {
+			"label": "Base64 Coding",
+			"tip": "Decode Base64 image and load it"
+		}
+	}
+}

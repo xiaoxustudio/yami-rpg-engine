@@ -1,0 +1,15 @@
+{
+	"components": {
+		"nestElement": {
+			"title": "Nest Element"
+		},
+		"nestElement-parent": {
+			"label": "Parent Element",
+			"tip": "Specify an element as the parent element"
+		},
+		"nestElement-child": {
+			"label": "Child Element",
+			"tip": "Add this element to the parent element as a child element"
+		}
+	}
+}

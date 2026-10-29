@@ -1,0 +1,33 @@
+{
+	"components": {
+		"setPointerEventRoot": {
+			"title": "设置指针事件根元素"
+		},
+		"setPointerEventRoot-operation": {
+			"label": "操作",
+			"tip": "根元素相关操作",
+			"options": {
+				"add": {
+					"name": "添加根元素",
+					"tip": "将一个元素设置为根元素，只有它以及它的后代元素才能触发指针事件"
+				},
+				"remove": {
+					"name": "移除根元素",
+					"tip": "移除指定的指针事件根元素"
+				},
+				"remove-latest": {
+					"name": "移除最新的根元素",
+					"tip": "移除最新的指针事件根元素"
+				},
+				"reset": {
+					"name": "重置",
+					"tip": "删除所有指针事件根元素"
+				}
+			}
+		},
+		"setPointerEventRoot-element": {
+			"label": "元素",
+			"tip": "对这个元素执行操作"
+		}
+	}
+}

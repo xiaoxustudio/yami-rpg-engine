@@ -1,0 +1,88 @@
+{
+	"components": {
+		"uiTextBox-properties-grid": {
+			"label": "TextBox Properties"
+		},
+		"uiTextBox-type": {
+			"label": "Type",
+			"tip": "Type of content in textbox.",
+			"options": {
+				"text": {
+					"name": "Text",
+					"tip": "Content can be read using the 'Set String' command."
+				},
+				"number": {
+					"name": "Number",
+					"tip": "Content can be read using the 'Set Number' command."
+				}
+			}
+		},
+		"uiTextBox-align": {
+			"label": "Align",
+			"tip": "Text alignment.",
+			"options": {
+				"left": {
+					"name": "Left",
+					"tip": "Left edge of text aligns with left edge of input area."
+				},
+				"center": {
+					"name": "Center",
+					"tip": "Horizontal center of text aligns with center of input area."
+				},
+				"right": {
+					"name": "Right",
+					"tip": "Right edge of text aligns with right edge of input area."
+				}
+			}
+		},
+		"uiTextBox-text": {
+			"label": "Text",
+			"tip": "Initial string content of textbox."
+		},
+		"uiTextBox-maxLength": {
+			"label": "Max Length",
+			"tip": "Maximum number of characters allowed."
+		},
+		"uiTextBox-number": {
+			"label": "Number",
+			"tip": "Initial numeric content of textbox."
+		},
+		"uiTextBox-min": {
+			"label": "Min",
+			"tip": "Minimum allowed value."
+		},
+		"uiTextBox-max": {
+			"label": "Max",
+			"tip": "Maximum allowed value."
+		},
+		"uiTextBox-decimals": {
+			"label": "Decimal Places",
+			"tip": "Maximum decimal places to retain."
+		},
+		"uiTextBox-padding": {
+			"label": "Padding",
+			"tip": "Distance between input area and left/right edges."
+		},
+		"uiTextBox-size": {
+			"label": "Size",
+			"tip": "Text size (10 ~ 400)."
+		},
+		"uiTextBox-font": {
+			"label": "Font",
+			"placeholder": "Default",
+			"tip": "Enter font name. Separate multiple fonts with commas in priority order."
+		},
+		"uiTextBox-color": {
+			"label": "Color",
+			"tip": "Text color."
+		},
+		"uiTextBox-selectionColor": {
+			"label": "Selection Color",
+			"tip": "Selected text color."
+		},
+		"uiTextBox-selectionBgColor": {
+			"label": "Selection Bg Color",
+			"tip": "Background color of selected text."
+		}
+	}
+}

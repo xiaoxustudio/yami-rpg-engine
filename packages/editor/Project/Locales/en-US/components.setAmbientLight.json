@@ -1,0 +1,32 @@
+{
+	"components": {
+		"setAmbientLight": {
+			"title": "Set Ambient Light"
+		},
+		"setAmbientLight-red": {
+			"label": "Red",
+			"tip": "Input color (Red) * Ambient Light (Red) / 255 = Output color (Red)"
+		},
+		"setAmbientLight-green": {
+			"label": "Green",
+			"tip": "Input color (Green) * Ambient Light (Green) / 255 = Output color (Green)"
+		},
+		"setAmbientLight-blue": {
+			"label": "Blue",
+			"tip": "Input color (Blue) * Ambient Light (Blue) / 255 = Output color (Blue)"
+		},
+		"setAmbientLight-easingId": {
+			"label": "Easing"
+		},
+		"setAmbientLight-duration": {
+			"label": "Duration"
+		},
+		"setAmbientLight-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

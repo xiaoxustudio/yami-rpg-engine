@@ -1,0 +1,33 @@
+{
+	"components": {
+		"controlDialog": {
+			"title": "控制对话框"
+		},
+		"controlDialog-element": {
+			"label": "元素",
+			"tip": "指定一个对话框元素"
+		},
+		"controlDialog-operation": {
+			"label": "操作",
+			"tip": "执行一个对话框操作",
+			"options": {
+				"pause": {
+					"name": "暂停打印",
+					"tip": "如果处于打印文本状态，则暂停"
+				},
+				"continue": {
+					"name": "继续打印",
+					"tip": "如果处于暂停打印状态，则继续"
+				},
+				"print-immediately": {
+					"name": "立即打印文本",
+					"tip": "打印文本，直到填满当前页面，或者全部文本已打印完毕"
+				},
+				"print-next-page": {
+					"name": "打印下一页文本",
+					"tip": "擦除当前页面的文本，开始打印下一页文本内容"
+				}
+			}
+		}
+	}
+}

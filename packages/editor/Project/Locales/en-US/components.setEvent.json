@@ -1,0 +1,53 @@
+{
+	"components": {
+		"setEvent": {
+			"title": "Set Event"
+		},
+		"setEvent-operation": {
+			"label": "Operation",
+			"tip": "Event Operation",
+			"options": {
+				"stop-propagation": {
+					"name": "Stop Propagation",
+					"tip": "Generally used in element events, when the user clicks on an element, it will first trigger the click event on the element, and then trigger the click event of the parent element, passing up the layer, and when this operation is performed, it will stop passing."
+				},
+				"pause": {
+					"name": "Pause and Save to Variable",
+					"tip": "Executing this action pauses the currently executing event and saves the event to an object variable."
+				},
+				"continue": {
+					"name": "Continue and Reset Variable",
+					"tip": "Continue the paused event and set the variable to a \"none\" value."
+				},
+				"enable": {
+					"name": "Enable Global Event",
+					"tip": "Automatic triggering of the event will return to normal."
+				},
+				"disable": {
+					"name": "Disable Global Event",
+					"tip": "Will no longer automatically trigger the event (Key Down, Mouse Down, etc.)."
+				},
+				"highest-priority": {
+					"name": "Set to Highest Priority",
+					"tip": "Once the event is set to the highest priority, it can be triggered even when the game is paused."
+				},
+				"goto-choice-branch": {
+					"name": "Go to Choice Branch",
+					"tip": "You can enter the specified choice branch after calling the \"Show Choices\" command."
+				}
+			}
+		},
+		"setEvent-variable": {
+			"label": "Variable",
+			"tip": "Variable storing the event object"
+		},
+		"setEvent-eventId": {
+			"label": "Event",
+			"tip": "Specify the event file ID"
+		},
+		"setEvent-choiceIndex": {
+			"label": "Choice Index",
+			"tip": "Jump to the Nth (0, 1, 2, ...) choice branch"
+		}
+	}
+}

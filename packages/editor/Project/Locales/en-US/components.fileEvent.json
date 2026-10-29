@@ -1,0 +1,154 @@
+{
+	"components": {
+		"fileEvent-general-grid": {
+			"label": "General"
+		},
+		"fileEvent-type": {
+			"label": "Type",
+			"tip": "Certain specific behaviors automatically trigger related type events"
+		},
+		"fileEvent-enabled": {
+			"label": "Enabled",
+			"tip": "Automatically triggered by event type"
+		},
+		"fileEvent-priority": {
+			"label": "Priority",
+			"tip": "Triggers before element events; not affected by \"Pause Game\" and \"Prevent Scene Input\" commands"
+		},
+		"fileEvent-namespace": {
+			"label": "Namespace",
+			"tip": "Enable: event uses independent variable scope when called\nDisable: event shares variable scope with caller"
+		},
+		"fileEvent-returnType": {
+			"label": "Return Type",
+			"tip": "Pass computed result to caller via \"Return\"",
+			"options": {
+				"none": {
+					"name": "None",
+					"tip": "Does not return any value"
+				},
+				"boolean": {
+					"name": "Boolean",
+					"tip": "Returns a boolean value"
+				},
+				"number": {
+					"name": "Number",
+					"tip": "Returns a numerical value"
+				},
+				"string": {
+					"name": "String",
+					"tip": "Returns a string"
+				},
+				"object": {
+					"name": "Object",
+					"tip": "Returns an object"
+				},
+				"actor": {
+					"name": "Actor",
+					"tip": "Returns an actor object"
+				},
+				"skill": {
+					"name": "Skill",
+					"tip": "Returns a skill object"
+				},
+				"state": {
+					"name": "State",
+					"tip": "Returns a state object"
+				},
+				"equipment": {
+					"name": "Equipment",
+					"tip": "Returns an equipment object"
+				},
+				"item": {
+					"name": "Item",
+					"tip": "Returns an item object"
+				},
+				"trigger": {
+					"name": "Trigger",
+					"tip": "Returns a trigger object"
+				},
+				"light": {
+					"name": "Light",
+					"tip": "Returns a light object"
+				},
+				"element": {
+					"name": "Element",
+					"tip": "Returns an element object"
+				}
+			}
+		},
+		"fileEvent-description": {
+			"label": "Description",
+			"tip": "Remarks or description of the event"
+		},
+		"fileEvent-parameters": {
+			"label": "Parameters",
+			"tip": "Parameter values can be passed when calling this event via \"Call Event\"\nParameters are automatically written to these variables during execution"
+		},
+		"fileEvent-parameter": {
+			"title": "Parameter"
+		},
+		"fileEvent-parameter-type": {
+			"label": "Type",
+			"tip": "Type of value received when called",
+			"options": {
+				"boolean": {
+					"name": "Boolean",
+					"tip": "Pass a boolean value to the initial variable"
+				},
+				"number": {
+					"name": "Number",
+					"tip": "Pass a numerical value to the initial variable"
+				},
+				"string": {
+					"name": "String",
+					"tip": "Pass a string to the initial variable"
+				},
+				"object": {
+					"name": "Object",
+					"tip": "Pass an object to the initial variable"
+				},
+				"actor": {
+					"name": "Actor",
+					"tip": "Pass an actor object to the initial variable"
+				},
+				"skill": {
+					"name": "Skill",
+					"tip": "Pass a skill object to the initial variable"
+				},
+				"state": {
+					"name": "State",
+					"tip": "Pass a state object to the initial variable"
+				},
+				"equipment": {
+					"name": "Equipment",
+					"tip": "Pass an equipment object to the initial variable"
+				},
+				"item": {
+					"name": "Item",
+					"tip": "Pass an item object to the initial variable"
+				},
+				"trigger": {
+					"name": "Trigger",
+					"tip": "Pass a trigger object to the initial variable"
+				},
+				"light": {
+					"name": "Light",
+					"tip": "Pass a light object to the initial variable"
+				},
+				"element": {
+					"name": "Element",
+					"tip": "Pass an element object to the initial variable"
+				}
+			}
+		},
+		"fileEvent-parameter-key": {
+			"label": "Key",
+			"tip": "Local variable"
+		},
+		"fileEvent-parameter-note": {
+			"label": "Note",
+			"tip": "Remarks or description of the parameter"
+		}
+	}
+}

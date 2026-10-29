@@ -1,0 +1,10 @@
+{
+	"components": {
+		"copyProgress": {
+			"title": "Copy Progress"
+		},
+		"copyProgress-box": {
+			"label": "Copying Files..."
+		}
+	}
+}

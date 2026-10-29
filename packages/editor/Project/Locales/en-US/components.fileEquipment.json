@@ -1,0 +1,31 @@
+{
+	"components": {
+		"fileEquipment-general-grid": {
+			"label": "General"
+		},
+		"fileEquipment-icon": {
+			"label": "Icon",
+			"tip": "Equipment Icon\n$Related command\nLoad Image"
+		},
+		"fileEquipment-clip": {
+			"label": "Clip",
+			"tip": "Clip area of icon\n$Related command\nLoad Image"
+		},
+		"fileEquipment-inherit": {
+			"label": "Inherit",
+			"tip": "Inherits specified equipment's attributes, events, and scripts\nIf the same attribute exists, it overrides the inherited equipment's attribute value\nIf the same type of event exists, it overrides the inherited equipment's event\nOverridden events can still be triggered using the 'Call Event' command\nHowever, inherited scripts will stack instead of being overridden"
+		},
+		"fileEquipment-attributes": {
+			"label": "Attributes",
+			"tip": "Initial attribute list\n$Optional types\nBoolean, Number, String, Enumeration(String)\n$Related commands\nSet Boolean, Set Number, Set String"
+		},
+		"fileEquipment-events": {
+			"label": "Events",
+			"tip": "A list of equipment events\nAccess \"Event Trigger Actor\" to get the actor with this equipment\nAccess \"Event Trigger Equipment\" to get this equipment\n$Optional types\nCreate: Triggered at equipment initialization (once)\nAdd Equipment: Triggered when the actor adds this equipment\nRemove Equipment: Triggered when the actor removes this equipment\nCustom: Triggered by the \"Call Event\" command"
+		},
+		"fileEquipment-scripts": {
+			"label": "Scripts",
+			"tip": "Add script files to extend this equipment"
+		}
+	}
+}

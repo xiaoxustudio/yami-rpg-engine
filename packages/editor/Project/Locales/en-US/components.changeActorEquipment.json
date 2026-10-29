@@ -1,0 +1,49 @@
+{
+	"components": {
+		"changeActorEquipment": {
+			"title": "Change Actor Equipment"
+		},
+		"changeActorEquipment-actor": {
+			"label": "Actor",
+			"tip": "Change the equipment of this actor"
+		},
+		"changeActorEquipment-operation": {
+			"label": "Operation",
+			"tip": "Actor equipment operation",
+			"options": {
+				"add": {
+					"name": "Add",
+					"tip": "Create an equipment and add it to the actor's equipment slot (if an equipment exists in the slot, remove it first)"
+				},
+				"remove": {
+					"name": "Remove",
+					"tip": "Remove the equipment with the specified ID from the actor's equipment slots"
+				},
+				"add-instance": {
+					"name": "Add Instance",
+					"tip": "Read an equipment from the equipment getter and add it to the actor's equipment slot"
+				},
+				"remove-instance": {
+					"name": "Remove Instance",
+					"tip": "Read an equipment from the equipment getter and remove it from the actor's equipment slots"
+				},
+				"remove-slot": {
+					"name": "Remove Slot",
+					"tip": "Remove an equipment from the specified slot in the actor's equipment slots"
+				}
+			}
+		},
+		"changeActorEquipment-slot": {
+			"label": "Slot",
+			"tip": "Specify the equipment slot"
+		},
+		"changeActorEquipment-equipmentId": {
+			"label": "EquipmentId",
+			"tip": "Specify the equipment file ID"
+		},
+		"changeActorEquipment-equipment": {
+			"label": "Equipment",
+			"tip": "Equipment accessor"
+		}
+	}
+}

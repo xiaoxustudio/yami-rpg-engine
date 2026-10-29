@@ -1,0 +1,11 @@
+{
+	"components": {
+		"setCursor": {
+			"title": "Set Cursor"
+		},
+		"setCursor-image": {
+			"label": "Image",
+			"tip": "Set mouse pointer to this image"
+		}
+	}
+}

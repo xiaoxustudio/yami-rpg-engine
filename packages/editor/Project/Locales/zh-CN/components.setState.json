@@ -1,0 +1,33 @@
+{
+	"components": {
+		"setState": {
+			"title": "设置状态"
+		},
+		"setState-state": {
+			"label": "状态",
+			"tip": "指定一个状态对象"
+		},
+		"setState-operation": {
+			"label": "操作",
+			"tip": "执行一个状态操作",
+			"options": {
+				"set-time": {
+					"name": "设置时间",
+					"tip": "同时设置状态的当前时间和最大时间"
+				},
+				"increase-time": {
+					"name": "增加时间",
+					"tip": "增加状态的当前时间，并更新最大时间"
+				},
+				"decrease-time": {
+					"name": "减少时间",
+					"tip": "减少状态的当前时间"
+				}
+			}
+		},
+		"setState-time": {
+			"label": "时间",
+			"tip": "状态的时间"
+		}
+	}
+}

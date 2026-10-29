@@ -1,0 +1,47 @@
+{
+	"components": {
+		"animSpriteLayer-properties-grid": {
+			"label": "Sprite Layer"
+		},
+		"animSpriteLayer-sprite": {
+			"label": "Sprite",
+			"tip": "Select a preset sprite image (in the Animation Settings panel Alt+S)"
+		},
+		"animSpriteLayer-blend": {
+			"label": "Blend",
+			"tip": "Select a formula to blend the color with the underlying color",
+			"options": {
+				"normal": {
+					"name": "Normal",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "Additive",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "Subtract",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		},
+		"animSpriteLayer-light": {
+			"label": "Light",
+			"tip": "Affects the rendering effect of the image",
+			"options": {
+				"raw": {
+					"name": "Raw",
+					"tip": "Not affected by lighting"
+				},
+				"anchor": {
+					"name": "Anchor Sampling",
+					"tip": "Samples light from the image's anchor point to blend the color"
+				},
+				"global": {
+					"name": "Global Sampling",
+					"tip": "Samples light from multiple pixel locations of the image to blend the color"
+				}
+			}
+		}
+	}
+}

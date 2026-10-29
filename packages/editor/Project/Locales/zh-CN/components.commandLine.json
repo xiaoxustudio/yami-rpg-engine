@@ -1,0 +1,40 @@
+{
+	"components": {
+		"commandLine": {
+			"title": "启动参数"
+		},
+		"commandLine-type": {
+			"label": "操作",
+			"options": {
+				"get": {
+					"name": "获取启动参数",
+					"tip": "获取启动参数的值"
+				},
+				"rm": {
+					"name": "移除启动参数",
+					"tip": "移除启动参数"
+				},
+				"set": {
+					"name": "设置启动参数",
+					"tip": "设置启动参数的值"
+				},
+				"has": {
+					"name": "是否存在启动参数",
+					"tip": "检查是否存在启动参数"
+				}
+			}
+		},
+		"commandLine-key": {
+			"label": "参数名称",
+			"tip": "启动参数名称"
+		},
+		"commandLine-value": {
+			"label": "参数值",
+			"tip": "启动参数值"
+		},
+		"commandLine-variable": {
+			"label": "保存到",
+			"tip": "返回值保存到变量中"
+		}
+	}
+}

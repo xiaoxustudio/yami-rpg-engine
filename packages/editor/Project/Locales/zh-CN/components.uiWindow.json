@@ -1,0 +1,71 @@
+{
+	"components": {
+		"uiWindow-properties-grid": {
+			"label": "窗口属性"
+		},
+		"uiWindow-layout": {
+			"label": "布局",
+			"tip": "针对窗口子元素的排版方式",
+			"options": {
+				"normal": {
+					"name": "正常",
+					"tip": "窗口仅作为一个普通容器"
+				},
+				"horizontal-grid": {
+					"name": "水平网格",
+					"tip": "网格从左向右排列，向下换行，将子元素依次对齐到网格中"
+				},
+				"vertical-grid": {
+					"name": "垂直网格",
+					"tip": "网格从上向下排列，向右换行，将子元素依次对齐到网格中"
+				}
+			}
+		},
+		"uiWindow-scrollX": {
+			"label": "滚动 X",
+			"tip": "窗口的初始水平滚动位置，当窗口内部的内容宽度超过窗口宽度时生效"
+		},
+		"uiWindow-scrollY": {
+			"label": "滚动 Y",
+			"tip": "窗口的初始垂直滚动位置，当窗口内部的内容高度超过窗口高度时生效"
+		},
+		"uiWindow-gridWidth": {
+			"label": "网格宽度",
+			"tip": "每个网格的宽度"
+		},
+		"uiWindow-gridHeight": {
+			"label": "网格高度",
+			"tip": "每个网格的高度"
+		},
+		"uiWindow-gridGapX": {
+			"label": "水平间距",
+			"tip": "网格在水平方向上的间隔距离"
+		},
+		"uiWindow-gridGapY": {
+			"label": "垂直间距",
+			"tip": "网格在垂直方向上的间隔距离"
+		},
+		"uiWindow-paddingX": {
+			"label": "水平边距",
+			"tip": "窗口左右边缘离最近网格的最小距离"
+		},
+		"uiWindow-paddingY": {
+			"label": "垂直边距",
+			"tip": "窗口上下边缘离最近网格的最小距离"
+		},
+		"uiWindow-overflow": {
+			"label": "溢出",
+			"tip": "窗口内容超过边缘后的处理方法",
+			"options": {
+				"visible": {
+					"name": "可见",
+					"tip": "允许内容出现在窗口外面"
+				},
+				"hidden": {
+					"name": "隐藏",
+					"tip": "隐藏超过边缘部分的内容"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"components": {
+		"ObjectProperty-index": {
+			"title": "索引"
+		},
+		"ObjectProperty-index-name": {
+			"label": "属性名称",
+			"tip": "要获取的属性名称"
+		}
+	}
+}

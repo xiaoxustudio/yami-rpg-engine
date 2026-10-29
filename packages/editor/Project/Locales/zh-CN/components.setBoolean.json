@@ -1,0 +1,83 @@
+{
+	"components": {
+		"setBoolean": {
+			"title": "设置布尔值"
+		},
+		"setBoolean-variable": {
+			"label": "变量",
+			"tip": "写入的目标变量"
+		},
+		"setBoolean-operation": {
+			"label": "操作",
+			"tip": "布尔值操作",
+			"options": {
+				"set": {
+					"name": "赋值",
+					"tip": "设置为操作值"
+				},
+				"not": {
+					"name": "非",
+					"tip": "设置为操作值的相反值"
+				},
+				"and": {
+					"name": "与",
+					"tip": "当目标变量与操作值都是True，设置为True，否则设置为False"
+				},
+				"or": {
+					"name": "或",
+					"tip": "当目标变量与操作值至少有一个是True，设置为True，否则设置为False"
+				},
+				"xor": {
+					"name": "异或",
+					"tip": "当目标变量与操作值不一样时，设置为True，否则设置为False"
+				}
+			}
+		},
+		"setBoolean-operand-type": {
+			"label": "类型",
+			"tip": "选择获取布尔值的方法",
+			"options": {
+				"constant": {
+					"name": "常量",
+					"tip": "固定的值"
+				},
+				"variable": {
+					"name": "变量",
+					"tip": "从变量中读取布尔值"
+				},
+				"list": {
+					"name": "列表项",
+					"tip": "从变量中读取列表，再读取列表中指定位置的布尔值"
+				},
+				"parameter": {
+					"name": "参数",
+					"tip": "\"显示文本\"、\"显示选项\"指令中输入的参数"
+				},
+				"script": {
+					"name": "脚本",
+					"tip": "Javascript的返回值"
+				}
+			}
+		},
+		"setBoolean-constant-value": {
+			"label": "常量",
+			"tip": "固定的值"
+		},
+		"setBoolean-common-variable": {
+			"label": "变量",
+			"tip": "从变量中读取数据"
+		},
+		"setBoolean-list-index": {
+			"label": "索引",
+			"tip": "读取列表中第N（0, 1, 2, ...）个位置的值"
+		},
+		"setBoolean-parameter-key": {
+			"label": "参数名称",
+			"tip": "获取这个参数的值"
+		},
+		"setBoolean-script": {
+			"label": "脚本",
+			"tip": "执行Javascript并获取返回值"
+		}
+	}
+}

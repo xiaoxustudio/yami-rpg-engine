@@ -1,0 +1,87 @@
+{
+	"components": {
+		"autoTile": {
+			"title": "自动图块"
+		},
+		"autoTile-general-grid": {
+			"label": "基本设置"
+		},
+		"autoTile-image": {
+			"label": "图像",
+			"tip": "选择图块精灵表的图像"
+		},
+		"autoTile-x": {
+			"label": "偏移 X",
+			"tip": "从指定的水平位置开始获取图块"
+		},
+		"autoTile-y": {
+			"label": "偏移 Y",
+			"tip": "从指定的垂直位置开始获取图块"
+		},
+		"autoTile-templates": {
+			"label": "模板",
+			"tip": "自动图块的模板列表"
+		},
+		"autoTile-nodes": {
+			"label": "图块",
+			"tip": "列举这个自动图块的所有可能性\n当设置图块到瓦片地图时，依次检查子图块的相邻规则，选出最先符合条件的图块\n如果全都不符合条件，则选择第一个图块作为默认值"
+		},
+		"autoTile-frames": {
+			"label": "动画帧",
+			"tip": "如果设置了多个动画帧，则按固定的帧间隔循环播放动画"
+		},
+		"autoTile-canvas": {
+			"label": "视图",
+			"tip": "预览选中的动画帧，点击进入编辑"
+		},
+		"autoTile-rule-grid": {
+			"label": "相邻",
+			"tip": "检查附近是否存在相同的图块\n箭头：该方向的相邻图块与本图块相同\n交叉：该方向的相邻图块与本图块不同\n空缺：该方向的相邻图块可以是任意图块"
+		},
+		"autoTile-rule-0": {
+			"tip": "$左\n附近是否存在相同的图块"
+		},
+		"autoTile-rule-1": {
+			"tip": "$左上\n附近是否存在相同的图块"
+		},
+		"autoTile-rule-2": {
+			"tip": "$上\n附近是否存在相同的图块"
+		},
+		"autoTile-rule-3": {
+			"tip": "$右上\n附近是否存在相同的图块"
+		},
+		"autoTile-rule-4": {
+			"tip": "$右\n附近是否存在相同的图块"
+		},
+		"autoTile-rule-5": {
+			"tip": "$右下\n附近是否存在相同的图块"
+		},
+		"autoTile-rule-6": {
+			"tip": "$下\n附近是否存在相同的图块"
+		},
+		"autoTile-rule-7": {
+			"tip": "$左下\n附近是否存在相同的图块"
+		},
+		"autoTile-generateFrames": {
+			"title": "生成动画帧"
+		},
+		"autoTile-generateFrames-strideX": {
+			"label": "偏移 X",
+			"tip": "生成的动画帧相对前一帧的水平位置偏移量"
+		},
+		"autoTile-generateFrames-strideY": {
+			"label": "偏移 Y",
+			"tip": "生成的动画帧相对前一帧的垂直位置偏移量"
+		},
+		"autoTile-generateFrames-count": {
+			"label": "数量",
+			"tip": "以选中的动画帧为参照物，总共生成多少动画帧"
+		},
+		"autoTile-frameIndex": {
+			"title": "动画帧"
+		},
+		"autoTile-selectNode": {
+			"title": "图块"
+		}
+	}
+}

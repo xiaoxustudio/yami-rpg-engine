@@ -1,0 +1,48 @@
+{
+	"components": {
+		"fileAudio-info-grid": {
+			"label": "File Info"
+		},
+		"fileAudio-name": {
+			"label": "Name",
+			"tip": "File Name"
+		},
+		"fileAudio-size": {
+			"label": "Size",
+			"tip": "File Size"
+		},
+		"fileAudio-duration": {
+			"label": "Duration",
+			"tip": "Audio length"
+		},
+		"fileAudio-bitrate": {
+			"label": "Bitrate",
+			"tip": "Audio bitrate - generally, higher = higher audio quality/file size"
+		},
+		"fileAudio-mixer-grid": {
+			"label": "Mixer"
+		},
+		"fileAudio-volume-box": {
+			"label": "Volume",
+			"tip": "Global volume"
+		},
+		"fileAudio-pan-box": {
+			"label": "Pan",
+			"tip": "Affects volume placement from Left/Right channels\n0%: L/R channel equalization\n-100%: audio on Left only\n+100%: audio on Right only"
+		},
+		"fileAudio-dry-box": {
+			"label": "Reverb - Dry",
+			"tip": "Dry reverb volume; lower indicates greater distance from sound origin"
+		},
+		"fileAudio-wet-box": {
+			"label": "Reverb - Wet",
+			"tip": "Wet reverb volume simulating closed space; higher indicates larger space"
+		},
+		"fileAudio-progress-box": {
+			"label": "Progress"
+		},
+		"fileAudio-frequency-canvas": {
+			"label": "Frequency"
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"components": {
+		"rename": {
+			"title": "Rename"
+		},
+		"rename-name": {
+			"label": "Name",
+			"tip": "Enter a new name"
+		}
+	}
+}

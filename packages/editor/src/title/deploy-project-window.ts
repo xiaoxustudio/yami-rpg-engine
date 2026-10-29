@@ -24,6 +24,12 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { fileURLToPath } from 'node:url';
 import type { YamiElement } from '@app/types/element-api';
 import { clone as deepClone } from '@app/utils/object';
+
+/** 弹窗警告文案（元素缺失时静默跳过）。 */
+const setWarning = (text: string): void => {
+	const el = titleEls.get('deployment-warning');
+	if (el) el.textContent = text;
+};
 const _moduleURL = new URL(import.meta.url);
 const _modulePath =
 	typeof fileURLToPath === 'function' && _moduleURL.protocol === 'file:'
@@ -196,23 +202,19 @@ Deployment.check = function (this: typeof Deployment) {
 	if (!folder) {
 		if (this.state !== 'unnamed') {
 			this.state = 'unnamed';
-			(titleEls.get('deployment-warning') as YamiElement).textContent = t(
-				'confirmation.enterFolderName'
-			);
+			setWarning(t('confirmation.enterFolderName'));
 		}
 		deploymentConfirmDisabled.value = true;
 	} else if (FS.existsSync!(Path.resolve!(location, folder))) {
 		if (this.state !== 'existing') {
 			this.state = 'existing';
-			(titleEls.get('deployment-warning') as YamiElement).textContent = t(
-				'confirmation.folderAlreadyExists'
-			);
+			setWarning(t('confirmation.folderAlreadyExists'));
 		}
 		deploymentConfirmDisabled.value = true;
 	} else {
 		if (this.state !== 'passed') {
 			this.state = 'passed';
-			(titleEls.get('deployment-warning') as YamiElement).textContent = '';
+			setWarning('');
 		}
 		deploymentConfirmDisabled.value = false;
 	}

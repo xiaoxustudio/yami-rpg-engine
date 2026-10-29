@@ -1,0 +1,125 @@
+{
+	"components": {
+		"setList": {
+			"title": "Set List"
+		},
+		"setList-variable": {
+			"label": "Variable",
+			"tip": "Target variable to write to"
+		},
+		"setList-operation": {
+			"label": "Operation",
+			"tip": "How to write data to the list",
+			"options": {
+				"set-empty": {
+					"name": "Set to Empty",
+					"tip": "Initialize a list with no values"
+				},
+				"set-numbers": {
+					"name": "Set Number List",
+					"tip": "Initialize a list with numbers"
+				},
+				"set-strings": {
+					"name": "Set String List",
+					"tip": "Initialize a list with strings"
+				},
+				"set-boolean": {
+					"name": "Set Boolean",
+					"tip": "Set the list item at the specified index to a boolean"
+				},
+				"set-number": {
+					"name": "Set Number",
+					"tip": "Set the list item at the specified index to a number"
+				},
+				"set-string": {
+					"name": "Set String",
+					"tip": "Set the list item at the specified index to a string"
+				},
+				"set-variable": {
+					"name": "Set Variable",
+					"tip": "Set the list item at the specified index to the value read from a variable"
+				},
+				"split-string": {
+					"name": "Split String",
+					"tip": "Split a string by the specified delimiter to generate a list"
+				},
+				"push": {
+					"name": "Add Item",
+					"tip": "Add the value read from the variable to the end of the list"
+				},
+				"remove": {
+					"name": "Remove Item",
+					"tip": "Remove the value read from the variable from the list"
+				},
+				"get-attribute-names": {
+					"name": "Get Attribute Names",
+					"tip": "Get all names in the attribute group and generate a list"
+				},
+				"get-attribute-keys": {
+					"name": "Get Attribute Keys",
+					"tip": "Get all keys in the attribute group and generate a list"
+				},
+				"get-enum-names": {
+					"name": "Get Enum Names",
+					"tip": "Get all names in the enumeration group and generate a list"
+				},
+				"get-enum-values": {
+					"name": "Get Enum Values",
+					"tip": "Get all values in the enumeration group and generate a list"
+				},
+				"get-actor-targets": {
+					"name": "Get Actor Targets",
+					"tip": "Get all target actors in the actor target pool and generate a list"
+				}
+			}
+		},
+		"setList-numbers": {
+			"label": "Numbers",
+			"tip": "Initialize a number list"
+		},
+		"setList-strings": {
+			"label": "Strings",
+			"tip": "Initialize a string list"
+		},
+		"setList-index": {
+			"label": "Index",
+			"tip": "Read a list from the target variable and write data at this position"
+		},
+		"setList-boolean": {
+			"label": "Boolean",
+			"tip": "Write a boolean value to the list"
+		},
+		"setList-number": {
+			"label": "Number",
+			"tip": "Write a number to the list"
+		},
+		"setList-string": {
+			"label": "String",
+			"tip": "Write a string to the list"
+		},
+		"setList-operand": {
+			"label": "Variable",
+			"tip": "Read data from a variable"
+		},
+		"setList-separator": {
+			"label": "Separator",
+			"tip": "Split the read string by a specified delimiter to generate a list"
+		},
+		"setList-attribute-groupId": {
+			"label": "Attribute Group",
+			"tip": "Select an attribute group"
+		},
+		"setList-enum-groupId": {
+			"label": "Enum Group",
+			"tip": "Select an enum group"
+		},
+		"setList-actor": {
+			"label": "Actor",
+			"tip": "Select an actor object"
+		},
+		"setList-index-skip-check": {
+			"label": "Boundary Limit",
+			"tip": "When enabled, if [list].length is less than index, no content will be added"
+		}
+	}
+}

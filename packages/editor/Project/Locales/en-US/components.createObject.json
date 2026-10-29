@@ -1,0 +1,13 @@
+{
+	"components": {
+		"createObject": {
+			"title": "Create Object"
+		},
+		"createObject-presetId": {
+			"label": "Object"
+		},
+		"createObject-position": {
+			"label": "Position"
+		}
+	}
+}

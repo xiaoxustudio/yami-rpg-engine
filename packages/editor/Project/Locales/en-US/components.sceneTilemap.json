@@ -1,0 +1,127 @@
+{
+	"components": {
+		"sceneTilemap-general-grid": {
+			"label": "General"
+		},
+		"sceneTilemap-name": {
+			"label": "Name",
+			"tip": "Tilemap Name (note: this is a label for user reference only)"
+		},
+		"sceneTilemap-layer": {
+			"label": "Layer",
+			"tip": "Foreground layer always overlaps Background layer, Object layer always overlaps Background layer\nIf layers are the same type, sorting goes in order with the highest value displayed first\nIf the order is the same, sorting goes by Object list position",
+			"options": {
+				"background": {
+					"name": "Background",
+					"tip": "Background layer is always displayed behind (or 'under') Object layer and/or Foreground layer"
+				},
+				"foreground": {
+					"name": "Foreground",
+					"tip": "Foreground layer is always displayed in front of (or 'on top of') Object layer and/or Background layer"
+				},
+				"object": {
+					"name": "Object",
+					"tip": "Object layer is rendered in order by position and Prioritys set for tiles"
+				}
+			}
+		},
+		"sceneTilemap-order": {
+			"label": "Order"
+		},
+		"sceneTilemap-light": {
+			"label": "Light",
+			"options": {
+				"raw": {
+					"name": "Raw",
+					"tip": "Tilemap is unaffected by lighting"
+				},
+				"anchor": {
+					"name": "Anchor Sampling",
+					"tip": "Color is synthesized by sampling light relative to the Tilemap's anchor point"
+				},
+				"global": {
+					"name": "Global Sampling",
+					"tip": "Color is synthesized by sampling multi-pixel locations relative to the Tilemap's location"
+				},
+				"ambient": {
+					"name": "Ambient Light",
+					"tip": "Color is a composite of the current Scene's existing lighting"
+				}
+			}
+		},
+		"sceneTilemap-blend": {
+			"label": "Blend",
+			"tip": "Choose a formula to blend the color with the underlying color",
+			"options": {
+				"normal": {
+					"name": "Normal",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "Additive",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "Subtract",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		},
+		"sceneTilemap-x": {
+			"label": "X",
+			"tip": "Tilemap's initial horizontal coordinates"
+		},
+		"sceneTilemap-y": {
+			"label": "Y",
+			"tip": "Tilemap's intial vertical coordinates"
+		},
+		"sceneTilemap-width": {
+			"label": "Width",
+			"tip": "Tilemap's horizontal tile count"
+		},
+		"sceneTilemap-height": {
+			"label": "Height",
+			"tip": "Tilemap's vertical tile count"
+		},
+		"sceneTilemap-anchorX": {
+			"label": "Anchor X",
+			"tip": "Horizontal position of rectangular area connection point between Tilemap and Scene"
+		},
+		"sceneTilemap-anchorY": {
+			"label": "Anchor Y",
+			"tip": "Vertical position of rectangular area connection point between Tilemap and Scene"
+		},
+		"sceneTilemap-offsetX": {
+			"label": "Offset X",
+			"tip": "Tilemap's horizontal offset distance (in pixels)"
+		},
+		"sceneTilemap-offsetY": {
+			"label": "Offset Y",
+			"tip": "Tilemap's vertical offset distance (in pixels)"
+		},
+		"sceneTilemap-parallaxFactorX": {
+			"label": "Parallax Factor X",
+			"tip": "Coefficient for horizontal tilemap movement when camera moves"
+		},
+		"sceneTilemap-parallaxFactorY": {
+			"label": "Parallax Factor Y",
+			"tip": "Coefficient for vertical tilemap movement when camera moves"
+		},
+		"sceneTilemap-opacity": {
+			"label": "Opacity",
+			"tip": "Tilemap's visibility (transparency adjustment)"
+		},
+		"sceneTilemap-conditions": {
+			"label": "Conditions",
+			"tip": "Set a list of conditions for the Tilemap to be created; if they aren't met, the Tilemap isn't created"
+		},
+		"sceneTilemap-events": {
+			"label": "Events",
+			"tip": "$Tilemap Events\n$Options\nAutorun: Event triggers as soon as the Tilemap appears (including after reading save data)\nCustom: triggered using the 'Call Event' command"
+		},
+		"sceneTilemap-scripts": {
+			"label": "Scripts",
+			"tip": "Add Script files to extend Tilemap functions"
+		}
+	}
+}

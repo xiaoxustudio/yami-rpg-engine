@@ -1,0 +1,49 @@
+{
+	"components": {
+		"skillGetter": {
+			"title": "Skill"
+		},
+		"skillGetter-type": {
+			"label": "Type",
+			"tip": "How to obtain the skill",
+			"options": {
+				"trigger": {
+					"name": "Event Trigger Skill",
+					"tip": "Skill that triggered this event"
+				},
+				"latest": {
+					"name": "Latest Skill",
+					"tip": "Get the most recently created skill, which refreshes when the 'Change Actor Skill' command is called"
+				},
+				"by-key": {
+					"name": "By Shortcut Key",
+					"tip": "Get the skill associated with the actor and the shortcut key"
+				},
+				"by-id": {
+					"name": "By Skill ID",
+					"tip": "Get the skill associated with the actor and the skill file ID"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Get the skill from the specified variable"
+				}
+			}
+		},
+		"skillGetter-actor": {
+			"label": "Actor",
+			"tip": "Get the skill from this actor"
+		},
+		"skillGetter-key": {
+			"label": "Shortcut Key",
+			"tip": "Get the skill assigned to this shortcut key"
+		},
+		"skillGetter-skillId": {
+			"label": "Skill",
+			"tip": "Get the skill associated with this skill file ID"
+		},
+		"skillGetter-variable": {
+			"label": "Variable",
+			"tip": "Get the skill object from the variable"
+		}
+	}
+}

@@ -1,0 +1,365 @@
+{
+	"components": {
+		"config-window-summary": {
+			"content": "Window"
+		},
+		"config-window-title": {
+			"label": "Title",
+			"tip": "Game window title"
+		},
+		"config-window-width": {
+			"label": "Width",
+			"tip": "Game window width (unaffected by maximize/fullscreen)"
+		},
+		"config-window-height": {
+			"label": "Height",
+			"tip": "Game window height (unaffected by maximize/fullscreen)"
+		},
+		"config-window-display": {
+			"label": "Display",
+			"tip": "Select a window mode\nScale the game screen proportionally",
+			"options": {
+				"windowed": {
+					"name": "Windowed",
+					"tip": "Run the game in windowed mode"
+				},
+				"maximized": {
+					"name": "Maximized",
+					"tip": "Run the game in maximized window mode"
+				},
+				"fullscreen": {
+					"name": "Fullscreen",
+					"tip": "Run the game in fullscreen mode"
+				}
+			}
+		},
+		"config-resolution-summary": {
+			"content": "Resolution"
+		},
+		"config-resolution-width": {
+			"label": "Width",
+			"tip": "Actual game canvas width, auto-scaled when window changes (saved after deployment)"
+		},
+		"config-resolution-height": {
+			"label": "Height",
+			"tip": "Actual game canvas height, auto-scaled when window changes (saved after deployment)"
+		},
+		"config-resolution-sceneScale": {
+			"label": "Scene Scale",
+			"tip": "Scale the scene objects proportionally (saved after deployment)"
+		},
+		"config-resolution-uiScale": {
+			"label": "UI Scale",
+			"tip": "Scale the user interface proportionally (saved after deployment)"
+		},
+		"config-scene-summary": {
+			"content": "Scene"
+		},
+		"config-scene-padding": {
+			"label": "Padding",
+			"tip": "Maximum camera distance outside scene. Set 0 to lock camera inside scene"
+		},
+		"config-scene-animationInterval": {
+			"label": "Tile Animation Interval",
+			"tip": "Interval for automatic tile animation frames"
+		},
+		"config-tileArea-summary": {
+			"content": "Tile Rendering Area"
+		},
+		"config-tileArea-expansionTop": {
+			"label": "Expansion Top",
+			"tip": "Render tiles a specified distance outside the top edge of the screen"
+		},
+		"config-tileArea-expansionLeft": {
+			"label": "Expansion Left",
+			"tip": "Render tiles a specified distance outside the left edge of the screen"
+		},
+		"config-tileArea-expansionRight": {
+			"label": "Expansion Right",
+			"tip": "Render tiles a specified distance outside the right edge of the screen"
+		},
+		"config-tileArea-expansionBottom": {
+			"label": "Expansion Bottom",
+			"tip": "Render tiles a specified distance outside the bottom edge of the screen"
+		},
+		"config-animationArea-summary": {
+			"content": "Animation Rendering Area"
+		},
+		"config-animationArea-expansionTop": {
+			"label": "Expansion Top",
+			"tip": "Render animations a specified distance outside the top edge of the screen"
+		},
+		"config-animationArea-expansionLeft": {
+			"label": "Expansion Left",
+			"tip": "Render animations a specified distance outside the left edge of the screen"
+		},
+		"config-animationArea-expansionRight": {
+			"label": "Expansion Right",
+			"tip": "Render animations a specified distance outside the right edge of the screen"
+		},
+		"config-animationArea-expansionBottom": {
+			"label": "Expansion Bottom",
+			"tip": "Render animations a specified distance outside the bottom edge of the screen"
+		},
+		"config-lightArea-summary": {
+			"content": "Light Rendering Area"
+		},
+		"config-lightArea-expansionTop": {
+			"label": "Expansion Top",
+			"tip": "Render light sources a specified distance outside the top edge of the screen"
+		},
+		"config-lightArea-expansionLeft": {
+			"label": "Expansion Left",
+			"tip": "Render light sources a specified distance outside the left edge of the screen"
+		},
+		"config-lightArea-expansionRight": {
+			"label": "Expansion Right",
+			"tip": "Render light sources a specified distance outside the right edge of the screen"
+		},
+		"config-lightArea-expansionBottom": {
+			"label": "Expansion Bottom",
+			"tip": "Render light sources a specified distance outside the bottom edge of the screen"
+		},
+		"config-virtualAxis-summary": {
+			"content": "Virtual Axis"
+		},
+		"config-virtualAxis-up": {
+			"label": "Axis Up",
+			"tip": "Pressing this key alone moves the axis point upward\nY = -1, Angle = 270"
+		},
+		"config-virtualAxis-down": {
+			"label": "Axis Down",
+			"tip": "Pressing this key alone moves the axis point downward\nY = 1, Angle = 90"
+		},
+		"config-virtualAxis-left": {
+			"label": "Axis Left",
+			"tip": "Pressing this key alone moves the axis point left\nX = -1, Angle = 180"
+		},
+		"config-virtualAxis-right": {
+			"label": "Axis Right",
+			"tip": "Pressing this key alone moves the axis point right\nX = 1, Angle = 0"
+		},
+		"config-collision-summary": {
+			"content": "Collision System"
+		},
+		"config-collision-actor-enabled": {
+			"label": "Actor Collision",
+			"tip": "enable or disable the collision system for actors",
+			"options": {
+				"true": {
+					"name": "Enabled",
+					"tip": "Automatically separate scene actors based on their collision sizes"
+				},
+				"false": {
+					"name": "Disabled",
+					"tip": "Turn off the collision system for better performance"
+				}
+			}
+		},
+		"config-collision-scene-enabled": {
+			"label": "Scene Collision",
+			"tip": "Enable or disable the collision system between actors and the scene",
+			"options": {
+				"true": {
+					"name": "Enabled",
+					"tip": "Actors cannot pass through impassable terrain areas"
+				},
+				"false": {
+					"name": "Disabled",
+					"tip": "Turn off the collision system for better performance"
+				}
+			}
+		},
+		"config-collision-scene-actorSize": {
+			"label": "Scene Collision Actor Size",
+			"tip": "When colliding with the scene, the actor is treated as a sphere with this diameter as its collision size"
+		},
+		"config-collision-trigger-collideWithActorShape": {
+			"label": "Trigger Collision Mode",
+			"tip": "Select the collision detection mode for triggers with actors",
+			"options": {
+				"true": {
+					"name": "Collide With Actor Shape",
+					"tip": "Collision detected when actor's shape overlaps trigger shape.\nMore accurate collision detection"
+				},
+				"false": {
+					"name": "Collide With Actor Anchor",
+					"tip": "Collision detected when actor's anchor point is inside trigger shape.\nBetter performance"
+				}
+			}
+		},
+		"config-text-summary": {
+			"content": "Text"
+		},
+		"config-text-importedFonts": {
+			"label": "Imported Fonts",
+			"tip": "Import external fonts. The font name is the filename (without the extension).\nImporting too many fonts will extend initial loading time"
+		},
+		"config-text-fontFamily": {
+			"label": "Default Font Family",
+			"tip": "Default font for text, textbox, and dialogbox elements\nSeparate multiple fonts with commas in priority order"
+		},
+		"config-text-highDefinition": {
+			"label": "High Definition",
+			"tip": "Whether to render high-definition text textures",
+			"options": {
+				"true": {
+					"name": "Yes",
+					"tip": "Render larger text textures, text remains sharp when scaled or rotated, but consumes more GPU memory"
+				},
+				"false": {
+					"name": "No",
+					"tip": "Render normal-sized text textures, text may appear blurry when scaled or rotated, but has better GPU performance"
+				}
+			}
+		},
+		"config-actor-summary": {
+			"content": "Actor"
+		},
+		"config-actor-tempAttributes": {
+			"label": "Actor Temporary Attributes",
+			"tip": "All actors automatically add preset temporary attributes when initialized. These attributes cannot be saved and will be reset after loading a saved game"
+		},
+		"config-animation-summary": {
+			"content": "Animation"
+		},
+		"config-animation-frameRate": {
+			"label": "Frame Rate",
+			"tip": "Number of animation timeline frames per second. Rendered frames are interpolated based on FPS"
+		},
+		"config-soundAttenuation-summary": {
+			"content": "Sound Attenuation"
+		},
+		"config-soundAttenuation-distance": {
+			"label": "Attenuation Distance",
+			"tip": "When playing 'Attenuated sound effects',\nIf the camera center is at the sound effect position, the volume is 1.\nWhen the camera center is at or beyond the attenuation distance from the sound effect, the volume is 0"
+		},
+		"config-soundAttenuation-easingId": {
+			"label": "Attenuation Easing",
+			"tip": "Interpolation curve from volume 1 to 0"
+		},
+		"config-webgl-summary": {
+			"content": "WebGL"
+		},
+		"config-webgl-desynchronized": {
+			"label": "Low Latency Mode",
+			"tip": "Optional parameter for WebGL context",
+			"options": {
+				"true": {
+					"name": "Enable",
+					"tip": "Reduces input latency and improves interaction responsiveness, but may cause slight screen tearing.\nMay crash when running in fullscreen on some AMD hardware PCs."
+				},
+				"false": {
+					"name": "Disable",
+					"tip": "Uses standard synchronized rendering, slightly increasing input latency but providing a more stable display."
+				}
+			}
+		},
+		"config-webgl-textureMagFilter": {
+			"label": "Texture Magnification",
+			"tip": "WebGL texture magnification sampling interpolation algorithm",
+			"options": {
+				"nearest": {
+					"name": "Nearest Sampling",
+					"tip": "Selects the nearest pixel color directly without interpolation.\nThe texture appears pixelated, suitable for pixel art or low-resolution retro games."
+				},
+				"linear": {
+					"name": "Linear Sampling",
+					"tip": "Uses bilinear interpolation to compute pixel values, making textures smoother when scaled.\nTextures appear softer and smoother without noticeable pixelation, suitable for high-resolution or realistic-style games."
+				}
+			}
+		},
+		"config-webgl-textureMinFilter": {
+			"label": "Texture Minification",
+			"tip": "WebGL texture minification sampling interpolation algorithm",
+			"options": {
+				"nearest": {
+					"name": "Nearest Sampling",
+					"tip": "Selects the nearest pixel color directly without interpolation.\nThe texture appears pixelated, suitable for pixel art or low-resolution retro games."
+				},
+				"linear": {
+					"name": "Linear Sampling",
+					"tip": "Uses bilinear interpolation to compute pixel values, making textures smoother when scaled.\nTextures appear softer and smoother without noticeable pixelation, suitable for high-resolution or realistic-style games."
+				}
+			}
+		},
+		"config-script-summary": {
+			"content": "Script"
+		},
+		"config-script-autoCompile": {
+			"label": "Auto Compile",
+			"tip": "Enable or disable automatic compilation of script files in the background.",
+			"options": {
+				"true": {
+					"name": "Enable",
+					"tip": "Watch TypeScript files in the project and automatically compile them into JavaScript."
+				},
+				"false": {
+					"name": "Disable",
+					"tip": "Disable automatic compilation and use the code editor's compilation feature instead."
+				}
+			}
+		},
+		"config-save-summary": {
+			"content": "Save"
+		},
+		"config-save-location": {
+			"label": "Save Location",
+			"tip": "Parent directory where game save data is stored.",
+			"options": {
+				"app-data": {
+					"name": "User Data Directory",
+					"tip": "This directory is the user's application data folder on different platforms.\nWindows: C:\\Users\\UserName\\AppData\\Roaming\\\nmacOS: /Users/UserName/Library/Application Support/\nLinux: /home/UserName/.config/"
+				},
+				"documents": {
+					"name": "User Documents Directory",
+					"tip": "If you want saves to be stored in the 'Documents' folder, making it easily accessible to users.\nWindows: C:\\Users\\UserName\\Documents\\\nmacOS: /Users/UserName/Documents/\nLinux: /home/UserName/Documents/"
+				},
+				"local": {
+					"name": "Application Local Directory",
+					"tip": "Saves are stored in the local directory, making it easier to inspect save data during development.\nHowever, there is a risk of accidental overwrites when updating the application."
+				}
+			}
+		},
+		"config-save-subdir": {
+			"label": "Subdirectory",
+			"tip": "Relative to the save location, setting a unique directory name can prevent conflicts with other applications' data.\n"
+		},
+		"config-localization-summary": {
+			"content": "Localization"
+		},
+		"config-localization-languages": {
+			"label": "Languages",
+			"tip": "List of game localization languages, detailed content can be edited in the 'Localization' window"
+		},
+		"config-localization-default": {
+			"label": "Default Game Language",
+			"tip": "Language selected on game start. When deployed, selected language is saved automatically"
+		},
+		"config-other-summary": {
+			"content": "Other Options"
+		},
+		"config-preload": {
+			"label": "Preload Files",
+			"tip": "Whether to preload media files when starting the game",
+			"options": {
+				"never": {
+					"name": "Never",
+					"tip": "Starts the game quickly, loading image and audio files on demand."
+				},
+				"always": {
+					"name": "Always",
+					"tip": "Preloads media files into memory to prevent flickering when displaying images for the first time and to reduce audio playback delay."
+				},
+				"deployed": {
+					"name": "Only After Deployment",
+					"tip": "Disabled during debugging, enabled only after deployment."
+				}
+			}
+		},
+		"config-deadzone": {
+			"label": "Custom dead zone",
+			"tip": "Custom dead zone for the handle, range (0-1)"
+		}
+	}
+}

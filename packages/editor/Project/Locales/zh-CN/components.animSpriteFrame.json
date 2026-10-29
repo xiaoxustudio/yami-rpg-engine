@@ -1,0 +1,71 @@
+{
+	"components": {
+		"animSpriteFrame-properties-grid": {
+			"label": "动画帧"
+		},
+		"animSpriteFrame-anchor-box": {
+			"label": "锚点"
+		},
+		"animSpriteFrame-anchorX": {
+			"tip": "$锚点 X\n精灵跟动画连接点的水平位置"
+		},
+		"animSpriteFrame-anchorY": {
+			"tip": "$锚点 Y\n精灵跟动画连接点的垂直位置"
+		},
+		"animSpriteFrame-pivot-box": {
+			"label": "轴点"
+		},
+		"animSpriteFrame-pivotX": {
+			"tip": "$轴点 X\n精灵跟动画连接点的水平偏移距离"
+		},
+		"animSpriteFrame-pivotY": {
+			"tip": "$轴点 Y\n精灵跟动画连接点的垂直偏移距离"
+		},
+		"animSpriteFrame-position-box": {
+			"label": "位置"
+		},
+		"animSpriteFrame-x": {
+			"tip": "$X\n水平位置"
+		},
+		"animSpriteFrame-y": {
+			"tip": "$Y\n垂直位置"
+		},
+		"animSpriteFrame-rotation-box": {
+			"label": "旋转"
+		},
+		"animSpriteFrame-rotation": {
+			"tip": "$旋转\n旋转角度，0度 = 正右方，顺时针旋转"
+		},
+		"animSpriteFrame-scale-box": {
+			"label": "缩放"
+		},
+		"animSpriteFrame-scaleX": {
+			"tip": "$缩放 X\n水平缩放系数"
+		},
+		"animSpriteFrame-scaleY": {
+			"tip": "$缩放 Y\n垂直缩放系数"
+		},
+		"animSpriteFrame-opacity-box": {
+			"label": "不透明度"
+		},
+		"animSpriteFrame-opacity": {
+			"tip": "$不透明度\n用来调节动画帧的可见度"
+		},
+		"animSpriteFrame-tint-0-box": {
+			"label": "色调 - 红",
+			"tip": "输入颜色(红) + 色调(红) = 输出颜色(红)"
+		},
+		"animSpriteFrame-tint-1-box": {
+			"label": "色调 - 绿",
+			"tip": "输入颜色(绿) + 色调(绿) = 输出颜色(绿)"
+		},
+		"animSpriteFrame-tint-2-box": {
+			"label": "色调 - 蓝",
+			"tip": "输入颜色(蓝) + 色调(蓝) = 输出颜色(蓝)"
+		},
+		"animSpriteFrame-tint-3-box": {
+			"label": "色调 - 灰",
+			"tip": "灰度与饱和度相反，灰度越高则饱和度越低"
+		}
+	}
+}

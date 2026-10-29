@@ -1,0 +1,119 @@
+{
+	"components": {
+		"uiProgressBar-properties-grid": {
+			"label": "ProgressBar Properties"
+		},
+		"uiProgressBar-image": {
+			"label": "Image",
+			"tip": "Image file for the element"
+		},
+		"uiProgressBar-display": {
+			"label": "Display",
+			"tip": "How to display the image",
+			"options": {
+				"stretch": {
+					"name": "Stretch",
+					"tip": "Stretch the image to fill the element"
+				},
+				"clip": {
+					"name": "Clip",
+					"tip": "Crop and stretch the image to fill the element"
+				}
+			}
+		},
+		"uiProgressBar-clip": {
+			"label": "Clip",
+			"tip": "Image cropping area"
+		},
+		"uiProgressBar-type": {
+			"label": "Type",
+			"tip": "Progress bar type",
+			"options": {
+				"horizontal": {
+					"name": "Horizontal",
+					"tip": "Progress displayed from left to right"
+				},
+				"vertical": {
+					"name": "Vertical",
+					"tip": "Progress displayed from bottom to top"
+				},
+				"round": {
+					"name": "Circular",
+					"tip": "Progress displayed in clockwise or counterclockwise direction"
+				}
+			}
+		},
+		"uiProgressBar-centerX": {
+			"label": "Center X",
+			"tip": "Center X of the circular progress bar"
+		},
+		"uiProgressBar-centerY": {
+			"label": "Center Y",
+			"tip": "Center Y of the circular progress bar"
+		},
+		"uiProgressBar-startAngle": {
+			"label": "Start Angle",
+			"tip": "Starting angle of the circular progress bar, 0° = right, clockwise rotation"
+		},
+		"uiProgressBar-centralAngle": {
+			"label": "Central Angle",
+			"tip": "Angle between the end and start angle of the circular progress bar, can be negative"
+		},
+		"uiProgressBar-step": {
+			"label": "Step",
+			"tip": "For horizontal or vertical progress bars: texture sampling width is an integer multiple of the step size\nFor circular progress bars: texture sampling angle is an integer multiple of the step size\nStep = 0: means no trimming on the progress bar"
+		},
+		"uiProgressBar-progress": {
+			"label": "Progress",
+			"tip": "Initial progress of the progress bar (0 ~ 1)"
+		},
+		"uiProgressBar-blend": {
+			"label": "Blend",
+			"tip": "Select a formula to blend the color with the underlying color",
+			"options": {
+				"normal": {
+					"name": "Normal",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "Additive",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "Subtract",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		},
+		"uiProgressBar-colorMode": {
+			"label": "Color Mode",
+			"tip": "How to obtain the progress bar's color",
+			"options": {
+				"texture": {
+					"name": "Texture Sampling",
+					"tip": "Use pixel color from the progress bar image"
+				},
+				"fixed": {
+					"name": "Fixed",
+					"tip": "Replace pixel colors in the progress bar image with a specified color"
+				}
+			}
+		},
+		"uiProgressBar-color-0-box": {
+			"label": "Red",
+			"tip": "Red component of the progress bar color"
+		},
+		"uiProgressBar-color-1-box": {
+			"label": "Green",
+			"tip": "Green component of the progress bar color"
+		},
+		"uiProgressBar-color-2-box": {
+			"label": "Blue",
+			"tip": "Blue component of the progress bar color"
+		},
+		"uiProgressBar-color-3-box": {
+			"label": "Alpha",
+			"tip": "Opacity of the progress bar color"
+		}
+	}
+}

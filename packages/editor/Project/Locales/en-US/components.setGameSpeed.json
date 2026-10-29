@@ -1,0 +1,24 @@
+{
+	"components": {
+		"setGameSpeed": {
+			"title": "Set Game Speed"
+		},
+		"setGameSpeed-speed": {
+			"label": "Speed",
+			"tip": "Game speed ratio affecting frame delta time"
+		},
+		"setGameSpeed-easingId": {
+			"label": "Easing"
+		},
+		"setGameSpeed-duration": {
+			"label": "Duration"
+		},
+		"setGameSpeed-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

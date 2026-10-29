@@ -1,8 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount, type VueWrapper } from '@vue/test-utils';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import DownloadFile from '@app/components/commands/DownloadFile.vue';
 import HttpRequest from '@app/components/commands/HttpRequest.vue';
 import RequestURL from '@app/components/commands/RequestURL.vue';
@@ -10,11 +8,9 @@ import UploadFile from '@app/components/commands/UploadFile.vue';
 import WebSocketConnect from '@app/components/commands/WebSocketConnect.vue';
 import { applyLocaleData, getYamiI18n, initYamiI18n } from '@app/i18n';
 import type { LocaleData } from '@app/i18n/convert';
+import { loadLocaleBundle } from '@app/i18n/__tests__/locale-bundle';
 
-const LOCALE_DIR = resolve(process.cwd(), 'Project/Locales');
-
-const loadLocale = (file: string): LocaleData =>
-	JSON.parse(readFileSync(resolve(LOCALE_DIR, file), 'utf8')) as LocaleData;
+const loadLocale = (file: string): LocaleData => loadLocaleBundle(file);
 
 const windows = {
 	downloadFile: { component: DownloadFile, title: 'Download File' },

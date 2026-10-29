@@ -1,0 +1,55 @@
+{
+	"components": {
+		"addAnimationComponent": {
+			"title": "添加动画组件"
+		},
+		"addAnimationComponent-actor": {
+			"label": "角色",
+			"tip": "为此角色添加动画组件"
+		},
+		"addAnimationComponent-animationId": {
+			"label": "动画",
+			"tip": "选择一个动画文件"
+		},
+		"addAnimationComponent-motion": {
+			"label": "动作",
+			"tip": "选择该动画的一个动作\n动画ID加上动作ID组成这个动画组件的ID\n因此相同动画和动作的组件不能重复添加"
+		},
+		"addAnimationComponent-rotatable": {
+			"label": "可旋转",
+			"tip": "是否自动更新动画旋转角度",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "动画受角度影响而旋转"
+				},
+				"false": {
+					"name": "否",
+					"tip": "动画始终不会旋转"
+				}
+			}
+		},
+		"addAnimationComponent-syncAngle": {
+			"label": "同步角度",
+			"tip": "是否同步动画与角色的角度",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "动画角度总是设置为角色当前的角度，动画角度会影响动作方向的切换"
+				},
+				"false": {
+					"name": "否",
+					"tip": "动画角度不会自动改变"
+				}
+			}
+		},
+		"addAnimationComponent-priority": {
+			"label": "优先级",
+			"tip": "动画组件的排序优先级\n - 小于0：动画组件显示在角色动画下面\n - 大于或等于0：动画组件显示在角色动画上面"
+		},
+		"addAnimationComponent-offsetY": {
+			"label": "偏移 Y",
+			"tip": "动画渲染位置的垂直偏移距离（单位：像素）"
+		}
+	}
+}

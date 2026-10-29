@@ -1,0 +1,42 @@
+{
+	"components": {
+		"moveCamera": {
+			"title": "移动摄像机"
+		},
+		"moveCamera-mode": {
+			"label": "模式",
+			"tip": "选择摄像机位置的参照物",
+			"options": {
+				"position": {
+					"name": "移动到指定位置",
+					"tip": "移动摄像机到场景中的指定位置"
+				},
+				"actor": {
+					"name": "跟随角色",
+					"tip": "锁定摄像机到指定角色的位置"
+				}
+			}
+		},
+		"moveCamera-position": {
+			"label": "位置",
+			"tip": "移动摄像机到这个位置"
+		},
+		"moveCamera-actor": {
+			"label": "角色",
+			"tip": "锁定摄像机到这个角色的位置"
+		},
+		"moveCamera-easingId": {
+			"label": "过渡"
+		},
+		"moveCamera-duration": {
+			"label": "时长"
+		},
+		"moveCamera-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

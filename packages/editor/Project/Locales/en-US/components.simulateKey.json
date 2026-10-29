@@ -1,0 +1,29 @@
+{
+	"components": {
+		"simulateKey": {
+			"title": "Simulate Key"
+		},
+		"simulateKey-operation": {
+			"label": "Operation",
+			"tip": "Simulate a keyboard action",
+			"options": {
+				"click": {
+					"name": "Click",
+					"tip": "Simulate the press and release behavior of the specified key"
+				},
+				"press": {
+					"name": "Press",
+					"tip": "If the specified key is released, simulate the press behavior and trigger the \"Key Down\" event"
+				},
+				"release": {
+					"name": "Release",
+					"tip": "If the specified key is pressed, simulate the release behavior and trigger the \"Key Up\" event"
+				}
+			}
+		},
+		"simulateKey-keycode": {
+			"label": "Key Code",
+			"tip": "Press any key to enter the key code"
+		}
+	}
+}

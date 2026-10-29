@@ -1,0 +1,19 @@
+{
+	"components": {
+		"setObjectProperty": {
+			"title": "Set Object Property"
+		},
+		"setObjectProperty-variable": {
+			"label": "Object Variable",
+			"tip": "The variable to be set"
+		},
+		"setObjectProperty-value-variable": {
+			"label": "Value",
+			"tip": "Save the value of this variable to the index"
+		},
+		"setObjectProperty-list": {
+			"label": "Index List",
+			"tip": "Obtain from top to bottom in sequence"
+		}
+	}
+}

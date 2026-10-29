@@ -1,0 +1,11 @@
+{
+	"components": {
+		"setTarget": {
+			"title": "Set Target"
+		},
+		"setTarget-actor": {
+			"label": "Actor",
+			"tip": "Set the specified actor as the 'Target Actor' in the actor accessor"
+		}
+	}
+}

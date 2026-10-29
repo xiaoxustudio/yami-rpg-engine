@@ -1,0 +1,111 @@
+{
+	"components": {
+		"condition": {
+			"title": "条件"
+		},
+		"condition-type": {
+			"label": "条件类型",
+			"tip": "选择条件变量的类型",
+			"options": {
+				"global-boolean": {
+					"name": "全局 - 布尔值",
+					"tip": "选择全局变量(布尔值)"
+				},
+				"global-number": {
+					"name": "全局 - 数值",
+					"tip": "选择全局变量(数值)"
+				},
+				"global-string": {
+					"name": "全局 - 字符串",
+					"tip": "选择全局变量(字符串)"
+				},
+				"self-boolean": {
+					"name": "独立 - 布尔值",
+					"tip": "选择对象独立变量(布尔值)"
+				},
+				"self-number": {
+					"name": "独立 - 数值",
+					"tip": "选择对象独立变量(数值)"
+				},
+				"self-string": {
+					"name": "独立 - 字符串",
+					"tip": "选择对象独立变量(字符串)"
+				}
+			}
+		},
+		"condition-key": {
+			"label": "变量",
+			"tip": "选择一个正确类型的全局变量"
+		},
+		"condition-boolean-operation": {
+			"label": "操作",
+			"tip": "布尔值操作",
+			"options": {
+				"equal": {
+					"name": "==",
+					"tip": "等于"
+				},
+				"unequal": {
+					"name": "!=",
+					"tip": "不等于"
+				}
+			}
+		},
+		"condition-boolean-value": {
+			"label": "布尔值",
+			"tip": "操作数"
+		},
+		"condition-number-operation": {
+			"label": "操作",
+			"tip": "数值操作",
+			"options": {
+				"equal": {
+					"name": "==",
+					"tip": "等于"
+				},
+				"unequal": {
+					"name": "!=",
+					"tip": "不等于"
+				},
+				"greater-or-equal": {
+					"name": ">=",
+					"tip": "大于或等于"
+				},
+				"less-or-equal": {
+					"name": "<=",
+					"tip": "小于或等于"
+				},
+				"greater": {
+					"name": ">",
+					"tip": "大于"
+				},
+				"less": {
+					"name": "<",
+					"tip": "小于"
+				}
+			}
+		},
+		"condition-number-value": {
+			"label": "数值",
+			"tip": "操作数"
+		},
+		"condition-string-operation": {
+			"label": "操作",
+			"tip": "字符串操作",
+			"options": {
+				"equal": {
+					"name": "==",
+					"tip": "等于"
+				},
+				"unequal": {
+					"name": "!=",
+					"tip": "不等于"
+				}
+			}
+		},
+		"condition-string-value": {
+			"label": "字符串",
+			"tip": "操作数"
+		}
+	}
+}

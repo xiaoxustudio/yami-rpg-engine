@@ -1,0 +1,69 @@
+{
+	"components": {
+		"elementGetter": {
+			"title": "Element"
+		},
+		"elementGetter-type": {
+			"label": "Type",
+			"tip": "How to get an element",
+			"options": {
+				"trigger": {
+					"name": "Event Trigger Element",
+					"tip": "Element that triggered this event"
+				},
+				"latest": {
+					"name": "Latest Element",
+					"tip": "Get the latest created element, which refreshes when the 'Create Element' command is called"
+				},
+				"by-id": {
+					"name": "By Element ID",
+					"tip": "Get the latest created element with the specified ID"
+				},
+				"by-ancestor-and-id": {
+					"name": "By Ancestor And ID",
+					"tip": "Get the first element with the specified ID among the descendant elements of the specified element"
+				},
+				"by-index": {
+					"name": "By Parent And Index",
+					"tip": "Get a child element of the specified element"
+				},
+				"by-button-index": {
+					"name": "By Focus And Button Index",
+					"tip": "Get a button in the button list of the specified focus element"
+				},
+				"selected-button": {
+					"name": "Get Selected Button In Focus",
+					"tip": "Get the selected button in the currently focused element"
+				},
+				"focus": {
+					"name": "Get The Latest Focus Element",
+					"tip": "Get the latest focused element"
+				},
+				"parent": {
+					"name": "Get Parent Element",
+					"tip": "Get the parent element of the variable element"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Read the element from the specified variable"
+				}
+			}
+		},
+		"elementGetter-ancestor": {
+			"label": "Ancestor",
+			"tip": "Choose the ancestor element of the target"
+		},
+		"elementGetter-presetId": {
+			"label": "Data ID",
+			"tip": "Get the preset element"
+		},
+		"elementGetter-index": {
+			"label": "Index",
+			"tip": "Position of target element in child list\nIndex 0 = First child element\nIndex 1 = Second child element\n......"
+		},
+		"elementGetter-variable": {
+			"label": "Variable",
+			"tip": "Get the element object from the variable"
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"components": {
+		"waitForVideo": {
+			"title": "等待视频结束"
+		},
+		"waitForVideo-element": {
+			"label": "元素",
+			"tip": "指定一个视频元素"
+		}
+	}
+}

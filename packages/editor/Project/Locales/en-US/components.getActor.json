@@ -1,0 +1,149 @@
+{
+	"components": {
+		"getActor": {
+			"title": "Get Actor"
+		},
+		"getActor-variable": {
+			"label": "Write to Variable",
+			"tip": "Write the obtained actor to this variable"
+		},
+		"getActor-position": {
+			"label": "Position",
+			"tip": "Find an actor at this location"
+		},
+		"getActor-area": {
+			"label": "Select Area",
+			"tip": "Search for actors in this shaped area",
+			"options": {
+				"square": {
+					"name": "Square",
+					"tip": "Find an actor within a square area centered at the specified position"
+				},
+				"circle": {
+					"name": "Circle",
+					"tip": "Find an actor within a circular area centered at the specified position"
+				}
+			}
+		},
+		"getActor-size": {
+			"label": "Size",
+			"tip": "Side length of the square area"
+		},
+		"getActor-radius": {
+			"label": "Radius",
+			"tip": "Radius of the circular area"
+		},
+		"getActor-selector": {
+			"label": "Selector",
+			"tip": "First filter for selecting an actor",
+			"options": {
+				"enemy": {
+					"name": "Enemy",
+					"tip": "Select hostile actors from the specified team"
+				},
+				"friend": {
+					"name": "Friend",
+					"tip": "Select friendly actors from the specified team"
+				},
+				"team": {
+					"name": "Team Member",
+					"tip": "Select members of the specified team"
+				},
+				"any": {
+					"name": "Any",
+					"tip": "Select any actor"
+				}
+			}
+		},
+		"getActor-teamId": {
+			"label": "Team",
+			"tip": "Actor's team"
+		},
+		"getActor-condition": {
+			"label": "Condition",
+			"tip": "Second filter for selecting an actor",
+			"options": {
+				"nearest": {
+					"name": "Nearest",
+					"tip": "Select the actor closest to the area center"
+				},
+				"farthest": {
+					"name": "Farthest",
+					"tip": "Select the actor furthest from the area center"
+				},
+				"min-attribute-value": {
+					"name": "Min Attribute Value",
+					"tip": "Select the actor with the smallest specified attribute"
+				},
+				"max-attribute-value": {
+					"name": "Max Attribute Value",
+					"tip": "Select the actor with the largest specified attribute"
+				},
+				"min-attribute-ratio": {
+					"name": "Min Attribute Ratio",
+					"tip": "Select the actor with the smallest ratio between the two specified attributes"
+				},
+				"max-attribute-ratio": {
+					"name": "Max Attribute Ratio",
+					"tip": "Select the actor with the largest ratio between the two specified attributes"
+				},
+				"random": {
+					"name": "Random",
+					"tip": "Select an actor randomly"
+				}
+			}
+		},
+		"getActor-attribute": {
+			"label": "Attribute",
+			"tip": "Attribute of target actor"
+		},
+		"getActor-divisor": {
+			"label": "Attribute 2",
+			"tip": "Second attribute of target actor"
+		},
+		"getActor-activation": {
+			"label": "Activation",
+			"tip": "Activation state of target actor",
+			"options": {
+				"active": {
+					"name": "Active",
+					"tip": "Actor must be active"
+				},
+				"inactive": {
+					"name": "Inactive",
+					"tip": "Actor must be inactive"
+				},
+				"either": {
+					"name": "Either",
+					"tip": "No activation state check"
+				}
+			}
+		},
+		"getActor-exclusion": {
+			"label": "Exclusion",
+			"tip": "Exclude actors that meet the condition",
+			"options": {
+				"none": {
+					"name": "None",
+					"tip": "Can be any actor"
+				},
+				"actor": {
+					"name": "Exclude Actor",
+					"tip": "Cannot be the specified actor"
+				},
+				"team": {
+					"name": "Exclude Team",
+					"tip": "Cannot be from the specified team"
+				}
+			}
+		},
+		"getActor-exclusionActor": {
+			"label": "Exclusion Actor",
+			"tip": "Target cannot be this actor"
+		},
+		"getActor-exclusionTeamId": {
+			"label": "Exclusion Team",
+			"tip": "Target cannot be from this team"
+		}
+	}
+}

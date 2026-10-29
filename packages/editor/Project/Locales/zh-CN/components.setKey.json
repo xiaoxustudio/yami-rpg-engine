@@ -1,0 +1,11 @@
+{
+	"components": {
+		"setKey": {
+			"title": "设置键"
+		},
+		"setKey-key": {
+			"label": "键",
+			"tip": "设置过渡曲线的键，供Javascript访问"
+		}
+	}
+}

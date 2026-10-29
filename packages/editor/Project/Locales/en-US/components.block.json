@@ -1,0 +1,15 @@
+{
+	"components": {
+		"block": {
+			"title": "Block"
+		},
+		"block-note": {
+			"placeholder": "Note",
+			"tip": "Describe the purpose of this command block"
+		},
+		"block-asynchronous-label": {
+			"content": "Asynchronous",
+			"tip": "Enabled: Creates a new execution branch without blocking subsequent commands.\nDisabled: Executes the commands in the block synchronously without any additional operations."
+		}
+	}
+}

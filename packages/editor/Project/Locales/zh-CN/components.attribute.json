@@ -1,0 +1,53 @@
+{
+	"components": {
+		"attribute": {
+			"title": "属性"
+		},
+		"attribute-list": {
+			"label": "列表"
+		},
+		"attribute-properties-flex": {
+			"label": "属性"
+		},
+		"attribute-name": {
+			"label": "名称",
+			"tip": "属性的名称"
+		},
+		"attribute-key": {
+			"label": "键",
+			"placeholder": "默认",
+			"tip": "属性的键，默认使用属性ID作为键"
+		},
+		"attribute-type-boolean": {
+			"label": "类型"
+		},
+		"attribute-type-boolean-label": {
+			"content": "布尔值",
+			"tip": "只能写入布尔值"
+		},
+		"attribute-type-number-label": {
+			"content": "数值",
+			"tip": "只能写入数值"
+		},
+		"attribute-type-string-label": {
+			"content": "字符串",
+			"tip": "只能写入字符串"
+		},
+		"attribute-type-enum-label": {
+			"content": "字符串(枚举)",
+			"tip": "只能写入指定的几个枚举值之一"
+		},
+		"attribute-type-object-label": {
+			"content": "对象(元素属性)",
+			"tip": "只能写入对象（仅元素可用）"
+		},
+		"attribute-enum": {
+			"label": "选项",
+			"tip": "选择一个枚举群组"
+		},
+		"attribute-note": {
+			"label": "备注",
+			"tip": "属性的备注说明"
+		}
+	}
+}

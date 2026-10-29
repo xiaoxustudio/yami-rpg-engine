@@ -1,0 +1,19 @@
+{
+	"components": {
+		"loadSubscene": {
+			"title": "加载子场景"
+		},
+		"loadSubscene-sceneId": {
+			"label": "场景",
+			"tip": "加载这个ID的场景中的所有对象"
+		},
+		"loadSubscene-shiftX": {
+			"label": "偏移 X",
+			"tip": "所有加载对象的水平位置偏移"
+		},
+		"loadSubscene-shiftY": {
+			"label": "偏移 Y",
+			"tip": "所有加载对象的垂直位置偏移"
+		}
+	}
+}

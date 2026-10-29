@@ -1,0 +1,15 @@
+{
+	"components": {
+		"setTriggerSpeed": {
+			"title": "Set Trigger Speed"
+		},
+		"setTriggerSpeed-trigger": {
+			"label": "Trigger",
+			"tip": "Set this trigger"
+		},
+		"setTriggerSpeed-speed": {
+			"label": "Speed",
+			"tip": "Trigger movement speed (unit: tiles/second)"
+		}
+	}
+}

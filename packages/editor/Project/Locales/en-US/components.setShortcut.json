@@ -1,0 +1,49 @@
+{
+	"components": {
+		"setShortcut": {
+			"title": "Set Shortcut"
+		},
+		"setShortcut-actor": {
+			"label": "Actor",
+			"tip": "Set the shortcut for this actor"
+		},
+		"setShortcut-operation": {
+			"label": "Operation",
+			"tip": "Perform a shortcut operation",
+			"options": {
+				"set-item-shortcut": {
+					"name": "Set Item Shortcut",
+					"tip": "Bind the item with the specified ID to the shortcut key"
+				},
+				"set-skill-shortcut": {
+					"name": "Set Skill Shortcut",
+					"tip": "Bind the skill with the specified ID to the shortcut key"
+				},
+				"delete-shortcut": {
+					"name": "Delete Shortcut",
+					"tip": "Unbind the shortcut key from the corresponding item or skill"
+				},
+				"swap-shortcuts": {
+					"name": "Swap Shortcuts",
+					"tip": "Swap the contents of the two shortcut key bindings (empty ones are also acceptable)"
+				}
+			}
+		},
+		"setShortcut-key": {
+			"label": "Shortcut Key",
+			"tip": "Shortcut key for item or skill"
+		},
+		"setShortcut-key2": {
+			"label": "Shortcut Key 2",
+			"tip": "Shortcut key 2 for item or skill"
+		},
+		"setShortcut-itemId": {
+			"label": "Item",
+			"tip": "Bind this item to the shortcut key"
+		},
+		"setShortcut-skillId": {
+			"label": "Skill",
+			"tip": "Bind this skill to the shortcut key"
+		}
+	}
+}

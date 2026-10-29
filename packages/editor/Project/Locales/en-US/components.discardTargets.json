@@ -1,0 +1,45 @@
+{
+	"components": {
+		"discardTargets": {
+			"title": "Discard Targets"
+		},
+		"discardTargets-actor": {
+			"label": "Actor",
+			"tip": "Remove some target actors from this actor's target pool"
+		},
+		"discardTargets-selector": {
+			"label": "Selector",
+			"tip": "Filter target actors that meet the criteria",
+			"options": {
+				"enemy": {
+					"name": "Enemy",
+					"tip": "Select enemy actors from the target pool"
+				},
+				"friend": {
+					"name": "Friend",
+					"tip": "Select friendly actors from the target pool"
+				},
+				"team": {
+					"name": "Team Member",
+					"tip": "Select team members from the target pool"
+				},
+				"team-except-self": {
+					"name": "Team Member Except Self",
+					"tip": "Select team members except this actor from the target pool"
+				},
+				"any-except-self": {
+					"name": "Any Except Self",
+					"tip": "Select all actors except this actor from the target pool"
+				},
+				"any": {
+					"name": "Any",
+					"tip": "Select all actors from the target pool"
+				}
+			}
+		},
+		"discardTargets-distance": {
+			"label": "Distance",
+			"tip": "Remove actors from the target pool that are greater than or equal to the specified distance"
+		}
+	}
+}

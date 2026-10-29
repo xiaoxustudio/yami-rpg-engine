@@ -1,0 +1,171 @@
+{
+	"components": {
+		"uiText-properties-grid": {
+			"label": "文本属性"
+		},
+		"uiText-direction": {
+			"label": "方向",
+			"tip": "选择文本排版方向",
+			"options": {
+				"horizontal-tb": {
+					"name": "水平 - 上下",
+					"tip": "内容从左到右水平流动，向下换行"
+				},
+				"vertical-lr": {
+					"name": "垂直 - 左右",
+					"tip": "内容从上到下垂直流动，向右换行"
+				},
+				"vertical-rl": {
+					"name": "垂直 - 右左",
+					"tip": "内容从上到下垂直流动，向左换行"
+				}
+			}
+		},
+		"uiText-align-box": {
+			"label": "对齐"
+		},
+		"uiText-align-left": {
+			"tip": "$左对齐\n文本的左边缘对齐元素的左边缘"
+		},
+		"uiText-align-center": {
+			"tip": "$水平居中\n文本的水平中点对齐元素的水平中点"
+		},
+		"uiText-align-right": {
+			"tip": "$右对齐\n文本的右边缘对齐元素的右边缘"
+		},
+		"uiText-align-top": {
+			"tip": "$顶部对齐\n文本的顶部边缘对齐元素的顶部边缘"
+		},
+		"uiText-align-middle": {
+			"tip": "$垂直居中\n文本的垂直中点对齐元素的垂直中点"
+		},
+		"uiText-align-bottom": {
+			"tip": "$底部对齐\n文本的底部边缘对齐元素的底部边缘"
+		},
+		"uiText-content": {
+			"label": "内容",
+			"tip": "元素的文本内容"
+		},
+		"uiText-size-box": {
+			"label": "字体大小",
+			"tip": "文字的大小（10 ~ 400）"
+		},
+		"uiText-lineSpacing-box": {
+			"label": "行间距",
+			"tip": "文本行的间隔距离"
+		},
+		"uiText-letterSpacing-box": {
+			"label": "字间距",
+			"tip": "同一行每个文字的间隔距离"
+		},
+		"uiText-color": {
+			"label": "颜色",
+			"tip": "文字的颜色"
+		},
+		"uiText-font": {
+			"label": "字体",
+			"placeholder": "默认",
+			"tip": "输入字体名称，如果有多个字体，用逗号隔开，按从左到右的优先顺序排列"
+		},
+		"uiText-typeface": {
+			"label": "字型",
+			"tip": "选择文字的样式",
+			"options": {
+				"regular": {
+					"name": "正常",
+					"tip": "默认文字样式"
+				},
+				"bold": {
+					"name": "加粗",
+					"tip": "加粗以重点突出"
+				},
+				"italic": {
+					"name": "倾斜",
+					"tip": "倾斜以模拟草书"
+				},
+				"bold-italic": {
+					"name": "加粗 倾斜",
+					"tip": "同时启用加粗和倾斜"
+				}
+			}
+		},
+		"uiText-effect-type": {
+			"label": "文字效果",
+			"tip": "选择一种文字效果",
+			"options": {
+				"none": {
+					"name": "无",
+					"tip": "无描边"
+				},
+				"shadow": {
+					"name": "阴影",
+					"tip": "在指定的偏移位置渲染文字作为阴影"
+				},
+				"stroke": {
+					"name": "描边",
+					"tip": "渲染指定宽度的字形轮廓，其中有一半宽度被文字遮挡"
+				},
+				"outline": {
+					"name": "轮廓",
+					"tip": "分别在上下左右偏离1像素距离的位置渲染4次文字作为轮廓"
+				}
+			}
+		},
+		"uiText-effect-shadowOffsetX": {
+			"label": "阴影 X",
+			"tip": "文字阴影的水平偏移距离"
+		},
+		"uiText-effect-shadowOffsetY": {
+			"label": "阴影 Y",
+			"tip": "文字阴影的垂直偏移距离"
+		},
+		"uiText-effect-strokeWidth": {
+			"label": "描边宽度",
+			"tip": "文字描边线条的宽度"
+		},
+		"uiText-effect-color": {
+			"label": "效果颜色",
+			"tip": "背景文字的颜色"
+		},
+		"uiText-overflow": {
+			"label": "溢出",
+			"tip": "文本超过边框后的处理方法",
+			"options": {
+				"visible": {
+					"name": "可见",
+					"tip": "允许文字出现在元素外面"
+				},
+				"wrap": {
+					"name": "换行",
+					"tip": "当文字打印到元素边缘时，换一行继续打印"
+				},
+				"truncate": {
+					"name": "截断",
+					"tip": "当换行后超出元素边缘时，停止打印文本"
+				},
+				"wrap-truncate": {
+					"name": "换行 截断",
+					"tip": "同时具备换行和截断特性"
+				}
+			}
+		},
+		"uiText-blend": {
+			"label": "混合模式",
+			"tip": "选择一个计算公式将颜色与底层的颜色混合",
+			"options": {
+				"normal": {
+					"name": "正常",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "加法",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "减法",
+					"tip": "C = max(0, A - B)"
+				}
+			}
+		}
+	}
+}

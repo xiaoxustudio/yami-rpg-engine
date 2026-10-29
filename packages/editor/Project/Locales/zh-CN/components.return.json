@@ -1,0 +1,113 @@
+{
+	"components": {
+		"return": {
+			"title": "返回"
+		},
+		"return-type": {
+			"label": "返回类型",
+			"tip": "本事件允许返回的值类型，在全局事件面板中可以修改",
+			"options": {
+				"none": {
+					"name": "无",
+					"tip": "不返回任何值"
+				},
+				"boolean": {
+					"name": "布尔值",
+					"tip": "返回布尔值"
+				},
+				"number": {
+					"name": "数值",
+					"tip": "返回数值"
+				},
+				"string": {
+					"name": "字符串",
+					"tip": "返回字符串"
+				},
+				"object": {
+					"name": "对象",
+					"tip": "返回任意对象"
+				},
+				"actor": {
+					"name": "角色",
+					"tip": "返回角色对象"
+				},
+				"skill": {
+					"name": "技能",
+					"tip": "返回技能对象"
+				},
+				"state": {
+					"name": "状态",
+					"tip": "返回状态对象"
+				},
+				"equipment": {
+					"name": "装备",
+					"tip": "返回装备对象"
+				},
+				"item": {
+					"name": "物品",
+					"tip": "返回物品对象"
+				},
+				"trigger": {
+					"name": "触发器",
+					"tip": "返回触发器对象"
+				},
+				"light": {
+					"name": "光源",
+					"tip": "返回光源对象"
+				},
+				"element": {
+					"name": "元素",
+					"tip": "返回元素对象"
+				}
+			}
+		},
+		"return-boolean": {
+			"label": "布尔值",
+			"tip": "返回这个布尔值"
+		},
+		"return-number": {
+			"label": "数值",
+			"tip": "返回这个数值或变量"
+		},
+		"return-string": {
+			"label": "字符串",
+			"tip": "返回这个字符串或变量"
+		},
+		"return-object": {
+			"label": "对象",
+			"tip": "返回从这个变量读取的对象"
+		},
+		"return-actor": {
+			"label": "角色",
+			"tip": "返回这个角色"
+		},
+		"return-skill": {
+			"label": "技能",
+			"tip": "返回这个技能"
+		},
+		"return-state": {
+			"label": "状态",
+			"tip": "返回这个状态"
+		},
+		"return-equipment": {
+			"label": "装备",
+			"tip": "返回这个装备"
+		},
+		"return-item": {
+			"label": "物品",
+			"tip": "返回这个物品"
+		},
+		"return-trigger": {
+			"label": "触发器",
+			"tip": "返回这个触发器"
+		},
+		"return-light": {
+			"label": "光源",
+			"tip": "返回这个光源"
+		},
+		"return-element": {
+			"label": "元素",
+			"tip": "返回这个元素"
+		}
+	}
+}

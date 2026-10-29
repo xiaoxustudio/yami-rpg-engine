@@ -1,0 +1,800 @@
+{
+	"components": {
+		"setNumber": {
+			"title": "Set Number"
+		},
+		"setNumber-variable": {
+			"label": "Variable",
+			"tip": "Target variable to be written"
+		},
+		"setNumber-operands": {
+			"label": "Expression"
+		},
+		"setNumber-operand": {
+			"title": "Number Operand"
+		},
+		"setNumber-operation": {
+			"label": "Operation",
+			"tip": "Expression operation",
+			"options": {
+				"set": {
+					"name": "Set",
+					"tip": "Set the target variable to the expression’s value"
+				},
+				"add": {
+					"name": "Add",
+					"tip": "Add the value of the expression to the target variable's value"
+				},
+				"sub": {
+					"name": "Sub",
+					"tip": "Subtract the value of the expression from the target variable's value"
+				},
+				"mul": {
+					"name": "Mul",
+					"tip": "Multiply the target variable's value by the value of the expression"
+				},
+				"div": {
+					"name": "Div",
+					"tip": "Divide the target variable's value by the value of the expression"
+				},
+				"mod": {
+					"name": "Mod",
+					"tip": "Get the remainder when the target variable's value is divided by the value of the expression"
+				}
+			}
+		},
+		"setNumber-operand-operation": {
+			"tip": "$ Operation\nNumeric operation",
+			"options": {
+				"add": {
+					"name": "Add",
+					"tip": "Add operands"
+				},
+				"sub": {
+					"name": "Sub",
+					"tip": "Subtract operands"
+				},
+				"mul": {
+					"name": "Mul",
+					"tip": "Multiply operands"
+				},
+				"div": {
+					"name": "Div",
+					"tip": "Divide operands"
+				},
+				"mod": {
+					"name": "Mod",
+					"tip": "Get the remainder when operands are divided"
+				},
+				"add()": {
+					"name": "(Add)",
+					"tip": "Add operands (higher priority)"
+				},
+				"sub()": {
+					"name": "(Sub)",
+					"tip": "Subtract operands (higher priority)"
+				},
+				"mul()": {
+					"name": "(Mul)",
+					"tip": "Multiply operands (higher priority)"
+				},
+				"div()": {
+					"name": "(Div)",
+					"tip": "Divide operands (higher priority)"
+				},
+				"mod()": {
+					"name": "(Mod)",
+					"tip": "Get remainder when operands are divided (higher priority)"
+				}
+			}
+		},
+		"setNumber-operand-type": {
+			"label": "Type",
+			"tip": "Select the method to obtain the value",
+			"options": {
+				"constant": {
+					"name": "Constant",
+					"tip": "Fixed value"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Read data from a variable"
+				},
+				"math": {
+					"name": "Math",
+					"tip": "Mathematical methods"
+				},
+				"string": {
+					"name": "String",
+					"tip": "String methods"
+				},
+				"object": {
+					"name": "Object",
+					"tip": "Object methods"
+				},
+				"element": {
+					"name": "Element",
+					"tip": "Element methods"
+				},
+				"list": {
+					"name": "List Item",
+					"tip": "Read the list from a variable, then read the value at a specified position in the list"
+				},
+				"parameter": {
+					"name": "Parameter",
+					"tip": "Parameters entered in 'Show Text' or 'Show Choices' commands"
+				},
+				"script": {
+					"name": "Script",
+					"tip": "Execute JavaScript and get the return value"
+				},
+				"other": {
+					"name": "Other",
+					"tip": "Other methods"
+				}
+			}
+		},
+		"setNumber-operand-constant-value": {
+			"label": "Constant",
+			"tip": "Fixed value"
+		},
+		"setNumber-operand-math-method": {
+			"label": "Math Method",
+			"tip": "Select a mathematical method to retrieve a value",
+			"options": {
+				"round": {
+					"name": "Round",
+					"tip": "Reads the variable value and returns the nearest integer after rounding"
+				},
+				"floor": {
+					"name": "Floor",
+					"tip": "Reads the variable value and returns the largest integer less than or equal to this number"
+				},
+				"ceil": {
+					"name": "Ceil",
+					"tip": "Reads the variable value and returns the smallest integer greater than or equal to this number"
+				},
+				"sqrt": {
+					"name": "Sqrt",
+					"tip": "Reads the variable value and returns the square root of this number"
+				},
+				"abs": {
+					"name": "Abs",
+					"tip": "Reads the variable value and returns the absolute value of this number"
+				},
+				"cos": {
+					"name": "Cos",
+					"tip": "Reads the variable value and returns the cosine of this angle"
+				},
+				"sin": {
+					"name": "Sin",
+					"tip": "Reads the variable value and returns the sine of this angle"
+				},
+				"tan": {
+					"name": "Tan",
+					"tip": "Reads the variable value and returns the tangent of this angle"
+				},
+				"random": {
+					"name": "Random[0,1)",
+					"tip": "Returns a random number between 0 and less than 1"
+				},
+				"random-int": {
+					"name": "Random Int",
+					"tip": "Returns a random integer between the specified minimum and maximum values"
+				},
+				"distance": {
+					"name": "Distance",
+					"tip": "Returns the distance between two positions"
+				},
+				"distance-x": {
+					"name": "Horizontal Distance",
+					"tip": "Returns the horizontal distance between two positions"
+				},
+				"distance-y": {
+					"name": "Vertical Distance",
+					"tip": "Returns the vertical distance between two positions"
+				},
+				"relative-angle": {
+					"name": "Relative Angle",
+					"tip": "Returns the relative angle between two positions"
+				}
+			}
+		},
+		"setNumber-operand-string-method": {
+			"label": "String Method",
+			"tip": "Select a string method to retrieve a value",
+			"options": {
+				"length": {
+					"name": "Get Length",
+					"tip": "Get the number of characters in the string.\nFor example: \"abcd\" returns 4"
+				},
+				"parse": {
+					"name": "Parse Number",
+					"tip": "Parse a string to a number.\nFor example: \"12.34\" returns 12.34"
+				},
+				"search": {
+					"name": "Get Index of Search String",
+					"tip": "Search for the position of the substring in the string.\nFor example: in \"abcdefg\"\nSearch for \"abc\" and the result is 0\nSearch for \"cdef\" and the result is 2.\nSearch for \"h\" and the result is -1, meaning it does not exist."
+				}
+			}
+		},
+		"setNumber-operand-object-property": {
+			"label": "Property",
+			"tip": "Retrieve object property value",
+			"options": {
+				"actor-x": {
+					"name": "Actor - X",
+					"tip": "Horizontal position of the actor in the scene"
+				},
+				"actor-y": {
+					"name": "Actor - Y",
+					"tip": "Vertical position of the actor in the scene"
+				},
+				"actor-ui-x": {
+					"name": "Actor - UI X",
+					"tip": "Convert the actor's scene X to UI X in pixels\nActor UI X = Actor Screen X / UI Scale"
+				},
+				"actor-ui-y": {
+					"name": "Actor - UI Y",
+					"tip": "Convert the actor's scene Y to UI Y in pixels\nActor UI Y = Actor Screen Y / UI Scale"
+				},
+				"actor-screen-x": {
+					"name": "Actor - Screen X",
+					"tip": "Convert the actor's scene X to screen X in pixels"
+				},
+				"actor-screen-y": {
+					"name": "Actor - Screen Y",
+					"tip": "Convert the actor's scene Y to screen Y in pixels"
+				},
+				"actor-angle": {
+					"name": "Actor - Angle",
+					"tip": "Actor angle"
+				},
+				"actor-direction": {
+					"name": "Actor - Direction Angle",
+					"tip": "Angle corresponding to actor animation direction.\nSingle direction is 0\nTwo directions may be 0/180\nFour directions may be 0/90/180/270"
+				},
+				"actor-movement-speed": {
+					"name": "Actor - Movement Speed",
+					"tip": "Actor movement speed"
+				},
+				"actor-collision-size": {
+					"name": "Actor - Collision Size",
+					"tip": "Actor collision size"
+				},
+				"actor-collision-weight": {
+					"name": "Actor - Collision Weight",
+					"tip": "Actor collision weight"
+				},
+				"actor-scaling-factor": {
+					"name": "Actor - Scaling Factor",
+					"tip": "Actor scaling factor"
+				},
+				"actor-inventory-item-quantity": {
+					"name": "Actor - Item Quantity",
+					"tip": "Number of items in inventory"
+				},
+				"actor-inventory-equipment-quantity": {
+					"name": "Actor - Equipment Quantity",
+					"tip": "Number of equipment items in inventory"
+				},
+				"actor-inventory-money": {
+					"name": "Actor - Inventory Money",
+					"tip": "Amount of money in inventory"
+				},
+				"actor-inventory-used-space": {
+					"name": "Actor - Inventory Used Space",
+					"tip": "Space occupied by items and equipment in the actor's inventory"
+				},
+				"actor-inventory-version": {
+					"name": "Actor - Inventory Version",
+					"tip": "Increments when the actor's inventory adds or removes items or equipment"
+				},
+				"actor-skill-version": {
+					"name": "Actor - Skill Version",
+					"tip": "Increments when the actor adds or removes skills"
+				},
+				"actor-state-version": {
+					"name": "Actor - State Version",
+					"tip": "Increments when the actor adds or removes states"
+				},
+				"actor-equipment-version": {
+					"name": "Actor - Equipment Version",
+					"tip": "Increments when the actor equips or unequips equipment"
+				},
+				"actor-shortcut-version": {
+					"name": "Actor - Shortcut Version",
+					"tip": "Increments when the actor's shortcut bar is changed"
+				},
+				"actor-animation-current-time": {
+					"name": "Actor - Anim Current Time",
+					"tip": "Elapsed time of actor animation"
+				},
+				"actor-animation-duration": {
+					"name": "Actor - Anim Duration",
+					"tip": "Duration of actor animation"
+				},
+				"actor-animation-progress": {
+					"name": "Actor - Anim Progress",
+					"tip": "Anim Current Time / Anim Duration"
+				},
+				"actor-cooldown-time": {
+					"name": "Actor - Cooldown Time",
+					"tip": "Get the current cooldown time by the specified key"
+				},
+				"actor-cooldown-duration": {
+					"name": "Actor - Cooldown Duration",
+					"tip": "Get the cooldown duration by the specified key"
+				},
+				"actor-cooldown-progress": {
+					"name": "Actor - Cooldown Progress",
+					"tip": "Cooldown Time / Cooldown Duration"
+				},
+				"skill-cooldown-time": {
+					"name": "Skill - Cooldown Time",
+					"tip": "Skill cooldown time"
+				},
+				"skill-cooldown-duration": {
+					"name": "Skill - Cooldown Duration",
+					"tip": "Skill cooldown duration"
+				},
+				"skill-cooldown-progress": {
+					"name": "Skill - Cooldown Progress",
+					"tip": "Cooldown Time / Cooldown Duration"
+				},
+				"state-current-time": {
+					"name": "State - Current Time",
+					"tip": "State current time"
+				},
+				"state-duration": {
+					"name": "State - Duration",
+					"tip": "State duration"
+				},
+				"state-progress": {
+					"name": "State - Progress",
+					"tip": "Current Time / Duration"
+				},
+				"equipment-order": {
+					"name": "Equipment - Order in Inventory",
+					"tip": "Get the order of the equipment in Inventory"
+				},
+				"item-order": {
+					"name": "Item - Order in Inventory",
+					"tip": "Get the order of the item in Inventory"
+				},
+				"item-quantity": {
+					"name": "Item - Quantity",
+					"tip": "Get the quantity of the items in Inventory"
+				},
+				"trigger-speed": {
+					"name": "Trigger - Speed",
+					"tip": "Get the speed of the trigger"
+				},
+				"trigger-angle": {
+					"name": "Trigger - Angle",
+					"tip": "Get the angle of the trigger"
+				},
+				"tilemap-width": {
+					"name": "Tilemap - Width",
+					"tip": "Get the width of the tilemap"
+				},
+				"tilemap-height": {
+					"name": "Tilemap - Height",
+					"tip": "Get the height of the tilemap"
+				},
+				"tilemap-tag": {
+					"name": "Tilemap - Tile Tag",
+					"tip": "Get the tag value at the specified tilemap position (0-99999)"
+				},
+				"list-length": {
+					"name": "List - Length",
+					"tip": "Get the number of data in the list"
+				}
+			}
+		},
+		"setNumber-operand-element-property": {
+			"label": "Property",
+			"tip": "Retrieve element property value",
+			"options": {
+				"element-x": {
+					"name": "Element - X",
+					"tip": "Element horizontal position (calculated)"
+				},
+				"element-y": {
+					"name": "Element - Y",
+					"tip": "Element vertical position (calculated)"
+				},
+				"element-width": {
+					"name": "Element - Width",
+					"tip": "Element width (calculated)"
+				},
+				"element-height": {
+					"name": "Element - Height",
+					"tip": "Element height (calculated)"
+				},
+				"element-children-count": {
+					"name": "Element - Number of Children",
+					"tip": "Get the number of child elements of this element"
+				},
+				"element-index-of-selected-button": {
+					"name": "Element - Index of the Selected Button",
+					"tip": "Get the position of the selected button of the focused element\n-1 = does not exist\n0 = first button\n1 = second button\n......"
+				},
+				"transform-anchorX": {
+					"name": "Transform - Anchor X",
+					"tip": "Anchor point horizontal position relative to container"
+				},
+				"transform-anchorY": {
+					"name": "Transform - Anchor Y",
+					"tip": "Anchor point vertical position relative to container"
+				},
+				"transform-x": {
+					"name": "Transform - X",
+					"tip": "Horizontal position within container (px)"
+				},
+				"transform-x2": {
+					"name": "Transform - X2",
+					"tip": "Horizontal position within container (container width ratio)"
+				},
+				"transform-y": {
+					"name": "Transform - Y",
+					"tip": "Vertical position within container (px)"
+				},
+				"transform-y2": {
+					"name": "Transform - Y2",
+					"tip": "Vertical position within container (container height ratio)"
+				},
+				"transform-width": {
+					"name": "Transform - Width",
+					"tip": "Width of element within container (px)"
+				},
+				"transform-width2": {
+					"name": "Transform - Width2",
+					"tip": "Width of element within container (container width ratio)"
+				},
+				"transform-height": {
+					"name": "Transform - Height",
+					"tip": "Height of element within container (px)"
+				},
+				"transform-height2": {
+					"name": "Transform - Height2",
+					"tip": "Height of element within container (container height ratio)"
+				},
+				"transform-rotation": {
+					"name": "Transform - Rotation",
+					"tip": "Rotation angle around anchor point; 0° = right, clockwise"
+				},
+				"transform-scaleX": {
+					"name": "Transform - Scale X",
+					"tip": "Horizontal scaling factor of element"
+				},
+				"transform-scaleY": {
+					"name": "Transform - Scale Y",
+					"tip": "Vertical scaling factor of element"
+				},
+				"transform-skewX": {
+					"name": "Transform - Skew X",
+					"tip": "Horizontal skew factor of element"
+				},
+				"transform-skewY": {
+					"name": "Transform - Skew Y",
+					"tip": "Vertical skew factor of element"
+				},
+				"transform-opacity": {
+					"name": "Transform - Opacity",
+					"tip": "Adjust the opacity of the element"
+				},
+				"window-visibleGridColumns": {
+					"name": "Window - Visible Grid Columns",
+					"tip": "Number of visible grid columns"
+				},
+				"window-visibleGridRows": {
+					"name": "Window - Visible Grid Rows",
+					"tip": "Number of visible grid rows"
+				},
+				"text-textWidth": {
+					"name": "Text - Text Width",
+					"tip": "Rendered text width"
+				},
+				"text-textHeight": {
+					"name": "Text - Text Height",
+					"tip": "Rendered text height"
+				},
+				"textBox-number": {
+					"name": "Text Box - Number",
+					"tip": "Read the numeric content of the text box"
+				},
+				"dialogBox-printEndX": {
+					"name": "Dialog Box - Print End X",
+					"tip": "Horizontal position of text at end of printing"
+				},
+				"dialogBox-printEndY": {
+					"name": "Dialog Box - Print End Y",
+					"tip": "Vertical position of text at end of printing"
+				}
+			}
+		},
+		"setNumber-operand-element-element": {
+			"label": "Element",
+			"tip": "Retrieve relevant data of this element"
+		},
+		"setNumber-operand-common-variable": {
+			"label": "Variable",
+			"tip": "Read data from a variable"
+		},
+		"setNumber-operand-common-actor": {
+			"label": "Actor",
+			"tip": "Retrieve relevant data of this actor"
+		},
+		"setNumber-operand-common-skill": {
+			"label": "Skill",
+			"tip": "Retrieve relevant data of this skill"
+		},
+		"setNumber-operand-common-state": {
+			"label": "State",
+			"tip": "Retrieve relevant data of this state"
+		},
+		"setNumber-operand-common-equipment": {
+			"label": "Equipment",
+			"tip": "Retrieve relevant data of this equipment"
+		},
+		"setNumber-operand-common-item": {
+			"label": "Item",
+			"tip": "Retrieve relevant data of this item"
+		},
+		"setNumber-operand-common-trigger": {
+			"label": "Trigger",
+			"tip": "Retrieve relevant data of this trigger"
+		},
+		"setNumber-operand-common-tilemap": {
+			"label": "Tilemap",
+			"tip": "Retrieve relevant data of this tilemap"
+		},
+		"setNumber-operand-tilemapPosition": {
+			"label": "Tilemap Position",
+			"tip": "The tilemap coordinates"
+		},
+		"setNumber-operand-object-itemId": {
+			"label": "Item",
+			"tip": "Input the item file ID"
+		},
+		"setNumber-operand-object-equipmentId": {
+			"label": "Equipment",
+			"tip": "Input the equipment file ID"
+		},
+		"setNumber-operand-string-search": {
+			"label": "Search String",
+			"tip": "Target string for search location"
+		},
+		"setNumber-operand-math-decimals": {
+			"label": "Decimal Places",
+			"tip": "If 0, round to integer, otherwise round to the specified number of decimal places"
+		},
+		"setNumber-operand-math-min": {
+			"label": "Min",
+			"tip": "Generated random integer must be greater than or equal to this value"
+		},
+		"setNumber-operand-math-max": {
+			"label": "Max",
+			"tip": "Generated random integer must be less than or equal to this value"
+		},
+		"setNumber-operand-math-startPosition": {
+			"label": "Start Position",
+			"tip": "Get the starting position"
+		},
+		"setNumber-operand-math-endPosition": {
+			"label": "End Position",
+			"tip": "Get the end position"
+		},
+		"setNumber-operand-cooldown-key": {
+			"label": "Cooldown Key",
+			"tip": "Select a cooldown key"
+		},
+		"setNumber-operand-list-index": {
+			"label": "Index",
+			"tip": "Read the value at position N (0, 1, 2, ...) in the list"
+		},
+		"setNumber-operand-parameter-key": {
+			"label": "Param Name",
+			"tip": "Get the value of this parameter"
+		},
+		"setNumber-operand-script": {
+			"label": "Script",
+			"tip": "Execute JavaScript and get the return value"
+		},
+		"setNumber-operand-other-data": {
+			"label": "Data",
+			"tip": "Retrieve other numeric data",
+			"options": {
+				"trigger-button": {
+					"name": "Event Mouse Button",
+					"tip": "Get the button code of the currently triggered \"mouse event\"\n0: Left button\n1: Middle button\n2: Right button\n3: Back button\n4: Forward button"
+				},
+				"trigger-wheel-y": {
+					"name": "Event Wheel Delta Y",
+					"tip": "Get the DeltaY of the currently triggered \"wheel event\"\nLess than 0: Slide up\nGreater than 0: Slide down"
+				},
+				"trigger-gamepad-button": {
+					"name": "Event Gamepad Button",
+					"tip": "Get the button code of the currently triggered \"gamepad event\"\nValid values: 0/1/2/3...\nInvalid value: -1"
+				},
+				"gamepad-left-stick-angle": {
+					"name": "Gamepad Left Stick Angle",
+					"tip": "Get the left stick angle of the currently triggered \"gamepad event\"\n0 degrees = right, rotates clockwise\nValid values: [0, 360)\nInvalid value: -1"
+				},
+				"gamepad-right-stick-angle": {
+					"name": "Gamepad Right Stick Angle",
+					"tip": "Get the right stick angle of the currently triggered \"gamepad event\"\n0 degrees = right, rotates clockwise\nValid values: [0, 360)\nInvalid value: -1"
+				},
+				"mouse-screen-x": {
+					"name": "Mouse Screen X",
+					"tip": "Horizontal position of the mouse in the screen in pixels"
+				},
+				"mouse-screen-y": {
+					"name": "Mouse Screen Y",
+					"tip": "Vertical position of the mouse in the screen in pixels"
+				},
+				"mouse-ui-x": {
+					"name": "Mouse UI X",
+					"tip": "Horizontal position of the mouse within the root element in pixels\nMouse UI X = Mouse Screen X / UI Scale"
+				},
+				"mouse-ui-y": {
+					"name": "Mouse UI Y",
+					"tip": "Vertical position of the mouse within the root element in pixels\nMouse UI Y = Mouse Screen Y / UI Scale"
+				},
+				"mouse-scene-x": {
+					"name": "Mouse Scene X",
+					"tip": "Horizontal position of the mouse in the scene"
+				},
+				"mouse-scene-y": {
+					"name": "Mouse Scene Y",
+					"tip": "Vertical position of the mouse in the scene"
+				},
+				"touch-screen-x": {
+					"name": "Touch Screen X",
+					"tip": "Horizontal position of the touch in the screen in pixels"
+				},
+				"touch-screen-y": {
+					"name": "Touch Screen Y",
+					"tip": "Vertical position of the touch in the screen in pixels"
+				},
+				"touch-ui-x": {
+					"name": "Touch UI X",
+					"tip": "Horizontal position of the touch within the root element in pixels\nTouch UI X = Touch Screen X / UI Scale"
+				},
+				"touch-ui-y": {
+					"name": "Touch UI Y",
+					"tip": "Vertical position of the touch within the root element in pixels\nTouch UI Y = Touch Screen Y / UI Scale"
+				},
+				"touch-scene-x": {
+					"name": "Touch Scene X",
+					"tip": "Horizontal position of the touch in the scene"
+				},
+				"touch-scene-y": {
+					"name": "Touch Scene Y",
+					"tip": "Vertical position of the touch in the scene"
+				},
+				"virtual-axis-x": {
+					"name": "Virtual Axis X",
+					"tip": "Horizontal distance from point to center of unit circle\nAffected by left and right arrow keys\nRange: [-1, 1]"
+				},
+				"virtual-axis-y": {
+					"name": "Virtual Axis Y",
+					"tip": "Vertical distance from point to center of unit circle\nAffected by up and down arrow keys\nRange: [-1, 1]"
+				},
+				"virtual-axis-angle": {
+					"name": "Virtual Axis Angle",
+					"tip": "Angle from center to virtual axis (X, Y)\nSet to invalid value after entering dead zone\n0 degrees = right, rotates clockwise\nValid range: [0, 360)\nInvalid value: -1"
+				},
+				"start-position-x": {
+					"name": "Start Position X",
+					"tip": "Set via \"Scene Stage -> Context Menu -> Set Initial Position\""
+				},
+				"start-position-y": {
+					"name": "Start Position Y",
+					"tip": "Set via \"Scene Stage -> Context Menu -> Set Initial Position\""
+				},
+				"camera-x": {
+					"name": "Camera X",
+					"tip": "Horizontal position of the center of the camera"
+				},
+				"camera-y": {
+					"name": "Camera Y",
+					"tip": "Vertical position of the center of the camera"
+				},
+				"camera-zoom": {
+					"name": "Camera Zoom",
+					"tip": "Final camera zoom ratio (raw zoom * scene scale)"
+				},
+				"raw-camera-zoom": {
+					"name": "Raw Camera Zoom",
+					"tip": "Camera's own zoom ratio (not affected by scene scale)"
+				},
+				"screen-width": {
+					"name": "Screen Width",
+					"tip": "Game resolution width"
+				},
+				"screen-height": {
+					"name": "Screen Height",
+					"tip": "Game resolution height"
+				},
+				"scene-width": {
+					"name": "Scene Width",
+					"tip": "Number of horizontal grids in scene"
+				},
+				"scene-height": {
+					"name": "Scene Height",
+					"tip": "Number of vertical grids in scene"
+				},
+				"scene-scale": {
+					"name": "Scene Scale",
+					"tip": "Current scene scale"
+				},
+				"ui-scale": {
+					"name": "UI Scale",
+					"tip": "Current UI scale"
+				},
+				"play-time": {
+					"name": "Play Time",
+					"tip": "Player's total play time; saved and cleared on game reset."
+				},
+				"elapsed-time": {
+					"name": "Elapsed Time",
+					"tip": "Running time since game start; cleared after exit"
+				},
+				"delta-time": {
+					"name": "Delta Time",
+					"tip": "Elapsed time between previous frame end and current frame start (ms),\ne.g. 16.66 at 60FPS. If game speed is 2, delta time scales to 33.33ms"
+				},
+				"raw-delta-time": {
+					"name": "Raw Delta Time",
+					"tip": "Delta time without scaling"
+				},
+				"timestamp": {
+					"name": "Get Timestamp",
+					"tip": "Generate a number for recording the current date in this computer"
+				},
+				"party-version": {
+					"name": "Party Version",
+					"tip": "It is incremented when party members change"
+				},
+				"party-member-count": {
+					"name": "Number of Party Members",
+					"tip": "Number of player party members"
+				},
+				"actor-count": {
+					"name": "Number of Actors in the Scene",
+					"tip": "Number of actors in the specified team in current scene"
+				},
+				"latest-item-increment": {
+					"name": "Latest Item Increment",
+					"tip": "Refreshed when any actor gains items, used to read the number of items gained"
+				},
+				"latest-money-increment": {
+					"name": "Latest Money Increment",
+					"tip": "Refreshed when any actor gains money, used to read the number of money gained"
+				},
+				"loader-loaded-bytes": {
+					"name": "Loader - Loaded Bytes",
+					"tip": "Counts the loaded bytes of all files being loaded in the background"
+				},
+				"loader-total-bytes": {
+					"name": "Loader - Total Bytes",
+					"tip": "Counts the total bytes of all files being loaded in the background"
+				},
+				"loader-completion-progress": {
+					"name": "Loader - Completion Progress",
+					"tip": "Completion progress = Loaded Bytes / Total Bytes"
+				}
+			}
+		},
+		"setNumber-operand-other-touchId": {
+			"label": "Touch Id",
+			"tip": "Input touch point id"
+		},
+		"setNumber-operand-other-teamId": {
+			"label": "Team",
+			"tip": "Input Team Id"
+		}
+	}
+}

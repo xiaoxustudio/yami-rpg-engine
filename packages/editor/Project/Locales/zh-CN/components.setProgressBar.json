@@ -1,0 +1,71 @@
+{
+	"components": {
+		"setProgressBar": {
+			"title": "设置进度条"
+		},
+		"setProgressBar-element": {
+			"label": "元素",
+			"tip": "指定一个进度条元素"
+		},
+		"setProgressBar-properties": {
+			"label": "设置属性"
+		},
+		"setProgressBar-property": {
+			"title": "进度条属性"
+		},
+		"setProgressBar-property-key": {
+			"label": "属性",
+			"tip": "进度条元素的属性",
+			"options": {
+				"image": "图像",
+				"display": "显示",
+				"blend": "混合模式",
+				"progress": "进度",
+				"clip-0": "裁剪 - X",
+				"clip-1": "裁剪 - Y",
+				"clip-2": "裁剪 - 宽度",
+				"clip-3": "裁剪 - 高度",
+				"color-0": "颜色 - 红",
+				"color-1": "颜色 - 绿",
+				"color-2": "颜色 - 蓝",
+				"color-3": "颜色 - 不透明度"
+			}
+		},
+		"setProgressBar-property-image": {
+			"label": "图像"
+		},
+		"setProgressBar-property-display": {
+			"label": "显示"
+		},
+		"setProgressBar-property-blend": {
+			"label": "混合模式"
+		},
+		"setProgressBar-property-progress": {
+			"label": "进度"
+		},
+		"setProgressBar-property-clip-0": {
+			"label": "裁剪 - X"
+		},
+		"setProgressBar-property-clip-1": {
+			"label": "裁剪 - Y"
+		},
+		"setProgressBar-property-clip-2": {
+			"label": "裁剪 - 宽度"
+		},
+		"setProgressBar-property-clip-3": {
+			"label": "裁剪 - 高度"
+		},
+		"setProgressBar-property-color-0": {
+			"label": "颜色 - 红"
+		},
+		"setProgressBar-property-color-1": {
+			"label": "颜色 - 绿"
+		},
+		"setProgressBar-property-color-2": {
+			"label": "颜色 - 蓝"
+		},
+		"setProgressBar-property-color-3": {
+			"label": "颜色 - 不透明度"
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"components": {
+		"importLanguage": {
+			"title": "Import Language Pack"
+		},
+		"importLanguage-language": {
+			"label": "Import to",
+			"tip": "Choose the language pack to overwrite"
+		}
+	}
+}

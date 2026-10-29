@@ -1,0 +1,73 @@
+{
+	"components": {
+		"loadImage": {
+			"title": "加载图像"
+		},
+		"loadImage-element": {
+			"label": "元素",
+			"tip": "指定一个图像元素"
+		},
+		"loadImage-type": {
+			"label": "类型",
+			"tip": "通过何种方式加载图像",
+			"options": {
+				"actor-portrait": {
+					"name": "角色头像",
+					"tip": "加载角色的头像到元素"
+				},
+				"skill-icon": {
+					"name": "技能图标",
+					"tip": "加载技能的图标到元素"
+				},
+				"state-icon": {
+					"name": "状态图标",
+					"tip": "加载状态的图标到元素"
+				},
+				"equipment-icon": {
+					"name": "装备图标",
+					"tip": "加载装备的图标到元素"
+				},
+				"item-icon": {
+					"name": "物品图标",
+					"tip": "加载物品的图标到元素"
+				},
+				"shortcut-icon": {
+					"name": "快捷栏图标",
+					"tip": "加载快捷项的图标到元素"
+				},
+				"base64": {
+					"name": "Base64图像",
+					"tip": "解码Base64字符串生成图像并加载到元素"
+				}
+			}
+		},
+		"loadImage-actor": {
+			"label": "角色",
+			"tip": "加载这个角色的头像"
+		},
+		"loadImage-skill": {
+			"label": "技能",
+			"tip": "加载这个技能的图标"
+		},
+		"loadImage-state": {
+			"label": "状态",
+			"tip": "加载这个状态的图标"
+		},
+		"loadImage-equipment": {
+			"label": "装备",
+			"tip": "加载这个装备的图标"
+		},
+		"loadImage-item": {
+			"label": "物品",
+			"tip": "加载这个物品的图标"
+		},
+		"loadImage-key": {
+			"label": "快捷键",
+			"tip": "加载这个快捷项的图标"
+		},
+		"loadImage-variable": {
+			"label": "Base64编码",
+			"tip": "解码Base64图像并加载它"
+		}
+	}
+}

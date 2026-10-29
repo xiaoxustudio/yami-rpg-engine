@@ -1,0 +1,26 @@
+{
+	"components": {
+		"playActorAnimation": {
+			"title": "播放角色动画"
+		},
+		"playActorAnimation-actor": {
+			"label": "角色",
+			"tip": "播放这个角色的动画"
+		},
+		"playActorAnimation-motion": {
+			"label": "动作",
+			"tip": "选择一个当前角色的动画包含的有效动作"
+		},
+		"playActorAnimation-speed": {
+			"label": "播放速度",
+			"tip": "设置动画的播放速度\n1：正常速度\n0.1：10%播放速度\n10：10倍播放速度\n有效范围：[0.1, 10]"
+		},
+		"playActorAnimation-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

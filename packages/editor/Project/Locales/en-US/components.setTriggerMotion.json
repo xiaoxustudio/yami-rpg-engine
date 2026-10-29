@@ -1,0 +1,15 @@
+{
+	"components": {
+		"setTriggerMotion": {
+			"title": "Set Trigger Motion"
+		},
+		"setTriggerMotion-trigger": {
+			"label": "Trigger",
+			"tip": "Set this trigger"
+		},
+		"setTriggerMotion-motion": {
+			"label": "Motion",
+			"tip": "Let the trigger's animation switch to this motion"
+		}
+	}
+}

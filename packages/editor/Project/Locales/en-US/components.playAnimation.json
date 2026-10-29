@@ -1,0 +1,74 @@
+{
+	"components": {
+		"playAnimation": {
+			"title": "Play Animation"
+		},
+		"playAnimation-mode": {
+			"label": "Mode",
+			"tip": "Choose the reference point for the animation's position",
+			"options": {
+				"position": {
+					"name": "Specify Position",
+					"tip": "Animation placed at fixed position"
+				},
+				"actor": {
+					"name": "Bind Actor",
+					"tip": "Animation moves with actor"
+				}
+			}
+		},
+		"playAnimation-position": {
+			"label": "Position",
+			"tip": "Position where animation appears"
+		},
+		"playAnimation-actor": {
+			"label": "Actor",
+			"tip": "Actor that animation follows"
+		},
+		"playAnimation-animationId": {
+			"label": "Animation",
+			"tip": "Specify the animation file ID"
+		},
+		"playAnimation-motion": {
+			"label": "Motion",
+			"tip": "Play this animation motion"
+		},
+		"playAnimation-rotatable": {
+			"label": "Rotatable",
+			"tip": "Whether the animation automatically updates its rotation angle",
+			"options": {
+				"true": {
+					"name": "Yes",
+					"tip": "Animation rotates based on angle"
+				},
+				"false": {
+					"name": "No",
+					"tip": "Animation never rotates"
+				}
+			}
+		},
+		"playAnimation-priority": {
+			"label": "Priority",
+			"tip": "Render priority of the animation\nAnimations below will always obscure those above\nPriority = -1: Moves the render position up by one tile\nPriority = 1: Moves the render position down by one tile"
+		},
+		"playAnimation-offsetY": {
+			"label": "Offset Y",
+			"tip": "Vertical offset for the animation render position (in pixels)"
+		},
+		"playAnimation-angle": {
+			"label": "Angle",
+			"tip": "Angle influences motion direction change"
+		},
+		"playAnimation-speed": {
+			"label": "Speed",
+			"tip": "Playback speed ratio\n0: Pause\n1: 100% playback speed\n10: 1000% playback speed"
+		},
+		"playAnimation-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

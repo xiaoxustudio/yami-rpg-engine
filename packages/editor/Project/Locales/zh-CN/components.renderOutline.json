@@ -1,0 +1,33 @@
+{
+	"components": {
+		"renderOutline": {
+			"title": "渲染轮廓"
+		},
+		"renderOutline-operation": {
+			"label": "操作",
+			"tip": "是否渲染角色动画精灵的轮廓线",
+			"options": {
+				"add": {
+					"name": "添加",
+					"tip": "渲染指定角色的轮廓线"
+				},
+				"remove": {
+					"name": "移除",
+					"tip": "取消渲染指定角色的轮廓线"
+				},
+				"reset": {
+					"name": "重置",
+					"tip": "不渲染任何角色的轮廓线"
+				}
+			}
+		},
+		"renderOutline-actor": {
+			"label": "角色",
+			"tip": "对这个角色进行操作"
+		},
+		"renderOutline-color": {
+			"label": "颜色",
+			"tip": "描边轮廓的颜色"
+		}
+	}
+}

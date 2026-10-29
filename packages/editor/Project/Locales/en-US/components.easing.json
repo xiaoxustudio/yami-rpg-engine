@@ -1,0 +1,131 @@
+{
+	"components": {
+		"easing": {
+			"title": "Easing"
+		},
+		"easing-list": {
+			"label": "List"
+		},
+		"easing-points-grid": {
+			"label": "Points"
+		},
+		"easing-mode": {
+			"label": "Mode",
+			"tip": "Select the number of curve control points",
+			"options": {
+				"2": {
+					"name": "Use 2 Control Points",
+					"tip": "Generate a simple curve"
+				},
+				"5": {
+					"name": "Use 5 Control Points",
+					"tip": "Generate a slightly more complex curve"
+				},
+				"8": {
+					"name": "Use 8 Control Points",
+					"tip": "Generate a more complex curve"
+				}
+			}
+		},
+		"easing-points-0": {
+			"content": "Point 1"
+		},
+		"easing-points-1": {
+			"content": "Point 2"
+		},
+		"easing-points-2": {
+			"content": "Point 3"
+		},
+		"easing-points-3": {
+			"content": "Point 4"
+		},
+		"easing-points-4": {
+			"content": "Point 5"
+		},
+		"easing-points-5": {
+			"content": "Point 6"
+		},
+		"easing-points-6": {
+			"content": "Point 7"
+		},
+		"easing-points-7": {
+			"content": "Point 8"
+		},
+		"easing-points-0-x": {
+			"tip": "$X1\nHorizontal position of Control Point 1"
+		},
+		"easing-points-0-y": {
+			"tip": "$Y1\nVertical position of Control Point 1"
+		},
+		"easing-points-1-x": {
+			"tip": "$X2\nHorizontal position of Control Point 2"
+		},
+		"easing-points-1-y": {
+			"tip": "$Y2\nVertical position of Control Point 2"
+		},
+		"easing-points-2-x": {
+			"tip": "$X3\nHorizontal position of Control Point 3"
+		},
+		"easing-points-2-y": {
+			"tip": "$Y3\nVertical position of Control Point 3"
+		},
+		"easing-points-3-x": {
+			"tip": "$X4\nHorizontal position of Control Point 4"
+		},
+		"easing-points-3-y": {
+			"tip": "$Y4\nVertical position of Control Point 4"
+		},
+		"easing-points-4-x": {
+			"tip": "$X5\nHorizontal position of Control Point 5"
+		},
+		"easing-points-4-y": {
+			"tip": "$Y5\nVertical position of Control Point 5"
+		},
+		"easing-points-5-x": {
+			"tip": "$X6\nHorizontal position of Control Point 6"
+		},
+		"easing-points-5-y": {
+			"tip": "$Y6\nVertical position of Control Point 6"
+		},
+		"easing-points-6-x": {
+			"tip": "$X7\nHorizontal position of Control Point 7"
+		},
+		"easing-points-6-y": {
+			"tip": "$Y7\nVertical position of Control Point 7"
+		},
+		"easing-points-7-x": {
+			"tip": "$X8\nHorizontal position of Control Point 8"
+		},
+		"easing-points-7-y": {
+			"tip": "$Y8\nVertical position of Control Point 8"
+		},
+		"easing-curve-canvas": {
+			"label": "Curve"
+		},
+		"easing-preview-canvas": {
+			"label": "Preview"
+		},
+		"easing-preview-reverse": {
+			"label": "Reverse",
+			"tip": "Whether to reverse the animation during preview",
+			"options": {
+				"true": {
+					"name": "ON",
+					"tip": "Reverse the animation at the end"
+				},
+				"false": {
+					"name": "OFF",
+					"tip": "Replay the animation from the beginning"
+				}
+			}
+		},
+		"easing-preview-duration": {
+			"label": "Duration",
+			"tip": "Duration of transition during preview"
+		},
+		"easing-preview-delay": {
+			"label": "Wait",
+			"tip": "Wait time after transition ends"
+		}
+	}
+}

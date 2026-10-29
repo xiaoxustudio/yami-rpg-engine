@@ -1,0 +1,11 @@
+{
+	"components": {
+		"wait": {
+			"title": "Wait"
+		},
+		"wait-duration": {
+			"label": "Duration",
+			"tip": "Waiting time is converted to number of frames.\nDurations less than 1 frame become 1 frame."
+		}
+	}
+}

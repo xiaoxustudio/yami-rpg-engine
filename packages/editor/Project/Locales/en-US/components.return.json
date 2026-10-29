@@ -1,0 +1,113 @@
+{
+	"components": {
+		"return": {
+			"title": "Return"
+		},
+		"return-type": {
+			"label": "Return Type",
+			"tip": "Type of value this event can return. Modify in global event panel.",
+			"options": {
+				"none": {
+					"name": "None",
+					"tip": "Does not return any value"
+				},
+				"boolean": {
+					"name": "Boolean",
+					"tip": "Returns a boolean value"
+				},
+				"number": {
+					"name": "Number",
+					"tip": "Returns a numerical value"
+				},
+				"string": {
+					"name": "String",
+					"tip": "Returns a string"
+				},
+				"object": {
+					"name": "Object",
+					"tip": "Returns an object"
+				},
+				"actor": {
+					"name": "Actor",
+					"tip": "Returns an actor object"
+				},
+				"skill": {
+					"name": "Skill",
+					"tip": "Returns a skill object"
+				},
+				"state": {
+					"name": "State",
+					"tip": "Returns a state object"
+				},
+				"equipment": {
+					"name": "Equipment",
+					"tip": "Returns an equipment object"
+				},
+				"item": {
+					"name": "Item",
+					"tip": "Returns an item object"
+				},
+				"trigger": {
+					"name": "Trigger",
+					"tip": "Returns a trigger object"
+				},
+				"light": {
+					"name": "Light",
+					"tip": "Returns a light object"
+				},
+				"element": {
+					"name": "Element",
+					"tip": "Returns an element object"
+				}
+			}
+		},
+		"return-boolean": {
+			"label": "Boolean",
+			"tip": "Return this boolean value"
+		},
+		"return-number": {
+			"label": "Number",
+			"tip": "Return this number or variable"
+		},
+		"return-string": {
+			"label": "String",
+			"tip": "Return this string or variable"
+		},
+		"return-object": {
+			"label": "Object",
+			"tip": "Return the object read from this variable"
+		},
+		"return-actor": {
+			"label": "Actor",
+			"tip": "Return this actor"
+		},
+		"return-skill": {
+			"label": "Skill",
+			"tip": "Return this skill"
+		},
+		"return-state": {
+			"label": "State",
+			"tip": "Return this state"
+		},
+		"return-equipment": {
+			"label": "Equipment",
+			"tip": "Return this equipment"
+		},
+		"return-item": {
+			"label": "Item",
+			"tip": "Return this item"
+		},
+		"return-trigger": {
+			"label": "Trigger",
+			"tip": "Return this trigger"
+		},
+		"return-light": {
+			"label": "Light",
+			"tip": "Return this light"
+		},
+		"return-element": {
+			"label": "Element",
+			"tip": "Return this element"
+		}
+	}
+}

@@ -1,0 +1,48 @@
+{
+	"components": {
+		"fileAudio-info-grid": {
+			"label": "文件信息"
+		},
+		"fileAudio-name": {
+			"label": "名称",
+			"tip": "文件名称"
+		},
+		"fileAudio-size": {
+			"label": "大小",
+			"tip": "文件大小"
+		},
+		"fileAudio-duration": {
+			"label": "长度",
+			"tip": "音频长度"
+		},
+		"fileAudio-bitrate": {
+			"label": "比特率",
+			"tip": "平均每秒传输的位数，一般来说越大音质越好"
+		},
+		"fileAudio-mixer-grid": {
+			"label": "调音台"
+		},
+		"fileAudio-volume-box": {
+			"label": "音量",
+			"tip": "全局音量"
+		},
+		"fileAudio-pan-box": {
+			"label": "声像",
+			"tip": "影响左右声道的音量\n0%：左右声道均衡\n-100%：只有左声道\n+100%：只有右声道"
+		},
+		"fileAudio-dry-box": {
+			"label": "混响 - 干",
+			"tip": "混响干声部分的音量，值越小代表距离声音源越远"
+		},
+		"fileAudio-wet-box": {
+			"label": "混响 - 湿",
+			"tip": "混响湿声部分的音量，模拟封闭环境中的声音反射，值越大代表空间越大"
+		},
+		"fileAudio-progress-box": {
+			"label": "进度"
+		},
+		"fileAudio-frequency-canvas": {
+			"label": "频率"
+		}
+	}
+}

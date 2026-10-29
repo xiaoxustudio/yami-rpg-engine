@@ -1,0 +1,104 @@
+{
+	"components": {
+		"setAnimationComponent": {
+			"title": "Set Animation Component"
+		},
+		"setAnimationComponent-actor": {
+			"label": "Actor",
+			"tip": "Set the animation component of this actor"
+		},
+		"setAnimationComponent-animationId": {
+			"label": "Animation",
+			"tip": "Select an animation file"
+		},
+		"setAnimationComponent-motion": {
+			"label": "Motion",
+			"tip": "Select a motion of the animation.\nThe animation ID plus the motion ID form the ID of the animation component.\nTherefore, components with the same animation and motion cannot be added repeatedly."
+		},
+		"setAnimationComponent-operation": {
+			"label": "Operation",
+			"tip": "Animation component operations",
+			"options": {
+				"set-angle": {
+					"name": "Set Angle",
+					"tip": "Angle affects the direction of the motion"
+				},
+				"set-scale": {
+					"name": "Set Scale",
+					"tip": "Animation scaling factor"
+				},
+				"set-speed": {
+					"name": "Set Speed",
+					"tip": "Playback speed ratio"
+				},
+				"set-opacity": {
+					"name": "Set Opacity",
+					"tip": "Opacity affects the visibility of the animation"
+				},
+				"set-priority": {
+					"name": "Set Priority",
+					"tip": "Sorting priority of the animation component"
+				},
+				"set-offsetY": {
+					"name": "Set Offset Y",
+					"tip": "Vertical offset distance of the animation rendering position"
+				},
+				"set-sprite": {
+					"name": "Set Sprite",
+					"tip": "Replace the sprite image"
+				},
+				"play-motion": {
+					"name": "Play Motion",
+					"tip": "Play a specified motion"
+				},
+				"stop-motion": {
+					"name": "Stop Motion",
+					"tip": "Stop playing the current motion"
+				}
+			}
+		},
+		"setAnimationComponent-angle": {
+			"label": "Angle",
+			"tip": "Angle affects the direction of the motion"
+		},
+		"setAnimationComponent-scale": {
+			"label": "Scale",
+			"tip": "Animation scaling factor (0 ~ 10)"
+		},
+		"setAnimationComponent-speed": {
+			"label": "Speed",
+			"tip": "Playback speed ratio (0 ~ 10)"
+		},
+		"setAnimationComponent-opacity": {
+			"label": "Opacity",
+			"tip": "Opacity affects the visibility of the animation (0 ~ 1)"
+		},
+		"setAnimationComponent-priority": {
+			"label": "Priority",
+			"tip": "Sorting priority of the animation component\n - Less than 0: The animation component is displayed below actor animation\n - Greater than or equal to 0: The animation component is displayed above actor animation"
+		},
+		"setAnimationComponent-offsetY": {
+			"label": "Offset Y",
+			"tip": "Vertical offset distance of the animation rendering position (unit: pixel)"
+		},
+		"setAnimationComponent-spriteId": {
+			"label": "Sprite Name",
+			"tip": "Select the sprite you want to change"
+		},
+		"setAnimationComponent-image": {
+			"label": "Image",
+			"tip": "Select a new image as the sprite image"
+		},
+		"setAnimationComponent-playMotion": {
+			"label": "Play Motion",
+			"tip": "Select a motion to play"
+		},
+		"setAnimationComponent-wait": {
+			"label": "Wait",
+			"options": {
+				"true": "Yes",
+				"false": "No"
+			}
+		}
+	}
+}

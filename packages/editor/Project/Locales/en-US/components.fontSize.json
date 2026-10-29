@@ -1,0 +1,11 @@
+{
+	"components": {
+		"fontSize": {
+			"title": "Set Font Size"
+		},
+		"fontSize-size": {
+			"label": "Size",
+			"tip": "Change the text size (10 ~ 400)"
+		}
+	}
+}

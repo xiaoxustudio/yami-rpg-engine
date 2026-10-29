@@ -1,0 +1,67 @@
+{
+	"components": {
+		"setText": {
+			"title": "Set Text"
+		},
+		"setText-element": {
+			"label": "Element",
+			"tip": "Specify a text element"
+		},
+		"setText-properties": {
+			"label": "Properties"
+		},
+		"setText-property": {
+			"title": "Text Property"
+		},
+		"setText-property-key": {
+			"label": "Property",
+			"tip": "Text element's property",
+			"options": {
+				"content": "Content",
+				"size": "Size",
+				"lineSpacing": "Line Spacing",
+				"letterSpacing": "Letter Spacing",
+				"color": "Color",
+				"font": "Font",
+				"effect": "Effect",
+				"blend": "Blend"
+			}
+		},
+		"setText-property-content": {
+			"label": "Content"
+		},
+		"setText-property-size": {
+			"label": "Size"
+		},
+		"setText-property-lineSpacing": {
+			"label": "Line Spacing"
+		},
+		"setText-property-letterSpacing": {
+			"label": "Letter Spacing"
+		},
+		"setText-property-color": {
+			"label": "Color"
+		},
+		"setText-property-font": {
+			"label": "Font"
+		},
+		"setText-property-effect-type": {
+			"label": "Effect"
+		},
+		"setText-property-effect-shadowOffsetX": {
+			"label": "Shadow X"
+		},
+		"setText-property-effect-shadowOffsetY": {
+			"label": "Shadow Y"
+		},
+		"setText-property-effect-strokeWidth": {
+			"label": "Stroke Width"
+		},
+		"setText-property-effect-color": {
+			"label": "Effect Color"
+		},
+		"setText-property-blend": {
+			"label": "Blend"
+		}
+	}
+}

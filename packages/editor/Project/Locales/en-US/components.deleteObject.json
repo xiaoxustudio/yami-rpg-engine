@@ -1,0 +1,10 @@
+{
+	"components": {
+		"deleteObject": {
+			"title": "Delete Object"
+		},
+		"deleteObject-object": {
+			"label": "Object"
+		}
+	}
+}

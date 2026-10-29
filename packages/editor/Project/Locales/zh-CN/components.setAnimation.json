@@ -1,0 +1,43 @@
+{
+	"components": {
+		"setAnimation": {
+			"title": "设置动画"
+		},
+		"setAnimation-element": {
+			"label": "元素",
+			"tip": "指定一个动画元素"
+		},
+		"setAnimation-properties": {
+			"label": "属性"
+		},
+		"setAnimation-property": {
+			"title": "动画属性"
+		},
+		"setAnimation-property-key": {
+			"label": "属性",
+			"tip": "动画元素的属性",
+			"options": {
+				"animation": "动画",
+				"animation-from-actor": "动画(来自角色)",
+				"motion": "动作",
+				"angle": "角度",
+				"frame": "帧"
+			}
+		},
+		"setAnimation-property-animation": {
+			"label": "动画"
+		},
+		"setAnimation-property-actor": {
+			"label": "角色"
+		},
+		"setAnimation-property-motion": {
+			"label": "动作"
+		},
+		"setAnimation-property-angle": {
+			"label": "角度"
+		},
+		"setAnimation-property-frame": {
+			"label": "帧"
+		}
+	}
+}

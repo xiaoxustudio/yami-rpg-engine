@@ -1,0 +1,41 @@
+{
+	"components": {
+		"createElement": {
+			"title": "Create Element"
+		},
+		"createElement-operation": {
+			"label": "Operation",
+			"tip": "How to create elements and whether to specify a parent element",
+			"options": {
+				"append-all-to-root": {
+					"name": "Append All to Root",
+					"tip": "Create all elements in the UI file (except those that are disabled) and add them to the root container"
+				},
+				"append-one-to-root": {
+					"name": "Append One to Root",
+					"tip": "Create a specified element in the UI file (whether it is disabled or not) and add it to the root container"
+				},
+				"append-all-to-element": {
+					"name": "Append All to Element",
+					"tip": "Create all elements in the UI file (except those that are disabled) as children of the specified element"
+				},
+				"append-one-to-element": {
+					"name": "Append One to Element",
+					"tip": "Create a specified element in the UI file (whether it is disabled or not) as a child of the specified element"
+				}
+			}
+		},
+		"createElement-parent": {
+			"label": "Parent",
+			"tip": "Add the newly created element as a child of this element"
+		},
+		"createElement-uiId": {
+			"label": "UI Elements",
+			"tip": "Create all non-disabled elements in this UI file"
+		},
+		"createElement-presetId": {
+			"label": "UI Element",
+			"tip": "Create the specified element"
+		}
+	}
+}

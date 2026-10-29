@@ -1,0 +1,33 @@
+{
+	"components": {
+		"loadScene": {
+			"title": "加载场景"
+		},
+		"loadScene-sceneId": {
+			"label": "场景",
+			"tip": "重置场景容器，加载这个ID的场景"
+		},
+		"loadScene-transfer": {
+			"label": "转移玩家角色",
+			"tip": "是否在场景加载完毕后转移玩家角色",
+			"options": {
+				"true": {
+					"name": "是",
+					"tip": "将玩家角色转移到指定位置"
+				},
+				"false": {
+					"name": "否",
+					"tip": "不转移玩家角色"
+				}
+			}
+		},
+		"loadScene-x": {
+			"label": "X",
+			"tip": "将玩家角色转移到这个水平位置"
+		},
+		"loadScene-y": {
+			"label": "Y",
+			"tip": "将玩家角色转移到这个垂直位置"
+		}
+	}
+}

@@ -13,7 +13,7 @@
  * 用法：node scripts/i18n-skip-list.mjs [--check]
  *   --check：只比对，不写入（供 CI/人工核对；等价于 spec 里的防漂移断言）
  */
-import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ROOT = process.cwd();
@@ -39,9 +39,23 @@ const walk = (p) => {
 walk(join(ROOT, 'packages/editor/src'));
 
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const components = JSON.parse(
-	readFileSync(join(ROOT, 'packages/editor/Project/Locales/en-US.English.json'), 'utf8')
-).components;
+
+/** 入口 + 命名空间分片聚合后的组件表（语言包按 `components.<ns>.json` 拆分）。 */
+const loadLocaleComponents = (entryName) => {
+	const localesDir = join(ROOT, 'packages/editor/Project/Locales');
+	const entry = JSON.parse(readFileSync(join(localesDir, entryName), 'utf8'));
+	const components = { ...entry.components };
+	const chunkDir = join(localesDir, entryName.split('.')[0]);
+	if (existsSync(chunkDir)) {
+		for (const name of readdirSync(chunkDir).filter((n) => n.endsWith('.json'))) {
+			const chunk = JSON.parse(readFileSync(join(chunkDir, name), 'utf8'));
+			Object.assign(components, chunk.components ?? {});
+		}
+	}
+	return components;
+};
+
+const components = loadLocaleComponents('en-US.English.json');
 
 /**
  * editor 的 `common/SelectBox.vue` 现在**自己**按 `components.<id>.options` 生成选项名

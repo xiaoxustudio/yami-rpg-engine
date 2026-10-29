@@ -1,0 +1,25 @@
+{
+	"components": {
+		"setPartyMember": {
+			"title": "设置队伍成员"
+		},
+		"setPartyMember-operation": {
+			"label": "操作",
+			"tip": "玩家队伍操作",
+			"options": {
+				"add": {
+					"name": "添加",
+					"tip": "将一个全局角色添加到玩家队伍中"
+				},
+				"remove": {
+					"name": "移除",
+					"tip": "从玩家队伍中移除一个全局角色"
+				}
+			}
+		},
+		"setPartyMember-actor": {
+			"label": "全局角色",
+			"tip": "对这个角色执行操作"
+		}
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"components": {
+		"removeAnimationComponent": {
+			"title": "移除动画组件"
+		},
+		"removeAnimationComponent-actor": {
+			"label": "角色",
+			"tip": "移除此角色的动画组件"
+		},
+		"removeAnimationComponent-animationId": {
+			"label": "动画",
+			"tip": "选择一个动画文件"
+		},
+		"removeAnimationComponent-motion": {
+			"label": "动作",
+			"tip": "选择该动画的一个动作\n动画ID加上动作ID组成这个动画组件的ID"
+		}
+	}
+}

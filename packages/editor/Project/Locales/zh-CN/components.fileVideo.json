@@ -1,0 +1,30 @@
+{
+	"components": {
+		"fileVideo-info-grid": {
+			"label": "文件信息"
+		},
+		"fileVideo-name": {
+			"label": "名称",
+			"tip": "文件名称"
+		},
+		"fileVideo-size": {
+			"label": "大小",
+			"tip": "文件大小"
+		},
+		"fileVideo-duration": {
+			"label": "长度",
+			"tip": "视频长度"
+		},
+		"fileVideo-resolution": {
+			"label": "分辨率",
+			"tip": "视频分辨率"
+		},
+		"fileVideo-bitrate": {
+			"label": "比特率",
+			"tip": "平均每秒传输的位数，一般来说越大画质越好"
+		},
+		"fileVideo-video": {
+			"label": "播放器"
+		}
+	}
+}

@@ -1,0 +1,29 @@
+{
+	"components": {
+		"changePassableTerrain": {
+			"title": "改变通行区域"
+		},
+		"changePassableTerrain-actor": {
+			"label": "角色",
+			"tip": "改变这个角色的通行区域"
+		},
+		"changePassableTerrain-passage": {
+			"label": "通行区域",
+			"tip": "设置新的通行区域",
+			"options": {
+				"land": {
+					"name": "地面",
+					"tip": "角色只能在地面移动"
+				},
+				"water": {
+					"name": "水面",
+					"tip": "角色只能在水面移动"
+				},
+				"unrestricted": {
+					"name": "不受限制",
+					"tip": "角色可在地面、水面、墙块中移动"
+				}
+			}
+		}
+	}
+}

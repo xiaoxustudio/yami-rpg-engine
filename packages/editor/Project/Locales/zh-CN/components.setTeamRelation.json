@@ -1,0 +1,29 @@
+{
+	"components": {
+		"setTeamRelation": {
+			"title": "设置队伍关系"
+		},
+		"setTeamRelation-teamId1": {
+			"label": "队伍 A",
+			"tip": "指定队伍A的ID"
+		},
+		"setTeamRelation-teamId2": {
+			"label": "队伍 B",
+			"tip": "指定队伍B的ID"
+		},
+		"setTeamRelation-relation": {
+			"label": "关系",
+			"tip": "设置两个队伍的相互关系",
+			"options": {
+				"0": {
+					"name": "敌对",
+					"tip": "将两个队伍设置为敌对关系"
+				},
+				"1": {
+					"name": "友好",
+					"tip": "将两个队伍设置为友好关系"
+				}
+			}
+		}
+	}
+}

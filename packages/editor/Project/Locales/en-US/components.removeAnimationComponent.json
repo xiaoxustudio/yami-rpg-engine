@@ -1,0 +1,19 @@
+{
+	"components": {
+		"removeAnimationComponent": {
+			"title": "Remove Animation Component"
+		},
+		"removeAnimationComponent-actor": {
+			"label": "Actor",
+			"tip": "Remove the animation component from this actor"
+		},
+		"removeAnimationComponent-animationId": {
+			"label": "Animation",
+			"tip": "Select an animation file"
+		},
+		"removeAnimationComponent-motion": {
+			"label": "Motion",
+			"tip": "Select a motion of the animation.\nThe animation ID plus the motion ID form the ID of the animation component.\nTherefore, components with the same animation and motion cannot be added repeatedly."
+		}
+	}
+}

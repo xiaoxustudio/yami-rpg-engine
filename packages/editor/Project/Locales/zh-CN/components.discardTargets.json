@@ -1,0 +1,45 @@
+{
+	"components": {
+		"discardTargets": {
+			"title": "放弃目标"
+		},
+		"discardTargets-actor": {
+			"label": "角色",
+			"tip": "从这个角色的目标池中移除一些目标角色"
+		},
+		"discardTargets-selector": {
+			"label": "放弃目标",
+			"tip": "筛选出符合条件的目标角色",
+			"options": {
+				"enemy": {
+					"name": "敌对角色",
+					"tip": "从目标池中选择此角色的敌对角色"
+				},
+				"friend": {
+					"name": "友好角色",
+					"tip": "从目标池中选择此角色的友好角色"
+				},
+				"team": {
+					"name": "队伍成员",
+					"tip": "从目标池中选择此角色的队伍成员"
+				},
+				"team-except-self": {
+					"name": "除自己外的队伍成员",
+					"tip": "从目标池中选择除了此角色以外的队伍成员"
+				},
+				"any-except-self": {
+					"name": "除自己外的任意角色",
+					"tip": "从目标池中选择除了此角色以外的所有角色"
+				},
+				"any": {
+					"name": "任意角色",
+					"tip": "从目标池中选择所有角色"
+				}
+			}
+		},
+		"discardTargets-distance": {
+			"label": "放弃距离",
+			"tip": "从目标池中移除大于或等于指定距离的角色"
+		}
+	}
+}

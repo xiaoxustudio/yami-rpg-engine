@@ -1,0 +1,37 @@
+{
+	"components": {
+		"controlButton": {
+			"title": "控制按钮"
+		},
+		"controlButton-operation": {
+			"label": "操作",
+			"tip": "执行一个按钮操作",
+			"options": {
+				"select-default": {
+					"name": "选中默认按钮",
+					"tip": "在当前焦点元素的后代元素中，选中第一个按钮元素"
+				},
+				"select": {
+					"name": "选中按钮",
+					"tip": "选中指定的按钮元素"
+				},
+				"hover-mode": {
+					"name": "显示选中模式",
+					"tip": "让按钮元素显示为\"选中\"模式"
+				},
+				"active-mode": {
+					"name": "显示按下模式",
+					"tip": "让按钮元素显示为\"按下\"模式"
+				},
+				"normal-mode": {
+					"name": "恢复显示模式",
+					"tip": "让按钮元素显示为\"正常\"模式"
+				}
+			}
+		},
+		"controlButton-element": {
+			"label": "元素",
+			"tip": "指定一个按钮元素"
+		}
+	}
+}

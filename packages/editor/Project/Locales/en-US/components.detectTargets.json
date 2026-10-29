@@ -1,0 +1,59 @@
+{
+	"components": {
+		"detectTargets": {
+			"title": "Detect Targets"
+		},
+		"detectTargets-actor": {
+			"label": "Actor",
+			"tip": "Detect other actors near this actor's location and add them to the target pool"
+		},
+		"detectTargets-distance": {
+			"label": "Distance",
+			"tip": "Select actors within a circle with a specified radius"
+		},
+		"detectTargets-selector": {
+			"label": "Selector",
+			"tip": "Filter target actors from nearby actors",
+			"options": {
+				"enemy": {
+					"name": "Enemy",
+					"tip": "Select enemy actors from the target pool"
+				},
+				"friend": {
+					"name": "Friend",
+					"tip": "Select friendly actors from the target pool"
+				},
+				"team": {
+					"name": "Team Member",
+					"tip": "Select team members from the target pool"
+				},
+				"team-except-self": {
+					"name": "Team Member Except Self",
+					"tip": "Select team members except this actor from the target pool"
+				},
+				"any-except-self": {
+					"name": "Any Except Self",
+					"tip": "Select all actors except this actor from the target pool"
+				},
+				"any": {
+					"name": "Any",
+					"tip": "Select all actors from the target pool"
+				}
+			}
+		},
+		"detectTargets-inSight": {
+			"label": "In Sight",
+			"tip": "Whether the target actor needs to be visible",
+			"options": {
+				"true": {
+					"name": "Enabled",
+					"tip": "Exclude target actors that are blocked by walls and not in sight"
+				},
+				"false": {
+					"name": "Disabled",
+					"tip": "Select target actors even if they are not in sight"
+				}
+			}
+		}
+	}
+}

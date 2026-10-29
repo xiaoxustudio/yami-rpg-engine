@@ -1,0 +1,31 @@
+{
+	"components": {
+		"setTile": {
+			"title": "Set Tile"
+		},
+		"setTile-tilemap": {
+			"label": "Tilemap",
+			"tip": "Tilemap whose tile will be replaced"
+		},
+		"setTile-tilemapX": {
+			"label": "Tilemap X",
+			"tip": "Horizontal position of tile to be replaced"
+		},
+		"setTile-tilemapY": {
+			"label": "Tilemap Y",
+			"tip": "Vertical position of tile to be replaced"
+		},
+		"setTile-tilesetId": {
+			"label": "Tileset",
+			"tip": "Get tiles from this file"
+		},
+		"setTile-tilesetX": {
+			"label": "Tileset X",
+			"tip": "Horizontal position of new tile"
+		},
+		"setTile-tilesetY": {
+			"label": "Tileset Y",
+			"tip": "Vertical position of new tile"
+		}
+	}
+}

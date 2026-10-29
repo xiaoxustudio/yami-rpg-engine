@@ -1,0 +1,33 @@
+{
+	"components": {
+		"setSkill": {
+			"title": "Set Skill"
+		},
+		"setSkill-skill": {
+			"label": "Skill",
+			"tip": "Get a skill from the skill accessor and set it"
+		},
+		"setSkill-operation": {
+			"label": "Operation",
+			"tip": "Perform a skill operation",
+			"options": {
+				"set-cooldown": {
+					"name": "Set Cooldown Time",
+					"tip": "Set the cooldown time of this skill and start the cooldown timer"
+				},
+				"increase-cooldown": {
+					"name": "Increase Cooldown Time",
+					"tip": "Increase the cooldown time of this skill and start the cooldown timer"
+				},
+				"decrease-cooldown": {
+					"name": "Decrease Cooldown Time",
+					"tip": "Reduce the cooldown time of this skill (minimum is 0)"
+				}
+			}
+		},
+		"setSkill-cooldown": {
+			"label": "Cooldown Time",
+			"tip": "Skill cooldown time"
+		}
+	}
+}

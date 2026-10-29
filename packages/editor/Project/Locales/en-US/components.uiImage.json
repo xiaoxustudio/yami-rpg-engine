@@ -1,0 +1,110 @@
+{
+	"components": {
+		"uiImage-properties-grid": {
+			"label": "Image Properties"
+		},
+		"uiImage-image": {
+			"label": "Image",
+			"tip": "Selected Image file"
+		},
+		"uiImage-display": {
+			"label": "Display",
+			"tip": "Display option for this image",
+			"options": {
+				"stretch": {
+					"name": "Stretch",
+					"tip": "Stretch the image to fill the Element"
+				},
+				"tile": {
+					"name": "Tile",
+					"tip": "Tile the image to fill the Element"
+				},
+				"clip": {
+					"name": "Clip",
+					"tip": "Crop the image and stretch it to fill the Element"
+				},
+				"slice": {
+					"name": "Slice",
+					"tip": "Cut the image into 9 tiles to fill the Element"
+				}
+			}
+		},
+		"uiImage-flip": {
+			"label": "Flip",
+			"tip": "Flip options for this image",
+			"options": {
+				"none": {
+					"name": "None",
+					"tip": "Display the image normally"
+				},
+				"horizontal": {
+					"name": "Horizontal",
+					"tip": "Flip image 180 degress from left to right"
+				},
+				"vertical": {
+					"name": "Vertical",
+					"tip": "Flip image 180 degress from top to bottom"
+				},
+				"both": {
+					"name": "Both",
+					"tip": "Flip image 180 degress from top left to bottom right"
+				}
+			}
+		},
+		"uiImage-blend": {
+			"label": "Blend",
+			"tip": "Choose a formula to blend the color with the underlying color",
+			"options": {
+				"normal": {
+					"name": "Normal",
+					"tip": "C = A * (1 - a%) + B * a%"
+				},
+				"additive": {
+					"name": "Additive",
+					"tip": "C = min(255, A + B)"
+				},
+				"subtract": {
+					"name": "Subtract",
+					"tip": "C = max(0, A - B)"
+				},
+				"mask": {
+					"name": "Mask",
+					"tip": "Descendant elements are only visible within the image, and the rendering color is filtered based on the RGB values of the image pixels"
+				}
+			}
+		},
+		"uiImage-shift-box": {
+			"label": "Shift"
+		},
+		"uiImage-shiftX": {
+			"tip": "$Offset X\nHorizontal offset of the image texture (unit: pixels)"
+		},
+		"uiImage-shiftY": {
+			"tip": "$Offset Y\nVertical offset of the image texture (unit: pixels)"
+		},
+		"uiImage-clip": {
+			"label": "Clip",
+			"tip": "Clipping area of image"
+		},
+		"uiImage-border": {
+			"label": "Border",
+			"tip": "Image split into 9 parts by border size (4 corners, 4 edges, center). These parts tile to fill the element. Border size = corner side length."
+		},
+		"uiImage-tint-0-box": {
+			"label": "Tint - Red",
+			"tip": "Input color (Red) + Hue (Red) = Output color (Red)"
+		},
+		"uiImage-tint-1-box": {
+			"label": "Tint - Green",
+			"tip": "Input color (Green) + Hue (Green) = Output color (Green)"
+		},
+		"uiImage-tint-2-box": {
+			"label": "Tint - Blue",
+			"tip": "Input color (Blue) + Hue (Blue) = Output color (Blue)"
+		},
+		"uiImage-tint-3-box": {
+			"label": "Tint - Grayscale",
+			"tip": "Reduces color saturation (to black & white if high enough)"
+		}
+	}
+}

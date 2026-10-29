@@ -1,0 +1,48 @@
+{
+	"components": {
+		"scene-switch-grid": {
+			"tip": "$Grid\nRender scene grid lines"
+		},
+		"scene-switch-light": {
+			"tip": "$Light\nRender ambient light and light sources"
+		},
+		"scene-switch-animation": {
+			"tip": "$Animation\nPlay animations and particles"
+		},
+		"scene-switch-settings": {
+			"tip": "$Settings\nOpen the scene settings panel"
+		},
+		"scene-layer-object": {
+			"tip": "$Object Layer\nScene objects can be selected in this mode"
+		},
+		"scene-layer-terrain": {
+			"tip": "$Terrain Layer\nSet the obstacle area\nLand: Actors with \"land\" or \"unrestricted\" passage terrain can move here\nWater: Actors with \"water\" or \"unrestricted\" passage terrain can move here\nWall: Actors with \"unrestricted\" passage terrain can move here, it can block \"trigger\" objects from passing through"
+		},
+		"scene-brush-eraser": {
+			"tip": "$Eraser\nErase a tile in the tilemap"
+		},
+		"scene-brush-pencil": {
+			"tip": "$Pencil\nDraw the selected tiles into the tilemap"
+		},
+		"scene-brush-rect": {
+			"tip": "$Rectangle\nFill the selected tiles into the rectangular area by dragging"
+		},
+		"scene-brush-oval": {
+			"tip": "$Oval\nFill the selected tiles into the oval area by dragging"
+		},
+		"scene-brush-fill": {
+			"tip": "$Fill\nFill the selected tiles into the consecutive and identical tiles of the tilemap"
+		},
+		"scene-shift": {
+			"title": "Shift"
+		},
+		"scene-shift-x": {
+			"label": "Shift X",
+			"tip": "Horizontal offset of the scene object"
+		},
+		"scene-shift-y": {
+			"label": "Shift Y",
+			"tip": "Vertical offset of the scene object"
+		}
+	}
+}

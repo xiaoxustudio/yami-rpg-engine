@@ -1,0 +1,43 @@
+{
+	"components": {
+		"setVideo": {
+			"title": "设置视频"
+		},
+		"setVideo-element": {
+			"label": "元素",
+			"tip": "指定一个视频元素"
+		},
+		"setVideo-properties": {
+			"label": "设置属性"
+		},
+		"setVideo-property": {
+			"title": "视频属性"
+		},
+		"setVideo-property-key": {
+			"label": "属性",
+			"tip": "视频元素的属性",
+			"options": {
+				"video": "视频",
+				"playbackRate": "播放速度",
+				"loop": "循环",
+				"flip": "翻转",
+				"blend": "混合模式"
+			}
+		},
+		"setVideo-property-video": {
+			"label": "视频"
+		},
+		"setVideo-property-playbackRate": {
+			"label": "播放速度"
+		},
+		"setVideo-property-loop": {
+			"label": "循环"
+		},
+		"setVideo-property-flip": {
+			"label": "翻转"
+		},
+		"setVideo-property-blend": {
+			"label": "混合模式"
+		}
+	}
+}

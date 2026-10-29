@@ -1,0 +1,154 @@
+{
+	"components": {
+		"fileEvent-general-grid": {
+			"label": "基本设置"
+		},
+		"fileEvent-type": {
+			"label": "类型",
+			"tip": "一些特定行为会自动触发相关类型的事件"
+		},
+		"fileEvent-enabled": {
+			"label": "启用",
+			"tip": "按事件类型自动触发"
+		},
+		"fileEvent-priority": {
+			"label": "优先级",
+			"tip": "提前到元素事件之前触发，不受\"暂停游戏\"和\"阻止场景输入事件\"指令的影响"
+		},
+		"fileEvent-namespace": {
+			"label": "命名空间",
+			"tip": "开启：事件被调用后将使用独立的变量作用域\n关闭：事件被调用后跟调用它的事件共用变量作用域"
+		},
+		"fileEvent-returnType": {
+			"label": "返回类型",
+			"tip": "通过\"返回\"指令将计算出的结果传递给调用它的事件",
+			"options": {
+				"none": {
+					"name": "无",
+					"tip": "不返回任何值"
+				},
+				"boolean": {
+					"name": "布尔值",
+					"tip": "返回布尔值"
+				},
+				"number": {
+					"name": "数值",
+					"tip": "返回数值"
+				},
+				"string": {
+					"name": "字符串",
+					"tip": "返回字符串"
+				},
+				"object": {
+					"name": "对象",
+					"tip": "返回任意对象"
+				},
+				"actor": {
+					"name": "角色",
+					"tip": "返回角色对象"
+				},
+				"skill": {
+					"name": "技能",
+					"tip": "返回技能对象"
+				},
+				"state": {
+					"name": "状态",
+					"tip": "返回状态对象"
+				},
+				"equipment": {
+					"name": "装备",
+					"tip": "返回装备对象"
+				},
+				"item": {
+					"name": "物品",
+					"tip": "返回物品对象"
+				},
+				"trigger": {
+					"name": "触发器",
+					"tip": "返回触发器对象"
+				},
+				"light": {
+					"name": "光源",
+					"tip": "返回光源对象"
+				},
+				"element": {
+					"name": "元素",
+					"tip": "返回元素对象"
+				}
+			}
+		},
+		"fileEvent-description": {
+			"label": "事件描述",
+			"tip": "事件的备注说明"
+		},
+		"fileEvent-parameters": {
+			"label": "事件参数",
+			"tip": "通过\"调用事件\"指令调用本事件可传递参数值\n将在执行本事件时自动写入参数值到这些变量"
+		},
+		"fileEvent-parameter": {
+			"title": "参数"
+		},
+		"fileEvent-parameter-type": {
+			"label": "类型",
+			"tip": "调用时接收的值类型",
+			"options": {
+				"boolean": {
+					"name": "布尔值",
+					"tip": "传递布尔值到初始变量"
+				},
+				"number": {
+					"name": "数值",
+					"tip": "传递数值到初始变量"
+				},
+				"string": {
+					"name": "字符串",
+					"tip": "传递字符串到初始变量"
+				},
+				"object": {
+					"name": "对象",
+					"tip": "传递任意对象到初始变量"
+				},
+				"actor": {
+					"name": "角色",
+					"tip": "传递角色对象到初始变量"
+				},
+				"skill": {
+					"name": "技能",
+					"tip": "传递技能对象到初始变量"
+				},
+				"state": {
+					"name": "状态",
+					"tip": "传递状态对象到初始变量"
+				},
+				"equipment": {
+					"name": "装备",
+					"tip": "传递装备对象到初始变量"
+				},
+				"item": {
+					"name": "物品",
+					"tip": "传递物品对象到初始变量"
+				},
+				"trigger": {
+					"name": "触发器",
+					"tip": "传递触发器对象到初始变量"
+				},
+				"light": {
+					"name": "光源",
+					"tip": "传递光源对象到初始变量"
+				},
+				"element": {
+					"name": "元素",
+					"tip": "传递元素对象到初始变量"
+				}
+			}
+		},
+		"fileEvent-parameter-key": {
+			"label": "键",
+			"tip": "本地变量"
+		},
+		"fileEvent-parameter-note": {
+			"label": "备注",
+			"tip": "参数的备注说明"
+		}
+	}
+}

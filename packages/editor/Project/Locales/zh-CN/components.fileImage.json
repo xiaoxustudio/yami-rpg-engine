@@ -1,0 +1,22 @@
+{
+	"components": {
+		"fileImage-info-grid": {
+			"label": "文件信息"
+		},
+		"fileImage-name": {
+			"label": "名称",
+			"tip": "文件名称"
+		},
+		"fileImage-size": {
+			"label": "大小",
+			"tip": "文件大小"
+		},
+		"fileImage-resolution": {
+			"label": "尺寸",
+			"tip": "图像分辨率"
+		},
+		"fileImage-image-viewer": {
+			"label": "图像"
+		}
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"components": {
+		"showChoices": {
+			"title": "Show Choices"
+		},
+		"showChoices-choices": {
+			"label": "Choices",
+			"tip": "Read choice contents with the 'Set String' command"
+		},
+		"showChoices-parameters": {
+			"label": "Parameters",
+			"tip": "Parameter Format\nbool1, bool2: true, num: 0, str: hello world, ...\nRead parameters by 'Set Boolean', 'Set Number' and 'Set String' commands"
+		}
+	}
+}

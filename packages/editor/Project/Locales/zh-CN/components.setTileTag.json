@@ -1,0 +1,11 @@
+{
+	"components": {
+		"setTileTag": {
+			"title": "设置图块标签"
+		},
+		"setTileTag-tag": {
+			"label": "标签",
+			"tip": "输入图块标签(0-99999)"
+		}
+	}
+}

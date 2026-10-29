@@ -1,0 +1,100 @@
+{
+	"components": {
+		"moveElement": {
+			"title": "移动元素"
+		},
+		"moveElement-element": {
+			"label": "元素",
+			"tip": "指定一个任意类型的元素"
+		},
+		"moveElement-properties": {
+			"label": "设置属性"
+		},
+		"moveElement-property": {
+			"title": "元素属性"
+		},
+		"moveElement-property-key": {
+			"label": "属性",
+			"tip": "元素的变换属性",
+			"options": {
+				"anchorX": "锚点 X",
+				"anchorY": "锚点 Y",
+				"x": "X",
+				"x2": "X2",
+				"y": "Y",
+				"y2": "Y2",
+				"width": "宽度",
+				"width2": "宽度2",
+				"height": "高度",
+				"height2": "高度2",
+				"rotation": "旋转",
+				"scaleX": "缩放 X",
+				"scaleY": "缩放 Y",
+				"skewX": "倾斜 X",
+				"skewY": "倾斜 Y",
+				"opacity": "不透明度"
+			}
+		},
+		"moveElement-property-anchorX": {
+			"label": "锚点 X"
+		},
+		"moveElement-property-anchorY": {
+			"label": "锚点 Y"
+		},
+		"moveElement-property-x": {
+			"label": "X"
+		},
+		"moveElement-property-x2": {
+			"label": "X2"
+		},
+		"moveElement-property-y": {
+			"label": "Y"
+		},
+		"moveElement-property-y2": {
+			"label": "Y2"
+		},
+		"moveElement-property-width": {
+			"label": "宽度"
+		},
+		"moveElement-property-width2": {
+			"label": "宽度2"
+		},
+		"moveElement-property-height": {
+			"label": "高度"
+		},
+		"moveElement-property-height2": {
+			"label": "高度2"
+		},
+		"moveElement-property-rotation": {
+			"label": "旋转"
+		},
+		"moveElement-property-scaleX": {
+			"label": "缩放 X"
+		},
+		"moveElement-property-scaleY": {
+			"label": "缩放 Y"
+		},
+		"moveElement-property-skewX": {
+			"label": "倾斜 X"
+		},
+		"moveElement-property-skewY": {
+			"label": "倾斜 Y"
+		},
+		"moveElement-property-opacity": {
+			"label": "不透明度"
+		},
+		"moveElement-easingId": {
+			"label": "过渡"
+		},
+		"moveElement-duration": {
+			"label": "时长"
+		},
+		"moveElement-wait": {
+			"label": "等待",
+			"options": {
+				"true": "是",
+				"false": "否"
+			}
+		}
+	}
+}

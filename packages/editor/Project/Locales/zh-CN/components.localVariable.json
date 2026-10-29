@@ -1,0 +1,11 @@
+{
+	"components": {
+		"localVariable": {
+			"title": "设置本地变量"
+		},
+		"localVariable-key": {
+			"label": "本地变量",
+			"tip": "输入当前事件中的一个本地变量的名称"
+		}
+	}
+}

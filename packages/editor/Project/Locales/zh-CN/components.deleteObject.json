@@ -1,0 +1,11 @@
+{
+	"components": {
+		"deleteObject": {
+			"title": "删除对象"
+		},
+		"deleteObject-object": {
+			"label": "对象",
+			"tip": "删除这个场景对象"
+		}
+	}
+}

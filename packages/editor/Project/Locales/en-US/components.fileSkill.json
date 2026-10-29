@@ -1,0 +1,31 @@
+{
+	"components": {
+		"fileSkill-general-grid": {
+			"label": "General"
+		},
+		"fileSkill-icon": {
+			"label": "Icon",
+			"tip": "Skill Icon\n$Related command\nLoad Image"
+		},
+		"fileSkill-clip": {
+			"label": "Clip",
+			"tip": "Clip area of icon\n$Related command\nLoad Image"
+		},
+		"fileSkill-inherit": {
+			"label": "Inherit",
+			"tip": "Inherits specified skill's attributes, events, and scripts\nIf the same attribute exists, it overrides the inherited skill's attribute value\nIf the same type of event exists, it overrides the inherited skill's event\nOverridden events can still be triggered using the 'Call Event' command\nHowever, inherited scripts will stack instead of being overridden"
+		},
+		"fileSkill-attributes": {
+			"label": "Attributes",
+			"tip": "Initial attribute list\n$Optional types\nBoolean, Number, String, Enumeration(String)\n$Related commands\nSet Boolean, Set Number, Set String"
+		},
+		"fileSkill-events": {
+			"label": "Events",
+			"tip": "A list of skill events\nEvents stop executing when the actor is inactive or destroyed\nAccess \"Skill Caster\" to get the actor with this skill\nAccess \"Event Trigger Actor\" to get the actor with this skill\nAccess \"Event Trigger Skill\" to get this skill\n$Optional types\nCast Skill: Triggered by the \"Cast Skill\" command\nAdd Skill: Triggered when an actor adds this skill\nRemove Skill: Triggered when an actor removes this skill\nCustom: Triggered by the \"Call Event\" command"
+		},
+		"fileSkill-scripts": {
+			"label": "Scripts",
+			"tip": "Add script files to extend this skill"
+		}
+	}
+}

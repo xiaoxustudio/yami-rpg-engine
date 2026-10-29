@@ -1,0 +1,41 @@
+{
+	"components": {
+		"stateGetter": {
+			"title": "State"
+		},
+		"stateGetter-type": {
+			"label": "Type",
+			"tip": "How to obtain the state",
+			"options": {
+				"trigger": {
+					"name": "Event Trigger State",
+					"tip": "State that triggered this event"
+				},
+				"latest": {
+					"name": "Latest State",
+					"tip": "Get the most recently created state, which refreshes when the 'Change Actor State' command is called"
+				},
+				"by-id": {
+					"name": "By State ID",
+					"tip": "Get the state associated with the actor and the state file ID"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Get the state from the specified variable"
+				}
+			}
+		},
+		"stateGetter-actor": {
+			"label": "Actor",
+			"tip": "Get the state from this actor"
+		},
+		"stateGetter-stateId": {
+			"label": "State",
+			"tip": "Get the state associated with this state file ID"
+		},
+		"stateGetter-variable": {
+			"label": "Variable",
+			"tip": "Get the state object from the variable"
+		}
+	}
+}

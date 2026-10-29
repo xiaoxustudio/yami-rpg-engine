@@ -1,0 +1,10 @@
+{
+	"components": {
+		"arrayList-number": {
+			"title": "数值"
+		},
+		"arrayList-string": {
+			"title": "字符串"
+		}
+	}
+}

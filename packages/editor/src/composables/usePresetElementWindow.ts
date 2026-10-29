@@ -76,7 +76,7 @@ function initialize(): void {
 	searcher = composableEls.get('presetElement-searcher') as YamiElement;
 	list.bind(() => nodes);
 	on(searcher, 'keydown', searcherKeydown);
-	(composableEls.get('presetElement') as YamiElement).addEventListener('closed', windowClosed);
+	composableEls.get('presetElement')?.addEventListener('closed', windowClosed);
 }
 
 function open(openTarget: PresetElementTarget): void {

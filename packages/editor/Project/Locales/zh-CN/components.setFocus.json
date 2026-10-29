@@ -1,0 +1,51 @@
+{
+	"components": {
+		"setFocus": {
+			"title": "设置焦点"
+		},
+		"setFocus-operation": {
+			"label": "操作",
+			"tip": "焦点元素相关操作",
+			"options": {
+				"add": {
+					"name": "添加焦点",
+					"tip": "将一个元素设置为焦点元素，它的后代按钮元素可用方向键切换，回车键确认"
+				},
+				"remove": {
+					"name": "移除焦点",
+					"tip": "移除指定的焦点元素"
+				},
+				"remove-latest": {
+					"name": "移除最新的焦点",
+					"tip": "移除最新的焦点元素"
+				},
+				"reset": {
+					"name": "重置",
+					"tip": "删除所有焦点元素"
+				}
+			}
+		},
+		"setFocus-element": {
+			"label": "元素",
+			"tip": "对这个元素执行操作"
+		},
+		"setFocus-mode": {
+			"label": "模式",
+			"tip": "如何创建按钮列表",
+			"options": {
+				"control-child-buttons": {
+					"name": "控制子按钮",
+					"tip": "快捷键可控制子元素中的按钮"
+				},
+				"control-descendant-buttons": {
+					"name": "控制后代按钮",
+					"tip": "快捷键可控制后代元素中的按钮"
+				}
+			}
+		},
+		"setFocus-cancelable": {
+			"label": "可取消",
+			"tip": "按Esc键可移除当前焦点"
+		}
+	}
+}

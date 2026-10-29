@@ -1,0 +1,89 @@
+{
+	"components": {
+		"callEvent": {
+			"title": "调用事件"
+		},
+		"callEvent-type": {
+			"label": "类型",
+			"tip": "想要调用哪个事件",
+			"options": {
+				"global": {
+					"name": "全局事件",
+					"tip": "同步调用指定的全局事件\n等待被调用的事件结束后才会接着执行\n可传递参数和接收返回值"
+				},
+				"inherited": {
+					"name": "继承事件",
+					"tip": "同步调用正在执行本事件的对象被覆盖的同类型事件。\n如果A继承了B，B继承了C，并且它们都有相同的'XX'事件，此时只有A的事件被激活。\n在A的事件中执行'调用继承事件'，就会调用B的事件，\n在B的事件中执行，就会调用C的事件，\n如果B缺少该事件，A会直接调用C的事件，\n继承链：\nA的注册事件 > A的场景事件 > A的事件 > B的事件 > C的事件..."
+				},
+				"scene": {
+					"name": "场景事件",
+					"tip": "异步调用当前场景的事件"
+				},
+				"actor": {
+					"name": "角色",
+					"tip": "异步调用指定角色的事件"
+				},
+				"skill": {
+					"name": "技能",
+					"tip": "异步调用指定技能的事件"
+				},
+				"state": {
+					"name": "状态",
+					"tip": "异步调用指定状态的事件"
+				},
+				"equipment": {
+					"name": "装备",
+					"tip": "异步调用指定装备的事件"
+				},
+				"item": {
+					"name": "物品",
+					"tip": "异步调用指定物品的事件"
+				},
+				"light": {
+					"name": "光源",
+					"tip": "异步调用指定光源的事件"
+				},
+				"element": {
+					"name": "元素",
+					"tip": "异步调用指定元素的事件"
+				}
+			}
+		},
+		"callEvent-actor": {
+			"label": "角色",
+			"tip": "调用这个角色的事件"
+		},
+		"callEvent-skill": {
+			"label": "技能",
+			"tip": "调用这个技能的事件"
+		},
+		"callEvent-state": {
+			"label": "状态",
+			"tip": "调用这个状态的事件"
+		},
+		"callEvent-equipment": {
+			"label": "装备",
+			"tip": "调用这个装备的事件"
+		},
+		"callEvent-item": {
+			"label": "物品",
+			"tip": "调用这个物品的事件"
+		},
+		"callEvent-light": {
+			"label": "光源",
+			"tip": "调用这个光源的事件"
+		},
+		"callEvent-element": {
+			"label": "元素",
+			"tip": "调用这个元素的事件"
+		},
+		"callEvent-eventId": {
+			"label": "事件",
+			"tip": "指定事件文件ID"
+		},
+		"callEvent-eventType": {
+			"label": "事件",
+			"tip": "选择对象的事件类型"
+		}
+	}
+}

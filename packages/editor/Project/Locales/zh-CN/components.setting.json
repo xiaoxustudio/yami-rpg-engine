@@ -1,0 +1,82 @@
+{
+	"components": {
+		"setting": {
+			"title": "设置"
+		},
+		"setting-title-server": {
+			"content": "本地服务"
+		},
+		"setting-server-port": {
+			"label": "端口",
+			"tip": "本地服务监听的端口"
+		},
+		"setting-server-auto": {
+			"label": "自动开启服务",
+			"tip": "打开项目自动启动本地服务"
+		},
+		"setting-title-apkbuild": {
+			"content": "APK构建"
+		},
+		"setting-apkbuild-outputDir": {
+			"label": "反编译输出目录",
+			"tip": "反编译后的APK文件反编译后的输出目录"
+		},
+		"setting-apkbuild-newApkPath": {
+			"label": "新APK输出路径",
+			"tip": "构建后的新APK文件输出路径"
+		},
+		"setting-apkbuild-apktoolPath": {
+			"label": "apktool.jar路径",
+			"tip": "apktool.jar的路径"
+		},
+		"setting-title-signed": {
+			"content": "签名"
+		},
+		"setting-signed-jksPath": {
+			"label": "JKS密钥库路径",
+			"tip": "JKS密钥库的路径"
+		},
+		"setting-signed-keyStorePassword": {
+			"label": "密钥库密码",
+			"tip": "密钥库的密码"
+		},
+		"setting-signed-keyAlias": {
+			"label": "密钥别名",
+			"tip": "密钥的别名"
+		},
+		"setting-signed-keyPassword": {
+			"label": "密钥密码",
+			"tip": "密钥的密码"
+		},
+		"setting-signed-apksignerPath": {
+			"label": "apksigner路径",
+			"tip": "apksigner的路径"
+		},
+		"setting-signed-zipalignPath": {
+			"label": "zipalign路径",
+			"tip": "zipalign的路径"
+		},
+		"setting-signed-signedApkPath": {
+			"label": "签名后APK路径",
+			"tip": "签名后的APK文件输出路径"
+		},
+		"setting-title-other": {
+			"content": "其他"
+		},
+		"setting-other-copyAsTextKeepEmptyLine": {
+			"label": "保留空行",
+			"tip": "复制到文本 是否保留空行"
+		},
+		"setting-other-browserSearchHistoryLimit": {
+			"label": "项目搜索历史上限",
+			"tip": "项目浏览器搜索框下拉列表最多显示的历史记录条数"
+		},
+		"setting-title-github": {
+			"content": "GitHub"
+		},
+		"setting-github-accelerationNode": {
+			"label": "加速节点",
+			"tip": "选择GitHub资源下载的加速节点"
+		}
+	}
+}

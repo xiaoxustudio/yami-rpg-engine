@@ -1,0 +1,71 @@
+{
+	"components": {
+		"animSpriteFrame-properties-grid": {
+			"label": "Frame"
+		},
+		"animSpriteFrame-anchor-box": {
+			"label": "Anchor"
+		},
+		"animSpriteFrame-anchorX": {
+			"tip": "$Anchor X\nThe horizontal position of the sprite relative to the animation connection point"
+		},
+		"animSpriteFrame-anchorY": {
+			"tip": "$Anchor Y\nThe vertical position of the sprite relative to the animation connection point"
+		},
+		"animSpriteFrame-pivot-box": {
+			"label": "Pivot"
+		},
+		"animSpriteFrame-pivotX": {
+			"tip": "$Pivot X\nThe horizontal offset of the sprite relative to the animation connection point"
+		},
+		"animSpriteFrame-pivotY": {
+			"tip": "$Pivot Y\nThe vertical offset of the sprite relative to the animation connection point"
+		},
+		"animSpriteFrame-position-box": {
+			"label": "Position"
+		},
+		"animSpriteFrame-x": {
+			"tip": "$X\nHorizontal position"
+		},
+		"animSpriteFrame-y": {
+			"tip": "$Y\nVertical position"
+		},
+		"animSpriteFrame-rotation-box": {
+			"label": "Rotation"
+		},
+		"animSpriteFrame-rotation": {
+			"tip": "$Rotation\nRotation angle, 0° = right, clockwise rotation"
+		},
+		"animSpriteFrame-scale-box": {
+			"label": "Scale"
+		},
+		"animSpriteFrame-scaleX": {
+			"tip": "$Scale X\nHorizontal scaling factor"
+		},
+		"animSpriteFrame-scaleY": {
+			"tip": "$Scale Y\nVertical scaling factor"
+		},
+		"animSpriteFrame-opacity-box": {
+			"label": "Opacity"
+		},
+		"animSpriteFrame-opacity": {
+			"tip": "$Opacity\nUsed to adjust the visibility of the animation frame"
+		},
+		"animSpriteFrame-tint-0-box": {
+			"label": "Tint - Red",
+			"tip": "Input color (Red) + Hue (Red) = Output color (Red)"
+		},
+		"animSpriteFrame-tint-1-box": {
+			"label": "Tint - Green",
+			"tip": "Input color (Green) + Hue (Green) = Output color (Green)"
+		},
+		"animSpriteFrame-tint-2-box": {
+			"label": "Tint - Blue",
+			"tip": "Input color (Blue) + Hue (Blue) = Output color (Blue)"
+		},
+		"animSpriteFrame-tint-3-box": {
+			"label": "Tint - Grayscale",
+			"tip": "Grayscale and saturation are opposite; the higher the grayscale, the lower the saturation"
+		}
+	}
+}

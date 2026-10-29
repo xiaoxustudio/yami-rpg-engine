@@ -1,0 +1,26 @@
+{
+	"components": {
+		"command": {
+			"title": "Custom Command"
+		},
+		"command-list": {
+			"label": "List"
+		},
+		"command-overview": {
+			"label": "Overview"
+		},
+		"command-settings-grid": {
+			"label": "Settings"
+		},
+		"command-alias": {
+			"label": "Alias",
+			"placeholder": "Use plugin name as default",
+			"tip": "Rename the command"
+		},
+		"command-keywords": {
+			"label": "Keywords",
+			"placeholder": "Keywords are separated by commas",
+			"tip": "Add search keywords, separated by commas"
+		}
+	}
+}

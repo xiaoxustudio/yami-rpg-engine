@@ -1,0 +1,45 @@
+{
+	"components": {
+		"playAudio": {
+			"title": "播放音频"
+		},
+		"playAudio-type": {
+			"label": "类型",
+			"tip": "在哪个通道上播放",
+			"options": {
+				"bgm": {
+					"name": "BGM",
+					"tip": "停止正在播放的BGM，播放新的音频"
+				},
+				"bgs": {
+					"name": "BGS",
+					"tip": "停止正在播放的BGS，播放新的音频"
+				},
+				"cv": {
+					"name": "CV",
+					"tip": "停止正在播放的CV，播放新的音频"
+				},
+				"se": {
+					"name": "SE",
+					"tip": "可同时播放多个音效"
+				},
+				"se-attenuated": {
+					"name": "SE - 衰减",
+					"tip": "在指定位置播放音效，并自动调整音量\n声音位置距离摄像机中心越远，衰减得越多"
+				}
+			}
+		},
+		"playAudio-audio": {
+			"label": "音频",
+			"tip": "要播放的音频文件ID"
+		},
+		"playAudio-volume": {
+			"label": "音量",
+			"tip": "声音的大小（0 ~ 1）"
+		},
+		"playAudio-location": {
+			"label": "声音位置",
+			"tip": "在指定位置播放音效，向周围衰减音量"
+		}
+	}
+}

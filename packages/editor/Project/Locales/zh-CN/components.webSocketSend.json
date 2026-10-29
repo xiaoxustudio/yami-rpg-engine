@@ -1,0 +1,15 @@
+{
+	"components": {
+		"webSocketSend": {
+			"title": "WebSocket发送"
+		},
+		"webSocketSend-id": {
+			"label": "连接ID",
+			"tip": "与webSocketConnect时设置的连接ID一致"
+		},
+		"webSocketSend-data": {
+			"label": "数据",
+			"tip": "要发送的数据"
+		}
+	}
+}

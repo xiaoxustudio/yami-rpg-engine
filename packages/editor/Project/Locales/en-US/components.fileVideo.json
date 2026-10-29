@@ -1,0 +1,30 @@
+{
+	"components": {
+		"fileVideo-info-grid": {
+			"label": "File Info"
+		},
+		"fileVideo-name": {
+			"label": "Name",
+			"tip": "File Name"
+		},
+		"fileVideo-size": {
+			"label": "Size",
+			"tip": "File Size"
+		},
+		"fileVideo-duration": {
+			"label": "Duration",
+			"tip": "Video duration"
+		},
+		"fileVideo-resolution": {
+			"label": "Resolution",
+			"tip": "Video resolution"
+		},
+		"fileVideo-bitrate": {
+			"label": "Bitrate",
+			"tip": "Video bitrate - generally, higher = higher video quality/file size"
+		},
+		"fileVideo-video": {
+			"label": "Player"
+		}
+	}
+}

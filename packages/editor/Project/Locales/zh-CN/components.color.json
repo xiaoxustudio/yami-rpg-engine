@@ -1,0 +1,22 @@
+{
+	"components": {
+		"color": {
+			"title": "拾色器"
+		},
+		"color-hex": {
+			"tip": "$十六进制\n6或8位颜色码"
+		},
+		"color-r": {
+			"tip": "$红色\n0 ~ 255"
+		},
+		"color-g": {
+			"tip": "$绿色\n0 ~ 255"
+		},
+		"color-b": {
+			"tip": "$蓝色\n0 ~ 255"
+		},
+		"color-a": {
+			"tip": "$不透明度\n0 ~ 255"
+		}
+	}
+}

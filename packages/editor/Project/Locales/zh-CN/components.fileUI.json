@@ -1,0 +1,15 @@
+{
+	"components": {
+		"fileUI-foreground-grid": {
+			"label": "舞台前景"
+		},
+		"fileUI-width": {
+			"label": "宽度",
+			"tip": "UI舞台容器的宽度，仅用作预览"
+		},
+		"fileUI-height": {
+			"label": "高度",
+			"tip": "UI舞台容器的高度，仅用作预览"
+		}
+	}
+}

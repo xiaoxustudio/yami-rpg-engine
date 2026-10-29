@@ -1,0 +1,194 @@
+{
+	"components": {
+		"fileTrigger-general-grid": {
+			"label": "General"
+		},
+		"fileTrigger-selector": {
+			"label": "Target",
+			"tip": "Trigger collides with target actor and triggers the \"Hit Actor\" event",
+			"options": {
+				"enemy": {
+					"name": "Enemy",
+					"tip": "Select enemy actors of the skill caster"
+				},
+				"friend": {
+					"name": "Friend",
+					"tip": "Select friendly actors of the skill caster"
+				},
+				"team": {
+					"name": "Team Member",
+					"tip": "Select team members of the skill caster"
+				},
+				"team-except-self": {
+					"name": "Team Member Except Self",
+					"tip": "Select team members except the skill caster"
+				},
+				"any-except-self": {
+					"name": "Any Except Self",
+					"tip": "Select any actor except the skill caster"
+				},
+				"any": {
+					"name": "Any",
+					"tip": "Select any actor"
+				}
+			}
+		},
+		"fileTrigger-onHitWalls": {
+			"label": "On Hit Walls",
+			"tip": "What to do when the trigger collides with a wall",
+			"options": {
+				"penetrate": {
+					"name": "Penetrate",
+					"tip": "Trigger unaffected when hitting wall"
+				},
+				"destroy": {
+					"name": "Destroy",
+					"tip": "Destroy trigger when its anchor point enters a wall"
+				}
+			}
+		},
+		"fileTrigger-onHitActors": {
+			"label": "On Hit Actors",
+			"tip": "What to do when the trigger collides with an actor",
+			"options": {
+				"penetrate": {
+					"name": "Penetrate",
+					"tip": "Trigger unaffected when hitting actor"
+				},
+				"destroy": {
+					"name": "Destroy",
+					"tip": "Destroy trigger when it hits an actor"
+				},
+				"penetrate-destroy": {
+					"name": "Destroy After Multiple Hits",
+					"tip": "Trigger is destroyed after specified number of hits"
+				}
+			}
+		},
+		"fileTrigger-hitCount": {
+			"label": "Hit Count",
+			"tip": "Max number of times trigger can hit actors"
+		},
+		"fileTrigger-shape-type": {
+			"label": "Shape",
+			"tip": "Shape of trigger for collision detection",
+			"options": {
+				"rectangle": {
+					"name": "Rectangle",
+					"tip": "A rectangle with specified width, height, and anchor"
+				},
+				"circle": {
+					"name": "Circle",
+					"tip": "A circle with the trigger as center and a specified radius"
+				},
+				"sector": {
+					"name": "Sector",
+					"tip": "A sector with the trigger as center and a specified radius and central angle"
+				}
+			}
+		},
+		"fileTrigger-shape-width": {
+			"label": "Width",
+			"tip": "Horizontal length of trigger shape at 0 degrees"
+		},
+		"fileTrigger-shape-height": {
+			"label": "Height",
+			"tip": "Vertical length of trigger shape at 0 degrees"
+		},
+		"fileTrigger-shape-anchor": {
+			"label": "Anchor",
+			"tip": "Horizontal position of the connection point between trigger and scene at 0 degrees\n0 = Left\n0.5 = Center\n1 = Right"
+		},
+		"fileTrigger-shape-radius": {
+			"label": "Radius",
+			"tip": "Radius of trigger shape"
+		},
+		"fileTrigger-shape-centralAngle": {
+			"label": "Central Angle",
+			"tip": "Sector angle"
+		},
+		"fileTrigger-speed": {
+			"label": "Speed",
+			"tip": "Initial movement speed of trigger (tiles/second)"
+		},
+		"fileTrigger-hitMode": {
+			"label": "Hit Mode",
+			"tip": "How often the trigger collides with an actor",
+			"options": {
+				"once": {
+					"name": "Once",
+					"tip": "Only hit an actor once"
+				},
+				"once-on-overlap": {
+					"name": "Once On Overlap",
+					"tip": "Only hit an actor once when overlapping the trigger\nActor can be hit again after separating from the trigger"
+				},
+				"repeat": {
+					"name": "Repeat",
+					"tip": "Hit an actor multiple times; interval can be specified"
+				}
+			}
+		},
+		"fileTrigger-hitInterval": {
+			"label": "Hit Interval",
+			"tip": "Time between multiple hits on the same actor"
+		},
+		"fileTrigger-initialDelay": {
+			"label": "Initial Delay",
+			"tip": "Delay before trigger activates and can hit actors"
+		},
+		"fileTrigger-effectiveTime": {
+			"label": "Effective Time",
+			"tip": "Duration of trigger activation. When timed out, it no longer hits actors\n0 = permanent activation"
+		},
+		"fileTrigger-duration": {
+			"label": "Duration",
+			"tip": "Duration of trigger existence; destroyed after timeout\n0 = use trigger animation duration (destroy when animation ends)"
+		},
+		"fileTrigger-inherit": {
+			"label": "Inherit",
+			"tip": "Inherits specified trigger's events and scripts\nIf the same type of event exists, it overrides the inherited trigger's event\nOverridden events can still be triggered using the 'Call Event' command\nHowever, inherited scripts will stack instead of being overridden"
+		},
+		"fileTrigger-animation-grid": {
+			"label": "Animation"
+		},
+		"fileTrigger-animationId": {
+			"label": "Animation",
+			"tip": "Trigger animation"
+		},
+		"fileTrigger-motion": {
+			"label": "Motion",
+			"tip": "Select a motion of the trigger animation"
+		},
+		"fileTrigger-priority": {
+			"label": "Priority",
+			"tip": "Sorting priority of trigger animation when rendering\nAnimations below always overlay those above\nPriority = -1: shift sort up by one tile.\nPriority = 1: shift sort down by one tile."
+		},
+		"fileTrigger-offsetY": {
+			"label": "Offset Y",
+			"tip": "Vertical offset of trigger animation (pixels)"
+		},
+		"fileTrigger-rotatable": {
+			"label": "Rotatable",
+			"tip": "Whether to automatically update the animation rotation angle",
+			"options": {
+				"true": {
+					"name": "Yes",
+					"tip": "Animation rotates due to angle"
+				},
+				"false": {
+					"name": "No",
+					"tip": "Animation never rotates"
+				}
+			}
+		},
+		"fileTrigger-events": {
+			"label": "Events",
+			"tip": "A list of trigger events\nAccess \"Skill Caster\" to get the actor who is casting the skill\nAccess \"Event Trigger Actor\" to get the actor who is casting the skill\nAccess \"Event Trigger Skill\" to get the skill that created this trigger\n$Optional types\nAutorun: Triggered when the trigger appears in a scene\nHit Actor: Triggered when the trigger collides with an actor. Access \"Event Trigger Actor\" to get the actor who was hit\nDestroy: Triggered before the trigger is destroyed (hit an actor or wall, timeout)"
+		},
+		"fileTrigger-scripts": {
+			"label": "Scripts",
+			"tip": "Add script files to extend this trigger"
+		}
+	}
+}

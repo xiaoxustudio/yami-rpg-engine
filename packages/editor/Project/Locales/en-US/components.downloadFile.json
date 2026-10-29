@@ -1,0 +1,39 @@
+{
+	"components": {
+		"downloadFile": {
+			"title": "Download File"
+		},
+		"downloadFile-url": {
+			"label": "Address",
+			"tip": "URL of the file to download, supports variables"
+		},
+		"downloadFile-header": {
+			"label": "Request Header",
+			"tip": "headers request header"
+		},
+		"downloadFile-method": {
+			"label": "Method",
+			"tip": "request method"
+		},
+		"downloadFile-data": {
+			"label": "Request Body",
+			"tip": "request body data"
+		},
+		"downloadFile-callback": {
+			"label": "Callback",
+			"tip": "callback function after request completion, @code represents the return value (error is -1), @response represents the response Blob data, @download function represents the download function (can pass in the file name)"
+		},
+		"downloadFile-rateCallback": {
+			"label": "Progress Callback",
+			"tip": "download progress callback function, @event represents the progress event object"
+		},
+		"downloadFile-isBackground": {
+			"label": "Background Storage",
+			"tip": "whether to download and store the file in the background"
+		},
+		"downloadFile-isBackground-path": {
+			"label": "File Path",
+			"tip": "file path for background download and storage"
+		}
+	}
+}

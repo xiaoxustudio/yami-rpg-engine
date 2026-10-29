@@ -1,0 +1,49 @@
+{
+	"components": {
+		"itemGetter": {
+			"title": "Item"
+		},
+		"itemGetter-type": {
+			"label": "Type",
+			"tip": "How to obtain the item",
+			"options": {
+				"trigger": {
+					"name": "Event Trigger Item",
+					"tip": "Item that triggered this event"
+				},
+				"latest": {
+					"name": "Latest Item",
+					"tip": "Get the most recently acquired item, which refreshes when the 'Set Inventory' command is called to add items"
+				},
+				"by-key": {
+					"name": "By Shortcut Key",
+					"tip": "Get the item in the shortcut bar of the specified actor"
+				},
+				"by-id": {
+					"name": "By Item ID",
+					"tip": "Get the item associated with the item file ID of the specified actor"
+				},
+				"variable": {
+					"name": "Variable",
+					"tip": "Get the item from the specified variable"
+				}
+			}
+		},
+		"itemGetter-actor": {
+			"label": "Actor",
+			"tip": "Get the item from this actor"
+		},
+		"itemGetter-key": {
+			"label": "Shortcut Key",
+			"tip": "Get the item assigned to this shortcut key"
+		},
+		"itemGetter-itemId": {
+			"label": "Item",
+			"tip": "Get the item corresponding to the specified actor and item file ID"
+		},
+		"itemGetter-variable": {
+			"label": "Variable",
+			"tip": "Get the item object from the variable"
+		}
+	}
+}

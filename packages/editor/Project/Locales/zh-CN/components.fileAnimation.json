@@ -1,0 +1,27 @@
+{
+	"components": {
+		"fileAnimation-sprites": {
+			"label": "精灵图",
+			"tip": "设置动画的精灵图，以便在精灵图层中使用"
+		},
+		"fileAnimation-sprite": {
+			"title": "精灵图"
+		},
+		"fileAnimation-sprite-name": {
+			"label": "名称",
+			"tip": "精灵图的名称"
+		},
+		"fileAnimation-sprite-image": {
+			"label": "图像",
+			"tip": "选择一个图像文件"
+		},
+		"fileAnimation-sprite-hframes": {
+			"label": "水平划分",
+			"tip": "精灵图的水平划分数量，每一帧的宽度向下取整"
+		},
+		"fileAnimation-sprite-vframes": {
+			"label": "垂直划分",
+			"tip": "精灵图的垂直划分数量，每一帧的高度向下取整"
+		}
+	}
+}

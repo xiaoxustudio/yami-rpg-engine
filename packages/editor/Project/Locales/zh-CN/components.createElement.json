@@ -1,0 +1,41 @@
+{
+	"components": {
+		"createElement": {
+			"title": "创建元素"
+		},
+		"createElement-operation": {
+			"label": "操作",
+			"tip": "如何创建元素以及是否指定父元素",
+			"options": {
+				"append-all-to-root": {
+					"name": "添加所有元素到根元素",
+					"tip": "创建UI文件中的所有元素（被禁用的除外），添加到根容器"
+				},
+				"append-one-to-root": {
+					"name": "添加单个元素到根元素",
+					"tip": "创建UI文件中一个指定的元素（不管是否被禁用），添加到根容器"
+				},
+				"append-all-to-element": {
+					"name": "添加所有元素到指定元素",
+					"tip": "创建UI文件中的所有元素（被禁用的除外），作为指定元素的子元素"
+				},
+				"append-one-to-element": {
+					"name": "添加单个元素到指定元素",
+					"tip": "创建UI文件中一个指定的元素（不管是否被禁用），作为指定元素的子元素"
+				}
+			}
+		},
+		"createElement-parent": {
+			"label": "父元素",
+			"tip": "将新建的元素添加到这个元素中"
+		},
+		"createElement-uiId": {
+			"label": "UI 元素",
+			"tip": "创建这个界面文件中的所有未被禁用的元素"
+		},
+		"createElement-presetId": {
+			"label": "UI 元素",
+			"tip": "创建指定的元素"
+		}
+	}
+}

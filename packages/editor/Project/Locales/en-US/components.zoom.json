@@ -1,0 +1,11 @@
+{
+	"components": {
+		"zoom": {
+			"title": "Zoom"
+		},
+		"zoom-factor": {
+			"label": "Zoom Factor",
+			"tip": "Enter the zoom factor for the editor interface (0.6666 ~ 2)"
+		}
+	}
+}
