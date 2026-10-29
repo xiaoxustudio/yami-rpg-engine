@@ -25,6 +25,21 @@ const SIZE_INPUT_IDS = [
 	'uiElement-transform-opacity'
 ];
 
+/** 共享分组（事件 / 脚本 / 参数）只写在 uiImage 页模板里；切到其它 UI 页时要靠 pageSwitch 搬过去。 */
+const UI_ELEMENT_PAGE_TYPES = new Set([
+	'uiImage',
+	'uiText',
+	'uiTextBox',
+	'uiDialogBox',
+	'uiProgressBar',
+	'uiButton',
+	'uiAnimation',
+	'uiVideo',
+	'uiWindow',
+	'uiContainer',
+	'uiReference'
+]);
+
 {
 	interface UIElementShape {
 		owner: UIOwnerShape;
@@ -105,6 +120,13 @@ const SIZE_INPUT_IDS = [
 		this.parameterPane.bind(inspectorEls.get('uiElement-scripts'));
 
 		on(Inspector.manager, 'switch', this.pageSwitch!);
+		// 首次选中 UI 元素时，`Inspector.open` 的 `manager.switch(type)` 往往早于这里注册监听；
+		// 只等下一次 switch 的话，共享分组会留在 uiImage 页里 —— 表现就是「事件栏不出现，
+		// 先点父级再点回来才出现」。按当前页补搬一次，与 switch 事件的顺序解耦。
+		const currentType = Inspector.type;
+		if (typeof currentType === 'string' && UI_ELEMENT_PAGE_TYPES.has(currentType)) {
+			this.pageSwitch!({ value: currentType } as Event & { value?: string });
+		}
 		const alignElements = $('.uiElement-transform-align');
 		alignElements.forEach((el) => on(el, 'click', this.alignmentClick!));
 		const otherElements = registryElements(inspectorEls, [
@@ -266,27 +288,18 @@ const SIZE_INPUT_IDS = [
 	};
 
 	UIElement.pageSwitch = function (this: typeof UIElement, event: Event & { value?: string }) {
-		switch (event.value) {
-			case 'uiImage':
-			case 'uiText':
-			case 'uiTextBox':
-			case 'uiDialogBox':
-			case 'uiProgressBar':
-			case 'uiButton':
-			case 'uiAnimation':
-			case 'uiVideo':
-			case 'uiWindow':
-			case 'uiContainer':
-			case 'uiReference': {
-				const page = Inspector.manager.active;
-				page.insertBefore(this.transformGroup, page.firstChild);
-				page.insertBefore(this.generalGroup, page.firstChild);
-				page.appendChild(this.eventsGroup);
-				page.appendChild(this.scriptsGroup);
-				page.appendChild(this.parameterPane);
-				break;
-			}
+		if (!event.value || !UI_ELEMENT_PAGE_TYPES.has(event.value)) return;
+		const page = Inspector.manager?.active;
+		if (!(page instanceof HTMLElement)) return;
+		const { transformGroup, generalGroup, eventsGroup, scriptsGroup, parameterPane } = this;
+		if (!transformGroup || !generalGroup || !eventsGroup || !scriptsGroup || !parameterPane) {
+			return;
 		}
+		page.insertBefore(transformGroup, page.firstChild);
+		page.insertBefore(generalGroup, page.firstChild);
+		page.appendChild(eventsGroup);
+		page.appendChild(scriptsGroup);
+		page.appendChild(parameterPane);
 	}.bind(UIElement);
 
 	UIElement.alignmentClick = function (this: HTMLElement, _event: Event) {

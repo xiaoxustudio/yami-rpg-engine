@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { createPageManagerElement } from '@ui-kit';
 
 vi.unmock('@app/inspector/element-page.ts');
 
@@ -82,5 +83,49 @@ describe('UIElement.open 与「控件尚未登记」', () => {
 
 		expect(Inspector.uiElement.pointerEvents).toBe(pointerEvents);
 		expect(pointerEvents.classList.contains('hidden')).toBe(false);
+	});
+
+	it('首次 open 前已经 switch 过：initialize 会把事件/脚本/参数分组搬进当前页', () => {
+		const manager = createPageManagerElement();
+		const imagePage = document.createElement('div');
+		imagePage.className = 'page-frame';
+		imagePage.setAttribute('value', 'uiImage');
+		const windowPage = document.createElement('div');
+		windowPage.className = 'page-frame';
+		windowPage.setAttribute('value', 'uiWindow');
+		manager.append(imagePage, windowPage);
+		Inspector.manager = manager as never;
+
+		const eventsGroup = makeEl();
+		const scriptsGroup = makeEl();
+		const parameterPane = makeEl();
+		const generalGroup = makeEl();
+		const transformGroup = makeEl();
+		imagePage.append(eventsGroup, scriptsGroup, parameterPane, generalGroup, transformGroup);
+
+		inspectorEls.set('uiElement-name', makeEl());
+		inspectorEls.set('uiElement-pointerEvents', makeEl());
+		inspectorEls.set('uiElement-general-group', generalGroup);
+		inspectorEls.set('uiElement-transform-group', transformGroup);
+		inspectorEls.set('uiElement-events-group', eventsGroup);
+		inspectorEls.set('uiElement-scripts-group', scriptsGroup);
+		inspectorEls.set('uiElement-parameter-pane', parameterPane);
+		inspectorEls.set('uiElement-events', makeEl());
+		inspectorEls.set('uiElement-scripts', makeEl());
+
+		Inspector.uiElement._elementInitialized = false;
+		Inspector.uiElement.pointerEvents = null;
+		Inspector.uiElement.target = null;
+		Inspector.uiElement._openRetry = undefined;
+
+		// 真机顺序：`Inspector.open` 先 manager.switch(type)，这时 UIElement 还没注册 switch 监听
+		manager.switch('uiWindow');
+		Inspector.type = 'uiWindow';
+
+		Inspector.uiElement.open(openNode('enabled'));
+
+		expect(windowPage.contains(eventsGroup)).toBe(true);
+		expect(windowPage.contains(scriptsGroup)).toBe(true);
+		expect(windowPage.contains(parameterPane)).toBe(true);
 	});
 });
