@@ -13,6 +13,8 @@ dist-*
 .trae
 # 真机冒烟脚本的产物（scripts/smoke-layout.mjs 的 out() 写出，属复跑副产品）
 scripts/smoke-report-*
+# 真机 E2E（pnpm e2e）的失败现场与报告：只用于 CI 上传/本地排查，不进版本库
+scripts/e2e/.artifacts/
 electron-out.log
 electron-err.log
 # 台账的 DOM 迁移矩阵报表（pnpm dom:guard:tracker 每次复跑重写，属生成物）

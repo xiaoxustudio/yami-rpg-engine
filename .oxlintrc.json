@@ -136,6 +136,12 @@
 			}
 		},
 		{
+			"files": ["scripts/e2e/**/*.mjs"],
+			"rules": {
+				"eslint/no-await-in-loop": "off"
+			}
+		},
+		{
 			"files": ["packages/export-electron/scripts/**/*.js"],
 			"env": {
 				"node": true,

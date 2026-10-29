@@ -80,13 +80,24 @@ CI 里 editor 全量测试按 `vitest --shard` 切 **3 片并行**（分片由 v
 pnpm -F @yami/editor exec vitest run --shard=1/3
 ```
 
-**端到端（E2E）与截图对比：当前不进 CI**
+**端到端（真机 E2E）：独立 workflow，不进 `ci.yml` 必跑门禁**
 
-本机与 CI 都没有 `@playwright/test` 与浏览器二进制，**不要**把 Playwright 加进必跑门禁（装不上会把整条流水线拖红）：
+本机与 CI 都没有 `@playwright/test` 与浏览器二进制，**不要**把 Playwright 加进来（装不上会把整条流水线拖红）。真机这条路由 `scripts/e2e/` 承担：只用 `pnpm install` 自带的 Electron + CDP，零额外依赖。
 
-- 崩溃 / 接线 / 窗口内重复 id 这类回归由 `src/tools/__tests__/deferred-window-smoke.spec.ts` 的 jsdom 冒烟兜底：真实挂载全部 deferred 窗口，断言控件 API 已接线、id 不重复；
-- 截图对比等有网络环境再补，做法是单独的 job（不进 `ci.yml` 必跑门禁）：`pnpm add -D @playwright/test` → `pnpm exec playwright install chromium` → `playwright.config.ts` 用 `webServer` 起 `pnpm dev`（或指向 `start:prod`）+ golden 图目录；
-- **不要**用 `@vitest/browser-playwright` 顶替：它同样要浏览器二进制。
+```shell
+pnpm e2e            # 先 build:vite，再起真机跑黄金路径（约 15-60s）
+pnpm e2e:fast       # 复用现有 dist/，本地迭代用
+pnpm e2e:selftest   # 自测：故意给一个打不开的工程，断言这条门禁会红
+```
+
+它跑的是「装得起来≠跑得起来」那一段：主进程起来 → 首页渲染 → 打开工程切到 directory 工作区 → 两个**懒挂载**工具窗口首次打开且控件已接线 → 启动时间线有界 → 页面无未捕获异常。失败现场（截图 / 页面 HTML / 主进程日志）落在 `scripts/e2e/.artifacts/`（已 gitignore），CI 失败时作为 artifact 上传。
+
+约定：
+
+- 它在 `.github/workflows/e2e.yml` 里跑（`workflow_dispatch` + 相关路径的 PR），**不是** `ci.yml` 的必跑门禁；
+- 崩溃 / 接线 / 窗口内重复 id 这类回归仍由 `src/tools/__tests__/deferred-window-smoke.spec.ts` 的 jsdom 冒烟兜底 —— 真机 E2E 是它的补充，不是替代（jsdom 快且稳，真机慢但真实）；
+- `scripts/e2e/fixture/` 是**最小可打开工程**（约 300KB，只有 Data/*.json，没有 Assets 实体）。模板数据 schema（`latestProjectVersion`）变更时同步更新它；
+- 截图对比等视觉回归仍按老做法：有网络环境再补成独立 job，不进必跑门禁。
 
 **迁移台账的批次推进（注册表寻址等「归零」轴）**
 

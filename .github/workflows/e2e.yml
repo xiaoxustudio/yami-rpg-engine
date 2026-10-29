@@ -1,0 +1,71 @@
+# 真机 E2E（Electron 启动 + 打开工程 + 懒挂载窗口）
+#
+# 为什么是独立 workflow、而不是塞进 ci.yml 的必跑门禁：
+#   1. 它要**起真正的 Electron**（xvfb + GTK/NSS 运行库），比 ci.yml 那批纯 Node 门禁重一个量级；
+#   2. 本仓约定「需要真机/浏览器二进制的检查不进 ci.yml 必跑门禁」（见 CONTRIBUTING
+#      「端到端（E2E）与截图对比：当前不进 CI」），避免基础设施抖动把整条流水线拖红；
+#   3. 它不依赖 `@playwright/test` 与浏览器二进制，只用 `pnpm install` 自带的 Electron，
+#      所以不存在"装不上"的老问题 —— 这是它能进 CI 的前提。
+#
+# 失败时上传 scripts/e2e/.artifacts（截图 / 页面 HTML / 主进程日志 / 报告）。
+name: E2E
+
+on:
+    workflow_dispatch:
+    pull_request:
+        paths:
+            - 'packages/editor/**'
+            - 'packages/ui-kit/**'
+            - 'scripts/e2e/**'
+            - '.github/workflows/e2e.yml'
+    push:
+        branches: [main]
+        paths:
+            - 'packages/editor/**'
+            - 'scripts/e2e/**'
+            - '.github/workflows/e2e.yml'
+
+concurrency:
+    group: e2e-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    COREPACK_ENABLE_STRICT: '0'
+
+jobs:
+    smoke:
+        name: 真机冒烟（linux + xvfb）
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: pnpm
+
+            - name: 安装依赖
+              run: pnpm install --frozen-lockfile
+
+            # Electron 在无头 Linux 上要 xvfb；NSS/GBM 是 Chromium 的硬依赖，
+            # runner 镜像通常自带，显式装一次避免镜像版本漂移。
+            - name: 安装无头运行库
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y --no-install-recommends xvfb libnss3 libgbm1
+
+            # 脚本自带 build（`pnpm e2e` 会先跑 build:vite），这里不再重复构建
+            - name: 真机 E2E
+              run: xvfb-run --auto-servernum --server-args="-screen 0 1600x900x24" pnpm e2e
+
+            - name: 失败现场
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: e2e-failure
+                  path: scripts/e2e/.artifacts/
+                  if-no-files-found: ignore
+                  retention-days: 7
