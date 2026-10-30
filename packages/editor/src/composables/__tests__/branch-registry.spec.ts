@@ -8,6 +8,7 @@ import SetNumberOperand from '@app/components/tools/SetNumberOperand.vue';
 import { composableEls } from '@app/composables/element-registry';
 import { registryElement } from '@app/utils/element-registry';
 import { getIfConditionBridge } from '@app/composables/if-condition-bridge';
+import { getSetNumberOperandBridge } from '@app/composables/set-number-operand-bridge';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -94,11 +95,11 @@ describe('分支/条件表单注册表', () => {
 			expect(el, `${id} 未镜像`).toBeTruthy();
 			expect(el?.id).toBe(id);
 		}
-		const frame = composableEls.get('setNumber-operand') as unknown as unknown as
-			| (HTMLElement & { setForm?: unknown })
-			| null;
+		const frame = composableEls.get('setNumber-operand') as HTMLElement | null;
 		expect(frame?.id).toBe('setNumber-operand');
-		expect(typeof frame?.setForm).toBe('function');
+		// 同 if-condition：窗口元素上不再挂业务方法，表单桥在模块上。
+		expect((frame as unknown as { setForm?: unknown }).setForm).toBeUndefined();
+		expect(typeof getSetNumberOperandBridge()?.setForm).toBe('function');
 
 		wrapper.unmount();
 	});

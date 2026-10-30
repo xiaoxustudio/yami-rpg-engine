@@ -292,7 +292,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { composableEls } from '@app/composables/element-registry';
 import { getFormFields, setFormFields } from '@app/composables/form-fields';
@@ -308,7 +308,10 @@ import {
 const NumberOperand = useNumberOperandSchema();
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import {
+	provideSetNumberOperandBridge,
+	resetSetNumberOperandBridge
+} from '@app/composables/set-number-operand-bridge';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import FileVar from '@app/components/common/FileVar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -427,9 +430,13 @@ const onConfirm = () => {
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		attachElementApi(el, { setForm, getForm });
 		registerElement(composableEls, 'setNumber-operand', el);
 	}
+	// 表单桥走模块而不是元素属性：元素契约收尾后 el 上不该再挂业务方法。
+	// 真机 E2E 在 debug 模式下由桥模块另开一条只读通道（utils/debug-bridges.ts）。
+	const api = { setForm, getForm };
+	provideSetNumberOperandBridge(api);
+	onUnmounted(() => resetSetNumberOperandBridge(api));
 	setupSetNumberOperandFields(fieldEls, el);
 });
 </script>

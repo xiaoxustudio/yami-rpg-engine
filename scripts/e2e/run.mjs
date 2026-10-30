@@ -290,27 +290,53 @@ async function main() {
 		 *
 		 * 驱动通道是**窗口契约桥**（`window.__YAMI_BRIDGES__`，仅 debug 模式登记），
 		 * 而不是窗口根元素上挂的方法 —— 元素契约收尾正在把后者拆掉。
+		 * 每迁一个窗口就往这张表里加一行，往返断言随之覆盖它。
 		 */
-		await step('元素契约窗口往返（if-condition setForm → getForm）', async () => {
-			await cdp.evaluate(`window.Window.open('if-condition'); true`);
-			const ready = await cdp.waitFor(
-				`(() => { const api = window.__YAMI_BRIDGES__?.['if-condition']; return !!(api && typeof api.setForm === 'function' && typeof api.getForm === 'function'); })()`,
-				{ timeoutMs: 20000 }
-			);
-			assert(ready, 'if-condition 窗口没有登记契约桥（debug 通道未开启或组件未 provide）');
+		const BRIDGE_ROUNDTRIPS = [
+			{
+				id: 'if-condition',
+				patch: `{ type: 'actor', commonActor: { type: 'trigger' }, actorOperation: 'present-active' }`,
+				check: (result) =>
+					result?.type === 'actor' && result?.actorOperation === 'present-active',
+				read: `{ type: form?.type, actorOperation: form?.actorOperation }`,
+				label: 'type=actor / actorOperation=present-active'
+			},
+			{
+				id: 'setNumber-operand',
+				patch: `{ operation: 'add', operandType: 'constant', constantValue: 42 }`,
+				check: (result) =>
+					result?.operation === 'add' &&
+					result?.operandType === 'constant' &&
+					result?.constantValue === 42,
+				read: `{ operation: form?.operation, operandType: form?.operandType, constantValue: form?.constantValue }`,
+				label: 'operation=add / constantValue=42'
+			}
+		];
 
-			const result = await cdp.evaluate(`(() => {
-				const api = window.__YAMI_BRIDGES__['if-condition'];
-				api.setForm({ type: 'actor', commonActor: { type: 'trigger' }, actorOperation: 'present-active' });
-				const form = api.getForm();
-				return { type: form?.type, actorOperation: form?.actorOperation };
-			})()`);
-			assert(
-				result?.type === 'actor' && result?.actorOperation === 'present-active',
-				`setForm → getForm 往返值不对：${JSON.stringify(result)}`
-			);
-			await cdp.evaluate(`window.Window.close('if-condition'); true`);
-			return 'type=actor / actorOperation=present-active';
+		await step('元素契约窗口往返（setForm → getForm）', async () => {
+			const covered = [];
+			for (const { id, patch, check, read, label } of BRIDGE_ROUNDTRIPS) {
+				await cdp.evaluate(`window.Window.open(${JSON.stringify(id)}); true`);
+				const ready = await cdp.waitFor(
+					`(() => { const api = window.__YAMI_BRIDGES__?.[${JSON.stringify(id)}]; return !!(api && typeof api.setForm === 'function' && typeof api.getForm === 'function'); })()`,
+					{ timeoutMs: 20000 }
+				);
+				assert(ready, `窗口 ${id} 没有登记契约桥（debug 通道未开启或组件未 provide）`);
+
+				const result = await cdp.evaluate(`(() => {
+					const api = window.__YAMI_BRIDGES__[${JSON.stringify(id)}];
+					api.setForm(${patch});
+					const form = api.getForm();
+					return ${read};
+				})()`);
+				assert(
+					check(result),
+					`${id} 的 setForm → getForm 往返值不对：${JSON.stringify(result)}`
+				);
+				await cdp.evaluate(`window.Window.close(${JSON.stringify(id)}); true`);
+				covered.push(`${id}(${label})`);
+			}
+			return covered.join(' + ');
 		});
 
 		await step('运行期无缺失文案 key', async () => {

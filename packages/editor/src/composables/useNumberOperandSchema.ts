@@ -30,6 +30,7 @@ import { Data } from '@app/data/data-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { getYamiI18n } from '@app/i18n';
 import { registryElement } from '@app/utils/element-registry';
+import { getSetNumberOperandBridge } from '@app/composables/set-number-operand-bridge';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -545,10 +546,9 @@ const open = (
 			otherTeamId = operand.teamId ?? otherTeamId;
 			break;
 	}
-	const setForm = registryElement<
-		HTMLElement & { setForm?: (data: Partial<NumberOperandForm>) => void }
-	>(composableEls, 'setNumber-operand')?.setForm;
-	setForm?.({
+	// 表单桥来自模块（窗口组件 onMounted 时登记），不再从窗口根元素的 DOM 属性上取
+	const bridge = getSetNumberOperandBridge();
+	bridge?.setForm({
 		operation: operand.operation,
 		operandType: operand.type,
 		constantValue,
@@ -585,11 +585,7 @@ const open = (
 };
 
 const save = (): unknown => {
-	const getForm = registryElement<HTMLElement & { getForm?: () => NumberOperandForm }>(
-		composableEls,
-		'setNumber-operand'
-	)?.getForm;
-	const form = getForm?.() ?? ({} as NumberOperandForm);
+	const form = getSetNumberOperandBridge()?.getForm() ?? ({} as NumberOperandForm);
 	const operation = form.operation;
 	const type = form.operandType;
 	let operand;

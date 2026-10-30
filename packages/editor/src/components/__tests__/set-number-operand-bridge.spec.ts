@@ -4,6 +4,10 @@ import { mount } from '@vue/test-utils';
 import SetNumberOperandWindow from '@app/components/tools/SetNumberOperand.vue';
 import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema';
 import type { NumberOperandData } from '@app/composables/useNumberOperandSchema';
+import {
+	getSetNumberOperandBridge,
+	type SetNumberOperandBridge
+} from '@app/composables/set-number-operand-bridge';
 
 const NumberOperand = useNumberOperandSchema();
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
@@ -16,13 +20,11 @@ vi.mock('@app/stores/local', () => ({
 	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
-interface SetNumberOperandFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-const getFrame = (): SetNumberOperandFrame =>
-	document.getElementById('setNumber-operand') as unknown as SetNumberOperandFrame;
+const getFrame = (): SetNumberOperandBridge => {
+	const bridge = getSetNumberOperandBridge();
+	if (!bridge) throw new Error('setNumber-operand 桥未登记（窗口未挂载？）');
+	return bridge;
+};
 
 describe('setNumber-operand 窗口表单桥接（Vue 双向绑定迁移回归）', () => {
 	beforeEach(() => {
@@ -36,7 +38,7 @@ describe('setNumber-operand 窗口表单桥接（Vue 双向绑定迁移回归）
 		NumberOperand.target = { start: 0, save: vi.fn() } as never;
 	});
 
-	it('窗口根元素暴露 setForm/getForm 桥接，setForm 写入控件 DOM', async () => {
+	it('模块桥登记 setForm/getForm，setForm 写入控件 DOM', async () => {
 		const wrapper = mount(SetNumberOperandWindow, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const frame = getFrame();
