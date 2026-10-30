@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import { composableEls } from '@app/composables/element-registry';
 import { getFormFields, setFormFields } from '@app/composables/form-fields';
 import { sceneEls } from '@app/scene/element-registry';
@@ -42,7 +42,10 @@ import { useI18n } from 'vue-i18n';
 import { SceneShift, type SceneShiftForm } from '@app/scene/move-scene.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import {
+	provideSceneShiftBridge,
+	resetSceneShiftBridge
+} from '@app/composables/scene-shift-bridge';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
 const { t } = useI18n();
@@ -67,10 +70,10 @@ const onConfirm = () => {
 
 onMounted(() => {
 	registerElement(sceneEls, 'scene-shift', frame.value);
-	const el = frame.value?.root;
-	if (el) {
-		attachElementApi(el, { setForm, getForm });
-	}
+	// 表单桥走模块而不是元素属性：元素契约收尾后 el 上不该再挂业务方法。
+	const api = { setForm, getForm };
+	provideSceneShiftBridge(api);
+	onUnmounted(() => resetSceneShiftBridge(api));
 });
 </script>
 

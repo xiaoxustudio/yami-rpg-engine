@@ -6,23 +6,17 @@ import RegionGetter from '@app/components/tools/RegionGetter.vue';
 import ExportLanguage from '@app/components/tools/ExportLanguage.vue';
 import { useChoicesSchema } from '@app/composables/useChoicesSchema';
 import { useRegionGetterWindow } from '@app/composables/useRegionGetterWindow';
+import { getExportLanguageBridge } from '@app/composables/export-language-bridge';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
 	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
-interface FormFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
 interface ControlEl extends HTMLElement {
 	read(): unknown;
 	write(value: unknown): void;
 }
-
-const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
 
 const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
 
@@ -75,10 +69,11 @@ describe('低频窗口表单桥接（choice/regionGetter/exportLanguage 回归�
 		wrapper.unmount();
 	});
 
-	it('exportLanguage 根元素暴露 setForm/getForm，setForm 写入控件 DOM', async () => {
+	it('exportLanguage 模块桥登记 setForm/getForm，setForm 写入控件 DOM', async () => {
 		const wrapper = mount(ExportLanguage, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
-		const frame = getFrame('exportLanguage');
+		const frame = getExportLanguageBridge();
+		if (!frame) throw new Error('exportLanguage 桥未登记');
 		expect(typeof frame.setForm).toBe('function');
 		expect(typeof frame.getForm).toBe('function');
 		frame.setForm({ first: 'en', second: '' });
@@ -92,7 +87,8 @@ describe('低频窗口表单桥接（choice/regionGetter/exportLanguage 回归�
 	it('exportLanguage 控件值变更在 getForm 时读回', async () => {
 		const wrapper = mount(ExportLanguage, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
-		const frame = getFrame('exportLanguage');
+		const frame = getExportLanguageBridge();
+		if (!frame) throw new Error('exportLanguage 桥未登记');
 		getControl('exportLanguage-first').write('zh');
 		getControl('exportLanguage-second').write('en');
 		await wrapper.vm.$nextTick();

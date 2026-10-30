@@ -9,6 +9,7 @@ import { Rename as RenameController } from '@app/composables/useRenameWindow';
 import { SetKey as SetKeyController } from '@app/composables/useSetKeyWindow';
 import { useSetQuantityWindow } from '@app/composables/useSetQuantityWindow';
 import { Window } from '@app/tools/window-object.ts';
+import { getSceneShiftBridge } from '@app/composables/scene-shift-bridge';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -95,10 +96,11 @@ describe('低频工具窗口表单桥接（表单读写型回归保护）', () =
 		wrapper.unmount();
 	});
 
-	it('scene-shift 根元素暴露 setForm/getForm，控件值变更在 getForm 时读回', async () => {
+	it('scene-shift 模块桥登记 setForm/getForm，控件值变更在 getForm 时读回', async () => {
 		const wrapper = mount(SceneShift, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
-		const frame = getFrame('scene-shift');
+		const frame = getSceneShiftBridge();
+		if (!frame) throw new Error('scene-shift 桥未登记');
 		expect(typeof frame.setForm).toBe('function');
 		expect(typeof frame.getForm).toBe('function');
 		frame.setForm({ x: 10, y: 20 });

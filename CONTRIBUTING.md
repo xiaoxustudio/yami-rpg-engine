@@ -164,11 +164,11 @@ pnpm coverage:selftest  # 门禁自证：持平判绿 / 下降判红 / 新目录
 
 只做 1、2 会让上门禁失去表单级验证，只做 3 等于给测试开后门。
 
-> **已落样板（2026-10-30）**：`if-condition` 与 `setNumber-operand` 两个窗口已完成成套替换 —— `composables/{if-condition,set-number-operand}-bridge.ts` + `utils/debug-bridges.ts`，两个 `.vue` 不再 `attachElementApi`，对应 schema 改读 `getXxxBridge()`，E2E 改从 `__YAMI_BRIDGES__[id]` 驱动（往返表 `BRIDGE_ROUNDTRIPS` 每迁一个窗口加一行）。`element-api-attach` 122 → 120。
+> **已落样板（2026-10-30）**：`if-condition` / `setNumber-operand` / `exportLanguage` / `scene-shift` 四个窗口已完成成套替换 —— `composables/{if-condition,set-number-operand}-bridge.ts` + `utils/debug-bridges.ts`，两个 `.vue` 不再 `attachElementApi`，对应 schema 改读 `getXxxBridge()`，E2E 改从 `__YAMI_BRIDGES__[id]` 驱动（往返表 `BRIDGE_ROUNDTRIPS` 每迁一个窗口加一行）。`element-api-attach` 122 → 118。
 >
 > 照抄清单（剩余窗口）：① 用 `composables/form-bridge.ts` 的 `createFormBridge<T>(id)` 声明三行（provide/reset/get 箭头函数）；② `.vue` 里 `provide` / `onUnmounted(reset)`；③ schema 两处改读模块；④ `branch-registry.spec` 断言「元素上没有 setForm、桥在模块上」；⑤ E2E 往返表 `BRIDGE_ROUNDTRIPS` 加一行。`launch.mjs` 已默认带 `--dirname=.` 打开 debug 通道，不用再动。
 >
-> 现存 5 个待迁窗口（都有 `attachElementApi(el, { setForm, getForm })`）：`ExportLanguage` / `LightGetter` / `ObjectGetter` / `SceneShift` / `VariableGetter2`；其中后三个的消费方在 `usePresetGetterWindow` 与 `variable-accessor-window` 这类共享助手，改之前先确认那条路径。
+> 剩余 3 个待迁窗口（`attachElementApi(el, { setForm, getForm })`）：`LightGetter` / `ObjectGetter` / `VariableGetter2` —— 它们的消费方在 `usePresetGetterWindow` 与 `variable-accessor-window` 这类**共享助手**里（不是各自的 schema），所以要先在共享助手里把「按 domKey 取元素」换成桥，再迁窗口。
 >
 > 顺带一条实测：一次性脚本扫 75 个 `attachElementApi` 站点，其中 **45 个的成员在「其它文件」里找不到调用**，看着像死代码 —— 但抽查发现正是 `sync` 这类**由本文件内回归测试直接驱动**的桥（`components/__tests__/animation-frame-page-bridge.spec.ts` 里的 `el.sync?.()`）。结论：静态扫不到消费方 ≠ 可删。
 

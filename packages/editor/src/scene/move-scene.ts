@@ -1,5 +1,5 @@
 import { sceneEls } from '@app/scene/element-registry';
-import { registryElement } from '@app/utils/element-registry';
+import { getSceneShiftBridge } from '@app/composables/scene-shift-bridge';
 import { Window } from '@app/tools/window-object.ts';
 import { onToolWindowMounted } from '@app/tools/tool-window-host';
 import { requestFocus } from '@app/directives/focus';
@@ -38,12 +38,9 @@ SceneShift.initialize = function () {
 
 SceneShift.open = function (callback: ((x: number, y: number) => void) | null) {
 	this.callback = callback;
-	// 控件可用后再回填（首次打开时 setForm 还没接上）
+	// 控件/桥可用后再回填（首次打开时桥还没登记）
 	Window.openWith!('scene-shift', () => {
-		const setForm = registryElement<
-			HTMLElement & { setForm?: (data: Partial<SceneShiftForm>) => void }
-		>(sceneEls, 'scene-shift')?.setForm;
-		setForm?.({ x: 0, y: 0 });
+		getSceneShiftBridge()?.setForm({ x: 0, y: 0 });
 	});
 	requestFocus('scene-shift-x', 'all');
 };
@@ -53,10 +50,7 @@ SceneShift.windowClosed = function (_event: Event) {
 };
 
 SceneShift.confirm = function (_event: Event) {
-	const getForm = (
-		sceneEls.get('scene-shift') as (HTMLElement & { getForm?: () => SceneShiftForm }) | null
-	)?.getForm;
-	const { x, y } = getForm?.() ?? ({} as SceneShiftForm);
+	const { x, y } = getSceneShiftBridge()?.getForm() ?? ({} as SceneShiftForm);
 	if (x === 0 && y === 0) {
 		return requestFocus('scene-shift-x');
 	}

@@ -34,14 +34,17 @@ import { getFormFields, setFormFields } from '@app/composables/form-fields';
 const onConfirm = () => {
 	ExportLanguage?.confirm?.(new Event('click'));
 };
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import { localEls } from '@app/local/element-registry';
 import { registryRef, registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import type { ExportLanguageForm } from '@app/local/export-language-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import {
+	provideExportLanguageBridge,
+	resetExportLanguageBridge
+} from '@app/composables/export-language-bridge';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
@@ -62,10 +65,10 @@ const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
 onMounted(() => {
 	registerElement(localEls, 'exportLanguage', frame.value);
-	const el = frame.value?.root;
-	if (el) {
-		attachElementApi(el, { setForm, getForm });
-	}
+	// 表单桥走模块而不是元素属性：元素契约收尾后 el 上不该再挂业务方法。
+	const api = { setForm, getForm };
+	provideExportLanguageBridge(api);
+	onUnmounted(() => resetExportLanguageBridge(api));
 });
 </script>
 

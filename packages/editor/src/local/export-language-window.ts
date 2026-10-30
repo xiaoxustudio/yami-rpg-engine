@@ -1,6 +1,6 @@
 import { Window } from '@app/tools/window-object.ts';
 import { localEls } from '@app/local/element-registry';
-import { registryElement } from '@app/utils/element-registry';
+import { getExportLanguageBridge } from '@app/composables/export-language-bridge';
 import { Path } from '@app/utils/config';
 import { File } from '@app/file/file-system-core.ts';
 import { Editor } from '@app/services/project/editor.ts';
@@ -50,14 +50,12 @@ ExportLanguage.open = function (this: typeof ExportLanguage) {
 			value: language.name
 		});
 	}
-	// 导出语言窗口是懒挂载的：控件/setForm 可用后再填（首次打开也不丢）
+	// 导出语言窗口是懒挂载的：控件/桥可用后再填（首次打开也不丢）
 	Window.openWith!('exportLanguage', () => {
 		localEls.get('exportLanguage-first')?.loadItems?.(items);
 		localEls.get('exportLanguage-second')?.loadItems?.([none, ...items]);
-		const setForm = registryElement<
-			HTMLElement & { setForm?: (data: Partial<ExportLanguageForm>) => void }
-		>(localEls, 'exportLanguage')?.setForm;
-		setForm?.({ first: items[0]?.value ?? '', second: '' });
+		// 表单桥来自模块（窗口组件 onMounted 时登记），不再从窗口根元素的 DOM 属性上取
+		getExportLanguageBridge()?.setForm({ first: items[0]?.value ?? '', second: '' });
 	});
 };
 
@@ -98,11 +96,7 @@ ExportLanguage.stringifyLanguagePack = function (
 ExportLanguage.confirm = function (this: typeof ExportLanguage, _event: Event) {
 	Window.close!('exportLanguage');
 	const dialogs = Editor.config!.dialogs as { import: string; export: string };
-	const getForm = registryElement<HTMLElement & { getForm?: () => ExportLanguageForm }>(
-		localEls,
-		'exportLanguage'
-	)?.getForm;
-	const { first, second } = getForm?.() ?? ({} as ExportLanguageForm);
+	const { first, second } = getExportLanguageBridge()?.getForm() ?? ({} as ExportLanguageForm);
 	File.showSaveDialog!({
 		defaultPath: Path.resolve!(dialogs.export, first + '.txt')
 	}).then(({ filePath }: { filePath: string }) => {
