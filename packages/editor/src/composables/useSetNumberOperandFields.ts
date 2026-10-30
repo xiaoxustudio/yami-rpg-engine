@@ -13,16 +13,22 @@ export interface FieldControl {
 }
 
 /**
+ * 控件表：组件在 onMounted 时按模板 ref 一次性填好（控件 id → 控件实例）。
+ * 与 if-condition 同口径：composable 只读这张表、不做任何注册表寻址。
+ */
+export type SetNumberOperandFieldMap = Record<string, FieldControl | null | undefined>;
+
+/**
  * set-number-operand 窗口的字段选项 / 联动配置（原 `SetNumberOperand.vue` 的 `onMounted` 大块）。
- * 由组件在 `onMounted` 内以**共享的 `fieldEls`** 与窗口根元素调用；
+ * 由组件在 `onMounted` 内以**控件表**与窗口根元素调用；
  * `useLocalizedOptions` 走全局 Composer，在此上下文中可安全调用。
  * 缺 `setNumber-operation` 控件时整体跳过（与原逻辑一致）。
  */
 export function setupSetNumberOperandFields(
-	fieldEls: Map<string, FieldControl | null>,
+	fields: SetNumberOperandFieldMap,
 	frameEl: HTMLElement | null | undefined
 ): void {
-	const opEl = fieldEls.get('setNumber-operation');
+	const opEl = fields['setNumber-operation'];
 	if (!opEl) return;
 	opEl.loadItems?.([
 		{ name: 'Set', value: 'set' },
@@ -36,7 +42,7 @@ export function setupSetNumberOperandFields(
 	useLocalizedOptions(
 		'setNumber-operand-operation',
 		['add', 'sub', 'mul', 'div', 'mod', 'add()', 'sub()', 'mul()', 'div()', 'mod()'],
-		(items) => fieldEls.get('setNumber-operand-operation')?.loadItems?.(items)
+		(items) => fields['setNumber-operand-operation']?.loadItems?.(items)
 	);
 
 	useLocalizedOptions(
@@ -53,54 +59,51 @@ export function setupSetNumberOperandFields(
 			'script',
 			'other'
 		],
-		(items) => fieldEls.get('setNumber-operand-type')?.loadItems?.(items)
+		(items) => fields['setNumber-operand-type']?.loadItems?.(items)
 	);
 
-	fieldEls
-		.get('setNumber-operand-type')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'constant',
-				targets: [fieldEls.get('setNumber-operand-constant-value')?.root]
-			},
-			{
-				case: 'variable',
-				targets: [fieldEls.get('setNumber-operand-common-variable')?.root]
-			},
-			{ case: 'math', targets: [fieldEls.get('setNumber-operand-math-method')?.root] },
-			{
-				case: 'string',
-				targets: [
-					fieldEls.get('setNumber-operand-string-method')?.root,
-					fieldEls.get('setNumber-operand-common-variable')?.root
-				]
-			},
-			{
-				case: 'object',
-				targets: [fieldEls.get('setNumber-operand-object-property')?.root]
-			},
-			{
-				case: 'element',
-				targets: [
-					fieldEls.get('setNumber-operand-element-property')?.root,
-					fieldEls.get('setNumber-operand-element-element')?.root
-				]
-			},
-			{
-				case: 'list',
-				targets: [
-					fieldEls.get('setNumber-operand-common-variable')?.root,
-					fieldEls.get('setNumber-operand-list-index')?.root
-				]
-			},
-			{
-				case: 'parameter',
-				targets: [fieldEls.get('setNumber-operand-parameter-key')?.root]
-			},
-			{ case: 'script', targets: [fieldEls.get('setNumber-operand-script')?.root] },
-			{ case: 'other', targets: [fieldEls.get('setNumber-operand-other-data')?.root] }
-		]);
+	fields['setNumber-operand-type']?.enableHiddenMode?.()?.relate?.([
+		{
+			case: 'constant',
+			targets: [fields['setNumber-operand-constant-value']?.root]
+		},
+		{
+			case: 'variable',
+			targets: [fields['setNumber-operand-common-variable']?.root]
+		},
+		{ case: 'math', targets: [fields['setNumber-operand-math-method']?.root] },
+		{
+			case: 'string',
+			targets: [
+				fields['setNumber-operand-string-method']?.root,
+				fields['setNumber-operand-common-variable']?.root
+			]
+		},
+		{
+			case: 'object',
+			targets: [fields['setNumber-operand-object-property']?.root]
+		},
+		{
+			case: 'element',
+			targets: [
+				fields['setNumber-operand-element-property']?.root,
+				fields['setNumber-operand-element-element']?.root
+			]
+		},
+		{
+			case: 'list',
+			targets: [
+				fields['setNumber-operand-common-variable']?.root,
+				fields['setNumber-operand-list-index']?.root
+			]
+		},
+		{
+			case: 'parameter',
+			targets: [fields['setNumber-operand-parameter-key']?.root]
+		},
+		{ case: 'script', targets: [fields['setNumber-operand-script']?.root] },
+		{ case: 'other', targets: [fields['setNumber-operand-other-data']?.root] }
+	]);
 
 	useLocalizedOptions(
 		'setNumber-operand-math-method',
@@ -120,60 +123,54 @@ export function setupSetNumberOperandFields(
 			'distance-y',
 			'relative-angle'
 		],
-		(items) => fieldEls.get('setNumber-operand-math-method')?.loadItems?.(items)
+		(items) => fields['setNumber-operand-math-method']?.loadItems?.(items)
 	);
 
-	fieldEls
-		.get('setNumber-operand-math-method')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'round',
-				targets: [
-					fieldEls.get('setNumber-operand-common-variable')?.root,
-					fieldEls.get('setNumber-operand-math-decimals')?.root
-				]
-			},
-			{
-				case: ['floor', 'ceil', 'sqrt', 'abs', 'cos', 'sin', 'tan'],
-				targets: [fieldEls.get('setNumber-operand-common-variable')?.root]
-			},
-			{
-				case: 'random-int',
-				targets: [
-					fieldEls.get('setNumber-operand-math-min')?.root,
-					fieldEls.get('setNumber-operand-math-max')?.root
-				]
-			},
-			{
-				case: ['distance', 'distance-x', 'distance-y', 'relative-angle'],
-				targets: [
-					fieldEls.get('setNumber-operand-math-startPosition')?.root,
-					fieldEls.get('setNumber-operand-math-endPosition')?.root
-				]
-			}
-		]);
+	fields['setNumber-operand-math-method']?.enableHiddenMode?.()?.relate?.([
+		{
+			case: 'round',
+			targets: [
+				fields['setNumber-operand-common-variable']?.root,
+				fields['setNumber-operand-math-decimals']?.root
+			]
+		},
+		{
+			case: ['floor', 'ceil', 'sqrt', 'abs', 'cos', 'sin', 'tan'],
+			targets: [fields['setNumber-operand-common-variable']?.root]
+		},
+		{
+			case: 'random-int',
+			targets: [
+				fields['setNumber-operand-math-min']?.root,
+				fields['setNumber-operand-math-max']?.root
+			]
+		},
+		{
+			case: ['distance', 'distance-x', 'distance-y', 'relative-angle'],
+			targets: [
+				fields['setNumber-operand-math-startPosition']?.root,
+				fields['setNumber-operand-math-endPosition']?.root
+			]
+		}
+	]);
 
 	useLocalizedOptions('setNumber-operand-string-method', ['length', 'parse', 'search'], (items) =>
-		fieldEls.get('setNumber-operand-string-method')?.loadItems?.(items)
+		fields['setNumber-operand-string-method']?.loadItems?.(items)
 	);
 
-	fieldEls
-		.get('setNumber-operand-string-method')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: ['length', 'parse'],
-				targets: [fieldEls.get('setNumber-operand-common-variable')?.root]
-			},
-			{
-				case: 'search',
-				targets: [
-					fieldEls.get('setNumber-operand-common-variable')?.root,
-					fieldEls.get('setNumber-operand-string-search')?.root
-				]
-			}
-		]);
+	fields['setNumber-operand-string-method']?.enableHiddenMode?.()?.relate?.([
+		{
+			case: ['length', 'parse'],
+			targets: [fields['setNumber-operand-common-variable']?.root]
+		},
+		{
+			case: 'search',
+			targets: [
+				fields['setNumber-operand-common-variable']?.root,
+				fields['setNumber-operand-string-search']?.root
+			]
+		}
+	]);
 
 	useLocalizedOptions(
 		'setNumber-operand-object-property',
@@ -221,97 +218,94 @@ export function setupSetNumberOperandFields(
 			'tilemap-tag',
 			'list-length'
 		],
-		(items) => fieldEls.get('setNumber-operand-object-property')?.loadItems?.(items)
+		(items) => fields['setNumber-operand-object-property']?.loadItems?.(items)
 	);
 
-	fieldEls
-		.get('setNumber-operand-object-property')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: [
-					'actor-x',
-					'actor-y',
-					'actor-ui-x',
-					'actor-ui-y',
-					'actor-screen-x',
-					'actor-screen-y',
-					'actor-angle',
-					'actor-direction',
-					'actor-movement-speed',
-					'actor-collision-size',
-					'actor-collision-weight',
-					'actor-scaling-factor',
-					'actor-inventory-money',
-					'actor-inventory-used-space',
-					'actor-inventory-version',
-					'actor-skill-version',
-					'actor-state-version',
-					'actor-equipment-version',
-					'actor-shortcut-version',
-					'actor-animation-current-time',
-					'actor-animation-duration',
-					'actor-animation-progress'
-				],
-				targets: [fieldEls.get('setNumber-operand-common-actor')?.root]
-			},
-			{
-				case: 'actor-inventory-item-quantity',
-				targets: [
-					fieldEls.get('setNumber-operand-common-actor')?.root,
-					fieldEls.get('setNumber-operand-object-itemId')?.root
-				]
-			},
-			{
-				case: 'actor-inventory-equipment-quantity',
-				targets: [
-					fieldEls.get('setNumber-operand-common-actor')?.root,
-					fieldEls.get('setNumber-operand-object-equipmentId')?.root
-				]
-			},
-			{
-				case: ['actor-cooldown-time', 'actor-cooldown-duration', 'actor-cooldown-progress'],
-				targets: [
-					fieldEls.get('setNumber-operand-common-actor')?.root,
-					fieldEls.get('setNumber-operand-cooldown-key')?.root
-				]
-			},
-			{
-				case: ['skill-cooldown-time', 'skill-cooldown-duration', 'skill-cooldown-progress'],
-				targets: [fieldEls.get('setNumber-operand-common-skill')?.root]
-			},
-			{
-				case: ['state-current-time', 'state-duration', 'state-progress'],
-				targets: [fieldEls.get('setNumber-operand-common-state')?.root]
-			},
-			{
-				case: 'equipment-order',
-				targets: [fieldEls.get('setNumber-operand-common-equipment')?.root]
-			},
-			{
-				case: ['item-order', 'item-quantity'],
-				targets: [fieldEls.get('setNumber-operand-common-item')?.root]
-			},
-			{
-				case: ['trigger-speed', 'trigger-angle'],
-				targets: [fieldEls.get('setNumber-operand-common-trigger')?.root]
-			},
-			{
-				case: ['tilemap-width', 'tilemap-height'],
-				targets: [fieldEls.get('setNumber-operand-common-tilemap')?.root]
-			},
-			{
-				case: 'tilemap-tag',
-				targets: [
-					fieldEls.get('setNumber-operand-common-tilemap')?.root,
-					fieldEls.get('setNumber-operand-tilemapPosition')?.root
-				]
-			},
-			{
-				case: 'list-length',
-				targets: [fieldEls.get('setNumber-operand-common-variable')?.root]
-			}
-		]);
+	fields['setNumber-operand-object-property']?.enableHiddenMode?.()?.relate?.([
+		{
+			case: [
+				'actor-x',
+				'actor-y',
+				'actor-ui-x',
+				'actor-ui-y',
+				'actor-screen-x',
+				'actor-screen-y',
+				'actor-angle',
+				'actor-direction',
+				'actor-movement-speed',
+				'actor-collision-size',
+				'actor-collision-weight',
+				'actor-scaling-factor',
+				'actor-inventory-money',
+				'actor-inventory-used-space',
+				'actor-inventory-version',
+				'actor-skill-version',
+				'actor-state-version',
+				'actor-equipment-version',
+				'actor-shortcut-version',
+				'actor-animation-current-time',
+				'actor-animation-duration',
+				'actor-animation-progress'
+			],
+			targets: [fields['setNumber-operand-common-actor']?.root]
+		},
+		{
+			case: 'actor-inventory-item-quantity',
+			targets: [
+				fields['setNumber-operand-common-actor']?.root,
+				fields['setNumber-operand-object-itemId']?.root
+			]
+		},
+		{
+			case: 'actor-inventory-equipment-quantity',
+			targets: [
+				fields['setNumber-operand-common-actor']?.root,
+				fields['setNumber-operand-object-equipmentId']?.root
+			]
+		},
+		{
+			case: ['actor-cooldown-time', 'actor-cooldown-duration', 'actor-cooldown-progress'],
+			targets: [
+				fields['setNumber-operand-common-actor']?.root,
+				fields['setNumber-operand-cooldown-key']?.root
+			]
+		},
+		{
+			case: ['skill-cooldown-time', 'skill-cooldown-duration', 'skill-cooldown-progress'],
+			targets: [fields['setNumber-operand-common-skill']?.root]
+		},
+		{
+			case: ['state-current-time', 'state-duration', 'state-progress'],
+			targets: [fields['setNumber-operand-common-state']?.root]
+		},
+		{
+			case: 'equipment-order',
+			targets: [fields['setNumber-operand-common-equipment']?.root]
+		},
+		{
+			case: ['item-order', 'item-quantity'],
+			targets: [fields['setNumber-operand-common-item']?.root]
+		},
+		{
+			case: ['trigger-speed', 'trigger-angle'],
+			targets: [fields['setNumber-operand-common-trigger']?.root]
+		},
+		{
+			case: ['tilemap-width', 'tilemap-height'],
+			targets: [fields['setNumber-operand-common-tilemap']?.root]
+		},
+		{
+			case: 'tilemap-tag',
+			targets: [
+				fields['setNumber-operand-common-tilemap']?.root,
+				fields['setNumber-operand-tilemapPosition']?.root
+			]
+		},
+		{
+			case: 'list-length',
+			targets: [fields['setNumber-operand-common-variable']?.root]
+		}
+	]);
 
 	useLocalizedOptions(
 		'setNumber-operand-element-property',
@@ -346,7 +340,7 @@ export function setupSetNumberOperandFields(
 			'dialogBox-printEndX',
 			'dialogBox-printEndY'
 		],
-		(items) => fieldEls.get('setNumber-operand-element-property')?.loadItems?.(items)
+		(items) => fields['setNumber-operand-element-property']?.loadItems?.(items)
 	);
 
 	useLocalizedOptions(
@@ -398,35 +392,32 @@ export function setupSetNumberOperandFields(
 			'loader-total-bytes',
 			'loader-completion-progress'
 		],
-		(items) => fieldEls.get('setNumber-operand-other-data')?.loadItems?.(items)
+		(items) => fields['setNumber-operand-other-data']?.loadItems?.(items)
 	);
 
-	fieldEls
-		.get('setNumber-operand-other-data')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: [
-					'touch-screen-x',
-					'touch-screen-y',
-					'touch-ui-x',
-					'touch-ui-y',
-					'touch-scene-x',
-					'touch-scene-y'
-				],
-				targets: [fieldEls.get('setNumber-operand-other-touchId')?.root]
-			},
-			{
-				case: 'actor-count',
-				targets: [fieldEls.get('setNumber-operand-other-teamId')?.root]
-			}
-		]);
+	fields['setNumber-operand-other-data']?.enableHiddenMode?.()?.relate?.([
+		{
+			case: [
+				'touch-screen-x',
+				'touch-screen-y',
+				'touch-ui-x',
+				'touch-ui-y',
+				'touch-scene-x',
+				'touch-scene-y'
+			],
+			targets: [fields['setNumber-operand-other-touchId']?.root]
+		},
+		{
+			case: 'actor-count',
+			targets: [fields['setNumber-operand-other-teamId']?.root]
+		}
+	]);
 
 	on(frameEl, 'open', () => {
-		fieldEls.get('setNumber-operand-other-teamId')?.loadItems?.(Data.createTeamItems!());
+		fields['setNumber-operand-other-teamId']?.loadItems?.(Data.createTeamItems!());
 	});
 
 	on(frameEl, 'closed', () => {
-		(fieldEls.get('setNumber-operation') as { root?: YamiElement } | null)?.root?.restore();
+		(fields['setNumber-operation'] as { root?: YamiElement } | null)?.root?.restore();
 	});
 }

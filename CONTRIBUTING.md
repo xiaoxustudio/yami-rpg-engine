@@ -101,7 +101,7 @@ pnpm e2e:fast       # 复用现有 dist/，本地迭代用
 pnpm e2e:selftest   # 自测：故意给一个打不开的工程，断言这条门禁会红
 ```
 
-它跑的是「装得起来≠跑得起来」那一段：主进程起来 → 首页渲染 → 打开工程切到 directory 工作区 → 编辑器域就绪 → 五个**懒挂载**工具窗口首次打开且控件已接线（含元素契约密集的 `variableGetter` / `if-condition`，并对 if-condition 走一遍 `setForm → getForm` 往返） → 运行时无缺失文案 key → 启动时间线有界 → 页面无未捕获异常。失败现场（截图 / 页面 HTML / 主进程日志）落在 `scripts/e2e/.artifacts/`（已 gitignore），CI 失败时作为 artifact 上传。
+它跑的是「装得起来≠跑得起来」那一段：主进程起来 → 首页渲染 → 打开工程切到 directory 工作区 → 编辑器域就绪 → 六个**懒挂载**工具窗口首次打开且控件已接线（含元素契约密集的 `variableGetter` / `if-condition`，并对 if-condition 走一遍 `setForm → getForm` 往返） → 运行时无缺失文案 key → 启动时间线有界 → 页面无未捕获异常。失败现场（截图 / 页面 HTML / 主进程日志）落在 `scripts/e2e/.artifacts/`（已 gitignore），CI 失败时作为 artifact 上传。
 
 **启动预算**按比例而不按绝对值：`scripts/e2e/boot-baseline.json` 记录一台参照机的 `__BOOT_MARKS__`，默认只拦 **×5** 以上的退化（同一份代码在不同机器差 3-5 倍是常态，卡绝对值必然假红），能抓的是同步阻塞、重复初始化、懒加载失效这类数量级问题。换机型后用 `pnpm e2e --write-boot-baseline` 重写基线并提交。
 
@@ -150,6 +150,7 @@ pnpm coverage:selftest  # 门禁自证：持平判绿 / 下降判红 / 新目录
 - 数量级的现实：这支轴还有 1475 处 / 305 个文件。按月排批次、每批一个面板家族，比追求一次性归零可靠；不要为了「看起来在做迁移」去动 `engine/**` 里那些被 canvas 直接驱动的站点。
 - **已落第一批（2026-10-30）**：`composables/useVariableGetterWindow.ts` 33 → 20。做法是「同一次装配里每个控件只寻址一次」——`preset-key` 原来在 6 个 case 里各取一遍、`confirmCore` 里 `getFocus(...)` 7 个分支各寻址一次，现在各自只有一处。同批把真机 E2E 扩到 `variableGetter` / `variableGetter2` / `if-condition`（40 个控件）——**先有兜底再动契约**，否则「注册表依赖删掉了」只能靠肉眼确认。
 - **已落第二批（2026-10-30）**：`composables/useIfConditionFields.ts` 72 → 0、`components/tools/IfCondition.vue` 2 → 0 —— 控件表从 `Map<string, FieldControl>` 换成普通对象入参 `IfConditionFieldMap`，composable 不再知道寻址方式，组件用模板 ref 直接按 id 落表；同批补了 4 条单测（缺控件早退 / 11 种类型灌入 / 隐藏行关系分组 / 本地化选项落位），它现在是可单测的纯装配函数。`element-registry-lookups` 1475 → 1394。
+- **已落第三批（2026-10-30）**：`composables/useSetNumberOperandFields.ts` 51 → 0、`components/tools/SetNumberOperand.vue` 同批改为控件表入参；补 4 条单测（缺控件早退 / 6 种运算符 / 隐藏行关系挂在 operand-type 上 / 根元素挂 open·closed 钩子），真机 E2E 同时把 `setNumber-operand`（42 控件）纳入。`element-registry-lookups` 1394 → 1337。
 
 **新增工具窗口检查清单（懒挂载）**
 

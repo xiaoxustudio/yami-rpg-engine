@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-10-30T11:18:23.412Z",
+	"generatedAt": "2026-10-30T12:08:11.476Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -131,8 +131,8 @@
 			"label": "元素注册表寻址（*Els.get、registryElement(s)）",
 			"target": "zero",
 			"value": {
-				"total": 1394,
-				"files": 303
+				"total": 1337,
+				"files": 301
 			}
 		},
 		"legacy-ui-lines": {

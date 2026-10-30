@@ -245,7 +245,8 @@ async function main() {
 			{ id: 'attribute', minControls: 1 },
 			{ id: 'variableGetter', minControls: 2 },
 			{ id: 'variableGetter2', minControls: 2 },
-			{ id: 'if-condition', minControls: 10 }
+			{ id: 'if-condition', minControls: 10 },
+			{ id: 'setNumber-operand', minControls: 5 }
 		];
 
 		await step('懒挂载工具窗口首次打开（command / attribute / 变量取值 / 条件）', async () => {

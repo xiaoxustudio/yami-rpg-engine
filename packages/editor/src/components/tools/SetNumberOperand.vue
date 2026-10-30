@@ -301,7 +301,8 @@ import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema'
 import type { NumberOperandForm } from '@app/composables/useNumberOperandSchema';
 import {
 	setupSetNumberOperandFields,
-	type FieldControl
+	type FieldControl,
+	type SetNumberOperandFieldMap
 } from '@app/composables/useSetNumberOperandFields';
 
 const NumberOperand = useNumberOperandSchema();
@@ -394,7 +395,7 @@ const FIELD_BY_ID: Record<string, keyof NumberOperandForm> = {
 	'setNumber-operand-other-teamId': 'otherTeamId'
 };
 
-const fieldEls = new Map<string, FieldControl | null>();
+const fieldEls: SetNumberOperandFieldMap = {};
 
 /**
  * 控件实例 → 元素：普通元素直接用；组件实例优先 `$el`（**ref 回调时即已就绪**），
@@ -409,7 +410,7 @@ const elementOf = (control: FieldControl | null): HTMLElement | null => {
 
 const fieldRef = (id: string) => (el: unknown) => {
 	const control = el as FieldControl | null;
-	fieldEls.set(id, control);
+	fieldEls[id] = control;
 	registerElement(composableEls, id, elementOf(control));
 };
 
