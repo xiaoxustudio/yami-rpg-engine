@@ -18,7 +18,7 @@
  *   pnpm e2e                     # 先 build:vite 再跑（CI 用这条）
  *   pnpm e2e --no-build          # 复用现有 dist/（本地迭代最快）
  *   pnpm e2e --keep              # 保留临时 HOME/工程，失败排查用
- *   pnpm e2e --timeout=180000    # 整体超时（默认 120s）
+ *   pnpm e2e --timeout=180000    # 整体超时（默认 300s；含一次 build:vite）
  *
  * 为什么不引 Playwright：见 CONTRIBUTING「端到端（E2E）与截图对比：当前不进 CI」——
  * 本机与 CI 都没有 `@playwright/test` 与浏览器二进制，装不上会把流水线拖红。
@@ -48,7 +48,7 @@ const value = (name, fallback) => {
 const options = {
 	build: !flag('no-build'),
 	keep: flag('keep'),
-	timeoutMs: Number(value('timeout', 120000)),
+	timeoutMs: Number(value('timeout', 300000)),
 	openTimeoutMs: Number(value('open-timeout', 90000)),
 	// 自测：故意造一个打不开的工程，断言本脚本会红。门禁不能自证就是摆设。
 	selftest: flag('selftest')
@@ -216,6 +216,18 @@ async function main() {
 			return `groups=${tree}`;
 		});
 
+		await step('编辑器域就绪（editors-ready）', async () => {
+			// 工具窗口属于编辑器外壳：`initEditors` / `initTools` 跑完之前打开，窗口激活会撞上
+			// 尚未接线的 Title 元素 API（实测打出 `Title.pointermove is not a function`）。
+			// 产品侧对这条路径自己 try/catch 了，不算崩溃；但不先等就绪会让「无未捕获异常」假红。
+			const ready = await cdp.waitFor(
+				`Array.isArray(window.__BOOT_MARKS__) && window.__BOOT_MARKS__.some((mark) => mark.name === 'editors-ready')`,
+				{ timeoutMs: 90000 }
+			);
+			assert(ready, '90s 内没有出现 editors-ready 打点');
+			return 'editors-ready';
+		});
+
 		/**
 		 * 懒挂载窗口：首次打开时控件 API 才接线，这是本仓 2026-10 反复出事的点。
 		 * 断言「窗口开了 + 控件真的挂上了」——只断言 `.open` 类名会被空壳骗过。
@@ -252,6 +264,20 @@ async function main() {
 				await cdp.evaluate(`window.Window.close(${JSON.stringify(id)}); true`);
 			}
 			return opened.join(' + ');
+		});
+
+		await step('运行期无缺失文案 key', async () => {
+			// 动态拼接的 key（`t('components.' + x)`）静态门禁看不见，只能靠运行期观测：
+			// 见 packages/editor/src/i18n/missing-keys.ts（只记 components./properties.）。
+			const raw = await cdp.evaluate(`JSON.stringify(window.__I18N_MISSING__ ?? [])`);
+			const keys = JSON.parse(raw ?? '[]');
+			assert(
+				keys.length === 0,
+				`运行期出现 ${keys.length} 个缺失 key（界面会直接显示 key）：\n    ${keys
+					.slice(0, 8)
+					.join('\n    ')}`
+			);
+			return '0 条';
 		});
 
 		await step('启动时间线有界', async () => {

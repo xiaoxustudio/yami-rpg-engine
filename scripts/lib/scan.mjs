@@ -492,7 +492,17 @@ export function countElementCustomEvents(src) {
  *   ① `window.dispatchEvent(new Event('x'))`
  *   ② `const e = new Event('x'); …; window.dispatchEvent(e)`
  *   ③ `emitCustom('x')`（类型化包装，内部仍是 window 事件）
- * 监听：`window.addEventListener('x', …)` 与 `onCustom('x', …)`。
+ * 监听：`window.addEventListener('x', …)`、`onCustom('x', …)`，以及
+ * `useEventListener(window, 'x', …)`（Vue 侧的标准写法）。
+ * 刻意**不认** `useEventListener(document, …)`：那多半是原生事件（mousedown / keydown），
+ * 归 `vue-global-listeners` 轴管；认进来只会给本轴凭空加一个 emits=0 的"死事件"。
+ *
+ * ⚠️ 漏掉第三种监听形式会**把活事件判成死事件**：2026-10-30 实测 `os-dragstart` /
+ * `os-dragend` / `update-log-update` / `home-recent-update` 四条全被台账标成 `dead`，
+ * 而它们各自的消费方都好好的（`YMFileBrowser.vue` / `UpdateLog.vue` /
+ * `HomeRecentList.vue` 都用 `useEventListener(window, …)`）。按 `dead` 一刀切删掉，
+ * 等于把拖拽状态与更新日志刷新一起删了。所以监听口径必须和 `vue-global-listeners`
+ * 轴保持一致 —— 那一条早就把 `useEventListener` 认作「合规的全局监听」。
  */
 export function windowEventSurfaceOf(src) {
 	const text = stripComments(scriptOnly(src));
@@ -516,6 +526,9 @@ export function windowEventSurfaceOf(src) {
 	for (const m of text.matchAll(/\bemitCustom\s*\(\s*['"]([\w:-]+)['"]/g)) emits.add(m[1]);
 	for (const m of text.matchAll(/\bonCustom\s*\(\s*['"]([\w:-]+)['"]/g)) listens.add(m[1]);
 	for (const m of text.matchAll(/window\.addEventListener\s*\(\s*['"]([\w:-]+)['"]/g)) {
+		listens.add(m[1]);
+	}
+	for (const m of text.matchAll(/\buseEventListener\s*\(\s*window\s*,\s*['"]([\w:-]+)['"]/g)) {
 		listens.add(m[1]);
 	}
 	return { emits, listens };

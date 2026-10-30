@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-10-28T17:43:46.312Z",
+	"generatedAt": "2026-10-30T09:09:59.606Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -256,7 +256,7 @@
 			"target": "zero",
 			"value": {
 				"total": 13,
-				"dead": 4
+				"dead": 0
 			}
 		},
 		"yami-element-refs": {

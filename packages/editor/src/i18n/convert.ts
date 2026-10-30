@@ -57,6 +57,10 @@ function flattenComponents(
 		put('label', comp.label);
 		put('tip', comp.tip);
 		put('content', comp.content);
+		// placeholder：输入类组件（Block.vue / GameData.vue / ShowText.vue…）用
+		// `t('components.<id>.placeholder')` 填占位文案。漏掉这一条时 `t()` 会原样返回 key，
+		// 界面上直接显示 `components.block-note.placeholder`（2026-10-30 由运行期缺失观测抓到）。
+		put('placeholder', comp.placeholder);
 		const options = comp.options;
 		if (options !== undefined && typeof options === 'object') {
 			for (const optKey of Object.keys(options as Record<string, unknown>)) {
@@ -64,14 +68,19 @@ function flattenComponents(
 				if (typeof opt === 'string') {
 					out[`components.${id}.options.${optKey}.name`] = escapeMessage(opt);
 					out[`components.${id}.options.${optKey}.label`] = escapeMessage(opt);
+					// 字符串选项没有独立 tip：用同名文案兜底。否则 `t('….options.x.tip')` 会原样
+					// 返回 key，tooltip 上直接显示 `components.loop-mode.options.all.tip`。
+					out[`components.${id}.options.${optKey}.tip`] = escapeMessage(opt);
 				} else if (opt !== null && typeof opt === 'object') {
 					const o = opt as { name?: string; tip?: string };
 					if (typeof o.name === 'string') {
 						out[`components.${id}.options.${optKey}.name`] = escapeMessage(o.name);
 						out[`components.${id}.options.${optKey}.label`] = escapeMessage(o.name);
 					}
-					if (typeof o.tip === 'string') {
-						out[`components.${id}.options.${optKey}.tip`] = escapeMessage(o.tip);
+					// 对象选项缺 tip 时同样用 name 兜底（同上：宁可重复，也不要显示 key）
+					const tip = typeof o.tip === 'string' ? o.tip : o.name;
+					if (typeof tip === 'string') {
+						out[`components.${id}.options.${optKey}.tip`] = escapeMessage(tip);
 					}
 				}
 			}

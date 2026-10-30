@@ -50,6 +50,17 @@ pnpm start:prod   # 先构建再以生产模式启动
 
 新增/修改文案时，键写进对应 `components.<ns>.json`（入口键才写入口文件）；`pnpm run i18n:guard` 会把**入口 + 全部分片**聚合成每种语言的 key 集合再比对，并校验分片文件名与内部 id 的命名空间一致、id 不重复。需要从旧单文件语言包重新拆分时跑 `node scripts/oneoff/i18n-split-locales.mjs`（加 `--check` 只校验不写盘）。
 
+**动态 key 只能靠运行期观测**（`src/i18n/missing-keys.ts`）
+
+`t('components.' + id + '.placeholder')` 这类拼接 key 静态门禁看不见（前缀以 `.` 结尾，自动跳过），拼错不会报错，`t()` 直接把 key 原样显示在界面上。所以 i18n 实例上挂了一个 `missing` 钩子，把受管命名空间（`components.` / `properties.`）的缺失记进 `window.__I18N_MISSING__`，`pnpm e2e` 在黄金路径跑完后**断言它为空**。
+
+两条口径，别改错方向：
+
+- **只记 `components.` / `properties.`**：`command.*` / `common.*` / `confirmation.*` 这些并不在编辑器语言包里 —— 它们由**工程模板**在运行期注入，算成"缺失"会制造几百条假阳性；
+- 语言包就位之前首页已经在渲染，期间的 miss 是启动顺序使然，加载完成后会**清空一次**再开始计数（否则每次启动都会固定带一批假红）。
+
+> 2026-10-30 这条观测第一次跑就抓到两类真缺口：`*.placeholder` 从来没进消息表（`convert.ts` 只导出 title/label/tip/content），以及无独立 tip 的选项 key（`options.x.tip`）——界面上的表现是占位符/tooltip 直接显示 `components.block-note.placeholder`。修完 179 → 0。
+
 **模板资源**
 
 改动了 `packages/template-arpg` 下的模板内容后，需要 `pnpm pack:resources` 重新打包资源再提交。

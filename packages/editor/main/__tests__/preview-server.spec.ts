@@ -107,7 +107,14 @@ const serve = async (
 afterEach(() => {
 	stopServer();
 	for (const dir of tempDirs.splice(0)) {
-		fs.rmSync(dir, { recursive: true, force: true });
+		// Windows 上 Koa 的流式响应可能在 afterEach 之后才真正释放句柄，`rmSync` 会报 ENOTEMPTY，
+		// 把一条本来已经通过的用例判红（本机必现、Linux CI 不复现）。临时目录本就一次性：
+		// 重试几次仍失败就放弃，清理失败不该决定用例结论。
+		try {
+			fs.rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+		} catch {
+			/* 交给操作系统在临时目录清理时收尾 */
+		}
 	}
 });
 

@@ -1407,7 +1407,7 @@ test('element-custom-events：构造自定义事件命中，原生名与注释�
 	);
 });
 
-test('windowEventSurfaceOf：三种派发形式与两种监听形式都要认出', () => {
+test('windowEventSurfaceOf：三种派发形式与三种监听形式都要认出', () => {
 	const direct = windowEventSurfaceOf("window.dispatchEvent(new Event('datachange'));");
 	eq([...direct.emits], ['datachange']);
 	const variable = windowEventSurfaceOf(
@@ -1419,6 +1419,14 @@ test('windowEventSurfaceOf：三种派发形式与两种监听形式都要认出
 	eq([...typed.listens], ['localize']);
 	const plain = windowEventSurfaceOf("window.addEventListener('resize', f);");
 	eq([...plain.listens], ['resize']);
+	// useEventListener 是 Vue 侧标准写法：漏认它会把活事件判成死事件（实测踩过，见 scan.mjs）
+	const vue = windowEventSurfaceOf("useEventListener(window, 'os-dragstart', handler);");
+	eq([...vue.listens], ['os-dragstart'], 'useEventListener(window, …)');
+	// document 上的监听是原生事件（mousedown/keydown），归 vue-global-listeners 轴，不进本轴
+	const vueDoc = windowEventSurfaceOf(
+		"useEventListener(document, 'mousedown', handler, { x: 1 });"
+	);
+	eq([...vueDoc.listens], [], 'useEventListener(document, …) 不计入 window 自定义事件');
 	// 只构造不派发不算 window 事件（元素级事件另有一套口径）
 	eq(windowEventSurfaceOf("const e = new Event('x');").emits.size, 0);
 });

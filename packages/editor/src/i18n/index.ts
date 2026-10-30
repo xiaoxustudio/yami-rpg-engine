@@ -6,6 +6,7 @@ import {
 	type FlatMessages
 } from './convert';
 import { loadLanguageBundle, loadLanguageList, resolveLanguage } from './loader';
+import { recordMissingKey, resetMissingKeys } from './missing-keys';
 import { localizeDomComponents, type LocalComponentItem } from '@app/localize/dom-localizer';
 import { getLocalStore } from '@app/stores/local';
 import { Editor } from '@app/services/project/editor';
@@ -59,7 +60,10 @@ const options = {
 	fallbackLocale: 'en-US',
 	missingWarn: false,
 	fallbackWarn: false,
-	messageResolver: resolveFlat as never
+	messageResolver: resolveFlat as never,
+	// 动态 key（`t('components.' + x)`）静态门禁看不见；运行期把受管命名空间的缺失记下来，
+	// 由真机 E2E 断言为空（见 @app/i18n/missing-keys）。
+	missing: (_locale: string, key: string) => recordMissingKey(key)
 } satisfies I18nOptions;
 
 const i18n = createI18n<false, typeof options>(options);
@@ -121,6 +125,9 @@ export async function loadI18n(language?: string): Promise<string> {
 				Editor.config.language = requested;
 			}
 			window.dispatchEvent(new Event('localize'));
+			// 语言包就位之前 home 已经在渲染，期间的 `t()` 必然 miss（启动顺序如此，不是缺陷）。
+			// 清一次，只保留「加载完成后仍然查不到」的 key —— 那才是真缺口。
+			resetMissingKeys();
 			return entry.key;
 		} finally {
 			loadPromise = null;
