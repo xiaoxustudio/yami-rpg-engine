@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { composableEls } from '@app/composables/element-registry';
 import { getFormFields, setFormFields } from '@app/composables/form-fields';
 import { registryRef, registerElement } from '@app/utils/element-registry';
@@ -47,7 +47,7 @@ import {
 } from '@app/composables/usePresetGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { presetGetterBridge } from '@app/composables/preset-getter-bridge';
 import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -76,11 +76,15 @@ const onConfirm = () => {
 
 onMounted(() => {
 	registerElement(composableEls, 'lightGetter', frame.value);
+	// 表单桥走模块（presetGetterBridge），元素上不再挂业务方法。
+	const api = { setForm, getForm };
+	const bridge = presetGetterBridge('lightGetter');
+	bridge?.provide(api);
 	const el = frame.value?.root;
 	if (el) {
-		attachElementApi(el, { setForm, getForm });
 		on(el, 'closed', () => lightGetter.onWindowClosed());
 	}
+	onUnmounted(() => bridge?.reset(api));
 });
 </script>
 

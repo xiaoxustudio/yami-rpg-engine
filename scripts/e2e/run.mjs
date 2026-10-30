@@ -248,7 +248,9 @@ async function main() {
 			{ id: 'if-condition', minControls: 10 },
 			{ id: 'setNumber-operand', minControls: 5 },
 			{ id: 'exportLanguage', minControls: 2, minNodes: 8 },
-			{ id: 'scene-shift', minControls: 2, minNodes: 8 }
+			{ id: 'scene-shift', minControls: 2, minNodes: 8 },
+			{ id: 'lightGetter', minControls: 2, minNodes: 8 },
+			{ id: 'objectGetter', minControls: 2, minNodes: 8 }
 		];
 
 		await step('懒挂载工具窗口首次打开（command / attribute / 变量取值 / 条件）', async () => {
@@ -322,6 +324,20 @@ async function main() {
 				check: (result) => result?.first === 'zh-CN' && result?.second === '',
 				read: `{ first: form?.first, second: form?.second }`,
 				label: 'first=zh-CN'
+			},
+			{
+				id: 'lightGetter',
+				patch: `{ type: 'by-id', presetId: 'p1' }`,
+				check: (result) => result?.type === 'by-id' && result?.presetId === 'p1',
+				read: `{ type: form?.type, presetId: form?.presetId }`,
+				label: 'type=by-id / presetId=p1'
+			},
+			{
+				id: 'objectGetter',
+				patch: `{ type: 'variable', presetId: '' }`,
+				check: (result) => result?.type === 'variable',
+				read: `{ type: form?.type, presetId: form?.presetId }`,
+				label: 'type=variable'
 			},
 			{
 				id: 'scene-shift',

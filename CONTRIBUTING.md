@@ -101,7 +101,7 @@ pnpm e2e:fast       # 复用现有 dist/，本地迭代用
 pnpm e2e:selftest   # 自测：故意给一个打不开的工程，断言这条门禁会红
 ```
 
-它跑的是「装得起来≠跑得起来」那一段：主进程起来 → 首页渲染 → 打开工程切到 directory 工作区 → 编辑器域就绪 → 六个**懒挂载**工具窗口首次打开且控件已接线（含元素契约密集的 `variableGetter` / `if-condition`，并对 if-condition 走一遍 `setForm → getForm` 往返） → 运行时无缺失文案 key → 启动时间线有界 → 页面无未捕获异常。失败现场（截图 / 页面 HTML / 主进程日志）落在 `scripts/e2e/.artifacts/`（已 gitignore），CI 失败时作为 artifact 上传。
+它跑的是「装得起来≠跑得起来」那一段：主进程起来 → 首页渲染 → 打开工程切到 directory 工作区 → 编辑器域就绪 → 十个**懒挂载**工具窗口首次打开且控件已接线（含元素契约密集的 `variableGetter` / `if-condition`），并对已迁完表单桥的窗口逐个走 `setForm → getForm` 往返（当前 6 个） → 运行时无缺失文案 key → 启动时间线有界 → 页面无未捕获异常。失败现场（截图 / 页面 HTML / 主进程日志）落在 `scripts/e2e/.artifacts/`（已 gitignore），CI 失败时作为 artifact 上传。
 
 **启动预算**按比例而不按绝对值：`scripts/e2e/boot-baseline.json` 记录一台参照机的 `__BOOT_MARKS__`，默认只拦 **×5** 以上的退化（同一份代码在不同机器差 3-5 倍是常态，卡绝对值必然假红），能抓的是同步阻塞、重复初始化、懒加载失效这类数量级问题。换机型后用 `pnpm e2e --write-boot-baseline` 重写基线并提交。
 
@@ -164,11 +164,11 @@ pnpm coverage:selftest  # 门禁自证：持平判绿 / 下降判红 / 新目录
 
 只做 1、2 会让上门禁失去表单级验证，只做 3 等于给测试开后门。
 
-> **已落样板（2026-10-30）**：`if-condition` / `setNumber-operand` / `exportLanguage` / `scene-shift` 四个窗口已完成成套替换 —— `composables/{if-condition,set-number-operand}-bridge.ts` + `utils/debug-bridges.ts`，两个 `.vue` 不再 `attachElementApi`，对应 schema 改读 `getXxxBridge()`，E2E 改从 `__YAMI_BRIDGES__[id]` 驱动（往返表 `BRIDGE_ROUNDTRIPS` 每迁一个窗口加一行）。`element-api-attach` 122 → 118。
+> **已落样板（2026-10-30）**：`if-condition` / `setNumber-operand` / `exportLanguage` / `scene-shift` / `lightGetter` / `objectGetter` 六个窗口已完成成套替换（`variableGetter2` 的元素桥无任何消费方，直接删除） —— `composables/{if-condition,set-number-operand}-bridge.ts` + `utils/debug-bridges.ts`，两个 `.vue` 不再 `attachElementApi`，对应 schema 改读 `getXxxBridge()`，E2E 改从 `__YAMI_BRIDGES__[id]` 驱动（往返表 `BRIDGE_ROUNDTRIPS` 每迁一个窗口加一行）。`element-api-attach` 122 → 115。
 >
 > 照抄清单（剩余窗口）：① 用 `composables/form-bridge.ts` 的 `createFormBridge<T>(id)` 声明三行（provide/reset/get 箭头函数）；② `.vue` 里 `provide` / `onUnmounted(reset)`；③ schema 两处改读模块；④ `branch-registry.spec` 断言「元素上没有 setForm、桥在模块上」；⑤ E2E 往返表 `BRIDGE_ROUNDTRIPS` 加一行。`launch.mjs` 已默认带 `--dirname=.` 打开 debug 通道，不用再动。
 >
-> 剩余 3 个待迁窗口（`attachElementApi(el, { setForm, getForm })`）：`LightGetter` / `ObjectGetter` / `VariableGetter2` —— 它们的消费方在 `usePresetGetterWindow` 与 `variable-accessor-window` 这类**共享助手**里（不是各自的 schema），所以要先在共享助手里把「按 domKey 取元素」换成桥，再迁窗口。
+> 带 `attachElementApi(el, { setForm, getForm })` 的窗口已全部迁完。最后一个变体是**共享助手**：`LightGetter` / `ObjectGetter` 的 setForm/getForm 不在各自 schema，而在 `usePresetGetterWindow` 里按 `domKey` 统一取元素 —— 对应桥也做成按 key 建表的 `presetGetterBridge(domKey)`，助手改读它，窗口只负责 `provide` / `onUnmounted(reset)`。`variableGetter2` 更简单：它的元素桥全仓没有消费方（表单由 composable 直接写控件），属于死挂载，直接删。
 >
 > 顺带一条实测：一次性脚本扫 75 个 `attachElementApi` 站点，其中 **45 个的成员在「其它文件」里找不到调用**，看着像死代码 —— 但抽查发现正是 `sync` 这类**由本文件内回归测试直接驱动**的桥（`components/__tests__/animation-frame-page-bridge.spec.ts` 里的 `el.sync?.()`）。结论：静态扫不到消费方 ≠ 可删。
 

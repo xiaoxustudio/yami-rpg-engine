@@ -1,6 +1,7 @@
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { composableEls } from '@app/composables/element-registry';
+import { presetGetterBridge } from '@app/composables/preset-getter-bridge';
 import { getFocus } from '@app/utils/element-utils';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
 
@@ -27,11 +28,6 @@ interface PresetGetterWindow {
 	onWindowClosed: () => void;
 }
 
-type PresetGetterFrame = HTMLElement & {
-	setForm?: (data: Partial<PresetGetterForm>) => void;
-	getForm?: () => PresetGetterForm;
-};
-
 interface PresetAccessorConfig {
 	domKey: string;
 	presetCategory: string;
@@ -46,9 +42,6 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 		variable: { type: 'local', key: '' }
 	});
 	let callback: ((getter: Record<string, unknown>) => void) | null = null;
-
-	const getFrame = (): PresetGetterFrame | null =>
-		composableEls.get(domKey) as PresetGetterFrame | null;
 
 	const initialize = (): void => {
 		const typeEl = composableEls.get(`${domKey}-type`);
@@ -79,12 +72,13 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 				break;
 		}
 		Object.assign(form, { type: data.type, presetId, variable });
-		getFrame()?.setForm?.(form);
+		// 表单桥来自模块（窗口组件 onMounted 时登记），不再从窗口根元素的 DOM 属性上取
+		presetGetterBridge(domKey)?.get()?.setForm?.(form);
 		getFocus(composableEls.get(`${domKey}-type`));
 	};
 
 	const confirm = (): void => {
-		const data = getFrame()?.getForm?.() ?? form;
+		const data = presetGetterBridge(domKey)?.get()?.getForm?.() ?? form;
 		let getter: Record<string, unknown> | undefined;
 		switch (data.type) {
 			case 'trigger':

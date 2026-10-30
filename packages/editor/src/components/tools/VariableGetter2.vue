@@ -49,17 +49,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { composableEls } from '@app/composables/element-registry';
-import { getFormFields, setFormFields } from '@app/composables/form-fields';
 import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import {
-	useVariableGetterWindow,
-	type VariableGetterForm
-} from '@app/composables/useVariableGetterWindow';
+import { useVariableGetterWindow } from '@app/composables/useVariableGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
@@ -68,20 +63,6 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const { t } = useI18n();
 
 const variableGetter = useVariableGetterWindow();
-const form = variableGetter.form;
-
-const setForm = (data: Partial<VariableGetterForm>): void =>
-	setFormFields<VariableGetterForm>(form, data, FIELD_BY_ID);
-
-const getForm = (): VariableGetterForm => getFormFields<VariableGetterForm>(form, FIELD_BY_ID);
-
-const FIELD_BY_ID: Record<string, keyof VariableGetterForm> = {
-	'variableGetter2-type': 'type',
-	'variableGetter2-element': 'element',
-	'variableGetter2-common-key': 'commonKey',
-	'variableGetter2-preset-key': 'presetKey',
-	'variableGetter2-global-key': 'globalKey'
-};
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
@@ -92,7 +73,9 @@ const onConfirm = () => {
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		attachElementApi(el, { setForm, getForm });
+		// 这里原来还挂了 `attachElementApi(el, { setForm, getForm })`，但全仓没有任何
+		// 消费方：变量取值窗口的表单是由 `useVariableGetterWindow` 直接写控件的。
+		// 元素契约收尾要求元素上不挂业务方法，这份死挂载因此直接删除（非"迁移"）。
 		on(el, 'closed', () => variableGetter.onWindow2Closed());
 	}
 });
