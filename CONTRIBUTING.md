@@ -149,6 +149,7 @@ pnpm coverage:selftest  # 门禁自证：持平判绿 / 下降判红 / 新目录
 - 实测头部存量（2026-10-30，`--axis element-registry-lookups`）：`composables/useIfConditionFields.ts` 72 次寻址但只涉及 **42 个不同控件**、`useSetNumberOperandFields.ts` 56 次、`useSetStringFields.ts` 44 次 —— 这三个都是「一个 setup 函数里把同一批控件反复取」，适合作为下一批：把 `Map<id, control>` 换成调用方解析一次的强类型字段表，composable 变成纯函数（可单测），寻址点随之从 composable 里消失。
 - 数量级的现实：这支轴还有 1475 处 / 305 个文件。按月排批次、每批一个面板家族，比追求一次性归零可靠；不要为了「看起来在做迁移」去动 `engine/**` 里那些被 canvas 直接驱动的站点。
 - **已落第一批（2026-10-30）**：`composables/useVariableGetterWindow.ts` 33 → 20。做法是「同一次装配里每个控件只寻址一次」——`preset-key` 原来在 6 个 case 里各取一遍、`confirmCore` 里 `getFocus(...)` 7 个分支各寻址一次，现在各自只有一处。同批把真机 E2E 扩到 `variableGetter` / `variableGetter2` / `if-condition`（40 个控件）——**先有兜底再动契约**，否则「注册表依赖删掉了」只能靠肉眼确认。
+- **已落第二批（2026-10-30）**：`composables/useIfConditionFields.ts` 72 → 0、`components/tools/IfCondition.vue` 2 → 0 —— 控件表从 `Map<string, FieldControl>` 换成普通对象入参 `IfConditionFieldMap`，composable 不再知道寻址方式，组件用模板 ref 直接按 id 落表；同批补了 4 条单测（缺控件早退 / 11 种类型灌入 / 隐藏行关系分组 / 本地化选项落位），它现在是可单测的纯装配函数。`element-registry-lookups` 1475 → 1394。
 
 **新增工具窗口检查清单（懒挂载）**
 

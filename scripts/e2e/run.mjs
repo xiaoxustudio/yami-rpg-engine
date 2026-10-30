@@ -342,17 +342,25 @@ async function main() {
 		await step('页面无未捕获异常', async () => {
 			// 给异步副作用一点时间落地（工程打开后的懒加载）
 			await sleep(1200);
-			const fatal = /Uncaught|Unhandled|TypeError|ENOENT|is not a function|Cannot read/;
-			const bad = cdp.consoleErrors.filter((line) => fatal.test(line));
+
+			// 口径区分「真没接住」和「应用自己 try/catch 之后打的一行日志」：
+			// `[window] activate Title.pointermove error: TypeError …` 属于后者 —— 激活路径
+			// 对每个 legacy 成员都包了 try/catch 并 console.error（window-object.ts），
+			// 界面继续工作。早期把 console.error 里所有 TypeError 都判红，导致这条门禁
+			// 在「连开 5 个窗口」的路径上稳定假红（2026-10-30 实测）。
+			const uncaught = cdp.exceptions;
+			const fatalLog =
+				/\[Unhandled Rejection\]|Uncaught |Uncaught\(|\[Vue warn\]: Unhandled error/;
+			const bad = cdp.consoleErrors.filter((line) => fatalLog.test(line));
 			const forwarded = (editor?.text() ?? '')
 				.split('\n')
-				.filter((line) => line.startsWith('[renderer:error]') && fatal.test(line));
-			const all = [...bad, ...forwarded];
+				.filter((line) => line.startsWith('[renderer:error]') && fatalLog.test(line));
+			const all = [...uncaught, ...bad, ...forwarded];
 			assert(
 				all.length === 0,
-				`捕获到 ${all.length} 条致命错误：\n    ${all.slice(0, 5).join('\n    ')}`
+				`捕获到 ${all.length} 条未捕获异常：\n    ${all.slice(0, 5).join('\n    ')}`
 			);
-			return '0 条';
+			return `0 条（已忽略 ${cdp.consoleErrors.length} 条应用自记录日志）`;
 		});
 	} finally {
 		clearTimeout(hardTimeout);

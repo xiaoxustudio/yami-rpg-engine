@@ -11,12 +11,19 @@ export interface FieldControl {
 }
 
 /**
+ * 控件表：由组件在 `onMounted` 时按模板 ref 一次性填好（控件 id → 控件实例）。
+ * 只读、不查 —— 这里刻意不是 `Map`：composable 不该知道注册表/容器的寻址方式，
+ * 传进来的是一个已经解析好的普通对象，于是它成了可单测的纯装配函数。
+ */
+export type IfConditionFieldMap = Record<string, FieldControl | null | undefined>;
+
+/**
  * if-condition 窗口的字段选项 / 联动配置（原 `IfCondition.vue` 的 `onMounted` 大块）。
- * 由组件在 `onMounted` 内以**共享的 `fieldEls`** 调用；`useLocalizedOptions` 走全局 Composer，
+ * 由组件在 `onMounted` 内以**共享的控件表**调用；`useLocalizedOptions` 走全局 Composer，
  * 在此上下文中可安全调用。缺 `if-condition-type` 控件时整体跳过（与原逻辑一致）。
  */
-export function setupIfConditionFields(fieldEls: Map<string, FieldControl | null>): void {
-	const typeEl = fieldEls.get('if-condition-type');
+export function setupIfConditionFields(fields: IfConditionFieldMap): void {
+	const typeEl = fields['if-condition-type'];
 	if (!typeEl) return;
 	typeEl.loadItems?.([
 		{ name: 'Boolean', value: 'boolean' },
@@ -36,102 +43,99 @@ export function setupIfConditionFields(fieldEls: Map<string, FieldControl | null
 		{
 			case: 'boolean',
 			targets: [
-				fieldEls.get('if-condition-common-variable')?.root,
-				fieldEls.get('if-condition-boolean-operation')?.root,
-				fieldEls.get('if-condition-boolean-operand-type')?.root
+				fields['if-condition-common-variable']?.root,
+				fields['if-condition-boolean-operation']?.root,
+				fields['if-condition-boolean-operand-type']?.root
 			]
 		},
 		{
 			case: 'number',
 			targets: [
-				fieldEls.get('if-condition-common-variable')?.root,
-				fieldEls.get('if-condition-number-operation')?.root,
-				fieldEls.get('if-condition-number-operand-type')?.root
+				fields['if-condition-common-variable']?.root,
+				fields['if-condition-number-operation']?.root,
+				fields['if-condition-number-operand-type']?.root
 			]
 		},
 		{
 			case: 'string',
 			targets: [
-				fieldEls.get('if-condition-common-variable')?.root,
-				fieldEls.get('if-condition-string-operation')?.root,
-				fieldEls.get('if-condition-string-operand-type')?.root
+				fields['if-condition-common-variable']?.root,
+				fields['if-condition-string-operation']?.root,
+				fields['if-condition-string-operand-type']?.root
 			]
 		},
 		{
 			case: 'object',
 			targets: [
-				fieldEls.get('if-condition-common-variable')?.root,
-				fieldEls.get('if-condition-object-operation')?.root
+				fields['if-condition-common-variable']?.root,
+				fields['if-condition-object-operation']?.root
 			]
 		},
 		{
 			case: 'actor',
 			targets: [
-				fieldEls.get('if-condition-common-actor')?.root,
-				fieldEls.get('if-condition-actor-operation')?.root
+				fields['if-condition-common-actor']?.root,
+				fields['if-condition-actor-operation']?.root
 			]
 		},
 		{
 			case: 'element',
 			targets: [
-				fieldEls.get('if-condition-common-element')?.root,
-				fieldEls.get('if-condition-element-operation')?.root
+				fields['if-condition-common-element']?.root,
+				fields['if-condition-element-operation']?.root
 			]
 		},
 		{
 			case: 'keyboard',
 			targets: [
-				fieldEls.get('if-condition-keyboard-keycode')?.root,
-				fieldEls.get('if-condition-keyboard-state')?.root
+				fields['if-condition-keyboard-keycode']?.root,
+				fields['if-condition-keyboard-state']?.root
 			]
 		},
 		{
 			case: 'gamepad',
 			targets: [
-				fieldEls.get('if-condition-gamepad-button')?.root,
-				fieldEls.get('if-condition-gamepad-state')?.root
+				fields['if-condition-gamepad-button']?.root,
+				fields['if-condition-gamepad-state']?.root
 			]
 		},
 		{
 			case: 'mouse',
 			targets: [
-				fieldEls.get('if-condition-mouse-button')?.root,
-				fieldEls.get('if-condition-mouse-state')?.root
+				fields['if-condition-mouse-button']?.root,
+				fields['if-condition-mouse-state']?.root
 			]
 		},
 		{
 			case: 'list',
 			targets: [
-				fieldEls.get('if-condition-common-variable')?.root,
-				fieldEls.get('if-condition-list-operation')?.root,
-				fieldEls.get('if-condition-operand-variable')?.root
+				fields['if-condition-common-variable']?.root,
+				fields['if-condition-list-operation']?.root,
+				fields['if-condition-operand-variable']?.root
 			]
 		},
-		{ case: 'other', targets: [fieldEls.get('if-condition-other-key')?.root] }
+		{ case: 'other', targets: [fields['if-condition-other-key']?.root] }
 	]);
 
 	useLocalizedOptions('if-condition-boolean-operation', ['equal', 'unequal'], (items) =>
-		fieldEls.get('if-condition-boolean-operation')?.loadItems?.(items)
+		fields['if-condition-boolean-operation']?.loadItems?.(items)
 	);
 
 	useLocalizedOptions(
 		'if-condition-boolean-operand-type',
 		['none', 'constant', 'variable'],
-		(items) => fieldEls.get('if-condition-boolean-operand-type')?.loadItems?.(items)
+		(items) => fields['if-condition-boolean-operand-type']?.loadItems?.(items)
 	);
 
-	fieldEls
-		.get('if-condition-boolean-operand-type')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'constant',
-				targets: [fieldEls.get('if-condition-boolean-constant-value')?.root]
-			},
-			{ case: 'variable', targets: [fieldEls.get('if-condition-operand-variable')?.root] }
-		]);
+	fields['if-condition-boolean-operand-type']?.enableHiddenMode?.()?.relate?.([
+		{
+			case: 'constant',
+			targets: [fields['if-condition-boolean-constant-value']?.root]
+		},
+		{ case: 'variable', targets: [fields['if-condition-operand-variable']?.root] }
+	]);
 
-	fieldEls.get('if-condition-boolean-constant-value')?.loadItems?.([
+	fields['if-condition-boolean-constant-value']?.loadItems?.([
 		{ name: 'False', value: false },
 		{ name: 'True', value: true }
 	]);
@@ -139,54 +143,48 @@ export function setupIfConditionFields(fieldEls: Map<string, FieldControl | null
 	useLocalizedOptions(
 		'if-condition-number-operation',
 		['equal', 'unequal', 'greater-or-equal', 'less-or-equal', 'greater', 'less'],
-		(items) => fieldEls.get('if-condition-number-operation')?.loadItems?.(items)
+		(items) => fields['if-condition-number-operation']?.loadItems?.(items)
 	);
 
 	useLocalizedOptions(
 		'if-condition-number-operand-type',
 		['none', 'constant', 'variable'],
-		(items) => fieldEls.get('if-condition-number-operand-type')?.loadItems?.(items)
+		(items) => fields['if-condition-number-operand-type']?.loadItems?.(items)
 	);
 
-	fieldEls
-		.get('if-condition-number-operand-type')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'constant',
-				targets: [fieldEls.get('if-condition-number-constant-value')?.root]
-			},
-			{ case: 'variable', targets: [fieldEls.get('if-condition-operand-variable')?.root] }
-		]);
+	fields['if-condition-number-operand-type']?.enableHiddenMode?.()?.relate?.([
+		{
+			case: 'constant',
+			targets: [fields['if-condition-number-constant-value']?.root]
+		},
+		{ case: 'variable', targets: [fields['if-condition-operand-variable']?.root] }
+	]);
 
 	useLocalizedOptions(
 		'if-condition-string-operation',
 		['equal', 'unequal', 'include', 'exclude'],
-		(items) => fieldEls.get('if-condition-string-operation')?.loadItems?.(items)
+		(items) => fields['if-condition-string-operation']?.loadItems?.(items)
 	);
 
 	useLocalizedOptions(
 		'if-condition-string-operand-type',
 		['none', 'constant', 'variable', 'enum'],
-		(items) => fieldEls.get('if-condition-string-operand-type')?.loadItems?.(items)
+		(items) => fields['if-condition-string-operand-type']?.loadItems?.(items)
 	);
 
-	fieldEls
-		.get('if-condition-string-operand-type')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'constant',
-				targets: [fieldEls.get('if-condition-string-constant-value')?.root]
-			},
-			{
-				case: 'variable',
-				targets: [fieldEls.get('if-condition-operand-variable')?.root]
-			},
-			{ case: 'enum', targets: [fieldEls.get('if-condition-string-enum-stringId')?.root] }
-		]);
+	fields['if-condition-string-operand-type']?.enableHiddenMode?.()?.relate?.([
+		{
+			case: 'constant',
+			targets: [fields['if-condition-string-constant-value']?.root]
+		},
+		{
+			case: 'variable',
+			targets: [fields['if-condition-operand-variable']?.root]
+		},
+		{ case: 'enum', targets: [fields['if-condition-string-enum-stringId']?.root] }
+	]);
 
-	fieldEls.get('if-condition-object-operation')?.loadItems?.([
+	fields['if-condition-object-operation']?.loadItems?.([
 		{ name: '==', value: 'equal' },
 		{ name: '!=', value: 'unequal' },
 		{ name: 'Is Actor', value: 'is-actor' },
@@ -199,15 +197,12 @@ export function setupIfConditionFields(fieldEls: Map<string, FieldControl | null
 		{ name: 'Is Element', value: 'is-element' }
 	]);
 
-	fieldEls
-		.get('if-condition-object-operation')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: ['equal', 'unequal'],
-				targets: [fieldEls.get('if-condition-object-operand-type')?.root]
-			}
-		]);
+	fields['if-condition-object-operation']?.enableHiddenMode?.()?.relate?.([
+		{
+			case: ['equal', 'unequal'],
+			targets: [fields['if-condition-object-operand-type']?.root]
+		}
+	]);
 
 	useLocalizedOptions(
 		'if-condition-object-operand-type',
@@ -223,26 +218,23 @@ export function setupIfConditionFields(fieldEls: Map<string, FieldControl | null
 			'element',
 			'variable'
 		],
-		(items) => fieldEls.get('if-condition-object-operand-type')?.loadItems?.(items)
+		(items) => fields['if-condition-object-operand-type']?.loadItems?.(items)
 	);
 
-	fieldEls
-		.get('if-condition-object-operand-type')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{ case: 'actor', targets: [fieldEls.get('if-condition-common-actor')?.root] },
-			{ case: 'skill', targets: [fieldEls.get('if-condition-common-skill')?.root] },
-			{ case: 'state', targets: [fieldEls.get('if-condition-common-state')?.root] },
-			{
-				case: 'equipment',
-				targets: [fieldEls.get('if-condition-common-equipment')?.root]
-			},
-			{ case: 'item', targets: [fieldEls.get('if-condition-common-item')?.root] },
-			{ case: 'trigger', targets: [fieldEls.get('if-condition-common-trigger')?.root] },
-			{ case: 'light', targets: [fieldEls.get('if-condition-common-light')?.root] },
-			{ case: 'element', targets: [fieldEls.get('if-condition-common-element')?.root] },
-			{ case: 'variable', targets: [fieldEls.get('if-condition-operand-variable')?.root] }
-		]);
+	fields['if-condition-object-operand-type']?.enableHiddenMode?.()?.relate?.([
+		{ case: 'actor', targets: [fields['if-condition-common-actor']?.root] },
+		{ case: 'skill', targets: [fields['if-condition-common-skill']?.root] },
+		{ case: 'state', targets: [fields['if-condition-common-state']?.root] },
+		{
+			case: 'equipment',
+			targets: [fields['if-condition-common-equipment']?.root]
+		},
+		{ case: 'item', targets: [fields['if-condition-common-item']?.root] },
+		{ case: 'trigger', targets: [fields['if-condition-common-trigger']?.root] },
+		{ case: 'light', targets: [fields['if-condition-common-light']?.root] },
+		{ case: 'element', targets: [fields['if-condition-common-element']?.root] },
+		{ case: 'variable', targets: [fields['if-condition-operand-variable']?.root] }
+	]);
 
 	useLocalizedOptions(
 		'if-condition-actor-operation',
@@ -271,46 +263,43 @@ export function setupIfConditionFields(fieldEls: Map<string, FieldControl | null
 			'is-team-friend',
 			'is-team-enemy'
 		],
-		(items) => fieldEls.get('if-condition-actor-operation')?.loadItems?.(items)
+		(items) => fields['if-condition-actor-operation']?.loadItems?.(items)
 	);
 
-	fieldEls
-		.get('if-condition-actor-operation')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{ case: 'has-skill', targets: [fieldEls.get('if-condition-actor-skillId')?.root] },
-			{ case: 'has-state', targets: [fieldEls.get('if-condition-actor-stateId')?.root] },
-			{
-				case: 'has-items',
-				targets: [
-					fieldEls.get('if-condition-actor-itemId')?.root,
-					fieldEls.get('if-condition-actor-quantity')?.root
-				]
-			},
-			{
-				case: 'has-equipments',
-				targets: [
-					fieldEls.get('if-condition-actor-equipmentId')?.root,
-					fieldEls.get('if-condition-actor-quantity')?.root
-				]
-			},
-			{
-				case: ['has-skill-shortcut', 'has-item-shortcut'],
-				targets: [fieldEls.get('if-condition-actor-shortcutKey')?.root]
-			},
-			{
-				case: 'equipped',
-				targets: [fieldEls.get('if-condition-actor-equipmentId')?.root]
-			},
-			{
-				case: ['is-teammate', 'is-friend', 'is-enemy'],
-				targets: [fieldEls.get('if-condition-actor-target')?.root]
-			},
-			{
-				case: ['is-team-member', 'is-team-friend', 'is-team-enemy'],
-				targets: [fieldEls.get('if-condition-actor-teamId')?.root]
-			}
-		]);
+	fields['if-condition-actor-operation']?.enableHiddenMode?.()?.relate?.([
+		{ case: 'has-skill', targets: [fields['if-condition-actor-skillId']?.root] },
+		{ case: 'has-state', targets: [fields['if-condition-actor-stateId']?.root] },
+		{
+			case: 'has-items',
+			targets: [
+				fields['if-condition-actor-itemId']?.root,
+				fields['if-condition-actor-quantity']?.root
+			]
+		},
+		{
+			case: 'has-equipments',
+			targets: [
+				fields['if-condition-actor-equipmentId']?.root,
+				fields['if-condition-actor-quantity']?.root
+			]
+		},
+		{
+			case: ['has-skill-shortcut', 'has-item-shortcut'],
+			targets: [fields['if-condition-actor-shortcutKey']?.root]
+		},
+		{
+			case: 'equipped',
+			targets: [fields['if-condition-actor-equipmentId']?.root]
+		},
+		{
+			case: ['is-teammate', 'is-friend', 'is-enemy'],
+			targets: [fields['if-condition-actor-target']?.root]
+		},
+		{
+			case: ['is-team-member', 'is-team-friend', 'is-team-enemy'],
+			targets: [fields['if-condition-actor-teamId']?.root]
+		}
+	]);
 
 	useLocalizedOptions(
 		'if-condition-element-operation',
@@ -325,33 +314,33 @@ export function setupIfConditionFields(fieldEls: Map<string, FieldControl | null
 			'dialogbox-is-waiting',
 			'dialogbox-is-complete'
 		],
-		(items) => fieldEls.get('if-condition-element-operation')?.loadItems?.(items)
+		(items) => fields['if-condition-element-operation']?.loadItems?.(items)
 	);
 
 	useLocalizedOptions(
 		'if-condition-keyboard-state',
 		['just-pressed', 'just-released', 'pressed', 'released'],
-		(items) => fieldEls.get('if-condition-keyboard-state')?.loadItems?.(items)
+		(items) => fields['if-condition-keyboard-state']?.loadItems?.(items)
 	);
 
 	useLocalizedOptions(
 		'if-condition-gamepad-state',
 		['just-pressed', 'just-released', 'pressed', 'released'],
-		(items) => fieldEls.get('if-condition-gamepad-state')?.loadItems?.(items)
+		(items) => fields['if-condition-gamepad-state']?.loadItems?.(items)
 	);
 
 	useLocalizedOptions('if-condition-mouse-button', [0, 1, 2, 3, 4], (items) =>
-		fieldEls.get('if-condition-mouse-button')?.loadItems?.(items)
+		fields['if-condition-mouse-button']?.loadItems?.(items)
 	);
 
 	useLocalizedOptions(
 		'if-condition-mouse-state',
 		['just-pressed', 'just-released', 'pressed', 'released'],
-		(items) => fieldEls.get('if-condition-mouse-state')?.loadItems?.(items)
+		(items) => fields['if-condition-mouse-state']?.loadItems?.(items)
 	);
 
 	useLocalizedOptions('if-condition-list-operation', ['include', 'exclude'], (items) =>
-		fieldEls.get('if-condition-list-operation')?.loadItems?.(items)
+		fields['if-condition-list-operation']?.loadItems?.(items)
 	);
 
 	useLocalizedOptions(
@@ -369,10 +358,10 @@ export function setupIfConditionFields(fieldEls: Map<string, FieldControl | null
 			'platform-macos',
 			'platform-mobile'
 		],
-		(items) => fieldEls.get('if-condition-other-key')?.loadItems?.(items)
+		(items) => fields['if-condition-other-key']?.loadItems?.(items)
 	);
 
-	(fieldEls.get('if-condition') as { root?: YamiElement } | null)?.root?.on?.('open', () => {
-		fieldEls.get('if-condition-actor-teamId')?.loadItems?.(Data.createTeamItems!());
+	(fields['if-condition'] as { root?: YamiElement } | null)?.root?.on?.('open', () => {
+		fields['if-condition-actor-teamId']?.loadItems?.(Data.createTeamItems!());
 	});
 }

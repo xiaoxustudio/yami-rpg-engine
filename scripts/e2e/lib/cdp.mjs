@@ -58,7 +58,10 @@ export async function connect(port, { timeoutMs = 60000 } = {}) {
 
 	let sequence = 0;
 	const pending = new Map();
+	/** `console.error(...)` 写的日志：可能是应用**有意**记录的（try/catch 之后打一行）。 */
 	const consoleErrors = [];
+	/** 真正没被接住的异常（`Runtime.exceptionThrown`）—— 这类才是崩溃信号。 */
+	const exceptions = [];
 
 	socket.addEventListener('message', (event) => {
 		let message;
@@ -76,9 +79,7 @@ export async function connect(port, { timeoutMs = 60000 } = {}) {
 		}
 		if (message.method === 'Runtime.exceptionThrown') {
 			const details = message.params.exceptionDetails;
-			consoleErrors.push(
-				details.exception?.description ?? details.text ?? 'unknown exception'
-			);
+			exceptions.push(details.exception?.description ?? details.text ?? 'unknown exception');
 		}
 		const waiter = message.id ? pending.get(message.id) : undefined;
 		if (!waiter) return;
@@ -137,7 +138,7 @@ export async function connect(port, { timeoutMs = 60000 } = {}) {
 	};
 
 	await send('Runtime.enable');
-	return { send, evaluate, waitFor, close, consoleErrors, page };
+	return { send, evaluate, waitFor, close, consoleErrors, exceptions, page };
 }
 
 export { sleep };

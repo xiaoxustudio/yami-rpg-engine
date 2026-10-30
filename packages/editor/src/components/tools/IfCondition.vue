@@ -17,7 +17,11 @@ import { composableEls } from '@app/composables/element-registry';
 import { registerElement } from '@app/utils/element-registry';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 import type { IfConditionForm } from '@app/composables/useIfConditionSchema';
-import { setupIfConditionFields, type FieldControl } from '@app/composables/useIfConditionFields';
+import {
+	setupIfConditionFields,
+	type FieldControl,
+	type IfConditionFieldMap
+} from '@app/composables/useIfConditionFields';
 
 const IfCondition = useIfConditionSchema();
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -75,7 +79,7 @@ const setForm = (data: Partial<IfConditionForm>): void => {
 	Object.assign(form, data);
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
 		if (!(field in data)) continue;
-		const control = fieldEls.get(id);
+		const control = fieldEls[id];
 		if (control && typeof control.write === 'function') {
 			control.write(data[field] as never);
 		}
@@ -85,7 +89,7 @@ const setForm = (data: Partial<IfConditionForm>): void => {
 const getForm = (): IfConditionForm => {
 	const data = { ...form } as IfConditionForm;
 	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = fieldEls.get(id);
+		const control = fieldEls[id];
 		if (control && typeof control.read === 'function') {
 			data[field] = control.read() as never;
 		}
@@ -137,7 +141,7 @@ const FIELD_BY_ID: Record<string, keyof IfConditionForm> = {
 	'if-condition-other-key': 'otherKey'
 };
 
-const fieldEls = new Map<string, FieldControl | null>();
+const fieldEls: IfConditionFieldMap = {};
 
 /**
  * 控件实例 → 元素：普通元素直接用；组件实例优先 `$el`（**ref 回调时即已就绪**），
@@ -152,7 +156,7 @@ const elementOf = (control: FieldControl | null): HTMLElement | null => {
 
 const fieldRef = (id: string) => (el: unknown) => {
 	const control = el as FieldControl | null;
-	fieldEls.set(id, control);
+	fieldEls[id] = control;
 	registerElement(composableEls, id, elementOf(control));
 };
 
