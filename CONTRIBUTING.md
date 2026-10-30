@@ -101,7 +101,9 @@ pnpm e2e:fast       # 复用现有 dist/，本地迭代用
 pnpm e2e:selftest   # 自测：故意给一个打不开的工程，断言这条门禁会红
 ```
 
-它跑的是「装得起来≠跑得起来」那一段：主进程起来 → 首页渲染 → 打开工程切到 directory 工作区 → 两个**懒挂载**工具窗口首次打开且控件已接线 → 启动时间线有界 → 页面无未捕获异常。失败现场（截图 / 页面 HTML / 主进程日志）落在 `scripts/e2e/.artifacts/`（已 gitignore），CI 失败时作为 artifact 上传。
+它跑的是「装得起来≠跑得起来」那一段：主进程起来 → 首页渲染 → 打开工程切到 directory 工作区 → 编辑器域就绪 → 两个**懒挂载**工具窗口首次打开且控件已接线 → 运行时无缺失文案 key → 启动时间线有界 → 页面无未捕获异常。失败现场（截图 / 页面 HTML / 主进程日志）落在 `scripts/e2e/.artifacts/`（已 gitignore），CI 失败时作为 artifact 上传。
+
+**启动预算**按比例而不按绝对值：`scripts/e2e/boot-baseline.json` 记录一台参照机的 `__BOOT_MARKS__`，默认只拦 **×5** 以上的退化（同一份代码在不同机器差 3-5 倍是常态，卡绝对值必然假红），能抓的是同步阻塞、重复初始化、懒加载失效这类数量级问题。换机型后用 `pnpm e2e --write-boot-baseline` 重写基线并提交。
 
 约定：
 
@@ -139,6 +141,13 @@ pnpm coverage:selftest  # 门禁自证：持平判绿 / 下降判红 / 新目录
 - 每批只挑**同构、能靠 typecheck / 单测自证**的站点。例：同一个 store 里反复查同一批控件 → 首次打开时一次性绑定成字段（`stores/search-string.ts` 就是这种批次）；
 - 批次改完跑 `pnpm migration:check` 看目标轴是否下降，再用 `pnpm migration:baseline` 写回新数字。基线**只许降**：别为了让 check 变绿把不相关的轴一起抬上去；
 - 提交信息里写「轴名：旧值 → 新值」，下一批用 `node scripts/migration-ledger.mjs --axis <轴>` 的明细挑下一个大头。
+
+**别把「计数下降」当成「迁移完成」** —— 这条轴最容易自欺：
+
+- `element-registry-lookups` 数的是 `*Els.get(...)` / `registryElement(s)` 的**寻址点**。给 `fieldEls` 包一层 memoize、或把 `fieldEls.get(id)` 换成 `el(id)`，计数会掉，耦合一点没少 —— 那不是迁移，是改数字。
+- 真正的终态是「元素契约消失」：控件由 `props` / `emits` + 模板 ref 提供，组件不再从全局注册表按 id 取裸元素。所以一批的验收标准应该是**该文件的注册表依赖被删掉**（`yami-element-refs`、`element-api-attach` 同批下降），而不是只有 `element-registry-lookups` 掉了几十。
+- 实测头部存量（2026-10-30，`--axis element-registry-lookups`）：`composables/useIfConditionFields.ts` 72 次寻址但只涉及 **42 个不同控件**、`useSetNumberOperandFields.ts` 56 次、`useSetStringFields.ts` 44 次 —— 这三个都是「一个 setup 函数里把同一批控件反复取」，适合作为下一批：把 `Map<id, control>` 换成调用方解析一次的强类型字段表，composable 变成纯函数（可单测），寻址点随之从 composable 里消失。
+- 数量级的现实：这支轴还有 1488 处 / 305 个文件。按月排批次、每批一个面板家族，比追求一次性归零可靠；不要为了「看起来在做迁移」去动 `engine/**` 里那些被 canvas 直接驱动的站点。
 
 **新增工具窗口检查清单（懒挂载）**
 

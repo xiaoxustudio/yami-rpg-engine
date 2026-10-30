@@ -119,9 +119,11 @@ devDependencies:
 | 想知道什么                                             | 跑什么                                                          |
 | ------------------------------------------------------ | --------------------------------------------------------------- |
 | 跨轴迁移总账（唯一真源；`--check` 是 CI 棘轮门禁）      | `pnpm migration:ledger` · `pnpm migration:check`                |
+| 覆盖率台账（按目录行覆盖率，只许降）                    | `pnpm coverage` · `pnpm coverage:gate` · `pnpm coverage:check`   |
+| 真机冒烟（起 Electron 跑黄金路径；独立 workflow）       | `pnpm e2e` · `pnpm e2e:fast` · `pnpm e2e:selftest`               |
 | 类型 / 规范 / 格式                                     | `pnpm typecheck` · `pnpm lint` · `pnpm format:check`             |
 | 测试                                                   | `pnpm -F @yami/editor test` · `pnpm -F @yami/ui-kit test`        |
 | 文本污染 / 文档一致性 / 事件面                          | `pnpm text:check` · `pnpm docs:check` · `pnpm events:surface`     |
 | 开发 / 构建                                            | `pnpm dev` · `pnpm build:vite`                                   |
 
-详细的门禁清单与 CI 定义见 `scripts/` 与 `.github/workflows/ci.yml`，协作约定见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+详细的门禁清单与 CI 定义见 `scripts/`、`.github/workflows/ci.yml`（必跑）与 `.github/workflows/{e2e,coverage}.yml`（真机 / 覆盖率，独立演练），协作约定见 [CONTRIBUTING.md](./CONTRIBUTING.md)。

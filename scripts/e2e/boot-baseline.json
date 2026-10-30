@@ -1,0 +1,228 @@
+{
+	"note": "参照机实测值（ms），由 pnpm e2e --write-boot-baseline 生成；换机型请重写",
+	"platform": "win32",
+	"generatedAt": "2026-10-30T10:18:06.553Z",
+	"factor": 5,
+	"marks": [
+		{
+			"name": "html-head",
+			"ms": 323
+		},
+		{
+			"name": "first-frame",
+			"ms": 409
+		},
+		{
+			"name": "config:start",
+			"ms": 637
+		},
+		{
+			"name": "main-body",
+			"ms": 1157
+		},
+		{
+			"name": "critical-ready",
+			"ms": 1265
+		},
+		{
+			"name": "vue-mounted",
+			"ms": 1267
+		},
+		{
+			"name": "editor-init",
+			"ms": 1268
+		},
+		{
+			"name": "config:file-read",
+			"ms": 1334
+		},
+		{
+			"name": "config-loaded",
+			"ms": 1334
+		},
+		{
+			"name": "i18n-ready",
+			"ms": 1496
+		},
+		{
+			"name": "cluster-imported",
+			"ms": 1499
+		},
+		{
+			"name": "cluster-ready",
+			"ms": 1499
+		},
+		{
+			"name": "init:Menubar",
+			"ms": 1500
+		},
+		{
+			"name": "init:Layout",
+			"ms": 1503
+		},
+		{
+			"name": "init:Home",
+			"ms": 1504
+		},
+		{
+			"name": "init:Timer",
+			"ms": 1504
+		},
+		{
+			"name": "init:Window",
+			"ms": 1504
+		},
+		{
+			"name": "init-core",
+			"ms": 1504
+		},
+		{
+			"name": "load-config",
+			"ms": 1506
+		},
+		{
+			"name": "home-visible",
+			"ms": 1546
+		},
+		{
+			"name": "title-ready",
+			"ms": 1672
+		},
+		{
+			"name": "workspace-activated",
+			"ms": 1675
+		},
+		{
+			"name": "inspectors-ready",
+			"ms": 3607
+		},
+		{
+			"name": "init:AudioManager",
+			"ms": 6674
+		},
+		{
+			"name": "tools-ready",
+			"ms": 6678
+		},
+		{
+			"name": "commands-ready",
+			"ms": 6937
+		},
+		{
+			"name": "lazy-ready",
+			"ms": 6937
+		},
+		{
+			"name": "init:EventEditor",
+			"ms": 6939
+		},
+		{
+			"name": "init:Inspector",
+			"ms": 6946
+		},
+		{
+			"name": "init:Command",
+			"ms": 6949
+		},
+		{
+			"name": "init:Project",
+			"ms": 7011
+		},
+		{
+			"name": "init:Easing",
+			"ms": 7023
+		},
+		{
+			"name": "init:Team",
+			"ms": 7024
+		},
+		{
+			"name": "init:PluginManager",
+			"ms": 7024
+		},
+		{
+			"name": "init:CustomCommand",
+			"ms": 7024
+		},
+		{
+			"name": "init:Log",
+			"ms": 7024
+		},
+		{
+			"name": "init:UpdateLog",
+			"ms": 7024
+		},
+		{
+			"name": "init:Reference",
+			"ms": 7024
+		},
+		{
+			"name": "init:Directory",
+			"ms": 7024
+		},
+		{
+			"name": "init:Printer",
+			"ms": 7024
+		},
+		{
+			"name": "init:Color",
+			"ms": 7025
+		},
+		{
+			"name": "init:Attribute",
+			"ms": 7025
+		},
+		{
+			"name": "init:Enum",
+			"ms": 7026
+		},
+		{
+			"name": "init:Localization",
+			"ms": 7026
+		},
+		{
+			"name": "init:ImageClip",
+			"ms": 7026
+		},
+		{
+			"name": "init:Selection",
+			"ms": 7048
+		},
+		{
+			"name": "init:SetQuantity",
+			"ms": 7048
+		},
+		{
+			"name": "init:SetTileTag",
+			"ms": 7048
+		},
+		{
+			"name": "init:PresetObject",
+			"ms": 7048
+		},
+		{
+			"name": "init:PresetElement",
+			"ms": 7048
+		},
+		{
+			"name": "init:ArrayList",
+			"ms": 7048
+		},
+		{
+			"name": "init:AttributeListInterface",
+			"ms": 7054
+		},
+		{
+			"name": "init:ConditionListInterface",
+			"ms": 7054
+		},
+		{
+			"name": "editors-ready",
+			"ms": 7054
+		},
+		{
+			"name": "editor-domains-ready",
+			"ms": 7054
+		}
+	]
+}

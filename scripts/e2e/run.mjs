@@ -51,7 +51,10 @@ const options = {
 	timeoutMs: Number(value('timeout', 300000)),
 	openTimeoutMs: Number(value('open-timeout', 90000)),
 	// 自测：故意造一个打不开的工程，断言本脚本会红。门禁不能自证就是摆设。
-	selftest: flag('selftest')
+	selftest: flag('selftest'),
+	// 启动预算：默认 ×4（只看数量级退化），基线由 --write-boot-baseline 生成。
+	budgetFactor: Number(value('budget-factor', 5)),
+	writeBootBaseline: flag('write-boot-baseline')
 };
 
 const results = [];
@@ -292,7 +295,8 @@ async function main() {
 				homeVisible.ms < BOOT_CEILING_MS,
 				`home-visible 用了 ${homeVisible.ms}ms，超过挂死阈值 ${BOOT_CEILING_MS}ms`
 			);
-			return `home-visible=${homeVisible.ms}ms`;
+			const budget = await compareBootBudget(parsed, homeVisible.ms);
+			return budget ?? `home-visible=${homeVisible.ms}ms`;
 		});
 
 		await step('页面无未捕获异常', async () => {
@@ -353,6 +357,48 @@ async function main() {
 	log(`结果：${ok ? '通过' : '失败'}（${(summary.durationMs / 1000).toFixed(1)}s）`);
 	if (options.keep) log(`临时工作区已保留：${workspace.root}`);
 	process.exit(ok ? 0 : 1);
+}
+
+/**
+ * 启动时间线 vs 基线：只拦「数量级退化」，不拦机器差异。
+ *
+ * 为什么不卡绝对值：同一份代码在不同机器上差 3-5 倍是常态（本机 1.8s、另一台 4.1s）。
+ * 所以默认放行到 ×4，只有出现「同步阻塞、重复初始化、丢懒加载」这类整数量级退化才会红。
+ * 基线本身由 `--write-boot-baseline` 在**参照机**上生成，注释里写明机型；换机型就重写一次。
+ */
+async function compareBootBudget(marks, homeVisibleMs) {
+	const baselinePath = path.join(REPO_ROOT, 'scripts/e2e/boot-baseline.json');
+	if (options.writeBootBaseline) {
+		const payload = {
+			note: '参照机实测值（ms），由 pnpm e2e --write-boot-baseline 生成；换机型请重写',
+			platform: process.platform,
+			generatedAt: new Date().toISOString(),
+			factor: options.budgetFactor,
+			marks
+		};
+		await fs.writeFile(baselinePath, `${JSON.stringify(payload, null, '\t')}\n`);
+		return `启动基线已写入（home-visible=${homeVisibleMs}ms）`;
+	}
+
+	let baseline;
+	try {
+		baseline = JSON.parse(await fs.readFile(baselinePath, 'utf8'));
+	} catch {
+		return `home-visible=${homeVisibleMs}ms（无启动基线，跳过预算比对）`;
+	}
+
+	const reference = baseline.marks?.find((mark) => mark.name === 'home-visible');
+	if (!reference || !reference.ms)
+		return `home-visible=${homeVisibleMs}ms（基线缺 home-visible）`;
+
+	const factor = options.budgetFactor ?? baseline.factor ?? 4;
+	const ratio = homeVisibleMs / reference.ms;
+	assert(
+		ratio <= factor,
+		`home-visible ${homeVisibleMs}ms 是基线 ${reference.ms}ms 的 ${ratio.toFixed(1)} 倍（预算 ×${factor}）——` +
+			'疑似同步阻塞 / 重复初始化 / 懒加载失效'
+	);
+	return `home-visible=${homeVisibleMs}ms（基线 ${reference.ms}ms，×${ratio.toFixed(1)}）`;
 }
 
 /** 失败现场：截图 + 主进程日志尾部，放到 .artifacts 供 CI 上传。 */
