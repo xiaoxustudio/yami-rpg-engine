@@ -1,7 +1,7 @@
 {
 	"version": 1,
 	"tolerancePct": 0.2,
-	"generatedAt": "2026-10-30T12:51:45.894Z",
+	"generatedAt": "2026-10-30T17:02:50.452Z",
 	"areas": {
 		"editor:main": {
 			"lines": 21.95,
@@ -29,8 +29,8 @@
 			"linesTotal": 11873
 		},
 		"editor:src/services": {
-			"lines": 7.55,
-			"linesCovered": 134,
+			"lines": 12.06,
+			"linesCovered": 214,
 			"linesTotal": 1774
 		},
 		"editor:src/stores": {
@@ -39,9 +39,9 @@
 			"linesTotal": 1616
 		},
 		"editor:src/utils": {
-			"lines": 34.19,
-			"linesCovered": 319,
-			"linesTotal": 933
+			"lines": 34.26,
+			"linesCovered": 322,
+			"linesTotal": 940
 		},
 		"ui-kit:src/composables": {
 			"lines": 97.73,
