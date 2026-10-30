@@ -99,6 +99,28 @@ pnpm e2e:selftest   # 自测：故意给一个打不开的工程，断言这条�
 - `scripts/e2e/fixture/` 是**最小可打开工程**（约 300KB，只有 Data/*.json，没有 Assets 实体）。模板数据 schema（`latestProjectVersion`）变更时同步更新它；
 - 截图对比等视觉回归仍按老做法：有网络环境再补成独立 job，不进必跑门禁。
 
+**覆盖率：目录级行覆盖率的「只许降」棘轮**
+
+```shell
+pnpm coverage           # 两个包各跑一次 vitest --coverage（产物 <pkg>/coverage/）
+pnpm coverage:check     # 台账判定（读已有产物，秒级）
+pnpm coverage:baseline  # 把当前数字写回 scripts/coverage-baseline.json（基线只许降）
+pnpm coverage:selftest  # 门禁自证：持平判绿 / 下降判红 / 新目录判红
+```
+
+口径（实现见 `scripts/coverage-ledger.mjs`）：按目录加权**行**覆盖率（不是"文件 pct 求平均"，那样会被大量 0 行小文件稀释）；容差 0.2pp；**新出现的目录必须先入基线**，否则判红 —— 这条挡的是"新建目录天生没测试、混进来把总数稀释掉"。`scripts/coverage-baseline.json` 是唯一真源，改它请单独提交。
+
+⚠️ **它不进 PR 必跑门禁**：v8 插桩把这套 jsdom 组件测试从约 5 分钟拉到约 20 分钟（2026-10-30 实测），PR 门禁扛不住。它跑在独立的 `.github/workflows/coverage.yml`（每天一次 + 手动触发）—— 日线棘轮照样拦得住"悄悄变红"，且不会让每个 PR 多等 20 分钟。改了公共代码（`src/stores`、`src/engine`、`main`）建议本地至少跑一次 `pnpm coverage:gate`。
+
+**已知边界：哪些「看起来像债」其实是有意为之**
+
+改到这里之前先看这一节，别把设计前提当成疏忽"顺手修掉"：
+
+1. **进程模型是刻意放宽的。** `packages/editor/main/window-manager.ts` 用 `nodeIntegration: true` / `contextIsolation: false` / `sandbox: false`。编辑器是本地工程工具、渲染进程不加载远程页面，且 `main.ts` 对 `window.open` / `will-navigate` / 权限请求一律拒绝（`setWindowOpenHandler` / `will-navigate` / `setPermissionRequestHandler` 全为 deny/false）。收紧成 `contextIsolation: true` 意味着把 `window.__nodeRequire` 的使用面整体收敛进 preload 白名单，是一次跨渲染层的迁移，不是顺手改。**只要新增任何"加载远程内容"的能力（远程 URL、iframe、可编辑 HTML 预览），这条前提就失效了，必须重新评估。**
+2. **播放器窗口跑的是用户工程自己的 `index.html`**，工程脚本天然拥有完整 Node 权限。这是"本地工具打开本地工程"的设计前提；如果哪天要跑不受信工程，这里是第一道口子。
+3. **`dom-*` 系列里大部分是"不增"而不是"归零"**（`dom-style-writes` 300、`dom-class-state` 342、`dom-measure-reads` 154…）。canvas / 布局引擎只能测量、只能写样式，把它们清零既不现实也没收益。真正该归零的是台账里 `target=zero` 的那批（`element-registry-lookups`、`yami-element-refs`、`element-api-attach`、`element-custom-events`），见下一节的批次推进。
+4. **自动更新只支持 Windows**：`packages/editor/main/updater.ts` 首行对非 `win32` 直接 return；README 已声明"目前只构建了 Windows 版本"。要支持 macOS，除了去掉这个 guard，还需要签名 + 公证 + 发布渠道策略 —— 那是发布工程，不是代码修补。
+
 **迁移台账的批次推进（注册表寻址等「归零」轴）**
 
 `element-registry-lookups`、`yami-element-refs` 这类轴的终态是 0，但存量分散在数百个文件里，只能按批下降：

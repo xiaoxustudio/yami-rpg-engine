@@ -1,0 +1,57 @@
+{
+	"version": 1,
+	"tolerancePct": 0.2,
+	"generatedAt": "2026-10-30T07:02:45.076Z",
+	"areas": {
+		"editor:main": {
+			"lines": 19.9,
+			"linesCovered": 165,
+			"linesTotal": 829
+		},
+		"editor:main/services": {
+			"lines": 43.1,
+			"linesCovered": 100,
+			"linesTotal": 232
+		},
+		"editor:main/types": {
+			"lines": 100,
+			"linesCovered": 0,
+			"linesTotal": 0
+		},
+		"editor:src/data": {
+			"lines": 21.48,
+			"linesCovered": 278,
+			"linesTotal": 1294
+		},
+		"editor:src/engine": {
+			"lines": 21.51,
+			"linesCovered": 2554,
+			"linesTotal": 11873
+		},
+		"editor:src/services": {
+			"lines": 7.55,
+			"linesCovered": 134,
+			"linesTotal": 1774
+		},
+		"editor:src/stores": {
+			"lines": 35.4,
+			"linesCovered": 572,
+			"linesTotal": 1616
+		},
+		"editor:src/utils": {
+			"lines": 34.19,
+			"linesCovered": 319,
+			"linesTotal": 933
+		},
+		"ui-kit:src/composables": {
+			"lines": 97.73,
+			"linesCovered": 43,
+			"linesTotal": 44
+		},
+		"ui-kit:src/utils": {
+			"lines": 68.96,
+			"linesCovered": 631,
+			"linesTotal": 915
+		}
+	}
+}

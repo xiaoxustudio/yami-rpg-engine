@@ -55,6 +55,7 @@
 		"@types/uglify-js": "^3.17.5",
 		"@vitejs/plugin-legacy": "^8.2.1",
 		"@vitejs/plugin-vue": "^6.0.8",
+		"@vitest/coverage-v8": "4.1.12",
 		"@vue/test-utils": "^2.4.11",
 		"@yami/ui-kit": "workspace:*",
 		"archiver": "^7.0.1",

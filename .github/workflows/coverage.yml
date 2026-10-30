@@ -1,0 +1,62 @@
+# 覆盖率棘轮（每天一次 + 手动）
+#
+# 为什么不进 ci.yml 的 PR 门禁：v8 插桩把这套 jsdom 组件测试从约 5 分钟拉到约 20 分钟，
+# 每个 PR 多等 20 分钟不划算。日线 + 手动足以拦住"悄悄变红"。
+#
+# 判定逻辑在 scripts/coverage-ledger.mjs（与 migration-ledger 同一套「只许降」口径，
+# 并且自带 --selftest）。这里只负责：跑覆盖率 → 比对基线 → 把台账贴进 job summary。
+name: Coverage
+
+on:
+    workflow_dispatch:
+    schedule:
+        # 每天 03:17（UTC+8）—— 避开定时任务整点拥堵
+        - cron: '17 19 * * *'
+
+concurrency:
+    group: coverage-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    COREPACK_ENABLE_STRICT: '0'
+
+jobs:
+    ledger:
+        name: 覆盖率台账
+        runs-on: ubuntu-latest
+        timeout-minutes: 45
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: pnpm
+
+            - run: pnpm install --frozen-lockfile
+
+            - name: 门禁自证（口径先立住）
+              run: pnpm run coverage:selftest
+
+            # editor 测试必须独占跑（与 ui-kit 并发会把 template-localized.spec.ts 逼成超时红），
+            # 所以 `pnpm coverage` 里是顺序执行，不要改成并行。
+            - name: 采集覆盖率并判定
+              run: pnpm run coverage:gate
+
+            - name: 台账摘要
+              if: always()
+              run: node scripts/coverage-ledger.mjs > coverage-table.txt || true
+
+            - name: 上传覆盖率产物
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: coverage-report
+                  path: |
+                      packages/editor/coverage/coverage-summary.json
+                      packages/ui-kit/coverage/coverage-summary.json
+                      coverage-table.txt
+                  if-no-files-found: ignore
+                  retention-days: 14
