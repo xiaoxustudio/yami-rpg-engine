@@ -147,10 +147,26 @@ pnpm coverage:selftest  # 门禁自证：持平判绿 / 下降判红 / 新目录
 - `element-registry-lookups` 数的是 `*Els.get(...)` / `registryElement(s)` 的**寻址点**。给 `fieldEls` 包一层 memoize、或把 `fieldEls.get(id)` 换成 `el(id)`，计数会掉，耦合一点没少 —— 那不是迁移，是改数字。
 - 真正的终态是「元素契约消失」：控件由 `props` / `emits` + 模板 ref 提供，组件不再从全局注册表按 id 取裸元素。所以一批的验收标准应该是**该文件的注册表依赖被删掉**（`yami-element-refs`、`element-api-attach` 同批下降），而不是只有 `element-registry-lookups` 掉了几十。
 - 实测头部存量（2026-10-30，`--axis element-registry-lookups`）：`composables/useIfConditionFields.ts` 72 次寻址但只涉及 **42 个不同控件**、`useSetNumberOperandFields.ts` 56 次、`useSetStringFields.ts` 44 次 —— 这三个都是「一个 setup 函数里把同一批控件反复取」，适合作为下一批：把 `Map<id, control>` 换成调用方解析一次的强类型字段表，composable 变成纯函数（可单测），寻址点随之从 composable 里消失。
-- 数量级的现实：这支轴还有 1475 处 / 305 个文件。按月排批次、每批一个面板家族，比追求一次性归零可靠；不要为了「看起来在做迁移」去动 `engine/**` 里那些被 canvas 直接驱动的站点。
+- 数量级的现实：这支轴还有 1337 处 / 301 个文件。按月排批次、每批一个面板家族，比追求一次性归零可靠；不要为了「看起来在做迁移」去动 `engine/**` 里那些被 canvas 直接驱动的站点。
 - **已落第一批（2026-10-30）**：`composables/useVariableGetterWindow.ts` 33 → 20。做法是「同一次装配里每个控件只寻址一次」——`preset-key` 原来在 6 个 case 里各取一遍、`confirmCore` 里 `getFocus(...)` 7 个分支各寻址一次，现在各自只有一处。同批把真机 E2E 扩到 `variableGetter` / `variableGetter2` / `if-condition`（40 个控件）——**先有兜底再动契约**，否则「注册表依赖删掉了」只能靠肉眼确认。
 - **已落第二批（2026-10-30）**：`composables/useIfConditionFields.ts` 72 → 0、`components/tools/IfCondition.vue` 2 → 0 —— 控件表从 `Map<string, FieldControl>` 换成普通对象入参 `IfConditionFieldMap`，composable 不再知道寻址方式，组件用模板 ref 直接按 id 落表；同批补了 4 条单测（缺控件早退 / 11 种类型灌入 / 隐藏行关系分组 / 本地化选项落位），它现在是可单测的纯装配函数。`element-registry-lookups` 1475 → 1394。
 - **已落第三批（2026-10-30）**：`composables/useSetNumberOperandFields.ts` 51 → 0、`components/tools/SetNumberOperand.vue` 同批改为控件表入参；补 4 条单测（缺控件早退 / 6 种运算符 / 隐藏行关系挂在 operand-type 上 / 根元素挂 open·closed 钩子），真机 E2E 同时把 `setNumber-operand`（42 控件）纳入。`element-registry-lookups` 1394 → 1337。
+
+**为什么「元素 API 挂载」（`attachElementApi`）还没动 —— 一条必须先讲清的耦合**
+
+`attachElementApi(el, { setForm, getForm })`（`IfCondition.vue` / `SetNumberOperand.vue` 等）**不是死代码**：对应的 schema（`useIfConditionSchema.ts`、`useNumberOperandSchema.ts`）就是通过 `registryElement(composableEls, '<id>')?.setForm` 把值灌进窗口的，删了窗口就打不开表单。
+
+更要紧的是：**真机 E2E 的契约往返断言也走这条桥**（`el.setForm(...)` → `el.getForm()`）。也就是说，它是当前唯一的「不靠点界面就能驱动窗口表单」的自动化入口。
+
+所以这一层的收尾不是「把 attach 删掉」，而是一次**配套替换**，缺一不可：
+
+1. 用模块级强类型桥（`provideXxxBridge(api)` / `getXxxBridge()`）取代 DOM 属性挂载；
+2. 把 schema 里的 `registryElement(...)?.setForm` 改为读该模块；
+3. 给 E2E 一条等价驱动通道（例如 debug 模式下由桥模块暴露 `window.__YAMI_BRIDGES__`），否则往返断言只能退化回「控件存在」。
+
+只做 1、2 会让上门禁失去表单级验证，只做 3 等于给测试开后门。这条人工依赖已记在这里，别单独拆任何一半。
+
+> 顺带一条实测（2026-10-30 用一次性脚本扫了 75 个 `attachElementApi` 站点）：其中 **45 个站点的成员在「其它文件」里找不到 `.member(` 调用**，看着像死代码 —— 但抽查发现它们正是 `sync` 这类**回归测试在本文件内直接驱动**的桥（`components/__tests__/animation-frame-page-bridge.spec.ts` 里的 `el.sync?.()`）。结论：静态扫不到消费方 ≠ 可删；动这一层前先跑对应窗口的 spec，并确认 E2E 往返断言是否依赖它。
 
 **新增工具窗口检查清单（懒挂载）**
 
