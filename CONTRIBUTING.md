@@ -101,7 +101,7 @@ pnpm e2e:fast       # 复用现有 dist/，本地迭代用
 pnpm e2e:selftest   # 自测：故意给一个打不开的工程，断言这条门禁会红
 ```
 
-它跑的是「装得起来≠跑得起来」那一段：主进程起来 → 首页渲染 → 打开工程切到 directory 工作区 → 编辑器域就绪 → 五个**懒挂载**工具窗口首次打开且控件已接线（含元素契约密集的 `variableGetter` / `if-condition`） → 运行时无缺失文案 key → 启动时间线有界 → 页面无未捕获异常。失败现场（截图 / 页面 HTML / 主进程日志）落在 `scripts/e2e/.artifacts/`（已 gitignore），CI 失败时作为 artifact 上传。
+它跑的是「装得起来≠跑得起来」那一段：主进程起来 → 首页渲染 → 打开工程切到 directory 工作区 → 编辑器域就绪 → 五个**懒挂载**工具窗口首次打开且控件已接线（含元素契约密集的 `variableGetter` / `if-condition`，并对 if-condition 走一遍 `setForm → getForm` 往返） → 运行时无缺失文案 key → 启动时间线有界 → 页面无未捕获异常。失败现场（截图 / 页面 HTML / 主进程日志）落在 `scripts/e2e/.artifacts/`（已 gitignore），CI 失败时作为 artifact 上传。
 
 **启动预算**按比例而不按绝对值：`scripts/e2e/boot-baseline.json` 记录一台参照机的 `__BOOT_MARKS__`，默认只拦 **×5** 以上的退化（同一份代码在不同机器差 3-5 倍是常态，卡绝对值必然假红），能抓的是同步阻塞、重复初始化、懒加载失效这类数量级问题。换机型后用 `pnpm e2e --write-boot-baseline` 重写基线并提交。
 

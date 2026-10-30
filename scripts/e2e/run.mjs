@@ -282,6 +282,33 @@ async function main() {
 			return opened.join(' + ');
 		});
 
+		/**
+		 * 元素契约窗口的「读回」断言：只断言控件存在还不够 —— 那批 setup 函数真正的价值在
+		 * `enableHiddenMode().relate(...)` / `loadItems` / 控件 write→form 的接线。
+		 * 走一遍 `setForm → getForm` 往返，才算证明接线还在（元素契约分批时这条最先断）。
+		 */
+		await step('元素契约窗口往返（if-condition setForm → getForm）', async () => {
+			await cdp.evaluate(`window.Window.open('if-condition'); true`);
+			const ready = await cdp.waitFor(
+				`(() => { const el = document.getElementById('if-condition'); return !!(el && typeof el.setForm === 'function' && typeof el.getForm === 'function'); })()`,
+				{ timeoutMs: 20000 }
+			);
+			assert(ready, 'if-condition 窗口没有接上 setForm / getForm 元素 API');
+
+			const result = await cdp.evaluate(`(() => {
+				const el = document.getElementById('if-condition');
+				el.setForm({ type: 'actor', commonActor: { type: 'trigger' }, actorOperation: 'present-active' });
+				const form = el.getForm();
+				return { type: form?.type, actorOperation: form?.actorOperation };
+			})()`);
+			assert(
+				result?.type === 'actor' && result?.actorOperation === 'present-active',
+				`setForm → getForm 往返值不对：${JSON.stringify(result)}`
+			);
+			await cdp.evaluate(`window.Window.close('if-condition'); true`);
+			return 'type=actor / actorOperation=present-active';
+		});
+
 		await step('运行期无缺失文案 key', async () => {
 			// 动态拼接的 key（`t('components.' + x)`）静态门禁看不见，只能靠运行期观测：
 			// 见 packages/editor/src/i18n/missing-keys.ts（只记 components./properties.）。
