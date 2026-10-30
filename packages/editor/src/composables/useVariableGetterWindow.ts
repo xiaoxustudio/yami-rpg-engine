@@ -217,64 +217,58 @@ const initializeWindow = (prefix: string): void => {
 	if (!typeEl || initializedTypeEls.has(typeEl)) return;
 	initializedTypeEls.add(typeEl);
 	if (prefix === 'variableGetter2') {
+		// 同一次装配里每个控件只寻址一次：`preset-key` 原来在 4 个 case 里各取一遍。
+		const commonKeyEl = composableEls.get('variableGetter2-common-key');
+		const globalKeyEl = composableEls.get('variableGetter2-global-key');
+		const elementEl = composableEls.get('variableGetter2-element');
+		const presetKeyEl = composableEls.get('variableGetter2-preset-key');
 		typeEl.enableHiddenMode().relate([
-			{ case: 'local', targets: [composableEls.get('variableGetter2-common-key')] },
-			{ case: 'global', targets: [composableEls.get('variableGetter2-global-key')] },
+			{ case: 'local', targets: [commonKeyEl] },
+			{ case: 'global', targets: [globalKeyEl] },
 			{
 				case: 'element',
-				targets: [
-					composableEls.get('variableGetter2-element'),
-					composableEls.get('variableGetter2-preset-key')
-				]
+				targets: [elementEl, presetKeyEl]
 			}
 		]);
 		return;
 	}
 
+	const commonKeyEl = composableEls.get('variableGetter-common-key');
+	const globalKeyEl = composableEls.get('variableGetter-global-key');
+	const presetKeyEl = composableEls.get('variableGetter-preset-key');
+	const actorEl = composableEls.get('variableGetter-actor');
+	const skillEl = composableEls.get('variableGetter-skill');
+	const stateEl = composableEls.get('variableGetter-state');
+	const equipmentEl = composableEls.get('variableGetter-equipment');
+	const itemEl = composableEls.get('variableGetter-item');
+	const elementEl = composableEls.get('variableGetter-element');
+
 	typeEl.enableHiddenMode().relate([
-		{ case: 'local', targets: [composableEls.get('variableGetter-common-key')] },
-		{ case: 'global', targets: [composableEls.get('variableGetter-global-key')] },
+		{ case: 'local', targets: [commonKeyEl] },
+		{ case: 'global', targets: [globalKeyEl] },
 		{
 			case: 'actor',
-			targets: [
-				composableEls.get('variableGetter-actor'),
-				composableEls.get('variableGetter-preset-key')
-			]
+			targets: [actorEl, presetKeyEl]
 		},
 		{
 			case: 'skill',
-			targets: [
-				composableEls.get('variableGetter-skill'),
-				composableEls.get('variableGetter-preset-key')
-			]
+			targets: [skillEl, presetKeyEl]
 		},
 		{
 			case: 'state',
-			targets: [
-				composableEls.get('variableGetter-state'),
-				composableEls.get('variableGetter-preset-key')
-			]
+			targets: [stateEl, presetKeyEl]
 		},
 		{
 			case: 'equipment',
-			targets: [
-				composableEls.get('variableGetter-equipment'),
-				composableEls.get('variableGetter-preset-key')
-			]
+			targets: [equipmentEl, presetKeyEl]
 		},
 		{
 			case: 'item',
-			targets: [
-				composableEls.get('variableGetter-item'),
-				composableEls.get('variableGetter-preset-key')
-			]
+			targets: [itemEl, presetKeyEl]
 		},
 		{
 			case: 'element',
-			targets: [
-				composableEls.get('variableGetter-element'),
-				composableEls.get('variableGetter-preset-key')
-			]
+			targets: [elementEl, presetKeyEl]
 		}
 	]);
 
@@ -288,10 +282,9 @@ const initializeWindow = (prefix: string): void => {
 		this.dataItems = backup;
 	};
 
-	const commonKey = composableEls.get('variableGetter-common-key');
-	if (commonKey) {
+	if (commonKeyEl) {
 		TextSuggestion.listen!(
-			commonKey as TextSuggestionTarget,
+			commonKeyEl as TextSuggestionTarget,
 			createVarListGenerator(filterState)
 		);
 	}
@@ -594,6 +587,11 @@ const typeInput = (event: Event & { value: string }): void => {
 const confirmCore = (prefix: string): void => {
 	const state = states[prefix];
 	if (!state) return;
+	// 「聚焦到出错的控件」在原实现里每个分支各寻址一次（7 处）；收紧成一处映射，
+	// 既没有重复寻址，也让「哪个字段没填」的映射集中可见。
+	const focusControl = (field: 'common-key' | 'global-key' | 'preset-key'): void => {
+		getFocus(composableEls.get(`${prefix}-${field}`));
+	};
 	const { target, filter } = state;
 	const data = form;
 	const type = data.type;
@@ -603,7 +601,7 @@ const confirmCore = (prefix: string): void => {
 		case 'local':
 			key = data.commonKey.trim();
 			if (key === '') {
-				getFocus(composableEls.get(`${prefix}-common-key`));
+				focusControl('common-key');
 				return;
 			}
 			getter = { type, key };
@@ -614,7 +612,7 @@ const confirmCore = (prefix: string): void => {
 			const baseType =
 				filter === 'boolean' || filter === 'number' || filter === 'string' ? filter : null;
 			if (key === '' || (baseType && typeof variable?.value !== baseType)) {
-				getFocus(composableEls.get(`${prefix}-global-key`));
+				focusControl('global-key');
 				return;
 			}
 			getter = { type, key };
@@ -624,7 +622,7 @@ const confirmCore = (prefix: string): void => {
 			const element = data.element;
 			key = data.presetKey;
 			if (key === '') {
-				getFocus(composableEls.get(`${prefix}-preset-key`));
+				focusControl('preset-key');
 				return;
 			}
 			getter = { type, element, key };
@@ -637,7 +635,7 @@ const confirmCore = (prefix: string): void => {
 			const actor = data.actor;
 			key = data.presetKey;
 			if (key === '') {
-				getFocus(composableEls.get(`${prefix}-preset-key`));
+				focusControl('preset-key');
 				return;
 			}
 			getter = { type, actor, key };
@@ -647,7 +645,7 @@ const confirmCore = (prefix: string): void => {
 			const skill = data.skill;
 			key = data.presetKey;
 			if (key === '') {
-				getFocus(composableEls.get(`${prefix}-preset-key`));
+				focusControl('preset-key');
 				return;
 			}
 			getter = { type, skill, key };
@@ -657,7 +655,7 @@ const confirmCore = (prefix: string): void => {
 			const stateVal = data.state;
 			key = data.presetKey;
 			if (key === '') {
-				getFocus(composableEls.get(`${prefix}-preset-key`));
+				focusControl('preset-key');
 				return;
 			}
 			getter = { type, state: stateVal, key };
@@ -667,7 +665,7 @@ const confirmCore = (prefix: string): void => {
 			const equipment = data.equipment;
 			key = data.presetKey;
 			if (key === '') {
-				getFocus(composableEls.get(`${prefix}-preset-key`));
+				focusControl('preset-key');
 				return;
 			}
 			getter = { type, equipment, key };
@@ -677,7 +675,7 @@ const confirmCore = (prefix: string): void => {
 			const item = data.item;
 			key = data.presetKey;
 			if (key === '') {
-				getFocus(composableEls.get(`${prefix}-preset-key`));
+				focusControl('preset-key');
 				return;
 			}
 			getter = { type, item, key };

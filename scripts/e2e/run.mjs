@@ -234,10 +234,23 @@ async function main() {
 		/**
 		 * 懒挂载窗口：首次打开时控件 API 才接线，这是本仓 2026-10 反复出事的点。
 		 * 断言「窗口开了 + 控件真的挂上了」——只断言 `.open` 类名会被空壳骗过。
+		 *
+		 * 后三个（variableGetter / variableGetter2 / if-condition）是**元素契约最密集**的窗口：
+		 * 一批 setup 函数全靠 `composables/*` 里的注册表寻址把 40+ 个控件配起来。元素契约的
+		 * 分批迁移（见 CONTRIBUTING「迁移台账的批次推进」）必须在这几个窗口上有真机兜底，
+		 * 否则「注册表依赖删掉了」只能靠肉眼确认。
 		 */
-		await step('懒挂载工具窗口首次打开（command / attribute）', async () => {
+		const TOOL_WINDOWS = [
+			{ id: 'command', minControls: 1 },
+			{ id: 'attribute', minControls: 1 },
+			{ id: 'variableGetter', minControls: 2 },
+			{ id: 'variableGetter2', minControls: 2 },
+			{ id: 'if-condition', minControls: 10 }
+		];
+
+		await step('懒挂载工具窗口首次打开（command / attribute / 变量取值 / 条件）', async () => {
 			const opened = [];
-			for (const id of ['command', 'attribute']) {
+			for (const { id, minControls } of TOOL_WINDOWS) {
 				await cdp.evaluate(`window.Window.open(${JSON.stringify(id)}); true`);
 				const appeared = await cdp.waitFor(
 					`[...document.querySelectorAll('.window-frame.open')].map((frame) => frame.id).includes(${JSON.stringify(id)})`,
@@ -259,8 +272,8 @@ async function main() {
 				assert(probe, `窗口 ${id} 的 DOM 消失了`);
 				assert(probe.nodes > 20, `窗口 ${id} 只挂了个空壳（${probe.nodes} 个节点）`);
 				assert(
-					probe.controls > 0,
-					`窗口 ${id} 挂载后没有接线任何控件（疑似懒挂载竞态，见 CONTRIBUTING 检查清单第 2 条）`
+					probe.controls >= minControls,
+					`窗口 ${id} 挂载后接线的控件只有 ${probe.controls} 个（期望 ≥ ${minControls}）：疑似懒挂载竞态，见 CONTRIBUTING 检查清单第 2 条`
 				);
 				opened.push(`${id}(${probe.controls} 控件)`);
 
