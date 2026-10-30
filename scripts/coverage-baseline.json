@@ -1,11 +1,11 @@
 {
 	"version": 1,
 	"tolerancePct": 0.2,
-	"generatedAt": "2026-10-30T07:02:45.076Z",
+	"generatedAt": "2026-10-30T12:51:45.894Z",
 	"areas": {
 		"editor:main": {
-			"lines": 19.9,
-			"linesCovered": 165,
+			"lines": 21.95,
+			"linesCovered": 182,
 			"linesTotal": 829
 		},
 		"editor:main/services": {

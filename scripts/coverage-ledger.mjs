@@ -203,6 +203,7 @@ function main() {
 			generatedAt: new Date().toISOString(),
 			areas: {}
 		};
+		const capped = [];
 		const raised = [];
 		for (const row of rows) {
 			if (row.current === null) continue;
@@ -212,20 +213,25 @@ function main() {
 					: ALLOW_RAISE
 						? row.current
 						: Math.min(row.baseline, row.current);
-			if (row.baseline !== null && lines > row.baseline) raised.push(row.key);
+			// 没加 --allow-raise 时用 min() 把数字钉在旧基线上（不是删条目！），
+			// 删条目会让这个目录从基线里消失，下次它就成了「新目录」而判红。
+			if (row.baseline !== null && row.current > row.baseline) {
+				if (!ALLOW_RAISE) capped.push(row.key);
+				else raised.push(row.key);
+			}
 			next.areas[row.key] = {
 				lines,
 				linesCovered: current[row.key].linesCovered,
 				linesTotal: current[row.key].linesTotal
 			};
 		}
-		for (const key of raised) delete next.areas[key]; // 不允许抬高：保留旧基线
 		writeFileSync(BASELINE_PATH, `${JSON.stringify(next, null, '\t')}\n`);
 		console.log(`基线已更新：${toPosix(relative(ROOT, BASELINE_PATH))}`);
-		if (raised.length > 0) {
-			console.log(`  · 拒绝抬高（基线只许降）：${raised.join(', ')}`);
+		if (capped.length > 0) {
+			console.log(`  · 保留旧基线（未加 --allow-raise）：${capped.join(', ')}`);
 			console.log('  · 确实要抬高请显式加 --allow-raise 并说明理由');
 		}
+		if (raised.length > 0) console.log(`  · 显式抬高：${raised.join(', ')}`);
 		const loweredCount = rows.filter((row) => row.delta !== null && row.delta < 0).length;
 		if (loweredCount > 0) console.log(`  · 本批下降 ${loweredCount} 个目录`);
 		return;
