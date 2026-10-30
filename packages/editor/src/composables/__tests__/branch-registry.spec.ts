@@ -7,6 +7,7 @@ import IfCondition from '@app/components/tools/IfCondition.vue';
 import SetNumberOperand from '@app/components/tools/SetNumberOperand.vue';
 import { composableEls } from '@app/composables/element-registry';
 import { registryElement } from '@app/utils/element-registry';
+import { getIfConditionBridge } from '@app/composables/if-condition-bridge';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -69,12 +70,14 @@ describe('分支/条件表单注册表', () => {
 			expect(el?.id).toBe(id);
 			expect(el).toBe(document.getElementById(id));
 		}
-		const frame = composableEls.get('if-condition') as unknown as unknown as
-			| (HTMLElement & { setForm?: unknown; getForm?: unknown })
-			| null;
+		const frame = composableEls.get('if-condition') as HTMLElement | null;
 		expect(frame?.id).toBe('if-condition');
-		expect(typeof frame?.setForm).toBe('function');
-		expect(typeof frame?.getForm).toBe('function');
+		// 表单桥已从「窗口根元素上的方法」迁到模块（composables/if-condition-bridge）：
+		// 元素上不该再有业务方法，桥由组件 onMounted 时登记。
+		expect((frame as unknown as { setForm?: unknown }).setForm).toBeUndefined();
+		const bridge = getIfConditionBridge();
+		expect(typeof bridge?.setForm).toBe('function');
+		expect(typeof bridge?.getForm).toBe('function');
 
 		wrapper.unmount();
 	});

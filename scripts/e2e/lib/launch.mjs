@@ -63,7 +63,16 @@ async function prepareIsolatedEnv(home, workspaceRoot) {
 export async function launchEditor({ home, workspaceRoot, port, extraArgs = [] }) {
 	const binary = resolveElectronBinary();
 	const env = await prepareIsolatedEnv(home, workspaceRoot);
-	const args = [EDITOR_DIR, `--remote-debugging-port=${port}`, '--disable-gpu', ...extraArgs];
+	const args = [
+		EDITOR_DIR,
+		`--remote-debugging-port=${port}`,
+		'--disable-gpu',
+		// `--dirname=.` 让主进程进入 debug 模式（dirname 仍是 appPath，行为不变）：
+		// 这样渲染进程会收到 `--debug-mode`，窗口契约桥才会登记到 `window.__YAMI_BRIDGES__`
+		// （见 packages/editor/src/utils/debug-bridges.ts）。E2E 的 setForm→getForm 往返靠它驱动。
+		'--dirname=.',
+		...extraArgs
+	];
 	if (process.platform === 'linux') {
 		// GitHub Actions 的 runner 没有 user namespace，Chromium 沙箱起不来
 		args.push('--no-sandbox', '--disable-dev-shm-usage');

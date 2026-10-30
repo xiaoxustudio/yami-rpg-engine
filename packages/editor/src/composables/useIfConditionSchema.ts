@@ -35,6 +35,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { requestFocus } from '@app/directives/focus';
 import { registryElement } from '@app/utils/element-registry';
+import { getIfConditionBridge } from '@app/composables/if-condition-bridge';
 
 export interface IfConditionTarget {
 	save: () => unknown;
@@ -563,10 +564,9 @@ const open = (
 		composableEls
 			.get('if-condition-actor-shortcutKey')
 			?.loadItems?.(Enum.getStringItems!('shortcut-key'));
-		const setForm = registryElement<
-			HTMLElement & { setForm?: (data: Partial<IfConditionForm>) => void }
-		>(composableEls, 'if-condition')?.setForm;
-		setForm?.({
+		// 表单桥来自模块（窗口组件 onMounted 时登记），不再从窗口根元素的 DOM 属性上取
+		const bridge = getIfConditionBridge();
+		bridge?.setForm({
 			type: condition.type,
 			commonVariable,
 			booleanOperation,
@@ -614,11 +614,7 @@ const open = (
 };
 
 const save = (): unknown => {
-	const getForm = registryElement<HTMLElement & { getForm?: () => IfConditionForm }>(
-		composableEls,
-		'if-condition'
-	)?.getForm;
-	const form = getForm?.() ?? ({} as IfConditionForm);
+	const form = getIfConditionBridge()?.getForm() ?? ({} as IfConditionForm);
 	const type = form.type;
 	let condition;
 	switch (type) {

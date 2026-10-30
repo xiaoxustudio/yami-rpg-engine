@@ -15,6 +15,8 @@ dist-*
 scripts/smoke-report-*
 # 真机 E2E（pnpm e2e）的失败现场与报告：只用于 CI 上传/本地排查，不进版本库
 scripts/e2e/.artifacts/
+# 本地跑全量测试时的日志（排查用，不进版本库）
+.test-run.log
 # 覆盖率原始产物（pnpm coverage）：基线数字在 scripts/coverage-baseline.json，报告是复跑副产品
 coverage/
 electron-out.log

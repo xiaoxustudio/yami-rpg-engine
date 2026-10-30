@@ -287,19 +287,22 @@ async function main() {
 		 * 元素契约窗口的「读回」断言：只断言控件存在还不够 —— 那批 setup 函数真正的价值在
 		 * `enableHiddenMode().relate(...)` / `loadItems` / 控件 write→form 的接线。
 		 * 走一遍 `setForm → getForm` 往返，才算证明接线还在（元素契约分批时这条最先断）。
+		 *
+		 * 驱动通道是**窗口契约桥**（`window.__YAMI_BRIDGES__`，仅 debug 模式登记），
+		 * 而不是窗口根元素上挂的方法 —— 元素契约收尾正在把后者拆掉。
 		 */
 		await step('元素契约窗口往返（if-condition setForm → getForm）', async () => {
 			await cdp.evaluate(`window.Window.open('if-condition'); true`);
 			const ready = await cdp.waitFor(
-				`(() => { const el = document.getElementById('if-condition'); return !!(el && typeof el.setForm === 'function' && typeof el.getForm === 'function'); })()`,
+				`(() => { const api = window.__YAMI_BRIDGES__?.['if-condition']; return !!(api && typeof api.setForm === 'function' && typeof api.getForm === 'function'); })()`,
 				{ timeoutMs: 20000 }
 			);
-			assert(ready, 'if-condition 窗口没有接上 setForm / getForm 元素 API');
+			assert(ready, 'if-condition 窗口没有登记契约桥（debug 通道未开启或组件未 provide）');
 
 			const result = await cdp.evaluate(`(() => {
-				const el = document.getElementById('if-condition');
-				el.setForm({ type: 'actor', commonActor: { type: 'trigger' }, actorOperation: 'present-active' });
-				const form = el.getForm();
+				const api = window.__YAMI_BRIDGES__['if-condition'];
+				api.setForm({ type: 'actor', commonActor: { type: 'trigger' }, actorOperation: 'present-active' });
+				const form = api.getForm();
 				return { type: form?.type, actorOperation: form?.actorOperation };
 			})()`);
 			assert(

@@ -3,6 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import IfConditionWindow from '@app/components/tools/IfCondition.vue';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
+import { getIfConditionBridge, type IfConditionBridge } from '@app/composables/if-condition-bridge';
 
 const IfCondition = useIfConditionSchema();
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
@@ -15,13 +16,11 @@ vi.mock('@app/stores/local', () => ({
 	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
-interface IfConditionFrame extends HTMLElement {
-	setForm(data: Record<string, unknown>): void;
-	getForm(): Record<string, unknown>;
-}
-
-const getFrame = (): IfConditionFrame =>
-	document.getElementById('if-condition') as unknown as IfConditionFrame;
+const getFrame = (): IfConditionBridge => {
+	const bridge = getIfConditionBridge();
+	if (!bridge) throw new Error('if-condition 桥未登记（窗口未挂载？）');
+	return bridge;
+};
 
 describe('if-condition 窗口表单桥接（Vue 双向绑定迁移回归）', () => {
 	beforeEach(() => {
@@ -34,7 +33,7 @@ describe('if-condition 窗口表单桥接（Vue 双向绑定迁移回归）', ()
 		Data.teams = { list: [{ id: 'team0' }] } as never;
 	});
 
-	it('窗口根元素暴露 setForm/getForm 桥接，setForm 写入控件 DOM', async () => {
+	it('模块桥登记 setForm/getForm，setForm 写入控件 DOM', async () => {
 		const wrapper = mount(IfConditionWindow, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const frame = getFrame();

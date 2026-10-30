@@ -152,21 +152,21 @@ pnpm coverage:selftest  # 门禁自证：持平判绿 / 下降判红 / 新目录
 - **已落第二批（2026-10-30）**：`composables/useIfConditionFields.ts` 72 → 0、`components/tools/IfCondition.vue` 2 → 0 —— 控件表从 `Map<string, FieldControl>` 换成普通对象入参 `IfConditionFieldMap`，composable 不再知道寻址方式，组件用模板 ref 直接按 id 落表；同批补了 4 条单测（缺控件早退 / 11 种类型灌入 / 隐藏行关系分组 / 本地化选项落位），它现在是可单测的纯装配函数。`element-registry-lookups` 1475 → 1394。
 - **已落第三批（2026-10-30）**：`composables/useSetNumberOperandFields.ts` 51 → 0、`components/tools/SetNumberOperand.vue` 同批改为控件表入参；补 4 条单测（缺控件早退 / 6 种运算符 / 隐藏行关系挂在 operand-type 上 / 根元素挂 open·closed 钩子），真机 E2E 同时把 `setNumber-operand`（42 控件）纳入。`element-registry-lookups` 1394 → 1337。
 
-**为什么「元素 API 挂载」（`attachElementApi`）还没动 —— 一条必须先讲清的耦合**
+**元素 API 挂载（`attachElementApi`）怎么安全拆掉 —— 三步必须成套**
 
-`attachElementApi(el, { setForm, getForm })`（`IfCondition.vue` / `SetNumberOperand.vue` 等）**不是死代码**：对应的 schema（`useIfConditionSchema.ts`、`useNumberOperandSchema.ts`）就是通过 `registryElement(composableEls, '<id>')?.setForm` 把值灌进窗口的，删了窗口就打不开表单。
+`attachElementApi(el, { setForm, getForm })`（`IfCondition.vue` / `SetNumberOperand.vue` 等）**不是死代码**：对应的 schema（`useIfConditionSchema.ts`、`useNumberOperandSchema.ts`）就是通过 `registryElement(composableEls, '<id>')?.setForm` 把值灌进窗口的，删了窗口就打不开表单。真机 E2E 的契约往返也曾经只认这条 DOM 桥。
 
-更要紧的是：**真机 E2E 的契约往返断言也走这条桥**（`el.setForm(...)` → `el.getForm()`）。也就是说，它是当前唯一的「不靠点界面就能驱动窗口表单」的自动化入口。
-
-所以这一层的收尾不是「把 attach 删掉」，而是一次**配套替换**，缺一不可：
+所以收尾不是「把 attach 删掉」，而是一次**配套替换**，缺一不可：
 
 1. 用模块级强类型桥（`provideXxxBridge(api)` / `getXxxBridge()`）取代 DOM 属性挂载；
 2. 把 schema 里的 `registryElement(...)?.setForm` 改为读该模块；
-3. 给 E2E 一条等价驱动通道（例如 debug 模式下由桥模块暴露 `window.__YAMI_BRIDGES__`），否则往返断言只能退化回「控件存在」。
+3. 给 E2E 一条等价驱动通道：`utils/debug-bridges.ts` 在 `--debug-mode` 下把同一份桥登记到 `window.__YAMI_BRIDGES__`（生产构建不创建该属性）。
 
-只做 1、2 会让上门禁失去表单级验证，只做 3 等于给测试开后门。这条人工依赖已记在这里，别单独拆任何一半。
+只做 1、2 会让上门禁失去表单级验证，只做 3 等于给测试开后门。
 
-> 顺带一条实测（2026-10-30 用一次性脚本扫了 75 个 `attachElementApi` 站点）：其中 **45 个站点的成员在「其它文件」里找不到 `.member(` 调用**，看着像死代码 —— 但抽查发现它们正是 `sync` 这类**回归测试在本文件内直接驱动**的桥（`components/__tests__/animation-frame-page-bridge.spec.ts` 里的 `el.sync?.()`）。结论：静态扫不到消费方 ≠ 可删；动这一层前先跑对应窗口的 spec，并确认 E2E 往返断言是否依赖它。
+> **已落样板（2026-10-30，`if-condition`）**：`composables/if-condition-bridge.ts` + `utils/debug-bridges.ts`，`IfCondition.vue` 不再 `attachElementApi`，schema 改读 `getIfConditionBridge()`，E2E 改从 `__YAMI_BRIDGES__['if-condition']` 驱动 —— `element-api-attach` 122 → 121。`SetNumberOperand` 等窗口照这套照抄即可（`E2E launch.mjs` 已默认带 `--dirname=.` 打开 debug 通道）。
+>
+> 顺带一条实测：一次性脚本扫 75 个 `attachElementApi` 站点，其中 **45 个的成员在「其它文件」里找不到调用**，看着像死代码 —— 但抽查发现正是 `sync` 这类**由本文件内回归测试直接驱动**的桥（`components/__tests__/animation-frame-page-bridge.spec.ts` 里的 `el.sync?.()`）。结论：静态扫不到消费方 ≠ 可删。
 
 **新增工具窗口检查清单（懒挂载）**
 

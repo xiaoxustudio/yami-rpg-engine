@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { composableEls } from '@app/composables/element-registry';
 import { registerElement } from '@app/utils/element-registry';
@@ -27,7 +27,10 @@ const IfCondition = useIfConditionSchema();
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import IfConditionFields from '@app/components/tools/if-condition/IfConditionFields.vue';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import {
+	provideIfConditionBridge,
+	resetIfConditionBridge
+} from '@app/composables/if-condition-bridge';
 
 const { t } = useI18n();
 
@@ -169,9 +172,13 @@ const onConfirm = () => {
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
-		attachElementApi(el, { setForm, getForm });
 		registerElement(composableEls, 'if-condition', el);
 	}
+	// 表单桥走模块而不是元素属性：元素契约收尾后 el 上不该再挂业务方法。
+	// 真机 E2E 在 debug 模式下由桥模块另开一条只读通道（utils/debug-bridges.ts）。
+	const api = { setForm, getForm };
+	provideIfConditionBridge(api);
+	onUnmounted(() => resetIfConditionBridge(api));
 	setupIfConditionFields(fieldEls);
 });
 </script>
