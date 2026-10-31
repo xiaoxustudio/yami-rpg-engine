@@ -11,13 +11,13 @@
 			<SelectBox
 				:label="t('components.lightGetter-type.label')"
 				id="lightGetter-type"
-				:ref="registryRef(composableEls, 'lightGetter-type')"
+				ref="typeBox"
 				v-tip="t('components.lightGetter-type.tip')"
 			/>
 			<div class="text">{{ t('components.lightGetter-presetId.label') }}</div>
 			<CustomBox
 				id="lightGetter-presetId"
-				:ref="registryRef(composableEls, 'lightGetter-presetId')"
+				ref="presetIdBox"
 				v-tip="t('components.lightGetter-presetId.tip')"
 				type="preset-object"
 				filter="light"
@@ -25,7 +25,7 @@
 			<div class="text">{{ t('components.lightGetter-variable.label') }}</div>
 			<CustomBox
 				id="lightGetter-variable"
-				:ref="registryRef(composableEls, 'lightGetter-variable')"
+				ref="variableBox"
 				v-tip="t('components.lightGetter-variable.tip')"
 				type="variable"
 				filter="object"
@@ -38,7 +38,7 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import { composableEls } from '@app/composables/element-registry';
 import { getFormFields, setFormFields } from '@app/composables/form-fields';
-import { registryRef, registerElement } from '@app/utils/element-registry';
+import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { LightGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
 import {
@@ -57,10 +57,23 @@ const { t } = useI18n();
 const lightGetter = useLightGetterWindow();
 const form = lightGetter.form;
 
-const setForm = (data: Partial<PresetGetterForm>): void =>
-	setFormFields<PresetGetterForm>(form, data, FIELD_BY_ID);
+/** 表单读写直接读模板 ref，不经过注册表（与 ExportLanguage 同口径）。 */
+const controlOf = (
+	id: string
+): { read?: () => unknown; write?: (value: unknown) => void } | null =>
+	id === 'lightGetter-type'
+		? typeBox.value
+		: id === 'lightGetter-presetId'
+			? presetIdBox.value
+			: id === 'lightGetter-variable'
+				? variableBox.value
+				: null;
 
-const getForm = (): PresetGetterForm => getFormFields<PresetGetterForm>(form, FIELD_BY_ID);
+const setForm = (data: Partial<PresetGetterForm>): void =>
+	setFormFields<PresetGetterForm>(form, data, FIELD_BY_ID, controlOf);
+
+const getForm = (): PresetGetterForm =>
+	getFormFields<PresetGetterForm>(form, FIELD_BY_ID, controlOf);
 
 const FIELD_BY_ID: Record<string, keyof PresetGetterForm> = {
 	'lightGetter-type': 'type',
@@ -70,6 +83,11 @@ const FIELD_BY_ID: Record<string, keyof PresetGetterForm> = {
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
+// 控件用模板 ref（组件 defineExpose），不再注册进 ElementRegistry。
+const typeBox = ref<InstanceType<typeof SelectBox> | null>(null);
+const presetIdBox = ref<InstanceType<typeof CustomBox> | null>(null);
+const variableBox = ref<InstanceType<typeof CustomBox> | null>(null);
+
 const onConfirm = () => {
 	LightGetter?.confirm?.(new Event('click'));
 };
@@ -77,6 +95,12 @@ const onConfirm = () => {
 onMounted(() => {
 	registerElement(composableEls, 'lightGetter', frame.value);
 	// 表单桥走模块（presetGetterBridge），元素上不再挂业务方法。
+	// 控件元素按模板 ref 交给 composable：它不再按 id 去注册表取裸元素
+	lightGetter.initialize?.({
+		type: typeBox.value?.root ?? null,
+		presetId: presetIdBox.value?.root ?? null,
+		variable: variableBox.value?.root ?? null
+	});
 	const api = { setForm, getForm };
 	const bridge = presetGetterBridge('lightGetter');
 	bridge?.provide(api);

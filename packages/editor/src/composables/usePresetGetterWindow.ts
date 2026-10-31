@@ -1,6 +1,5 @@
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { composableEls } from '@app/composables/element-registry';
 import { presetGetterBridge } from '@app/composables/preset-getter-bridge';
 import { getFocus } from '@app/utils/element-utils';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
@@ -20,9 +19,26 @@ interface PresetGetterTarget {
 	isPluginInput?: boolean;
 }
 
+/**
+ * 类型下拉元素：元素契约迁移的中间态 —— 控件由窗口的模板 ref 交过来（不再按 id 查注册表），
+ * 但「元素优先」的 API 仍挂在 DOM 元素上（`attachElementApi`），所以这里按结构类型声明它。
+ * P3 阶段把包装层的 attachElementApi 删掉后，这里会变成组件实例的引用类型。
+ */
+export type PresetGetterTypeElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	enableHiddenMode?: () => { relate?: (entries: unknown) => unknown } | undefined;
+};
+
+/** 窗口在 onMounted 里按模板 ref 交过来的三个元素（元素契约迁移后不再走注册表）。 */
+export interface PresetGetterElements {
+	type: PresetGetterTypeElement | null;
+	presetId: HTMLElement | null;
+	variable: HTMLElement | null;
+}
+
 interface PresetGetterWindow {
 	form: PresetGetterForm;
-	initialize: () => void;
+	initialize: (fields?: PresetGetterElements) => void;
 	open: (target: PresetGetterTarget) => void;
 	confirm: () => void;
 	onWindowClosed: () => void;
@@ -42,14 +58,21 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 		variable: { type: 'local', key: '' }
 	});
 	let callback: ((getter: Record<string, unknown>) => void) | null = null;
+	/**
+	 * 控件元素：由窗口在 onMounted 时按模板 ref 交过来。
+	 * 之前是 `composableEls.get(\`${domKey}-type\`)` —— 即「按 id 去全局注册表找裸元素」，
+	 * 元素契约收尾要拆的就是这条路径。
+	 */
+	let fields: PresetGetterElements = { type: null, presetId: null, variable: null };
 
-	const initialize = (): void => {
-		const typeEl = composableEls.get(`${domKey}-type`);
+	const initialize = (next?: PresetGetterElements): void => {
+		if (next) fields = { ...fields, ...next };
+		const typeEl = fields.type;
 		if (!typeEl) return;
-		typeEl.loadItems(items);
-		typeEl.enableHiddenMode().relate([
-			{ case: 'by-id', targets: [composableEls.get(`${domKey}-presetId`)] },
-			{ case: 'variable', targets: [composableEls.get(`${domKey}-variable`)] }
+		typeEl.loadItems?.(items);
+		typeEl.enableHiddenMode?.()?.relate?.([
+			{ case: 'by-id', targets: [fields.presetId] },
+			{ case: 'variable', targets: [fields.variable] }
 		]);
 	};
 
@@ -74,7 +97,7 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 		Object.assign(form, { type: data.type, presetId, variable });
 		// 表单桥来自模块（窗口组件 onMounted 时登记），不再从窗口根元素的 DOM 属性上取
 		presetGetterBridge(domKey)?.get()?.setForm?.(form);
-		getFocus(composableEls.get(`${domKey}-type`));
+		getFocus(fields.type);
 	};
 
 	const confirm = (): void => {
@@ -87,7 +110,7 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 				break;
 			case 'by-id': {
 				if (data.presetId === '') {
-					getFocus(composableEls.get(`${domKey}-presetId`));
+					getFocus(fields.presetId);
 					return;
 				}
 				getter = { type: data.type, presetId: data.presetId };
@@ -95,7 +118,7 @@ function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWin
 			}
 			case 'variable': {
 				if ((data.variable as { key: string }).key === '') {
-					getFocus(composableEls.get(`${domKey}-variable`));
+					getFocus(fields.variable);
 					return;
 				}
 				getter = { type: data.type, variable: data.variable };

@@ -93,23 +93,21 @@ describe('窗口 composable 读注册表', () => {
 		wrapper.unmount();
 	});
 
-	it('PresetGetter 工厂：两个 getter 窗口的 4 个 id 都登记（`${domKey}` 动态键）', async () => {
+	it('PresetGetter 工厂：窗口只登记根元素，控件由模板 ref 交给 composable', async () => {
 		const a = await mountSettle(LightGetter);
-		expectRegistered([
-			'lightGetter',
-			'lightGetter-type',
-			'lightGetter-presetId',
-			'lightGetter-variable'
-		]);
+		// 元素契约迁移后控件不再进注册表：窗口根元素仍登记（窗口激活 / 关闭钩子要用），
+		// 三个控件由 initialize(fields) 交接给 composable。
+		expectRegistered(['lightGetter']);
+		expect(composableEls.get('lightGetter-type')).toBeUndefined();
+		expect(composableEls.get('lightGetter-presetId')).toBeUndefined();
+		expect(composableEls.get('lightGetter-variable')).toBeUndefined();
 		a.unmount();
 
 		const b = await mountSettle(ObjectGetter);
-		expectRegistered([
-			'objectGetter',
-			'objectGetter-type',
-			'objectGetter-presetId',
-			'objectGetter-variable'
-		]);
+		expectRegistered(['objectGetter']);
+		expect(composableEls.get('objectGetter-type')).toBeUndefined();
+		expect(composableEls.get('objectGetter-presetId')).toBeUndefined();
+		expect(composableEls.get('objectGetter-variable')).toBeUndefined();
 		b.unmount();
 	});
 
