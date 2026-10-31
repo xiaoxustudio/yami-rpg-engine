@@ -109,7 +109,7 @@ pnpm e2e:selftest   # 自测：故意给一个打不开的工程，断言这条�
 
 - 它在 `.github/workflows/e2e.yml` 里跑（`workflow_dispatch` + 相关路径的 PR），**不是** `ci.yml` 的必跑门禁；
 - 崩溃 / 接线 / 窗口内重复 id 这类回归仍由 `src/tools/__tests__/deferred-window-smoke.spec.ts` 的 jsdom 冒烟兜底 —— 真机 E2E 是它的补充，不是替代（jsdom 快且稳，真机慢但真实）；
-- `scripts/e2e/fixture/` 是**最小可打开工程**（约 300KB，只有 Data/*.json，没有 Assets 实体）。模板数据 schema（`latestProjectVersion`）变更时同步更新它；
+- `scripts/e2e/fixture/` 是**最小可打开工程**（约 300KB，只有 Data/*.json，没有 Assets 实体）。模板数据 schema（`latestProjectVersion`）变更时同步更新它 —— 四处版本（updater 常量 / template-arpg `yami.projectVersion` / `packmeta.Project` / fixture `game.yamirpg`）由 `pnpm e2e:fixture-check` 守着，`pnpm e2e` 起步也会先跑它，漂移时直接一行报错；
 - 截图对比等视觉回归仍按老做法：有网络环境再补成独立 job，不进必跑门禁。
 
 **覆盖率：目录级行覆盖率的「只许降」棘轮**

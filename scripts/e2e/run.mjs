@@ -135,6 +135,22 @@ async function main() {
 	log(`  平台 ${process.platform} / Electron 真机 / 零额外依赖`);
 	log('');
 
+	// 起真机之前先验 fixture 的 schema 版本：fixture 旧了会以「工程打不开 / 版本弹窗」
+	// 的形式失败，排查成本很高（四处版本来源的约定见 fixture-check.mjs 头部）。
+	await step('fixture 与工程 schema 版本一致', async () => {
+		const check = spawnSync(
+			process.execPath,
+			[path.join(REPO_ROOT, 'scripts/e2e/fixture-check.mjs')],
+			{
+				cwd: REPO_ROOT,
+				encoding: 'utf8'
+			}
+		);
+		assert(check.status === 0, (check.stderr || check.stdout || '').trim());
+		return (check.stdout ?? '').trim();
+	});
+	if (failed) return;
+
 	const workspace = await prepareWorkspace({
 		keep: options.keep,
 		sabotage: options.selftest

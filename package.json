@@ -36,6 +36,7 @@
 		"e2e": "node scripts/e2e/run.mjs",
 		"e2e:fast": "node scripts/e2e/run.mjs --no-build",
 		"e2e:selftest": "node scripts/e2e/run.mjs --no-build --selftest --open-timeout=12000",
+		"e2e:fixture-check": "node scripts/e2e/fixture-check.mjs",
 		"typecheck": "pnpm -F @yami/editor typecheck",
 		"lint": "oxlint -c ./.oxlintrc.json packages/editor packages/ui-kit scripts",
 		"lint:fix": "oxlint -c ./.oxlintrc.json --fix packages/editor packages/ui-kit scripts",
