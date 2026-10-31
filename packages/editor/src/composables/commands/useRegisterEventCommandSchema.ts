@@ -12,7 +12,6 @@ import { requestFocus } from '@app/directives/focus';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { getCommandSchemaFormsStore } from '@app/stores/command-schema-forms';
-import type { YamiElement } from '@app/types/element-api';
 
 export type RegisterEventData = {
 	target: string;
@@ -190,8 +189,8 @@ const switchTypeAndTagInput = (): void => {
 		hide(input.previousElementSibling);
 		hide(input);
 	};
-	const typeInput = composableEls.get('registerEvent-type') as YamiElement;
-	const tagInput = composableEls.get('registerEvent-tag') as YamiElement;
+	const typeInput = composableEls.get('registerEvent-type') as HTMLElement;
+	const tagInput = composableEls.get('registerEvent-tag') as HTMLElement;
 	const target = form.target;
 	const operation = form.operation;
 	switch (target) {
@@ -249,7 +248,7 @@ const switchPriority = (): void => {
 	const target = form.target;
 	const operation = form.operation;
 	const type = form.type;
-	const priority = composableEls.get('registerEvent-priority') as YamiElement;
+	const priority = composableEls.get('registerEvent-priority') as HTMLElement;
 	if (target === 'global' && operation === 'register' && type in priorityTypes) {
 		show(priority.previousElementSibling);
 		show(priority);
@@ -262,7 +261,7 @@ const switchPriority = (): void => {
 };
 
 const switchNamespace = (): void => {
-	const namespace = composableEls.get('registerEvent-namespace') as YamiElement;
+	const namespace = composableEls.get('registerEvent-namespace') as HTMLElement;
 	const operation = form.operation;
 	if (operation === 'register') {
 		show(namespace.previousElementSibling);

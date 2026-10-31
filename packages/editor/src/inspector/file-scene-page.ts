@@ -6,11 +6,10 @@ import { Inspector } from '@app/inspector/inspector.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileSceneShape {
-		button: YamiElement | null;
+		button: HTMLElement | null;
 		owner: {
 			setTarget: (target: unknown) => void;
 			planToSave: () => void;
@@ -43,7 +42,7 @@ import type { YamiElement } from '@app/types/element-api';
 	};
 
 	FileScene.initialize = function () {};
-	FileScene.button = inspectorEls.get('scene-switch-settings') as YamiElement;
+	FileScene.button = inspectorEls.get('scene-switch-settings') as HTMLElement;
 	FileScene.owner = {
 		setTarget: (target: unknown) => {
 			if (FileScene.target !== target) {

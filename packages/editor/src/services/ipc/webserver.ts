@@ -7,18 +7,17 @@ import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Log } from '@app/log/log-window.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { Deployment, DeploymentForm } from '@app/title/deploy-project-window.ts';
-import type { YamiElement } from '@app/types/element-api';
 
 export const WebServer = new (class {
 	port = 5959;
 	constructor() {}
 	bindButtons() {
-		const startBtn = serviceEls.get('qr-start-button') as YamiElement;
+		const startBtn = serviceEls.get('qr-start-button') as HTMLElement;
 		if (!startBtn) return;
 		on(startBtn, 'click', () => {
 			this.start!(Path.slash(Editor.config!.project!));
 		});
-		on(serviceEls.get('qr-close-button') as YamiElement, 'click', () => this.stop!());
+		on(serviceEls.get('qr-close-button') as HTMLElement, 'click', () => this.stop!());
 	}
 	get enable() {
 		return YamiIpc.sync.getServerState();
@@ -47,11 +46,11 @@ export const WebServer = new (class {
 	}
 	load() {
 		if (this.enable) {
-			disable(serviceEls.get('qr-start-button') as YamiElement);
-			enable(serviceEls.get('qr-close-button') as YamiElement);
+			disable(serviceEls.get('qr-start-button') as HTMLElement);
+			enable(serviceEls.get('qr-close-button') as HTMLElement);
 		} else {
-			disable(serviceEls.get('qr-close-button') as YamiElement);
-			enable(serviceEls.get('qr-start-button') as YamiElement);
+			disable(serviceEls.get('qr-close-button') as HTMLElement);
+			enable(serviceEls.get('qr-start-button') as HTMLElement);
 		}
 	}
 	async open() {
@@ -61,7 +60,7 @@ export const WebServer = new (class {
 		let index = 0;
 		let url = `http://${ips[index]}:${WebServer.port}`;
 		this.setContent!(url, (await WebServer.toDataUrl(url)) ?? '');
-		on(serviceEls.get('qr-update-button') as YamiElement, 'click', async () => {
+		on(serviceEls.get('qr-update-button') as HTMLElement, 'click', async () => {
 			index = index >= ips.length - 1 ? 0 : ++index;
 			url = `http://${ips[index]}:${WebServer.port}`;
 			this.setContent!(url, (await WebServer.toDataUrl(url)) ?? '');

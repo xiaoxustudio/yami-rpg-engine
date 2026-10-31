@@ -1,4 +1,3 @@
-import type { YamiElement } from '@app/types/element-api';
 import type { History } from '@app/tools/history.ts';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
 import type { ImageTexture } from '@app/engine/webgl/image-texture.ts';
@@ -24,8 +23,8 @@ export interface UIFacadeShape {
 	page: HTMLElement;
 	head: HTMLElement;
 	body: HTMLElement;
-	screen: YamiElement;
-	marquee: YamiElement;
+	screen: HTMLElement;
+	marquee: HTMLElement;
 
 	history: History | null;
 	planToSave: (() => void) | null;

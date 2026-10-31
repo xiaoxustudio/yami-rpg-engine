@@ -7,7 +7,6 @@ import { Scene } from '@app/scene/scene-window.ts';
 import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { Palette } from '@app/palette/palette.ts';
 import { elementDataOf } from '@ui-kit';
-import type { YamiElement } from '@app/types/element-api';
 import { clamp } from '@app/utils/math';
 import { registryElement } from '@app/utils/element-registry';
 
@@ -33,7 +32,7 @@ type TileNodeMarquee = HTMLElement & {
 
 type TileNodeDragging = PointerEvent & {
 	mode: 'select' | 'scroll';
-	screen: YamiElement;
+	screen: HTMLElement;
 	scrollLeft: number;
 	scrollTop: number;
 };
@@ -83,7 +82,7 @@ interface TileNodeWindow {
 const getCanvas = (): HTMLCanvasElement =>
 	registryElement<HTMLCanvasElement>(composableEls, 'autoTile-selectNode-canvas')!;
 
-const getScreen = (): HTMLElement => composableEls.get('autoTile-selectNode-screen') as YamiElement;
+const getScreen = (): HTMLElement => composableEls.get('autoTile-selectNode-screen') as HTMLElement;
 
 const getMarquee = (): TileNodeMarquee =>
 	registryElement<TileNodeMarquee>(composableEls, 'autoTile-selectNode-marquee')!;
@@ -121,7 +120,7 @@ const open = (
 	const MAX_CONTENT_HEIGHT = 696;
 	const MIN_CONTENT_WIDTH = 100;
 	const MIN_CONTENT_HEIGHT = 100;
-	const windowFrame = composableEls.get('autoTile-selectNode') as YamiElement;
+	const windowFrame = composableEls.get('autoTile-selectNode') as HTMLElement;
 	const screen = getScreen();
 	const tileWidth = Palette.tileset!.tileWidth;
 	const tileHeight = Palette.tileset!.tileHeight;
@@ -397,7 +396,7 @@ const marqueePointerdown = (event: PointerEvent): void => {
 			if (event.altKey) {
 				dragging = event as TileNodeDragging;
 				dragging.mode = 'scroll';
-				dragging.screen = (event.target as YamiElement).parentNode as YamiElement;
+				dragging.screen = (event.target as HTMLElement).parentNode as HTMLElement;
 				dragging.scrollLeft = dragging.screen.scrollLeft;
 				dragging.scrollTop = dragging.screen.scrollTop;
 				Cursor.open('cursor-grab');
@@ -421,7 +420,7 @@ const marqueePointerdown = (event: PointerEvent): void => {
 		case 2:
 			dragging = event as TileNodeDragging;
 			dragging.mode = 'scroll';
-			dragging.screen = (event.target as YamiElement).parentNode as YamiElement;
+			dragging.screen = (event.target as HTMLElement).parentNode as HTMLElement;
 			dragging.scrollLeft = dragging.screen.scrollLeft;
 			dragging.scrollTop = dragging.screen.scrollTop;
 			Cursor.open('cursor-grab');
