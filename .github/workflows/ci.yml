@@ -80,6 +80,14 @@ jobs:
             - name: 文档一致性（包脚本 / 链接 / 脚本引用）
               run: pnpm run docs:check
 
+            # workflow 自身不在任何本地门禁里跑：写错包脚本名 / 引用已删脚本，要等 CI 真的跑到
+            # 才发现（e2e.yml 与 coverage.yml 尤其低频）。这条守住 run: 里的包脚本与 scripts/ 路径。
+            - name: workflow 可执行性自测（门禁自身的口径）
+              run: node scripts/workflows-check.mjs --selftest
+
+            - name: workflow 可执行性（包脚本 / scripts 引用）
+              run: pnpm run workflows:check
+
             # E2E fixture 的工程数据 schema 版本必须与代码/模板/packmeta 一致（四处来源的约定
             # 见 scripts/e2e/fixture-check.mjs）。纯文本读取、零依赖，所以放在快门禁里；
             # 真机 E2E 在独立 workflow 跑，这条负责在 schema 升级时第一时间报出来。

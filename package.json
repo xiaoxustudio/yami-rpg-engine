@@ -62,6 +62,7 @@
 		"migration:lazy-slots-assign": "node scripts/lazy-slot-assign-codemod.mjs",
 		"a11y:aria-labels": "node scripts/aria-label-codemod.mjs",
 		"docs:check": "node scripts/docs-check.mjs",
+		"workflows:check": "node scripts/workflows-check.mjs",
 		"stale-exemptions": "node scripts/stale-exemptions.mjs",
 		"text:check": "node scripts/check-text-integrity.mjs",
 		"text:rules": "node scripts/check-text-integrity.mjs --rules",

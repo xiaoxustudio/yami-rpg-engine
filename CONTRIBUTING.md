@@ -74,6 +74,7 @@ pnpm run text:check                  # 文本污染（控制字符 / 注释被�
 pnpm run window:guard                # 懒挂载窗口 open 后写控件（应为 0）
 pnpm run i18n:guard                  # components./properties. 静态 key 在所有语言里都存在
 pnpm run docs:check                  # 文档里写的包脚本 / 链接 / node 脚本引用真实存在
+node scripts/workflows-check.mjs     # .github/workflows 里的 pnpm 脚本名 / scripts 路径存在
 pnpm run format:check                # oxfmt（editor + ui-kit，与 lint 同口径）
 pnpm run lint                        # oxlint（一个包都不漏：editor + ui-kit + scripts）
 pnpm -F @yami/editor typecheck       # tsc strict
