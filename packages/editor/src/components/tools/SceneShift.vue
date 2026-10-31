@@ -11,7 +11,7 @@
 			<NumberBox
 				:label="t('components.scene-shift-x.label')"
 				id="scene-shift-x"
-				:ref="registryRef(composableEls, 'scene-shift-x')"
+				ref="xBox"
 				v-tip="t('components.scene-shift-x.tip')"
 				v-focus
 				min="-512"
@@ -22,7 +22,7 @@
 			<NumberBox
 				:label="t('components.scene-shift-y.label')"
 				id="scene-shift-y"
-				:ref="registryRef(composableEls, 'scene-shift-y')"
+				ref="yBox"
 				v-tip="t('components.scene-shift-y.tip')"
 				min="-512"
 				max="512"
@@ -34,10 +34,9 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
-import { composableEls } from '@app/composables/element-registry';
 import { getFormFields, setFormFields } from '@app/composables/form-fields';
 import { sceneEls } from '@app/scene/element-registry';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { SceneShift, type SceneShiftForm } from '@app/scene/move-scene.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -52,15 +51,25 @@ const { t } = useI18n();
 
 const form = reactive<SceneShiftForm>({ x: 0, y: 0 });
 
-const setForm = (data: Partial<SceneShiftForm>): void =>
-	setFormFields<SceneShiftForm>(form, data, FIELD_BY_ID);
-
-const getForm = (): SceneShiftForm => getFormFields<SceneShiftForm>(form, FIELD_BY_ID);
-
 const FIELD_BY_ID: Record<string, keyof SceneShiftForm> = {
 	'scene-shift-x': 'x',
 	'scene-shift-y': 'y'
 };
+
+// 控件用模板 ref（组件 defineExpose），不再注册进 ElementRegistry。
+const xBox = ref<InstanceType<typeof NumberBox> | null>(null);
+const yBox = ref<InstanceType<typeof NumberBox> | null>(null);
+
+/** 表单读写直接读模板 ref，不经过注册表（与 ExportLanguage 同口径）。 */
+const controlOf = (
+	id: string
+): { read?: () => unknown; write?: (value: unknown) => void } | null =>
+	id === 'scene-shift-x' ? xBox.value : id === 'scene-shift-y' ? yBox.value : null;
+
+const setForm = (data: Partial<SceneShiftForm>): void =>
+	setFormFields<SceneShiftForm>(form, data, FIELD_BY_ID, controlOf);
+
+const getForm = (): SceneShiftForm => getFormFields<SceneShiftForm>(form, FIELD_BY_ID, controlOf);
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
