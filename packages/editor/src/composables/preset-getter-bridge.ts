@@ -14,8 +14,8 @@ export interface PresetGetterBridge {
 }
 
 const bridges = {
-	lightGetter: createFormBridge<PresetGetterForm>('lightGetter'),
-	objectGetter: createFormBridge<PresetGetterForm>('objectGetter')
+	lightGetter: createFormBridge<PresetGetterBridge>('lightGetter'),
+	objectGetter: createFormBridge<PresetGetterBridge>('objectGetter')
 };
 
 export type PresetGetterDomKey = keyof typeof bridges;

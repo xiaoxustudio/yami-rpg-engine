@@ -173,6 +173,39 @@ pnpm coverage:selftest  # 门禁自证：持平判绿 / 下降判红 / 新目录
 >
 > 顺带一条实测：一次性脚本扫 75 个 `attachElementApi` 站点，其中 **45 个的成员在「其它文件」里找不到调用**，看着像死代码 —— 但抽查发现正是 `sync` 这类**由本文件内回归测试直接驱动**的桥（`components/__tests__/animation-frame-page-bridge.spec.ts` 里的 `el.sync?.()`）。结论：静态扫不到消费方 ≠ 可删。
 
+**元素契约迁移：从「元素 API」到「组件 defineExpose」**（2026-10-31 重新评估）
+
+现状实测（口径见 `pnpm migration:ledger`）：
+
+- ui-kit 的 18 个 `.vue` 用 `attachApi`，且**全部**同时有 `defineExpose` —— 双模已具备，先改 ui-kit 不是前置条件；
+- editor 的 30 个 `components/common/*` 包装组件带 `attachElementApi`，多数也已有 `defineExpose`；
+- **234 个 editor `.vue`** 仍用 `registryRef(...)` 把控件写进 `ElementRegistry`，消费方再用 `fieldEls.get(id)` / `localEls.get(id)` 取裸元素；
+- 台账：`yami-element-refs` 535 / 107 文件、`element-api-attach` 115、`element-registry-lookups` 1332。
+
+三种消费路径，对应三种迁移方式（**不要混用**）：
+
+1. **窗口/页面内部（.vue）**：`registryRef` → 模板 ref（`<SelectBox ref="box">`），调用 `box.value?.read()`。表单读写给 `setFormFields` / `getFormFields` 传自己的 `controlOf` 解析器，不再经过注册表（样板见 `components/tools/ExportLanguage.vue`）。
+2. **非 Vue 单例（命令 schema / 老 window 模块）**：走模块桥（`composables/form-bridge.ts` 的 `createFormBridge<Api>`）。控件级能力（`loadItems` 等）由窗口实现进桥，单例不再知道控件 id。
+3. **跨窗口共享助手**（`usePresetGetterWindow` 等）：按 key 建表的桥（`presetGetterBridge(domKey)`），助手只认 key。
+
+四个阶段（每阶段独立验收）：
+
+| 阶段 | 内容 | 完成判据 |
+| --- | --- | --- |
+| P1 契约类型 | ui-kit / 包装层导出 `XxxExpose = InstanceType<typeof Xxx>` | 各写各的字面量接口消失（现在有 3 份 `SelectBoxElement` 已在漂移） |
+| P2 批次迁移 | 一批一个面板家族：.vue 改模板 ref、单例改桥 | 该批 `registryRef` / `localEls.get` 归零；typecheck + **vue-tsc** + 相关 spec + `pnpm e2e` 全绿 |
+| P3 包装层收尾 | 某包装组件的 DOM 消费方归零后删它的 `attachElementApi` | `element-api-attach` 按包装组件逐个下降 |
+| P4 拆除 | 删 `attachApi` / `markApiAttached` / `ElementRegistry` / `registryRef` / `registryElement` / `YamiElement` | 三条轴归零，引擎层不再出现注册表 |
+
+批次顺序（按消费密度）：窗口类（6 个桥窗口已无 DOM 表单消费）→ 命令窗口族（`components/commands/*`，20-14 处/文件）→ inspector 页族 → scene / animation / palette 引擎域（最后，风险最高）。
+
+反模式（踩过或明确禁止）：
+
+- **双写**（既 `registryRef` 又模板 ref）：之后无法判断谁在驱动控件；
+- **读写分裂**（read 走 ref、write 仍走注册表）：懒挂载时序上必然翻车；
+- **一次性全仓替换 234 个文件**：每批必须能被单测 + 真机 E2E 自证；
+- ⚠️ **改 `.vue` 的类型必须过 `typecheck:vue`（vue-tsc）**：`tsc` 对 `.vue` 是假绿 —— 本轮把 `YamiElement` 收窄成 `HTMLElement` 时，3 个 `.vue` 在 `tsc` 下通过、在 `vue-tsc` 下报 `loadItems/write2` 缺失，只能回退。
+
 **新增工具窗口检查清单（懒挂载）**
 
 工具窗口是**按需挂载**的（`tools/tool-window-host.ts`）：控件 API 在组件挂载时才接线，

@@ -11,7 +11,7 @@ export interface SceneShiftBridge {
 	getForm(): SceneShiftForm;
 }
 
-const bridge = createFormBridge<SceneShiftForm>('scene-shift');
+const bridge = createFormBridge<SceneShiftBridge>('scene-shift');
 
 /** 组件挂载时登记。 */
 export const provideSceneShiftBridge = (api: SceneShiftBridge): void => bridge.provide(api);

@@ -1,5 +1,4 @@
 import { Window } from '@app/tools/window-object.ts';
-import { localEls } from '@app/local/element-registry';
 import { getExportLanguageBridge } from '@app/composables/export-language-bridge';
 import { Path } from '@app/utils/config';
 import { File } from '@app/file/file-system-core.ts';
@@ -38,7 +37,8 @@ export const ExportLanguage: {
 };
 
 ExportLanguage.initialize = function (this: typeof ExportLanguage) {
-	if (!localEls.get('exportLanguage')) return;
+	// 窗口是否挂载由桥自己回答（组件 onMounted 时 provide），不再摸元素注册表
+	if (!getExportLanguageBridge()) return;
 };
 
 ExportLanguage.open = function (this: typeof ExportLanguage) {
@@ -50,12 +50,12 @@ ExportLanguage.open = function (this: typeof ExportLanguage) {
 			value: language.name
 		});
 	}
-	// 导出语言窗口是懒挂载的：控件/桥可用后再填（首次打开也不丢）
+	// 导出语言窗口是懒挂载的：桥可用后再填（首次打开也不丢）。
+	// 候选项由窗口组件灌进自己的模板 ref，单例不再知道控件 id。
 	Window.openWith!('exportLanguage', () => {
-		localEls.get('exportLanguage-first')?.loadItems?.(items);
-		localEls.get('exportLanguage-second')?.loadItems?.([none, ...items]);
-		// 表单桥来自模块（窗口组件 onMounted 时登记），不再从窗口根元素的 DOM 属性上取
-		getExportLanguageBridge()?.setForm({ first: items[0]?.value ?? '', second: '' });
+		const bridge = getExportLanguageBridge();
+		bridge?.loadItems(items, [none, ...items]);
+		bridge?.setForm({ first: items[0]?.value ?? '', second: '' });
 	});
 };
 

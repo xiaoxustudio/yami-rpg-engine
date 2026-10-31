@@ -13,7 +13,7 @@ export interface IfConditionBridge {
 	getForm(): IfConditionForm;
 }
 
-const bridge = createFormBridge<IfConditionForm>('if-condition');
+const bridge = createFormBridge<IfConditionBridge>('if-condition');
 
 /** 组件挂载时登记。 */
 export const provideIfConditionBridge = (api: IfConditionBridge): void => bridge.provide(api);

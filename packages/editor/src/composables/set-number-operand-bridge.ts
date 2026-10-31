@@ -11,7 +11,7 @@ export interface SetNumberOperandBridge {
 	getForm(): NumberOperandForm;
 }
 
-const bridge = createFormBridge<NumberOperandForm>('setNumber-operand');
+const bridge = createFormBridge<SetNumberOperandBridge>('setNumber-operand');
 
 /** 组件挂载时登记。 */
 export const provideSetNumberOperandBridge = (api: SetNumberOperandBridge): void =>
