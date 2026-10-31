@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-10-31T12:32:55.128Z",
+	"generatedAt": "2026-10-31T13:02:18.557Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -263,8 +263,8 @@
 			"label": "YamiElement 类型引用（元素契约存量）",
 			"target": "zero",
 			"value": {
-				"total": 538,
-				"files": 108
+				"total": 527,
+				"files": 104
 			}
 		}
 	}
