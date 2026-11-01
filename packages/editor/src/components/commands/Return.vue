@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="return" :ref="registryRef(fieldEls, 'return')" @confirm="onConfirm">
+	<WindowFrame id="return" :ref="boxRef('return')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.return.title') }}
@@ -21,14 +21,14 @@
 				:label="t('components.return-boolean.label')"
 				id="return-boolean"
 				v-tip="t('components.return-boolean.tip')"
-				:ref="registryRef(fieldEls, 'return-boolean')"
+				:ref="boxRef('return-boolean')"
 				v-model="form.boolean"
 			/>
 			<div class="text">{{ t('components.return-number.label') }}</div>
 			<NumberVar
 				id="return-number"
 				v-tip="t('components.return-number.tip')"
-				:ref="registryRef(fieldEls, 'return-number')"
+				:ref="boxRef('return-number')"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
@@ -38,14 +38,14 @@
 			<StringVar
 				id="return-string"
 				v-tip="t('components.return-string.tip')"
-				:ref="registryRef(fieldEls, 'return-string')"
+				:ref="boxRef('return-string')"
 				v-model="form.string"
 			/>
 			<div class="text">{{ t('components.return-object.label') }}</div>
 			<CustomBox
 				id="return-object"
 				v-tip="t('components.return-object.tip')"
-				:ref="registryRef(fieldEls, 'return-object')"
+				:ref="boxRef('return-object')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -55,7 +55,7 @@
 			<CustomBox
 				id="return-actor"
 				v-tip="t('components.return-actor.tip')"
-				:ref="registryRef(fieldEls, 'return-actor')"
+				:ref="boxRef('return-actor')"
 				type="actor"
 				v-model="form.actor"
 			/>
@@ -63,7 +63,7 @@
 			<CustomBox
 				id="return-skill"
 				v-tip="t('components.return-skill.tip')"
-				:ref="registryRef(fieldEls, 'return-skill')"
+				:ref="boxRef('return-skill')"
 				type="skill"
 				v-model="form.skill"
 			/>
@@ -71,7 +71,7 @@
 			<CustomBox
 				id="return-state"
 				v-tip="t('components.return-state.tip')"
-				:ref="registryRef(fieldEls, 'return-state')"
+				:ref="boxRef('return-state')"
 				type="state"
 				v-model="form.state"
 			/>
@@ -79,7 +79,7 @@
 			<CustomBox
 				id="return-equipment"
 				v-tip="t('components.return-equipment.tip')"
-				:ref="registryRef(fieldEls, 'return-equipment')"
+				:ref="boxRef('return-equipment')"
 				type="equipment"
 				v-model="form.equipment"
 			/>
@@ -87,7 +87,7 @@
 			<CustomBox
 				id="return-item"
 				v-tip="t('components.return-item.tip')"
-				:ref="registryRef(fieldEls, 'return-item')"
+				:ref="boxRef('return-item')"
 				type="item"
 				v-model="form.item"
 			/>
@@ -95,7 +95,7 @@
 			<CustomBox
 				id="return-trigger"
 				v-tip="t('components.return-trigger.tip')"
-				:ref="registryRef(fieldEls, 'return-trigger')"
+				:ref="boxRef('return-trigger')"
 				type="trigger"
 				v-model="form.trigger"
 			/>
@@ -103,7 +103,7 @@
 			<CustomBox
 				id="return-light"
 				v-tip="t('components.return-light.tip')"
-				:ref="registryRef(fieldEls, 'return-light')"
+				:ref="boxRef('return-light')"
 				type="light"
 				v-model="form.light"
 			/>
@@ -111,7 +111,7 @@
 			<CustomBox
 				id="return-element"
 				v-tip="t('components.return-element.tip')"
-				:ref="registryRef(fieldEls, 'return-element')"
+				:ref="boxRef('return-element')"
 				type="element"
 				v-model="form.element"
 			/>
@@ -123,7 +123,29 @@
 import { createElementRegistry, registryRef } from '@app/utils/element-registry';
 import { composableEls } from '@app/composables/element-registry';
 
+/** 仍有全局消费方的那个控件（schema 要给它 loadItems），继续镜像进全局注册表。 */
 const fieldEls = createElementRegistry(composableEls);
+
+/** 其余控件只存在本窗口的局部表里（模板 ref 回调写入，见 boxRef）。 */
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useReturnCommandSchema } from '@app/composables/commands/useReturnCommandSchema';
@@ -143,7 +165,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('return-boolean')?.loadItems?.([
+	boxes['return-boolean']?.loadItems?.([
 		{ name: 'False', value: false },
 		{ name: 'True', value: true }
 	]);
@@ -151,18 +173,18 @@ onMounted(() => {
 		.get('return-type')
 		?.enableHiddenMode?.()
 		?.relate?.([
-			{ case: 'boolean', targets: [fieldEls.get('return-boolean')] },
-			{ case: 'number', targets: [fieldEls.get('return-number')] },
-			{ case: 'string', targets: [fieldEls.get('return-string')] },
-			{ case: 'object', targets: [fieldEls.get('return-object')] },
-			{ case: 'actor', targets: [fieldEls.get('return-actor')] },
-			{ case: 'skill', targets: [fieldEls.get('return-skill')] },
-			{ case: 'state', targets: [fieldEls.get('return-state')] },
-			{ case: 'equipment', targets: [fieldEls.get('return-equipment')] },
-			{ case: 'item', targets: [fieldEls.get('return-item')] },
-			{ case: 'trigger', targets: [fieldEls.get('return-trigger')] },
-			{ case: 'light', targets: [fieldEls.get('return-light')] },
-			{ case: 'element', targets: [fieldEls.get('return-element')] }
+			{ case: 'boolean', targets: [boxes['return-boolean']] },
+			{ case: 'number', targets: [boxes['return-number']] },
+			{ case: 'string', targets: [boxes['return-string']] },
+			{ case: 'object', targets: [boxes['return-object']] },
+			{ case: 'actor', targets: [boxes['return-actor']] },
+			{ case: 'skill', targets: [boxes['return-skill']] },
+			{ case: 'state', targets: [boxes['return-state']] },
+			{ case: 'equipment', targets: [boxes['return-equipment']] },
+			{ case: 'item', targets: [boxes['return-item']] },
+			{ case: 'trigger', targets: [boxes['return-trigger']] },
+			{ case: 'light', targets: [boxes['return-light']] },
+			{ case: 'element', targets: [boxes['return-element']] }
 		]);
 });
 </script>
