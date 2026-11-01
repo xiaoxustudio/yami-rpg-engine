@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setElement" :ref="registryRef(fieldEls, 'setElement')" @confirm="onConfirm">
+	<WindowFrame id="setElement" :ref="boxRef('setElement')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setElement.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.setElement-element.label') }}</div>
 			<CustomBox
 				id="setElement-element"
-				:ref="registryRef(fieldEls, 'setElement-element')"
+				:ref="boxRef('setElement-element')"
 				v-tip="t('components.setElement-element.tip')"
 				v-focus
 				type="element"
@@ -21,7 +21,7 @@
 				:label="t('components.setElement-operation.label')"
 				id="setElement-operation"
 				v-tip="t('components.setElement-operation.tip')"
-				:ref="registryRef(fieldEls, 'setElement-operation')"
+				:ref="boxRef('setElement-operation')"
 				v-model="form.operation"
 			/>
 		</div>
@@ -30,10 +30,6 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetElementCommandSchema } from '@app/composables/commands/useSetElementCommandSchema';
@@ -41,6 +37,28 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用局部模板 ref 回调（存**元素**，relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 
 const { t } = useI18n();
 
@@ -62,7 +80,7 @@ onMounted(() => {
 			'move-to-first',
 			'move-to-last'
 		],
-		(items) => fieldEls.get('setElement-operation')?.loadItems?.(items),
+		(items) => boxes['setElement-operation']?.loadItems?.(items),
 		{
 			hide: 'command.setElement.hide',
 			show: 'command.setElement.show',

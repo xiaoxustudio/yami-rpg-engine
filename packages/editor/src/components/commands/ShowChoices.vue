@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="showChoices" :ref="registryRef(fieldEls, 'showChoices')" @confirm="onConfirm">
+	<WindowFrame id="showChoices" :ref="boxRef('showChoices')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.showChoices.title') }}
@@ -11,7 +11,7 @@
 			<ParamList
 				id="showChoices-choices"
 				v-tip="t('components.showChoices-choices.tip')"
-				:ref="registryRef(fieldEls, 'showChoices-choices')"
+				:ref="boxRef('showChoices-choices')"
 				v-focus
 				v-model="form.choices"
 			/>
@@ -19,7 +19,7 @@
 			<TextBox
 				:label="t('components.showChoices-parameters.label')"
 				id="showChoices-parameters"
-				:ref="registryRef(fieldEls, 'showChoices-parameters')"
+				:ref="boxRef('showChoices-parameters')"
 				v-tip="t('components.showChoices-parameters.tip')"
 				v-model="form.parameters"
 			/>
@@ -28,10 +28,6 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { on } from '@app/utils/element-utils.ts';
@@ -44,6 +40,28 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 
+// 控件用局部模板 ref 回调（存**元素**，relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
+
 const { t } = useI18n();
 
 const { form, save, windowClosed } = useShowChoicesCommandSchema();
@@ -53,8 +71,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('showChoices-choices')?.bind?.(Choices);
-	on(fieldEls.get('showChoices'), 'closed', () => windowClosed(new Event('closed')));
+	boxes['showChoices-choices']?.bind?.(Choices);
+	on(boxes['showChoices'], 'closed', () => windowClosed(new Event('closed')));
 });
 </script>
 

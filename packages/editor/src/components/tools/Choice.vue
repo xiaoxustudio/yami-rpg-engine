@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="choice" :ref="registryRef(fieldEls, 'choice')" @confirm="onConfirm">
+	<WindowFrame id="choice" :ref="boxRef('choice')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.choice.title') }}
@@ -11,7 +11,7 @@
 			<TextBox
 				:label="t('components.choice-content.label')"
 				id="choice-content"
-				:ref="registryRef(fieldEls, 'choice-content')"
+				:ref="boxRef('choice-content')"
 				v-tip="t('components.choice-content.tip')"
 				v-focus
 				v-model="form.content"
@@ -22,10 +22,6 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { on } from '@app/utils/element-utils.ts';
@@ -33,6 +29,28 @@ import { useChoicesSchema } from '@app/composables/useChoicesSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
+
+// 控件用局部模板 ref 回调（存**元素**，relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 
 const Choices = useChoicesSchema();
 
@@ -45,7 +63,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	on(fieldEls.get('choice'), 'closed', () => Choices.windowClosed?.(new Event('closed')));
+	on(boxes['choice'], 'closed', () => Choices.windowClosed?.(new Event('closed')));
 });
 </script>
 

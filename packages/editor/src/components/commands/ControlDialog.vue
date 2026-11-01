@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="controlDialog"
-		:ref="registryRef(fieldEls, 'controlDialog')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="controlDialog" :ref="boxRef('controlDialog')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.controlDialog.title') }}
@@ -14,7 +10,7 @@
 			<div class="text">{{ t('components.controlDialog-element.label') }}</div>
 			<CustomBox
 				id="controlDialog-element"
-				:ref="registryRef(fieldEls, 'controlDialog-element')"
+				:ref="boxRef('controlDialog-element')"
 				v-tip="t('components.controlDialog-element.tip')"
 				v-focus
 				type="element"
@@ -25,7 +21,7 @@
 				:label="t('components.controlDialog-operation.label')"
 				id="controlDialog-operation"
 				v-tip="t('components.controlDialog-operation.tip')"
-				:ref="registryRef(fieldEls, 'controlDialog-operation')"
+				:ref="boxRef('controlDialog-operation')"
 				v-model="form.operation"
 			/>
 		</div>
@@ -34,10 +30,6 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useControlDialogCommandSchema } from '@app/composables/commands/useControlDialogCommandSchema';
@@ -45,6 +37,28 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用局部模板 ref 回调（存**元素**，relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 
 const { t } = useI18n();
 
@@ -58,7 +72,7 @@ onMounted(() => {
 	useLocalizedOptions(
 		'controlDialog-operation',
 		['pause', 'continue', 'print-immediately', 'print-next-page'],
-		(items) => fieldEls.get('controlDialog-operation')?.loadItems?.(items),
+		(items) => boxes['controlDialog-operation']?.loadItems?.(items),
 		{
 			pause: 'command.controlDialog.pause',
 			continue: 'command.controlDialog.continue',

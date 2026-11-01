@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="createGlobalActor"
-		:ref="registryRef(fieldEls, 'createGlobalActor')"
+		:ref="boxRef('createGlobalActor')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -15,7 +15,7 @@
 			<div class="text">{{ t('components.createGlobalActor-actorId.label') }}</div>
 			<CustomBox
 				id="createGlobalActor-actorId"
-				:ref="registryRef(fieldEls, 'createGlobalActor-actorId')"
+				:ref="boxRef('createGlobalActor-actorId')"
 				v-tip="t('components.createGlobalActor-actorId.tip')"
 				v-focus
 				type="file"
@@ -27,7 +27,7 @@
 				:label="t('components.createGlobalActor-teamId.label')"
 				id="createGlobalActor-teamId"
 				v-tip="t('components.createGlobalActor-teamId.tip')"
-				:ref="registryRef(fieldEls, 'createGlobalActor-teamId')"
+				:ref="boxRef('createGlobalActor-teamId')"
 				v-model="form.teamId"
 			/>
 		</div>
@@ -35,10 +35,6 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCreateGlobalActorCommandSchema } from '@app/composables/commands/useCreateGlobalActorCommandSchema';
@@ -47,6 +43,28 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用局部模板 ref 回调（存**元素**，relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 
 const { t } = useI18n();
 
@@ -58,7 +76,7 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('createGlobalActor-teamId')?.loadItems?.(Data.createTeamItems!());
+	boxes['createGlobalActor-teamId']?.loadItems?.(Data.createTeamItems!());
 };
 
 onMounted(() => {});

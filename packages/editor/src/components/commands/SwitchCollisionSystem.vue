@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="switchCollisionSystem"
-		:ref="registryRef(fieldEls, 'switchCollisionSystem')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="switchCollisionSystem" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.switchCollisionSystem.title') }}
@@ -16,7 +12,7 @@
 				:label="t('components.switchCollisionSystem-operation.label')"
 				id="switchCollisionSystem-operation"
 				v-tip="t('components.switchCollisionSystem-operation.tip')"
-				:ref="registryRef(fieldEls, 'switchCollisionSystem-operation')"
+				ref="switchCollisionSystemOperationBox"
 				v-focus
 				v-model="form.operation"
 			/>
@@ -26,16 +22,15 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSwitchCollisionSystemCommandSchema } from '@app/composables/commands/useSwitchCollisionSystemCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用模板 ref（组件 defineExpose），不再注册进 ElementRegistry。
+const switchCollisionSystemOperationBox = ref<InstanceType<typeof SelectBox> | null>(null);
 
 const { t } = useI18n();
 
@@ -54,7 +49,7 @@ onMounted(() => {
 			'enable-scene-collision',
 			'disable-scene-collision'
 		],
-		(items) => fieldEls.get('switchCollisionSystem-operation')?.loadItems?.(items)
+		(items) => switchCollisionSystemOperationBox.value?.loadItems?.(items)
 	);
 });
 </script>

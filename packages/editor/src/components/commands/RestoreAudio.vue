@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="restoreAudio"
-		:ref="registryRef(fieldEls, 'restoreAudio')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="restoreAudio" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.restoreAudio.title') }}
@@ -16,7 +12,7 @@
 				:label="t('components.restoreAudio-type.label')"
 				id="restoreAudio-type"
 				v-tip="t('components.restoreAudio-type.tip')"
-				:ref="registryRef(fieldEls, 'restoreAudio-type')"
+				ref="restoreAudioTypeBox"
 				v-focus
 				v-model="form.type"
 			/>
@@ -25,16 +21,15 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRestoreAudioCommandSchema } from '@app/composables/commands/useRestoreAudioCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用模板 ref（组件 defineExpose），不再注册进 ElementRegistry。
+const restoreAudioTypeBox = ref<InstanceType<typeof SelectBox> | null>(null);
 
 const { t } = useI18n();
 
@@ -45,7 +40,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('restoreAudio-type')?.loadItems?.([
+	restoreAudioTypeBox.value?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' }
