@@ -10,6 +10,12 @@
  * 由 `vFocus` 指令在元素上按 **DOM id** 匹配（`directives/focus.ts`），全程不碰注册表。
  * 早期把它算成消费方，会把「被卡住」的窗口数虚增一大截。
  *
+ * ⚠️ 口径边界（别把「无消费方」当成「可以无脑改」）：本脚本只认**字面量 id**。
+ * 动态读取（`els.get(windowId)`、遍历注册表、`windowShellEls` 这类壳注册表）它看不见 ——
+ * 所以每个窗口仍要人工确认三件事：
+ *   1. 根元素是否已被 `WindowFrame.vue` 自动登记进 `windowShellEls`（那样再写一次是冗余）；
+ *   2. 窗口是否靠「壳注册表」被 `Window.open/close/activate` 找到（`windowShellEls` 是查找表）；
+ *   3. 该窗口有没有被命令 schema 按 `getElementById` 之外的方式驱动。
  * 用法：
  *   node scripts/contract-inventory.mjs            # 按窗口列出 id 与消费方类型
  *   node scripts/contract-inventory.mjs --json     # 机器可读

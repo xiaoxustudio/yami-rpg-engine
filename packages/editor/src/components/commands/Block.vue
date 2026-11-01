@@ -1,10 +1,5 @@
 <template>
-	<WindowFrame
-		id="block"
-		:ref="registryRef(fieldEls, 'block')"
-		@confirm="onConfirm"
-		@closed="reset"
-	>
+	<WindowFrame id="block" @confirm="onConfirm" @closed="reset">
 		<template #title
 			><TitleBar
 				>{{ t('components.block.title') }}
@@ -14,20 +9,14 @@
 		<TextBox
 			id="block-note"
 			:placeholder="t('components.block-note.placeholder')"
-			:ref="registryRef(fieldEls, 'block-note')"
 			v-tip="t('components.block-note.tip')"
 			v-focus
 			v-model="note"
 		/>
-		<CheckBox
-			id="block-asynchronous"
-			:ref="registryRef(fieldEls, 'block-asynchronous')"
-			class="standard"
-			v-model="asynchronous"
+		<CheckBox id="block-asynchronous" class="standard" v-model="asynchronous"
 			><div
 				class="text"
 				id="block-asynchronous-label"
-				:ref="registryRef(fieldEls, 'block-asynchronous-label')"
 				v-tip="t('components.block-asynchronous-label.tip')"
 			>
 				{{ t('components.block-asynchronous-label.content') }}
@@ -37,10 +26,6 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useBlockCommandSchema } from '@app/composables/commands/useBlockCommandSchema';
@@ -67,39 +52,9 @@ const asynchronous = computed({
 	}
 });
 
-defineExpose({ form });
-
 const onConfirm = () => {
 	save();
 };
+
+defineExpose({ form });
 </script>
-
-<style>
-#block {
-	width: 520px;
-	height: 98px;
-}
-
-#block-note {
-	position: absolute;
-	left: 10px;
-	top: 10px;
-	width: 500px;
-}
-
-#block-asynchronous {
-	position: absolute;
-	left: 10px;
-	bottom: 10px;
-}
-
-#block-confirm {
-	right: 108px;
-	bottom: 10px;
-}
-
-#block-cancel {
-	right: 10px;
-	bottom: 10px;
-}
-</style>

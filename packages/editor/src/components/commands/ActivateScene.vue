@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="activateScene"
-		:ref="registryRef(fieldEls, 'activateScene')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="activateScene" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.activateScene.title') }}
@@ -13,10 +9,10 @@
 		<div class="grid-box">
 			<div class="text">{{ t('components.activateScene-pointer.label') }}</div>
 			<SelectBox
+				ref="pointerBox"
 				:label="t('components.activateScene-pointer.label')"
 				id="activateScene-pointer"
 				v-tip="t('components.activateScene-pointer.tip')"
-				:ref="registryRef(fieldEls, 'activateScene-pointer')"
 				v-focus
 				v-model="form.pointer"
 			/>
@@ -25,13 +21,9 @@
 </template>
 
 <script setup lang="ts">
-import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { useActivateSceneCommandSchema } from '@app/composables/commands/useActivateSceneCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -41,13 +33,17 @@ const { t } = useI18n();
 
 const { form, save } = useActivateSceneCommandSchema();
 
+// 控件用模板 ref（组件 defineExpose），不再注册进 ElementRegistry。
+// 本窗口的两个 id 都没有跨文件的全局消费方（见 scripts/contract-inventory.mjs）。
+const pointerBox = ref<InstanceType<typeof SelectBox> | null>(null);
+
 const onConfirm = () => {
 	save();
 };
 
 onMounted(() => {
 	useLocalizedOptions('activateScene-pointer', [0, 1], (items) =>
-		fieldEls.get('activateScene-pointer')?.loadItems?.(items)
+		pointerBox.value?.loadItems?.(items)
 	);
 });
 </script>
