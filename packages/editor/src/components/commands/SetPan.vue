@@ -1,10 +1,5 @@
 <template>
-	<WindowFrame
-		id="setPan"
-		:ref="registryRef(fieldEls, 'setPan')"
-		@confirm="onConfirm"
-		@open="onWindowOpen"
-	>
+	<WindowFrame id="setPan" :ref="boxRef('setPan')" @confirm="onConfirm" @open="onWindowOpen">
 		<template #title
 			><TitleBar
 				>{{ t('components.setPan.title') }}
@@ -17,14 +12,14 @@
 				:label="t('components.setPan-type.label')"
 				id="setPan-type"
 				v-tip="t('components.setPan-type.tip')"
-				:ref="registryRef(fieldEls, 'setPan-type')"
+				:ref="boxRef('setPan-type')"
 				v-focus
 				v-model="form.type"
 			/>
 			<div class="text">{{ t('components.setPan-pan.label') }}</div>
 			<NumberVar
 				id="setPan-pan"
-				:ref="registryRef(fieldEls, 'setPan-pan')"
+				:ref="boxRef('setPan-pan')"
 				v-tip="t('components.setPan-pan.tip')"
 				min="-1"
 				max="1"
@@ -36,7 +31,7 @@
 			<SelectBox
 				:label="t('components.setPan-easingId.label')"
 				id="setPan-easingId"
-				:ref="registryRef(fieldEls, 'setPan-easingId')"
+				:ref="boxRef('setPan-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -44,7 +39,7 @@
 			<NumberBox
 				:label="t('components.setPan-duration.label')"
 				id="setPan-duration"
-				:ref="registryRef(fieldEls, 'setPan-duration')"
+				:ref="boxRef('setPan-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -55,7 +50,7 @@
 			<SelectBox
 				:label="t('components.setPan-wait.label')"
 				id="setPan-wait"
-				:ref="registryRef(fieldEls, 'setPan-wait')"
+				:ref="boxRef('setPan-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -65,10 +60,6 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetPanCommandSchema } from '@app/composables/commands/useSetPanCommandSchema';
@@ -78,6 +69,28 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 
 const { t } = useI18n();
 
@@ -96,18 +109,18 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('setPan-easingId')?.loadItems?.(Data.createEasingItems!());
+	boxes['setPan-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
-	fieldEls.get('setPan-type')?.loadItems?.([
+	boxes['setPan-type']?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' },
 		{ name: 'SE', value: 'se' }
 	]);
 	useLocalizedOptions('setPan-wait', [true, false], (items) =>
-		fieldEls.get('setPan-wait')?.loadItems?.(items)
+		boxes['setPan-wait']?.loadItems?.(items)
 	);
 });
 </script>

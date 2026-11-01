@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="moveLight"
-		:ref="registryRef(fieldEls, 'moveLight')"
+		:ref="boxRef('moveLight')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 		@closed="onClosed"
@@ -16,7 +16,7 @@
 			<div class="text">{{ t('components.moveLight-light.label') }}</div>
 			<CustomBox
 				id="moveLight-light"
-				:ref="registryRef(fieldEls, 'moveLight-light')"
+				:ref="boxRef('moveLight-light')"
 				v-focus
 				type="light"
 				v-model="form.light"
@@ -24,7 +24,7 @@
 			<div class="text">{{ t('components.moveLight-properties.label') }}</div>
 			<ParamList
 				id="moveLight-properties"
-				:ref="registryRef(fieldEls, 'moveLight-properties')"
+				:ref="boxRef('moveLight-properties')"
 				v-focus
 				v-model="form.properties"
 			/>
@@ -32,7 +32,7 @@
 			<SelectBox
 				:label="t('components.moveLight-easingId.label')"
 				id="moveLight-easingId"
-				:ref="registryRef(fieldEls, 'moveLight-easingId')"
+				:ref="boxRef('moveLight-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -40,7 +40,7 @@
 			<NumberBox
 				:label="t('components.moveLight-duration.label')"
 				id="moveLight-duration"
-				:ref="registryRef(fieldEls, 'moveLight-duration')"
+				:ref="boxRef('moveLight-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -51,7 +51,7 @@
 			<SelectBox
 				:label="t('components.moveLight-wait.label')"
 				id="moveLight-wait"
-				:ref="registryRef(fieldEls, 'moveLight-wait')"
+				:ref="boxRef('moveLight-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -61,10 +61,6 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveLightCommandSchema } from '@app/composables/commands/useMoveLightCommandSchema';
@@ -77,6 +73,28 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 
 const { t } = useI18n();
 
@@ -95,18 +113,18 @@ const onConfirm = () => {
 
 /** 窗口关闭时清理。 */
 const onClosed = () => {
-	clear(fieldEls.get('moveLight-properties'));
+	clear(boxes['moveLight-properties']);
 };
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('moveLight-easingId')?.loadItems?.(Data.createEasingItems!());
+	boxes['moveLight-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
-	fieldEls.get('moveLight-properties')?.bind?.(LightProperty);
+	boxes['moveLight-properties']?.bind?.(LightProperty);
 	useLocalizedOptions('moveLight-wait', [true, false], (items) =>
-		fieldEls.get('moveLight-wait')?.loadItems?.(items)
+		boxes['moveLight-wait']?.loadItems?.(items)
 	);
 });
 </script>

@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="moveElement"
-		:ref="registryRef(fieldEls, 'moveElement')"
+		:ref="boxRef('moveElement')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 		@closed="onClosed"
@@ -16,7 +16,7 @@
 			<div class="text">{{ t('components.moveElement-element.label') }}</div>
 			<CustomBox
 				id="moveElement-element"
-				:ref="registryRef(fieldEls, 'moveElement-element')"
+				:ref="boxRef('moveElement-element')"
 				v-tip="t('components.moveElement-element.tip')"
 				v-focus
 				type="element"
@@ -25,7 +25,7 @@
 			<div class="text">{{ t('components.moveElement-properties.label') }}</div>
 			<ParamList
 				id="moveElement-properties"
-				:ref="registryRef(fieldEls, 'moveElement-properties')"
+				:ref="boxRef('moveElement-properties')"
 				v-focus
 				v-model="form.properties"
 			/>
@@ -33,7 +33,7 @@
 			<SelectBox
 				:label="t('components.moveElement-easingId.label')"
 				id="moveElement-easingId"
-				:ref="registryRef(fieldEls, 'moveElement-easingId')"
+				:ref="boxRef('moveElement-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -41,7 +41,7 @@
 			<NumberBox
 				:label="t('components.moveElement-duration.label')"
 				id="moveElement-duration"
-				:ref="registryRef(fieldEls, 'moveElement-duration')"
+				:ref="boxRef('moveElement-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -52,7 +52,7 @@
 			<SelectBox
 				:label="t('components.moveElement-wait.label')"
 				id="moveElement-wait"
-				:ref="registryRef(fieldEls, 'moveElement-wait')"
+				:ref="boxRef('moveElement-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -62,10 +62,6 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveElementCommandSchema } from '@app/composables/commands/useMoveElementCommandSchema';
@@ -78,6 +74,28 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 
 const { t } = useI18n();
 
@@ -96,18 +114,18 @@ const onConfirm = () => {
 
 /** 窗口关闭时清理。 */
 const onClosed = () => {
-	clear(fieldEls.get('moveElement-properties'));
+	clear(boxes['moveElement-properties']);
 };
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('moveElement-easingId')?.loadItems?.(Data.createEasingItems!());
+	boxes['moveElement-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
-	fieldEls.get('moveElement-properties')?.bind?.(TransformProperty);
+	boxes['moveElement-properties']?.bind?.(TransformProperty);
 	useLocalizedOptions('moveElement-wait', [true, false], (items) =>
-		fieldEls.get('moveElement-wait')?.loadItems?.(items)
+		boxes['moveElement-wait']?.loadItems?.(items)
 	);
 });
 </script>

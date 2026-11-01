@@ -1,10 +1,5 @@
 <template>
-	<WindowFrame
-		id="setAngle"
-		:ref="registryRef(fieldEls, 'setAngle')"
-		@confirm="onConfirm"
-		@open="onWindowOpen"
-	>
+	<WindowFrame id="setAngle" :ref="boxRef('setAngle')" @confirm="onConfirm" @open="onWindowOpen">
 		<template #title
 			><TitleBar
 				>{{ t('components.setAngle.title') }}
@@ -15,7 +10,7 @@
 			<div class="text">{{ t('components.setAngle-actor.label') }}</div>
 			<CustomBox
 				id="setAngle-actor"
-				:ref="registryRef(fieldEls, 'setAngle-actor')"
+				:ref="boxRef('setAngle-actor')"
 				v-tip="t('components.setAngle-actor.tip')"
 				v-focus
 				type="actor"
@@ -24,7 +19,7 @@
 			<div class="text">{{ t('components.setAngle-angle.label') }}</div>
 			<CustomBox
 				id="setAngle-angle"
-				:ref="registryRef(fieldEls, 'setAngle-angle')"
+				:ref="boxRef('setAngle-angle')"
 				v-tip="t('components.setAngle-angle.tip')"
 				type="angle"
 				v-model="form.angle"
@@ -33,14 +28,14 @@
 			<SelectBox
 				:label="t('components.setAngle-easingId.label')"
 				id="setAngle-easingId"
-				:ref="registryRef(fieldEls, 'setAngle-easingId')"
+				:ref="boxRef('setAngle-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
 			<div class="text">{{ t('components.setAngle-duration.label') }}</div>
 			<NumberVar
 				id="setAngle-duration"
-				:ref="registryRef(fieldEls, 'setAngle-duration')"
+				:ref="boxRef('setAngle-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -51,7 +46,7 @@
 			<SelectBox
 				:label="t('components.setAngle-wait.label')"
 				id="setAngle-wait"
-				:ref="registryRef(fieldEls, 'setAngle-wait')"
+				:ref="boxRef('setAngle-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -61,10 +56,6 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAngleCommandSchema } from '@app/composables/commands/useSetAngleCommandSchema';
@@ -74,6 +65,28 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 
 const { t } = useI18n();
 
@@ -85,12 +98,12 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('setAngle-easingId')?.loadItems?.(Data.createEasingItems!());
+	boxes['setAngle-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
 	useLocalizedOptions('setAngle-wait', [true, false], (items) =>
-		fieldEls.get('setAngle-wait')?.loadItems?.(items)
+		boxes['setAngle-wait']?.loadItems?.(items)
 	);
 });
 </script>

@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="requestURL" :ref="registryRef(fieldEls, 'requestURL')" @confirm="onConfirm">
+	<WindowFrame id="requestURL" :ref="boxRef('requestURL')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.requestURL.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.requestURL-url.label') }}</div>
 			<StringVar
 				id="requestURL-url"
-				:ref="registryRef(fieldEls, 'requestURL-url')"
+				:ref="boxRef('requestURL-url')"
 				v-tip="t('components.requestURL-url.tip')"
 				v-focus
 				v-model="form.url"
@@ -19,7 +19,7 @@
 			<ParamList
 				id="requestURL-header"
 				v-tip="t('components.requestURL-header.tip')"
-				:ref="registryRef(fieldEls, 'requestURL-header')"
+				:ref="boxRef('requestURL-header')"
 				v-model="form.headers"
 			/>
 			<div class="text">{{ t('components.requestURL-method.label') }}</div>
@@ -27,20 +27,20 @@
 				:label="t('components.requestURL-method.label')"
 				id="requestURL-method"
 				v-tip="t('components.requestURL-method.tip')"
-				:ref="registryRef(fieldEls, 'requestURL-method')"
+				:ref="boxRef('requestURL-method')"
 				v-model="form.method"
 			/>
 			<div class="text">{{ t('components.requestURL-data.label') }}</div>
 			<ParamList
 				id="requestURL-data"
 				v-tip="t('components.requestURL-data.tip')"
-				:ref="registryRef(fieldEls, 'requestURL-data')"
+				:ref="boxRef('requestURL-data')"
 				v-model="form.data"
 			/>
 			<div class="text">{{ t('components.requestURL-callback.label') }}</div>
 			<CustomBox
 				id="requestURL-callback"
-				:ref="registryRef(fieldEls, 'requestURL-callback')"
+				:ref="boxRef('requestURL-callback')"
 				v-tip="t('components.requestURL-callback.tip')"
 				type="file"
 				filter="event"
@@ -51,10 +51,6 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRequestURLCommandSchema } from '@app/composables/commands/useRequestURLCommandSchema';
@@ -66,6 +62,28 @@ import StringVar from '@app/components/common/StringVar.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
+
 const { t } = useI18n();
 
 const { form, save } = useRequestURLCommandSchema();
@@ -75,14 +93,14 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('requestURL-method')?.loadItems?.([
+	boxes['requestURL-method']?.loadItems?.([
 		{ name: 'GET', value: 'GET' },
 		{ name: 'POST', value: 'POST' },
 		{ name: 'PUT', value: 'PUT' },
 		{ name: 'DELETE', value: 'DELETE' }
 	]);
-	fieldEls.get('requestURL-header')?.bind?.(RequestkeyValueBind);
-	fieldEls.get('requestURL-data')?.bind?.(RequestkeyValueBind);
+	boxes['requestURL-header']?.bind?.(RequestkeyValueBind);
+	boxes['requestURL-data']?.bind?.(RequestkeyValueBind);
 });
 </script>
 

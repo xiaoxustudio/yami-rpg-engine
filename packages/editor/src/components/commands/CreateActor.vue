@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="createActor"
-		:ref="registryRef(fieldEls, 'createActor')"
+		:ref="boxRef('createActor')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -15,7 +15,7 @@
 			<div class="text">{{ t('components.createActor-actorId.label') }}</div>
 			<CustomBox
 				id="createActor-actorId"
-				:ref="registryRef(fieldEls, 'createActor-actorId')"
+				:ref="boxRef('createActor-actorId')"
 				v-tip="t('components.createActor-actorId.tip')"
 				v-focus
 				type="file"
@@ -27,13 +27,13 @@
 				:label="t('components.createActor-teamId.label')"
 				id="createActor-teamId"
 				v-tip="t('components.createActor-teamId.tip')"
-				:ref="registryRef(fieldEls, 'createActor-teamId')"
+				:ref="boxRef('createActor-teamId')"
 				v-model="form.teamId"
 			/>
 			<div class="text">{{ t('components.createActor-position.label') }}</div>
 			<CustomBox
 				id="createActor-position"
-				:ref="registryRef(fieldEls, 'createActor-position')"
+				:ref="boxRef('createActor-position')"
 				v-tip="t('components.createActor-position.tip')"
 				type="position"
 				v-model="form.position"
@@ -41,7 +41,7 @@
 			<div class="text">{{ t('components.createActor-angle.label') }}</div>
 			<NumberVar
 				id="createActor-angle"
-				:ref="registryRef(fieldEls, 'createActor-angle')"
+				:ref="boxRef('createActor-angle')"
 				v-tip="t('components.createActor-angle.tip')"
 				min="-360"
 				max="360"
@@ -54,10 +54,6 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCreateActorCommandSchema } from '@app/composables/commands/useCreateActorCommandSchema';
@@ -67,6 +63,28 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 
 const { t } = useI18n();
 
@@ -78,7 +96,7 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('createActor-teamId')?.loadItems?.(Data.createTeamItems!());
+	boxes['createActor-teamId']?.loadItems?.(Data.createTeamItems!());
 };
 
 onMounted(() => {});

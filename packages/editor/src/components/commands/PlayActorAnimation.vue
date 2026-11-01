@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="playActorAnimation"
-		:ref="registryRef(fieldEls, 'playActorAnimation')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="playActorAnimation" :ref="boxRef('playActorAnimation')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.playActorAnimation.title') }}
@@ -14,7 +10,7 @@
 			<div class="text">{{ t('components.playActorAnimation-actor.label') }}</div>
 			<CustomBox
 				id="playActorAnimation-actor"
-				:ref="registryRef(fieldEls, 'playActorAnimation-actor')"
+				:ref="boxRef('playActorAnimation-actor')"
 				v-tip="t('components.playActorAnimation-actor.tip')"
 				v-focus
 				type="actor"
@@ -23,7 +19,7 @@
 			<div class="text">{{ t('components.playActorAnimation-motion.label') }}</div>
 			<CustomBox
 				id="playActorAnimation-motion"
-				:ref="registryRef(fieldEls, 'playActorAnimation-motion')"
+				:ref="boxRef('playActorAnimation-motion')"
 				v-tip="t('components.playActorAnimation-motion.tip')"
 				type="enum-string"
 				v-model="form.motion"
@@ -31,7 +27,7 @@
 			<div class="text">{{ t('components.playActorAnimation-speed.label') }}</div>
 			<NumberVar
 				id="playActorAnimation-speed"
-				:ref="registryRef(fieldEls, 'playActorAnimation-speed')"
+				:ref="boxRef('playActorAnimation-speed')"
 				v-tip="t('components.playActorAnimation-speed.tip')"
 				min="0.1"
 				max="10"
@@ -43,7 +39,7 @@
 			<SelectBox
 				:label="t('components.playActorAnimation-wait.label')"
 				id="playActorAnimation-wait"
-				:ref="registryRef(fieldEls, 'playActorAnimation-wait')"
+				:ref="boxRef('playActorAnimation-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -53,10 +49,6 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayActorAnimationCommandSchema } from '@app/composables/commands/usePlayActorAnimationCommandSchema';
@@ -65,6 +57,28 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 
 const { t } = useI18n();
 
@@ -76,7 +90,7 @@ const onConfirm = () => {
 
 onMounted(() => {
 	useLocalizedOptions('playActorAnimation-wait', [true, false], (items) =>
-		fieldEls.get('playActorAnimation-wait')?.loadItems?.(items)
+		boxes['playActorAnimation-wait']?.loadItems?.(items)
 	);
 });
 </script>

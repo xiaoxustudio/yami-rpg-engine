@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="setZoomFactor"
-		:ref="registryRef(fieldEls, 'setZoomFactor')"
+		:ref="boxRef('setZoomFactor')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -15,7 +15,7 @@
 			<div class="text">{{ t('components.setZoomFactor-zoom.label') }}</div>
 			<NumberVar
 				id="setZoomFactor-zoom"
-				:ref="registryRef(fieldEls, 'setZoomFactor-zoom')"
+				:ref="boxRef('setZoomFactor-zoom')"
 				v-tip="t('components.setZoomFactor-zoom.tip')"
 				v-focus
 				min="1"
@@ -28,14 +28,14 @@
 			<SelectBox
 				:label="t('components.setZoomFactor-easingId.label')"
 				id="setZoomFactor-easingId"
-				:ref="registryRef(fieldEls, 'setZoomFactor-easingId')"
+				:ref="boxRef('setZoomFactor-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
 			<div class="text">{{ t('components.setZoomFactor-duration.label') }}</div>
 			<NumberVar
 				id="setZoomFactor-duration"
-				:ref="registryRef(fieldEls, 'setZoomFactor-duration')"
+				:ref="boxRef('setZoomFactor-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -46,7 +46,7 @@
 			<SelectBox
 				:label="t('components.setZoomFactor-wait.label')"
 				id="setZoomFactor-wait"
-				:ref="registryRef(fieldEls, 'setZoomFactor-wait')"
+				:ref="boxRef('setZoomFactor-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -56,10 +56,6 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetZoomFactorCommandSchema } from '@app/composables/commands/useSetZoomFactorCommandSchema';
@@ -68,6 +64,28 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 
 const { t } = useI18n();
 
@@ -79,12 +97,12 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('setZoomFactor-easingId')?.loadItems?.(Data.createEasingItems!());
+	boxes['setZoomFactor-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
 	useLocalizedOptions('setZoomFactor-wait', [true, false], (items) =>
-		fieldEls.get('setZoomFactor-wait')?.loadItems?.(items)
+		boxes['setZoomFactor-wait']?.loadItems?.(items)
 	);
 });
 </script>
