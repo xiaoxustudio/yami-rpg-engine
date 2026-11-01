@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="if" :ref="registryRef(fieldEls, 'if')" @confirm="onConfirm">
+	<WindowFrame id="if" :ref="boxRef('if')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.if.title') }}
@@ -10,20 +10,16 @@
 			<div class="text">{{ t('components.if-branches.label') }}</div>
 			<ParamList
 				id="if-branches"
-				:ref="registryRef(fieldEls, 'if-branches')"
+				:ref="boxRef('if-branches')"
 				v-focus
 				v-model="form.branches"
 			/>
 		</div>
-		<CheckBox
-			id="if-else"
-			:ref="registryRef(fieldEls, 'if-else')"
-			v-model="form.else"
-			class="standard"
+		<CheckBox id="if-else" :ref="boxRef('if-else')" v-model="form.else" class="standard"
 			><div
 				class="text"
 				id="if-else-label"
-				:ref="registryRef(fieldEls, 'if-else-label')"
+				:ref="boxRef('if-else-label')"
 				v-tip="t('components.if-else-label.tip')"
 			>
 				{{ t('components.if-else-label.content') }}
@@ -33,10 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { on } from '@app/utils/element-utils.ts';
@@ -49,6 +41,28 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 
+// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
+
 const { t } = useI18n();
 
 const { form, save, windowClosed } = useIfCommandSchema();
@@ -58,8 +72,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('if-branches')?.bind?.(IfBranch);
-	on(fieldEls.get('if'), 'closed', () => windowClosed(new Event('closed')));
+	boxes['if-branches']?.bind?.(IfBranch);
+	on(boxes['if'], 'closed', () => windowClosed(new Event('closed')));
 });
 </script>
 

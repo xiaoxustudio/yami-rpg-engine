@@ -33,7 +33,7 @@ function walk(dir, out = []) {
 		const full = join(dir, name);
 		const stat = statSync(full);
 		if (stat.isDirectory()) {
-			if (name === '__tests__' || name === 'node_modules') continue;
+			if (name === 'node_modules') continue;
 			walk(full, out);
 		} else if (/\.(ts|vue)$/.test(name)) {
 			out.push(full);
@@ -73,30 +73,72 @@ function consumersOf(id, ownerFile) {
 	return consumers;
 }
 
+/**
+ * 「被 spec 结构性守着」的命令窗口：某个 spec 既 import 了 `<Name>.vue`，又读
+ * `composableEls`，就说明它断言的是「按 id 驱动控件」的契约（典型是
+ * `command-write-loop-registry.spec`：schema 的 write 循环按 `${name}-${domId}` 拼 id）。
+ * 这类窗口即使源码里没有字面量消费方，也不能改成局部 ref —— 实测迁移后 3 个用例全红。
+ */
+function specGuardedWindows() {
+	const flagged = new Set();
+	for (const [file, text] of sources) {
+		const rel = relative(SRC, file);
+		if (!rel.endsWith('.spec.ts') || !text.includes('composableEls')) continue;
+		for (const match of text.matchAll(
+			/import\s+(\w+)\s+from\s+'@app\/components\/commands\/\w+\.vue';/g
+		)) {
+			flagged.add(match[1].charAt(0).toLowerCase() + match[1].slice(1));
+		}
+	}
+	return flagged;
+}
+
+const dynamicWindows = specGuardedWindows();
 const report = windows
 	.sort((a, b) => a.file.localeCompare(b.file))
-	.map((window) => ({
-		file: window.file,
-		ids: window.ids.map((id) => ({ id, consumers: consumersOf(id, window.file) }))
-	}));
+	.map((window) => {
+		const base =
+			window.file
+				.split(/[\\/]/)
+				.pop()
+				?.replace(/\.vue$/, '') ?? '';
+		const windowName = base.charAt(0).toLowerCase() + base.slice(1);
+		const schemaDynamic = dynamicWindows.has(windowName);
+		return {
+			file: window.file,
+			schemaDynamic,
+			ids: window.ids.map((id) => ({
+				id,
+				consumers: consumersOf(id, window.file),
+				schemaDynamic
+			}))
+		};
+	});
+
+const isBlocked = (window) =>
+	window.schemaDynamic || window.ids.some((entry) => entry.consumers.length > 0);
 
 if (AS_JSON) {
 	console.log(JSON.stringify({ windows: report }, null, 2));
 } else {
 	const totalWindows = report.length;
 	const totalIds = report.reduce((sum, window) => sum + window.ids.length, 0);
-	const blocked = report.filter((window) =>
-		window.ids.some((entry) => entry.consumers.length > 0)
-	);
+	const blocked = report.filter(isBlocked);
 	console.log(`仍用 registryRef 的窗口：${totalWindows} 个，共 ${totalIds} 个控件 id`);
-	console.log(`其中存在「全局消费方」的窗口：${blocked.length} 个（需先接桥再迁 ref）\n`);
+	console.log(
+		`其中「有全局消费方 / schema 动态读」的窗口：${blocked.length} 个（需先接桥或改测试）\n`
+	);
 	for (const window of report.slice(0, 15)) {
-		const flags = window.ids.filter((entry) => entry.consumers.length > 0);
-		const mark = flags.length > 0 ? '⚠' : '✓';
-		console.log(
-			`${mark} ${window.file}（${window.ids.length} 个 id${flags.length ? `，${flags.length} 个有全局消费` : ''}）`
-		);
-		for (const entry of flags.slice(0, 3))
+		const flaggedIds = window.ids.filter((entry) => entry.consumers.length > 0);
+		const mark = flaggedIds.length > 0 || window.schemaDynamic ? '⚠' : '✓';
+		const note = window.schemaDynamic
+			? `，schema 有动态读`
+			: flaggedIds.length
+				? `，${flaggedIds.length} 个有全局消费`
+				: '';
+		console.log(`${mark} ${window.file}（${window.ids.length} 个 id${note}）`);
+		for (const entry of flaggedIds.slice(0, 3)) {
 			console.log(`    ${entry.id} ← ${entry.consumers.join(' / ')}`);
+		}
 	}
 }

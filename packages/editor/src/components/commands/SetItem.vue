@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setItem" :ref="registryRef(fieldEls, 'setItem')" @confirm="onConfirm">
+	<WindowFrame id="setItem" :ref="boxRef('setItem')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setItem.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.setItem-item.label') }}</div>
 			<CustomBox
 				id="setItem-item"
-				:ref="registryRef(fieldEls, 'setItem-item')"
+				:ref="boxRef('setItem-item')"
 				v-tip="t('components.setItem-item.tip')"
 				v-focus
 				type="item"
@@ -21,13 +21,13 @@
 				:label="t('components.setItem-operation.label')"
 				id="setItem-operation"
 				v-tip="t('components.setItem-operation.tip')"
-				:ref="registryRef(fieldEls, 'setItem-operation')"
+				:ref="boxRef('setItem-operation')"
 				v-model="form.operation"
 			/>
 			<div class="text">{{ t('components.setItem-quantity.label') }}</div>
 			<NumberVar
 				id="setItem-quantity"
-				:ref="registryRef(fieldEls, 'setItem-quantity')"
+				:ref="boxRef('setItem-quantity')"
 				v-tip="t('components.setItem-quantity.tip')"
 				min="1"
 				max="10000"
@@ -39,10 +39,6 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetItemCommandSchema } from '@app/composables/commands/useSetItemCommandSchema';
@@ -51,6 +47,28 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
+type ControlElement = HTMLElement & {
+	loadItems?: (items: unknown[]) => unknown;
+	bind?: (value: unknown) => unknown;
+	write?: (value: unknown) => void;
+	read?: () => unknown;
+};
+const boxes: Record<string, ControlElement | null> = {};
+const boxRef = (id: string) => (el: unknown) => {
+	if (el == null) {
+		boxes[id] = null;
+		return;
+	}
+	if (el instanceof HTMLElement) {
+		boxes[id] = el as ControlElement;
+		return;
+	}
+	const instance = el as { $el?: unknown; root?: unknown };
+	const root = instance.$el ?? instance.root ?? null;
+	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
+};
 
 const { t } = useI18n();
 
@@ -62,7 +80,7 @@ const onConfirm = () => {
 
 onMounted(() => {
 	useLocalizedOptions('setItem-operation', ['increase', 'decrease'], (items) =>
-		fieldEls.get('setItem-operation')?.loadItems?.(items)
+		boxes['setItem-operation']?.loadItems?.(items)
 	);
 });
 </script>
