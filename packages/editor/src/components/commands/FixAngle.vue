@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="fixAngle" :ref="boxRef('fixAngle')" @confirm="onConfirm">
+	<WindowFrame id="fixAngle" :ref="controlRef('fixAngle')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.fixAngle.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.fixAngle-actor.label') }}</div>
 			<CustomBox
 				id="fixAngle-actor"
-				:ref="boxRef('fixAngle-actor')"
+				:ref="controlRef('fixAngle-actor')"
 				v-tip="t('components.fixAngle-actor.tip')"
 				v-focus
 				type="actor"
@@ -21,7 +21,7 @@
 				:label="t('components.fixAngle-fixed.label')"
 				id="fixAngle-fixed"
 				v-tip="t('components.fixAngle-fixed.tip')"
-				:ref="boxRef('fixAngle-fixed')"
+				:ref="controlRef('fixAngle-fixed')"
 				v-model="form.fixed"
 			/>
 		</div>
@@ -37,28 +37,12 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**，relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'fixAngle' | 'fixAngle-actor' | 'fixAngle-fixed';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -72,7 +56,7 @@ onMounted(() => {
 	useLocalizedOptions(
 		'fixAngle-fixed',
 		[true, false],
-		(items) => boxes['fixAngle-fixed']?.loadItems?.(items),
+		(items) => controls['fixAngle-fixed']?.loadItems?.(items),
 		{ true: 'command.fixAngle.fixed.true', false: 'command.fixAngle.fixed.false' }
 	);
 });

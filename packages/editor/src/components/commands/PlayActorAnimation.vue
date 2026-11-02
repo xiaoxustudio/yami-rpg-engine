@@ -1,5 +1,9 @@
 <template>
-	<WindowFrame id="playActorAnimation" :ref="boxRef('playActorAnimation')" @confirm="onConfirm">
+	<WindowFrame
+		id="playActorAnimation"
+		:ref="controlRef('playActorAnimation')"
+		@confirm="onConfirm"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.playActorAnimation.title') }}
@@ -10,7 +14,7 @@
 			<div class="text">{{ t('components.playActorAnimation-actor.label') }}</div>
 			<CustomBox
 				id="playActorAnimation-actor"
-				:ref="boxRef('playActorAnimation-actor')"
+				:ref="controlRef('playActorAnimation-actor')"
 				v-tip="t('components.playActorAnimation-actor.tip')"
 				v-focus
 				type="actor"
@@ -19,7 +23,7 @@
 			<div class="text">{{ t('components.playActorAnimation-motion.label') }}</div>
 			<CustomBox
 				id="playActorAnimation-motion"
-				:ref="boxRef('playActorAnimation-motion')"
+				:ref="controlRef('playActorAnimation-motion')"
 				v-tip="t('components.playActorAnimation-motion.tip')"
 				type="enum-string"
 				v-model="form.motion"
@@ -27,7 +31,7 @@
 			<div class="text">{{ t('components.playActorAnimation-speed.label') }}</div>
 			<NumberVar
 				id="playActorAnimation-speed"
-				:ref="boxRef('playActorAnimation-speed')"
+				:ref="controlRef('playActorAnimation-speed')"
 				v-tip="t('components.playActorAnimation-speed.tip')"
 				min="0.1"
 				max="10"
@@ -39,7 +43,7 @@
 			<SelectBox
 				:label="t('components.playActorAnimation-wait.label')"
 				id="playActorAnimation-wait"
-				:ref="boxRef('playActorAnimation-wait')"
+				:ref="controlRef('playActorAnimation-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -57,28 +61,17 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'playActorAnimation'
+	| 'playActorAnimation-actor'
+	| 'playActorAnimation-motion'
+	| 'playActorAnimation-speed'
+	| 'playActorAnimation-wait';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -90,7 +83,7 @@ const onConfirm = () => {
 
 onMounted(() => {
 	useLocalizedOptions('playActorAnimation-wait', [true, false], (items) =>
-		boxes['playActorAnimation-wait']?.loadItems?.(items)
+		controls['playActorAnimation-wait']?.loadItems?.(items)
 	);
 });
 </script>

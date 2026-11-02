@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setPan" :ref="boxRef('setPan')" @confirm="onConfirm" @open="onWindowOpen">
+	<WindowFrame id="setPan" :ref="controlRef('setPan')" @confirm="onConfirm" @open="onWindowOpen">
 		<template #title
 			><TitleBar
 				>{{ t('components.setPan.title') }}
@@ -12,14 +12,14 @@
 				:label="t('components.setPan-type.label')"
 				id="setPan-type"
 				v-tip="t('components.setPan-type.tip')"
-				:ref="boxRef('setPan-type')"
+				:ref="controlRef('setPan-type')"
 				v-focus
 				v-model="form.type"
 			/>
 			<div class="text">{{ t('components.setPan-pan.label') }}</div>
 			<NumberVar
 				id="setPan-pan"
-				:ref="boxRef('setPan-pan')"
+				:ref="controlRef('setPan-pan')"
 				v-tip="t('components.setPan-pan.tip')"
 				min="-1"
 				max="1"
@@ -31,7 +31,7 @@
 			<SelectBox
 				:label="t('components.setPan-easingId.label')"
 				id="setPan-easingId"
-				:ref="boxRef('setPan-easingId')"
+				:ref="controlRef('setPan-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -39,7 +39,7 @@
 			<NumberBox
 				:label="t('components.setPan-duration.label')"
 				id="setPan-duration"
-				:ref="boxRef('setPan-duration')"
+				:ref="controlRef('setPan-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -50,7 +50,7 @@
 			<SelectBox
 				:label="t('components.setPan-wait.label')"
 				id="setPan-wait"
-				:ref="boxRef('setPan-wait')"
+				:ref="controlRef('setPan-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -69,28 +69,18 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'setPan'
+	| 'setPan-duration'
+	| 'setPan-easingId'
+	| 'setPan-pan'
+	| 'setPan-type'
+	| 'setPan-wait';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -109,18 +99,18 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	boxes['setPan-easingId']?.loadItems?.(Data.createEasingItems!());
+	controls['setPan-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
-	boxes['setPan-type']?.loadItems?.([
+	controls['setPan-type']?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' },
 		{ name: 'SE', value: 'se' }
 	]);
 	useLocalizedOptions('setPan-wait', [true, false], (items) =>
-		boxes['setPan-wait']?.loadItems?.(items)
+		controls['setPan-wait']?.loadItems?.(items)
 	);
 });
 </script>

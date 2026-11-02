@@ -1,5 +1,5 @@
-﻿import { Command } from '@app/commands/command-object.ts';
-import { composableEls } from '@app/composables/element-registry';
+import { Command } from '@app/commands/command-object.ts';
+import { getChangeActorEquipmentBridge } from '@app/composables/change-actor-equipment-bridge';
 import { commit } from '@app/composables/useCommandSchema';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Token } from '@app/commands/token.ts';
@@ -82,9 +82,7 @@ const createDefault = (): Record<string, unknown> => {
 };
 
 const load = (params: Record<string, unknown> = {}): void => {
-	composableEls
-		.get('changeActorEquipment-slot')
-		?.loadItems?.(Enum.getStringItems!('equipment-slot'));
+	getChangeActorEquipmentBridge()?.loadItems(Enum.getStringItems!('equipment-slot'));
 	Object.assign(form, createDefault(), params);
 	requestFocus('changeActorEquipment-actor');
 };

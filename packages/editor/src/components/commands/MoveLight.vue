@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="moveLight"
-		:ref="boxRef('moveLight')"
+		:ref="controlRef('moveLight')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 		@closed="onClosed"
@@ -16,7 +16,7 @@
 			<div class="text">{{ t('components.moveLight-light.label') }}</div>
 			<CustomBox
 				id="moveLight-light"
-				:ref="boxRef('moveLight-light')"
+				:ref="controlRef('moveLight-light')"
 				v-focus
 				type="light"
 				v-model="form.light"
@@ -24,7 +24,7 @@
 			<div class="text">{{ t('components.moveLight-properties.label') }}</div>
 			<ParamList
 				id="moveLight-properties"
-				:ref="boxRef('moveLight-properties')"
+				:ref="controlRef('moveLight-properties')"
 				v-focus
 				v-model="form.properties"
 			/>
@@ -32,7 +32,7 @@
 			<SelectBox
 				:label="t('components.moveLight-easingId.label')"
 				id="moveLight-easingId"
-				:ref="boxRef('moveLight-easingId')"
+				:ref="controlRef('moveLight-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -40,7 +40,7 @@
 			<NumberBox
 				:label="t('components.moveLight-duration.label')"
 				id="moveLight-duration"
-				:ref="boxRef('moveLight-duration')"
+				:ref="controlRef('moveLight-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -51,7 +51,7 @@
 			<SelectBox
 				:label="t('components.moveLight-wait.label')"
 				id="moveLight-wait"
-				:ref="boxRef('moveLight-wait')"
+				:ref="controlRef('moveLight-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -73,28 +73,18 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'moveLight'
+	| 'moveLight-duration'
+	| 'moveLight-easingId'
+	| 'moveLight-light'
+	| 'moveLight-properties'
+	| 'moveLight-wait';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -113,18 +103,18 @@ const onConfirm = () => {
 
 /** 窗口关闭时清理。 */
 const onClosed = () => {
-	clear(boxes['moveLight-properties']);
+	clear(controlRoot(controls['moveLight-properties']));
 };
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	boxes['moveLight-easingId']?.loadItems?.(Data.createEasingItems!());
+	controls['moveLight-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
-	boxes['moveLight-properties']?.bind?.(LightProperty);
+	controls['moveLight-properties']?.bind?.(LightProperty);
 	useLocalizedOptions('moveLight-wait', [true, false], (items) =>
-		boxes['moveLight-wait']?.loadItems?.(items)
+		controls['moveLight-wait']?.loadItems?.(items)
 	);
 });
 </script>

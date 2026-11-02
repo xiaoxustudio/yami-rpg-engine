@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="renderOutline"
-		:ref="registryRef(fieldEls, 'renderOutline')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="renderOutline" :ref="controlRef('renderOutline')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.renderOutline.title') }}
@@ -16,7 +12,7 @@
 				:label="t('components.renderOutline-operation.label')"
 				id="renderOutline-operation"
 				v-tip="t('components.renderOutline-operation.tip')"
-				:ref="registryRef(fieldEls, 'renderOutline-operation')"
+				:ref="controlRef('renderOutline-operation')"
 				v-focus
 				v-model="form.operation"
 			/>
@@ -24,7 +20,7 @@
 			<CustomBox
 				id="renderOutline-actor"
 				v-tip="t('components.renderOutline-actor.tip')"
-				:ref="registryRef(fieldEls, 'renderOutline-actor')"
+				:ref="controlRef('renderOutline-actor')"
 				type="actor"
 				v-model="form.actor"
 			/>
@@ -33,7 +29,7 @@
 				:label="t('components.renderOutline-color.label')"
 				id="renderOutline-color"
 				v-tip="t('components.renderOutline-color.tip')"
-				:ref="registryRef(fieldEls, 'renderOutline-color')"
+				:ref="controlRef('renderOutline-color')"
 				v-model="color"
 			/>
 		</div>
@@ -42,10 +38,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRenderOutlineCommandSchema } from '@app/composables/commands/useRenderOutlineCommandSchema';
@@ -54,6 +47,16 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import ColorBox from '@app/components/common/ColorBox.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'renderOutline'
+	| 'renderOutline-actor'
+	| 'renderOutline-color'
+	| 'renderOutline-operation';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -74,23 +77,24 @@ onMounted(() => {
 	useLocalizedOptions(
 		'renderOutline-operation',
 		['add', 'remove', 'reset'],
-		(items) => fieldEls.get('renderOutline-operation')?.loadItems?.(items),
+		(items) => controls['renderOutline-operation']?.loadItems?.(items),
 		{
 			add: 'command.renderOutline.add',
 			remove: 'command.renderOutline.remove',
 			reset: 'command.renderOutline.reset'
 		}
 	);
-	fieldEls
-		.get('renderOutline-operation')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'add',
-				targets: [fieldEls.get('renderOutline-actor'), fieldEls.get('renderOutline-color')]
-			},
-			{ case: 'remove', targets: [fieldEls.get('renderOutline-actor')] }
-		]);
+	controls['renderOutline-operation']?.enableHiddenMode?.();
+	controls['renderOutline-operation']?.relate?.([
+		{
+			case: 'add',
+			targets: [
+				controlRoot(controls['renderOutline-actor']),
+				controlRoot(controls['renderOutline-color'])
+			]
+		},
+		{ case: 'remove', targets: [controlRoot(controls['renderOutline-actor'])] }
+	]);
 });
 </script>
 

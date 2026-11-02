@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="choice" :ref="boxRef('choice')" @confirm="onConfirm">
+	<WindowFrame id="choice" :ref="controlRef('choice')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.choice.title') }}
@@ -11,7 +11,7 @@
 			<TextBox
 				:label="t('components.choice-content.label')"
 				id="choice-content"
-				:ref="boxRef('choice-content')"
+				:ref="controlRef('choice-content')"
 				v-tip="t('components.choice-content.tip')"
 				v-focus
 				v-model="form.content"
@@ -29,28 +29,12 @@ import { useChoicesSchema } from '@app/composables/useChoicesSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**，relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'choice' | 'choice-content';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const Choices = useChoicesSchema();
 
@@ -63,7 +47,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	on(boxes['choice'], 'closed', () => Choices.windowClosed?.(new Event('closed')));
+	on(controls['choice'], 'closed', () => Choices.windowClosed?.(new Event('closed')));
 });
 </script>
 

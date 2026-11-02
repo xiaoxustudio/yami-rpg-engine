@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="setObjectAnimation"
-		:ref="registryRef(fieldEls, 'setObjectAnimation')"
+		:ref="controlRef('setObjectAnimation')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -14,14 +14,14 @@
 		<div
 			class="grid-box"
 			id="setObjectAnimation-grid-box"
-			:ref="registryRef(fieldEls, 'setObjectAnimation-grid-box')"
+			:ref="controlRef('setObjectAnimation-grid-box')"
 		>
 			<div class="text">{{ t('components.setObjectAnimation-sort.label') }}</div>
 			<SelectBox
 				:label="t('components.setObjectAnimation-sort.label')"
 				id="setObjectAnimation-sort"
 				v-tip="t('components.setObjectAnimation-sort.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-sort')"
+				:ref="controlRef('setObjectAnimation-sort')"
 				v-focus
 				v-model="form.sort"
 			/>
@@ -29,7 +29,7 @@
 			<CustomBox
 				id="setObjectAnimation-actor"
 				v-tip="t('components.setObjectAnimation-actor.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-actor')"
+				:ref="controlRef('setObjectAnimation-actor')"
 				type="actor"
 				v-model="form.actor"
 			/>
@@ -37,7 +37,7 @@
 			<CustomBox
 				id="setObjectAnimation-trigger"
 				v-tip="t('components.setObjectAnimation-trigger.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-trigger')"
+				:ref="controlRef('setObjectAnimation-trigger')"
 				type="trigger"
 				v-model="form.trigger"
 			/>
@@ -45,7 +45,7 @@
 			<CustomBox
 				id="setObjectAnimation-animation"
 				v-tip="t('components.setObjectAnimation-animation.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-animation')"
+				:ref="controlRef('setObjectAnimation-animation')"
 				type="object"
 				v-model="form.animation"
 			/>
@@ -54,7 +54,7 @@
 				:label="t('components.setObjectAnimation-operation.label')"
 				id="setObjectAnimation-operation"
 				v-tip="t('components.setObjectAnimation-operation.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-operation')"
+				:ref="controlRef('setObjectAnimation-operation')"
 				v-model="form.operation"
 			/>
 			<div class="text">{{ t('components.setObjectAnimation-tint-0.label') }}</div>
@@ -62,7 +62,7 @@
 				:label="t('components.setObjectAnimation-tint-0.label')"
 				id="setObjectAnimation-tint-0"
 				v-tip="t('components.setObjectAnimation-tint-0.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-0')"
+				:ref="controlRef('setObjectAnimation-tint-0')"
 				min="-255"
 				max="255"
 				step="5"
@@ -73,7 +73,7 @@
 				:label="t('components.setObjectAnimation-tint-1.label')"
 				id="setObjectAnimation-tint-1"
 				v-tip="t('components.setObjectAnimation-tint-1.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-1')"
+				:ref="controlRef('setObjectAnimation-tint-1')"
 				min="-255"
 				max="255"
 				step="5"
@@ -84,7 +84,7 @@
 				:label="t('components.setObjectAnimation-tint-2.label')"
 				id="setObjectAnimation-tint-2"
 				v-tip="t('components.setObjectAnimation-tint-2.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-2')"
+				:ref="controlRef('setObjectAnimation-tint-2')"
 				min="-255"
 				max="255"
 				step="5"
@@ -95,7 +95,7 @@
 				:label="t('components.setObjectAnimation-tint-3.label')"
 				id="setObjectAnimation-tint-3"
 				v-tip="t('components.setObjectAnimation-tint-3.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-tint-3')"
+				:ref="controlRef('setObjectAnimation-tint-3')"
 				min="0"
 				max="255"
 				step="5"
@@ -105,7 +105,7 @@
 			<NumberVar
 				id="setObjectAnimation-opacity"
 				v-tip="t('components.setObjectAnimation-opacity.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-opacity')"
+				:ref="controlRef('setObjectAnimation-opacity')"
 				min="0"
 				max="1"
 				step="0.1"
@@ -116,7 +116,7 @@
 			<NumberVar
 				id="setObjectAnimation-offsetY"
 				v-tip="t('components.setObjectAnimation-offsetY.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-offsetY')"
+				:ref="controlRef('setObjectAnimation-offsetY')"
 				min="-10000"
 				max="10000"
 				step="1"
@@ -127,7 +127,7 @@
 			<NumberVar
 				id="setObjectAnimation-rotation"
 				v-tip="t('components.setObjectAnimation-rotation.tip')"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-rotation')"
+				:ref="controlRef('setObjectAnimation-rotation')"
 				min="-10000"
 				max="10000"
 				step="1"
@@ -138,7 +138,7 @@
 			<SelectBox
 				:label="t('components.setObjectAnimation-easingId.label')"
 				id="setObjectAnimation-easingId"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-easingId')"
+				:ref="controlRef('setObjectAnimation-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -146,7 +146,7 @@
 			<NumberBox
 				:label="t('components.setObjectAnimation-duration.label')"
 				id="setObjectAnimation-duration"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-duration')"
+				:ref="controlRef('setObjectAnimation-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -157,7 +157,7 @@
 			<SelectBox
 				:label="t('components.setObjectAnimation-wait.label')"
 				id="setObjectAnimation-wait"
-				:ref="registryRef(fieldEls, 'setObjectAnimation-wait')"
+				:ref="controlRef('setObjectAnimation-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -167,10 +167,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetObjectAnimationCommandSchema } from '@app/composables/commands/useSetObjectAnimationCommandSchema';
@@ -181,6 +178,29 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'setObjectAnimation'
+	| 'setObjectAnimation-actor'
+	| 'setObjectAnimation-animation'
+	| 'setObjectAnimation-duration'
+	| 'setObjectAnimation-easingId'
+	| 'setObjectAnimation-grid-box'
+	| 'setObjectAnimation-offsetY'
+	| 'setObjectAnimation-opacity'
+	| 'setObjectAnimation-operation'
+	| 'setObjectAnimation-rotation'
+	| 'setObjectAnimation-sort'
+	| 'setObjectAnimation-tint-0'
+	| 'setObjectAnimation-tint-1'
+	| 'setObjectAnimation-tint-2'
+	| 'setObjectAnimation-tint-3'
+	| 'setObjectAnimation-trigger'
+	| 'setObjectAnimation-wait';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -227,77 +247,73 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('setObjectAnimation-easingId')?.loadItems?.(Data.createEasingItems!());
+	controls['setObjectAnimation-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
 	useLocalizedOptions(
 		'setObjectAnimation-sort',
 		['actor', 'components', 'trigger', 'animation'],
-		(items) => fieldEls.get('setObjectAnimation-sort')?.loadItems?.(items)
+		(items) => controls['setObjectAnimation-sort']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('setObjectAnimation-sort')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: ['actor', 'components'],
-				targets: [fieldEls.get('setObjectAnimation-actor')]
-			},
-			{
-				case: 'trigger',
-				targets: [fieldEls.get('setObjectAnimation-trigger')]
-			},
-			{
-				case: 'animation',
-				targets: [fieldEls.get('setObjectAnimation-animation')]
-			}
-		]);
+	controls['setObjectAnimation-sort']?.enableHiddenMode?.();
+	controls['setObjectAnimation-sort']?.relate?.([
+		{
+			case: ['actor', 'components'],
+			targets: [controlRoot(controls['setObjectAnimation-actor'])]
+		},
+		{
+			case: 'trigger',
+			targets: [controlRoot(controls['setObjectAnimation-trigger'])]
+		},
+		{
+			case: 'animation',
+			targets: [controlRoot(controls['setObjectAnimation-animation'])]
+		}
+	]);
 	useLocalizedOptions(
 		'setObjectAnimation-operation',
 		['set-tint', 'set-rgb', 'set-gray', 'set-opacity', 'set-offsetY', 'set-rotation'],
-		(items) => fieldEls.get('setObjectAnimation-operation')?.loadItems?.(items)
+		(items) => controls['setObjectAnimation-operation']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('setObjectAnimation-operation')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'set-tint',
-				targets: [
-					fieldEls.get('setObjectAnimation-tint-0'),
-					fieldEls.get('setObjectAnimation-tint-1'),
-					fieldEls.get('setObjectAnimation-tint-2'),
-					fieldEls.get('setObjectAnimation-tint-3')
-				]
-			},
-			{
-				case: 'set-rgb',
-				targets: [
-					fieldEls.get('setObjectAnimation-tint-0'),
-					fieldEls.get('setObjectAnimation-tint-1'),
-					fieldEls.get('setObjectAnimation-tint-2')
-				]
-			},
-			{
-				case: 'set-gray',
-				targets: [fieldEls.get('setObjectAnimation-tint-3')]
-			},
-			{
-				case: 'set-opacity',
-				targets: [fieldEls.get('setObjectAnimation-opacity')]
-			},
-			{
-				case: 'set-offsetY',
-				targets: [fieldEls.get('setObjectAnimation-offsetY')]
-			},
-			{
-				case: 'set-rotation',
-				targets: [fieldEls.get('setObjectAnimation-rotation')]
-			}
-		]);
+	controls['setObjectAnimation-operation']?.enableHiddenMode?.();
+	controls['setObjectAnimation-operation']?.relate?.([
+		{
+			case: 'set-tint',
+			targets: [
+				controlRoot(controls['setObjectAnimation-tint-0']),
+				controlRoot(controls['setObjectAnimation-tint-1']),
+				controlRoot(controls['setObjectAnimation-tint-2']),
+				controlRoot(controls['setObjectAnimation-tint-3'])
+			]
+		},
+		{
+			case: 'set-rgb',
+			targets: [
+				controlRoot(controls['setObjectAnimation-tint-0']),
+				controlRoot(controls['setObjectAnimation-tint-1']),
+				controlRoot(controls['setObjectAnimation-tint-2'])
+			]
+		},
+		{
+			case: 'set-gray',
+			targets: [controlRoot(controls['setObjectAnimation-tint-3'])]
+		},
+		{
+			case: 'set-opacity',
+			targets: [controlRoot(controls['setObjectAnimation-opacity'])]
+		},
+		{
+			case: 'set-offsetY',
+			targets: [controlRoot(controls['setObjectAnimation-offsetY'])]
+		},
+		{
+			case: 'set-rotation',
+			targets: [controlRoot(controls['setObjectAnimation-rotation'])]
+		}
+	]);
 	useLocalizedOptions('setObjectAnimation-wait', [true, false], (items) =>
-		fieldEls.get('setObjectAnimation-wait')?.loadItems?.(items)
+		controls['setObjectAnimation-wait']?.loadItems?.(items)
 	);
 });
 </script>

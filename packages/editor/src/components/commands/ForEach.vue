@@ -12,7 +12,7 @@
 				:label="t('components.forEach-data.label')"
 				id="forEach-data"
 				v-tip="t('components.forEach-data.tip')"
-				:ref="registryRef(fieldEls, 'forEach-data')"
+				:ref="controlRef('forEach-data')"
 				v-focus
 				v-model="form.data"
 			/>
@@ -20,7 +20,7 @@
 			<CustomBox
 				id="forEach-list"
 				v-tip="t('components.forEach-list.tip')"
-				:ref="registryRef(fieldEls, 'forEach-list')"
+				:ref="controlRef('forEach-list')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -30,7 +30,7 @@
 			<CustomBox
 				id="forEach-actor"
 				v-tip="t('components.forEach-actor.tip')"
-				:ref="registryRef(fieldEls, 'forEach-actor')"
+				:ref="controlRef('forEach-actor')"
 				type="actor"
 				v-model="form.actor"
 			/>
@@ -38,7 +38,7 @@
 			<CustomBox
 				id="forEach-element"
 				v-tip="t('components.forEach-element.tip')"
-				:ref="registryRef(fieldEls, 'forEach-element')"
+				:ref="controlRef('forEach-element')"
 				type="element"
 				v-model="form.element"
 			/>
@@ -46,7 +46,7 @@
 			<CustomBox
 				id="forEach-attribute-groupId"
 				v-tip="t('components.forEach-attribute-groupId.tip')"
-				:ref="registryRef(fieldEls, 'forEach-attribute-groupId')"
+				:ref="controlRef('forEach-attribute-groupId')"
 				v-focus
 				type="attribute-group"
 				v-model="form.attributeGroupId"
@@ -55,7 +55,7 @@
 			<CustomBox
 				id="forEach-enum-groupId"
 				v-tip="t('components.forEach-enum-groupId.tip')"
-				:ref="registryRef(fieldEls, 'forEach-enum-groupId')"
+				:ref="controlRef('forEach-enum-groupId')"
 				v-focus
 				type="enum-group"
 				v-model="form.enumGroupId"
@@ -64,7 +64,7 @@
 			<CustomBox
 				id="forEach-variable"
 				v-tip="t('components.forEach-variable.tip')"
-				:ref="registryRef(fieldEls, 'forEach-variable')"
+				:ref="controlRef('forEach-variable')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -74,7 +74,7 @@
 			<CustomBox
 				id="forEach-saveIndex"
 				v-tip="t('components.forEach-saveIndex.tip')"
-				:ref="registryRef(fieldEls, 'forEach-saveIndex')"
+				:ref="controlRef('forEach-saveIndex')"
 				v-focus
 				type="variable"
 				filter="number"
@@ -84,7 +84,7 @@
 			<CustomBox
 				id="forEach-touchId"
 				v-tip="t('components.forEach-touchId.tip')"
-				:ref="registryRef(fieldEls, 'forEach-touchId')"
+				:ref="controlRef('forEach-touchId')"
 				v-focus
 				type="variable"
 				filter="number"
@@ -96,13 +96,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef, registerElement } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
-
-const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { on } from '@app/utils/element-utils.ts';
 import { useForEachCommandSchema } from '@app/composables/commands/useForEachCommandSchema';
@@ -110,6 +104,22 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'forEach'
+	| 'forEach-actor'
+	| 'forEach-attribute-groupId'
+	| 'forEach-data'
+	| 'forEach-element'
+	| 'forEach-enum-groupId'
+	| 'forEach-list'
+	| 'forEach-saveIndex'
+	| 'forEach-touchId'
+	| 'forEach-variable';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -120,7 +130,6 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	registerElement(fieldEls, 'forEach', frame.value);
 	useLocalizedOptions(
 		'forEach-data',
 		[
@@ -137,7 +146,7 @@ onMounted(() => {
 			'touch',
 			'changed-touch'
 		],
-		(items) => fieldEls.get('forEach-data')?.loadItems?.(items),
+		(items) => controls['forEach-data']?.loadItems?.(items),
 		{
 			list: 'command.forEach.list',
 			skill: 'command.forEach.skill',
@@ -153,41 +162,51 @@ onMounted(() => {
 			'changed-touch': 'command.forEach.changed-touch'
 		}
 	);
-	fieldEls
-		.get('forEach-data')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'list',
-				targets: [fieldEls.get('forEach-list'), fieldEls.get('forEach-variable')]
-			},
-			{
-				case: ['skill', 'state', 'equipment', 'inventory'],
-				targets: [fieldEls.get('forEach-actor'), fieldEls.get('forEach-variable')]
-			},
-			{
-				case: 'element',
-				targets: [fieldEls.get('forEach-element'), fieldEls.get('forEach-variable')]
-			},
-			{ case: 'member', targets: [fieldEls.get('forEach-variable')] },
-			{
-				case: 'attribute',
-				targets: [
-					fieldEls.get('forEach-attribute-groupId'),
-					fieldEls.get('forEach-variable')
-				]
-			},
-			{
-				case: 'enum',
-				targets: [fieldEls.get('forEach-enum-groupId'), fieldEls.get('forEach-variable')]
-			},
-			{ case: 'save', targets: [fieldEls.get('forEach-saveIndex')] },
-			{
-				case: ['touch', 'changed-touch'],
-				targets: [fieldEls.get('forEach-touchId')]
-			}
-		]);
-	on(fieldEls.get('forEach'), 'closed', () => windowClosed(new Event('closed')));
+	controls['forEach-data']?.enableHiddenMode?.();
+	controls['forEach-data']?.relate?.([
+		{
+			case: 'list',
+			targets: [
+				controlRoot(controls['forEach-list']),
+				controlRoot(controls['forEach-variable'])
+			]
+		},
+		{
+			case: ['skill', 'state', 'equipment', 'inventory'],
+			targets: [
+				controlRoot(controls['forEach-actor']),
+				controlRoot(controls['forEach-variable'])
+			]
+		},
+		{
+			case: 'element',
+			targets: [
+				controlRoot(controls['forEach-element']),
+				controlRoot(controls['forEach-variable'])
+			]
+		},
+		{ case: 'member', targets: [controlRoot(controls['forEach-variable'])] },
+		{
+			case: 'attribute',
+			targets: [
+				controlRoot(controls['forEach-attribute-groupId']),
+				controlRoot(controls['forEach-variable'])
+			]
+		},
+		{
+			case: 'enum',
+			targets: [
+				controlRoot(controls['forEach-enum-groupId']),
+				controlRoot(controls['forEach-variable'])
+			]
+		},
+		{ case: 'save', targets: [controlRoot(controls['forEach-saveIndex'])] },
+		{
+			case: ['touch', 'changed-touch'],
+			targets: [controlRoot(controls['forEach-touchId'])]
+		}
+	]);
+	on(controls['forEach'], 'closed', () => windowClosed(new Event('closed')));
 });
 </script>
 

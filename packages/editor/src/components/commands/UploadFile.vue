@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="uploadFile" :ref="registryRef(fieldEls, 'uploadFile')" @confirm="onConfirm">
+	<WindowFrame id="uploadFile" :ref="controlRef('uploadFile')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.uploadFile.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.uploadFile-url.label') }}</div>
 			<StringVar
 				id="uploadFile-url"
-				:ref="registryRef(fieldEls, 'uploadFile-url')"
+				:ref="controlRef('uploadFile-url')"
 				v-tip="t('components.uploadFile-url.tip')"
 				v-focus
 				v-model="form.url"
@@ -18,7 +18,7 @@
 			<div class="text">{{ t('components.uploadFile-path.label') }}</div>
 			<StringVar
 				id="uploadFile-path"
-				:ref="registryRef(fieldEls, 'uploadFile-path')"
+				:ref="controlRef('uploadFile-path')"
 				v-tip="t('components.uploadFile-path.tip')"
 				v-focus
 				v-model="form.path"
@@ -28,13 +28,13 @@
 				:label="t('components.uploadFile-method.label')"
 				id="uploadFile-method"
 				v-tip="t('components.uploadFile-method.tip')"
-				:ref="registryRef(fieldEls, 'uploadFile-method')"
+				:ref="controlRef('uploadFile-method')"
 				v-model="form.method"
 			/>
 			<div class="text">{{ t('components.uploadFile-field.label') }}</div>
 			<StringVar
 				id="uploadFile-field"
-				:ref="registryRef(fieldEls, 'uploadFile-field')"
+				:ref="controlRef('uploadFile-field')"
 				v-tip="t('components.uploadFile-field.tip')"
 				v-model="form.field"
 			/>
@@ -42,13 +42,13 @@
 			<ParamList
 				id="uploadFile-header"
 				v-tip="t('components.uploadFile-header.tip')"
-				:ref="registryRef(fieldEls, 'uploadFile-header')"
+				:ref="controlRef('uploadFile-header')"
 				v-model="form.header"
 			/>
 			<div class="text">{{ t('components.uploadFile-callback.label') }}</div>
 			<CustomBox
 				id="uploadFile-callback"
-				:ref="registryRef(fieldEls, 'uploadFile-callback')"
+				:ref="controlRef('uploadFile-callback')"
 				v-tip="t('components.uploadFile-callback.tip')"
 				type="file"
 				filter="event"
@@ -57,7 +57,7 @@
 			<div class="text">{{ t('components.uploadFile-rateCallback.label') }}</div>
 			<CustomBox
 				id="uploadFile-rateCallback"
-				:ref="registryRef(fieldEls, 'uploadFile-rateCallback')"
+				:ref="controlRef('uploadFile-rateCallback')"
 				v-tip="t('components.uploadFile-rateCallback.tip')"
 				type="file"
 				filter="event"
@@ -68,10 +68,6 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUploadFileCommandSchema } from '@app/composables/commands/useUploadFileCommandSchema';
@@ -82,6 +78,20 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'uploadFile'
+	| 'uploadFile-callback'
+	| 'uploadFile-field'
+	| 'uploadFile-header'
+	| 'uploadFile-method'
+	| 'uploadFile-path'
+	| 'uploadFile-rateCallback'
+	| 'uploadFile-url';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -92,11 +102,11 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('uploadFile-method')?.loadItems?.([
+	controls['uploadFile-method']?.loadItems?.([
 		{ name: 'POST', value: 'POST' },
 		{ name: 'PUT', value: 'PUT' }
 	]);
-	fieldEls.get('uploadFile-header')?.bind?.(RequestkeyValueBind);
+	controls['uploadFile-header']?.bind?.(RequestkeyValueBind);
 });
 </script>
 

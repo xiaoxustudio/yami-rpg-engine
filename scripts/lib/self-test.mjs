@@ -1462,6 +1462,10 @@ test('render-callback-props：容器回调要认，普通回调不认', () => {
 
 test('真实仓库的读数与台账一致（防「仪器只对手写样本有效」）', () => {
 	// 只锚「非零 + 量级」：具体数字由台账 baseline 守护，这里防止口径被整体改坏成恒 0。
+	//
+	// 下限**不能写死成当前排队量**：`element-registry-lookups` 的终态是归零，迁移每推一批
+	// 真实读数就往下走（本轮 1232 → 972），写死 `> 1000` 会让门禁在**迁移成功时**变红。
+	// 这两条只是烟雾检查，量级下界取「几十处」，真正的棘轮在 migration-ledger-baseline.json。
 	const files = collectFiles({ dirs: SCAN_DIRS });
 	const style = files.reduce(
 		(sum, f) => sum + countCodeMatches(readSource(f.full), auxRe('styleWrite')),
@@ -1472,7 +1476,7 @@ test('真实仓库的读数与台账一致（防「仪器只对手写样本有�
 		0
 	);
 	ok(style > 100, `真实仓库的 style 直写应在百处量级，实际 ${style}`);
-	ok(registry > 1000, `元素注册表寻址应在千处量级，实际 ${registry}`);
+	ok(registry > 50, `元素注册表寻址应仍有数十处以上（终态归零），实际 ${registry}`);
 });
 
 // ---------------------------------------------------------------------------

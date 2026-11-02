@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="moveActor" :ref="registryRef(fieldEls, 'moveActor')" @confirm="onConfirm">
+	<WindowFrame id="moveActor" :ref="controlRef('moveActor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.moveActor.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.moveActor-actor.label') }}</div>
 			<CustomBox
 				id="moveActor-actor"
-				:ref="registryRef(fieldEls, 'moveActor-actor')"
+				:ref="controlRef('moveActor-actor')"
 				v-tip="t('components.moveActor-actor.tip')"
 				v-focus
 				type="actor"
@@ -21,14 +21,14 @@
 				:label="t('components.moveActor-mode.label')"
 				id="moveActor-mode"
 				v-tip="t('components.moveActor-mode.tip')"
-				:ref="registryRef(fieldEls, 'moveActor-mode')"
+				:ref="controlRef('moveActor-mode')"
 				v-model="form.mode"
 			/>
 			<div class="text">{{ t('components.moveActor-angle.label') }}</div>
 			<NumberVar
 				id="moveActor-angle"
 				v-tip="t('components.moveActor-angle.tip')"
-				:ref="registryRef(fieldEls, 'moveActor-angle')"
+				:ref="controlRef('moveActor-angle')"
 				min="-360"
 				max="360"
 				decimals="4"
@@ -39,7 +39,7 @@
 			<CustomBox
 				id="moveActor-destination"
 				v-tip="t('components.moveActor-destination.tip')"
-				:ref="registryRef(fieldEls, 'moveActor-destination')"
+				:ref="controlRef('moveActor-destination')"
 				type="position"
 				v-model="form.destination"
 			/>
@@ -47,7 +47,7 @@
 			<SelectBox
 				:label="t('components.moveActor-wait.label')"
 				id="moveActor-wait"
-				:ref="registryRef(fieldEls, 'moveActor-wait')"
+				:ref="controlRef('moveActor-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -57,10 +57,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveActorCommandSchema } from '@app/composables/commands/useMoveActorCommandSchema';
@@ -69,6 +66,18 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'moveActor'
+	| 'moveActor-actor'
+	| 'moveActor-angle'
+	| 'moveActor-destination'
+	| 'moveActor-mode'
+	| 'moveActor-wait';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -82,7 +91,7 @@ onMounted(() => {
 	useLocalizedOptions(
 		'moveActor-mode',
 		['stop', 'keep', 'straight', 'navigate', 'navigate-bypass', 'teleport'],
-		(items) => fieldEls.get('moveActor-mode')?.loadItems?.(items),
+		(items) => controls['moveActor-mode']?.loadItems?.(items),
 		{
 			stop: 'command.moveActor.mode.stop',
 			keep: 'command.moveActor.mode.keep',
@@ -92,19 +101,20 @@ onMounted(() => {
 			teleport: 'command.moveActor.mode.teleport'
 		}
 	);
-	fieldEls
-		.get('moveActor-mode')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{ case: 'keep', targets: [fieldEls.get('moveActor-angle')] },
-			{
-				case: ['straight', 'navigate', 'navigate-bypass'],
-				targets: [fieldEls.get('moveActor-destination'), fieldEls.get('moveActor-wait')]
-			},
-			{ case: 'teleport', targets: [fieldEls.get('moveActor-destination')] }
-		]);
+	controls['moveActor-mode']?.enableHiddenMode?.();
+	controls['moveActor-mode']?.relate?.([
+		{ case: 'keep', targets: [controlRoot(controls['moveActor-angle'])] },
+		{
+			case: ['straight', 'navigate', 'navigate-bypass'],
+			targets: [
+				controlRoot(controls['moveActor-destination']),
+				controlRoot(controls['moveActor-wait'])
+			]
+		},
+		{ case: 'teleport', targets: [controlRoot(controls['moveActor-destination'])] }
+	]);
 	useLocalizedOptions('moveActor-wait', [true, false], (items) =>
-		fieldEls.get('moveActor-wait')?.loadItems?.(items)
+		controls['moveActor-wait']?.loadItems?.(items)
 	);
 });
 </script>

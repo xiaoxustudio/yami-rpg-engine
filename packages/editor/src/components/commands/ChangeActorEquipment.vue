@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="changeActorEquipment"
-		:ref="registryRef(fieldEls, 'changeActorEquipment')"
+		:ref="controlRef('changeActorEquipment')"
 		@confirm="onConfirm"
 	>
 		<template #title
@@ -14,7 +14,7 @@
 			<div class="text">{{ t('components.changeActorEquipment-actor.label') }}</div>
 			<CustomBox
 				id="changeActorEquipment-actor"
-				:ref="registryRef(fieldEls, 'changeActorEquipment-actor')"
+				:ref="controlRef('changeActorEquipment-actor')"
 				v-tip="t('components.changeActorEquipment-actor.tip')"
 				v-focus
 				type="actor"
@@ -25,14 +25,14 @@
 				:label="t('components.changeActorEquipment-operation.label')"
 				id="changeActorEquipment-operation"
 				v-tip="t('components.changeActorEquipment-operation.tip')"
-				:ref="registryRef(fieldEls, 'changeActorEquipment-operation')"
+				:ref="controlRef('changeActorEquipment-operation')"
 				v-model="form.operation"
 			/>
 			<div class="text">{{ t('components.changeActorEquipment-slot.label') }}</div>
 			<SelectVar
 				id="changeActorEquipment-slot"
 				v-tip="t('components.changeActorEquipment-slot.tip')"
-				:ref="registryRef(fieldEls, 'changeActorEquipment-slot')"
+				:ref="controlRef('changeActorEquipment-slot')"
 				v-focus
 				v-model="form.slot"
 			/>
@@ -40,7 +40,7 @@
 			<CustomBox
 				id="changeActorEquipment-equipmentId"
 				v-tip="t('components.changeActorEquipment-equipmentId.tip')"
-				:ref="registryRef(fieldEls, 'changeActorEquipment-equipmentId')"
+				:ref="controlRef('changeActorEquipment-equipmentId')"
 				v-focus
 				type="file"
 				filter="equipment"
@@ -50,7 +50,7 @@
 			<CustomBox
 				id="changeActorEquipment-equipment"
 				v-tip="t('components.changeActorEquipment-equipment.tip')"
-				:ref="registryRef(fieldEls, 'changeActorEquipment-equipment')"
+				:ref="controlRef('changeActorEquipment-equipment')"
 				type="equipment"
 				v-model="form.equipment"
 			/>
@@ -60,11 +60,8 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorEquipmentCommandSchema } from '@app/composables/commands/useChangeActorEquipmentCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -72,20 +69,44 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+import {
+	provideChangeActorEquipmentBridge,
+	resetChangeActorEquipmentBridge,
+	type ChangeActorEquipmentBridge
+} from '@app/composables/change-actor-equipment-bridge';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'changeActorEquipment'
+	| 'changeActorEquipment-actor'
+	| 'changeActorEquipment-equipment'
+	| 'changeActorEquipment-equipmentId'
+	| 'changeActorEquipment-operation'
+	| 'changeActorEquipment-slot';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
 const { form, save } = useChangeActorEquipmentCommandSchema();
+
+/** 控件级能力：schema 载入表单时要候选项，但 schema 不该知道控件 id。 */
+const bridgeApi: ChangeActorEquipmentBridge = {
+	loadItems: (slotItems) => controls['changeActorEquipment-slot']?.loadItems?.(slotItems)
+};
 
 const onConfirm = () => {
 	save();
 };
 
 onMounted(() => {
+	provideChangeActorEquipmentBridge(bridgeApi);
+	onUnmounted(() => resetChangeActorEquipmentBridge(bridgeApi));
 	useLocalizedOptions(
 		'changeActorEquipment-operation',
 		['add', 'remove', 'add-instance', 'remove-instance', 'remove-slot'],
-		(items) => fieldEls.get('changeActorEquipment-operation')?.loadItems?.(items),
+		(items) => controls['changeActorEquipment-operation']?.loadItems?.(items),
 		{
 			add: 'command.changeActorEquipment.add',
 			remove: 'command.changeActorEquipment.remove',
@@ -94,37 +115,35 @@ onMounted(() => {
 			'remove-slot': 'command.changeActorEquipment.remove-slot'
 		}
 	);
-	fieldEls
-		.get('changeActorEquipment-operation')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'add',
-				targets: [
-					fieldEls.get('changeActorEquipment-slot'),
-					fieldEls.get('changeActorEquipment-equipmentId')
-				]
-			},
-			{
-				case: 'remove',
-				targets: [fieldEls.get('changeActorEquipment-equipmentId')]
-			},
-			{
-				case: 'add-instance',
-				targets: [
-					fieldEls.get('changeActorEquipment-slot'),
-					fieldEls.get('changeActorEquipment-equipment')
-				]
-			},
-			{
-				case: 'remove-instance',
-				targets: [fieldEls.get('changeActorEquipment-equipment')]
-			},
-			{
-				case: 'remove-slot',
-				targets: [fieldEls.get('changeActorEquipment-slot')]
-			}
-		]);
+	controls['changeActorEquipment-operation']?.enableHiddenMode?.();
+	controls['changeActorEquipment-operation']?.relate?.([
+		{
+			case: 'add',
+			targets: [
+				controlRoot(controls['changeActorEquipment-slot']),
+				controlRoot(controls['changeActorEquipment-equipmentId'])
+			]
+		},
+		{
+			case: 'remove',
+			targets: [controlRoot(controls['changeActorEquipment-equipmentId'])]
+		},
+		{
+			case: 'add-instance',
+			targets: [
+				controlRoot(controls['changeActorEquipment-slot']),
+				controlRoot(controls['changeActorEquipment-equipment'])
+			]
+		},
+		{
+			case: 'remove-instance',
+			targets: [controlRoot(controls['changeActorEquipment-equipment'])]
+		},
+		{
+			case: 'remove-slot',
+			targets: [controlRoot(controls['changeActorEquipment-slot'])]
+		}
+	]);
 });
 </script>
 

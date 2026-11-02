@@ -63,7 +63,9 @@ function consumersOf(id, ownerFile) {
 		const rel = relative(SRC, file);
 		if (rel === ownerFile || rel.endsWith('.spec.ts') || text.includes(quoted) === false)
 			continue;
-		if (new RegExp(`composableEls\\.get\\(\\s*${`'${id}'`}`).test(text))
+		// 链式写法常被格式化成 `composableEls\n\t.get('x')`：`\s*` 是必须的，否则漏报
+		// （实测 `useSetAnimationComponentCommandSchema` 就是这样漏掉的，迁移后单测才红）。
+		if (new RegExp(`composableEls\\s*\\.\\s*get\\(\\s*${`'${id}'`}`).test(text))
 			consumers.push(`${rel}:get`);
 		if (new RegExp(`registryElement[\\s\\S]{0,120}?${`'${id}'`}`).test(text)) {
 			consumers.push(`${rel}:registryElement`);

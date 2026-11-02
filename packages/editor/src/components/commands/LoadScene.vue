@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="loadScene" :ref="registryRef(fieldEls, 'loadScene')" @confirm="onConfirm">
+	<WindowFrame id="loadScene" :ref="controlRef('loadScene')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.loadScene.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.loadScene-sceneId.label') }}</div>
 			<FileVar
 				id="loadScene-sceneId"
-				:ref="registryRef(fieldEls, 'loadScene-sceneId')"
+				:ref="controlRef('loadScene-sceneId')"
 				v-tip="t('components.loadScene-sceneId.tip')"
 				v-focus
 				type="file"
@@ -22,14 +22,14 @@
 				:label="t('components.loadScene-transfer.label')"
 				id="loadScene-transfer"
 				v-tip="t('components.loadScene-transfer.tip')"
-				:ref="registryRef(fieldEls, 'loadScene-transfer')"
+				:ref="controlRef('loadScene-transfer')"
 				v-model="form.transfer"
 			/>
 			<div class="text">{{ t('components.loadScene-x.label') }}</div>
 			<NumberVar
 				id="loadScene-x"
 				v-tip="t('components.loadScene-x.tip')"
-				:ref="registryRef(fieldEls, 'loadScene-x')"
+				:ref="controlRef('loadScene-x')"
 				min="0"
 				max="512"
 				step="0.5"
@@ -40,7 +40,7 @@
 			<NumberVar
 				id="loadScene-y"
 				v-tip="t('components.loadScene-y.tip')"
-				:ref="registryRef(fieldEls, 'loadScene-y')"
+				:ref="controlRef('loadScene-y')"
 				min="0"
 				max="512"
 				step="0.5"
@@ -53,10 +53,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useLoadSceneCommandSchema } from '@app/composables/commands/useLoadSceneCommandSchema';
@@ -65,6 +62,12 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import FileVar from '@app/components/common/FileVar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'loadScene' | 'loadScene-sceneId' | 'loadScene-transfer' | 'loadScene-x' | 'loadScene-y';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -76,14 +79,15 @@ const onConfirm = () => {
 
 onMounted(() => {
 	useLocalizedOptions('loadScene-transfer', [true, false], (items) =>
-		fieldEls.get('loadScene-transfer')?.loadItems?.(items)
+		controls['loadScene-transfer']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('loadScene-transfer')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{ case: true, targets: [fieldEls.get('loadScene-x'), fieldEls.get('loadScene-y')] }
-		]);
+	controls['loadScene-transfer']?.enableHiddenMode?.();
+	controls['loadScene-transfer']?.relate?.([
+		{
+			case: true,
+			targets: [controlRoot(controls['loadScene-x']), controlRoot(controls['loadScene-y'])]
+		}
+	]);
 });
 </script>
 

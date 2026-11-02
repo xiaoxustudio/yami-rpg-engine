@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="commandLine" :ref="registryRef(fieldEls, 'commandLine')" @confirm="onConfirm">
+	<WindowFrame id="commandLine" :ref="controlRef('commandLine')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.commandLine.title') }}
@@ -11,14 +11,14 @@
 			<SelectBox
 				:label="t('components.commandLine-type.label')"
 				id="commandLine-type"
-				:ref="registryRef(fieldEls, 'commandLine-type')"
+				:ref="controlRef('commandLine-type')"
 				v-model="form.type"
 			/>
 			<div class="text">{{ t('components.commandLine-key.label') }}</div>
 			<StringVar
 				id="commandLine-key"
 				v-tip="t('components.commandLine-key.tip')"
-				:ref="registryRef(fieldEls, 'commandLine-key')"
+				:ref="controlRef('commandLine-key')"
 				v-focus
 				v-model="form.key"
 			/>
@@ -26,14 +26,14 @@
 			<StringVar
 				id="commandLine-value"
 				v-tip="t('components.commandLine-value.tip')"
-				:ref="registryRef(fieldEls, 'commandLine-value')"
+				:ref="controlRef('commandLine-value')"
 				v-model="form.value"
 			/>
 			<div class="text">{{ t('components.commandLine-variable.label') }}</div>
 			<CustomBox
 				id="commandLine-variable"
 				v-tip="t('components.commandLine-variable.tip')"
-				:ref="registryRef(fieldEls, 'commandLine-variable')"
+				:ref="controlRef('commandLine-variable')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -45,10 +45,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCommandLineCommandSchema } from '@app/composables/commands/useCommandLineCommandSchema';
@@ -57,6 +54,17 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'commandLine'
+	| 'commandLine-key'
+	| 'commandLine-type'
+	| 'commandLine-value'
+	| 'commandLine-variable';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -70,7 +78,7 @@ onMounted(() => {
 	useLocalizedOptions(
 		'commandLine-type',
 		['get', 'rm', 'set', 'has'],
-		(items) => fieldEls.get('commandLine-type')?.loadItems?.(items),
+		(items) => controls['commandLine-type']?.loadItems?.(items),
 		{
 			get: 'command.commandLine.get',
 			rm: 'command.commandLine.rm',
@@ -78,27 +86,37 @@ onMounted(() => {
 			has: 'command.commandLine.has'
 		}
 	);
-	fieldEls
-		.get('commandLine-type')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'get',
-				targets: [fieldEls.get('commandLine-key'), fieldEls.get('commandLine-variable')]
-			},
-			{
-				case: 'rm',
-				targets: [fieldEls.get('commandLine-key'), fieldEls.get('commandLine-value')]
-			},
-			{
-				case: 'set',
-				targets: [fieldEls.get('commandLine-key'), fieldEls.get('commandLine-value')]
-			},
-			{
-				case: 'has',
-				targets: [fieldEls.get('commandLine-key'), fieldEls.get('commandLine-variable')]
-			}
-		]);
+	controls['commandLine-type']?.enableHiddenMode?.();
+	controls['commandLine-type']?.relate?.([
+		{
+			case: 'get',
+			targets: [
+				controlRoot(controls['commandLine-key']),
+				controlRoot(controls['commandLine-variable'])
+			]
+		},
+		{
+			case: 'rm',
+			targets: [
+				controlRoot(controls['commandLine-key']),
+				controlRoot(controls['commandLine-value'])
+			]
+		},
+		{
+			case: 'set',
+			targets: [
+				controlRoot(controls['commandLine-key']),
+				controlRoot(controls['commandLine-value'])
+			]
+		},
+		{
+			case: 'has',
+			targets: [
+				controlRoot(controls['commandLine-key']),
+				controlRoot(controls['commandLine-variable'])
+			]
+		}
+	]);
 });
 </script>
 

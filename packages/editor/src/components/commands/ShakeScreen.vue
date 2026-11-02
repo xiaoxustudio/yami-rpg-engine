@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="shakeScreen"
-		:ref="registryRef(fieldEls, 'shakeScreen')"
+		:ref="controlRef('shakeScreen')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -16,7 +16,7 @@
 			<SelectBox
 				:label="t('components.shakeScreen-mode.label')"
 				id="shakeScreen-mode"
-				:ref="registryRef(fieldEls, 'shakeScreen-mode')"
+				:ref="controlRef('shakeScreen-mode')"
 				v-focus
 				v-model="form.mode"
 			/>
@@ -24,7 +24,7 @@
 			<NumberBox
 				:label="t('components.shakeScreen-power.label')"
 				id="shakeScreen-power"
-				:ref="registryRef(fieldEls, 'shakeScreen-power')"
+				:ref="controlRef('shakeScreen-power')"
 				v-tip="t('components.shakeScreen-power.tip')"
 				min="1"
 				max="10"
@@ -34,7 +34,7 @@
 			<NumberBox
 				:label="t('components.shakeScreen-speed.label')"
 				id="shakeScreen-speed"
-				:ref="registryRef(fieldEls, 'shakeScreen-speed')"
+				:ref="controlRef('shakeScreen-speed')"
 				v-tip="t('components.shakeScreen-speed.tip')"
 				min="1"
 				max="10"
@@ -44,7 +44,7 @@
 			<SelectBox
 				:label="t('components.shakeScreen-easingId.label')"
 				id="shakeScreen-easingId"
-				:ref="registryRef(fieldEls, 'shakeScreen-easingId')"
+				:ref="controlRef('shakeScreen-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -52,7 +52,7 @@
 			<NumberBox
 				:label="t('components.shakeScreen-duration.label')"
 				id="shakeScreen-duration"
-				:ref="registryRef(fieldEls, 'shakeScreen-duration')"
+				:ref="controlRef('shakeScreen-duration')"
 				name="duration"
 				min="1"
 				max="3600000"
@@ -63,7 +63,7 @@
 			<SelectBox
 				:label="t('components.shakeScreen-wait.label')"
 				id="shakeScreen-wait"
-				:ref="registryRef(fieldEls, 'shakeScreen-wait')"
+				:ref="controlRef('shakeScreen-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -73,10 +73,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useShakeScreenCommandSchema } from '@app/composables/commands/useShakeScreenCommandSchema';
@@ -85,6 +82,19 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'shakeScreen'
+	| 'shakeScreen-duration'
+	| 'shakeScreen-easingId'
+	| 'shakeScreen-mode'
+	| 'shakeScreen-power'
+	| 'shakeScreen-speed'
+	| 'shakeScreen-wait';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -117,15 +127,15 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('shakeScreen-easingId')?.loadItems?.(Data.createEasingItems!());
+	controls['shakeScreen-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
 	useLocalizedOptions('shakeScreen-mode', ['random', 'horizontal', 'vertical'], (items) =>
-		fieldEls.get('shakeScreen-mode')?.loadItems?.(items)
+		controls['shakeScreen-mode']?.loadItems?.(items)
 	);
 	useLocalizedOptions('shakeScreen-wait', [true, false], (items) =>
-		fieldEls.get('shakeScreen-wait')?.loadItems?.(items)
+		controls['shakeScreen-wait']?.loadItems?.(items)
 	);
 });
 </script>

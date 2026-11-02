@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="changePassableTerrain"
-		:ref="boxRef('changePassableTerrain')"
+		:ref="controlRef('changePassableTerrain')"
 		@confirm="onConfirm"
 	>
 		<template #title
@@ -14,7 +14,7 @@
 			<div class="text">{{ t('components.changePassableTerrain-actor.label') }}</div>
 			<CustomBox
 				id="changePassableTerrain-actor"
-				:ref="boxRef('changePassableTerrain-actor')"
+				:ref="controlRef('changePassableTerrain-actor')"
 				v-tip="t('components.changePassableTerrain-actor.tip')"
 				v-focus
 				type="actor"
@@ -25,7 +25,7 @@
 				:label="t('components.changePassableTerrain-passage.label')"
 				id="changePassableTerrain-passage"
 				v-tip="t('components.changePassableTerrain-passage.tip')"
-				:ref="boxRef('changePassableTerrain-passage')"
+				:ref="controlRef('changePassableTerrain-passage')"
 				v-model="form.passage"
 			/>
 		</div>
@@ -41,28 +41,12 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**，relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'changePassableTerrain' | 'changePassableTerrain-actor' | 'changePassableTerrain-passage';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -76,7 +60,7 @@ onMounted(() => {
 	useLocalizedOptions(
 		'changePassableTerrain-passage',
 		['land', 'water', 'unrestricted'],
-		(items) => boxes['changePassableTerrain-passage']?.loadItems?.(items),
+		(items) => controls['changePassableTerrain-passage']?.loadItems?.(items),
 		{
 			land: 'command.changePassableTerrain.land',
 			water: 'command.changePassableTerrain.water',

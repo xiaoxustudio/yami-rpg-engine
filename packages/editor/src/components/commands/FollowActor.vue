@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="followActor" :ref="registryRef(fieldEls, 'followActor')" @confirm="onConfirm">
+	<WindowFrame id="followActor" :ref="controlRef('followActor')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.followActor.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.followActor-actor.label') }}</div>
 			<CustomBox
 				id="followActor-actor"
-				:ref="registryRef(fieldEls, 'followActor-actor')"
+				:ref="controlRef('followActor-actor')"
 				v-tip="t('components.followActor-actor.tip')"
 				v-focus
 				type="actor"
@@ -19,7 +19,7 @@
 			<div class="text">{{ t('components.followActor-target.label') }}</div>
 			<CustomBox
 				id="followActor-target"
-				:ref="registryRef(fieldEls, 'followActor-target')"
+				:ref="controlRef('followActor-target')"
 				v-tip="t('components.followActor-target.tip')"
 				type="actor"
 				v-model="form.target"
@@ -29,13 +29,13 @@
 				:label="t('components.followActor-mode.label')"
 				id="followActor-mode"
 				v-tip="t('components.followActor-mode.tip')"
-				:ref="registryRef(fieldEls, 'followActor-mode')"
+				:ref="controlRef('followActor-mode')"
 				v-model="form.mode"
 			/>
 			<div class="text">{{ t('components.followActor-minDist.label') }}</div>
 			<NumberVar
 				id="followActor-minDist"
-				:ref="registryRef(fieldEls, 'followActor-minDist')"
+				:ref="controlRef('followActor-minDist')"
 				v-tip="t('components.followActor-minDist.tip')"
 				min="0"
 				max="16"
@@ -46,7 +46,7 @@
 			<div class="text">{{ t('components.followActor-maxDist.label') }}</div>
 			<NumberVar
 				id="followActor-maxDist"
-				:ref="registryRef(fieldEls, 'followActor-maxDist')"
+				:ref="controlRef('followActor-maxDist')"
 				v-tip="t('components.followActor-maxDist.tip')"
 				min="0"
 				max="20"
@@ -59,7 +59,7 @@
 				:label="t('components.followActor-offset.label')"
 				id="followActor-offset"
 				v-tip="t('components.followActor-offset.tip')"
-				:ref="registryRef(fieldEls, 'followActor-offset')"
+				:ref="controlRef('followActor-offset')"
 				min="-0.8"
 				max="0.8"
 				decimals="4"
@@ -71,7 +71,7 @@
 				:label="t('components.followActor-vertDist.label')"
 				id="followActor-vertDist"
 				v-tip="t('components.followActor-vertDist.tip')"
-				:ref="registryRef(fieldEls, 'followActor-vertDist')"
+				:ref="controlRef('followActor-vertDist')"
 				min="0"
 				max="4"
 				decimals="4"
@@ -82,7 +82,7 @@
 			<NumberBox
 				:label="t('components.followActor-bufferDist.label')"
 				id="followActor-bufferDist"
-				:ref="registryRef(fieldEls, 'followActor-bufferDist')"
+				:ref="controlRef('followActor-bufferDist')"
 				v-tip="t('components.followActor-bufferDist.tip')"
 				min="0"
 				max="4"
@@ -95,7 +95,7 @@
 				:label="t('components.followActor-navigate.label')"
 				id="followActor-navigate"
 				v-tip="t('components.followActor-navigate.tip')"
-				:ref="registryRef(fieldEls, 'followActor-navigate')"
+				:ref="controlRef('followActor-navigate')"
 				v-model="form.navigate"
 			/>
 			<div class="text">{{ t('components.followActor-bypass.label') }}</div>
@@ -103,7 +103,7 @@
 				:label="t('components.followActor-bypass.label')"
 				id="followActor-bypass"
 				v-tip="t('components.followActor-bypass.tip')"
-				:ref="registryRef(fieldEls, 'followActor-bypass')"
+				:ref="controlRef('followActor-bypass')"
 				v-model="form.bypass"
 			/>
 			<div class="text">{{ t('components.followActor-once.label') }}</div>
@@ -111,14 +111,14 @@
 				:label="t('components.followActor-once.label')"
 				id="followActor-once"
 				v-tip="t('components.followActor-once.tip')"
-				:ref="registryRef(fieldEls, 'followActor-once')"
+				:ref="controlRef('followActor-once')"
 				v-model="form.once"
 			/>
 			<div class="text">{{ t('components.followActor-wait.label') }}</div>
 			<SelectBox
 				:label="t('components.followActor-wait.label')"
 				id="followActor-wait"
-				:ref="registryRef(fieldEls, 'followActor-wait')"
+				:ref="controlRef('followActor-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -128,10 +128,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFollowActorCommandSchema } from '@app/composables/commands/useFollowActorCommandSchema';
@@ -141,6 +138,25 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'followActor'
+	| 'followActor-actor'
+	| 'followActor-bufferDist'
+	| 'followActor-bypass'
+	| 'followActor-maxDist'
+	| 'followActor-minDist'
+	| 'followActor-mode'
+	| 'followActor-navigate'
+	| 'followActor-offset'
+	| 'followActor-once'
+	| 'followActor-target'
+	| 'followActor-vertDist'
+	| 'followActor-wait';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -173,38 +189,36 @@ onMounted(() => {
 	useLocalizedOptions(
 		'followActor-mode',
 		['circle', 'rectangle'],
-		(items) => fieldEls.get('followActor-mode')?.loadItems?.(items),
+		(items) => controls['followActor-mode']?.loadItems?.(items),
 		{
 			circle: 'command.followActor.mode.circle',
 			rectangle: 'command.followActor.mode.rectangle'
 		}
 	);
-	fieldEls
-		.get('followActor-mode')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{ case: 'circle', targets: [fieldEls.get('followActor-offset')] },
-			{ case: 'rectangle', targets: [fieldEls.get('followActor-vertDist')] }
-		]);
+	controls['followActor-mode']?.enableHiddenMode?.();
+	controls['followActor-mode']?.relate?.([
+		{ case: 'circle', targets: [controlRoot(controls['followActor-offset'])] },
+		{ case: 'rectangle', targets: [controlRoot(controls['followActor-vertDist'])] }
+	]);
 	useLocalizedOptions('followActor-navigate', [true, false], (items) =>
-		fieldEls.get('followActor-navigate')?.loadItems?.(items)
+		controls['followActor-navigate']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('followActor-navigate')
-		?.enableHiddenMode?.()
-		?.relate?.([{ case: true, targets: [fieldEls.get('followActor-bypass')] }]);
+	controls['followActor-navigate']?.enableHiddenMode?.();
+	controls['followActor-navigate']?.relate?.([
+		{ case: true, targets: [controlRoot(controls['followActor-bypass'])] }
+	]);
 	useLocalizedOptions('followActor-bypass', [true, false], (items) =>
-		fieldEls.get('followActor-bypass')?.loadItems?.(items)
+		controls['followActor-bypass']?.loadItems?.(items)
 	);
 	useLocalizedOptions('followActor-once', [true, false], (items) =>
-		fieldEls.get('followActor-once')?.loadItems?.(items)
+		controls['followActor-once']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('followActor-once')
-		?.enableHiddenMode?.()
-		?.relate?.([{ case: true, targets: [fieldEls.get('followActor-wait')] }]);
+	controls['followActor-once']?.enableHiddenMode?.();
+	controls['followActor-once']?.relate?.([
+		{ case: true, targets: [controlRoot(controls['followActor-wait'])] }
+	]);
 	useLocalizedOptions('followActor-wait', [true, false], (items) =>
-		fieldEls.get('followActor-wait')?.loadItems?.(items)
+		controls['followActor-wait']?.loadItems?.(items)
 	);
 });
 </script>

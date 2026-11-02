@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setEvent" :ref="registryRef(fieldEls, 'setEvent')" @confirm="onConfirm">
+	<WindowFrame id="setEvent" :ref="controlRef('setEvent')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setEvent.title') }}
@@ -12,7 +12,7 @@
 				:label="t('components.setEvent-operation.label')"
 				id="setEvent-operation"
 				v-tip="t('components.setEvent-operation.tip')"
-				:ref="registryRef(fieldEls, 'setEvent-operation')"
+				:ref="controlRef('setEvent-operation')"
 				v-focus
 				v-model="form.operation"
 			/>
@@ -20,7 +20,7 @@
 			<CustomBox
 				id="setEvent-variable"
 				v-tip="t('components.setEvent-variable.tip')"
-				:ref="registryRef(fieldEls, 'setEvent-variable')"
+				:ref="controlRef('setEvent-variable')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -30,7 +30,7 @@
 			<CustomBox
 				id="setEvent-eventId"
 				v-tip="t('components.setEvent-eventId.tip')"
-				:ref="registryRef(fieldEls, 'setEvent-eventId')"
+				:ref="controlRef('setEvent-eventId')"
 				v-focus
 				type="file"
 				filter="event"
@@ -40,7 +40,7 @@
 			<NumberVar
 				id="setEvent-choiceIndex"
 				v-tip="t('components.setEvent-choiceIndex.tip')"
-				:ref="registryRef(fieldEls, 'setEvent-choiceIndex')"
+				:ref="controlRef('setEvent-choiceIndex')"
 				min="0"
 				max="255"
 				v-model="form.choiceIndex"
@@ -51,10 +51,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetEventCommandSchema } from '@app/composables/commands/useSetEventCommandSchema';
@@ -63,6 +60,17 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'setEvent'
+	| 'setEvent-choiceIndex'
+	| 'setEvent-eventId'
+	| 'setEvent-operation'
+	| 'setEvent-variable';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -84,7 +92,7 @@ onMounted(() => {
 			'highest-priority',
 			'goto-choice-branch'
 		],
-		(items) => fieldEls.get('setEvent-operation')?.loadItems?.(items),
+		(items) => controls['setEvent-operation']?.loadItems?.(items),
 		{
 			'stop-propagation': 'command.setEvent.stop-propagation',
 			pause: 'command.setEvent.pause',
@@ -95,23 +103,21 @@ onMounted(() => {
 			'goto-choice-branch': 'command.setEvent.goto-choice-branch'
 		}
 	);
-	fieldEls
-		.get('setEvent-operation')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: ['pause', 'continue'],
-				targets: [fieldEls.get('setEvent-variable')]
-			},
-			{
-				case: ['enable', 'disable', 'highest-priority'],
-				targets: [fieldEls.get('setEvent-eventId')]
-			},
-			{
-				case: 'goto-choice-branch',
-				targets: [fieldEls.get('setEvent-choiceIndex')]
-			}
-		]);
+	controls['setEvent-operation']?.enableHiddenMode?.();
+	controls['setEvent-operation']?.relate?.([
+		{
+			case: ['pause', 'continue'],
+			targets: [controlRoot(controls['setEvent-variable'])]
+		},
+		{
+			case: ['enable', 'disable', 'highest-priority'],
+			targets: [controlRoot(controls['setEvent-eventId'])]
+		},
+		{
+			case: 'goto-choice-branch',
+			targets: [controlRoot(controls['setEvent-choiceIndex'])]
+		}
+	]);
 });
 </script>
 

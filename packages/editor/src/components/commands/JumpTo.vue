@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="jumpTo" :ref="registryRef(fieldEls, 'jumpTo')" @confirm="onConfirm">
+	<WindowFrame id="jumpTo" :ref="controlRef('jumpTo')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.jumpTo.title') }}
@@ -12,7 +12,7 @@
 				:label="t('components.jumpTo-operation.label')"
 				id="jumpTo-operation"
 				v-tip="t('components.jumpTo-operation.tip')"
-				:ref="registryRef(fieldEls, 'jumpTo-operation')"
+				:ref="controlRef('jumpTo-operation')"
 				v-focus
 				v-model="form.operation"
 			/>
@@ -21,7 +21,7 @@
 				:label="t('components.jumpTo-label.label')"
 				id="jumpTo-label"
 				v-tip="t('components.jumpTo-label.tip')"
-				:ref="registryRef(fieldEls, 'jumpTo-label')"
+				:ref="controlRef('jumpTo-label')"
 				v-focus
 				v-model="label"
 			/>
@@ -31,10 +31,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { TextSuggestion, type TextSuggestionTarget } from '@app/commands/text-tip.ts';
@@ -43,6 +40,12 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'jumpTo' | 'jumpTo-label' | 'jumpTo-operation';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -60,14 +63,18 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	TextSuggestion.listen!(fieldEls.get('jumpTo-label') as TextSuggestionTarget, loadLabels);
-	useLocalizedOptions('jumpTo-operation', ['jump', 'save-jump', 'return'], (items) =>
-		fieldEls.get('jumpTo-operation')?.loadItems?.(items)
+	// TextSuggestion 要的是 DOM（监听 focus/blur/keydown + 读 rect），所以这里取根元素而不是控件实例。
+	TextSuggestion.listen!(
+		controlRoot(controls['jumpTo-label']) as TextSuggestionTarget,
+		loadLabels
 	);
-	fieldEls
-		.get('jumpTo-operation')
-		?.enableHiddenMode?.()
-		?.relate?.([{ case: ['jump', 'save-jump'], targets: [fieldEls.get('jumpTo-label')] }]);
+	useLocalizedOptions('jumpTo-operation', ['jump', 'save-jump', 'return'], (items) =>
+		controls['jumpTo-operation']?.loadItems?.(items)
+	);
+	controls['jumpTo-operation']?.enableHiddenMode?.();
+	controls['jumpTo-operation']?.relate?.([
+		{ case: ['jump', 'save-jump'], targets: [controlRoot(controls['jumpTo-label'])] }
+	]);
 });
 </script>
 

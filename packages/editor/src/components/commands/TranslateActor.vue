@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="translateActor"
-		:ref="registryRef(fieldEls, 'translateActor')"
+		:ref="controlRef('translateActor')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -15,7 +15,7 @@
 			<div class="text">{{ t('components.translateActor-actor.label') }}</div>
 			<CustomBox
 				id="translateActor-actor"
-				:ref="registryRef(fieldEls, 'translateActor-actor')"
+				:ref="controlRef('translateActor-actor')"
 				v-tip="t('components.translateActor-actor.tip')"
 				v-focus
 				type="actor"
@@ -24,7 +24,7 @@
 			<div class="text">{{ t('components.translateActor-angle.label') }}</div>
 			<CustomBox
 				id="translateActor-angle"
-				:ref="registryRef(fieldEls, 'translateActor-angle')"
+				:ref="controlRef('translateActor-angle')"
 				v-tip="t('components.translateActor-angle.tip')"
 				type="angle"
 				v-model="form.angle"
@@ -32,7 +32,7 @@
 			<div class="text">{{ t('components.translateActor-distance.label') }}</div>
 			<NumberVar
 				id="translateActor-distance"
-				:ref="registryRef(fieldEls, 'translateActor-distance')"
+				:ref="controlRef('translateActor-distance')"
 				v-tip="t('components.translateActor-distance.tip')"
 				v-focus
 				min="0"
@@ -45,14 +45,14 @@
 			<SelectBox
 				:label="t('components.translateActor-easingId.label')"
 				id="translateActor-easingId"
-				:ref="registryRef(fieldEls, 'translateActor-easingId')"
+				:ref="controlRef('translateActor-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
 			<div class="text">{{ t('components.translateActor-duration.label') }}</div>
 			<NumberVar
 				id="translateActor-duration"
-				:ref="registryRef(fieldEls, 'translateActor-duration')"
+				:ref="controlRef('translateActor-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -63,7 +63,7 @@
 			<SelectBox
 				:label="t('components.translateActor-wait.label')"
 				id="translateActor-wait"
-				:ref="registryRef(fieldEls, 'translateActor-wait')"
+				:ref="controlRef('translateActor-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -73,10 +73,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTranslateActorCommandSchema } from '@app/composables/commands/useTranslateActorCommandSchema';
@@ -86,6 +83,19 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'translateActor'
+	| 'translateActor-actor'
+	| 'translateActor-angle'
+	| 'translateActor-distance'
+	| 'translateActor-duration'
+	| 'translateActor-easingId'
+	| 'translateActor-wait';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -97,12 +107,12 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('translateActor-easingId')?.loadItems?.(Data.createEasingItems!());
+	controls['translateActor-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
 	useLocalizedOptions('translateActor-wait', [true, false], (items) =>
-		fieldEls.get('translateActor-wait')?.loadItems?.(items)
+		controls['translateActor-wait']?.loadItems?.(items)
 	);
 });
 </script>

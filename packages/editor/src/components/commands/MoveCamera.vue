@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="moveCamera"
-		:ref="registryRef(fieldEls, 'moveCamera')"
+		:ref="controlRef('moveCamera')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -17,7 +17,7 @@
 				:label="t('components.moveCamera-mode.label')"
 				id="moveCamera-mode"
 				v-tip="t('components.moveCamera-mode.tip')"
-				:ref="registryRef(fieldEls, 'moveCamera-mode')"
+				:ref="controlRef('moveCamera-mode')"
 				v-focus
 				v-model="form.mode"
 			/>
@@ -25,7 +25,7 @@
 			<CustomBox
 				id="moveCamera-position"
 				v-tip="t('components.moveCamera-position.tip')"
-				:ref="registryRef(fieldEls, 'moveCamera-position')"
+				:ref="controlRef('moveCamera-position')"
 				type="position"
 				v-model="form.position"
 			/>
@@ -33,7 +33,7 @@
 			<CustomBox
 				id="moveCamera-actor"
 				v-tip="t('components.moveCamera-actor.tip')"
-				:ref="registryRef(fieldEls, 'moveCamera-actor')"
+				:ref="controlRef('moveCamera-actor')"
 				type="actor"
 				v-model="form.actor"
 			/>
@@ -41,7 +41,7 @@
 			<SelectBox
 				:label="t('components.moveCamera-easingId.label')"
 				id="moveCamera-easingId"
-				:ref="registryRef(fieldEls, 'moveCamera-easingId')"
+				:ref="controlRef('moveCamera-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -49,7 +49,7 @@
 			<NumberBox
 				:label="t('components.moveCamera-duration.label')"
 				id="moveCamera-duration"
-				:ref="registryRef(fieldEls, 'moveCamera-duration')"
+				:ref="controlRef('moveCamera-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -60,7 +60,7 @@
 			<SelectBox
 				:label="t('components.moveCamera-wait.label')"
 				id="moveCamera-wait"
-				:ref="registryRef(fieldEls, 'moveCamera-wait')"
+				:ref="controlRef('moveCamera-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -70,10 +70,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveCameraCommandSchema } from '@app/composables/commands/useMoveCameraCommandSchema';
@@ -83,6 +80,19 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'moveCamera'
+	| 'moveCamera-actor'
+	| 'moveCamera-duration'
+	| 'moveCamera-easingId'
+	| 'moveCamera-mode'
+	| 'moveCamera-position'
+	| 'moveCamera-wait';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -101,25 +111,23 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('moveCamera-easingId')?.loadItems?.(Data.createEasingItems!());
+	controls['moveCamera-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
 	useLocalizedOptions(
 		'moveCamera-mode',
 		['position', 'actor'],
-		(items) => fieldEls.get('moveCamera-mode')?.loadItems?.(items),
+		(items) => controls['moveCamera-mode']?.loadItems?.(items),
 		{ position: 'command.moveCamera.position', actor: 'command.moveCamera.actor' }
 	);
-	fieldEls
-		.get('moveCamera-mode')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{ case: 'position', targets: [fieldEls.get('moveCamera-position')] },
-			{ case: 'actor', targets: [fieldEls.get('moveCamera-actor')] }
-		]);
+	controls['moveCamera-mode']?.enableHiddenMode?.();
+	controls['moveCamera-mode']?.relate?.([
+		{ case: 'position', targets: [controlRoot(controls['moveCamera-position'])] },
+		{ case: 'actor', targets: [controlRoot(controls['moveCamera-actor'])] }
+	]);
 	useLocalizedOptions('moveCamera-wait', [true, false], (items) =>
-		fieldEls.get('moveCamera-wait')?.loadItems?.(items)
+		controls['moveCamera-wait']?.loadItems?.(items)
 	);
 });
 </script>

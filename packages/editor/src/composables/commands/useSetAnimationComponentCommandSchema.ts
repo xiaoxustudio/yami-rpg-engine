@@ -1,5 +1,5 @@
-﻿import { Command } from '@app/commands/command-object.ts';
-import { composableEls } from '@app/composables/element-registry';
+import { Command } from '@app/commands/command-object.ts';
+import { getSetAnimationComponentBridge } from '@app/composables/set-animation-component-bridge';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
@@ -120,15 +120,12 @@ export function useSetAnimationComponentCommandSchema() {
 	const onLoad = (params: Record<string, unknown>): void => {
 		const animationId = (params.animationId ?? '') as string;
 		if (animationId !== '') {
-			composableEls
-				.get('setAnimationComponent-motion')
-				?.loadItems?.(Animation.getMotionListItems!(animationId));
-			composableEls
-				.get('setAnimationComponent-playMotion')
-				?.loadItems?.(Animation.getMotionListItems!(animationId));
-			composableEls
-				.get('setAnimationComponent-spriteId')
-				?.loadItems?.(Animation.getSpriteListItems!(animationId));
+			getSetAnimationComponentBridge()?.loadItems(
+				Animation.getMotionListItems!(animationId),
+				Animation.getMotionListItems!(animationId),
+				// 这个助手在 animation-window 里的返回类型还是 unknown（与 getMotionListItems 不一致）
+				Animation.getSpriteListItems!(animationId) as unknown[]
+			);
 		}
 		load(params);
 	};

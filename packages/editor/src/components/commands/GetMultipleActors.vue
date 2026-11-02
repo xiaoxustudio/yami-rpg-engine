@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="getMultipleActors"
-		:ref="registryRef(fieldEls, 'getMultipleActors')"
+		:ref="controlRef('getMultipleActors')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -15,7 +15,7 @@
 			<div class="text">{{ t('components.getMultipleActors-variable.label') }}</div>
 			<CustomBox
 				id="getMultipleActors-variable"
-				:ref="registryRef(fieldEls, 'getMultipleActors-variable')"
+				:ref="controlRef('getMultipleActors-variable')"
 				v-tip="t('components.getMultipleActors-variable.tip')"
 				v-focus
 				type="variable"
@@ -25,7 +25,7 @@
 			<div class="text">{{ t('components.getMultipleActors-position.label') }}</div>
 			<CustomBox
 				id="getMultipleActors-position"
-				:ref="registryRef(fieldEls, 'getMultipleActors-position')"
+				:ref="controlRef('getMultipleActors-position')"
 				v-tip="t('components.getMultipleActors-position.tip')"
 				type="position"
 				v-model="form.position"
@@ -35,14 +35,14 @@
 				:label="t('components.getMultipleActors-area.label')"
 				id="getMultipleActors-area"
 				v-tip="t('components.getMultipleActors-area.tip')"
-				:ref="registryRef(fieldEls, 'getMultipleActors-area')"
+				:ref="controlRef('getMultipleActors-area')"
 				v-model="form.area"
 			/>
 			<div class="text">{{ t('components.getMultipleActors-width.label') }}</div>
 			<NumberVar
 				id="getMultipleActors-width"
 				v-tip="t('components.getMultipleActors-width.tip')"
-				:ref="registryRef(fieldEls, 'getMultipleActors-width')"
+				:ref="controlRef('getMultipleActors-width')"
 				min="0"
 				max="512"
 				decimals="4"
@@ -53,7 +53,7 @@
 			<NumberVar
 				id="getMultipleActors-height"
 				v-tip="t('components.getMultipleActors-height.tip')"
-				:ref="registryRef(fieldEls, 'getMultipleActors-height')"
+				:ref="controlRef('getMultipleActors-height')"
 				min="0"
 				max="512"
 				decimals="4"
@@ -64,7 +64,7 @@
 			<NumberVar
 				id="getMultipleActors-radius"
 				v-tip="t('components.getMultipleActors-radius.tip')"
-				:ref="registryRef(fieldEls, 'getMultipleActors-radius')"
+				:ref="controlRef('getMultipleActors-radius')"
 				min="0"
 				max="256"
 				decimals="4"
@@ -76,14 +76,14 @@
 				:label="t('components.getMultipleActors-selector.label')"
 				id="getMultipleActors-selector"
 				v-tip="t('components.getMultipleActors-selector.tip')"
-				:ref="registryRef(fieldEls, 'getMultipleActors-selector')"
+				:ref="controlRef('getMultipleActors-selector')"
 				v-model="form.selector"
 			/>
 			<div class="text">{{ t('components.getMultipleActors-teamId.label') }}</div>
 			<SelectVar
 				id="getMultipleActors-teamId"
 				v-tip="t('components.getMultipleActors-teamId.tip')"
-				:ref="registryRef(fieldEls, 'getMultipleActors-teamId')"
+				:ref="controlRef('getMultipleActors-teamId')"
 				v-model="form.teamId"
 			/>
 			<div class="text">{{ t('components.getMultipleActors-activation.label') }}</div>
@@ -91,7 +91,7 @@
 				:label="t('components.getMultipleActors-activation.label')"
 				id="getMultipleActors-activation"
 				v-tip="t('components.getMultipleActors-activation.tip')"
-				:ref="registryRef(fieldEls, 'getMultipleActors-activation')"
+				:ref="controlRef('getMultipleActors-activation')"
 				v-model="form.activation"
 			/>
 		</div>
@@ -100,10 +100,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetMultipleActorsCommandSchema } from '@app/composables/commands/useGetMultipleActorsCommandSchema';
@@ -114,6 +111,22 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'getMultipleActors'
+	| 'getMultipleActors-activation'
+	| 'getMultipleActors-area'
+	| 'getMultipleActors-height'
+	| 'getMultipleActors-position'
+	| 'getMultipleActors-radius'
+	| 'getMultipleActors-selector'
+	| 'getMultipleActors-teamId'
+	| 'getMultipleActors-variable'
+	| 'getMultipleActors-width';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -126,48 +139,44 @@ const onConfirm = () => {
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
 	const items = Data.createTeamItems!();
-	fieldEls.get('getMultipleActors-teamId')?.loadItems?.(items);
+	controls['getMultipleActors-teamId']?.loadItems?.(items);
 };
 
 onMounted(() => {
 	useLocalizedOptions(
 		'getMultipleActors-area',
 		['rectangle', 'circle'],
-		(items) => fieldEls.get('getMultipleActors-area')?.loadItems?.(items),
+		(items) => controls['getMultipleActors-area']?.loadItems?.(items),
 		{
 			rectangle: 'command.getMultipleActors.rectangle',
 			circle: 'command.getMultipleActors.circle'
 		}
 	);
-	fieldEls
-		.get('getMultipleActors-area')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'rectangle',
-				targets: [
-					fieldEls.get('getMultipleActors-width'),
-					fieldEls.get('getMultipleActors-height')
-				]
-			},
-			{ case: 'circle', targets: [fieldEls.get('getMultipleActors-radius')] }
-		]);
+	controls['getMultipleActors-area']?.enableHiddenMode?.();
+	controls['getMultipleActors-area']?.relate?.([
+		{
+			case: 'rectangle',
+			targets: [
+				controlRoot(controls['getMultipleActors-width']),
+				controlRoot(controls['getMultipleActors-height'])
+			]
+		},
+		{ case: 'circle', targets: [controlRoot(controls['getMultipleActors-radius'])] }
+	]);
 	useLocalizedOptions('getMultipleActors-selector', ['enemy', 'friend', 'team', 'any'], (items) =>
-		fieldEls.get('getMultipleActors-selector')?.loadItems?.(items)
+		controls['getMultipleActors-selector']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('getMultipleActors-selector')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: ['enemy', 'friend', 'team'],
-				targets: [fieldEls.get('getMultipleActors-teamId')]
-			}
-		]);
+	controls['getMultipleActors-selector']?.enableHiddenMode?.();
+	controls['getMultipleActors-selector']?.relate?.([
+		{
+			case: ['enemy', 'friend', 'team'],
+			targets: [controlRoot(controls['getMultipleActors-teamId'])]
+		}
+	]);
 	useLocalizedOptions(
 		'getMultipleActors-activation',
 		['active', 'inactive', 'either'],
-		(items) => fieldEls.get('getMultipleActors-activation')?.loadItems?.(items),
+		(items) => controls['getMultipleActors-activation']?.loadItems?.(items),
 		{
 			active: 'command.getMultipleActors.active',
 			inactive: 'command.getMultipleActors.inactive',

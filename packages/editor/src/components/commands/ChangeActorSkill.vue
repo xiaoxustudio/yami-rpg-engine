@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="changeActorSkill"
-		:ref="registryRef(fieldEls, 'changeActorSkill')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="changeActorSkill" :ref="controlRef('changeActorSkill')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.changeActorSkill.title') }}
@@ -14,7 +10,7 @@
 			<div class="text">{{ t('components.changeActorSkill-actor.label') }}</div>
 			<CustomBox
 				id="changeActorSkill-actor"
-				:ref="registryRef(fieldEls, 'changeActorSkill-actor')"
+				:ref="controlRef('changeActorSkill-actor')"
 				v-focus
 				type="actor"
 				v-model="form.actor"
@@ -23,13 +19,13 @@
 			<SelectBox
 				:label="t('components.changeActorSkill-operation.label')"
 				id="changeActorSkill-operation"
-				:ref="registryRef(fieldEls, 'changeActorSkill-operation')"
+				:ref="controlRef('changeActorSkill-operation')"
 				v-model="form.operation"
 			/>
 			<div class="text">{{ t('components.changeActorSkill-skillId.label') }}</div>
 			<FileVar
 				id="changeActorSkill-skillId"
-				:ref="registryRef(fieldEls, 'changeActorSkill-skillId')"
+				:ref="controlRef('changeActorSkill-skillId')"
 				v-focus
 				type="file"
 				filter="skill"
@@ -38,7 +34,7 @@
 			<div class="text">{{ t('components.changeActorSkill-skill.label') }}</div>
 			<CustomBox
 				id="changeActorSkill-skill"
-				:ref="registryRef(fieldEls, 'changeActorSkill-skill')"
+				:ref="controlRef('changeActorSkill-skill')"
 				type="skill"
 				v-model="form.skill"
 			/>
@@ -48,10 +44,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorSkillCommandSchema } from '@app/composables/commands/useChangeActorSkillCommandSchema';
@@ -60,6 +53,17 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import FileVar from '@app/components/common/FileVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'changeActorSkill'
+	| 'changeActorSkill-actor'
+	| 'changeActorSkill-operation'
+	| 'changeActorSkill-skill'
+	| 'changeActorSkill-skillId';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -73,7 +77,7 @@ onMounted(() => {
 	useLocalizedOptions(
 		'changeActorSkill-operation',
 		['add', 'remove', 'remove-instance', 'sort-by-order'],
-		(items) => fieldEls.get('changeActorSkill-operation')?.loadItems?.(items),
+		(items) => controls['changeActorSkill-operation']?.loadItems?.(items),
 		{
 			add: 'command.changeActorSkill.add',
 			remove: 'command.changeActorSkill.remove',
@@ -81,19 +85,17 @@ onMounted(() => {
 			'sort-by-order': 'command.changeActorSkill.sort-by-order'
 		}
 	);
-	fieldEls
-		.get('changeActorSkill-operation')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: ['add', 'remove'],
-				targets: [fieldEls.get('changeActorSkill-skillId')]
-			},
-			{
-				case: 'remove-instance',
-				targets: [fieldEls.get('changeActorSkill-skill')]
-			}
-		]);
+	controls['changeActorSkill-operation']?.enableHiddenMode?.();
+	controls['changeActorSkill-operation']?.relate?.([
+		{
+			case: ['add', 'remove'],
+			targets: [controlRoot(controls['changeActorSkill-skillId'])]
+		},
+		{
+			case: 'remove-instance',
+			targets: [controlRoot(controls['changeActorSkill-skill'])]
+		}
+	]);
 });
 </script>
 

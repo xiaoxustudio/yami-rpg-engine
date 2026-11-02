@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="changeThreat" :ref="boxRef('changeThreat')" @confirm="onConfirm">
+	<WindowFrame id="changeThreat" :ref="controlRef('changeThreat')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.changeThreat.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.changeThreat-actor.label') }}</div>
 			<CustomBox
 				id="changeThreat-actor"
-				:ref="boxRef('changeThreat-actor')"
+				:ref="controlRef('changeThreat-actor')"
 				v-tip="t('components.changeThreat-actor.tip')"
 				v-focus
 				type="actor"
@@ -19,7 +19,7 @@
 			<div class="text">{{ t('components.changeThreat-target.label') }}</div>
 			<CustomBox
 				id="changeThreat-target"
-				:ref="boxRef('changeThreat-target')"
+				:ref="controlRef('changeThreat-target')"
 				v-tip="t('components.changeThreat-target.tip')"
 				type="actor"
 				v-model="form.target"
@@ -29,13 +29,13 @@
 				:label="t('components.changeThreat-operation.label')"
 				id="changeThreat-operation"
 				v-tip="t('components.changeThreat-operation.tip')"
-				:ref="boxRef('changeThreat-operation')"
+				:ref="controlRef('changeThreat-operation')"
 				v-model="form.operation"
 			/>
 			<div class="text">{{ t('components.changeThreat-threat.label') }}</div>
 			<NumberVar
 				id="changeThreat-threat"
-				:ref="boxRef('changeThreat-threat')"
+				:ref="controlRef('changeThreat-threat')"
 				v-tip="t('components.changeThreat-threat.tip')"
 				min="0"
 				max="1000000000"
@@ -56,28 +56,17 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'changeThreat'
+	| 'changeThreat-actor'
+	| 'changeThreat-operation'
+	| 'changeThreat-target'
+	| 'changeThreat-threat';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -91,7 +80,7 @@ onMounted(() => {
 	useLocalizedOptions(
 		'changeThreat-operation',
 		['increase', 'decrease'],
-		(items) => boxes['changeThreat-operation']?.loadItems?.(items),
+		(items) => controls['changeThreat-operation']?.loadItems?.(items),
 		{ increase: 'command.changeThreat.increase', decrease: 'command.changeThreat.decrease' }
 	);
 });

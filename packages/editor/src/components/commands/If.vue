@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="if" :ref="boxRef('if')" @confirm="onConfirm">
+	<WindowFrame id="if" :ref="controlRef('if')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.if.title') }}
@@ -10,16 +10,16 @@
 			<div class="text">{{ t('components.if-branches.label') }}</div>
 			<ParamList
 				id="if-branches"
-				:ref="boxRef('if-branches')"
+				:ref="controlRef('if-branches')"
 				v-focus
 				v-model="form.branches"
 			/>
 		</div>
-		<CheckBox id="if-else" :ref="boxRef('if-else')" v-model="form.else" class="standard"
+		<CheckBox id="if-else" :ref="controlRef('if-else')" v-model="form.else" class="standard"
 			><div
 				class="text"
 				id="if-else-label"
-				:ref="boxRef('if-else-label')"
+				:ref="controlRef('if-else-label')"
 				v-tip="t('components.if-else-label.tip')"
 			>
 				{{ t('components.if-else-label.content') }}
@@ -40,28 +40,12 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'if' | 'if-branches' | 'if-else' | 'if-else-label';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -72,8 +56,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	boxes['if-branches']?.bind?.(IfBranch);
-	on(boxes['if'], 'closed', () => windowClosed(new Event('closed')));
+	controls['if-branches']?.bind?.(IfBranch);
+	on(controls['if'], 'closed', () => windowClosed(new Event('closed')));
 });
 </script>
 

@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="setZoomFactor"
-		:ref="boxRef('setZoomFactor')"
+		:ref="controlRef('setZoomFactor')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -15,7 +15,7 @@
 			<div class="text">{{ t('components.setZoomFactor-zoom.label') }}</div>
 			<NumberVar
 				id="setZoomFactor-zoom"
-				:ref="boxRef('setZoomFactor-zoom')"
+				:ref="controlRef('setZoomFactor-zoom')"
 				v-tip="t('components.setZoomFactor-zoom.tip')"
 				v-focus
 				min="1"
@@ -28,14 +28,14 @@
 			<SelectBox
 				:label="t('components.setZoomFactor-easingId.label')"
 				id="setZoomFactor-easingId"
-				:ref="boxRef('setZoomFactor-easingId')"
+				:ref="controlRef('setZoomFactor-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
 			<div class="text">{{ t('components.setZoomFactor-duration.label') }}</div>
 			<NumberVar
 				id="setZoomFactor-duration"
-				:ref="boxRef('setZoomFactor-duration')"
+				:ref="controlRef('setZoomFactor-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -46,7 +46,7 @@
 			<SelectBox
 				:label="t('components.setZoomFactor-wait.label')"
 				id="setZoomFactor-wait"
-				:ref="boxRef('setZoomFactor-wait')"
+				:ref="controlRef('setZoomFactor-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -64,28 +64,17 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'setZoomFactor'
+	| 'setZoomFactor-duration'
+	| 'setZoomFactor-easingId'
+	| 'setZoomFactor-wait'
+	| 'setZoomFactor-zoom';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -97,12 +86,12 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	boxes['setZoomFactor-easingId']?.loadItems?.(Data.createEasingItems!());
+	controls['setZoomFactor-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
 	useLocalizedOptions('setZoomFactor-wait', [true, false], (items) =>
-		boxes['setZoomFactor-wait']?.loadItems?.(items)
+		controls['setZoomFactor-wait']?.loadItems?.(items)
 	);
 });
 </script>

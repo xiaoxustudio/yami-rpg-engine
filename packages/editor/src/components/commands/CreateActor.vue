@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="createActor"
-		:ref="boxRef('createActor')"
+		:ref="controlRef('createActor')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -15,7 +15,7 @@
 			<div class="text">{{ t('components.createActor-actorId.label') }}</div>
 			<CustomBox
 				id="createActor-actorId"
-				:ref="boxRef('createActor-actorId')"
+				:ref="controlRef('createActor-actorId')"
 				v-tip="t('components.createActor-actorId.tip')"
 				v-focus
 				type="file"
@@ -27,13 +27,13 @@
 				:label="t('components.createActor-teamId.label')"
 				id="createActor-teamId"
 				v-tip="t('components.createActor-teamId.tip')"
-				:ref="boxRef('createActor-teamId')"
+				:ref="controlRef('createActor-teamId')"
 				v-model="form.teamId"
 			/>
 			<div class="text">{{ t('components.createActor-position.label') }}</div>
 			<CustomBox
 				id="createActor-position"
-				:ref="boxRef('createActor-position')"
+				:ref="controlRef('createActor-position')"
 				v-tip="t('components.createActor-position.tip')"
 				type="position"
 				v-model="form.position"
@@ -41,7 +41,7 @@
 			<div class="text">{{ t('components.createActor-angle.label') }}</div>
 			<NumberVar
 				id="createActor-angle"
-				:ref="boxRef('createActor-angle')"
+				:ref="controlRef('createActor-angle')"
 				v-tip="t('components.createActor-angle.tip')"
 				min="-360"
 				max="360"
@@ -63,28 +63,17 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'createActor'
+	| 'createActor-actorId'
+	| 'createActor-angle'
+	| 'createActor-position'
+	| 'createActor-teamId';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -96,7 +85,7 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	boxes['createActor-teamId']?.loadItems?.(Data.createTeamItems!());
+	controls['createActor-teamId']?.loadItems?.(Data.createTeamItems!());
 };
 
 onMounted(() => {});

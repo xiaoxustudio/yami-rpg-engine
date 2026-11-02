@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setObject" :ref="registryRef(fieldEls, 'setObject')" @confirm="onConfirm">
+	<WindowFrame id="setObject" :ref="controlRef('setObject')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setObject.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.setObject-variable.label') }}</div>
 			<CustomBox
 				id="setObject-variable"
-				:ref="registryRef(fieldEls, 'setObject-variable')"
+				:ref="controlRef('setObject-variable')"
 				v-tip="t('components.setObject-variable.tip')"
 				v-focus
 				type="variable"
@@ -22,14 +22,14 @@
 				:label="t('components.setObject-operand-type.label')"
 				id="setObject-operand-type"
 				v-tip="t('components.setObject-operand-type.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-type')"
+				:ref="controlRef('setObject-operand-type')"
 				v-model="form['operand-type']"
 			/>
 			<div class="text">{{ t('components.setObject-operand-actor.label') }}</div>
 			<CustomBox
 				id="setObject-operand-actor"
 				v-tip="t('components.setObject-operand-actor.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-actor')"
+				:ref="controlRef('setObject-operand-actor')"
 				type="actor"
 				v-model="form['operand-actor']"
 			/>
@@ -37,7 +37,7 @@
 			<CustomBox
 				id="setObject-operand-skill"
 				v-tip="t('components.setObject-operand-skill.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-skill')"
+				:ref="controlRef('setObject-operand-skill')"
 				type="skill"
 				v-model="form['operand-skill']"
 			/>
@@ -45,7 +45,7 @@
 			<CustomBox
 				id="setObject-operand-state"
 				v-tip="t('components.setObject-operand-state.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-state')"
+				:ref="controlRef('setObject-operand-state')"
 				type="state"
 				v-model="form['operand-state']"
 			/>
@@ -53,7 +53,7 @@
 			<CustomBox
 				id="setObject-operand-equipment"
 				v-tip="t('components.setObject-operand-equipment.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-equipment')"
+				:ref="controlRef('setObject-operand-equipment')"
 				type="equipment"
 				v-model="form['operand-equipment']"
 			/>
@@ -61,7 +61,7 @@
 			<CustomBox
 				id="setObject-operand-item"
 				v-tip="t('components.setObject-operand-item.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-item')"
+				:ref="controlRef('setObject-operand-item')"
 				type="item"
 				v-model="form['operand-item']"
 			/>
@@ -69,7 +69,7 @@
 			<CustomBox
 				id="setObject-operand-trigger"
 				v-tip="t('components.setObject-operand-trigger.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-trigger')"
+				:ref="controlRef('setObject-operand-trigger')"
 				type="trigger"
 				v-model="form['operand-trigger']"
 			/>
@@ -77,7 +77,7 @@
 			<CustomBox
 				id="setObject-operand-light"
 				v-tip="t('components.setObject-operand-light.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-light')"
+				:ref="controlRef('setObject-operand-light')"
 				type="light"
 				v-model="form['operand-light']"
 			/>
@@ -85,7 +85,7 @@
 			<CustomBox
 				id="setObject-operand-object"
 				v-tip="t('components.setObject-operand-object.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-object')"
+				:ref="controlRef('setObject-operand-object')"
 				type="object"
 				v-model="form['operand-object']"
 			/>
@@ -93,7 +93,7 @@
 			<CustomBox
 				id="setObject-operand-element"
 				v-tip="t('components.setObject-operand-element.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-element')"
+				:ref="controlRef('setObject-operand-element')"
 				type="element"
 				v-model="form['operand-element']"
 			/>
@@ -101,7 +101,7 @@
 			<CustomBox
 				id="setObject-operand-variable"
 				v-tip="t('components.setObject-operand-variable.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-variable')"
+				:ref="controlRef('setObject-operand-variable')"
 				v-focus
 				type="variable"
 				filter="object"
@@ -111,7 +111,7 @@
 			<NumberVar
 				id="setObject-operand-list-index"
 				v-tip="t('components.setObject-operand-list-index.tip')"
-				:ref="registryRef(fieldEls, 'setObject-operand-list-index')"
+				:ref="controlRef('setObject-operand-list-index')"
 				min="0"
 				max="1000000000"
 				v-model="form['operand-list-index']"
@@ -122,10 +122,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetObjectCommandSchema } from '@app/composables/commands/useSetObjectCommandSchema';
@@ -134,6 +131,26 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'setObject'
+	| 'setObject-operand-actor'
+	| 'setObject-operand-element'
+	| 'setObject-operand-equipment'
+	| 'setObject-operand-item'
+	| 'setObject-operand-light'
+	| 'setObject-operand-list-index'
+	| 'setObject-operand-object'
+	| 'setObject-operand-skill'
+	| 'setObject-operand-state'
+	| 'setObject-operand-trigger'
+	| 'setObject-operand-type'
+	| 'setObject-operand-variable'
+	| 'setObject-variable';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -160,36 +177,34 @@ onMounted(() => {
 			'variable',
 			'list'
 		],
-		(items) => fieldEls.get('setObject-operand-type')?.loadItems?.(items)
+		(items) => controls['setObject-operand-type']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('setObject-operand-type')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{ case: 'actor', targets: [fieldEls.get('setObject-operand-actor')] },
-			{ case: 'skill', targets: [fieldEls.get('setObject-operand-skill')] },
-			{ case: 'state', targets: [fieldEls.get('setObject-operand-state')] },
-			{
-				case: 'equipment',
-				targets: [fieldEls.get('setObject-operand-equipment')]
-			},
-			{ case: 'item', targets: [fieldEls.get('setObject-operand-item')] },
-			{ case: 'trigger', targets: [fieldEls.get('setObject-operand-trigger')] },
-			{ case: 'light', targets: [fieldEls.get('setObject-operand-light')] },
-			{ case: 'object', targets: [fieldEls.get('setObject-operand-object')] },
-			{ case: 'element', targets: [fieldEls.get('setObject-operand-element')] },
-			{
-				case: 'variable',
-				targets: [fieldEls.get('setObject-operand-variable')]
-			},
-			{
-				case: 'list',
-				targets: [
-					fieldEls.get('setObject-operand-variable'),
-					fieldEls.get('setObject-operand-list-index')
-				]
-			}
-		]);
+	controls['setObject-operand-type']?.enableHiddenMode?.();
+	controls['setObject-operand-type']?.relate?.([
+		{ case: 'actor', targets: [controlRoot(controls['setObject-operand-actor'])] },
+		{ case: 'skill', targets: [controlRoot(controls['setObject-operand-skill'])] },
+		{ case: 'state', targets: [controlRoot(controls['setObject-operand-state'])] },
+		{
+			case: 'equipment',
+			targets: [controlRoot(controls['setObject-operand-equipment'])]
+		},
+		{ case: 'item', targets: [controlRoot(controls['setObject-operand-item'])] },
+		{ case: 'trigger', targets: [controlRoot(controls['setObject-operand-trigger'])] },
+		{ case: 'light', targets: [controlRoot(controls['setObject-operand-light'])] },
+		{ case: 'object', targets: [controlRoot(controls['setObject-operand-object'])] },
+		{ case: 'element', targets: [controlRoot(controls['setObject-operand-element'])] },
+		{
+			case: 'variable',
+			targets: [controlRoot(controls['setObject-operand-variable'])]
+		},
+		{
+			case: 'list',
+			targets: [
+				controlRoot(controls['setObject-operand-variable']),
+				controlRoot(controls['setObject-operand-list-index'])
+			]
+		}
+	]);
 });
 </script>
 

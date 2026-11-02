@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setElement" :ref="boxRef('setElement')" @confirm="onConfirm">
+	<WindowFrame id="setElement" :ref="controlRef('setElement')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setElement.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.setElement-element.label') }}</div>
 			<CustomBox
 				id="setElement-element"
-				:ref="boxRef('setElement-element')"
+				:ref="controlRef('setElement-element')"
 				v-tip="t('components.setElement-element.tip')"
 				v-focus
 				type="element"
@@ -21,7 +21,7 @@
 				:label="t('components.setElement-operation.label')"
 				id="setElement-operation"
 				v-tip="t('components.setElement-operation.tip')"
-				:ref="boxRef('setElement-operation')"
+				:ref="controlRef('setElement-operation')"
 				v-model="form.operation"
 			/>
 		</div>
@@ -37,28 +37,12 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**，relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'setElement' | 'setElement-element' | 'setElement-operation';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -80,7 +64,7 @@ onMounted(() => {
 			'move-to-first',
 			'move-to-last'
 		],
-		(items) => boxes['setElement-operation']?.loadItems?.(items),
+		(items) => controls['setElement-operation']?.loadItems?.(items),
 		{
 			hide: 'command.setElement.hide',
 			show: 'command.setElement.show',

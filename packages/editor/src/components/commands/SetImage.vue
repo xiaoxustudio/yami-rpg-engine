@@ -1,5 +1,10 @@
 <template>
-	<WindowFrame id="setImage" :ref="boxRef('setImage')" @confirm="onConfirm" @closed="onClosed">
+	<WindowFrame
+		id="setImage"
+		:ref="controlRef('setImage')"
+		@confirm="onConfirm"
+		@closed="onClosed"
+	>
 		<template #title
 			><TitleBar
 				>{{ t('components.setImage.title') }}
@@ -10,7 +15,7 @@
 			<div class="text">{{ t('components.setImage-element.label') }}</div>
 			<CustomBox
 				id="setImage-element"
-				:ref="boxRef('setImage-element')"
+				:ref="controlRef('setImage-element')"
 				v-focus
 				type="element"
 				v-model="form.element"
@@ -18,7 +23,7 @@
 			<div class="text">{{ t('components.setImage-properties.label') }}</div>
 			<ParamList
 				id="setImage-properties"
-				:ref="boxRef('setImage-properties')"
+				:ref="controlRef('setImage-properties')"
 				v-focus
 				v-model="form.properties"
 			/>
@@ -36,28 +41,12 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**，relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'setImage' | 'setImage-element' | 'setImage-properties';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -69,11 +58,11 @@ const onConfirm = () => {
 
 /** 窗口关闭时清理。 */
 const onClosed = () => {
-	clear(boxes['setImage-properties']);
+	clear(controlRoot(controls['setImage-properties']));
 };
 
 onMounted(() => {
-	boxes['setImage-properties']?.bind?.(ImageProperty);
+	controls['setImage-properties']?.bind?.(ImageProperty);
 });
 </script>
 

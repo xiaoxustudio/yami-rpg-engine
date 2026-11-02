@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="setPointerEventRoot"
-		:ref="registryRef(fieldEls, 'setPointerEventRoot')"
+		:ref="controlRef('setPointerEventRoot')"
 		@confirm="onConfirm"
 	>
 		<template #title
@@ -16,7 +16,7 @@
 				:label="t('components.setPointerEventRoot-operation.label')"
 				id="setPointerEventRoot-operation"
 				v-tip="t('components.setPointerEventRoot-operation.tip')"
-				:ref="registryRef(fieldEls, 'setPointerEventRoot-operation')"
+				:ref="controlRef('setPointerEventRoot-operation')"
 				v-focus
 				v-model="form.operation"
 			/>
@@ -24,7 +24,7 @@
 			<CustomBox
 				id="setPointerEventRoot-element"
 				v-tip="t('components.setPointerEventRoot-element.tip')"
-				:ref="registryRef(fieldEls, 'setPointerEventRoot-element')"
+				:ref="controlRef('setPointerEventRoot-element')"
 				type="element"
 				v-model="form.element"
 			/>
@@ -34,10 +34,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetPointerEventRootCommandSchema } from '@app/composables/commands/useSetPointerEventRootCommandSchema';
@@ -45,6 +42,12 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'setPointerEventRoot' | 'setPointerEventRoot-element' | 'setPointerEventRoot-operation';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -58,17 +61,15 @@ onMounted(() => {
 	useLocalizedOptions(
 		'setPointerEventRoot-operation',
 		['add', 'remove', 'remove-latest', 'reset'],
-		(items) => fieldEls.get('setPointerEventRoot-operation')?.loadItems?.(items)
+		(items) => controls['setPointerEventRoot-operation']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('setPointerEventRoot-operation')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: ['add', 'remove'],
-				targets: [fieldEls.get('setPointerEventRoot-element')]
-			}
-		]);
+	controls['setPointerEventRoot-operation']?.enableHiddenMode?.();
+	controls['setPointerEventRoot-operation']?.relate?.([
+		{
+			case: ['add', 'remove'],
+			targets: [controlRoot(controls['setPointerEventRoot-element'])]
+		}
+	]);
 });
 </script>
 

@@ -50,6 +50,48 @@ pnpm start:prod   # 先构建再以生产模式启动
 
 新增/修改文案时，键写进对应 `components.<ns>.json`（入口键才写入口文件）；`pnpm run i18n:guard` 会把**入口 + 全部分片**聚合成每种语言的 key 集合再比对，并校验分片文件名与内部 id 的命名空间一致、id 不重复。需要从旧单文件语言包重新拆分时跑 `node scripts/oneoff/i18n-split-locales.mjs`（加 `--check` 只校验不写盘）。
 
+**元素契约迁移：控件从「元素 API」到组件 `defineExpose`**
+
+现状（2026-11-02 实测；**数字真源是脚本，不是本文**）：
+
+```shell
+node scripts/contract-inventory.mjs                                  # 还挂着 registryRef 的窗口 / 控件 id / 谁在读它们
+node scripts/oneoff/audit-migrated-controls.mjs <迁过的 .vue…>        # 迁后回查：还有别的文件按 id 读它吗
+node scripts/oneoff/audit-expose-vs-attach.mjs                       # 包装组件的 defineExpose 是否覆盖 attachElementApi
+```
+
+- 148 个 `.vue` 仍用 `registryRef(...)`（810 个控件 id），其中 80 个「有全局消费方或 schema 按 id 动态读」——这批必须先接桥，不能直接改模板 ref；
+- 台账三轴：`element-registry-lookups` 976 / 217 文件、`yami-element-refs` 535 / 107、`element-api-attach` 115；
+- 74 个 `attachElementApi` 组件里 47 个的 `defineExpose` **不全**（多为 inspector 页的 `sync` / `update` / `form`）：迁到实例之前必须补齐，否则调用点在运行期静默变 `undefined`。
+
+**目标契约**：控件 = 组件实例，能力来自 `defineExpose`；控件寻址不再经过 `ElementRegistry`。按消费方分三条路径，**不要混用**：
+
+1. **窗口内部**：`composables/control-refs.ts` 的 `useControlRefs<Id>()` —— `:ref="controlRef('x')"` 收实例，`controls['x']?.loadItems?.(…)` 调用。`Id` 是字面量联合，**拼错在 tsc / vue-tsc 就红**（注册表时代拼错只在运行期静默 no-op）。确实需要 DOM 的少数站点用 `controlRoot(controls['x'])` 取根元素；**不要**为了省事把表存成裸元素 —— 那样 `element-api-attach` 永远不会降。
+2. **非 Vue 单例（命令 schema / 老 window 模块）**：模块桥 `composables/form-bridge.ts` 的 `createFormBridge<Api>(id)`。表单用 `setForm`/`getForm`，**控件级能力**（`loadItems` 等）也走这条桥 —— 单例不再知道任何控件 id（样板：`change-actor-equipment-bridge.ts`、`set-animation-component-bridge.ts`）。
+3. **跨窗口共享助手**：按 key 建表的桥（`preset-getter-bridge.ts`），助手只认 key。
+
+阶段与判据：
+
+| 阶段 | 内容 | 完成判据 |
+| --- | --- | --- |
+| P1 契约类型 + 接缝 | `control-refs.ts`（唯一接缝）、桥工厂 | 窗口内不再出现「元素上挂方法」的调用形状 |
+| P2 批次迁移 | 一批一个面板家族：`.vue` 改 `useControlRefs`、单例改桥 | 该批 `registryRef` / `*Els.get` 归零；typecheck + **vue-tsc** + 相关 spec + `pnpm e2e` 全绿 |
+| P3 包装层收尾 | 补齐 `defineExpose` 后，删掉元素消费方已归零的包装组件的 `attachElementApi` | `element-api-attach` 按包装组件逐个下降 |
+| P4 拆除 | 删 `attachApi` / `markApiAttached` / `ElementRegistry` / `registryRef` / `registryElement` / `YamiElement` | 三轴归零，引擎层不再出现注册表 |
+
+批次顺序（按消费密度）：命令窗口族 → tools → inspector 页族 → scene / animation / palette 引擎域（最后，风险最高）。命令窗口族里「无全局消费方」的 34 个已迁完；剩下 27 个卡在 schema 按 id 读控件，按路径 2 逐个接桥。
+
+反模式（都踩过）：
+
+- **双写**（既 `registryRef` 又模板 ref）：之后无法判断谁在驱动控件；确需过渡时只镜像**被单例读的那一个** id，并在注释里写明是过渡（见 `commands/Return.vue`）；
+- **读写分裂**（read 走 ref、write 仍走注册表）：懒挂载时序上必然翻车；
+- **一次性全仓替换**：每批必须能被单测 + 真机 E2E 自证；
+- **把 ref 表存成裸元素**：只是把查找搬出注册表，元素 API 还在，`element-api-attach` 不降；
+- **每个窗口复制一份 ref 表助手**：44 份副本已经漂移过一次口径，接缝只能有一份；
+- ⚠️ **改 `.vue` 的类型必须过 `typecheck:vue`**：`tsc` 对 `.vue` 是假绿（本轮 15 个 `clear(el)` 站点就是 vue-tsc 抓到的）；
+- ⚠️ **`relate()` 的 `targets` 仍是 DOM 语义**（`select-box-core` 读写 `element.style` 与兄弟标签），必须传 `controlRoot(...)`；这是 P3 之前拆不掉 `attachElementApi` 的主要原因。
+- ⚠️ **`write2()` 在新列表里找不到旧值时会把第一项当默认值写进去**：只在「原来就有选中值」时回写，否则会变成替用户选一个。
+
 
 ## 目录详解
 
@@ -86,4 +128,4 @@ yami-rpg-editor/
 | `stale-exemptions.mjs`     | 陈旧豁免注释（应为 0）                                                     |
 | `i18n-skip-list.mjs`       | 生成 `src/localize/template-localized.ts`（生成物，勿手改）                |
 
-其余（`any-hatch-*`、`null-cast-*`、`lazy-slot-*`、`audit-ui-slots`、`element-registry-migrate`、`element-ref-annotate`、`smoke-layout`）是**一次性 codemod / 探针**，任务已完成，只在需要复现当时的做法时参考。
+其余（`any-hatch-*`、`null-cast-*`、`lazy-slot-*`、`audit-ui-slots`、`element-registry-migrate`、`element-ref-annotate`、`smoke-layout`）是**一次性 codemod / 探针**，任务已完成，只在需要复现当时的做法时参考。元素契约迁移的四个工具（`control-refs-codemod`、`audit-migrated-controls`、`audit-expose-vs-attach`、`fix-relate-targets`）放在 `scripts/oneoff/`，用法见上文「元素契约迁移」一节。

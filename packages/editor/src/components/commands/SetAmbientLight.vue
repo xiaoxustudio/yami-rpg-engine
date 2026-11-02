@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="setAmbientLight"
-		:ref="registryRef(fieldEls, 'setAmbientLight')"
+		:ref="controlRef('setAmbientLight')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -15,7 +15,7 @@
 			<div class="text">{{ t('components.setAmbientLight-red.label') }}</div>
 			<NumberVar
 				id="setAmbientLight-red"
-				:ref="registryRef(fieldEls, 'setAmbientLight-red')"
+				:ref="controlRef('setAmbientLight-red')"
 				v-tip="t('components.setAmbientLight-red.tip')"
 				v-focus
 				min="0"
@@ -26,7 +26,7 @@
 			<div class="text">{{ t('components.setAmbientLight-green.label') }}</div>
 			<NumberVar
 				id="setAmbientLight-green"
-				:ref="registryRef(fieldEls, 'setAmbientLight-green')"
+				:ref="controlRef('setAmbientLight-green')"
 				v-tip="t('components.setAmbientLight-green.tip')"
 				min="0"
 				max="255"
@@ -36,7 +36,7 @@
 			<div class="text">{{ t('components.setAmbientLight-blue.label') }}</div>
 			<NumberVar
 				id="setAmbientLight-blue"
-				:ref="registryRef(fieldEls, 'setAmbientLight-blue')"
+				:ref="controlRef('setAmbientLight-blue')"
 				v-tip="t('components.setAmbientLight-blue.tip')"
 				min="0"
 				max="255"
@@ -47,14 +47,14 @@
 			<SelectBox
 				:label="t('components.setAmbientLight-easingId.label')"
 				id="setAmbientLight-easingId"
-				:ref="registryRef(fieldEls, 'setAmbientLight-easingId')"
+				:ref="controlRef('setAmbientLight-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
 			<div class="text">{{ t('components.setAmbientLight-duration.label') }}</div>
 			<NumberVar
 				id="setAmbientLight-duration"
-				:ref="registryRef(fieldEls, 'setAmbientLight-duration')"
+				:ref="controlRef('setAmbientLight-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -65,7 +65,7 @@
 			<SelectBox
 				:label="t('components.setAmbientLight-wait.label')"
 				id="setAmbientLight-wait"
-				:ref="registryRef(fieldEls, 'setAmbientLight-wait')"
+				:ref="controlRef('setAmbientLight-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -75,10 +75,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAmbientLightCommandSchema } from '@app/composables/commands/useSetAmbientLightCommandSchema';
@@ -87,6 +84,19 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'setAmbientLight'
+	| 'setAmbientLight-blue'
+	| 'setAmbientLight-duration'
+	| 'setAmbientLight-easingId'
+	| 'setAmbientLight-green'
+	| 'setAmbientLight-red'
+	| 'setAmbientLight-wait';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -98,12 +108,12 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('setAmbientLight-easingId')?.loadItems?.(Data.createEasingItems!());
+	controls['setAmbientLight-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
 	useLocalizedOptions('setAmbientLight-wait', [true, false], (items) =>
-		fieldEls.get('setAmbientLight-wait')?.loadItems?.(items)
+		controls['setAmbientLight-wait']?.loadItems?.(items)
 	);
 });
 </script>

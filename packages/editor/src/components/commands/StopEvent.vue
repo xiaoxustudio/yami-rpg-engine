@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="stopEvent" :ref="registryRef(fieldEls, 'stopEvent')" @confirm="onConfirm">
+	<WindowFrame id="stopEvent" :ref="controlRef('stopEvent')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.stopEvent.title') }}
@@ -12,7 +12,7 @@
 				:label="t('components.stopEvent-type.label')"
 				id="stopEvent-type"
 				v-tip="t('components.stopEvent-type.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-type')"
+				:ref="controlRef('stopEvent-type')"
 				v-focus
 				v-model="form.type"
 				@write="onTypeWrite"
@@ -21,7 +21,7 @@
 			<CustomBox
 				id="stopEvent-actor"
 				v-tip="t('components.stopEvent-actor.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-actor')"
+				:ref="controlRef('stopEvent-actor')"
 				type="actor"
 				v-model="form.actor"
 			/>
@@ -29,7 +29,7 @@
 			<CustomBox
 				id="stopEvent-skill"
 				v-tip="t('components.stopEvent-skill.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-skill')"
+				:ref="controlRef('stopEvent-skill')"
 				type="skill"
 				v-model="form.skill"
 			/>
@@ -37,7 +37,7 @@
 			<CustomBox
 				id="stopEvent-state"
 				v-tip="t('components.stopEvent-state.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-state')"
+				:ref="controlRef('stopEvent-state')"
 				type="state"
 				v-model="form.state"
 			/>
@@ -45,7 +45,7 @@
 			<CustomBox
 				id="stopEvent-equipment"
 				v-tip="t('components.stopEvent-equipment.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-equipment')"
+				:ref="controlRef('stopEvent-equipment')"
 				type="equipment"
 				v-model="form.equipment"
 			/>
@@ -53,7 +53,7 @@
 			<CustomBox
 				id="stopEvent-item"
 				v-tip="t('components.stopEvent-item.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-item')"
+				:ref="controlRef('stopEvent-item')"
 				type="item"
 				v-model="form.item"
 			/>
@@ -61,7 +61,7 @@
 			<CustomBox
 				id="stopEvent-light"
 				v-tip="t('components.stopEvent-light.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-light')"
+				:ref="controlRef('stopEvent-light')"
 				type="light"
 				v-model="form.light"
 			/>
@@ -69,7 +69,7 @@
 			<CustomBox
 				id="stopEvent-element"
 				v-tip="t('components.stopEvent-element.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-element')"
+				:ref="controlRef('stopEvent-element')"
 				type="element"
 				v-model="form.element"
 			/>
@@ -77,7 +77,7 @@
 			<CustomBox
 				id="stopEvent-eventId"
 				v-tip="t('components.stopEvent-eventId.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-eventId')"
+				:ref="controlRef('stopEvent-eventId')"
 				v-focus
 				type="file"
 				filter="event"
@@ -88,7 +88,7 @@
 				:label="t('components.stopEvent-eventType.label')"
 				id="stopEvent-eventType"
 				v-tip="t('components.stopEvent-eventType.tip')"
-				:ref="registryRef(fieldEls, 'stopEvent-eventType')"
+				:ref="controlRef('stopEvent-eventType')"
 				v-focus
 				v-model="form.eventType"
 			/>
@@ -97,10 +97,6 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useStopEventCommandSchema } from '@app/composables/commands/useStopEventCommandSchema';
@@ -112,6 +108,23 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import type { YamiElement } from '@app/types/element-api';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'stopEvent'
+	| 'stopEvent-actor'
+	| 'stopEvent-element'
+	| 'stopEvent-equipment'
+	| 'stopEvent-eventId'
+	| 'stopEvent-eventType'
+	| 'stopEvent-item'
+	| 'stopEvent-light'
+	| 'stopEvent-skill'
+	| 'stopEvent-state'
+	| 'stopEvent-type';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -126,7 +139,7 @@ const onTypeWrite = (value: unknown) => {
 	if (!source) {
 		return;
 	}
-	const elEventType = fieldEls.get('stopEvent-eventType') as YamiElement;
+	const elEventType = controls['stopEvent-eventType'] as YamiElement;
 	const eventTypes = Enum.getMergedItems!(source, type + '-event');
 	elEventType?.loadItems?.(eventTypes);
 	elEventType?.createTooltip?.();
@@ -139,7 +152,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	fieldEls.get('stopEvent-type')?.loadItems?.([
+	controls['stopEvent-type']?.loadItems?.([
 		{ name: t('command.stopEvent.current') || 'Current', value: 'current' },
 		{ name: 'Global', value: 'global' },
 		{ name: t('command.stopEvent.scene') || 'Scene', value: 'scene' },
@@ -151,41 +164,60 @@ onMounted(() => {
 		{ name: 'Light', value: 'light' },
 		{ name: 'Element', value: 'element' }
 	]);
-	fieldEls
-		.get('stopEvent-type')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{ case: 'global', targets: [fieldEls.get('stopEvent-eventId')] },
-			{ case: 'scene', targets: [fieldEls.get('stopEvent-eventType')] },
-			{
-				case: 'actor',
-				targets: [fieldEls.get('stopEvent-actor'), fieldEls.get('stopEvent-eventType')]
-			},
-			{
-				case: 'skill',
-				targets: [fieldEls.get('stopEvent-skill'), fieldEls.get('stopEvent-eventType')]
-			},
-			{
-				case: 'state',
-				targets: [fieldEls.get('stopEvent-state'), fieldEls.get('stopEvent-eventType')]
-			},
-			{
-				case: 'equipment',
-				targets: [fieldEls.get('stopEvent-equipment'), fieldEls.get('stopEvent-eventType')]
-			},
-			{
-				case: 'item',
-				targets: [fieldEls.get('stopEvent-item'), fieldEls.get('stopEvent-eventType')]
-			},
-			{
-				case: 'light',
-				targets: [fieldEls.get('stopEvent-light'), fieldEls.get('stopEvent-eventType')]
-			},
-			{
-				case: 'element',
-				targets: [fieldEls.get('stopEvent-element'), fieldEls.get('stopEvent-eventType')]
-			}
-		]);
+	controls['stopEvent-type']?.enableHiddenMode?.();
+	controls['stopEvent-type']?.relate?.([
+		{ case: 'global', targets: [controlRoot(controls['stopEvent-eventId'])] },
+		{ case: 'scene', targets: [controlRoot(controls['stopEvent-eventType'])] },
+		{
+			case: 'actor',
+			targets: [
+				controlRoot(controls['stopEvent-actor']),
+				controlRoot(controls['stopEvent-eventType'])
+			]
+		},
+		{
+			case: 'skill',
+			targets: [
+				controlRoot(controls['stopEvent-skill']),
+				controlRoot(controls['stopEvent-eventType'])
+			]
+		},
+		{
+			case: 'state',
+			targets: [
+				controlRoot(controls['stopEvent-state']),
+				controlRoot(controls['stopEvent-eventType'])
+			]
+		},
+		{
+			case: 'equipment',
+			targets: [
+				controlRoot(controls['stopEvent-equipment']),
+				controlRoot(controls['stopEvent-eventType'])
+			]
+		},
+		{
+			case: 'item',
+			targets: [
+				controlRoot(controls['stopEvent-item']),
+				controlRoot(controls['stopEvent-eventType'])
+			]
+		},
+		{
+			case: 'light',
+			targets: [
+				controlRoot(controls['stopEvent-light']),
+				controlRoot(controls['stopEvent-eventType'])
+			]
+		},
+		{
+			case: 'element',
+			targets: [
+				controlRoot(controls['stopEvent-element']),
+				controlRoot(controls['stopEvent-eventType'])
+			]
+		}
+	]);
 });
 </script>
 

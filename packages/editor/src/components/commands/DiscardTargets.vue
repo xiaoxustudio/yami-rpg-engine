@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="discardTargets" :ref="boxRef('discardTargets')" @confirm="onConfirm">
+	<WindowFrame id="discardTargets" :ref="controlRef('discardTargets')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.discardTargets.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.discardTargets-actor.label') }}</div>
 			<CustomBox
 				id="discardTargets-actor"
-				:ref="boxRef('discardTargets-actor')"
+				:ref="controlRef('discardTargets-actor')"
 				v-tip="t('components.discardTargets-actor.tip')"
 				v-focus
 				type="actor"
@@ -21,13 +21,13 @@
 				:label="t('components.discardTargets-selector.label')"
 				id="discardTargets-selector"
 				v-tip="t('components.discardTargets-selector.tip')"
-				:ref="boxRef('discardTargets-selector')"
+				:ref="controlRef('discardTargets-selector')"
 				v-model="form.selector"
 			/>
 			<div class="text">{{ t('components.discardTargets-distance.label') }}</div>
 			<NumberVar
 				id="discardTargets-distance"
-				:ref="boxRef('discardTargets-distance')"
+				:ref="controlRef('discardTargets-distance')"
 				v-tip="t('components.discardTargets-distance.tip')"
 				min="0"
 				max="512"
@@ -49,28 +49,16 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'discardTargets'
+	| 'discardTargets-actor'
+	| 'discardTargets-distance'
+	| 'discardTargets-selector';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -84,7 +72,7 @@ onMounted(() => {
 	useLocalizedOptions(
 		'discardTargets-selector',
 		['enemy', 'friend', 'team', 'team-except-self', 'any-except-self', 'any'],
-		(items) => boxes['discardTargets-selector']?.loadItems?.(items)
+		(items) => controls['discardTargets-selector']?.loadItems?.(items)
 	);
 });
 </script>

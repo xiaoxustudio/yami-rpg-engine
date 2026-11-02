@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="setReverb"
-		:ref="registryRef(fieldEls, 'setReverb')"
+		:ref="controlRef('setReverb')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -17,14 +17,14 @@
 				:label="t('components.setReverb-type.label')"
 				id="setReverb-type"
 				v-tip="t('components.setReverb-type.tip')"
-				:ref="registryRef(fieldEls, 'setReverb-type')"
+				:ref="controlRef('setReverb-type')"
 				v-focus
 				v-model="form.type"
 			/>
 			<div class="text">{{ t('components.setReverb-dry.label') }}</div>
 			<NumberVar
 				id="setReverb-dry"
-				:ref="registryRef(fieldEls, 'setReverb-dry')"
+				:ref="controlRef('setReverb-dry')"
 				v-tip="t('components.setReverb-dry.tip')"
 				min="0"
 				max="1"
@@ -35,7 +35,7 @@
 			<div class="text">{{ t('components.setReverb-wet.label') }}</div>
 			<NumberVar
 				id="setReverb-wet"
-				:ref="registryRef(fieldEls, 'setReverb-wet')"
+				:ref="controlRef('setReverb-wet')"
 				v-tip="t('components.setReverb-wet.tip')"
 				min="0"
 				max="1"
@@ -47,7 +47,7 @@
 			<SelectBox
 				:label="t('components.setReverb-easingId.label')"
 				id="setReverb-easingId"
-				:ref="registryRef(fieldEls, 'setReverb-easingId')"
+				:ref="controlRef('setReverb-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -55,7 +55,7 @@
 			<NumberBox
 				:label="t('components.setReverb-duration.label')"
 				id="setReverb-duration"
-				:ref="registryRef(fieldEls, 'setReverb-duration')"
+				:ref="controlRef('setReverb-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -66,7 +66,7 @@
 			<SelectBox
 				:label="t('components.setReverb-wait.label')"
 				id="setReverb-wait"
-				:ref="registryRef(fieldEls, 'setReverb-wait')"
+				:ref="controlRef('setReverb-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -76,10 +76,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetReverbCommandSchema } from '@app/composables/commands/useSetReverbCommandSchema';
@@ -89,6 +86,19 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'setReverb'
+	| 'setReverb-dry'
+	| 'setReverb-duration'
+	| 'setReverb-easingId'
+	| 'setReverb-type'
+	| 'setReverb-wait'
+	| 'setReverb-wet';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -107,18 +117,18 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('setReverb-easingId')?.loadItems?.(Data.createEasingItems!());
+	controls['setReverb-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
-	fieldEls.get('setReverb-type')?.loadItems?.([
+	controls['setReverb-type']?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' },
 		{ name: 'SE', value: 'se' }
 	]);
 	useLocalizedOptions('setReverb-wait', [true, false], (items) =>
-		fieldEls.get('setReverb-wait')?.loadItems?.(items)
+		controls['setReverb-wait']?.loadItems?.(items)
 	);
 });
 </script>

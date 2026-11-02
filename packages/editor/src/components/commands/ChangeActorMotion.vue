@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="changeActorMotion" :ref="boxRef('changeActorMotion')" @confirm="onConfirm">
+	<WindowFrame id="changeActorMotion" :ref="controlRef('changeActorMotion')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.changeActorMotion.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.changeActorMotion-actor.label') }}</div>
 			<CustomBox
 				id="changeActorMotion-actor"
-				:ref="boxRef('changeActorMotion-actor')"
+				:ref="controlRef('changeActorMotion-actor')"
 				v-tip="t('components.changeActorMotion-actor.tip')"
 				v-focus
 				type="actor"
@@ -21,13 +21,13 @@
 				:label="t('components.changeActorMotion-type.label')"
 				id="changeActorMotion-type"
 				v-tip="t('components.changeActorMotion-type.tip')"
-				:ref="boxRef('changeActorMotion-type')"
+				:ref="controlRef('changeActorMotion-type')"
 				v-model="form.type"
 			/>
 			<div class="text">{{ t('components.changeActorMotion-motion.label') }}</div>
 			<CustomBox
 				id="changeActorMotion-motion"
-				:ref="boxRef('changeActorMotion-motion')"
+				:ref="controlRef('changeActorMotion-motion')"
 				v-tip="t('components.changeActorMotion-motion.tip')"
 				type="enum-string"
 				v-model="form.motion"
@@ -45,28 +45,16 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'changeActorMotion'
+	| 'changeActorMotion-actor'
+	| 'changeActorMotion-motion'
+	| 'changeActorMotion-type';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -80,7 +68,7 @@ onMounted(() => {
 	useLocalizedOptions(
 		'changeActorMotion-type',
 		['idle', 'move'],
-		(items) => boxes['changeActorMotion-type']?.loadItems?.(items),
+		(items) => controls['changeActorMotion-type']?.loadItems?.(items),
 		{ idle: 'command.changeActorMotion.type.idle', move: 'command.changeActorMotion.type.move' }
 	);
 });

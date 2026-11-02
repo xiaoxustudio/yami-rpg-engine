@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="moveElement"
-		:ref="boxRef('moveElement')"
+		:ref="controlRef('moveElement')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 		@closed="onClosed"
@@ -16,7 +16,7 @@
 			<div class="text">{{ t('components.moveElement-element.label') }}</div>
 			<CustomBox
 				id="moveElement-element"
-				:ref="boxRef('moveElement-element')"
+				:ref="controlRef('moveElement-element')"
 				v-tip="t('components.moveElement-element.tip')"
 				v-focus
 				type="element"
@@ -25,7 +25,7 @@
 			<div class="text">{{ t('components.moveElement-properties.label') }}</div>
 			<ParamList
 				id="moveElement-properties"
-				:ref="boxRef('moveElement-properties')"
+				:ref="controlRef('moveElement-properties')"
 				v-focus
 				v-model="form.properties"
 			/>
@@ -33,7 +33,7 @@
 			<SelectBox
 				:label="t('components.moveElement-easingId.label')"
 				id="moveElement-easingId"
-				:ref="boxRef('moveElement-easingId')"
+				:ref="controlRef('moveElement-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -41,7 +41,7 @@
 			<NumberBox
 				:label="t('components.moveElement-duration.label')"
 				id="moveElement-duration"
-				:ref="boxRef('moveElement-duration')"
+				:ref="controlRef('moveElement-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -52,7 +52,7 @@
 			<SelectBox
 				:label="t('components.moveElement-wait.label')"
 				id="moveElement-wait"
-				:ref="boxRef('moveElement-wait')"
+				:ref="controlRef('moveElement-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -74,28 +74,18 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'moveElement'
+	| 'moveElement-duration'
+	| 'moveElement-easingId'
+	| 'moveElement-element'
+	| 'moveElement-properties'
+	| 'moveElement-wait';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -114,18 +104,18 @@ const onConfirm = () => {
 
 /** 窗口关闭时清理。 */
 const onClosed = () => {
-	clear(boxes['moveElement-properties']);
+	clear(controlRoot(controls['moveElement-properties']));
 };
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	boxes['moveElement-easingId']?.loadItems?.(Data.createEasingItems!());
+	controls['moveElement-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
-	boxes['moveElement-properties']?.bind?.(TransformProperty);
+	controls['moveElement-properties']?.bind?.(TransformProperty);
 	useLocalizedOptions('moveElement-wait', [true, false], (items) =>
-		boxes['moveElement-wait']?.loadItems?.(items)
+		controls['moveElement-wait']?.loadItems?.(items)
 	);
 });
 </script>

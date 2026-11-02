@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="playAudio" :ref="registryRef(fieldEls, 'playAudio')" @confirm="onConfirm">
+	<WindowFrame id="playAudio" :ref="controlRef('playAudio')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.playAudio.title') }}
@@ -12,14 +12,14 @@
 				:label="t('components.playAudio-type.label')"
 				id="playAudio-type"
 				v-tip="t('components.playAudio-type.tip')"
-				:ref="registryRef(fieldEls, 'playAudio-type')"
+				:ref="controlRef('playAudio-type')"
 				v-focus
 				v-model="form.type"
 			/>
 			<div class="text">{{ t('components.playAudio-audio.label') }}</div>
 			<CustomBox
 				id="playAudio-audio"
-				:ref="registryRef(fieldEls, 'playAudio-audio')"
+				:ref="controlRef('playAudio-audio')"
 				v-tip="t('components.playAudio-audio.tip')"
 				v-focus
 				type="file"
@@ -30,7 +30,7 @@
 			<NumberBox
 				:label="t('components.playAudio-volume.label')"
 				id="playAudio-volume"
-				:ref="registryRef(fieldEls, 'playAudio-volume')"
+				:ref="controlRef('playAudio-volume')"
 				v-tip="t('components.playAudio-volume.tip')"
 				min="0"
 				max="1"
@@ -42,7 +42,7 @@
 			<CustomBox
 				id="playAudio-location"
 				v-tip="t('components.playAudio-location.tip')"
-				:ref="registryRef(fieldEls, 'playAudio-location')"
+				:ref="controlRef('playAudio-location')"
 				type="position"
 				v-model="form.location"
 			/>
@@ -52,10 +52,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayAudioCommandSchema } from '@app/composables/commands/usePlayAudioCommandSchema';
@@ -64,6 +61,17 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'playAudio'
+	| 'playAudio-audio'
+	| 'playAudio-location'
+	| 'playAudio-type'
+	| 'playAudio-volume';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -82,12 +90,12 @@ const onConfirm = () => {
 
 onMounted(() => {
 	useLocalizedOptions('playAudio-type', ['bgm', 'bgs', 'cv', 'se', 'se-attenuated'], (items) =>
-		fieldEls.get('playAudio-type')?.loadItems?.(items)
+		controls['playAudio-type']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('playAudio-type')
-		?.enableHiddenMode?.()
-		?.relate?.([{ case: 'se-attenuated', targets: [fieldEls.get('playAudio-location')] }]);
+	controls['playAudio-type']?.enableHiddenMode?.();
+	controls['playAudio-type']?.relate?.([
+		{ case: 'se-attenuated', targets: [controlRoot(controls['playAudio-location'])] }
+	]);
 });
 </script>
 

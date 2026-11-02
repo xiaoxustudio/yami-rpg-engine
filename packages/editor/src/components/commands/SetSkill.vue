@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setSkill" :ref="boxRef('setSkill')" @confirm="onConfirm">
+	<WindowFrame id="setSkill" :ref="controlRef('setSkill')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setSkill.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.setSkill-skill.label') }}</div>
 			<CustomBox
 				id="setSkill-skill"
-				:ref="boxRef('setSkill-skill')"
+				:ref="controlRef('setSkill-skill')"
 				v-tip="t('components.setSkill-skill.tip')"
 				v-focus
 				type="skill"
@@ -21,13 +21,13 @@
 				:label="t('components.setSkill-operation.label')"
 				id="setSkill-operation"
 				v-tip="t('components.setSkill-operation.tip')"
-				:ref="boxRef('setSkill-operation')"
+				:ref="controlRef('setSkill-operation')"
 				v-model="form.operation"
 			/>
 			<div class="text">{{ t('components.setSkill-cooldown.label') }}</div>
 			<NumberVar
 				id="setSkill-cooldown"
-				:ref="boxRef('setSkill-cooldown')"
+				:ref="controlRef('setSkill-cooldown')"
 				v-tip="t('components.setSkill-cooldown.tip')"
 				min="1"
 				max="3600000"
@@ -48,28 +48,12 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**：relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'setSkill' | 'setSkill-cooldown' | 'setSkill-operation' | 'setSkill-skill';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -83,7 +67,7 @@ onMounted(() => {
 	useLocalizedOptions(
 		'setSkill-operation',
 		['set-cooldown', 'increase-cooldown', 'decrease-cooldown'],
-		(items) => boxes['setSkill-operation']?.loadItems?.(items)
+		(items) => controls['setSkill-operation']?.loadItems?.(items)
 	);
 });
 </script>

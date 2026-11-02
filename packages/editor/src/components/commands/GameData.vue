@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="gameData" :ref="registryRef(fieldEls, 'gameData')" @confirm="onConfirm">
+	<WindowFrame id="gameData" :ref="controlRef('gameData')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.gameData.title') }}
@@ -12,7 +12,7 @@
 				:label="t('components.gameData-operation.label')"
 				id="gameData-operation"
 				v-tip="t('components.gameData-operation.tip')"
-				:ref="registryRef(fieldEls, 'gameData-operation')"
+				:ref="controlRef('gameData-operation')"
 				v-focus
 				v-model="form.operation"
 			/>
@@ -20,7 +20,7 @@
 			<NumberVar
 				id="gameData-index"
 				v-tip="t('components.gameData-index.tip')"
-				:ref="registryRef(fieldEls, 'gameData-index')"
+				:ref="controlRef('gameData-index')"
 				min="0"
 				max="32"
 				v-model="form.index"
@@ -31,7 +31,7 @@
 				id="gameData-variables"
 				:placeholder="t('components.gameData-variables.placeholder')"
 				v-tip="t('components.gameData-variables.tip')"
-				:ref="registryRef(fieldEls, 'gameData-variables')"
+				:ref="controlRef('gameData-variables')"
 				v-model="variables"
 			/>
 		</div>
@@ -40,10 +40,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGameDataCommandSchema } from '@app/composables/commands/useGameDataCommandSchema';
@@ -52,6 +49,12 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'gameData' | 'gameData-index' | 'gameData-operation' | 'gameData-variables';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -72,23 +75,24 @@ onMounted(() => {
 	useLocalizedOptions(
 		'gameData-operation',
 		['save', 'load', 'delete'],
-		(items) => fieldEls.get('gameData-operation')?.loadItems?.(items),
+		(items) => controls['gameData-operation']?.loadItems?.(items),
 		{
 			save: 'command.gameData.save',
 			load: 'command.gameData.load',
 			delete: 'command.gameData.delete'
 		}
 	);
-	fieldEls
-		.get('gameData-operation')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'save',
-				targets: [fieldEls.get('gameData-index'), fieldEls.get('gameData-variables')]
-			},
-			{ case: ['load', 'delete'], targets: [fieldEls.get('gameData-index')] }
-		]);
+	controls['gameData-operation']?.enableHiddenMode?.();
+	controls['gameData-operation']?.relate?.([
+		{
+			case: 'save',
+			targets: [
+				controlRoot(controls['gameData-index']),
+				controlRoot(controls['gameData-variables'])
+			]
+		},
+		{ case: ['load', 'delete'], targets: [controlRoot(controls['gameData-index'])] }
+	]);
 });
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setFocus" :ref="registryRef(fieldEls, 'setFocus')" @confirm="onConfirm">
+	<WindowFrame id="setFocus" :ref="controlRef('setFocus')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setFocus.title') }}
@@ -12,7 +12,7 @@
 				:label="t('components.setFocus-operation.label')"
 				id="setFocus-operation"
 				v-tip="t('components.setFocus-operation.tip')"
-				:ref="registryRef(fieldEls, 'setFocus-operation')"
+				:ref="controlRef('setFocus-operation')"
 				v-focus
 				v-model="form.operation"
 			/>
@@ -20,7 +20,7 @@
 			<CustomBox
 				id="setFocus-element"
 				v-tip="t('components.setFocus-element.tip')"
-				:ref="registryRef(fieldEls, 'setFocus-element')"
+				:ref="controlRef('setFocus-element')"
 				type="element"
 				v-model="form.element"
 			/>
@@ -29,14 +29,14 @@
 				:label="t('components.setFocus-mode.label')"
 				id="setFocus-mode"
 				v-tip="t('components.setFocus-mode.tip')"
-				:ref="registryRef(fieldEls, 'setFocus-mode')"
+				:ref="controlRef('setFocus-mode')"
 				v-model="form.mode"
 			/>
 			<div class="text">{{ t('components.setFocus-cancelable.label') }}</div>
 			<CheckBox
 				id="setFocus-cancelable"
 				v-tip="t('components.setFocus-cancelable.tip')"
-				:ref="registryRef(fieldEls, 'setFocus-cancelable')"
+				:ref="controlRef('setFocus-cancelable')"
 				class="standard large"
 				v-model="cancelable"
 			/>
@@ -46,10 +46,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetFocusCommandSchema } from '@app/composables/commands/useSetFocusCommandSchema';
@@ -58,6 +55,17 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'setFocus'
+	| 'setFocus-cancelable'
+	| 'setFocus-element'
+	| 'setFocus-mode'
+	| 'setFocus-operation';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -78,27 +86,25 @@ onMounted(() => {
 	useLocalizedOptions(
 		'setFocus-operation',
 		['add', 'remove', 'remove-latest', 'reset'],
-		(items) => fieldEls.get('setFocus-operation')?.loadItems?.(items)
+		(items) => controls['setFocus-operation']?.loadItems?.(items)
 	);
 	useLocalizedOptions(
 		'setFocus-mode',
 		['control-child-buttons', 'control-descendant-buttons'],
-		(items) => fieldEls.get('setFocus-mode')?.loadItems?.(items)
+		(items) => controls['setFocus-mode']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('setFocus-operation')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'add',
-				targets: [
-					fieldEls.get('setFocus-element'),
-					fieldEls.get('setFocus-mode'),
-					fieldEls.get('setFocus-cancelable')
-				]
-			},
-			{ case: 'remove', targets: [fieldEls.get('setFocus-element')] }
-		]);
+	controls['setFocus-operation']?.enableHiddenMode?.();
+	controls['setFocus-operation']?.relate?.([
+		{
+			case: 'add',
+			targets: [
+				controlRoot(controls['setFocus-element']),
+				controlRoot(controls['setFocus-mode']),
+				controlRoot(controls['setFocus-cancelable'])
+			]
+		},
+		{ case: 'remove', targets: [controlRoot(controls['setFocus-element'])] }
+	]);
 });
 </script>
 

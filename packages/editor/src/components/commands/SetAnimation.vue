@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="setAnimation"
-		:ref="boxRef('setAnimation')"
+		:ref="controlRef('setAnimation')"
 		@confirm="onConfirm"
 		@closed="onClosed"
 	>
@@ -15,7 +15,7 @@
 			<div class="text">{{ t('components.setAnimation-element.label') }}</div>
 			<CustomBox
 				id="setAnimation-element"
-				:ref="boxRef('setAnimation-element')"
+				:ref="controlRef('setAnimation-element')"
 				v-tip="t('components.setAnimation-element.tip')"
 				v-focus
 				type="element"
@@ -24,7 +24,7 @@
 			<div class="text">{{ t('components.setAnimation-properties.label') }}</div>
 			<ParamList
 				id="setAnimation-properties"
-				:ref="boxRef('setAnimation-properties')"
+				:ref="controlRef('setAnimation-properties')"
 				v-focus
 				v-model="form.properties"
 			/>
@@ -42,28 +42,12 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
 
-// 控件用局部模板 ref 回调（存**元素**，relate/hide/show 需要 DOM 元素），不再进全局注册表。
-type ControlElement = HTMLElement & {
-	loadItems?: (items: unknown[]) => unknown;
-	bind?: (value: unknown) => unknown;
-	write?: (value: unknown) => void;
-	read?: () => unknown;
-};
-const boxes: Record<string, ControlElement | null> = {};
-const boxRef = (id: string) => (el: unknown) => {
-	if (el == null) {
-		boxes[id] = null;
-		return;
-	}
-	if (el instanceof HTMLElement) {
-		boxes[id] = el as ControlElement;
-		return;
-	}
-	const instance = el as { $el?: unknown; root?: unknown };
-	const root = instance.$el ?? instance.root ?? null;
-	boxes[id] = root instanceof HTMLElement ? (root as ControlElement) : null;
-};
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'setAnimation' | 'setAnimation-element' | 'setAnimation-properties';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -75,11 +59,11 @@ const onConfirm = () => {
 
 /** 窗口关闭时清理。 */
 const onClosed = () => {
-	clear(boxes['setAnimation-properties']);
+	clear(controlRoot(controls['setAnimation-properties']));
 };
 
 onMounted(() => {
-	boxes['setAnimation-properties']?.bind?.(AnimationProperty);
+	controls['setAnimation-properties']?.bind?.(AnimationProperty);
 });
 </script>
 

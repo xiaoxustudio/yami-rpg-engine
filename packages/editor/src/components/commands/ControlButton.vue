@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="controlButton"
-		:ref="registryRef(fieldEls, 'controlButton')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="controlButton" :ref="controlRef('controlButton')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.controlButton.title') }}
@@ -16,7 +12,7 @@
 				:label="t('components.controlButton-operation.label')"
 				id="controlButton-operation"
 				v-tip="t('components.controlButton-operation.tip')"
-				:ref="registryRef(fieldEls, 'controlButton-operation')"
+				:ref="controlRef('controlButton-operation')"
 				v-focus
 				v-model="form.operation"
 			/>
@@ -24,7 +20,7 @@
 			<CustomBox
 				id="controlButton-element"
 				v-tip="t('components.controlButton-element.tip')"
-				:ref="registryRef(fieldEls, 'controlButton-element')"
+				:ref="controlRef('controlButton-element')"
 				type="element"
 				v-model="form.element"
 			/>
@@ -34,10 +30,7 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useControlButtonCommandSchema } from '@app/composables/commands/useControlButtonCommandSchema';
@@ -45,6 +38,12 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'controlButton' | 'controlButton-element' | 'controlButton-operation';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -58,7 +57,7 @@ onMounted(() => {
 	useLocalizedOptions(
 		'controlButton-operation',
 		['select-default', 'select', 'hover-mode', 'active-mode', 'normal-mode'],
-		(items) => fieldEls.get('controlButton-operation')?.loadItems?.(items),
+		(items) => controls['controlButton-operation']?.loadItems?.(items),
 		{
 			'select-default': 'command.controlButton.select-default',
 			select: 'command.controlButton.select',
@@ -67,15 +66,13 @@ onMounted(() => {
 			'normal-mode': 'command.controlButton.normal-mode'
 		}
 	);
-	fieldEls
-		.get('controlButton-operation')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: ['select', 'hover-mode', 'active-mode', 'normal-mode'],
-				targets: [fieldEls.get('controlButton-element')]
-			}
-		]);
+	controls['controlButton-operation']?.enableHiddenMode?.();
+	controls['controlButton-operation']?.relate?.([
+		{
+			case: ['select', 'hover-mode', 'active-mode', 'normal-mode'],
+			targets: [controlRoot(controls['controlButton-element'])]
+		}
+	]);
 });
 </script>
 
