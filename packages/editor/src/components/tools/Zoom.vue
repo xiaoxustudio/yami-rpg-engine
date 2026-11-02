@@ -1,6 +1,6 @@
 <template>
 	<YMZoom
-		:ref="registryRef(windowShellEls, 'zoom')"
+		:ref="controlRef('zoom')"
 		v-model="form.factor"
 		:title="t('components.zoom.title')"
 		:label="t('components.zoom-factor.label')"
@@ -12,9 +12,13 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { useZoomWindow } from '@app/composables/useZoomWindow';
-import { registryRef } from '@app/utils/element-registry';
-import { windowShellEls } from '@app/tools/window-object.ts';
 import { YMZoom } from '@ui-kit';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'zoom';
+
+const { controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 

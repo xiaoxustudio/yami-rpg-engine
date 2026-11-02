@@ -1,6 +1,6 @@
 <template>
 	<YMArrayListString
-		:ref="registryRef(windowShellEls, 'arrayList-string')"
+		:ref="controlRef('arrayList-string')"
 		v-model="form.value"
 		:title="t('components.arrayList-string.title')"
 		@confirm="arrayWindow.confirmString"
@@ -10,9 +10,13 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { useArrayWindow } from '@app/composables/useArrayWindow';
-import { registryRef } from '@app/utils/element-registry';
-import { windowShellEls } from '@app/tools/window-object.ts';
 import { YMArrayListString } from '@ui-kit';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'arrayList-string';
+
+const { controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 

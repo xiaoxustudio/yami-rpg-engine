@@ -37,29 +37,17 @@
 				<br />
 			</div>
 			<div class="text">Editor</div>
-			<div
-				class="text"
-				id="editor-version"
-				:ref="registryRef(titleEls, 'editor-version')"
-			></div>
+			<div class="text" id="editor-version" :ref="controlRef('editor-version')"></div>
 			<div class="text">Electron</div>
-			<div
-				class="text"
-				id="electron-version"
-				:ref="registryRef(titleEls, 'electron-version')"
-			></div>
+			<div class="text" id="electron-version" :ref="controlRef('electron-version')"></div>
 			<div class="text">Chromium</div>
-			<div
-				class="text"
-				id="chrome-version"
-				:ref="registryRef(titleEls, 'chrome-version')"
-			></div>
+			<div class="text" id="chrome-version" :ref="controlRef('chrome-version')"></div>
 			<div class="text">Node.js</div>
-			<div class="text" id="node-version" :ref="registryRef(titleEls, 'node-version')"></div>
+			<div class="text" id="node-version" :ref="controlRef('node-version')"></div>
 			<div class="text">V8</div>
-			<div class="text" id="v8-version" :ref="registryRef(titleEls, 'v8-version')"></div>
+			<div class="text" id="v8-version" :ref="controlRef('v8-version')"></div>
 			<div class="text">OS</div>
-			<div class="text" id="os-version" :ref="registryRef(titleEls, 'os-version')"></div>
+			<div class="text" id="os-version" :ref="controlRef('os-version')"></div>
 		</div>
 	</WindowFrame>
 </template>
@@ -67,11 +55,21 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { Menubar } from '@app/title/menu-bar.ts';
-import { titleEls } from '@app/title/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'chrome-version'
+	| 'editor-version'
+	| 'electron-version'
+	| 'node-version'
+	| 'os-version'
+	| 'v8-version';
+
+const { controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 

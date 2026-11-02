@@ -63,9 +63,12 @@ function consumersOf(id, ownerFile) {
 		const rel = relative(SRC, file);
 		if (rel === ownerFile || rel.endsWith('.spec.ts') || text.includes(quoted) === false)
 			continue;
-		// 链式写法常被格式化成 `composableEls\n\t.get('x')`：`\s*` 是必须的，否则漏报
-		// （实测 `useSetAnimationComponentCommandSchema` 就是这样漏掉的，迁移后单测才红）。
-		if (new RegExp(`composableEls\\s*\\.\\s*get\\(\\s*${`'${id}'`}`).test(text))
+		// 两条口径都必须宽一点，否则漏报（都实测踩过）：
+		// ① 注册表名不能写死成 composableEls —— `titleEls.get('export-apk')` 也是消费方
+		//    （menu-bar.ts 就这么读窗口里的元素；只认 composableEls 时这些窗口被误判成 clean）；
+		// ② 链式写法常被格式化成 `<reg>\n\t.get('x')`，`\s*` 是必须的 ——
+		//    `useSetAnimationComponentCommandSchema` 就是这样漏掉的，迁移后单测才红。
+		if (new RegExp(`\\w*Els\\s*\\.\\s*get\\(\\s*${`'${id}'`}`).test(text))
 			consumers.push(`${rel}:get`);
 		if (new RegExp(`registryElement[\\s\\S]{0,120}?${`'${id}'`}`).test(text)) {
 			consumers.push(`${rel}:registryElement`);

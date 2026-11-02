@@ -13,7 +13,7 @@
 						t('components.particleLayer-rotation-angle-box.label') || 'Rotation Angle'
 					"
 					id="particleLayer-rotation-angle-0"
-					:ref="registryRef(inspectorEls, 'particleLayer-rotation-angle-0')"
+					:ref="controlRef('particleLayer-rotation-angle-0')"
 					v-tip="t('components.particleLayer-rotation-angle-0.tip')"
 					v-model="form.rotation.angle[0]"
 					@input="onParamInput"
@@ -26,7 +26,7 @@
 				>
 				<NumberBox
 					id="particleLayer-rotation-angle-1"
-					:ref="registryRef(inspectorEls, 'particleLayer-rotation-angle-1')"
+					:ref="controlRef('particleLayer-rotation-angle-1')"
 					v-tip="t('components.particleLayer-rotation-angle-1.tip')"
 					v-model="form.rotation.angle[1]"
 					@input="onParamInput"
@@ -47,7 +47,7 @@
 						t('components.particleLayer-rotation-speed-box.label') || 'Angular Velocity'
 					"
 					id="particleLayer-rotation-speed-0"
-					:ref="registryRef(inspectorEls, 'particleLayer-rotation-speed-0')"
+					:ref="controlRef('particleLayer-rotation-speed-0')"
 					v-tip="t('components.particleLayer-rotation-speed-0.tip')"
 					v-model="form.rotation.speed[0]"
 					@input="onParamInput"
@@ -59,7 +59,7 @@
 				>
 				<NumberBox
 					id="particleLayer-rotation-speed-1"
-					:ref="registryRef(inspectorEls, 'particleLayer-rotation-speed-1')"
+					:ref="controlRef('particleLayer-rotation-speed-1')"
 					v-tip="t('components.particleLayer-rotation-speed-1.tip')"
 					v-model="form.rotation.speed[1]"
 					@input="onParamInput"
@@ -79,7 +79,7 @@
 						t('components.particleLayer-rotation-accel-box.label') || 'Angular Accel'
 					"
 					id="particleLayer-rotation-accel-0"
-					:ref="registryRef(inspectorEls, 'particleLayer-rotation-accel-0')"
+					:ref="controlRef('particleLayer-rotation-accel-0')"
 					v-tip="t('components.particleLayer-rotation-accel-0.tip')"
 					v-model="form.rotation.accel[0]"
 					@input="onParamInput"
@@ -91,7 +91,7 @@
 				>
 				<NumberBox
 					id="particleLayer-rotation-accel-1"
-					:ref="registryRef(inspectorEls, 'particleLayer-rotation-accel-1')"
+					:ref="controlRef('particleLayer-rotation-accel-1')"
 					v-tip="t('components.particleLayer-rotation-accel-1.tip')"
 					v-model="form.rotation.accel[1]"
 					@input="onParamInput"
@@ -109,12 +109,22 @@
 <script setup lang="ts">
 import { inject } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import { particleLayerContextKey } from './context.ts';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'particleLayer-rotation-accel-0'
+	| 'particleLayer-rotation-accel-1'
+	| 'particleLayer-rotation-angle-0'
+	| 'particleLayer-rotation-angle-1'
+	| 'particleLayer-rotation-speed-0'
+	| 'particleLayer-rotation-speed-1';
+
+const { controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 const { form, onParamInput } = inject(particleLayerContextKey)!;

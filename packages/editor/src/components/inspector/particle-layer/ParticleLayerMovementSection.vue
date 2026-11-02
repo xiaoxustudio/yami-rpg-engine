@@ -13,7 +13,7 @@
 						t('components.particleLayer-movement-angle-box.label') || 'Movement Angle'
 					"
 					id="particleLayer-movement-angle-0"
-					:ref="registryRef(inspectorEls, 'particleLayer-movement-angle-0')"
+					:ref="controlRef('particleLayer-movement-angle-0')"
 					v-tip="t('components.particleLayer-movement-angle-0.tip')"
 					v-model="form.movement.angle[0]"
 					@input="onParamInput"
@@ -26,7 +26,7 @@
 				>
 				<NumberBox
 					id="particleLayer-movement-angle-1"
-					:ref="registryRef(inspectorEls, 'particleLayer-movement-angle-1')"
+					:ref="controlRef('particleLayer-movement-angle-1')"
 					v-tip="t('components.particleLayer-movement-angle-1.tip')"
 					v-model="form.movement.angle[1]"
 					@input="onParamInput"
@@ -47,7 +47,7 @@
 						t('components.particleLayer-movement-speed-box.label') || 'Movement Speed'
 					"
 					id="particleLayer-movement-speed-0"
-					:ref="registryRef(inspectorEls, 'particleLayer-movement-speed-0')"
+					:ref="controlRef('particleLayer-movement-speed-0')"
 					v-tip="t('components.particleLayer-movement-speed-0.tip')"
 					v-model="form.movement.speed[0]"
 					@input="onParamInput"
@@ -58,7 +58,7 @@
 				>
 				<NumberBox
 					id="particleLayer-movement-speed-1"
-					:ref="registryRef(inspectorEls, 'particleLayer-movement-speed-1')"
+					:ref="controlRef('particleLayer-movement-speed-1')"
 					v-tip="t('components.particleLayer-movement-speed-1.tip')"
 					v-model="form.movement.speed[1]"
 					@input="onParamInput"
@@ -77,7 +77,7 @@
 						t('components.particleLayer-movement-accelAngle-box.label') || 'Accel Angle'
 					"
 					id="particleLayer-movement-accelAngle-0"
-					:ref="registryRef(inspectorEls, 'particleLayer-movement-accelAngle-0')"
+					:ref="controlRef('particleLayer-movement-accelAngle-0')"
 					v-tip="t('components.particleLayer-movement-accelAngle-0.tip')"
 					v-model="form.movement.accelAngle[0]"
 					@input="onParamInput"
@@ -90,7 +90,7 @@
 				>
 				<NumberBox
 					id="particleLayer-movement-accelAngle-1"
-					:ref="registryRef(inspectorEls, 'particleLayer-movement-accelAngle-1')"
+					:ref="controlRef('particleLayer-movement-accelAngle-1')"
 					v-tip="t('components.particleLayer-movement-accelAngle-1.tip')"
 					v-model="form.movement.accelAngle[1]"
 					@input="onParamInput"
@@ -109,7 +109,7 @@
 				<NumberBox
 					:label="t('components.particleLayer-movement-accel-box.label') || 'Accel'"
 					id="particleLayer-movement-accel-0"
-					:ref="registryRef(inspectorEls, 'particleLayer-movement-accel-0')"
+					:ref="controlRef('particleLayer-movement-accel-0')"
 					v-tip="t('components.particleLayer-movement-accel-0.tip')"
 					v-model="form.movement.accel[0]"
 					@input="onParamInput"
@@ -120,7 +120,7 @@
 				>
 				<NumberBox
 					id="particleLayer-movement-accel-1"
-					:ref="registryRef(inspectorEls, 'particleLayer-movement-accel-1')"
+					:ref="controlRef('particleLayer-movement-accel-1')"
 					v-tip="t('components.particleLayer-movement-accel-1.tip')"
 					v-model="form.movement.accel[1]"
 					@input="onParamInput"
@@ -137,12 +137,24 @@
 <script setup lang="ts">
 import { inject } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import { particleLayerContextKey } from './context.ts';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'particleLayer-movement-accel-0'
+	| 'particleLayer-movement-accel-1'
+	| 'particleLayer-movement-accelAngle-0'
+	| 'particleLayer-movement-accelAngle-1'
+	| 'particleLayer-movement-angle-0'
+	| 'particleLayer-movement-angle-1'
+	| 'particleLayer-movement-speed-0'
+	| 'particleLayer-movement-speed-1';
+
+const { controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 const { form, onParamInput } = inject(particleLayerContextKey)!;
