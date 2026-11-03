@@ -190,7 +190,7 @@ for (const file of FILES) {
 		'/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */',
 		`type Id = ${ids
 			.map((id) => `'${id}'`)
-			.sort()
+			.sort((a, b) => a.localeCompare(b))
 			.join(' | ')};`,
 		'',
 		readsControls

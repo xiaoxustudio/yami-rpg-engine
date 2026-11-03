@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setString" :ref="registryRef(fieldEls, 'setString')" @confirm="onConfirm">
+	<WindowFrame id="setString" :ref="controlRef('setString')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setString.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.setString-variable.label') }}</div>
 			<CustomBox
 				id="setString-variable"
-				:ref="registryRef(fieldEls, 'setString-variable')"
+				:ref="controlRef('setString-variable')"
 				v-focus
 				type="variable"
 				filter="writable-string"
@@ -21,7 +21,7 @@
 				:label="t('components.setString-operation.label')"
 				id="setString-operation"
 				v-tip="t('components.setString-operation.tip')"
-				:ref="registryRef(fieldEls, 'setString-operation')"
+				:ref="controlRef('setString-operation')"
 				v-model="form.operation"
 			/>
 			<div class="text">{{ t('components.setString-operand-type.label') }}</div>
@@ -29,7 +29,7 @@
 				:label="t('components.setString-operand-type.label')"
 				id="setString-operand-type"
 				v-tip="t('components.setString-operand-type.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-type')"
+				:ref="controlRef('setString-operand-type')"
 				v-model="form.operandType"
 				@write="onWrite"
 			/>
@@ -37,7 +37,7 @@
 			<TextArea
 				:label="t('components.setString-operand-common-value.label')"
 				id="setString-operand-common-value"
-				:ref="registryRef(fieldEls, 'setString-operand-common-value')"
+				:ref="controlRef('setString-operand-common-value')"
 				menu="tag-local-var tag-global-var tag-localization"
 				v-model="commonValue"
 			/>
@@ -46,14 +46,14 @@
 				:label="t('components.setString-operand-string-method.label')"
 				id="setString-operand-string-method"
 				v-tip="t('components.setString-operand-string-method.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-string-method')"
+				:ref="controlRef('setString-operand-string-method')"
 				v-model="form.stringMethod"
 			/>
 			<div class="text">{{ t('components.setString-operand-common-variable.label') }}</div>
 			<CustomBox
 				id="setString-operand-common-variable"
 				v-tip="t('components.setString-operand-common-variable.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-common-variable')"
+				:ref="controlRef('setString-operand-common-variable')"
 				v-focus
 				type="variable"
 				filter="all"
@@ -63,7 +63,7 @@
 			<NumberVar
 				id="setString-operand-string-char-index"
 				v-tip="t('components.setString-operand-string-char-index.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-string-char-index')"
+				:ref="controlRef('setString-operand-string-char-index')"
 				min="0"
 				max="1000000000"
 				v-model="form.stringCharIndex"
@@ -72,7 +72,7 @@
 			<NumberVar
 				id="setString-operand-string-slice-begin"
 				v-tip="t('components.setString-operand-string-slice-begin.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-string-slice-begin')"
+				:ref="controlRef('setString-operand-string-slice-begin')"
 				min="-1000000000"
 				max="1000000000"
 				v-model="form.stringSliceBegin"
@@ -81,7 +81,7 @@
 			<NumberVar
 				id="setString-operand-string-slice-end"
 				v-tip="t('components.setString-operand-string-slice-end.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-string-slice-end')"
+				:ref="controlRef('setString-operand-string-slice-end')"
 				min="-1000000000"
 				max="1000000000"
 				v-model="form.stringSliceEnd"
@@ -93,7 +93,7 @@
 				:label="t('components.setString-operand-string-pad-start-length.label')"
 				id="setString-operand-string-pad-start-length"
 				v-tip="t('components.setString-operand-string-pad-start-length.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-string-pad-start-length')"
+				:ref="controlRef('setString-operand-string-pad-start-length')"
 				min="2"
 				max="10"
 				v-model="stringPadStartLength"
@@ -105,7 +105,7 @@
 				:label="t('components.setString-operand-string-pad-start-pad.label')"
 				id="setString-operand-string-pad-start-pad"
 				v-tip="t('components.setString-operand-string-pad-start-pad.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-string-pad-start-pad')"
+				:ref="controlRef('setString-operand-string-pad-start-pad')"
 				v-model="stringPadStartPad"
 			/>
 			<div class="text">
@@ -114,7 +114,7 @@
 			<StringVar
 				id="setString-operand-string-replace-pattern"
 				v-tip="t('components.setString-operand-string-replace-pattern.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-string-replace-pattern')"
+				:ref="controlRef('setString-operand-string-replace-pattern')"
 				v-focus
 				v-model="form.stringReplacePattern"
 			/>
@@ -124,7 +124,7 @@
 			<StringVar
 				id="setString-operand-string-replace-replacement"
 				v-tip="t('components.setString-operand-string-replace-replacement.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-string-replace-replacement')"
+				:ref="controlRef('setString-operand-string-replace-replacement')"
 				v-model="form.stringReplaceReplacement"
 			/>
 			<div class="text">
@@ -133,7 +133,7 @@
 			<CustomBox
 				id="setString-operand-attribute-attributeId"
 				v-tip="t('components.setString-operand-attribute-attributeId.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-attribute-attributeId')"
+				:ref="controlRef('setString-operand-attribute-attributeId')"
 				v-focus
 				type="attribute"
 				v-model="form.attributeId"
@@ -142,7 +142,7 @@
 			<CustomBox
 				id="setString-operand-enum-stringId"
 				v-tip="t('components.setString-operand-enum-stringId.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-enum-stringId')"
+				:ref="controlRef('setString-operand-enum-stringId')"
 				v-focus
 				type="enum-string"
 				v-model="form.enumStringId"
@@ -152,7 +152,7 @@
 				:label="t('components.setString-operand-object-property.label')"
 				id="setString-operand-object-property"
 				v-tip="t('components.setString-operand-object-property.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-object-property')"
+				:ref="controlRef('setString-operand-object-property')"
 				v-model="form.objectProperty"
 			/>
 			<div class="text">{{ t('components.setString-operand-element-property.label') }}</div>
@@ -160,14 +160,14 @@
 				:label="t('components.setString-operand-element-property.label')"
 				id="setString-operand-element-property"
 				v-tip="t('components.setString-operand-element-property.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-element-property')"
+				:ref="controlRef('setString-operand-element-property')"
 				v-model="form.elementProperty"
 			/>
 			<div class="text">{{ t('components.setString-operand-element-element.label') }}</div>
 			<CustomBox
 				id="setString-operand-element-element"
 				v-tip="t('components.setString-operand-element-element.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-element-element')"
+				:ref="controlRef('setString-operand-element-element')"
 				type="element"
 				v-model="form.elementElement"
 			/>
@@ -175,7 +175,7 @@
 			<CustomBox
 				id="setString-operand-common-actor"
 				v-tip="t('components.setString-operand-common-actor.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-common-actor')"
+				:ref="controlRef('setString-operand-common-actor')"
 				type="actor"
 				v-model="form.commonActor"
 			/>
@@ -183,7 +183,7 @@
 			<CustomBox
 				id="setString-operand-common-skill"
 				v-tip="t('components.setString-operand-common-skill.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-common-skill')"
+				:ref="controlRef('setString-operand-common-skill')"
 				type="skill"
 				v-model="form.commonSkill"
 			/>
@@ -191,7 +191,7 @@
 			<CustomBox
 				id="setString-operand-common-trigger"
 				v-tip="t('components.setString-operand-common-trigger.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-common-trigger')"
+				:ref="controlRef('setString-operand-common-trigger')"
 				type="trigger"
 				v-model="form.commonTrigger"
 			/>
@@ -199,7 +199,7 @@
 			<CustomBox
 				id="setString-operand-common-state"
 				v-tip="t('components.setString-operand-common-state.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-common-state')"
+				:ref="controlRef('setString-operand-common-state')"
 				type="state"
 				v-model="form.commonState"
 			/>
@@ -207,7 +207,7 @@
 			<CustomBox
 				id="setString-operand-common-equipment"
 				v-tip="t('components.setString-operand-common-equipment.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-common-equipment')"
+				:ref="controlRef('setString-operand-common-equipment')"
 				type="equipment"
 				v-model="form.commonEquipment"
 			/>
@@ -215,7 +215,7 @@
 			<CustomBox
 				id="setString-operand-common-item"
 				v-tip="t('components.setString-operand-common-item.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-common-item')"
+				:ref="controlRef('setString-operand-common-item')"
 				type="item"
 				v-model="form.commonItem"
 			/>
@@ -223,7 +223,7 @@
 			<CustomBox
 				id="setString-operand-object-fileId"
 				v-tip="t('components.setString-operand-object-fileId.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-object-fileId')"
+				:ref="controlRef('setString-operand-object-fileId')"
 				v-focus
 				type="file"
 				v-model="form.objectFileId"
@@ -232,7 +232,7 @@
 			<NumberVar
 				id="setString-operand-list-index"
 				v-tip="t('components.setString-operand-list-index.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-list-index')"
+				:ref="controlRef('setString-operand-list-index')"
 				min="0"
 				max="1000000000"
 				v-model="form.listIndex"
@@ -240,7 +240,7 @@
 			<div class="text">{{ t('components.setString-operand-parameter-key.label') }}</div>
 			<StringVar
 				id="setString-operand-parameter-key"
-				:ref="registryRef(fieldEls, 'setString-operand-parameter-key')"
+				:ref="controlRef('setString-operand-parameter-key')"
 				v-focus
 				v-model="form.parameterKey"
 			/>
@@ -249,7 +249,7 @@
 				:label="t('components.setString-operand-script.label')"
 				id="setString-operand-script"
 				v-tip="t('components.setString-operand-script.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-script')"
+				:ref="controlRef('setString-operand-script')"
 				v-focus
 				v-model="script"
 			/>
@@ -258,7 +258,7 @@
 				:label="t('components.setString-operand-other-data.label')"
 				id="setString-operand-other-data"
 				v-tip="t('components.setString-operand-other-data.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-other-data')"
+				:ref="controlRef('setString-operand-other-data')"
 				v-model="form.otherData"
 			/>
 			<div class="text">
@@ -267,7 +267,7 @@
 			<NumberVar
 				id="setString-operand-showChoices-content-choiceIndex"
 				v-tip="t('components.setString-operand-showChoices-content-choiceIndex.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-showChoices-content-choiceIndex')"
+				:ref="controlRef('setString-operand-showChoices-content-choiceIndex')"
 				min="0"
 				max="255"
 				v-model="form.showChoicesIndex"
@@ -278,7 +278,7 @@
 			<CustomBox
 				id="setString-operand-parse-timestamp-variable"
 				v-tip="t('components.setString-operand-parse-timestamp-variable.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-parse-timestamp-variable')"
+				:ref="controlRef('setString-operand-parse-timestamp-variable')"
 				v-focus
 				type="variable"
 				filter="number"
@@ -291,7 +291,7 @@
 				:label="t('components.setString-operand-parse-timestamp-format.label')"
 				id="setString-operand-parse-timestamp-format"
 				v-tip="t('components.setString-operand-parse-timestamp-format.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-parse-timestamp-format')"
+				:ref="controlRef('setString-operand-parse-timestamp-format')"
 				v-model="parseTimestampFormat"
 			/>
 			<div class="text">{{ t('components.setString-operand-screenshot-width.label') }}</div>
@@ -299,7 +299,7 @@
 				:label="t('components.setString-operand-screenshot-width.label')"
 				id="setString-operand-screenshot-width"
 				v-tip="t('components.setString-operand-screenshot-width.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-screenshot-width')"
+				:ref="controlRef('setString-operand-screenshot-width')"
 				min="64"
 				max="7680"
 				unit="px"
@@ -310,7 +310,7 @@
 				:label="t('components.setString-operand-screenshot-height.label')"
 				id="setString-operand-screenshot-height"
 				v-tip="t('components.setString-operand-screenshot-height.tip')"
-				:ref="registryRef(fieldEls, 'setString-operand-screenshot-height')"
+				:ref="controlRef('setString-operand-screenshot-height')"
 				min="64"
 				max="7680"
 				unit="px"
@@ -322,10 +322,7 @@
 
 <script setup lang="ts">
 import { setupSetStringFields } from '@app/composables/useSetStringFields';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetStringCommandSchema } from '@app/composables/commands/useSetStringCommandSchema';
@@ -338,6 +335,47 @@ import StringVar from '@app/components/common/StringVar.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'setString'
+	| 'setString-operand-attribute-attributeId'
+	| 'setString-operand-common-actor'
+	| 'setString-operand-common-equipment'
+	| 'setString-operand-common-item'
+	| 'setString-operand-common-skill'
+	| 'setString-operand-common-state'
+	| 'setString-operand-common-trigger'
+	| 'setString-operand-common-value'
+	| 'setString-operand-common-variable'
+	| 'setString-operand-element-element'
+	| 'setString-operand-element-property'
+	| 'setString-operand-enum-stringId'
+	| 'setString-operand-list-index'
+	| 'setString-operand-object-fileId'
+	| 'setString-operand-object-property'
+	| 'setString-operand-other-data'
+	| 'setString-operand-parameter-key'
+	| 'setString-operand-parse-timestamp-format'
+	| 'setString-operand-parse-timestamp-variable'
+	| 'setString-operand-screenshot-height'
+	| 'setString-operand-screenshot-width'
+	| 'setString-operand-script'
+	| 'setString-operand-showChoices-content-choiceIndex'
+	| 'setString-operand-string-char-index'
+	| 'setString-operand-string-method'
+	| 'setString-operand-string-pad-start-length'
+	| 'setString-operand-string-pad-start-pad'
+	| 'setString-operand-string-replace-pattern'
+	| 'setString-operand-string-replace-replacement'
+	| 'setString-operand-string-slice-begin'
+	| 'setString-operand-string-slice-end'
+	| 'setString-operand-type'
+	| 'setString-operation'
+	| 'setString-variable';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -401,7 +439,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	setupSetStringFields(fieldEls);
+	setupSetStringFields(controls);
 });
 </script>
 
