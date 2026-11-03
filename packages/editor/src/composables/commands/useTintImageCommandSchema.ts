@@ -1,5 +1,5 @@
-﻿import { Command } from '@app/commands/command-object.ts';
-import { composableEls } from '@app/composables/element-registry';
+import { Command } from '@app/commands/command-object.ts';
+import { getTintImageBridge } from '@app/composables/tint-image-bridge';
 import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -7,7 +7,6 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { write } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { requestFocus } from '@app/directives/focus';
 
@@ -104,7 +103,7 @@ export function useTintImageCommandSchema() {
 			'tint-2': tint[2],
 			'tint-3': tint[3]
 		});
-		write(composableEls.get('tintImage-filter'), tint);
+		getTintImageBridge()?.setFilter(tint);
 	};
 	const onSave = (): void => {
 		const element = form.element;

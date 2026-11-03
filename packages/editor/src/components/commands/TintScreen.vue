@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="tintScreen"
-		:ref="registryRef(fieldEls, 'tintScreen')"
+		:ref="controlRef('tintScreen')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 		@closed="onClosed"
@@ -12,16 +12,12 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<div
-			class="grid-box"
-			id="tintScreen-grid-box"
-			:ref="registryRef(fieldEls, 'tintScreen-grid-box')"
-		>
+		<div class="grid-box" id="tintScreen-grid-box" :ref="controlRef('tintScreen-grid-box')">
 			<div class="text">{{ t('components.tintScreen-tint-0.label') }}</div>
 			<NumberBox
 				:label="t('components.tintScreen-tint-0.label')"
 				id="tintScreen-tint-0"
-				:ref="registryRef(fieldEls, 'tintScreen-tint-0')"
+				:ref="controlRef('tintScreen-tint-0')"
 				v-tip="t('components.tintScreen-tint-0.tip')"
 				v-focus
 				min="-255"
@@ -33,7 +29,7 @@
 			<NumberBox
 				:label="t('components.tintScreen-tint-1.label')"
 				id="tintScreen-tint-1"
-				:ref="registryRef(fieldEls, 'tintScreen-tint-1')"
+				:ref="controlRef('tintScreen-tint-1')"
 				v-tip="t('components.tintScreen-tint-1.tip')"
 				min="-255"
 				max="255"
@@ -44,7 +40,7 @@
 			<NumberBox
 				:label="t('components.tintScreen-tint-2.label')"
 				id="tintScreen-tint-2"
-				:ref="registryRef(fieldEls, 'tintScreen-tint-2')"
+				:ref="controlRef('tintScreen-tint-2')"
 				v-tip="t('components.tintScreen-tint-2.tip')"
 				min="-255"
 				max="255"
@@ -55,7 +51,7 @@
 			<NumberBox
 				:label="t('components.tintScreen-tint-3.label')"
 				id="tintScreen-tint-3"
-				:ref="registryRef(fieldEls, 'tintScreen-tint-3')"
+				:ref="controlRef('tintScreen-tint-3')"
 				v-tip="t('components.tintScreen-tint-3.tip')"
 				min="0"
 				max="255"
@@ -66,7 +62,7 @@
 			<SelectBox
 				:label="t('components.tintScreen-easingId.label')"
 				id="tintScreen-easingId"
-				:ref="registryRef(fieldEls, 'tintScreen-easingId')"
+				:ref="controlRef('tintScreen-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -74,7 +70,7 @@
 			<NumberBox
 				:label="t('components.tintScreen-duration.label')"
 				id="tintScreen-duration"
-				:ref="registryRef(fieldEls, 'tintScreen-duration')"
+				:ref="controlRef('tintScreen-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -85,14 +81,14 @@
 			<SelectBox
 				:label="t('components.tintScreen-wait.label')"
 				id="tintScreen-wait"
-				:ref="registryRef(fieldEls, 'tintScreen-wait')"
+				:ref="controlRef('tintScreen-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
 		</div>
 		<FilterBox
 			id="tintScreen-filter"
-			:ref="registryRef(fieldEls, 'tintScreen-filter')"
+			:ref="controlRef('tintScreen-filter')"
 			width="96"
 			height="160"
 		/>
@@ -101,11 +97,8 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
-import { computed, onMounted, watch } from 'vue';
+import { computed, onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTintScreenCommandSchema } from '@app/composables/commands/useTintScreenCommandSchema';
 import { clear, write } from '@app/utils/element-utils';
@@ -115,6 +108,27 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import FilterBox from '@app/components/common/FilterBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+import {
+	provideTintScreenBridge,
+	resetTintScreenBridge,
+	type TintScreenBridge
+} from '@app/composables/tint-screen-bridge';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'tintScreen-duration'
+	| 'tintScreen-easingId'
+	| 'tintScreen-filter'
+	| 'tintScreen-grid-box'
+	| 'tintScreen-tint-0'
+	| 'tintScreen-tint-1'
+	| 'tintScreen-tint-2'
+	| 'tintScreen-tint-3'
+	| 'tintScreen-wait'
+	| 'tintScreen';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -162,23 +176,32 @@ const onConfirm = () => {
 watch(
 	[() => form['tint-0'], () => form['tint-1'], () => form['tint-2'], () => form['tint-3']],
 	([red, green, blue, gray]) => {
-		write(fieldEls.get('tintScreen-filter'), [red, green, blue, gray]);
+		write(controls['tintScreen-filter'], [red, green, blue, gray]);
 	}
 );
 
 /** 窗口关闭时清理。 */
 const onClosed = () => {
-	clear(fieldEls.get('tintScreen-filter'));
+	clear(controlRoot(controls['tintScreen-filter']));
 };
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('tintScreen-easingId')?.loadItems?.(Data.createEasingItems!());
+	controls['tintScreen-easingId']?.loadItems?.(Data.createEasingItems!());
+};
+
+/** 控件级能力：schema 载入/保存要用，但 schema 不该知道控件 id。 */
+const bridgeApi: TintScreenBridge = {
+	setFilter: (value) => {
+		controls['tintScreen-filter']?.write?.(value);
+	}
 };
 
 onMounted(() => {
+	provideTintScreenBridge(bridgeApi);
+	onUnmounted(() => resetTintScreenBridge(bridgeApi));
 	useLocalizedOptions('tintScreen-wait', [true, false], (items) =>
-		fieldEls.get('tintScreen-wait')?.loadItems?.(items)
+		controls['tintScreen-wait']?.loadItems?.(items)
 	);
 });
 </script>

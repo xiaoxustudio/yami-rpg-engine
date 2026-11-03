@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-03T09:06:00.605Z",
+	"generatedAt": "2026-11-03T14:51:38.051Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -59,8 +59,8 @@
 			"label": "DOM 待迁移文件（受限 API 命中且未进白名单）",
 			"target": "zero",
 			"value": {
-				"total": 0,
-				"hits": 0
+				"total": 1,
+				"hits": 1
 			}
 		},
 		"dom-style-writes": {
@@ -131,8 +131,8 @@
 			"label": "元素注册表寻址（*Els.get、registryElement(s)）",
 			"target": "zero",
 			"value": {
-				"total": 847,
-				"files": 194
+				"total": 824,
+				"files": 187
 			}
 		},
 		"legacy-ui-lines": {
@@ -263,8 +263,8 @@
 			"label": "YamiElement 类型引用（元素契约存量）",
 			"target": "zero",
 			"value": {
-				"total": 520,
-				"files": 102
+				"total": 516,
+				"files": 100
 			}
 		}
 	}

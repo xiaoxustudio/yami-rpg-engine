@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="tintImage"
-		:ref="registryRef(fieldEls, 'tintImage')"
+		:ref="controlRef('tintImage')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 		@closed="onClosed"
@@ -12,15 +12,11 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<div
-			class="grid-box"
-			id="tintImage-grid-box"
-			:ref="registryRef(fieldEls, 'tintImage-grid-box')"
-		>
+		<div class="grid-box" id="tintImage-grid-box" :ref="controlRef('tintImage-grid-box')">
 			<div class="text">{{ t('components.tintImage-element.label') }}</div>
 			<CustomBox
 				id="tintImage-element"
-				:ref="registryRef(fieldEls, 'tintImage-element')"
+				:ref="controlRef('tintImage-element')"
 				v-tip="t('components.tintImage-element.tip')"
 				v-focus
 				type="element"
@@ -31,7 +27,7 @@
 				:label="t('components.tintImage-mode.label')"
 				id="tintImage-mode"
 				v-tip="t('components.tintImage-mode.tip')"
-				:ref="registryRef(fieldEls, 'tintImage-mode')"
+				:ref="controlRef('tintImage-mode')"
 				v-model="form.mode"
 			/>
 			<div class="text">{{ t('components.tintImage-tint-0.label') }}</div>
@@ -39,7 +35,7 @@
 				:label="t('components.tintImage-tint-0.label')"
 				id="tintImage-tint-0"
 				v-tip="t('components.tintImage-tint-0.tip')"
-				:ref="registryRef(fieldEls, 'tintImage-tint-0')"
+				:ref="controlRef('tintImage-tint-0')"
 				min="-255"
 				max="255"
 				step="5"
@@ -50,7 +46,7 @@
 				:label="t('components.tintImage-tint-1.label')"
 				id="tintImage-tint-1"
 				v-tip="t('components.tintImage-tint-1.tip')"
-				:ref="registryRef(fieldEls, 'tintImage-tint-1')"
+				:ref="controlRef('tintImage-tint-1')"
 				min="-255"
 				max="255"
 				step="5"
@@ -61,7 +57,7 @@
 				:label="t('components.tintImage-tint-2.label')"
 				id="tintImage-tint-2"
 				v-tip="t('components.tintImage-tint-2.tip')"
-				:ref="registryRef(fieldEls, 'tintImage-tint-2')"
+				:ref="controlRef('tintImage-tint-2')"
 				min="-255"
 				max="255"
 				step="5"
@@ -72,7 +68,7 @@
 				:label="t('components.tintImage-tint-3.label')"
 				id="tintImage-tint-3"
 				v-tip="t('components.tintImage-tint-3.tip')"
-				:ref="registryRef(fieldEls, 'tintImage-tint-3')"
+				:ref="controlRef('tintImage-tint-3')"
 				min="0"
 				max="255"
 				step="5"
@@ -82,7 +78,7 @@
 			<SelectBox
 				:label="t('components.tintImage-easingId.label')"
 				id="tintImage-easingId"
-				:ref="registryRef(fieldEls, 'tintImage-easingId')"
+				:ref="controlRef('tintImage-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -90,7 +86,7 @@
 			<NumberBox
 				:label="t('components.tintImage-duration.label')"
 				id="tintImage-duration"
-				:ref="registryRef(fieldEls, 'tintImage-duration')"
+				:ref="controlRef('tintImage-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -101,14 +97,14 @@
 			<SelectBox
 				:label="t('components.tintImage-wait.label')"
 				id="tintImage-wait"
-				:ref="registryRef(fieldEls, 'tintImage-wait')"
+				:ref="controlRef('tintImage-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
 		</div>
 		<FilterBox
 			id="tintImage-filter"
-			:ref="registryRef(fieldEls, 'tintImage-filter')"
+			:ref="controlRef('tintImage-filter')"
 			width="96"
 			height="208"
 		/>
@@ -117,11 +113,8 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
-import { computed, onMounted, watch } from 'vue';
+import { computed, onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTintImageCommandSchema } from '@app/composables/commands/useTintImageCommandSchema';
 import { clear, write } from '@app/utils/element-utils';
@@ -132,6 +125,29 @@ import FilterBox from '@app/components/common/FilterBox.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+import {
+	provideTintImageBridge,
+	resetTintImageBridge,
+	type TintImageBridge
+} from '@app/composables/tint-image-bridge';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'tintImage-duration'
+	| 'tintImage-easingId'
+	| 'tintImage-element'
+	| 'tintImage-filter'
+	| 'tintImage-grid-box'
+	| 'tintImage-mode'
+	| 'tintImage-tint-0'
+	| 'tintImage-tint-1'
+	| 'tintImage-tint-2'
+	| 'tintImage-tint-3'
+	| 'tintImage-wait'
+	| 'tintImage';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -197,56 +213,63 @@ watch(
 				tint = [gray];
 				break;
 		}
-		write(fieldEls.get('tintImage-filter'), tint);
+		write(controls['tintImage-filter'], tint);
 	}
 );
 
 /** 窗口关闭时清理。 */
 const onClosed = () => {
-	clear(fieldEls.get('tintImage-filter'));
+	clear(controlRoot(controls['tintImage-filter']));
 };
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('tintImage-easingId')?.loadItems?.(Data.createEasingItems!());
+	controls['tintImage-easingId']?.loadItems?.(Data.createEasingItems!());
+};
+
+/** 控件级能力：schema 载入/保存要用，但 schema 不该知道控件 id。 */
+const bridgeApi: TintImageBridge = {
+	setFilter: (value) => {
+		controls['tintImage-filter']?.write?.(value);
+	}
 };
 
 onMounted(() => {
+	provideTintImageBridge(bridgeApi);
+	onUnmounted(() => resetTintImageBridge(bridgeApi));
 	useLocalizedOptions(
 		'tintImage-mode',
 		['full', 'rgb', 'gray'],
-		(items) => fieldEls.get('tintImage-mode')?.loadItems?.(items),
+		(items) => controls['tintImage-mode']?.loadItems?.(items),
 		{
 			full: 'command.tintImage.full',
 			rgb: 'command.tintImage.rgb',
 			gray: 'command.tintImage.gray'
 		}
 	);
-	fieldEls
-		.get('tintImage-mode')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'full',
-				targets: [
-					fieldEls.get('tintImage-tint-0'),
-					fieldEls.get('tintImage-tint-1'),
-					fieldEls.get('tintImage-tint-2'),
-					fieldEls.get('tintImage-tint-3')
-				]
-			},
-			{
-				case: 'rgb',
-				targets: [
-					fieldEls.get('tintImage-tint-0'),
-					fieldEls.get('tintImage-tint-1'),
-					fieldEls.get('tintImage-tint-2')
-				]
-			},
-			{ case: 'gray', targets: [fieldEls.get('tintImage-tint-3')] }
-		]);
+	controls['tintImage-mode']?.enableHiddenMode?.();
+	controls['tintImage-mode']?.relate?.([
+		{
+			case: 'full',
+			targets: [
+				controlRoot(controls['tintImage-tint-0']),
+				controlRoot(controls['tintImage-tint-1']),
+				controlRoot(controls['tintImage-tint-2']),
+				controlRoot(controls['tintImage-tint-3'])
+			]
+		},
+		{
+			case: 'rgb',
+			targets: [
+				controlRoot(controls['tintImage-tint-0']),
+				controlRoot(controls['tintImage-tint-1']),
+				controlRoot(controls['tintImage-tint-2'])
+			]
+		},
+		{ case: 'gray', targets: [controlRoot(controls['tintImage-tint-3'])] }
+	]);
 	useLocalizedOptions('tintImage-wait', [true, false], (items) =>
-		fieldEls.get('tintImage-wait')?.loadItems?.(items)
+		controls['tintImage-wait']?.loadItems?.(items)
 	);
 });
 </script>

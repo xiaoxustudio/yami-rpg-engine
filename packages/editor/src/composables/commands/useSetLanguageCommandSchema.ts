@@ -1,12 +1,10 @@
-﻿import { Command } from '@app/commands/command-object.ts';
-import { composableEls } from '@app/composables/element-registry';
+import { Command } from '@app/commands/command-object.ts';
+import { getSetLanguageBridge } from '@app/composables/set-language-bridge';
 import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getLoadedLocaleData, getYamiI18n } from '@app/i18n';
-import { getFocus, write } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
-import type { YamiElement } from '@app/types/element-api';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -45,10 +43,9 @@ export function useSetLanguageCommandSchema() {
 	return useCommandSchema('setLanguage', {
 		skipWrite: true,
 		onLoad(params) {
-			const el = composableEls.get('setLanguage-language') as YamiElement;
-			el.loadItems(Command.cases.setLanguage.createLanguageItems!());
-			write(el, params.language ?? 'auto');
-			getFocus(el);
+			getSetLanguageBridge()?.loadItems(Command.cases.setLanguage.createLanguageItems!());
+			getSetLanguageBridge()?.setLanguage(params.language ?? 'auto');
+			getSetLanguageBridge()?.focus();
 		}
 	});
 }

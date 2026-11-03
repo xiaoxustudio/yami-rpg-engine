@@ -1,5 +1,5 @@
-﻿import { Command } from '@app/commands/command-object.ts';
-import { composableEls } from '@app/composables/element-registry';
+import { Command } from '@app/commands/command-object.ts';
+import { getTintScreenBridge } from '@app/composables/tint-screen-bridge';
 import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -7,7 +7,6 @@ import { getYamiI18n } from '@app/i18n';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
-import { write } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { requestFocus } from '@app/directives/focus';
 
@@ -78,7 +77,7 @@ export function useTintScreenCommandSchema() {
 			'tint-2': tint[2],
 			'tint-3': tint[3]
 		});
-		write(composableEls.get('tintScreen-filter'), tint);
+		getTintScreenBridge()?.setFilter(tint);
 	};
 	const onSave = (): void => {
 		const tint = [form['tint-0'], form['tint-1'], form['tint-2'], form['tint-3']];
