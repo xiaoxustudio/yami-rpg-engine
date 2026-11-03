@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="getActor"
-		:ref="registryRef(fieldEls, 'getActor')"
+		:ref="controlRef('getActor')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -15,7 +15,7 @@
 			<div class="text">{{ t('components.getActor-variable.label') }}</div>
 			<CustomBox
 				id="getActor-variable"
-				:ref="registryRef(fieldEls, 'getActor-variable')"
+				:ref="controlRef('getActor-variable')"
 				v-tip="t('components.getActor-variable.tip')"
 				v-focus
 				type="variable"
@@ -25,7 +25,7 @@
 			<div class="text">{{ t('components.getActor-position.label') }}</div>
 			<CustomBox
 				id="getActor-position"
-				:ref="registryRef(fieldEls, 'getActor-position')"
+				:ref="controlRef('getActor-position')"
 				v-tip="t('components.getActor-position.tip')"
 				type="position"
 				v-model="form.position"
@@ -35,14 +35,14 @@
 				:label="t('components.getActor-area.label')"
 				id="getActor-area"
 				v-tip="t('components.getActor-area.tip')"
-				:ref="registryRef(fieldEls, 'getActor-area')"
+				:ref="controlRef('getActor-area')"
 				v-model="form.area"
 			/>
 			<div class="text">{{ t('components.getActor-size.label') }}</div>
 			<NumberVar
 				id="getActor-size"
 				v-tip="t('components.getActor-size.tip')"
-				:ref="registryRef(fieldEls, 'getActor-size')"
+				:ref="controlRef('getActor-size')"
 				min="0"
 				max="512"
 				decimals="4"
@@ -53,7 +53,7 @@
 			<NumberVar
 				id="getActor-radius"
 				v-tip="t('components.getActor-radius.tip')"
-				:ref="registryRef(fieldEls, 'getActor-radius')"
+				:ref="controlRef('getActor-radius')"
 				min="0"
 				max="256"
 				decimals="4"
@@ -65,14 +65,14 @@
 				:label="t('components.getActor-selector.label')"
 				id="getActor-selector"
 				v-tip="t('components.getActor-selector.tip')"
-				:ref="registryRef(fieldEls, 'getActor-selector')"
+				:ref="controlRef('getActor-selector')"
 				v-model="form.selector"
 			/>
 			<div class="text">{{ t('components.getActor-teamId.label') }}</div>
 			<SelectVar
 				id="getActor-teamId"
 				v-tip="t('components.getActor-teamId.tip')"
-				:ref="registryRef(fieldEls, 'getActor-teamId')"
+				:ref="controlRef('getActor-teamId')"
 				v-model="form.teamId"
 			/>
 			<div class="text">{{ t('components.getActor-condition.label') }}</div>
@@ -80,7 +80,7 @@
 				:label="t('components.getActor-condition.label')"
 				id="getActor-condition"
 				v-tip="t('components.getActor-condition.tip')"
-				:ref="registryRef(fieldEls, 'getActor-condition')"
+				:ref="controlRef('getActor-condition')"
 				v-model="form.condition"
 			/>
 			<div class="text">{{ t('components.getActor-attribute.label') }}</div>
@@ -88,7 +88,7 @@
 				:label="t('components.getActor-attribute.label')"
 				id="getActor-attribute"
 				v-tip="t('components.getActor-attribute.tip')"
-				:ref="registryRef(fieldEls, 'getActor-attribute')"
+				:ref="controlRef('getActor-attribute')"
 				v-focus
 				v-model="form.attribute"
 			/>
@@ -97,7 +97,7 @@
 				:label="t('components.getActor-divisor.label')"
 				id="getActor-divisor"
 				v-tip="t('components.getActor-divisor.tip')"
-				:ref="registryRef(fieldEls, 'getActor-divisor')"
+				:ref="controlRef('getActor-divisor')"
 				v-focus
 				v-model="form.divisor"
 			/>
@@ -106,7 +106,7 @@
 				:label="t('components.getActor-activation.label')"
 				id="getActor-activation"
 				v-tip="t('components.getActor-activation.tip')"
-				:ref="registryRef(fieldEls, 'getActor-activation')"
+				:ref="controlRef('getActor-activation')"
 				v-model="form.activation"
 			/>
 			<div class="text">{{ t('components.getActor-exclusion.label') }}</div>
@@ -114,14 +114,14 @@
 				:label="t('components.getActor-exclusion.label')"
 				id="getActor-exclusion"
 				v-tip="t('components.getActor-exclusion.tip')"
-				:ref="registryRef(fieldEls, 'getActor-exclusion')"
+				:ref="controlRef('getActor-exclusion')"
 				v-model="form.exclusion"
 			/>
 			<div class="text">{{ t('components.getActor-exclusionActor.label') }}</div>
 			<CustomBox
 				id="getActor-exclusionActor"
 				v-tip="t('components.getActor-exclusionActor.tip')"
-				:ref="registryRef(fieldEls, 'getActor-exclusionActor')"
+				:ref="controlRef('getActor-exclusionActor')"
 				type="actor"
 				v-model="form.exclusionActor"
 			/>
@@ -129,7 +129,7 @@
 			<SelectVar
 				id="getActor-exclusionTeamId"
 				v-tip="t('components.getActor-exclusionTeamId.tip')"
-				:ref="registryRef(fieldEls, 'getActor-exclusionTeamId')"
+				:ref="controlRef('getActor-exclusionTeamId')"
 				v-model="form.exclusionTeamId"
 			/>
 		</div>
@@ -138,11 +138,8 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetActorCommandSchema } from '@app/composables/commands/useGetActorCommandSchema';
 import { Data } from '@app/data/data-object.ts';
@@ -152,6 +149,32 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+import {
+	provideGetActorBridge,
+	resetGetActorBridge,
+	type GetActorBridge
+} from '@app/composables/get-actor-bridge';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'getActor-activation'
+	| 'getActor-area'
+	| 'getActor-attribute'
+	| 'getActor-condition'
+	| 'getActor-divisor'
+	| 'getActor-exclusion'
+	| 'getActor-exclusionActor'
+	| 'getActor-exclusionTeamId'
+	| 'getActor-position'
+	| 'getActor-radius'
+	| 'getActor-selector'
+	| 'getActor-size'
+	| 'getActor-teamId'
+	| 'getActor-variable'
+	| 'getActor';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -164,36 +187,42 @@ const onConfirm = () => {
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
 	const items = Data.createTeamItems!();
-	fieldEls.get('getActor-teamId')?.loadItems?.(items);
-	fieldEls.get('getActor-exclusionTeamId')?.loadItems?.(items);
+	controls['getActor-teamId']?.loadItems?.(items);
+	controls['getActor-exclusionTeamId']?.loadItems?.(items);
+};
+
+/** 控件级能力：schema 载入时要候选项，但 schema 不该知道控件 id。 */
+const bridgeApi: GetActorBridge = {
+	loadItems: (items) => {
+		controls['getActor-attribute']?.loadItems?.(items);
+		controls['getActor-divisor']?.loadItems?.(items);
+	}
 };
 
 onMounted(() => {
+	provideGetActorBridge(bridgeApi);
+	onUnmounted(() => resetGetActorBridge(bridgeApi));
 	useLocalizedOptions(
 		'getActor-area',
 		['square', 'circle'],
-		(items) => fieldEls.get('getActor-area')?.loadItems?.(items),
+		(items) => controls['getActor-area']?.loadItems?.(items),
 		{ square: 'command.getActor.square', circle: 'command.getActor.circle' }
 	);
-	fieldEls
-		.get('getActor-area')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{ case: 'square', targets: [fieldEls.get('getActor-size')] },
-			{ case: 'circle', targets: [fieldEls.get('getActor-radius')] }
-		]);
+	controls['getActor-area']?.enableHiddenMode?.();
+	controls['getActor-area']?.relate?.([
+		{ case: 'square', targets: [controlRoot(controls['getActor-size'])] },
+		{ case: 'circle', targets: [controlRoot(controls['getActor-radius'])] }
+	]);
 	useLocalizedOptions('getActor-selector', ['enemy', 'friend', 'team', 'any'], (items) =>
-		fieldEls.get('getActor-selector')?.loadItems?.(items)
+		controls['getActor-selector']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('getActor-selector')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: ['enemy', 'friend', 'team'],
-				targets: [fieldEls.get('getActor-teamId')]
-			}
-		]);
+	controls['getActor-selector']?.enableHiddenMode?.();
+	controls['getActor-selector']?.relate?.([
+		{
+			case: ['enemy', 'friend', 'team'],
+			targets: [controlRoot(controls['getActor-teamId'])]
+		}
+	]);
 	useLocalizedOptions(
 		'getActor-condition',
 		[
@@ -205,7 +234,7 @@ onMounted(() => {
 			'max-attribute-ratio',
 			'random'
 		],
-		(items) => fieldEls.get('getActor-condition')?.loadItems?.(items),
+		(items) => controls['getActor-condition']?.loadItems?.(items),
 		{
 			nearest: 'command.getActor.condition.nearest',
 			farthest: 'command.getActor.condition.farthest',
@@ -216,23 +245,24 @@ onMounted(() => {
 			random: 'command.getActor.condition.random'
 		}
 	);
-	fieldEls
-		.get('getActor-condition')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: ['min-attribute-value', 'max-attribute-value'],
-				targets: [fieldEls.get('getActor-attribute')]
-			},
-			{
-				case: ['min-attribute-ratio', 'max-attribute-ratio'],
-				targets: [fieldEls.get('getActor-attribute'), fieldEls.get('getActor-divisor')]
-			}
-		]);
+	controls['getActor-condition']?.enableHiddenMode?.();
+	controls['getActor-condition']?.relate?.([
+		{
+			case: ['min-attribute-value', 'max-attribute-value'],
+			targets: [controlRoot(controls['getActor-attribute'])]
+		},
+		{
+			case: ['min-attribute-ratio', 'max-attribute-ratio'],
+			targets: [
+				controlRoot(controls['getActor-attribute']),
+				controlRoot(controls['getActor-divisor'])
+			]
+		}
+	]);
 	useLocalizedOptions(
 		'getActor-activation',
 		['active', 'inactive', 'either'],
-		(items) => fieldEls.get('getActor-activation')?.loadItems?.(items),
+		(items) => controls['getActor-activation']?.loadItems?.(items),
 		{
 			active: 'command.getActor.active',
 			inactive: 'command.getActor.inactive',
@@ -240,15 +270,13 @@ onMounted(() => {
 		}
 	);
 	useLocalizedOptions('getActor-exclusion', ['none', 'actor', 'team'], (items) =>
-		fieldEls.get('getActor-exclusion')?.loadItems?.(items)
+		controls['getActor-exclusion']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('getActor-exclusion')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{ case: 'actor', targets: [fieldEls.get('getActor-exclusionActor')] },
-			{ case: 'team', targets: [fieldEls.get('getActor-exclusionTeamId')] }
-		]);
+	controls['getActor-exclusion']?.enableHiddenMode?.();
+	controls['getActor-exclusion']?.relate?.([
+		{ case: 'actor', targets: [controlRoot(controls['getActor-exclusionActor'])] },
+		{ case: 'team', targets: [controlRoot(controls['getActor-exclusionTeamId'])] }
+	]);
 });
 </script>
 

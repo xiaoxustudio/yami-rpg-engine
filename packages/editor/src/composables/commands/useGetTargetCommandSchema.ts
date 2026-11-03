@@ -1,5 +1,5 @@
-﻿import { Command } from '@app/commands/command-object.ts';
-import { composableEls } from '@app/composables/element-registry';
+import { Command } from '@app/commands/command-object.ts';
+import { getGetTargetBridge } from '@app/composables/get-target-bridge';
 import { commit } from '@app/composables/useCommandSchema';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Token } from '@app/commands/token.ts';
@@ -86,8 +86,7 @@ const createDefault = (): Record<string, unknown> => {
 
 const load = (params: Record<string, unknown> = {}): void => {
 	const attrItems = Attribute.getAttributeItems!('actor', 'number');
-	composableEls.get('getTarget-attribute')?.loadItems?.(attrItems);
-	composableEls.get('getTarget-divisor')?.loadItems?.(attrItems);
+	getGetTargetBridge()?.loadItems(attrItems);
 	Object.assign(form, createDefault(), params);
 	requestFocus('getTarget-actor');
 };

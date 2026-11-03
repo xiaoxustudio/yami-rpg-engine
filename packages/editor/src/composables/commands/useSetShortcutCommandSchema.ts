@@ -1,5 +1,5 @@
-﻿import { Command } from '@app/commands/command-object.ts';
-import { composableEls } from '@app/composables/element-registry';
+import { Command } from '@app/commands/command-object.ts';
+import { getSetShortcutBridge } from '@app/composables/set-shortcut-bridge';
 import { Token } from '@app/commands/token.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -69,8 +69,7 @@ export function useSetShortcutCommandSchema() {
 		skipWrite: true,
 		onLoad() {
 			const items = Enum.getStringItems!('shortcut-key');
-			composableEls.get('setShortcut-key')?.loadItems?.(items);
-			composableEls.get('setShortcut-key2')?.loadItems?.(items);
+			getSetShortcutBridge()?.loadItems(items);
 			requestFocus('setShortcut-operation');
 		}
 	});

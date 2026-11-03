@@ -101,6 +101,15 @@ function stripRegistryGlue(text, eol, registries) {
 			);
 		}
 	}
+	// 有的窗口只 import 了共享注册表本身（没有本地 `createElementRegistry`），
+	// 改写后它就成了未使用 import → vue-tsc 报 TS6133。
+	out = out.replace(
+		new RegExp(
+			`import \\{ composableEls \\} from '@app/composables/element-registry';${eol}`,
+			'g'
+		),
+		''
+	);
 	return out;
 }
 

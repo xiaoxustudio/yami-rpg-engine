@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="getTarget" :ref="registryRef(fieldEls, 'getTarget')" @confirm="onConfirm">
+	<WindowFrame id="getTarget" :ref="controlRef('getTarget')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.getTarget.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.getTarget-actor.label') }}</div>
 			<CustomBox
 				id="getTarget-actor"
-				:ref="registryRef(fieldEls, 'getTarget-actor')"
+				:ref="controlRef('getTarget-actor')"
 				v-tip="t('components.getTarget-actor.tip')"
 				v-focus
 				type="actor"
@@ -21,7 +21,7 @@
 				:label="t('components.getTarget-selector.label')"
 				id="getTarget-selector"
 				v-tip="t('components.getTarget-selector.tip')"
-				:ref="registryRef(fieldEls, 'getTarget-selector')"
+				:ref="controlRef('getTarget-selector')"
 				v-model="form.selector"
 			/>
 			<div class="text">{{ t('components.getTarget-condition.label') }}</div>
@@ -29,7 +29,7 @@
 				:label="t('components.getTarget-condition.label')"
 				id="getTarget-condition"
 				v-tip="t('components.getTarget-condition.tip')"
-				:ref="registryRef(fieldEls, 'getTarget-condition')"
+				:ref="controlRef('getTarget-condition')"
 				v-model="form.condition"
 			/>
 			<div class="text">{{ t('components.getTarget-attribute.label') }}</div>
@@ -37,7 +37,7 @@
 				:label="t('components.getTarget-attribute.label')"
 				id="getTarget-attribute"
 				v-tip="t('components.getTarget-attribute.tip')"
-				:ref="registryRef(fieldEls, 'getTarget-attribute')"
+				:ref="controlRef('getTarget-attribute')"
 				v-focus
 				v-model="form.attribute"
 			/>
@@ -46,7 +46,7 @@
 				:label="t('components.getTarget-divisor.label')"
 				id="getTarget-divisor"
 				v-tip="t('components.getTarget-divisor.tip')"
-				:ref="registryRef(fieldEls, 'getTarget-divisor')"
+				:ref="controlRef('getTarget-divisor')"
 				v-focus
 				v-model="form.divisor"
 			/>
@@ -56,17 +56,31 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetTargetCommandSchema } from '@app/composables/commands/useGetTargetCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+import {
+	provideGetTargetBridge,
+	resetGetTargetBridge,
+	type GetTargetBridge
+} from '@app/composables/get-target-bridge';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'getTarget-actor'
+	| 'getTarget-attribute'
+	| 'getTarget-condition'
+	| 'getTarget-divisor'
+	| 'getTarget-selector'
+	| 'getTarget';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -76,11 +90,21 @@ const onConfirm = () => {
 	save();
 };
 
+/** 控件级能力：schema 载入时要候选项，但 schema 不该知道控件 id。 */
+const bridgeApi: GetTargetBridge = {
+	loadItems: (items) => {
+		controls['getTarget-attribute']?.loadItems?.(items);
+		controls['getTarget-divisor']?.loadItems?.(items);
+	}
+};
+
 onMounted(() => {
+	provideGetTargetBridge(bridgeApi);
+	onUnmounted(() => resetGetTargetBridge(bridgeApi));
 	useLocalizedOptions(
 		'getTarget-selector',
 		['enemy', 'friend', 'team', 'team-except-self', 'any-except-self', 'any'],
-		(items) => fieldEls.get('getTarget-selector')?.loadItems?.(items)
+		(items) => controls['getTarget-selector']?.loadItems?.(items)
 	);
 	useLocalizedOptions(
 		'getTarget-condition',
@@ -94,7 +118,7 @@ onMounted(() => {
 			'max-attribute-ratio',
 			'random'
 		],
-		(items) => fieldEls.get('getTarget-condition')?.loadItems?.(items),
+		(items) => controls['getTarget-condition']?.loadItems?.(items),
 		{
 			'max-threat': 'command.getTarget.condition.max-threat',
 			nearest: 'command.getTarget.condition.nearest',
@@ -106,19 +130,20 @@ onMounted(() => {
 			random: 'command.getTarget.condition.random'
 		}
 	);
-	fieldEls
-		.get('getTarget-condition')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: ['min-attribute-value', 'max-attribute-value'],
-				targets: [fieldEls.get('getTarget-attribute')]
-			},
-			{
-				case: ['min-attribute-ratio', 'max-attribute-ratio'],
-				targets: [fieldEls.get('getTarget-attribute'), fieldEls.get('getTarget-divisor')]
-			}
-		]);
+	controls['getTarget-condition']?.enableHiddenMode?.();
+	controls['getTarget-condition']?.relate?.([
+		{
+			case: ['min-attribute-value', 'max-attribute-value'],
+			targets: [controlRoot(controls['getTarget-attribute'])]
+		},
+		{
+			case: ['min-attribute-ratio', 'max-attribute-ratio'],
+			targets: [
+				controlRoot(controls['getTarget-attribute']),
+				controlRoot(controls['getTarget-divisor'])
+			]
+		}
+	]);
 });
 </script>
 
