@@ -1,11 +1,5 @@
-﻿<template>
-	<div
-		ref="rootEl"
-		class="box"
-		id="log-message"
-		:class="{ open: items.length !== 0 }"
-		@click="onMessageClick"
-	>
+<template>
+	<div class="box" id="log-message" :class="{ open: items.length !== 0 }" @click="onMessageClick">
 		<div
 			class="log-item"
 			v-for="(item, index) in items"
@@ -17,18 +11,19 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { logEls } from '@app/log/element-registry';
-import { registerElement } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { Log } from '@app/log/log-window.ts';
 import { File } from '@app/file/file-system-core.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import {
+	provideLogMessageBridge,
+	resetLogMessageBridge,
+	type LogMessageBridge
+} from '@app/composables/log-message-bridge';
 import { useToastService } from '@app/composables/useToastService';
 
 const toast = useToastService();
 
 const items = ref<{ type: string; message: string; duration: number }[]>([]);
-const rootEl = ref<HTMLElement | null>(null);
 
 const escapeHtml = (value: unknown): string =>
 	String(value ?? '').replace(/[&<>"']/g, (c) =>
@@ -82,11 +77,12 @@ const onMessageClick = (event: MouseEvent): void => {
 	Log.openVSCode?.(file, line, column);
 };
 
+/** 日志刷新由窗口自己实现，单例经桥调用（不再把 `update` 挂到根元素上）。 */
+const bridgeApi: LogMessageBridge = { update };
+
 onMounted(() => {
-	registerElement(logEls, 'log-message', rootEl.value);
-	const el = rootEl.value;
-	if (!el) return;
-	attachElementApi(el, { update });
+	provideLogMessageBridge(bridgeApi);
+	onUnmounted(() => resetLogMessageBridge(bridgeApi));
 	update();
 });
 </script>

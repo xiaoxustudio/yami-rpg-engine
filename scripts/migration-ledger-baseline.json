@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-03T08:00:16.808Z",
+	"generatedAt": "2026-11-03T08:16:04.521Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -115,8 +115,8 @@
 			"label": "元素 API 装配（attachApi / attachElementApi）",
 			"target": "zero",
 			"value": {
-				"total": 115,
-				"files": 115
+				"total": 114,
+				"files": 114
 			}
 		},
 		"element-custom-events": {
@@ -131,8 +131,8 @@
 			"label": "元素注册表寻址（*Els.get、registryElement(s)）",
 			"target": "zero",
 			"value": {
-				"total": 916,
-				"files": 211
+				"total": 915,
+				"files": 210
 			}
 		},
 		"legacy-ui-lines": {
@@ -263,8 +263,8 @@
 			"label": "YamiElement 类型引用（元素契约存量）",
 			"target": "zero",
 			"value": {
-				"total": 522,
-				"files": 103
+				"total": 520,
+				"files": 102
 			}
 		}
 	}

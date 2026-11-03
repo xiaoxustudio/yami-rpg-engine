@@ -1,11 +1,10 @@
 import { Editor } from '@app/services/project/editor.ts';
-import { logEls } from '@app/log/element-registry';
+import { getLogMessageBridge } from '@app/composables/log-message-bridge';
 
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 
 interface LogShape {
-	readonly box: HTMLElement | null;
 	devmode: boolean;
 	initialize: ((...args: unknown[]) => void) | null;
 	throw: ((...args: unknown[]) => void) | null;
@@ -29,9 +28,6 @@ interface LogShape {
 }
 
 const log: Omit<LogShape, 'list'> = {
-	get box() {
-		return logEls.get('log-message') as YamiElement;
-	},
 	devmode: typeof process !== 'undefined' && process.argv?.includes('--debug-mode'),
 	initialize: null as (() => void) | null,
 	throw: null as ((...args: unknown[]) => void) | null,
@@ -88,9 +84,7 @@ Log.clear = function () {
 };
 
 Log.update = function () {
-	const { box } = this;
-	if (!box) return;
-	(box as HTMLElement & { update?: () => void }).update?.();
+	getLogMessageBridge()?.update();
 };
 
 Log.tick = function () {
@@ -172,7 +166,6 @@ Log.tscLog = function (_event: unknown, tscMessage: unknown) {
 };
 
 import { getLogStore } from '@app/stores/log';
-import type { YamiElement } from '@app/types/element-api';
 
 Object.defineProperty(Log, 'list', {
 	get: () => getLogStore().logs,
