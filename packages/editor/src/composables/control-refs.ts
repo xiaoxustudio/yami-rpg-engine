@@ -27,6 +27,8 @@ export interface ControlApi extends FormFieldControl {
 	relate?: (entries: unknown) => void;
 	/** 只改值不派发 input 事件（换候选项后回写旧值时用）。 */
 	write2?: (value: unknown) => void;
+	/** 清空控件内容（`SelectBox` 换候选项 / 关窗时用）。 */
+	clear?: () => unknown;
 	enableHiddenMode?: () => unknown;
 	toggleRelatedElements?: () => void;
 	enable?: () => void;

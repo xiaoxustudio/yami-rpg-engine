@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="changeActorTeam"
-		:ref="registryRef(fieldEls, 'changeActorTeam')"
+		:ref="controlRef('changeActorTeam')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -15,7 +15,7 @@
 			<div class="text">{{ t('components.changeActorTeam-actor.label') }}</div>
 			<CustomBox
 				id="changeActorTeam-actor"
-				:ref="registryRef(fieldEls, 'changeActorTeam-actor')"
+				:ref="controlRef('changeActorTeam-actor')"
 				v-tip="t('components.changeActorTeam-actor.tip')"
 				v-focus
 				type="actor"
@@ -26,7 +26,7 @@
 				:label="t('components.changeActorTeam-teamId.label')"
 				id="changeActorTeam-teamId"
 				v-tip="t('components.changeActorTeam-teamId.tip')"
-				:ref="registryRef(fieldEls, 'changeActorTeam-teamId')"
+				:ref="controlRef('changeActorTeam-teamId')"
 				v-model="form.teamId"
 			/>
 		</div>
@@ -34,11 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChangeActorTeamCommandSchema } from '@app/composables/commands/useChangeActorTeamCommandSchema';
 import { Data } from '@app/data/data-object.ts';
@@ -46,6 +42,17 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+import {
+	provideChangeActorTeamBridge,
+	resetChangeActorTeamBridge,
+	type ChangeActorTeamBridge
+} from '@app/composables/change-actor-team-bridge';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'changeActorTeam-actor' | 'changeActorTeam-teamId' | 'changeActorTeam';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -55,12 +62,22 @@ const onConfirm = () => {
 	save();
 };
 
-/** 窗口打开时刷新候选项。 */
-const onWindowOpen = () => {
-	fieldEls.get('changeActorTeam-teamId')?.loadItems?.(Data.createTeamItems!());
+/** 控件级能力：schema 载入时要队伍候选项（insert 即加载，不依赖窗口 open 事件）。 */
+const bridgeApi: ChangeActorTeamBridge = {
+	loadItems: (items) => {
+		controls['changeActorTeam-teamId']?.loadItems?.(items);
+	}
 };
 
-onMounted(() => {});
+/** 窗口打开时刷新候选项。 */
+const onWindowOpen = () => {
+	controls['changeActorTeam-teamId']?.loadItems?.(Data.createTeamItems!());
+};
+
+onMounted(() => {
+	provideChangeActorTeamBridge(bridgeApi);
+	onUnmounted(() => resetChangeActorTeamBridge(bridgeApi));
+});
 </script>
 
 <style>

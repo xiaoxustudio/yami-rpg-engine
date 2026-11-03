@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="transition" :ref="registryRef(fieldEls, 'transition')" @confirm="onConfirm">
+	<WindowFrame id="transition" :ref="controlRef('transition')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.transition.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.transition-variable.label') }}</div>
 			<CustomBox
 				id="transition-variable"
-				:ref="registryRef(fieldEls, 'transition-variable')"
+				:ref="controlRef('transition-variable')"
 				v-tip="t('components.transition-variable.tip')"
 				v-focus
 				type="variable"
@@ -20,7 +20,7 @@
 			<div class="text">{{ t('components.transition-start.label') }}</div>
 			<NumberVar
 				id="transition-start"
-				:ref="registryRef(fieldEls, 'transition-start')"
+				:ref="controlRef('transition-start')"
 				v-tip="t('components.transition-start.tip')"
 				min="-1000000000"
 				max="1000000000"
@@ -30,7 +30,7 @@
 			<div class="text">{{ t('components.transition-end.label') }}</div>
 			<NumberVar
 				id="transition-end"
-				:ref="registryRef(fieldEls, 'transition-end')"
+				:ref="controlRef('transition-end')"
 				v-tip="t('components.transition-end.tip')"
 				min="-1000000000"
 				max="1000000000"
@@ -41,14 +41,14 @@
 			<SelectBox
 				:label="t('components.transition-easingId.label')"
 				id="transition-easingId"
-				:ref="registryRef(fieldEls, 'transition-easingId')"
+				:ref="controlRef('transition-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
 			<div class="text">{{ t('components.transition-duration.label') }}</div>
 			<NumberVar
 				id="transition-duration"
-				:ref="registryRef(fieldEls, 'transition-duration')"
+				:ref="controlRef('transition-duration')"
 				v-focus
 				name="duration"
 				min="0"
@@ -61,11 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { on } from '@app/utils/element-utils';
 import { useTransitionCommandSchema } from '@app/composables/commands/useTransitionCommandSchema';
@@ -74,6 +70,23 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+import {
+	provideTransitionBridge,
+	resetTransitionBridge,
+	type TransitionBridge
+} from '@app/composables/transition-bridge';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'transition-duration'
+	| 'transition-easingId'
+	| 'transition-end'
+	| 'transition-start'
+	| 'transition-variable'
+	| 'transition';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -83,9 +96,21 @@ const onConfirm = () => {
 	save();
 };
 
+/** 控件级能力：schema 要在打开/关闭窗口时灌候选项与清空，但不该知道控件 id。 */
+const bridgeApi: TransitionBridge = {
+	loadItems: (items) => {
+		controls['transition-easingId']?.loadItems?.(items);
+	},
+	clear: () => {
+		controls['transition-easingId']?.clear?.();
+	}
+};
+
 onMounted(() => {
-	on(fieldEls.get('transition'), 'open', () => open());
-	on(fieldEls.get('transition'), 'closed', () => windowClosed(new Event('closed')));
+	provideTransitionBridge(bridgeApi);
+	onUnmounted(() => resetTransitionBridge(bridgeApi));
+	on(controls['transition'], 'open', () => open());
+	on(controls['transition'], 'closed', () => windowClosed(new Event('closed')));
 });
 </script>
 

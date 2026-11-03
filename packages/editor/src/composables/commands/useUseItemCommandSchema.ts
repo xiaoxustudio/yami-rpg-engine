@@ -1,5 +1,5 @@
-﻿import { Command } from '@app/commands/command-object.ts';
-import { composableEls } from '@app/composables/element-registry';
+import { Command } from '@app/commands/command-object.ts';
+import { getUseItemBridge } from '@app/composables/use-item-bridge';
 import { Token } from '@app/commands/token.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -60,7 +60,7 @@ export function useUseItemCommandSchema() {
 	const { form, load, commit } = useCommandSchema('useItem', {
 		skipWrite: true,
 		onLoad() {
-			composableEls.get('useItem-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
+			getUseItemBridge()?.loadItems(Enum.getStringItems!('shortcut-key'));
 			requestFocus('useItem-actor');
 		}
 	});

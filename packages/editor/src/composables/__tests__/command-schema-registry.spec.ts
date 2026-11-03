@@ -6,6 +6,7 @@ import Transition from '@app/components/commands/Transition.vue';
 import WebSocketSend from '@app/components/commands/WebSocketSend.vue';
 import { composableEls } from '@app/composables/element-registry';
 import { useTransitionCommandSchema } from '@app/composables/commands/useTransitionCommandSchema';
+import { getTransitionBridge } from '@app/composables/transition-bridge';
 import { Command } from '@app/commands/command-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
@@ -51,13 +52,12 @@ describe('命令表单 composable 注册表', () => {
 		wrapper.unmount();
 	});
 
-	it('Transition：open 经注册表把缓动选项写进控件（链路有效，不是静默 no-op）', async () => {
+	it('Transition：open 经**模块桥**把缓动选项交给窗口（链路有效，不是静默 no-op）', async () => {
 		const wrapper = await mountAndSettle(Transition);
 
-		const el = composableEls.get('transition-easingId') as unknown as LoadableEl;
-		expect(el?.id).toBe('transition-easingId');
-		const loadItems = vi.fn();
-		el.loadItems = loadItems;
+		const bridge = getTransitionBridge();
+		expect(bridge, '窗口挂载后应登记桥').toBeTruthy();
+		const loadItems = vi.spyOn(bridge!, 'loadItems');
 		Data.createEasingItems = vi.fn(() => [{ name: 'Linear', value: 'linear' }]) as never;
 
 		useTransitionCommandSchema().open();
@@ -65,6 +65,7 @@ describe('命令表单 composable 注册表', () => {
 		expect(loadItems.mock.calls[0][0]).toEqual([{ name: 'Linear', value: 'linear' }]);
 
 		wrapper.unmount();
+		expect(getTransitionBridge(), '卸载后桥应注销').toBeNull();
 	});
 
 	it('RegisterEvent：targetWrite 经注册表刷新 type 控件（模块侧真的调到了控件）', async () => {

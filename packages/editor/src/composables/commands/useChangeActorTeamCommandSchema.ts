@@ -1,5 +1,5 @@
 import { useCommandSchema } from '@app/composables/useCommandSchema';
-import { composableEls } from '@app/composables/element-registry';
+import { getChangeActorTeamBridge } from '@app/composables/change-actor-team-bridge';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -32,7 +32,7 @@ export function useChangeActorTeamCommandSchema() {
 	return useCommandSchema('changeActorTeam', {
 		skipWrite: true,
 		onLoad() {
-			composableEls.get('changeActorTeam-teamId')?.loadItems?.(Data.createTeamItems!());
+			getChangeActorTeamBridge()?.loadItems(Data.createTeamItems!());
 			requestFocus('changeActorTeam-actor');
 		}
 	});

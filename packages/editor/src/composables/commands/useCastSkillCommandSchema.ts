@@ -1,5 +1,5 @@
-﻿import { Command } from '@app/commands/command-object.ts';
-import { composableEls } from '@app/composables/element-registry';
+import { Command } from '@app/commands/command-object.ts';
+import { getCastSkillBridge } from '@app/composables/cast-skill-bridge';
 import { commit } from '@app/composables/useCommandSchema';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Token } from '@app/commands/token.ts';
@@ -78,7 +78,7 @@ const createDefault = (): Record<string, unknown> => {
 };
 
 const load = (params: Record<string, unknown> = {}): void => {
-	composableEls.get('castSkill-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
+	getCastSkillBridge()?.loadItems(Enum.getStringItems!('shortcut-key'));
 	Object.assign(form, createDefault(), params);
 	requestFocus('castSkill-actor');
 };

@@ -1,5 +1,4 @@
-﻿import { clear } from '@app/utils/element-utils';
-import { composableEls } from '@app/composables/element-registry';
+import { getTransitionBridge } from '@app/composables/transition-bridge';
 import { Command } from '@app/commands/command-object.ts';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
@@ -98,11 +97,11 @@ const save = (): unknown => {
 
 const windowClosed = (_event: Event): void => {
 	commands = null;
-	clear(composableEls.get('transition-easingId'));
+	getTransitionBridge()?.clear();
 };
 
 const open = (): void => {
-	composableEls.get('transition-easingId')?.loadItems?.(Data.createEasingItems!());
+	getTransitionBridge()?.loadItems(Data.createEasingItems!());
 };
 
 const schema = Command.cases.transition;
