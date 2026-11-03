@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-03T14:51:38.051Z",
+	"generatedAt": "2026-11-03T16:56:06.570Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -59,8 +59,8 @@
 			"label": "DOM 待迁移文件（受限 API 命中且未进白名单）",
 			"target": "zero",
 			"value": {
-				"total": 1,
-				"hits": 1
+				"total": 0,
+				"hits": 0
 			}
 		},
 		"dom-style-writes": {
@@ -131,8 +131,8 @@
 			"label": "元素注册表寻址（*Els.get、registryElement(s)）",
 			"target": "zero",
 			"value": {
-				"total": 824,
-				"files": 187
+				"total": 822,
+				"files": 186
 			}
 		},
 		"legacy-ui-lines": {

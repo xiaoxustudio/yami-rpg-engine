@@ -7,6 +7,7 @@ import WebSocketSend from '@app/components/commands/WebSocketSend.vue';
 import { composableEls } from '@app/composables/element-registry';
 import { useTransitionCommandSchema } from '@app/composables/commands/useTransitionCommandSchema';
 import { getTransitionBridge } from '@app/composables/transition-bridge';
+import { getWebSocketSendBridge } from '@app/composables/web-socket-send-bridge';
 import { Command } from '@app/commands/command-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
@@ -90,13 +91,18 @@ describe('命令表单 composable 注册表', () => {
 		wrapper.unmount();
 	});
 
-	it('WebSocketSend：无局部注册表的 SFC 也会登记（本批补的 fieldEls）', async () => {
+	it('WebSocketSend：控件不再进注册表，改成挂载时登记控件桥', async () => {
 		const wrapper = await mountAndSettle(WebSocketSend);
 
-		expect(composableEls.get('webSocketSend-id')?.id).toBe('webSocketSend-id');
-		expect(composableEls.get('webSocketSend-data')?.id).toBe('webSocketSend-data');
+		// 迁移后控件只走模板 ref：注册表里没有它们，能力经模块桥交出
+		expect(composableEls.get('webSocketSend-id')).toBeFalsy();
+		expect(composableEls.get('webSocketSend-data')).toBeFalsy();
+		const bridge = getWebSocketSendBridge();
+		expect(bridge, '窗口挂载后应登记桥').toBeTruthy();
+		expect(typeof bridge?.getId).toBe('function');
 
 		wrapper.unmount();
+		expect(getWebSocketSendBridge(), '卸载后桥应注销').toBeNull();
 	});
 
 	it('注册表为空时模块侧安全 no-op（不再有按 id 的隐式回退）', () => {
