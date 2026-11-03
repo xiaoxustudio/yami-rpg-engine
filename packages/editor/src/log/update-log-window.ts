@@ -1,9 +1,6 @@
-﻿import { Window } from '@app/tools/window-object.ts';
-import { logEls } from '@app/log/element-registry';
-import { on } from '@app/utils/element-utils.ts';
+import { Window } from '@app/tools/window-object.ts';
 import { Updater } from '@app/services/updater/updater.ts';
 import { initializeUpdateLog } from '@app/module/global.ts';
-import type { YamiElement } from '@app/types/element-api';
 
 export interface UpdateLogItem {
 	title?: string;
@@ -32,8 +29,6 @@ UpdateLog.initialize = function () {
 	this.currentMode = 'internal';
 	this.internalItems = [];
 	this.communityItems = [];
-	const el = logEls.get('update-log') as YamiElement;
-	if (el) on(el, 'closed', this.windowClosed!);
 };
 
 UpdateLog.open = function (this: typeof UpdateLog, items: UpdateLogItem[] | null = null) {

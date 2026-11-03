@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="update-log" :ref="registryRef(logEls, 'update-log')" no-buttons>
+	<WindowFrame id="update-log" no-buttons @closed="onWindowClosed">
 		<template #title
 			><TitleBar
 				>{{ t('components.update-log.title') }}
@@ -66,8 +66,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { logEls } from '@app/log/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useEventListener } from '@app/composables/useEventListener';
 import { UpdateLog, type UpdateLogItem } from '@app/log/update-log-window.ts';
@@ -133,6 +131,11 @@ onMounted(() => {
 });
 
 useEventListener(window, 'update-log-update', refresh);
+
+/** 关闭时清空单例里暂存的条目：窗口自己接 `closed`，不再让单例按 id 去注册表摸根元素。 */
+const onWindowClosed = () => {
+	UpdateLog.windowClosed?.();
+};
 </script>
 
 <style>
