@@ -1,4 +1,5 @@
-import { titleEls } from '@app/title/element-registry';
+import { getCopyProgressBridge } from '@app/composables/copy-progress-bridge';
+import { getDeploymentBridge } from '@app/composables/deployment-bridge';
 import { Window } from '@app/tools/window-object.ts';
 
 import { Timer } from '@app/utils/timer';
@@ -22,13 +23,11 @@ import type { DeploymentForm as DeploymentFormShape } from '@app/stores/deployme
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { fileURLToPath } from 'node:url';
-import type { YamiElement } from '@app/types/element-api';
 import { clone as deepClone } from '@app/utils/object';
 
-/** 弹窗警告文案（元素缺失时静默跳过）。 */
+/** 弹窗警告文案：窗口自己渲染，单例经桥写（不再按 id 摸元素）。 */
 const setWarning = (text: string): void => {
-	const el = titleEls.get('deployment-warning');
-	if (el) el.textContent = text;
+	getDeploymentBridge()?.setWarning(text);
 };
 const _moduleURL = new URL(import.meta.url);
 const _modulePath =
@@ -169,15 +168,8 @@ export const Deployment: DeploymentShape = {
 	confirm: null
 };
 
-Deployment.initialize = function (this: typeof Deployment) {
-	const platform = titleEls.get('deployment-platform') as YamiElement;
-	if (!platform) return;
-	platform.loadItems([
-		{ name: 'Windows x64', value: 'windows-x64' },
-		{ name: 'MacOS Universal', value: 'mac-universal' },
-		{ name: 'Web / Android / iOS', value: 'web' }
-	]);
-};
+/** 平台候选项由窗口自己在 `onMounted` 里灌（`deployment-platform` 已不进注册表）。 */
+Deployment.initialize = function (this: typeof Deployment) {};
 
 Deployment.open = function (this: typeof Deployment) {
 	Window.open!('deployment');
@@ -507,19 +499,11 @@ Deployment.readTsOutDir = function (this: typeof Deployment) {
 	return outDir;
 };
 
-/** 复制进度控件（懒挂载窗口，取不到时按空处理）。 */
-const copyProgressEls = (): { bar: HTMLElement | null; info: HTMLElement | null } => ({
-	bar: titleEls.get('copyProgress-bar') as HTMLElement | null,
-	info: titleEls.get('copyProgress-info') as HTMLElement | null
-});
-
+/** 复制进度由 copyProgress 窗口自己渲染（懒挂载，未挂载时桥为空）。 */
 Deployment.copyFilesTo = function (this: typeof Deployment, dirPath: string) {
 	const platform = DeploymentForm.platform;
-	// 复制进度窗口是懒挂载的：控件可用后再复位（读取一律按「可能为空」处理）
 	const resetProgress = (): void => {
-		const { bar, info } = copyProgressEls();
-		if (bar) bar.style.width = '0';
-		if (info) info.textContent = '';
+		getCopyProgressBridge()?.reset();
 	};
 	Window.openWith!('copyProgress', resetProgress);
 	const { extnameToTypeMap } = FolderItem;
@@ -601,9 +585,7 @@ Deployment.copyFilesTo = function (this: typeof Deployment, dirPath: string) {
 			duration: Infinity,
 			update: () => {
 				const percent = Math.round((count / total) * 100);
-				const { bar, info: infoEl } = copyProgressEls();
-				if (bar) bar.style.width = `${percent}%`;
-				if (infoEl) infoEl.textContent = info;
+				getCopyProgressBridge()?.update(percent, info);
 			}
 		}).add();
 		return Promise.all(promises);

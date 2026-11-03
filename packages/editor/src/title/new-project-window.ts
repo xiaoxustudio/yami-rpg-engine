@@ -1,7 +1,7 @@
 import { computed } from 'vue';
-import { titleEls } from '@app/title/element-registry';
+import { getCopyProgressBridge } from '@app/composables/copy-progress-bridge';
+import { getNewProjectBridge } from '@app/composables/new-project-bridge';
 import { Window } from '@app/tools/window-object.ts';
-import { read } from '@app/utils/element-utils';
 import { Timer } from '@app/utils/timer';
 import { Data } from '@app/data/data-object.ts';
 import { requestFocus } from '@app/directives/focus';
@@ -20,12 +20,10 @@ import { Title } from '@app/title/title-bar.ts';
 import { getYamiI18n } from '@app/i18n';
 
 import { Path } from '@app/utils/config';
-import type { YamiElement } from '@app/types/element-api';
 
-/** 弹窗警告文案（元素缺失时静默跳过）。 */
+/** 弹窗警告文案：窗口自己渲染，单例经桥写（不再按 id 摸元素）。 */
 const setWarning = (text: string): void => {
-	const el = titleEls.get('newProject-warning');
-	if (el) el.textContent = text;
+	getNewProjectBridge()?.setWarning(text);
 };
 
 const t = (key: string, named?: Record<string, unknown>) =>
@@ -108,15 +106,8 @@ export const NewProject: NewProjectShape = {
 	confirm: null
 };
 
-NewProject.initialize = function (this: typeof NewProject) {
-	const template = titleEls.get('newProject-template') as YamiElement;
-	if (!template) return;
-	template.loadItems([
-		{ name: 'ARPG - English', value: 'arpg-ts-english' },
-		{ name: 'ARPG - 简体中文', value: 'arpg-ts-chinese' },
-		{ name: 'Minimized Current Project', value: 'minimized-project' }
-	]);
-};
+/** 模板候选项由窗口自己在 `onMounted` 里灌（`newProject-template` 已不进注册表）。 */
+NewProject.initialize = function (this: typeof NewProject) {};
 
 NewProject.open = function (this: typeof NewProject) {
 	Window.open!('newProject');
@@ -207,21 +198,13 @@ NewProject.readFileList = (function IIFE() {
 	};
 })();
 
-/** 复制进度控件（懒挂载窗口，取不到时按空处理）。 */
-const copyProgressEls = (): { bar: HTMLElement | null; info: HTMLElement | null } => ({
-	bar: titleEls.get('copyProgress-bar') as HTMLElement | null,
-	info: titleEls.get('copyProgress-info') as HTMLElement | null
-});
-
 NewProject.copyFilesTo = function (this: typeof NewProject, ...args: unknown[]) {
 	const sPath = args[0] as string;
 	const dPath = args[1] as string;
 	const idFilter = args[2];
-	// 复制进度窗口是懒挂载的：控件可用后再复位，读取一律按「可能为空」处理
+	// 复制进度窗口是懒挂载的：挂载完成后再复位（桥为空时就是没挂载）
 	const resetProgress = (): void => {
-		const { bar, info } = copyProgressEls();
-		if (bar) bar.style.width = '0';
-		if (info) info.textContent = '';
+		getCopyProgressBridge()?.reset();
 	};
 	Window.openWith!('copyProgress', resetProgress);
 	return this.readFileList!(sPath, idFilter).then(
@@ -253,10 +236,7 @@ NewProject.copyFilesTo = function (this: typeof NewProject, ...args: unknown[]) 
 				duration: Infinity,
 				update: (_timer: Timer) => {
 					const percent = Math.round((count / total) * 100);
-					const progressBar = titleEls.get('copyProgress-bar') as YamiElement | null;
-					const progressInfo = titleEls.get('copyProgress-info') as YamiElement | null;
-					if (progressBar) progressBar.style.width = `${percent}%`;
-					if (progressInfo) progressInfo.textContent = info;
+					getCopyProgressBridge()?.update(percent, info);
 				}
 			}).add();
 			return Promise.all(promises);
@@ -400,7 +380,7 @@ export function newProjectConfirmAllowed(
 const newProjectConfirmOriginal = NewProject.confirm;
 
 NewProject.confirm = function (this: typeof NewProject) {
-	const template = read(titleEls.get('newProject-template') as YamiElement);
+	const template = getNewProjectBridge()?.getTemplate() ?? '';
 	const noResourceObj = isNoResource();
 	if (newProjectConfirmAllowed(template, (key) => noResourceObj[key]?.check === true)) {
 		newProjectConfirmOriginal!.call(Title);

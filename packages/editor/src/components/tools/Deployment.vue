@@ -12,7 +12,7 @@
 				:label="t('components.deployment-platform.label')"
 				id="deployment-platform"
 				v-tip="t('components.deployment-platform.tip')"
-				:ref="registryRef(titleEls, 'deployment-platform')"
+				:ref="controlRef('deployment-platform')"
 				v-focus
 				v-model="Deployment.form.platform"
 				@input="onPlatformInput"
@@ -51,18 +51,12 @@
 				@change="onCompressChange"
 			/>
 		</div>
-		<div
-			class="text"
-			id="deployment-warning"
-			:ref="registryRef(titleEls, 'deployment-warning')"
-		/>
+		<div class="text" id="deployment-warning">{{ warning }}</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { titleEls } from '@app/title/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -74,6 +68,12 @@ import {
 	deploymentConfirmDisabled as confirmDisabled
 } from '@app/title/deploy-project-window';
 import { useToastService } from '@app/composables/useToastService';
+import { useControlRefs } from '@app/composables/control-refs';
+import {
+	provideDeploymentBridge,
+	resetDeploymentBridge,
+	type DeploymentBridge
+} from '@app/composables/deployment-bridge';
 
 const { t } = useI18n();
 
@@ -102,7 +102,29 @@ const onConfirm = () => {
 	toast.show('Deployment started', 'info');
 };
 
-onMounted(() => {});
+/** 控件表：只放真正需要实例能力的控件（平台下拉要自己灌候选项）。 */
+type Id = 'deployment-platform';
+
+const { controls, controlRef } = useControlRefs<Id>();
+
+/** 打包前的校验提示由窗口自己渲染，单例经桥写文案。 */
+const warning = ref('');
+
+const bridgeApi: DeploymentBridge = {
+	setWarning: (text) => {
+		warning.value = text;
+	}
+};
+
+onMounted(() => {
+	provideDeploymentBridge(bridgeApi);
+	onUnmounted(() => resetDeploymentBridge(bridgeApi));
+	controls['deployment-platform']?.loadItems?.([
+		{ name: 'Windows x64', value: 'windows-x64' },
+		{ name: 'MacOS Universal', value: 'mac-universal' },
+		{ name: 'Web / Android / iOS', value: 'web' }
+	]);
+});
 </script>
 
 <style>

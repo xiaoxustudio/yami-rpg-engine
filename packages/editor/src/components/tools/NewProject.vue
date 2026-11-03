@@ -12,7 +12,7 @@
 				:label="t('components.newProject-template.label')"
 				id="newProject-template"
 				v-tip="t('components.newProject-template.tip')"
-				:ref="registryRef(titleEls, 'newProject-template')"
+				:ref="controlRef('newProject-template')"
 				v-focus
 				v-model="form.template"
 				@input="onTemplateInput"
@@ -44,18 +44,12 @@
 				</button>
 			</div>
 		</div>
-		<div
-			class="text"
-			id="newProject-warning"
-			:ref="registryRef(titleEls, 'newProject-warning')"
-		/>
+		<div class="text" id="newProject-warning">{{ warning }}</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { titleEls } from '@app/title/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
 	NewProject,
@@ -65,6 +59,12 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+import {
+	provideNewProjectBridge,
+	resetNewProjectBridge,
+	type NewProjectBridge
+} from '@app/composables/new-project-bridge';
 
 const { t } = useI18n();
 
@@ -89,7 +89,30 @@ const onConfirm = () => {
 	NewProject?.confirm?.();
 };
 
-onMounted(() => {});
+/** 控件表：模板下拉要自己灌候选项、并在建工程时被单例读取。 */
+type Id = 'newProject-template';
+
+const { controls, controlRef } = useControlRefs<Id>();
+
+/** 校验提示由窗口自己渲染，单例经桥写文案。 */
+const warning = ref('');
+
+const bridgeApi: NewProjectBridge = {
+	setWarning: (text) => {
+		warning.value = text;
+	},
+	getTemplate: () => (controls['newProject-template']?.read?.() as string) ?? null
+};
+
+onMounted(() => {
+	provideNewProjectBridge(bridgeApi);
+	onUnmounted(() => resetNewProjectBridge(bridgeApi));
+	controls['newProject-template']?.loadItems?.([
+		{ name: 'ARPG - English', value: 'arpg-ts-english' },
+		{ name: 'ARPG - 简体中文', value: 'arpg-ts-chinese' },
+		{ name: 'Minimized Current Project', value: 'minimized-project' }
+	]);
+});
 </script>
 
 <style>
