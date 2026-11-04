@@ -52,7 +52,7 @@ pnpm start:prod   # 先构建再以生产模式启动
 
 **元素契约迁移：控件从「元素 API」到组件 `defineExpose`**
 
-现状（2026-11-03 实测；**数字真源是脚本，不是本文**）：
+现状（2026-11-04 实测；**数字真源是脚本，不是本文**）：
 
 ```shell
 node scripts/contract-inventory.mjs                                  # 还挂着 registryRef 的窗口 / 控件 id / 谁在读它们
@@ -60,18 +60,21 @@ node scripts/oneoff/report-blocked-by-consumer.mjs                   # 按「卡
 node scripts/oneoff/triage-registry-windows.mjs <窗口…>               # 这些窗口挂的注册表，别处有没有**动态**读
 node scripts/oneoff/audit-migrated-controls.mjs <迁过的 .vue…>        # 迁后回查：还有别的文件按 id 读它吗
 node scripts/oneoff/audit-expose-vs-attach.mjs                       # 包装组件的 defineExpose 是否覆盖 attachElementApi
+node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --apply   # 生成桥模块并给窗口接线
 ```
 
-- 131 个 `.vue` 仍用 `registryRef(...)`（713 个控件 id），其中 **123 个**「有全局消费方或 schema 按 id 动态读」；
-- 台账三轴：`element-registry-lookups` 928 / 214 文件、`yami-element-refs` 531 / 106、`element-api-attach` 115；
+- 104 个 `.vue` 仍用 `registryRef(...)`（560 个控件 id），其中 **96 个**「有全局消费方或 schema 按 id 动态读」；
+- 台账三轴：`element-registry-lookups` 775 / 175 文件、`yami-element-refs` 508 / 96、`element-api-attach` 114；
 - 74 个 `attachElementApi` 组件里 47 个的 `defineExpose` **不全**（多为 inspector 页的 `sync` / `update` / `form`）：迁到实例之前必须补齐，否则调用点在运行期静默变 `undefined`。
 
 **存量是碎片化的，不存在「再迁一批就清零」**：119 个消费方文件里最重的那个也只卡 5 个窗口（`report-blocked-by-consumer.mjs` 的输出）。所以一批的粒度应该是**一个消费方 + 它卡住的 1–5 个窗口**，而不是一个目录。
 
-两类消费方，两种收尾方式：
+三类消费方，三种收尾方式：
 
 - **单例只要窗口根元素上的一个能力**（如 `update-log-window.ts` 对 `update-log` 的 `closed` 监听、`deploy-project-window.ts` 对 `deployment-warning` 的写文案）→ 这一步**根本不需要桥**：能力搬回窗口自己（`@closed` / `defineExpose`），单例把这段代码删掉；
-- **单例要驱动窗口内的一批控件**（命令 schema、`useProjectSettingsWindow`、`element-page.ts`）→ 走路径 2 的桥，把「控件级能力」一次性交给单例。
+- **单例要驱动窗口内的一批控件**（命令 schema、`useProjectSettingsWindow`、`element-page.ts`）→ 走路径 2 的桥，把「控件级能力」一次性交给单例；
+- **装配本来就是窗口自己的配置**（文本捕获族的候选项 / 隐藏行关系 / 变量名补全）→ 搬进窗口的 `onMounted`，单例只留 `open` / `confirm`；这类最干净，连桥都不用。
+
 
 
 **目标契约**：控件 = 组件实例，能力来自 `defineExpose`；控件寻址不再经过 `ElementRegistry`。按消费方分三条路径，**不要混用**：
@@ -102,7 +105,9 @@ node scripts/oneoff/audit-expose-vs-attach.mjs                       # 包装组
 - ⚠️ **登记侧不上台账**：`registryRef` 窗口数只出现在清单里，`element-registry-lookups` 只数**读**。一批只改登记侧时轴不会降，别以为白干了，也别用轴没降当「没成效」的证据；
 - ⚠️ **改 `.vue` 的类型必须过 `typecheck:vue`**：`tsc` 对 `.vue` 是假绿（15 个 `clear(el)` 站点就是 vue-tsc 抓到的）；
 - ⚠️ **`relate()` 的 `targets` 仍是 DOM 语义**（`select-box-core` 读写 `element.style` 与兄弟标签），必须传 `controlRoot(...)`；这是 P3 之前拆不掉 `attachElementApi` 的主要原因；
-- ⚠️ **`write2()` 在新列表里找不到旧值时会把第一项当默认值写进去**：只在「原来就有选中值」时回写，否则会变成替用户选一个。
+- ⚠️ **`write2()` 在新列表里找不到旧值时会把第一项当默认值写进去**：只在「原来就有选中值」时回写，否则会变成替用户选一个（`SetAnimationComponent` 那条单测就是这么红的）；
+- ⚠️ **默认写路径是拼出来的 id**：`useCommandSchema` 的 `load` 用 `${name}-${field}` 去注册表取元素，所以非 `skipWrite` 的命令窗口必须先传 `controls: () => 控件表` 才迁得动（`WebSocketSend` 是第一个这么迁的）；
+- ⚠️ **清的 import 要按 specifier 摘，不要整行删**：`import { Selection, textCaptureEls }` 同行时，整行删会把还被用到的 `Selection` 一起删掉 —— 而 `Selection` 正好是 DOM 全局类名，删完不报「找不到名字」，只报一串 `Property 'xxx' does not exist` 的怪错（文本捕获族四个窗口踩过）。
 
 
 ## 目录详解
