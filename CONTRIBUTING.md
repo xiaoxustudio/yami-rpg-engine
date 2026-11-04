@@ -63,17 +63,18 @@ node scripts/oneoff/audit-expose-vs-attach.mjs                       # 包装组
 node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --apply   # 生成桥模块并给窗口接线
 ```
 
-- 104 个 `.vue` 仍用 `registryRef(...)`（560 个控件 id），其中 **96 个**「有全局消费方或 schema 按 id 动态读」；
-- 台账三轴：`element-registry-lookups` 775 / 175 文件、`yami-element-refs` 508 / 96、`element-api-attach` 114；
+- 99 个 `.vue` 仍用 `registryRef(...)`（547 个控件 id），其中 **91 个**「有全局消费方或 schema 按 id 动态读」；
+- 台账三轴：`element-registry-lookups` 755 / 171 文件、`yami-element-refs` 511 / 97、`element-api-attach` 113；
 - 74 个 `attachElementApi` 组件里 47 个的 `defineExpose` **不全**（多为 inspector 页的 `sync` / `update` / `form`）：迁到实例之前必须补齐，否则调用点在运行期静默变 `undefined`。
 
 **存量是碎片化的，不存在「再迁一批就清零」**：119 个消费方文件里最重的那个也只卡 5 个窗口（`report-blocked-by-consumer.mjs` 的输出）。所以一批的粒度应该是**一个消费方 + 它卡住的 1–5 个窗口**，而不是一个目录。
 
-三类消费方，三种收尾方式：
+四类消费方，四种收尾方式：
 
 - **单例只要窗口根元素上的一个能力**（如 `update-log-window.ts` 对 `update-log` 的 `closed` 监听、`deploy-project-window.ts` 对 `deployment-warning` 的写文案）→ 这一步**根本不需要桥**：能力搬回窗口自己（`@closed` / `defineExpose`），单例把这段代码删掉；
 - **单例要驱动窗口内的一批控件**（命令 schema、`useProjectSettingsWindow`、`element-page.ts`）→ 走路径 2 的桥，把「控件级能力」一次性交给单例；
-- **装配本来就是窗口自己的配置**（文本捕获族的候选项 / 隐藏行关系 / 变量名补全）→ 搬进窗口的 `onMounted`，单例只留 `open` / `confirm`；这类最干净，连桥都不用。
+- **装配本来就是窗口自己的配置**（文本捕获族的候选项 / 隐藏行关系 / 变量名补全）→ 搬进窗口的 `onMounted`，单例只留 `open` / `confirm`；这类最干净，连桥都不用；
+- **单例长期持有元素**（`image-crop-window.ts`、`enum-window.ts`：把 list / panel / inputs 存成字段、跨 open/close 复用，还会往元素上挂方法）→ 窗口挂载时**一次性交出句柄表**（`composables/image-crop-handles.ts`、`enum-handles.ts`），卸载注销；单例只读这份表。这类不能按「每次取一次元素」改，否则每次调用都要重新解析一遍。
 
 
 
