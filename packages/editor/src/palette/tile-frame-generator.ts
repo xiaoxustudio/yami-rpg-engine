@@ -1,10 +1,7 @@
-import { paletteEls } from '@app/palette/element-registry';
 import { Window } from '@app/tools/window-object.ts';
-import { on } from '@app/utils/element-utils.ts';
 import { requestFocus } from '@app/directives/focus';
 import { getPaletteStore } from '@app/stores/palette';
 import type { FrameGeneratorForm } from '@app/stores/palette';
-import type { YamiElement } from '@app/types/element-api';
 
 export type { FrameGeneratorForm };
 
@@ -43,8 +40,7 @@ FrameGenerator.initialize = function (this: typeof FrameGenerator) {
 	this.form.strideY = 0;
 	this.form.count = 1;
 
-	const frameWindow = paletteEls.get('autoTile-generateFrames') as YamiElement;
-	if (frameWindow) on(frameWindow, 'closed', this.windowClosed!);
+	// `closed` 通知由窗口自己发（见 AutoTileGenerateFrames.vue 的 onWindowClosed）。
 };
 
 FrameGenerator.open = function (

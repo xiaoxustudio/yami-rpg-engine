@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="autoTile-generateFrames"
-		:ref="registryRef(paletteEls, 'autoTile-generateFrames')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="autoTile-generateFrames" @confirm="onConfirm" @closed="onWindowClosed">
 		<template #title
 			><TitleBar
 				>{{ t('components.autoTile-generateFrames.title') }}
@@ -45,12 +41,15 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { paletteEls } from '@app/palette/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { FrameGenerator } from '@app/palette/tile-frame-generator.ts';
 
 const onConfirm = () => {
 	FrameGenerator?.confirm?.(new Event('click'));
+};
+
+/** 关闭时通知单例：窗口自己就有 `closed`，不必让单例按 id 去注册表摸根元素。 */
+const onWindowClosed = () => {
+	FrameGenerator?.windowClosed?.(new Event('closed'));
 };
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
