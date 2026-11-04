@@ -1,5 +1,5 @@
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
-import { paletteEls } from '@app/palette/element-registry';
+import { getFrameIndexHandles } from '@app/composables/frame-index-handles';
 import { Window } from '@app/tools/window-object.ts';
 import { on, rect, css } from '@app/utils/element-utils.ts';
 
@@ -57,25 +57,25 @@ interface TileFrameShape {
 
 export const TileFrame = {
 	get window() {
-		return paletteEls.get('autoTile-frameIndex') as YamiElement;
+		return (getFrameIndexHandles()?.win ?? null) as YamiElement;
 	},
 	get screen() {
-		return paletteEls.get('autoTile-frameIndex-screen') as YamiElement;
+		return (getFrameIndexHandles()?.screen ?? null) as YamiElement;
 	},
 	get clip() {
-		return paletteEls.get('autoTile-frameIndex-image-clip') as YamiElement;
+		return (getFrameIndexHandles()?.clip ?? null) as YamiElement;
 	},
 	get mask() {
-		return paletteEls.get('autoTile-frameIndex-mask') as YamiElement;
+		return (getFrameIndexHandles()?.mask ?? null) as YamiElement;
 	},
 	get image() {
-		return paletteEls.get('autoTile-frameIndex-image') as YamiElement;
+		return (getFrameIndexHandles()?.image ?? null) as YamiElement;
 	},
 	get marquee() {
-		return paletteEls.get('autoTile-frameIndex-marquee') as TileFrameMarquee;
+		return (getFrameIndexHandles()?.marquee ?? null) as TileFrameMarquee;
 	},
 	get info() {
-		return paletteEls.get('autoTile-frameIndex-info') as TileFrameInfoElement;
+		return (getFrameIndexHandles()?.info ?? null) as TileFrameInfoElement;
 	},
 	dragging: null,
 	hframes: null,
