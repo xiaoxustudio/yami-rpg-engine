@@ -2,8 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { nextTick } from 'vue';
 import { Menu } from '@app/components/menu-list';
-import { registerElement } from '@app/utils/element-registry';
-import { Selection, textCaptureEls } from '../text-capture.ts';
+import { Selection } from '../text-capture.ts';
 
 vi.mock('@app/components/menu-list', () => ({
 	Menu: { popup: vi.fn() }
@@ -40,15 +39,11 @@ const rightClick = async (input: HTMLInputElement): Promise<void> => {
 
 beforeEach(() => {
 	setActivePinia(createPinia());
-	textCaptureEls.clear();
-	// initialize 的就绪门：Font 窗口登记后才开始扫描输入框
-	registerElement(textCaptureEls, 'font', document.createElement('div'));
 	vi.mocked(Menu.popup).mockClear();
 });
 
 afterEach(() => {
 	for (const element of created.splice(0)) element.remove();
-	textCaptureEls.clear();
 });
 
 describe('文本捕获：输入框右键绑定', () => {

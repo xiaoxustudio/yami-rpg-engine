@@ -13,11 +13,15 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { registryRef } from '@app/utils/element-registry';
-import { Selection, textCaptureEls } from '@app/tools/text-capture.ts';
-import { windowShellEls } from '@app/tools/window-object.ts';
+import { Selection } from '@app/tools/text-capture.ts';
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
 import { YMFont } from '@ui-kit';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'font';
+
+const { controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -25,8 +29,8 @@ const form = useTextCaptureWindow().font.form;
 
 // 同一个根元素要进两个注册表：`textCaptureEls` 是文本标记初始化的就绪门，
 // `windowShellEls` 是 `Window.open('font')` 的窗口查找表（ui-kit 窗口不会自己登记）。
-const captureRef = registryRef(textCaptureEls, 'font');
-const shellRef = registryRef(windowShellEls, 'font');
+const captureRef = controlRef('font');
+const shellRef = controlRef('font');
 const fontRef = (el: unknown): void => {
 	captureRef(el);
 	shellRef(el);

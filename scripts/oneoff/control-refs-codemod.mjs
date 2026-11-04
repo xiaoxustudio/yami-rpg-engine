@@ -95,9 +95,19 @@ function stripRegistryGlue(text, eol, registries) {
 			.replace(/import \{[^}]*\} from '[^']*';/g, '')
 			.replace(/import [\w$]+ from '[^']*';/g, '');
 		if (!new RegExp(`\\b${reg}\\b`).test(withoutImports)) {
+			// 只摘掉这一个 specifier：整行删会连带删掉同行的其它导入
+			// （`textCaptureEls` 与 `Selection` 同行时，把 `Selection` 一起删掉过）。
 			out = out.replace(
-				new RegExp(`import \\{[^}]*\\b${reg}\\b[^}]*\\} from '[^']*';${eol}`, 'g'),
-				''
+				new RegExp(`import \\{([^}]*)\\} from ('[^']*');${eol}`, 'g'),
+				(match, inner, modulePath) => {
+					if (!new RegExp(`\\b${reg}\\b`).test(inner)) return match;
+					const kept = inner
+						.split(',')
+						.map((part) => part.trim())
+						.filter((part) => part && part !== reg);
+					if (kept.length === 0) return '';
+					return `import { ${kept.join(', ')} } from ${modulePath};${eol}`;
+				}
 			);
 		}
 	}

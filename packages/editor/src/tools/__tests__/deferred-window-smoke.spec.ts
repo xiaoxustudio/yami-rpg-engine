@@ -18,7 +18,6 @@ import {
 } from '@app/tools/tool-window-host';
 import { composableEls } from '@app/composables/element-registry';
 import { conditionEls } from '@app/tools/condition-list';
-import { textCaptureEls } from '@app/tools/text-capture';
 import { localEls } from '@app/local/element-registry';
 import { sceneEls } from '@app/scene/element-registry';
 import { moduleEls } from '@app/module/element-registry';
@@ -89,7 +88,6 @@ const isControl = (element: HTMLElement): boolean =>
 
 const registries = [
 	composableEls,
-	textCaptureEls,
 	conditionEls,
 	localEls,
 	sceneEls,

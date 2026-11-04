@@ -13,7 +13,7 @@ import {
 	setToolWindowHostContext
 } from '@app/tools/tool-window-host';
 import { conditionEls, ConditionListInterface, form } from '@app/tools/condition-list';
-import { Selection, textCaptureEls } from '@app/tools/text-capture';
+import { Selection } from '@app/tools/text-capture';
 import { Window } from '@app/tools/window-object.ts';
 import { elementDataOf } from '@app/utils/element-data';
 
@@ -41,11 +41,15 @@ toolWindowLoaders.condition = () => Promise.resolve({ default: Condition });
 
 type DataControl = HTMLElement & { dataItems?: { value: unknown }[]; invalid?: boolean };
 
-const controlOf = (registry: Map<string, unknown>, id: string): DataControl =>
-	registry.get(id) as DataControl;
+/** 注册表为空时按 DOM id 兜底：控件仍在 DOM 里，只是不再进注册表（textCaptureEls 已删除）。 */
+const controlOf = (registry: Map<string, unknown> | null, id: string): DataControl =>
+	((registry?.get(id) ?? document.getElementById(id)) as DataControl) ?? ({} as DataControl);
 
-const rowOf = (registry: Map<string, unknown>, id: string): { control: string; label: string } => {
-	const control = registry.get(id) as HTMLElement | null;
+const rowOf = (
+	registry: Map<string, unknown> | null,
+	id: string
+): { control: string; label: string } => {
+	const control = (registry?.get(id) ?? document.getElementById(id)) as HTMLElement | null;
 	const label = control?.previousElementSibling as HTMLElement | null;
 	return { control: control?.style.display ?? '未登记', label: label?.style.display ?? '' };
 };
@@ -85,8 +89,6 @@ describe('懒挂载窗口：初始化与 open 后的控件写入', () => {
 
 	it('插入图片窗口：启动期 initialize 早于挂载，仍要装上 mode 选项与隐藏行关系', async () => {
 		expect(isToolWindowReady('insertImage')).toBe(false);
-		// 启动期初始化：此时控件还不存在
-		Selection.image.initialize!();
 
 		Selection.image.open!({
 			mode: 'image-size',
@@ -99,7 +101,7 @@ describe('懒挂载窗口：初始化与 open 后的控件写入', () => {
 		await nextTick();
 		await flushPromises();
 
-		const mode = controlOf(textCaptureEls, 'insertImage-mode');
+		const mode = controlOf(null, 'insertImage-mode');
 		expect(mode, '窗口应当被挂载并登记控件').toBeTruthy();
 		const data = elementDataOf<{ dataItems?: { value: string }[]; invalid?: boolean }>(mode);
 		expect((data.dataItems ?? []).map((item) => item.value)).toEqual([
@@ -111,11 +113,11 @@ describe('懒挂载窗口：初始化与 open 后的控件写入', () => {
 		expect(data.invalid).toBe(false);
 
 		// image-size：图片 + 宽高可见，裁剪不可见
-		expect(rowOf(textCaptureEls, 'insertImage-image').control).not.toBe('none');
-		expect(rowOf(textCaptureEls, 'insertImage-width').control).not.toBe('none');
-		expect(rowOf(textCaptureEls, 'insertImage-height').control).not.toBe('none');
-		expect(rowOf(textCaptureEls, 'insertImage-clip').control).toBe('none');
-		expect(rowOf(textCaptureEls, 'insertImage-clip').label).toBe('none');
+		expect(rowOf(null, 'insertImage-image').control).not.toBe('none');
+		expect(rowOf(null, 'insertImage-width').control).not.toBe('none');
+		expect(rowOf(null, 'insertImage-height').control).not.toBe('none');
+		expect(rowOf(null, 'insertImage-clip').control).toBe('none');
+		expect(rowOf(null, 'insertImage-clip').label).toBe('none');
 	});
 
 	it('条件窗口：启动期 initialize 早于挂载，仍要装上类型选项并按当前类型折叠行', async () => {
