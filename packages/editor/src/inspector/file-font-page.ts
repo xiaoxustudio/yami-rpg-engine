@@ -1,4 +1,4 @@
-import { inspectorEls } from './element-registry.ts';
+import { getFileFontPageBridge } from '@app/composables/file-font-page-bridge';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { hide, show } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
@@ -93,9 +93,7 @@ import { encodeURL } from '@app/utils/css';
 	};
 
 	FileFont.update = function (this: FileFontShape) {
-		const el = inspectorEls.get('fileFont') as YamiElement;
-		if (!el) return;
-		(el as HTMLElement & { update?: () => void }).update?.();
+		getFileFontPageBridge()?.update();
 	};
 
 	FileFont.windowResize = function (this: FileFontShape) {
@@ -103,8 +101,7 @@ import { encodeURL } from '@app/utils/css';
 		const dpr = window.devicePixelRatio;
 		if (previews.dpr !== dpr) {
 			previews.dpr = dpr;
-			const gridEl = inspectorEls.get('fileFont-font-grid');
-			if (gridEl) gridEl.style.fontSize = `${12 / dpr}px`;
+			getFileFontPageBridge()?.setPreviewFontSize(12 / dpr);
 		}
 	};
 

@@ -16,11 +16,7 @@
 		<DetailSummary>{{
 			t('components.fileFont-font-grid.label') || 'Font Preview'
 		}}</DetailSummary>
-		<div
-			class="detail-grid"
-			id="fileFont-font-grid"
-			:ref="registryRef(inspectorEls, 'fileFont-font-grid')"
-		>
+		<div class="detail-grid" id="fileFont-font-grid" ref="gridEl">
 			<TextBox id="fileFont-content" v-model="form.text" />
 			<div class="text fileFont-preview" id="fileFont-12px">{{ form.text }}</div>
 			<div class="text fileFont-preview" id="fileFont-18px">{{ form.text }}</div>
@@ -34,13 +30,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef, registryElements } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useFileFontPage } from '@app/composables/useFileFontPage';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import {
+	provideFileFontPageBridge,
+	resetFileFontPageBridge,
+	type FileFontPageBridge
+} from '@app/composables/file-font-page-bridge';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import TextBox from '@app/components/common/TextBox.vue';
@@ -49,16 +48,31 @@ const { t } = useI18n();
 
 const { form, sync } = useFileFontPage();
 
+/** 预览区网格：字号由 `windowResize` 经桥写，预览节点也在这里取（不再登记进 inspectorEls）。 */
+const gridEl = ref<HTMLElement | null>(null);
+
+const bridgeApi: FileFontPageBridge = {
+	update: () => {
+		sync();
+	},
+	setPreviewFontSize: (size) => {
+		if (gridEl.value) gridEl.value.style.fontSize = `${size}px`;
+	}
+};
+
 onMounted(() => {
 	const fileFont = Inspector.fileFont;
 	if (!fileFont) return;
-	const previews = registryElements(inspectorEls, []);
-	fileFont.previews = previews;
+	// 预览节点以前用 `registryElements(inspectorEls, [])` 取 —— 空数组，永远是空的，
+	// 于是 `FontFace` 加载完成后 hide/show 的那一套从来没生效过。这里按 DOM 取回来。
+	fileFont.previews = [
+		...(gridEl.value?.querySelectorAll<HTMLElement>('.fileFont-preview') ?? [])
+	] as NonNullable<typeof fileFont.previews>;
 	const el = inspectorEls.get('fileFont');
-	if (el) {
-		attachElementApi(el, { update: sync });
-		el.addEventListener('resize', fileFont.windowResize);
-	}
+	// 页面根元素由页面管理器登记，`resize` 事件也由它派发；这里只挂监听，不再往元素上挂方法。
+	if (el) el.addEventListener('resize', fileFont.windowResize);
+	provideFileFontPageBridge(bridgeApi);
+	onUnmounted(() => resetFileFontPageBridge(bridgeApi));
 	sync();
 });
 </script>
