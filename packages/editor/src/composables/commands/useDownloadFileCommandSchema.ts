@@ -1,5 +1,4 @@
-﻿import { disable, enable } from '@app/utils/element-utils';
-import { composableEls } from '@app/composables/element-registry';
+﻿import { getDownloadFileBridge } from '@app/composables/download-file-bridge';
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -109,11 +108,7 @@ export function useDownloadFileCommandSchema() {
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
-		if (params.isBackground) {
-			enable(composableEls.get('downloadFile-isBackground-path') as HTMLElement);
-		} else {
-			disable(composableEls.get('downloadFile-isBackground-path') as HTMLElement);
-		}
+		getDownloadFileBridge()?.setPathEnabled(Boolean(params.isBackground));
 		load(params);
 	};
 	const onSave = (): void => {

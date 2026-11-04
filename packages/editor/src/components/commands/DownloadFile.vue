@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="downloadFile"
-		:ref="registryRef(fieldEls, 'downloadFile')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="downloadFile" :ref="controlRef('downloadFile')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.downloadFile.title') }}
@@ -14,7 +10,7 @@
 			<div class="text">{{ t('components.downloadFile-url.label') }}</div>
 			<StringVar
 				id="downloadFile-url"
-				:ref="registryRef(fieldEls, 'downloadFile-url')"
+				:ref="controlRef('downloadFile-url')"
 				v-tip="t('components.downloadFile-url.tip')"
 				v-focus
 				v-model="form.url"
@@ -23,7 +19,7 @@
 			<ParamList
 				id="downloadFile-header"
 				v-tip="t('components.downloadFile-header.tip')"
-				:ref="registryRef(fieldEls, 'downloadFile-header')"
+				:ref="controlRef('downloadFile-header')"
 				v-model="form.header"
 			/>
 			<div class="text">{{ t('components.downloadFile-method.label') }}</div>
@@ -31,20 +27,20 @@
 				:label="t('components.downloadFile-method.label')"
 				id="downloadFile-method"
 				v-tip="t('components.downloadFile-method.tip')"
-				:ref="registryRef(fieldEls, 'downloadFile-method')"
+				:ref="controlRef('downloadFile-method')"
 				v-model="form.method"
 			/>
 			<div class="text">{{ t('components.downloadFile-data.label') }}</div>
 			<ParamList
 				id="downloadFile-data"
 				v-tip="t('components.downloadFile-data.tip')"
-				:ref="registryRef(fieldEls, 'downloadFile-data')"
+				:ref="controlRef('downloadFile-data')"
 				v-model="form.data"
 			/>
 			<div class="text">{{ t('components.downloadFile-callback.label') }}</div>
 			<CustomBox
 				id="downloadFile-callback"
-				:ref="registryRef(fieldEls, 'downloadFile-callback')"
+				:ref="controlRef('downloadFile-callback')"
 				v-tip="t('components.downloadFile-callback.tip')"
 				type="file"
 				filter="event"
@@ -53,7 +49,7 @@
 			<div class="text">{{ t('components.downloadFile-rateCallback.label') }}</div>
 			<CustomBox
 				id="downloadFile-rateCallback"
-				:ref="registryRef(fieldEls, 'downloadFile-rateCallback')"
+				:ref="controlRef('downloadFile-rateCallback')"
 				v-tip="t('components.downloadFile-rateCallback.tip')"
 				type="file"
 				filter="event"
@@ -64,7 +60,7 @@
 				class="standard"
 				id="downloadFile-isBackground"
 				v-tip="t('components.downloadFile-isBackground.tip')"
-				:ref="registryRef(fieldEls, 'downloadFile-isBackground')"
+				:ref="controlRef('downloadFile-isBackground')"
 				v-model="isBackground"
 				@input="onIsBackgroundInput"
 			/>
@@ -72,7 +68,7 @@
 			<StringVar
 				id="downloadFile-isBackground-path"
 				v-tip="t('components.downloadFile-isBackground-path.tip')"
-				:ref="registryRef(fieldEls, 'downloadFile-isBackground-path')"
+				:ref="controlRef('downloadFile-isBackground-path')"
 				v-model="form.isBackgroundPath"
 			/>
 		</div>
@@ -80,11 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDownloadFileCommandSchema } from '@app/composables/commands/useDownloadFileCommandSchema';
 import { disable, enable } from '@app/utils/element-utils';
@@ -96,6 +88,26 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+import {
+	provideDownloadFileBridge,
+	resetDownloadFileBridge,
+	type DownloadFileBridge
+} from '@app/composables/download-file-bridge';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'downloadFile-callback'
+	| 'downloadFile-data'
+	| 'downloadFile-header'
+	| 'downloadFile-isBackground-path'
+	| 'downloadFile-isBackground'
+	| 'downloadFile-method'
+	| 'downloadFile-rateCallback'
+	| 'downloadFile-url'
+	| 'downloadFile';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -110,9 +122,9 @@ const isBackground = computed({
 
 const onIsBackgroundInput = (value: boolean) => {
 	if (value) {
-		enable(fieldEls.get('downloadFile-isBackground-path'));
+		enable(controls['downloadFile-isBackground-path']);
 	} else {
-		disable(fieldEls.get('downloadFile-isBackground-path'));
+		disable(controls['downloadFile-isBackground-path']);
 	}
 };
 
@@ -120,19 +132,30 @@ const onConfirm = () => {
 	save();
 };
 
+/** 控件级能力：schema 载入时按 `isBackground` 开关「写入路径」。 */
+const bridgeApi: DownloadFileBridge = {
+	setPathEnabled: (enabled) => {
+		const control = controls['downloadFile-isBackground-path'];
+		if (enabled) control?.enable?.();
+		else control?.disable?.();
+	}
+};
+
 onMounted(() => {
-	fieldEls.get('downloadFile-method')?.loadItems?.([
+	provideDownloadFileBridge(bridgeApi);
+	onUnmounted(() => resetDownloadFileBridge(bridgeApi));
+	controls['downloadFile-method']?.loadItems?.([
 		{ name: 'GET', value: 'GET' },
 		{ name: 'POST', value: 'POST' },
 		{ name: 'PUT', value: 'PUT' },
 		{ name: 'DELETE', value: 'DELETE' }
 	]);
-	fieldEls
-		.get('downloadFile-isBackground')
-		?.relate?.([fieldEls.get('downloadFile-isBackground-path')]);
-	disable(fieldEls.get('downloadFile-isBackground-path'));
-	fieldEls.get('downloadFile-header')?.bind?.(RequestkeyValueBind);
-	fieldEls.get('downloadFile-data')?.bind?.(RequestkeyValueBind);
+	controls['downloadFile-isBackground']?.relate?.([
+		controlRoot(controls['downloadFile-isBackground-path'])
+	]);
+	disable(controls['downloadFile-isBackground-path']);
+	controls['downloadFile-header']?.bind?.(RequestkeyValueBind);
+	controls['downloadFile-data']?.bind?.(RequestkeyValueBind);
 });
 </script>
 

@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="addAnimationComponent"
-		:ref="registryRef(fieldEls, 'addAnimationComponent')"
+		:ref="controlRef('addAnimationComponent')"
 		@confirm="onConfirm"
 	>
 		<template #title
@@ -14,7 +14,7 @@
 			<div class="text">{{ t('components.addAnimationComponent-actor.label') }}</div>
 			<CustomBox
 				id="addAnimationComponent-actor"
-				:ref="registryRef(fieldEls, 'addAnimationComponent-actor')"
+				:ref="controlRef('addAnimationComponent-actor')"
 				v-tip="t('components.addAnimationComponent-actor.tip')"
 				v-focus
 				type="actor"
@@ -23,7 +23,7 @@
 			<div class="text">{{ t('components.addAnimationComponent-animationId.label') }}</div>
 			<CustomBox
 				id="addAnimationComponent-animationId"
-				:ref="registryRef(fieldEls, 'addAnimationComponent-animationId')"
+				:ref="controlRef('addAnimationComponent-animationId')"
 				v-tip="t('components.addAnimationComponent-animationId.tip')"
 				type="file"
 				filter="animation"
@@ -34,7 +34,7 @@
 			<SelectBox
 				:label="t('components.addAnimationComponent-motion.label')"
 				id="addAnimationComponent-motion"
-				:ref="registryRef(fieldEls, 'addAnimationComponent-motion')"
+				:ref="controlRef('addAnimationComponent-motion')"
 				v-tip="t('components.addAnimationComponent-motion.tip')"
 				v-model="form.motion"
 			/>
@@ -43,7 +43,7 @@
 				:label="t('components.addAnimationComponent-rotatable.label')"
 				id="addAnimationComponent-rotatable"
 				v-tip="t('components.addAnimationComponent-rotatable.tip')"
-				:ref="registryRef(fieldEls, 'addAnimationComponent-rotatable')"
+				:ref="controlRef('addAnimationComponent-rotatable')"
 				v-model="form.rotatable"
 			/>
 			<div class="text">{{ t('components.addAnimationComponent-syncAngle.label') }}</div>
@@ -51,14 +51,14 @@
 				:label="t('components.addAnimationComponent-syncAngle.label')"
 				id="addAnimationComponent-syncAngle"
 				v-tip="t('components.addAnimationComponent-syncAngle.tip')"
-				:ref="registryRef(fieldEls, 'addAnimationComponent-syncAngle')"
+				:ref="controlRef('addAnimationComponent-syncAngle')"
 				v-model="form.syncAngle"
 			/>
 			<div class="text">{{ t('components.addAnimationComponent-priority.label') }}</div>
 			<NumberBox
 				:label="t('components.addAnimationComponent-priority.label')"
 				id="addAnimationComponent-priority"
-				:ref="registryRef(fieldEls, 'addAnimationComponent-priority')"
+				:ref="controlRef('addAnimationComponent-priority')"
 				v-tip="t('components.addAnimationComponent-priority.tip')"
 				min="-100"
 				max="100"
@@ -68,7 +68,7 @@
 			<NumberBox
 				:label="t('components.addAnimationComponent-offsetY.label')"
 				id="addAnimationComponent-offsetY"
-				:ref="registryRef(fieldEls, 'addAnimationComponent-offsetY')"
+				:ref="controlRef('addAnimationComponent-offsetY')"
 				v-tip="t('components.addAnimationComponent-offsetY.tip')"
 				min="-100"
 				max="100"
@@ -81,11 +81,8 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAddAnimationComponentCommandSchema } from '@app/composables/commands/useAddAnimationComponentCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -93,6 +90,25 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+import {
+	provideAddAnimationComponentBridge,
+	resetAddAnimationComponentBridge,
+	type AddAnimationComponentBridge
+} from '@app/composables/add-animation-component-bridge';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'addAnimationComponent-actor'
+	| 'addAnimationComponent-animationId'
+	| 'addAnimationComponent-motion'
+	| 'addAnimationComponent-offsetY'
+	| 'addAnimationComponent-priority'
+	| 'addAnimationComponent-rotatable'
+	| 'addAnimationComponent-syncAngle'
+	| 'addAnimationComponent';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -119,12 +135,21 @@ const onConfirm = () => {
 	save();
 };
 
+/** 控件级能力：schema 载入/保存要用，但 schema 不该知道控件 id。 */
+const bridgeApi: AddAnimationComponentBridge = {
+	reloadMotion: (items) => {
+		controls['addAnimationComponent-motion']?.loadItems?.(items);
+	}
+};
+
 onMounted(() => {
+	provideAddAnimationComponentBridge(bridgeApi);
+	onUnmounted(() => resetAddAnimationComponentBridge(bridgeApi));
 	useLocalizedOptions('addAnimationComponent-rotatable', [true, false], (items) =>
-		fieldEls.get('addAnimationComponent-rotatable')?.loadItems?.(items)
+		controls['addAnimationComponent-rotatable']?.loadItems?.(items)
 	);
 	useLocalizedOptions('addAnimationComponent-syncAngle', [true, false], (items) =>
-		fieldEls.get('addAnimationComponent-syncAngle')?.loadItems?.(items)
+		controls['addAnimationComponent-syncAngle']?.loadItems?.(items)
 	);
 });
 </script>
