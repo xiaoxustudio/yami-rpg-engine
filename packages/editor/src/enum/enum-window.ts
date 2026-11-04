@@ -2,7 +2,7 @@ import { getListConfig } from '@ui-kit';
 
 import { Window } from '@app/tools/window-object.ts';
 import { clear, getFocus, hide, on, read, show, write } from '@app/utils/element-utils.ts';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { getEnumHandles } from '@app/composables/enum-handles';
 import { ctrl } from '@app/utils/event-accessors';
 import { folderGroupOf } from '@app/utils/folder-group';
 import { Data } from '@app/data/data-object.ts';
@@ -26,8 +26,6 @@ import { emitCustom } from '@app/events/custom-events';
 import type { YamiElement } from '@app/types/element-api';
 import type { YamiEvent } from '@app/types/editor-event';
 import { clone as deepClone } from '@app/utils/object';
-
-export const enumEls = createElementRegistry();
 
 export interface EnumItem {
 	id: string;
@@ -127,15 +125,15 @@ export const Enum = {
 
 function ensureDomBound() {
 	if (Enum.list) return;
-	const list = enumEls.get('enum-list');
-	if (!list) return;
-	Enum.list = list as TreeListElement;
-	Enum.panel = enumEls.get('enum-properties-flex') as YamiElement;
+	const handles = getEnumHandles();
+	if (!handles) return;
+	Enum.list = handles.list as TreeListElement;
+	Enum.panel = handles.panel;
 	hide(Enum.panel!);
-	Enum.searcher = enumEls.get('enum-searcher') as YamiElement;
-	Enum.inputs.name = enumEls.get('enum-name') as YamiElement;
-	Enum.inputs.value = enumEls.get('enum-value') as YamiElement;
-	Enum.inputs.note = enumEls.get('enum-note') as YamiElement;
+	Enum.searcher = handles.searcher;
+	Enum.inputs.name = handles.name;
+	Enum.inputs.value = handles.value;
+	Enum.inputs.note = handles.note;
 	bindListClipboardMethods({
 		module: Enum as Parameters<typeof bindListClipboardMethods>[0]['module'],
 		list: Enum.list,
@@ -264,8 +262,11 @@ Enum.initialize = function (this: typeof Enum) {
 		getEnumStore().state.changed = true;
 	};
 
-	on(enumEls.get('enum'), 'close', this.windowClose);
-	on(enumEls.get('enum'), 'closed', this.windowClosed);
+	const handles = getEnumHandles();
+	if (handles) {
+		on(handles.root, 'close', this.windowClose);
+		on(handles.root, 'closed', this.windowClosed);
+	}
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {

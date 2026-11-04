@@ -5,7 +5,8 @@ import { mount } from '@vue/test-utils';
 import AttributeWindow from '@app/components/tools/Attribute.vue';
 import EnumWindow from '@app/components/tools/Enum.vue';
 import { Attribute, attributeEls } from '../attribute-window.ts';
-import { Enum, enumEls } from '@app/enum/enum-window.ts';
+import { Enum } from '@app/enum/enum-window.ts';
+import { getEnumHandles } from '@app/composables/enum-handles';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
@@ -16,7 +17,6 @@ describe('属性/枚举窗口元素注册表', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		attributeEls.clear();
-		enumEls.clear();
 		Attribute.list = undefined as unknown as typeof Attribute.list;
 		Enum.list = undefined as unknown as typeof Enum.list;
 	});
@@ -61,10 +61,12 @@ describe('属性/枚举窗口元素注册表', () => {
 		wrapper.unmount();
 	});
 
-	it('Enum.vue 登记元素且 Enum.initialize 从注册表绑定', async () => {
+	it('Enum.vue 挂载后交出句柄表，Enum.initialize 从中绑定', async () => {
 		const wrapper = mount(EnumWindow, { attachTo: document.body });
 		await nextTick();
 
+		const handles = getEnumHandles();
+		expect(handles).toBeTruthy();
 		for (const id of [
 			'enum',
 			'enum-list',
@@ -74,15 +76,16 @@ describe('属性/枚举窗口元素注册表', () => {
 			'enum-value',
 			'enum-note'
 		]) {
-			expect(enumEls.get(id), `注册表缺少 ${id}`).toBeInstanceOf(HTMLElement);
+			expect(document.getElementById(id), `DOM 里缺少 ${id}`).toBeInstanceOf(HTMLElement);
 		}
 
 		Enum.initialize!();
-		expect(Enum.list).toBe(enumEls.get('enum-list'));
-		expect(Enum.panel).toBe(enumEls.get('enum-properties-flex'));
-		expect(Enum.inputs.name).toBe(enumEls.get('enum-name'));
+		expect(Enum.list).toBe(handles?.list);
+		expect(Enum.panel).toBe(handles?.panel);
+		expect(Enum.inputs.name).toBe(handles?.name);
 
 		wrapper.unmount();
+		expect(getEnumHandles(), '卸载后应注销').toBeNull();
 	});
 
 	it('注册表为空时（未挂载）initialize 不抛错且不改动既有绑定', () => {
