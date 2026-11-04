@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="playAnimation"
-		:ref="registryRef(fieldEls, 'playAnimation')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="playAnimation" :ref="controlRef('playAnimation')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.playAnimation.title') }}
@@ -16,7 +12,7 @@
 				:label="t('components.playAnimation-mode.label')"
 				id="playAnimation-mode"
 				v-tip="t('components.playAnimation-mode.tip')"
-				:ref="registryRef(fieldEls, 'playAnimation-mode')"
+				:ref="controlRef('playAnimation-mode')"
 				v-focus
 				v-model="form.mode"
 			/>
@@ -24,7 +20,7 @@
 			<CustomBox
 				id="playAnimation-position"
 				v-tip="t('components.playAnimation-position.tip')"
-				:ref="registryRef(fieldEls, 'playAnimation-position')"
+				:ref="controlRef('playAnimation-position')"
 				type="position"
 				v-model="form.position"
 			/>
@@ -32,7 +28,7 @@
 			<CustomBox
 				id="playAnimation-actor"
 				v-tip="t('components.playAnimation-actor.tip')"
-				:ref="registryRef(fieldEls, 'playAnimation-actor')"
+				:ref="controlRef('playAnimation-actor')"
 				type="actor"
 				v-model="form.actor"
 			/>
@@ -40,7 +36,7 @@
 			<CustomBox
 				id="playAnimation-animationId"
 				v-tip="t('components.playAnimation-animationId.tip')"
-				:ref="registryRef(fieldEls, 'playAnimation-animationId')"
+				:ref="controlRef('playAnimation-animationId')"
 				v-focus
 				type="file"
 				filter="animation"
@@ -51,7 +47,7 @@
 			<SelectBox
 				:label="t('components.playAnimation-motion.label')"
 				id="playAnimation-motion"
-				:ref="registryRef(fieldEls, 'playAnimation-motion')"
+				:ref="controlRef('playAnimation-motion')"
 				v-tip="t('components.playAnimation-motion.tip')"
 				v-focus
 				v-model="form.motion"
@@ -61,14 +57,14 @@
 				:label="t('components.playAnimation-rotatable.label')"
 				id="playAnimation-rotatable"
 				v-tip="t('components.playAnimation-rotatable.tip')"
-				:ref="registryRef(fieldEls, 'playAnimation-rotatable')"
+				:ref="controlRef('playAnimation-rotatable')"
 				v-model="form.rotatable"
 			/>
 			<div class="text">{{ t('components.playAnimation-priority.label') }}</div>
 			<NumberBox
 				:label="t('components.playAnimation-priority.label')"
 				id="playAnimation-priority"
-				:ref="registryRef(fieldEls, 'playAnimation-priority')"
+				:ref="controlRef('playAnimation-priority')"
 				v-tip="t('components.playAnimation-priority.tip')"
 				min="-100"
 				max="100"
@@ -77,7 +73,7 @@
 			<div class="text">{{ t('components.playAnimation-offsetY.label') }}</div>
 			<NumberVar
 				id="playAnimation-offsetY"
-				:ref="registryRef(fieldEls, 'playAnimation-offsetY')"
+				:ref="controlRef('playAnimation-offsetY')"
 				v-tip="t('components.playAnimation-offsetY.tip')"
 				min="-1000000000"
 				max="1000000000"
@@ -87,7 +83,7 @@
 			<div class="text">{{ t('components.playAnimation-angle.label') }}</div>
 			<NumberVar
 				id="playAnimation-angle"
-				:ref="registryRef(fieldEls, 'playAnimation-angle')"
+				:ref="controlRef('playAnimation-angle')"
 				v-tip="t('components.playAnimation-angle.tip')"
 				min="-360"
 				max="360"
@@ -98,7 +94,7 @@
 			<div class="text">{{ t('components.playAnimation-speed.label') }}</div>
 			<NumberVar
 				id="playAnimation-speed"
-				:ref="registryRef(fieldEls, 'playAnimation-speed')"
+				:ref="controlRef('playAnimation-speed')"
 				v-tip="t('components.playAnimation-speed.tip')"
 				min="0.1"
 				max="10"
@@ -110,7 +106,7 @@
 			<SelectBox
 				:label="t('components.playAnimation-wait.label')"
 				id="playAnimation-wait"
-				:ref="registryRef(fieldEls, 'playAnimation-wait')"
+				:ref="controlRef('playAnimation-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -120,11 +116,8 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
 
-const fieldEls = createElementRegistry(composableEls);
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { usePlayAnimationCommandSchema } from '@app/composables/commands/usePlayAnimationCommandSchema';
 import { read } from '@app/utils/element-utils';
@@ -134,6 +127,29 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
+import {
+	providePlayAnimationBridge,
+	resetPlayAnimationBridge,
+	type PlayAnimationBridge
+} from '@app/composables/play-animation-bridge';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'playAnimation-actor'
+	| 'playAnimation-angle'
+	| 'playAnimation-animationId'
+	| 'playAnimation-mode'
+	| 'playAnimation-motion'
+	| 'playAnimation-offsetY'
+	| 'playAnimation-position'
+	| 'playAnimation-priority'
+	| 'playAnimation-rotatable'
+	| 'playAnimation-speed'
+	| 'playAnimation-wait'
+	| 'playAnimation';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -154,24 +170,34 @@ const onConfirm = () => {
 	save();
 };
 
+/** 控件级能力：schema 载入/保存要用，但 schema 不该知道控件 id。 */
+const bridgeApi: PlayAnimationBridge = {
+	reloadMotion: (items) => {
+		controls['playAnimation-motion']?.loadItems?.(items);
+		controls['playAnimation-motion']?.write2?.(
+			controls['playAnimation-motion']?.read?.() as string
+		);
+	}
+};
+
 onMounted(() => {
+	providePlayAnimationBridge(bridgeApi);
+	onUnmounted(() => resetPlayAnimationBridge(bridgeApi));
 	useLocalizedOptions('playAnimation-mode', ['position', 'actor'], (items) =>
-		fieldEls.get('playAnimation-mode')?.loadItems?.(items)
+		controls['playAnimation-mode']?.loadItems?.(items)
 	);
-	fieldEls
-		.get('playAnimation-mode')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{ case: 'position', targets: [fieldEls.get('playAnimation-position')] },
-			{ case: 'actor', targets: [fieldEls.get('playAnimation-actor')] }
-		]);
+	controls['playAnimation-mode']?.enableHiddenMode?.();
+	controls['playAnimation-mode']?.relate?.([
+		{ case: 'position', targets: [controlRoot(controls['playAnimation-position'])] },
+		{ case: 'actor', targets: [controlRoot(controls['playAnimation-actor'])] }
+	]);
 	useLocalizedOptions('playAnimation-rotatable', [true, false], (items) =>
-		fieldEls.get('playAnimation-rotatable')?.loadItems?.(items)
+		controls['playAnimation-rotatable']?.loadItems?.(items)
 	);
 	useLocalizedOptions('playAnimation-wait', [true, false], (items) =>
-		fieldEls.get('playAnimation-wait')?.loadItems?.(items)
+		controls['playAnimation-wait']?.loadItems?.(items)
 	);
-	const animationId = read(fieldEls.get('playAnimation-animationId'));
+	const animationId = read(controls['playAnimation-animationId']);
 	if (animationId) writeHandler({ value: animationId });
 });
 </script>

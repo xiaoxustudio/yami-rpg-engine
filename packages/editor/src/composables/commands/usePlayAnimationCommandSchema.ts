@@ -1,5 +1,4 @@
-﻿import { read } from '@app/utils/element-utils';
-import { composableEls } from '@app/composables/element-registry';
+import { getPlayAnimationBridge } from '@app/composables/play-animation-bridge';
 import { Command } from '@app/commands/command-object.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,7 +6,6 @@ import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
 import { requestFocus } from '@app/directives/focus';
-import type { YamiElement } from '@app/types/element-api';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -108,9 +106,7 @@ export function usePlayAnimationCommandSchema() {
 	});
 	const writeHandler = (event: { value: string }): void => {
 		if (!event.value) return;
-		const elMotion = composableEls.get('playAnimation-motion') as YamiElement;
-		elMotion?.loadItems?.(Animation.getMotionListItems!(event.value));
-		elMotion?.write2?.(read(elMotion));
+		getPlayAnimationBridge()?.reloadMotion(Animation.getMotionListItems!(event.value));
 	};
 	const onSave = (): void => {
 		const mode = form.mode as string;
