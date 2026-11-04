@@ -1,4 +1,5 @@
 import { reactive } from 'vue';
+import { getFileEventParameterBridge } from '@app/composables/file-event-parameter-bridge';
 import { inspectorEls } from './element-registry.ts';
 import { registryElement } from '@app/utils/element-registry';
 import { getElementWriter } from '@app/utils/dom';
@@ -192,9 +193,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			FileEvent.parameters?.loadTypeItems?.();
 		},
 		loadTypeItems: function () {
-			const el = inspectorEls.get('fileEvent-parameter-type') as YamiElement;
-			if (!el) return;
-			el.loadItems([
+			getFileEventParameterBridge()?.loadTypeItems([
 				{ name: 'Boolean', value: 'boolean' },
 				{ name: 'Number', value: 'number' },
 				{ name: 'String', value: 'string' },

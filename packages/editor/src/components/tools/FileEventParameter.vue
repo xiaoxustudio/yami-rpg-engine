@@ -12,7 +12,7 @@
 				:label="t('components.fileEvent-parameter-type.label')"
 				id="fileEvent-parameter-type"
 				v-tip="t('components.fileEvent-parameter-type.tip')"
-				:ref="registryRef(inspectorEls, 'fileEvent-parameter-type')"
+				:ref="controlRef('fileEvent-parameter-type')"
 				v-focus
 				v-model="form.type"
 			/>
@@ -36,9 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
+import { onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { fileEventParameterForm } from '@app/inspector/file-event-page.ts';
@@ -47,6 +45,17 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+import {
+	provideFileEventParameterBridge,
+	resetFileEventParameterBridge,
+	type FileEventParameterBridge
+} from '@app/composables/file-event-parameter-bridge';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'fileEvent-parameter-type';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -56,7 +65,17 @@ const onConfirm = () => {
 	Inspector?.fileEvent?.parameters?.save?.();
 };
 
-onMounted(() => {});
+/** 控件级能力：schema 载入/保存要用，但 schema 不该知道控件 id。 */
+const bridgeApi: FileEventParameterBridge = {
+	loadTypeItems: (items) => {
+		controls['fileEvent-parameter-type']?.loadItems?.(items);
+	}
+};
+
+onMounted(() => {
+	provideFileEventParameterBridge(bridgeApi);
+	onUnmounted(() => resetFileEventParameterBridge(bridgeApi));
+});
 </script>
 
 <style>
