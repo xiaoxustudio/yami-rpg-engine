@@ -1,5 +1,5 @@
 import { useImageClipWindow } from '@app/composables/useImageClipWindow';
-import { createElementRegistry, registryElement } from '@app/utils/element-registry';
+import { getImageCropHandles } from '@app/composables/image-crop-handles';
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { $ } from '@app/utils/dom';
 import { attachDoubleclick } from '@app/utils/doubleclick';
@@ -13,8 +13,6 @@ import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { Path } from '@app/utils/config';
 import type { YamiElement } from '@app/types/element-api';
 import { clamp } from '@app/utils/math';
-
-export const imageClipEls = createElementRegistry();
 
 type CropTarget = {
 	getAttribute?: (name: string) => string | null;
@@ -70,13 +68,13 @@ interface ImageClipSlots {
 
 function ensureDomBound() {
 	if (ImageClip.window) return;
-	const win = imageClipEls.get('imageClip');
-	if (!win) return;
-	ImageClip.window = win;
-	ImageClip.screen = imageClipEls.get('imageClip-screen') as YamiElement;
-	ImageClip.image = registryElement<HTMLImageElement>(imageClipEls, 'imageClip-image')!;
+	const handles = getImageCropHandles();
+	if (!handles) return;
+	ImageClip.window = handles.win as YamiElement;
+	ImageClip.screen = handles.screen as YamiElement;
+	ImageClip.image = handles.image;
 	hide(ImageClip.image!);
-	ImageClip.marquee = registryElement<CropMarquee>(imageClipEls, 'imageClip-marquee')!;
+	ImageClip.marquee = handles.marquee;
 	hide(ImageClip.marquee!);
 }
 

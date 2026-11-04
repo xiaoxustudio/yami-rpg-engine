@@ -7,17 +7,9 @@
 				<div class="close"></div> </TitleBar
 		></template>
 
-		<div
-			class="box"
-			id="imageClip-screen"
-			:ref="registryRef(imageClipEls, 'imageClip-screen')"
-			tabindex="-1"
-		>
-			<img id="imageClip-image" alt="" :ref="registryRef(imageClipEls, 'imageClip-image')" />
-			<MarqueeArea
-				id="imageClip-marquee"
-				:ref="registryRef(imageClipEls, 'imageClip-marquee')"
-			/>
+		<div class="box" id="imageClip-screen" ref="screenEl" tabindex="-1">
+			<img id="imageClip-image" alt="" ref="imageEl" />
+			<MarqueeArea id="imageClip-marquee" ref="marqueeRef" />
 		</div>
 		<div class="flex-box" id="imageClip-flex">
 			<NumberBox id="imageClip-x" min="0" max="10000" v-model="form.x" @input="onParamInput"
@@ -47,9 +39,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { imageClipEls } from '@app/tools/image-crop-window';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref } from 'vue';
+import {
+	provideImageCropHandles,
+	resetImageCropHandles,
+	type CropMarquee
+} from '@app/composables/image-crop-handles';
 import { ImageClip } from '@app/tools/image-crop-window.ts';
 import { useImageClipWindow } from '@app/composables/useImageClipWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -62,6 +57,9 @@ const imageClip = useImageClipWindow();
 const form = imageClip.form;
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+const screenEl = ref<HTMLElement | null>(null);
+const imageEl = ref<HTMLImageElement | null>(null);
+const marqueeRef = ref<InstanceType<typeof MarqueeArea> | null>(null);
 
 const onParamInput = () => {
 	ImageClip?.paramInput?.(new Event('input'));
@@ -70,12 +68,24 @@ const onConfirm = () => {
 	imageClip.confirm();
 };
 
+/** 长期持有的四个节点一次交给单例（它跨 open/close 复用，不是每次取一次的形状）。 */
+let handles: Parameters<typeof provideImageCropHandles>[0] | null = null;
+
 onMounted(() => {
-	registerElement(imageClipEls, 'imageClip', frame.value?.root ?? null);
-	const el = frame.value?.root;
-	if (el) {
-		on(el, 'closed', () => imageClip.onWindowClosed());
-	}
+	const win = frame.value?.root;
+	const marquee = (marqueeRef.value?.root ?? null) as CropMarquee | null;
+	if (!win || !screenEl.value || !imageEl.value || !marquee) return;
+	on(win, 'closed', () => imageClip.onWindowClosed());
+	handles = {
+		win,
+		screen: screenEl.value,
+		image: imageEl.value,
+		marquee
+	};
+	provideImageCropHandles(handles);
+	onUnmounted(() => {
+		if (handles) resetImageCropHandles(handles);
+	});
 });
 </script>
 
