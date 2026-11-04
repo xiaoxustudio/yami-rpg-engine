@@ -4,7 +4,8 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import AttributeWindow from '@app/components/tools/Attribute.vue';
 import EnumWindow from '@app/components/tools/Enum.vue';
-import { Attribute, attributeEls } from '../attribute-window.ts';
+import { Attribute } from '../attribute-window.ts';
+import { getAttributeHandles } from '@app/composables/attribute-handles';
 import { Enum } from '@app/enum/enum-window.ts';
 import { getEnumHandles } from '@app/composables/enum-handles';
 
@@ -13,18 +14,19 @@ vi.mock('@app/stores/local', () => ({
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
-describe('属性/枚举窗口元素注册表', () => {
+describe('属性/枚举窗口：句柄表接缝', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
-		attributeEls.clear();
 		Attribute.list = undefined as unknown as typeof Attribute.list;
 		Enum.list = undefined as unknown as typeof Enum.list;
 	});
 
-	it('Attribute.vue 登记 9 个元素（元素 id 与注册键一致）', async () => {
+	it('Attribute.vue 挂载后交出 9 个句柄，节点与 DOM id 一致', async () => {
 		const wrapper = mount(AttributeWindow, { attachTo: document.body });
 		await nextTick();
 
+		const handles = getAttributeHandles();
+		expect(handles).toBeTruthy();
 		for (const id of [
 			'attribute',
 			'attribute-list',
@@ -36,26 +38,26 @@ describe('属性/枚举窗口元素注册表', () => {
 			'attribute-enum',
 			'attribute-enum-box'
 		]) {
-			const el = attributeEls.get(id);
-			expect(el, `注册表缺少 ${id}`).toBeInstanceOf(HTMLElement);
-			expect(el?.id).toBe(id);
+			expect(document.getElementById(id), `DOM 里缺少 ${id}`).toBeInstanceOf(HTMLElement);
 		}
 
 		wrapper.unmount();
+		expect(getAttributeHandles(), '卸载后应注销').toBeNull();
 	});
 
-	it('Attribute.initialize 从注册表绑定 list/panel/searcher/inputs', async () => {
+	it('Attribute.initialize 从句柄表绑定 list/panel/searcher/inputs', async () => {
 		const wrapper = mount(AttributeWindow, { attachTo: document.body });
 		await nextTick();
 
+		const handles = getAttributeHandles()!;
 		Attribute.initialize!();
 
-		expect(Attribute.list).toBe(attributeEls.get('attribute-list'));
-		expect(Attribute.panel).toBe(attributeEls.get('attribute-properties-flex'));
-		expect(Attribute.searcher).toBe(attributeEls.get('attribute-searcher'));
-		expect(Attribute.inputs.name).toBe(attributeEls.get('attribute-name'));
-		expect(Attribute.inputs.key).toBe(attributeEls.get('attribute-key'));
-		expect(Attribute.inputs.enumBox).toBe(attributeEls.get('attribute-enum-box'));
+		expect(Attribute.list).toBe(handles.list);
+		expect(Attribute.panel).toBe(handles.panel);
+		expect(Attribute.searcher).toBe(handles.searcher);
+		expect(Attribute.inputs.name).toBe(handles.name);
+		expect(Attribute.inputs.key).toBe(handles.key);
+		expect(Attribute.inputs.enumBox).toBe(handles.enumBox);
 		expect((Attribute.panel as HTMLElement).classList.contains('hidden')).toBe(true);
 
 		wrapper.unmount();
@@ -88,8 +90,7 @@ describe('属性/枚举窗口元素注册表', () => {
 		expect(getEnumHandles(), '卸载后应注销').toBeNull();
 	});
 
-	it('注册表为空时（未挂载）initialize 不抛错且不改动既有绑定', () => {
-		attributeEls.clear();
+	it('未挂载（句柄表为空）时 initialize 不抛错且不改动既有绑定', () => {
 		const saved = Attribute.list;
 		expect(() => Attribute.initialize!()).not.toThrow();
 		expect(Attribute.list).toBe(saved);

@@ -1,11 +1,5 @@
 <template>
-	<WindowFrame
-		id="attribute"
-		:ref="registryRef(attributeEls, 'attribute')"
-		show-apply
-		@apply="onApply"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="attribute" ref="frame" show-apply @apply="onApply" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.attribute.title') }}
@@ -16,7 +10,7 @@
 			<div class="legend">{{ t('components.attribute-list.label') }}</div>
 			<TreeList
 				id="attribute-list"
-				:ref="registryRef(attributeEls, 'attribute-list')"
+				ref="listRef"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -28,18 +22,14 @@
 		</div>
 		<div class="field-set" id="attribute-properties-fieldset">
 			<div class="legend">{{ t('components.attribute-properties-flex.label') }}</div>
-			<div
-				class="flex-box"
-				id="attribute-properties-flex"
-				:ref="registryRef(attributeEls, 'attribute-properties-flex')"
-			>
+			<div class="flex-box" id="attribute-properties-flex" ref="panelRef">
 				<div class="flex-item">
 					<div class="text">{{ t('components.attribute-name.label') }}</div>
 					<TextBox
 						:label="t('components.attribute-name.label')"
 						id="attribute-name"
 						v-tip="t('components.attribute-name.tip')"
-						:ref="registryRef(attributeEls, 'attribute-name')"
+						ref="nameRef"
 						menu="tag-localization"
 						@input="onNameInput"
 					/>
@@ -51,7 +41,7 @@
 						id="attribute-key"
 						:placeholder="t('components.attribute-key.placeholder')"
 						v-tip="t('components.attribute-key.tip')"
-						:ref="registryRef(attributeEls, 'attribute-key')"
+						ref="keyRef"
 						@input="onKeyInput"
 					/>
 				</div>
@@ -133,16 +123,12 @@
 						</div></RadioBox
 					>
 				</div>
-				<div
-					class="flex-item"
-					id="attribute-enum-box"
-					:ref="registryRef(attributeEls, 'attribute-enum-box')"
-				>
+				<div class="flex-item" id="attribute-enum-box" ref="enumBoxRef">
 					<div class="text">{{ t('components.attribute-enum.label') }}</div>
 					<CustomBox
 						id="attribute-enum"
 						v-tip="t('components.attribute-enum.tip')"
-						:ref="registryRef(attributeEls, 'attribute-enum')"
+						ref="enumRef"
 						type="enum-group"
 					/>
 				</div>
@@ -152,25 +138,26 @@
 						:label="t('components.attribute-note.label')"
 						id="attribute-note"
 						v-tip="t('components.attribute-note.tip')"
-						:ref="registryRef(attributeEls, 'attribute-note')"
+						ref="noteRef"
 					/>
 				</div>
 			</div>
 		</div>
-		<TextBox
-			id="attribute-searcher"
-			:ref="registryRef(attributeEls, 'attribute-searcher')"
-			name="search"
-		/>
+		<TextBox id="attribute-searcher" ref="searcherRef" name="search" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, type VNode } from 'vue';
+import { h, onMounted, type VNode, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Attribute, attributeEls } from '@app/attribute/attribute-window.ts';
+import type { YamiElement } from '@app/types/element-api';
+import { Attribute } from '@app/attribute/attribute-window.ts';
+import {
+	provideAttributeHandles,
+	resetAttributeHandles,
+	type AttributeWindowHandles
+} from '@app/composables/attribute-handles';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
-import { registryRef } from '@app/utils/element-registry';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { getAttributeStore } from '@app/stores/attribute';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -265,6 +252,58 @@ const onConfirm = () => {
 };
 
 onMounted(() => {});
+
+/**
+ * 长期持有的 9 个节点一次交给单例（它把 list/panel/searcher/inputs 存成字段并跨 open/close 复用）。
+ * 组件 ref 统一取根元素：单例把它们当「带元素 API 的元素」用。
+ */
+const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+const listRef = ref<unknown>(null);
+const panelRef = ref<unknown>(null);
+const nameRef = ref<unknown>(null);
+const keyRef = ref<unknown>(null);
+const noteRef = ref<unknown>(null);
+const enumRef = ref<unknown>(null);
+const enumBoxRef = ref<unknown>(null);
+const searcherRef = ref<unknown>(null);
+
+const rootOf = (target: unknown): YamiElement | null => {
+	const instance = target as { root?: unknown; $el?: unknown } | null;
+	const el = instance?.root ?? instance?.$el ?? target;
+	return el instanceof HTMLElement ? (el as YamiElement) : null;
+};
+
+let handles: AttributeWindowHandles | null = null;
+
+onMounted(() => {
+	const root = rootOf(frame.value);
+	const list = rootOf(listRef.value);
+	const panel = rootOf(panelRef.value);
+	const searcher = rootOf(searcherRef.value);
+	const name = rootOf(nameRef.value);
+	const key = rootOf(keyRef.value);
+	const note = rootOf(noteRef.value);
+	const enumControl = rootOf(enumRef.value);
+	const enumBox = rootOf(enumBoxRef.value);
+	if (
+		!root ||
+		!list ||
+		!panel ||
+		!searcher ||
+		!name ||
+		!key ||
+		!note ||
+		!enumControl ||
+		!enumBox
+	) {
+		return;
+	}
+	handles = { root, list, panel, searcher, name, key, note, enum: enumControl, enumBox };
+	provideAttributeHandles(handles);
+	onUnmounted(() => {
+		if (handles) resetAttributeHandles(handles);
+	});
+});
 </script>
 
 <style>

@@ -2,7 +2,7 @@ import { getListConfig } from '@ui-kit';
 
 import { Window } from '@app/tools/window-object.ts';
 import { clear, getFocus, hide, on, read, show, write } from '@app/utils/element-utils.ts';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { getAttributeHandles } from '@app/composables/attribute-handles';
 import { ctrl } from '@app/utils/event-accessors';
 import { folderGroupOf } from '@app/utils/folder-group';
 import { Data } from '@app/data/data-object.ts';
@@ -26,8 +26,6 @@ import type { AttributeItemShape } from '@app/stores/attribute';
 import type { YamiElement } from '@app/types/element-api';
 import type { YamiEvent } from '@app/types/editor-event';
 import { clone as deepClone } from '@app/utils/object';
-
-export const attributeEls = createElementRegistry();
 
 export interface AttributeItem {
 	id: string;
@@ -145,17 +143,18 @@ export const Attribute = attribute as AttributeWindowShape;
 
 function ensureDomBound() {
 	if (Attribute.list) return;
-	const list = attributeEls.get('attribute-list');
-	if (!list) return;
+	const handles = getAttributeHandles();
+	if (!handles) return;
+	const list = handles.list;
 	Attribute.list = list as TreeListElement;
-	Attribute.panel = attributeEls.get('attribute-properties-flex') as YamiElement;
+	Attribute.panel = handles.panel;
 	hide(Attribute.panel);
-	Attribute.searcher = attributeEls.get('attribute-searcher') as YamiElement;
-	Attribute.inputs.name = attributeEls.get('attribute-name') as YamiElement;
-	Attribute.inputs.key = attributeEls.get('attribute-key') as YamiElement;
-	Attribute.inputs.note = attributeEls.get('attribute-note') as YamiElement;
-	Attribute.inputs.enum = attributeEls.get('attribute-enum') as YamiElement;
-	Attribute.inputs.enumBox = attributeEls.get('attribute-enum-box') as YamiElement;
+	Attribute.searcher = handles.searcher;
+	Attribute.inputs.name = handles.name;
+	Attribute.inputs.key = handles.key;
+	Attribute.inputs.note = handles.note;
+	Attribute.inputs.enum = handles.enum;
+	Attribute.inputs.enumBox = handles.enumBox;
 	list.saveScroll = Attribute.list_saveScroll;
 	list.restoreScroll = Attribute.list_restoreScroll;
 	list.cancelSearch = Attribute.list_cancelSearch;
@@ -298,8 +297,11 @@ Attribute.initialize = function (this: typeof Attribute) {
 		getAttributeStore().state.changed = true;
 	};
 
-	on(attributeEls.get('attribute'), 'close', this.windowClose);
-	on(attributeEls.get('attribute'), 'closed', this.windowClosed);
+	const handles = getAttributeHandles();
+	if (handles) {
+		on(handles.root, 'close', this.windowClose);
+		on(handles.root, 'closed', this.windowClosed);
+	}
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {
