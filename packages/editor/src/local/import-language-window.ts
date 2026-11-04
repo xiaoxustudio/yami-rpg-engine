@@ -1,6 +1,5 @@
 import { Window } from '@app/tools/window-object.ts';
-import { localEls } from '@app/local/element-registry';
-import { read } from '@app/utils/element-utils';
+import { getImportLanguageBridge } from '@app/composables/import-language-bridge';
 import { Editor } from '@app/services/project/editor.ts';
 import { Data } from '@app/data/data-object.ts';
 import { requestFocus } from '@app/directives/focus';
@@ -10,7 +9,6 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { Path } from '@app/utils/config';
-import type { YamiElement } from '@app/types/element-api';
 
 export const ImportLanguage: {
 	filePath: string;
@@ -28,9 +26,8 @@ export const ImportLanguage: {
 	confirm: () => {}
 };
 
-ImportLanguage.initialize = function (this: typeof ImportLanguage) {
-	if (!localEls.get('importLanguage')) return;
-};
+/** 控件能力由窗口在挂载时经桥交出（importLanguage-language 已不进注册表）。 */
+ImportLanguage.initialize = function (this: typeof ImportLanguage) {};
 
 ImportLanguage.open = function (this: typeof ImportLanguage) {
 	const dialogs = Editor.config!.dialogs as { import: string; export: string };
@@ -57,8 +54,8 @@ ImportLanguage.open = function (this: typeof ImportLanguage) {
 			const language = Path.basename!(filePath, extname);
 			// 导入语言窗口是懒挂载的：控件可用后再填（首次打开也不丢）
 			Window.openWith!('importLanguage', () => {
-				localEls.get('importLanguage-language')?.loadItems?.(items);
-				localEls.get('importLanguage-language')?.write2?.(language);
+				getImportLanguageBridge()?.loadItems(items);
+				getImportLanguageBridge()?.setLanguage(language);
 			});
 			requestFocus('importLanguage-language');
 			dialogs.import = Path.slash!(Path.dirname!(filePath));
@@ -96,7 +93,7 @@ ImportLanguage.parseLanguagePack = function (this: typeof ImportLanguage, string
 ImportLanguage.confirm = function (this: typeof ImportLanguage, _event: Event) {
 	const get = (key: string) => t('confirmation.' + key);
 	const filename = Path.basename!(ImportLanguage.filePath);
-	const language = read(localEls.get('importLanguage-language') as YamiElement);
+	const language = getImportLanguageBridge()?.getLanguage();
 	const langname = t('languages.' + language);
 	Window.confirm!(
 		{
@@ -112,7 +109,7 @@ ImportLanguage.confirm = function (this: typeof ImportLanguage, _event: Event) {
 						type: 'text'
 					}).then((text: string) => {
 						if (text) {
-							ImportLanguage.importLanguagePack!(language, text);
+							ImportLanguage.importLanguagePack!(language as string, text);
 						}
 					});
 				}

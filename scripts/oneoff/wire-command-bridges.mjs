@@ -20,9 +20,14 @@ const args = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const APPLY = process.argv.includes('--apply');
 const [windowName, bridgeId, spec] = args;
 if (!windowName || !bridgeId || !spec) {
-	console.error('用法：wire-command-bridges.mjs <窗口名> <bridgeId> "<spec>" [--apply]');
+	console.error(
+		'用法：wire-command-bridges.mjs <窗口名> <bridgeId> "<spec>" [--dir=tools] [--apply]'
+	);
 	process.exit(1);
 }
+
+/** 窗口所在目录（默认 commands；tools / inspector 等族传 `--dir=`）。 */
+const DIR = process.argv.find((a) => a.startsWith('--dir='))?.slice('--dir='.length) ?? 'commands';
 
 const kebab = bridgeId.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
 const Pascal = `${bridgeId.charAt(0).toUpperCase()}${bridgeId.slice(1)}`;
@@ -95,7 +100,7 @@ export const ${reset} = (api: ${iface}): void => bridge.reset(api);
 export const ${getter} = (): ${iface} | null => bridge.get();
 `;
 
-const windowFile = `${ROOT}/components/commands/${windowName}.vue`;
+const windowFile = `${ROOT}/components/${DIR}/${windowName}.vue`;
 let text = readFileSync(windowFile, 'utf8');
 
 if (!text.includes(`${kebab}-bridge`)) {
