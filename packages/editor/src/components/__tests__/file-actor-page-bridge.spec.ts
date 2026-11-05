@@ -4,6 +4,7 @@ import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';
 import FileActorPage from '@app/components/inspector/FileActorPage.vue';
+import { getFileActorPage } from '@app/composables/file-actor-page-bridge';
 
 interface ActorData {
 	portrait: string;
@@ -92,17 +93,19 @@ describe('FileActorPage（fileActor inspector 响应式双向绑定桥接）', (
 	const read = (id: string) =>
 		(document.getElementById(id) as (HTMLElement & { read?: () => unknown }) | null)?.read?.();
 
-	it('onMounted 挂载 sync 桥接到 #fileActor-vue-mount 容器', async () => {
+	it('onMounted 交出 sync 页面桥（不再挂到 #fileActor-vue-mount 元素上）', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('fileActor-vue-mount') as SyncEl;
-		expect(typeof el.sync).toBe('function');
+		const element = document.getElementById('fileActor-vue-mount') as SyncEl;
+		expect(typeof element.sync, '元素上不该再有 sync').toBe('undefined');
+		expect(typeof getFileActorPage()?.sync).toBe('function');
 		wrapper.unmount();
+		expect(getFileActorPage(), '卸载后应注销').toBeNull();
 	});
 
 	it('sync 桥接把 legacy target 渲染到控件（open 后初始化）', async () => {
 		const wrapper = await mountPage();
 		fileActor.target = makeActor();
-		(document.getElementById('fileActor-vue-mount') as SyncEl).sync?.();
+		getFileActorPage()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		expect(read('fileActor-portrait')).toBe('');
@@ -123,13 +126,13 @@ describe('FileActorPage（fileActor inspector 响应式双向绑定桥接）', (
 
 	it('切换 target 后再次 sync 更新控件显示', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('fileActor-vue-mount') as SyncEl;
+
 		fileActor.target = makeActor();
-		el.sync?.();
+		getFileActorPage()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		fileActor.target = makeActor({ portrait: 'portrait-2', speed: 9, passage: 'water' });
-		el.sync?.();
+		getFileActorPage()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		expect(read('fileActor-portrait')).toBe('portrait-2');
@@ -140,9 +143,9 @@ describe('FileActorPage（fileActor inspector 响应式双向绑定桥接）', (
 
 	it('控件 input 转发 update 并保持 form 与 target 同步', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('fileActor-vue-mount') as SyncEl;
+
 		fileActor.target = makeActor();
-		el.sync?.();
+		getFileActorPage()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		fileActor.update.mockImplementation((actor: ActorData, key: string, value: unknown) => {

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-const d = JSON.parse(readFileSync(`${process.env.TEMP}/inv8.json`, 'utf8'));
+const d = JSON.parse(readFileSync(`${process.env.TEMP}/inv10.json`, 'utf8'));
 const rows = d.windows
 	.filter((w) => w.file.replace(/\\/g, '/').startsWith('components/inspector'))
 	.map((w) => {

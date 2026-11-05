@@ -8,6 +8,7 @@ import AutoTileSelectNode from '@app/components/tools/AutoTileSelectNode.vue';
 import LightGetter from '@app/components/tools/LightGetter.vue';
 import ObjectGetter from '@app/components/tools/ObjectGetter.vue';
 import { composableEls } from '@app/composables/element-registry';
+import { getTileNodeHandles } from '@app/composables/auto-tile-handles';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
@@ -82,15 +83,22 @@ describe('窗口 composable 读注册表', () => {
 		b.unmount();
 	});
 
-	it('AutoTileSelectNode：画布/屏幕/选框登记，窗口框架用具名 ref 命令式登记', async () => {
+	it('AutoTileSelectNode：三个节点经句柄表交出，不再进注册表', async () => {
 		const wrapper = await mountSettle(AutoTileSelectNode);
-		expectRegistered([
-			'autoTile-selectNode',
+		const handles = getTileNodeHandles();
+		expect(handles).toBeTruthy();
+		expect(handles?.canvas.id).toBe('autoTile-selectNode-canvas');
+		expect(handles?.screen.id).toBe('autoTile-selectNode-screen');
+		expect(handles?.marquee.id).toBe('autoTile-selectNode-marquee');
+		for (const id of [
 			'autoTile-selectNode-canvas',
 			'autoTile-selectNode-screen',
 			'autoTile-selectNode-marquee'
-		]);
+		]) {
+			expect(composableEls.get(id), id + ' 不该再进注册表').toBeUndefined();
+		}
 		wrapper.unmount();
+		expect(getTileNodeHandles(), '卸载后应注销').toBeNull();
 	});
 
 	it('PresetGetter 工厂：窗口只登记根元素，控件由模板 ref 交给 composable', async () => {
