@@ -1,18 +1,15 @@
 import { reactive } from 'vue';
 import { getFileEventParameterBridge } from '@app/composables/file-event-parameter-bridge';
-import { inspectorEls } from './element-registry.ts';
-import { registryElement } from '@app/utils/element-registry';
+import { getFileEventPageBridge } from '@app/composables/file-event-page-bridge';
 import { getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@app/tools/window-object.ts';
-import { clear, hide, show } from '@app/utils/element-utils';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { requestFocus } from '@app/directives/focus';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getYamiI18n } from '@app/i18n';
-import type { YamiElement } from '@app/types/element-api';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -90,17 +87,14 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			this.target = event;
 			this.meta = meta;
 
-			inspectorEls
-				.get('fileEvent-type')
-				?.loadItems?.(Enum.getMergedItems!(EventEditor.types?.global, 'global-event'));
+			getFileEventPageBridge()?.loadTypeItems(
+				Enum.getMergedItems!(EventEditor.types?.global, 'global-event')
+			);
 
 			const write = getElementWriter('fileEvent', event);
 			write('parameters');
 
-			registryElement<HTMLElement & { sync?: () => void }>(
-				inspectorEls,
-				'fileEvent-vue-mount'
-			)?.sync?.();
+			getFileEventPageBridge()?.sync();
 		}
 	};
 
@@ -109,12 +103,12 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
-			clear(inspectorEls.get('fileEvent-parameters'));
+			getFileEventPageBridge()?.clearParameters();
 		}
 	};
 
 	FileEvent.write = function (this: FileEventPage, _options: { type?: string }) {
-		registryElement<{ sync?: () => void }>(inspectorEls, 'fileEvent-vue-mount')?.sync?.();
+		getFileEventPageBridge()?.sync();
 	};
 
 	FileEvent.update = function (
@@ -144,44 +138,34 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	};
 
 	FileEvent.typeWrite = function (this: FileEventPage, event: Event & { value?: string }) {
-		const enabledInput = inspectorEls.get('fileEvent-enabled') as YamiElement;
-		const enabledLabel = enabledInput.previousElementSibling;
-		const priorityInput = inspectorEls.get('fileEvent-priority') as YamiElement;
-		const priorityLabel = priorityInput.previousElementSibling;
-		switch (event.value) {
+		const bridge = getFileEventPageBridge();
+		const value = event.value;
+		switch (value) {
 			case 'common':
-				hide(enabledLabel);
-				hide(enabledInput);
+				bridge?.setEnabledVisible(false);
 				break;
 			default:
-				show(enabledLabel);
-				show(enabledInput);
+				bridge?.setEnabledVisible(true);
 				break;
 		}
-		switch (event.value) {
-			case 'input':
-			case 'keydown':
-			case 'keyup':
-			case 'mousedown':
-			case 'mouseup':
-			case 'mousemove':
-			case 'doubleclick':
-			case 'wheel':
-			case 'touchstart':
-			case 'touchmove':
-			case 'touchend':
-			case 'gamepadbuttonpress':
-			case 'gamepadbuttonrelease':
-			case 'gamepadleftstickchange':
-			case 'gamepadrightstickchange':
-				show(priorityLabel);
-				show(priorityInput);
-				break;
-			default:
-				hide(priorityLabel);
-				hide(priorityInput);
-				break;
-		}
+		const showsPriority = [
+			'input',
+			'keydown',
+			'keyup',
+			'mousedown',
+			'mouseup',
+			'mousemove',
+			'doubleclick',
+			'wheel',
+			'touchstart',
+			'touchmove',
+			'touchend',
+			'gamepadbuttonpress',
+			'gamepadbuttonrelease',
+			'gamepadleftstickchange',
+			'gamepadrightstickchange'
+		].includes(value ?? '');
+		bridge?.setPriorityVisible(showsPriority);
 	};
 
 	FileEvent.listChange = function (this: FileEventPage, _event?: Event) {

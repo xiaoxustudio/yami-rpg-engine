@@ -18,7 +18,7 @@
 			<CheckBox
 				id="fileEvent-enabled"
 				v-tip="t('components.fileEvent-enabled.tip')"
-				:ref="registryRef(inspectorEls, 'fileEvent-enabled')"
+				ref="elEnabled"
 				class="standard large"
 				v-model="form.enabled"
 				@input="onParamInput"
@@ -27,7 +27,7 @@
 			<CheckBox
 				id="fileEvent-priority"
 				v-tip="t('components.fileEvent-priority.tip')"
-				:ref="registryRef(inspectorEls, 'fileEvent-priority')"
+				ref="elPriority"
 				class="standard large"
 				v-model="form.priority"
 				@input="onParamInput"
@@ -79,14 +79,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef, registerElement } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
+import {
+	provideFileEventPageBridge,
+	resetFileEventPageBridge,
+	type FileEventPageBridge
+} from '@app/composables/file-event-page-bridge';
+import { hide, show } from '@app/utils/element-utils';
 import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { useFileEventPage } from '@app/composables/useFileEventPage';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -114,6 +117,8 @@ watch(
 );
 
 const elType = ref<InstanceType<typeof SelectBox> | null>(null);
+const elEnabled = ref<InstanceType<typeof CheckBox> | null>(null);
+const elPriority = ref<InstanceType<typeof CheckBox> | null>(null);
 const elReturnType = ref<InstanceType<typeof SelectBox> | null>(null);
 const elParameters = ref<InstanceType<typeof ParamList> | null>(null);
 
@@ -125,16 +130,42 @@ const onParametersChange = (): void => {
 	Inspector.fileEvent?.listChange?.();
 };
 
+/** 按事件类型开关某一行的显隐（控件 + 它左边的 `.text` 标签）。 */
+const setRowVisible = (control: HTMLElement | null, visible: boolean): void => {
+	const label = control?.previousElementSibling as HTMLElement | null;
+	if (visible) {
+		show(label);
+		show(control);
+	} else {
+		hide(label);
+		hide(control);
+	}
+};
+
+const bridgeApi: FileEventPageBridge = {
+	loadTypeItems: (items) => {
+		elType.value?.loadItems(items);
+	},
+	sync: () => {
+		sync();
+	},
+	clearParameters: () => {
+		elParameters.value?.clear();
+	},
+	setEnabledVisible: (visible) => {
+		setRowVisible(elEnabled.value?.root ?? null, visible);
+	},
+	setPriorityVisible: (visible) => {
+		setRowVisible(elPriority.value?.root ?? null, visible);
+	}
+};
+
 onMounted(() => {
-	registerElement(inspectorEls, 'fileEvent-type', elType.value);
-	registerElement(inspectorEls, 'fileEvent-parameters', elParameters.value);
 	const editor = Inspector.fileEvent;
 	if (!editor) return;
 
-	const el = inspectorEls.get('fileEvent-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	provideFileEventPageBridge(bridgeApi);
+	onUnmounted(() => resetFileEventPageBridge(bridgeApi));
 
 	if (EventEditor.types) {
 		elType.value?.loadItems(EventEditor.types.global);
