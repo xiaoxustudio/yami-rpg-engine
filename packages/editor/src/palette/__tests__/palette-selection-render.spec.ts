@@ -4,6 +4,7 @@ import '@app/palette/register.ts';
 import { paletteEls } from '@app/palette/element-registry.ts';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement } from '@app/utils/element-registry';
+import { provideTileNodeHandles } from '@app/composables/auto-tile-handles';
 
 type SelectionShape = HTMLElement & { x: number; y: number };
 type MarqueeShape = HTMLElement & {
@@ -43,6 +44,22 @@ describe('Palette selection 元素 Vue 渲染（拖拽选区覆盖层）', () =>
 		append('palette-edit');
 		append('palette-zoom');
 		append('fileTileset-general-detail');
+
+		// 选框窗口的句柄表：本 spec 不挂窗口，直接把三个节点交出去（接缝已从注册表换成句柄表）+
+		const nodeCanvas = document.createElement('canvas');
+		nodeCanvas.id = 'autoTile-selectNode-canvas';
+		const nodeScreen = document.createElement('div');
+		nodeScreen.id = 'autoTile-selectNode-screen';
+		const nodeMarquee = document.createElement('div');
+		nodeMarquee.id = 'autoTile-selectNode-marquee';
+		document.body.append(nodeCanvas, nodeScreen, nodeMarquee);
+		provideTileNodeHandles({
+			root: nodeScreen,
+			canvas: nodeCanvas,
+			screen: nodeScreen,
+			marquee: nodeMarquee as never
+		});
+
 		Palette.initialize();
 		marquee = document.getElementById('palette-marquee') as unknown as MarqueeShape;
 		marquee.scaleX = 32;

@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="autoTile" :ref="registryRef(paletteEls, 'autoTile')" @confirm="onConfirm">
+	<WindowFrame id="autoTile" ref="frame" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.autoTile.title') }}
@@ -46,7 +46,7 @@
 			<TreeList
 				id="autoTile-templates"
 				v-tip="t('components.autoTile-templates.tip')"
-				:ref="registryRef(paletteEls, 'autoTile-templates')"
+				ref="templatesRef"
 				padded
 				:node-extras="nodeExtras"
 				@select="onTemplatesSelect"
@@ -59,7 +59,7 @@
 			<CommonList
 				id="autoTile-nodes"
 				v-tip="t('components.autoTile-nodes.tip')"
-				:ref="registryRef(paletteEls, 'autoTile-nodes')"
+				ref="nodesRef"
 				@write="onNodesWrite"
 				@popup="onNodesPopup"
 			/>
@@ -69,7 +69,7 @@
 			<canvas
 				id="autoTile-canvas"
 				v-tip="t('components.autoTile-canvas.tip')"
-				:ref="registryRef(paletteEls, 'autoTile-canvas')"
+				ref="canvasRef"
 				width="128"
 				height="128"
 				@click="onCanvasClick"
@@ -154,7 +154,7 @@
 			<CommonList
 				id="autoTile-frames"
 				v-tip="t('components.autoTile-frames.tip')"
-				:ref="registryRef(paletteEls, 'autoTile-frames')"
+				ref="framesRef"
 				@write="onFramesWrite"
 				@popup="onFramesPopup"
 			/>
@@ -163,10 +163,14 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, type VNode } from 'vue';
-import { paletteEls } from '@app/palette/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { h, onMounted, onUnmounted, ref, type VNode } from 'vue';
 import { useI18n } from 'vue-i18n';
+import {
+	provideAutoTileHandles,
+	resetAutoTileHandles,
+	type AutoTileHandles
+} from '@app/composables/auto-tile-handles';
+import type { YamiElement } from '@app/types/element-api';
 import { AutoTile } from '@app/palette/auto-tile.ts';
 import type { AutoTileTemplateData } from '@app/palette/auto-tile.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -243,7 +247,34 @@ const onConfirm = () => {
 	AutoTile?.confirm?.();
 };
 
-onMounted(() => {});
+/** 长期持有的 5 个节点一次交给单例（模板 / 节点 / 帧三张列表 + 画布 + 根元素）。 */
+const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+const templatesRef = ref<unknown>(null);
+const nodesRef = ref<unknown>(null);
+const canvasRef = ref<unknown>(null);
+const framesRef = ref<unknown>(null);
+
+const rootOf = (target: unknown): YamiElement | null => {
+	const instance = target as { root?: unknown; $el?: unknown } | null;
+	const el = instance?.root ?? instance?.$el ?? target;
+	return el instanceof HTMLElement ? (el as YamiElement) : null;
+};
+
+let handles: AutoTileHandles | null = null;
+
+onMounted(() => {
+	const root = rootOf(frame.value);
+	const templates = rootOf(templatesRef.value);
+	const nodes = rootOf(nodesRef.value);
+	const canvas = canvasRef.value as HTMLCanvasElement | null;
+	const frames = rootOf(framesRef.value);
+	if (!root || !templates || !nodes || !canvas || !frames) return;
+	handles = { root, canvas, templates, nodes, frames };
+	provideAutoTileHandles(handles);
+	onUnmounted(() => {
+		if (handles) resetAutoTileHandles(handles);
+	});
+});
 </script>
 
 <style>

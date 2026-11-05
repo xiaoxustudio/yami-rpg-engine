@@ -6,29 +6,20 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<canvas
-			id="autoTile-selectNode-canvas"
-			:ref="registryRef(composableEls, 'autoTile-selectNode-canvas')"
-			width="0"
-			height="0"
-		/>
-		<div
-			class="box"
-			id="autoTile-selectNode-screen"
-			:ref="registryRef(composableEls, 'autoTile-selectNode-screen')"
-		>
-			<MarqueeArea
-				id="autoTile-selectNode-marquee"
-				:ref="registryRef(composableEls, 'autoTile-selectNode-marquee')"
-			/>
+		<canvas id="autoTile-selectNode-canvas" ref="canvasRef" width="0" height="0" />
+		<div class="box" id="autoTile-selectNode-screen" ref="screenRef">
+			<MarqueeArea id="autoTile-selectNode-marquee" ref="marqueeRef" />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { composableEls } from '@app/composables/element-registry';
-import { registryRef, registerElement } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref } from 'vue';
+import {
+	provideTileNodeHandles,
+	resetTileNodeHandles,
+	type TileNodeHandles
+} from '@app/composables/auto-tile-handles';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -40,14 +31,26 @@ const { t } = useI18n();
 
 const tileNode = useTileNodeWindow();
 
+/** 画布 / 容器 / 选框三个节点一次交给 `useTileNodeWindow`。 */
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+const canvasRef = ref<unknown>(null);
+const screenRef = ref<unknown>(null);
+const marqueeRef = ref<unknown>(null);
+
+let handles: TileNodeHandles | null = null;
 
 onMounted(() => {
-	registerElement(composableEls, 'autoTile-selectNode', frame.value);
-	const el = frame.value?.root;
-	if (el) {
-		on(el, 'closed', () => tileNode.windowClosed());
-	}
+	const root = frame.value?.root ?? null;
+	const canvas = canvasRef.value as HTMLCanvasElement | null;
+	const screen = screenRef.value as HTMLElement | null;
+	const marquee = (marqueeRef.value as { root?: unknown } | null)?.root ?? null;
+	if (!root || !canvas || !screen || !(marquee instanceof HTMLElement)) return;
+	on(root, 'closed', () => tileNode.windowClosed());
+	handles = { root, canvas, screen, marquee: marquee as TileNodeHandles['marquee'] };
+	provideTileNodeHandles(handles);
+	onUnmounted(() => {
+		if (handles) resetTileNodeHandles(handles);
+	});
 });
 </script>
 

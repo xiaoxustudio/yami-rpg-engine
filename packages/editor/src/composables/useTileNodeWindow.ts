@@ -1,5 +1,4 @@
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
-import { composableEls } from '@app/composables/element-registry';
 import { getWindowStore } from '@app/stores/window';
 import { on, rect, css, addClass } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
@@ -8,7 +7,7 @@ import { Cursor } from '@app/composables/usePointerObjectWindow';
 import { Palette } from '@app/palette/palette.ts';
 import { elementDataOf } from '@ui-kit';
 import { clamp } from '@app/utils/math';
-import { registryElement } from '@app/utils/element-registry';
+import { getTileNodeHandles } from '@app/composables/auto-tile-handles';
 
 /**
  * 场景选框元素上的 `key`（`'tile' | 'terrain' | 'edit' | …` 的选区种类）是**元素数据**，
@@ -79,13 +78,12 @@ interface TileNodeWindow {
 	pointermove: (event: PointerEvent) => void;
 }
 
-const getCanvas = (): HTMLCanvasElement =>
-	registryElement<HTMLCanvasElement>(composableEls, 'autoTile-selectNode-canvas')!;
+const getCanvas = (): HTMLCanvasElement => getTileNodeHandles()!.canvas;
 
-const getScreen = (): HTMLElement => composableEls.get('autoTile-selectNode-screen') as HTMLElement;
+const getScreen = (): HTMLElement => getTileNodeHandles()!.screen;
 
 const getMarquee = (): TileNodeMarquee =>
-	registryElement<TileNodeMarquee>(composableEls, 'autoTile-selectNode-marquee')!;
+	getTileNodeHandles()!.marquee as unknown as TileNodeMarquee;
 
 let context: CanvasRenderingContext2D | null = null;
 let dragging: TileNodeDragging | null = null;
@@ -120,7 +118,7 @@ const open = (
 	const MAX_CONTENT_HEIGHT = 696;
 	const MIN_CONTENT_WIDTH = 100;
 	const MIN_CONTENT_HEIGHT = 100;
-	const windowFrame = composableEls.get('autoTile-selectNode') as HTMLElement;
+	const windowFrame = getTileNodeHandles()!.root;
 	const screen = getScreen();
 	const tileWidth = Palette.tileset!.tileWidth;
 	const tileHeight = Palette.tileset!.tileHeight;

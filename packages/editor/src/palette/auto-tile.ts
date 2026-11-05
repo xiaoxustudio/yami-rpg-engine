@@ -1,7 +1,6 @@
 import { elementDataOf, getListConfig } from '@ui-kit';
-import { registryElement } from '@app/utils/element-registry';
 import { renderDetached } from '@app/utils/dom';
-import { paletteEls } from '@app/palette/element-registry';
+import { getAutoTileHandles } from '@app/composables/auto-tile-handles';
 import { Window } from '@app/tools/window-object.ts';
 import { on, hasClass, write, read, clear } from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/utils/event-accessors';
@@ -153,14 +152,16 @@ AutoTile.generateFrames = AutoTileEngine.generateFrames;
 AutoTile.shiftTemplateFrames = AutoTileEngine.shiftTemplateFrames;
 
 function ensureDomBound(): boolean {
-	const canvas = registryElement<HTMLCanvasElement>(paletteEls, 'autoTile-canvas');
-	const templateList = registryElement<AutoTileListElement>(paletteEls, 'autoTile-templates');
+	const handles = getAutoTileHandles();
+	if (!handles) return false;
+	const canvas = handles.canvas;
+	const templateList = handles.templates as unknown as AutoTileListElement;
 	if (!templateList || !canvas) return false;
 	if (AutoTile.templateList === templateList && AutoTile.canvas === canvas) return false;
 	AutoTile.canvas = canvas;
 	AutoTile.templateList = templateList;
-	AutoTile.nodeList = paletteEls.get('autoTile-nodes') ?? null;
-	AutoTile.frameList = paletteEls.get('autoTile-frames') ?? null;
+	AutoTile.nodeList = handles.nodes;
+	AutoTile.frameList = handles.frames;
 	templateList.updateItemName = Team.list_updateItemName as (...args: unknown[]) => unknown;
 	templateList.updateTextNode = Easing.list_updateTextNode as (...args: unknown[]) => unknown;
 	return true;
@@ -180,7 +181,7 @@ function configureLists() {
 }
 
 function registerWindowEvents() {
-	const frame = paletteEls.get('autoTile') as YamiElement;
+	const frame = getAutoTileHandles()?.root ?? null;
 	if (!frame || !AutoTile.templateList || !AutoTile.nodeList || !AutoTile.frameList) return;
 	window.addEventListener('dprchange', AutoTile.dprchange);
 	on(frame, 'close', AutoTile.windowClose);
