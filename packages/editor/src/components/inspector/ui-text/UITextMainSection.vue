@@ -69,7 +69,6 @@
 	<TextArea
 		:label="t('components.uiText-content.label') || 'Content'"
 		id="uiText-content"
-		:ref="registryRef(inspectorEls, 'uiText-content')"
 		v-tip="t('components.uiText-content.tip')"
 		v-model="form.content"
 		menu="tag-global-var tag-dynamic-global-var tag-localization"
@@ -157,7 +156,6 @@
 	<ColorBox
 		:label="t('components.uiText-color.label') || 'Color'"
 		id="uiText-color"
-		:ref="registryRef(inspectorEls, 'uiText-color')"
 		v-tip="t('components.uiText-color.tip')"
 		v-model="form.color"
 		@input="onParamInput"
@@ -167,7 +165,6 @@
 		:label="t('components.uiText-font.label') || 'Font'"
 		id="uiText-font"
 		:placeholder="t('components.uiText-font.placeholder')"
-		:ref="registryRef(inspectorEls, 'uiText-font')"
 		v-tip="t('components.uiText-font.tip')"
 		v-model="form.font"
 		@input="onParamInput"
@@ -186,8 +183,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
 import ColorBox from '@app/components/common/ColorBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
@@ -224,14 +219,6 @@ const synchronize = (
 };
 
 onMounted(() => {
-	registerElement(inspectorEls, 'uiText-direction', elDirection.value);
-	registerElement(inspectorEls, 'uiText-size', elSize.value);
-	registerElement(inspectorEls, 'uiText-lineSpacing', elLineSpacing.value);
-	registerElement(inspectorEls, 'uiText-letterSpacing', elLetterSpacing.value);
-	registerElement(inspectorEls, 'uiText-typeface', elTypeface.value);
-	registerElement(inspectorEls, 'uiText-size-slider', elSizeSlider.value);
-	registerElement(inspectorEls, 'uiText-lineSpacing-slider', elLineSpacingSlider.value);
-	registerElement(inspectorEls, 'uiText-letterSpacing-slider', elLetterSpacingSlider.value);
 	elDirection.value?.loadItems([
 		{
 			name: t('components.uiText-direction.options.horizontal-tb.name'),

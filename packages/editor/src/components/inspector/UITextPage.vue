@@ -11,15 +11,18 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
+import { onMounted, onUnmounted, provide } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryElements } from '@app/utils/element-registry';
+import { queryElementsByIds } from '@app/utils/dom';
 import { useUITextPage } from '@app/composables/useUITextPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import {
+	provideUiTextPage,
+	resetUiTextPage,
+	type UiTextPageApi
+} from '@app/composables/ui-text-page-bridge';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { uiTextContextKey } from './ui-text/context.ts';
@@ -41,7 +44,7 @@ const { bindInput, bindSliders } = useInspectorInput();
 onMounted(() => {
 	const uiText = Inspector.uiText;
 	if (!uiText) return;
-	const elements = registryElements(inspectorEls, [
+	const elements = queryElementsByIds([
 		'uiText-direction',
 		'uiText-horizontalAlign',
 		'uiText-verticalAlign',
@@ -60,7 +63,7 @@ onMounted(() => {
 		'uiText-overflow',
 		'uiText-blend'
 	]);
-	const sliders = registryElements(inspectorEls, [
+	const sliders = queryElementsByIds([
 		'uiText-size-slider',
 		'uiText-lineSpacing-slider',
 		'uiText-letterSpacing-slider'
@@ -68,10 +71,9 @@ onMounted(() => {
 	bindInput(elements, getUIStore(), uiText);
 	bindSliders(sliders);
 
-	const el = inspectorEls.get('uiText-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync, form });
-	}
+	const bridgeApi: UiTextPageApi = { sync, form };
+	provideUiTextPage(bridgeApi);
+	onUnmounted(() => resetUiTextPage(bridgeApi));
 	sync();
 });
 </script>

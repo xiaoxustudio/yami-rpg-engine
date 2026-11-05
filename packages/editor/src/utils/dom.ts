@@ -25,6 +25,17 @@ export function createDetachedElement(): HTMLDivElement {
 	return document.createElement('div');
 }
 
+/**
+ * 按 id 批量取控件根元素（等价于旧的 `registryElements(xxxEls, ids)`，但不经过注册表）。
+ *
+ * 用在「页面只要给自己的输入框挂 focus/blur 监听」这类场景：控件就在页面自己的 DOM 里，
+ * 不需要为了拿元素而把它们登记进共享注册表。**在 `onMounted` 之后调用**（节点已挂载）。
+ */
+export function queryElementsByIds(ids: readonly string[]): HTMLElement[] {
+	if (ids.length === 0) return [];
+	const selector = ids.map((id) => `#${id}`).join(',');
+	return Array.from(document.querySelectorAll<HTMLElement>(selector));
+}
 export function addClass(el: HTMLElement, className: string): boolean {
 	if (!el.classList.contains(className)) {
 		el.classList.add(className);
