@@ -12,7 +12,7 @@
 				:label="t('components.fileActor-sprite-id.label')"
 				id="fileActor-sprite-id"
 				v-tip="t('components.fileActor-sprite-id.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-sprite-id')"
+				ref="spriteIdRef"
 				v-focus
 				v-model="form.id"
 			/>
@@ -30,10 +30,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import {
+	provideFileActorSprite,
+	resetFileActorSprite,
+	type FileActorSpriteApi
+} from '@app/composables/file-actor-tool-bridges';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { fileActorSpriteForm } from '@app/inspector/file-actor-page.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -49,7 +52,19 @@ const onConfirm = () => {
 	Inspector?.fileActor?.sprites?.save?.();
 };
 
-onMounted(() => {});
+/** 这个窗口只负责一件事：给单例把候选项灌进控件。 */
+const spriteIdRef = ref<InstanceType<typeof SelectBox> | null>(null);
+
+const bridgeApi: FileActorSpriteApi = {
+	loadIds: (items) => {
+		spriteIdRef.value?.loadItems(items);
+	}
+};
+
+onMounted(() => {
+	provideFileActorSprite(bridgeApi);
+	onUnmounted(() => resetFileActorSprite(bridgeApi));
+});
 </script>
 
 <style>

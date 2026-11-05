@@ -21,7 +21,7 @@
 				:label="t('components.fileActor-skill-key.label')"
 				id="fileActor-skill-key"
 				v-tip="t('components.fileActor-skill-key.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-skill-key')"
+				ref="skillKeyRef"
 				v-model="form.key"
 			/>
 		</div>
@@ -29,10 +29,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import {
+	provideFileActorSkill,
+	resetFileActorSkill,
+	type FileActorSkillApi
+} from '@app/composables/file-actor-tool-bridges';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { fileActorSkillForm } from '@app/inspector/file-actor-page.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -48,7 +51,19 @@ const onConfirm = () => {
 	Inspector?.fileActor?.skills?.save?.();
 };
 
-onMounted(() => {});
+/** 这个窗口只负责一件事：给单例把候选项灌进控件。 */
+const skillKeyRef = ref<InstanceType<typeof SelectBox> | null>(null);
+
+const bridgeApi: FileActorSkillApi = {
+	loadKeys: (items) => {
+		skillKeyRef.value?.loadItems(items);
+	}
+};
+
+onMounted(() => {
+	provideFileActorSkill(bridgeApi);
+	onUnmounted(() => resetFileActorSkill(bridgeApi));
+});
 </script>
 
 <style>

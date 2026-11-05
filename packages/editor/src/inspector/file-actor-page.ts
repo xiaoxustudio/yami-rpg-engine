@@ -4,7 +4,12 @@ import {
 	getFileActorMotion,
 	getFileActorPage
 } from '@app/composables/file-actor-page-bridge';
-import { inspectorEls } from './element-registry.ts';
+import {
+	getFileActorEquipment,
+	getFileActorInventory,
+	getFileActorSkill,
+	getFileActorSprite
+} from '@app/composables/file-actor-tool-bridges';
 import { getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@app/tools/window-object.ts';
@@ -18,7 +23,6 @@ import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { getYamiI18n } from '@app/i18n';
-import type { YamiElement } from '@app/types/element-api';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -282,8 +286,8 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		open: function ({ id = '', image = '' } = {}) {
 			Window.open!('fileActor-sprite');
 			const animationId = FileActor.target!.animationId;
-			const items = Animation.getSpriteListItems!(animationId);
-			inspectorEls.get('fileActor-sprite-id')?.loadItems?.(items);
+			const items = Animation.getSpriteListItems!(animationId) as unknown[];
+			getFileActorSprite()?.loadIds(items);
 			Object.assign(fileActorSpriteForm, { id, image });
 			if (!id) {
 				requestFocus('fileActor-sprite-id');
@@ -324,9 +328,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		},
 		open: function ({ id = '', key = '' } = {}) {
 			Window.open!('fileActor-skill');
-			const elSkillKey = inspectorEls.get('fileActor-skill-key') as YamiElement;
-			const items = Enum.getStringItems!('shortcut-key', true);
-			elSkillKey.loadItems(items);
+			getFileActorSkill()?.loadKeys(Enum.getStringItems!('shortcut-key', true));
 			Object.assign(fileActorSkillForm, { id, key });
 			requestFocus('fileActor-skill-id');
 		},
@@ -363,9 +365,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		},
 		open: function ({ id = '', slot = Enum.getDefStringId!('equipment-slot') } = {}) {
 			Window.open!('fileActor-equipment');
-			const elEquipmentKey = inspectorEls.get('fileActor-equipment-slot') as YamiElement;
-			const items = Enum.getStringItems!('equipment-slot');
-			elEquipmentKey.loadItems(items);
+			getFileActorEquipment()?.loadSlots(Enum.getStringItems!('equipment-slot'));
 			Object.assign(fileActorEquipmentForm, { id, slot });
 			requestFocus('fileActor-equipment-id');
 		},
@@ -388,31 +388,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			FileActor.inventory!.loadTypeItems();
 		},
 		loadTypeItems: function () {
-			const invTypeEl = inspectorEls.get('fileActor-inventory-type') as YamiElement;
-			if (!invTypeEl) return;
-			invTypeEl.loadItems([
-				{ name: 'Item', value: 'item' },
-				{ name: 'Equipment', value: 'equipment' },
-				{ name: 'Money', value: 'money' }
-			]);
-
-			invTypeEl.enableHiddenMode().relate([
-				{
-					case: 'item',
-					targets: [
-						inspectorEls.get('fileActor-inventory-item-id'),
-						inspectorEls.get('fileActor-inventory-item-quantity')
-					]
-				},
-				{
-					case: 'equipment',
-					targets: [inspectorEls.get('fileActor-inventory-equipment-id')]
-				},
-				{
-					case: 'money',
-					targets: [inspectorEls.get('fileActor-inventory-money')]
-				}
-			]);
+			getFileActorInventory()?.setupTypeRows();
 		},
 		parse: function ({
 			type,

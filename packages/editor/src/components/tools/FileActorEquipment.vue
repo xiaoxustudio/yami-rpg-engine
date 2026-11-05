@@ -21,7 +21,7 @@
 				:label="t('components.fileActor-equipment-slot.label')"
 				id="fileActor-equipment-slot"
 				v-tip="t('components.fileActor-equipment-slot.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-equipment-slot')"
+				ref="equipmentSlotRef"
 				v-focus
 				v-model="form.slot"
 			/>
@@ -30,10 +30,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import {
+	provideFileActorEquipment,
+	resetFileActorEquipment,
+	type FileActorEquipmentApi
+} from '@app/composables/file-actor-tool-bridges';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { fileActorEquipmentForm } from '@app/inspector/file-actor-page.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -49,7 +52,19 @@ const onConfirm = () => {
 	Inspector?.fileActor?.equipments?.save?.();
 };
 
-onMounted(() => {});
+/** 这个窗口只负责一件事：给单例把候选项灌进控件。 */
+const equipmentSlotRef = ref<InstanceType<typeof SelectBox> | null>(null);
+
+const bridgeApi: FileActorEquipmentApi = {
+	loadSlots: (items) => {
+		equipmentSlotRef.value?.loadItems(items);
+	}
+};
+
+onMounted(() => {
+	provideFileActorEquipment(bridgeApi);
+	onUnmounted(() => resetFileActorEquipment(bridgeApi));
+});
 </script>
 
 <style>

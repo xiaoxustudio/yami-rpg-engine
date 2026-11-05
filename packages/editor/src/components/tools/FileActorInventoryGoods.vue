@@ -16,7 +16,7 @@
 				:label="t('components.fileActor-inventory-type.label')"
 				id="fileActor-inventory-type"
 				v-tip="t('components.fileActor-inventory-type.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-inventory-type')"
+				ref="typeRef"
 				v-focus
 				v-model="form.type"
 			/>
@@ -24,7 +24,7 @@
 			<CustomBox
 				id="fileActor-inventory-item-id"
 				v-tip="t('components.fileActor-inventory-item-id.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-inventory-item-id')"
+				ref="itemIdRef"
 				v-focus
 				type="file"
 				filter="item"
@@ -35,7 +35,7 @@
 				:label="t('components.fileActor-inventory-item-quantity.label')"
 				id="fileActor-inventory-item-quantity"
 				v-tip="t('components.fileActor-inventory-item-quantity.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-inventory-item-quantity')"
+				ref="itemQuantityRef"
 				min="1"
 				max="10000"
 				v-model="form.itemQuantity"
@@ -44,7 +44,7 @@
 			<CustomBox
 				id="fileActor-inventory-equipment-id"
 				v-tip="t('components.fileActor-inventory-equipment-id.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-inventory-equipment-id')"
+				ref="equipmentIdRef"
 				v-focus
 				type="file"
 				filter="equipment"
@@ -55,7 +55,7 @@
 				:label="t('components.fileActor-inventory-money.label')"
 				id="fileActor-inventory-money"
 				v-tip="t('components.fileActor-inventory-money.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-inventory-money')"
+				ref="moneyRef"
 				min="1"
 				max="100000000"
 				v-model="form.money"
@@ -65,10 +65,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { controlRoot } from '@app/composables/control-refs';
+import {
+	provideFileActorInventory,
+	resetFileActorInventory,
+	type FileActorInventoryApi
+} from '@app/composables/file-actor-tool-bridges';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { fileActorInventoryForm } from '@app/inspector/file-actor-page.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -85,7 +89,42 @@ const onConfirm = () => {
 	Inspector?.fileActor?.inventory?.save?.();
 };
 
-onMounted(() => {});
+/**
+ * 库存窗口的两件事一次交出：类型候选项 + 按类型开关后面几行。
+ * `relate()` 的目标是 DOM 语义，用 `controlRoot(...)` 取根元素。
+ */
+const typeRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const itemIdRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const itemQuantityRef = ref<InstanceType<typeof NumberBox> | null>(null);
+const equipmentIdRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const moneyRef = ref<InstanceType<typeof NumberBox> | null>(null);
+
+const bridgeApi: FileActorInventoryApi = {
+	setupTypeRows: () => {
+		const type = typeRef.value;
+		type?.loadItems([
+			{ name: 'Item', value: 'item' },
+			{ name: 'Equipment', value: 'equipment' },
+			{ name: 'Money', value: 'money' }
+		]);
+		// enableHiddenMode() 的返回值类型不含 relate，这里按隐藏模式句柄断言一下
+
+		const hidden = type?.enableHiddenMode?.() as { relate?: (groups: unknown[]) => void };
+		hidden?.relate?.([
+			{
+				case: 'item',
+				targets: [controlRoot(itemIdRef.value), controlRoot(itemQuantityRef.value)]
+			},
+			{ case: 'equipment', targets: [controlRoot(equipmentIdRef.value)] },
+			{ case: 'money', targets: [controlRoot(moneyRef.value)] }
+		]);
+	}
+};
+
+onMounted(() => {
+	provideFileActorInventory(bridgeApi);
+	onUnmounted(() => resetFileActorInventory(bridgeApi));
+});
 </script>
 
 <style>
