@@ -1,4 +1,5 @@
 import { getElementWriter } from '@app/utils/dom';
+import { getFileScenePage } from '@app/composables/file-scene-page-bridge';
 import { inspectorEls } from './element-registry.ts';
 import { addClass, clear, removeClass } from '@app/utils/element-utils';
 import { Codec } from '@app/engine/codec/codec.ts';
@@ -120,11 +121,7 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 			const write = getElementWriter('fileScene', Scene);
 			write('events');
 			write('scripts');
-			(
-				inspectorEls.get('fileScene-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			getFileScenePage()?.sync();
 		}
 	};
 
@@ -143,11 +140,7 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 		this: typeof FileScene,
 		_options: { width?: number; height?: number }
 	) {
-		(
-			inspectorEls.get('fileScene-vue-mount') as HTMLElement & {
-				sync?: () => void;
-			}
-		)?.sync?.();
+		getFileScenePage()?.sync();
 	};
 
 	FileScene.update = function (

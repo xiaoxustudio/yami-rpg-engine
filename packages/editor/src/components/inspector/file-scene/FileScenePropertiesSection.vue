@@ -28,7 +28,7 @@
 			<NumberBox
 				:label="t('components.fileScene-tileWidth.label') || 'Tile Width'"
 				id="fileScene-tileWidth"
-				:ref="registryRef(inspectorEls, 'fileScene-tileWidth')"
+				ref="elTileWidth"
 				v-tip="t('components.fileScene-tileWidth.tip')"
 				v-model="form.tileWidth"
 				@input="onParamInput"
@@ -42,7 +42,7 @@
 			<NumberBox
 				:label="t('components.fileScene-tileHeight.label') || 'Tile Height'"
 				id="fileScene-tileHeight"
-				:ref="registryRef(inspectorEls, 'fileScene-tileHeight')"
+				ref="elTileHeight"
 				v-tip="t('components.fileScene-tileHeight.tip')"
 				v-model="form.tileHeight"
 				@input="onParamInput"
@@ -171,8 +171,11 @@
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import {
+	FILE_SCENE_CONTROLS_KEY,
+	type FileSceneControls
+} from '@app/composables/file-scene-page-bridge';
+import { toControl } from '@app/composables/control-refs';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -181,12 +184,16 @@ import { fileSceneContextKey } from './context.ts';
 
 const { t } = useI18n();
 const { form, onParamInput } = inject(fileSceneContextKey)!;
+/** 页面建的控件表：本 section 把自己那一半填进去。 */
+const controls = inject<FileSceneControls>(FILE_SCENE_CONTROLS_KEY, {});
 
 type SyncTarget = HTMLElement & {
 	write(value: number | string): void;
 	input: HTMLInputElement;
 };
 
+const elTileWidth = ref<InstanceType<typeof NumberBox> | null>(null);
+const elTileHeight = ref<InstanceType<typeof NumberBox> | null>(null);
 const elAmbientRedSlider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elAmbientRed = ref<InstanceType<typeof NumberBox> | null>(null);
 const elAmbientGreenSlider = ref<InstanceType<typeof SliderBox> | null>(null);
@@ -197,14 +204,17 @@ const elAmbientDirectSlider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elAmbientDirect = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'fileScene-ambient-red', elAmbientRed.value);
-	registerElement(inspectorEls, 'fileScene-ambient-green', elAmbientGreen.value);
-	registerElement(inspectorEls, 'fileScene-ambient-blue', elAmbientBlue.value);
-	registerElement(inspectorEls, 'fileScene-ambient-direct', elAmbientDirect.value);
-	registerElement(inspectorEls, 'fileScene-ambient-red-slider', elAmbientRedSlider.value);
-	registerElement(inspectorEls, 'fileScene-ambient-green-slider', elAmbientGreenSlider.value);
-	registerElement(inspectorEls, 'fileScene-ambient-blue-slider', elAmbientBlueSlider.value);
-	registerElement(inspectorEls, 'fileScene-ambient-direct-slider', elAmbientDirectSlider.value);
+	controls['fileScene-tileWidth'] = toControl(elTileWidth.value);
+	controls['fileScene-tileHeight'] = toControl(elTileHeight.value);
+	controls['fileScene-ambient-red'] = toControl(elAmbientRed.value);
+	controls['fileScene-ambient-green'] = toControl(elAmbientGreen.value);
+	controls['fileScene-ambient-blue'] = toControl(elAmbientBlue.value);
+	controls['fileScene-ambient-direct'] = toControl(elAmbientDirect.value);
+	controls['fileScene-ambient-red-slider'] = toControl(elAmbientRedSlider.value);
+	controls['fileScene-ambient-green-slider'] = toControl(elAmbientGreenSlider.value);
+	controls['fileScene-ambient-blue-slider'] = toControl(elAmbientBlueSlider.value);
+	controls['fileScene-ambient-direct-slider'] = toControl(elAmbientDirectSlider.value);
+	controls['fileScene-tileWidth'] = toControl(elTileWidth.value);
 	elAmbientRedSlider.value?.synchronize(elAmbientRed.value?.root as SyncTarget);
 	elAmbientGreenSlider.value?.synchronize(elAmbientGreen.value?.root as SyncTarget);
 	elAmbientBlueSlider.value?.synchronize(elAmbientBlue.value?.root as SyncTarget);

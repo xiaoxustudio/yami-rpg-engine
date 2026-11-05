@@ -51,7 +51,7 @@ type ControlTarget = ControlApi & { $el?: unknown };
  * `defineExpose` 是双向的：普通 DOM 节点（模板里的 `<div class="text">` 也会挂 ref）
  * 保留元素本身 —— `relate` 的 targets、tooltip 位置都需要它；组件则保留实例。
  */
-const toControl = (target: unknown): ControlApi | null => {
+export const toControl = (target: unknown): ControlApi | null => {
 	if (target == null) return null;
 	if (target instanceof HTMLElement) return target as ControlApi;
 	return target as ControlTarget;
