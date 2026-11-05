@@ -4,11 +4,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { onMounted, onUnmounted, provide } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { useFileActorPage } from '@app/composables/useFileActorPage';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import {
+	provideFileActorPage,
+	resetFileActorPage,
+	type FileActorPageApi
+} from '@app/composables/file-actor-page-bridge';
 import { fileActorContextKey } from './file-actor/context.ts';
 import FileActorPropertiesSection from './file-actor/FileActorPropertiesSection.vue';
 import FileActorMetaSection from './file-actor/FileActorMetaSection.vue';
@@ -21,13 +24,13 @@ const onParamInput = (value: unknown): void => {
 
 provide(fileActorContextKey, { form, onParamInput });
 
+const bridgeApi: FileActorPageApi = { sync };
+
 onMounted(() => {
 	const editor = Inspector.fileActor;
 	if (!editor) return;
-	const el = inspectorEls.get('fileActor-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	provideFileActorPage(bridgeApi);
+	onUnmounted(() => resetFileActorPage(bridgeApi));
 	sync();
 });
 </script>

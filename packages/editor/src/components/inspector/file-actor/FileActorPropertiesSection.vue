@@ -37,7 +37,7 @@
 				:label="t('components.fileActor-idleMotion.label')"
 				id="fileActor-idleMotion"
 				v-tip="t('components.fileActor-idleMotion.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-idleMotion')"
+				ref="idleMotionRef"
 				v-model="form.idleMotion"
 				@input="onParamInput"
 			/>
@@ -46,7 +46,7 @@
 				:label="t('components.fileActor-moveMotion.label')"
 				id="fileActor-moveMotion"
 				v-tip="t('components.fileActor-moveMotion.tip')"
-				:ref="registryRef(inspectorEls, 'fileActor-moveMotion')"
+				ref="moveMotionRef"
 				v-model="form.moveMotion"
 				@input="onParamInput"
 			/>
@@ -160,10 +160,13 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
+import {
+	provideFileActorMotion,
+	resetFileActorMotion,
+	type FileActorMotionApi
+} from '@app/composables/file-actor-page-bridge';
 import { Inspector } from '@app/inspector/inspector.ts';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -241,5 +244,24 @@ onMounted(() => {
 			value: false
 		}
 	]);
+});
+
+/** 「待机 / 移动动作」两个下拉：换动画后由单例经桥要求刷新。 */
+const idleMotionRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const moveMotionRef = ref<InstanceType<typeof SelectBox> | null>(null);
+
+const bridgeApi: FileActorMotionApi = {
+	reloadMotions: (items) => {
+		idleMotionRef.value?.loadItems(items);
+		moveMotionRef.value?.loadItems(items);
+		const prev = idleMotionRef.value?.read?.();
+		idleMotionRef.value?.write2?.(prev);
+		moveMotionRef.value?.write2?.(prev);
+	}
+};
+
+onMounted(() => {
+	provideFileActorMotion(bridgeApi);
+	onUnmounted(() => resetFileActorMotion(bridgeApi));
 });
 </script>
