@@ -1,9 +1,14 @@
 import { reactive } from 'vue';
+import {
+	getFileActorMeta,
+	getFileActorMotion,
+	getFileActorPage
+} from '@app/composables/file-actor-page-bridge';
 import { inspectorEls } from './element-registry.ts';
 import { getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@app/tools/window-object.ts';
-import { clear, on, read } from '@app/utils/element-utils';
+import { on } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -123,11 +128,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			write('events');
 			write('scripts');
 
-			(
-				inspectorEls.get('fileActor-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			getFileActorPage()?.sync();
 		}
 	};
 
@@ -136,14 +137,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
-			clear(inspectorEls.get('fileActor-sprites'));
-			clear(inspectorEls.get('fileActor-attributes'));
-			clear(inspectorEls.get('fileActor-skills'));
-			clear(inspectorEls.get('fileActor-equipments'));
-			clear(inspectorEls.get('fileActor-inventory'));
-			clear(inspectorEls.get('fileActor-events'));
-			clear(inspectorEls.get('fileActor-scripts'));
-			clear(inspectorEls.get('fileActor-parameter-pane'));
+			getFileActorMeta()?.clearLists();
 		}
 	};
 
@@ -251,13 +245,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 		event: Event & { value?: string }
 	) {
 		if (!event.value) return;
-		const elIdleMotion = inspectorEls.get('fileActor-idleMotion') as YamiElement;
-		const elMoveMotion = inspectorEls.get('fileActor-moveMotion') as YamiElement;
-		const items = Animation.getMotionListItems!(event.value);
-		elIdleMotion.loadItems(items);
-		elMoveMotion.loadItems(items);
-		elIdleMotion.write2(read(elIdleMotion));
-		elMoveMotion.write2(read(elMoveMotion));
+		getFileActorMotion()?.reloadMotions(Animation.getMotionListItems!(event.value));
 	};
 
 	FileActor.listChange = function (this: FileActorShape, _event: Event) {

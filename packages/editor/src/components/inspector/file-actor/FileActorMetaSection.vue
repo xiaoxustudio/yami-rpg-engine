@@ -88,11 +88,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
 import { Inspector } from '@app/inspector/inspector.ts';
+import {
+	provideFileActorMeta,
+	resetFileActorMeta,
+	type FileActorMetaApi
+} from '@app/composables/file-actor-page-bridge';
+import { clear } from '@app/utils/element-utils';
 import { EventListInterface } from '@app/tools/event-list.ts';
 import { AttributeListInterface } from '@app/tools/property-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
@@ -116,15 +120,25 @@ const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
 const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
+const bridgeApi: FileActorMetaApi = {
+	clearLists: () => {
+		for (const control of [
+			elSprites.value,
+			elAttributes.value,
+			elSkills.value,
+			elEquipments.value,
+			elInventory.value,
+			elEvents.value,
+			elScripts.value,
+			elParameterPane.value
+		]) {
+			clear((control as { root?: HTMLElement } | null)?.root ?? null);
+		}
+	}
+};
 onMounted(() => {
-	registerElement(inspectorEls, 'fileActor-sprites', elSprites.value);
-	registerElement(inspectorEls, 'fileActor-attributes', elAttributes.value);
-	registerElement(inspectorEls, 'fileActor-skills', elSkills.value);
-	registerElement(inspectorEls, 'fileActor-equipments', elEquipments.value);
-	registerElement(inspectorEls, 'fileActor-inventory', elInventory.value);
-	registerElement(inspectorEls, 'fileActor-events', elEvents.value);
-	registerElement(inspectorEls, 'fileActor-scripts', elScripts.value);
-	registerElement(inspectorEls, 'fileActor-parameter-pane', elParameterPane.value);
+	provideFileActorMeta(bridgeApi);
+	onUnmounted(() => resetFileActorMeta(bridgeApi));
 	const editor = Inspector.fileActor;
 	if (!editor) return;
 	if (editor.sprites) elSprites.value?.bind(editor.sprites);

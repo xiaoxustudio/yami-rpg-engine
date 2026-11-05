@@ -19,7 +19,13 @@ export interface FileActorMotionApi {
 	reloadMotions(items: unknown[]): void;
 }
 
+export interface FileActorMetaApi {
+	/** 清空元信息页的 8 张列表（sprites / attributes / skills / equipments / inventory / events / scripts / parameter pane）。 */
+	clearLists(): void;
+}
+
 const pageBridge = createFormBridge<FileActorPageApi>('fileActorPage');
+const metaBridge = createFormBridge<FileActorMetaApi>('fileActorMeta');
 const motionBridge = createFormBridge<FileActorMotionApi>('fileActorMotion');
 
 /** 页面挂载时登记。 */
@@ -35,3 +41,10 @@ export const provideFileActorMotion = (api: FileActorMotionApi): void => motionB
 export const resetFileActorMotion = (api: FileActorMotionApi): void => motionBridge.reset(api);
 /** 单例侧读取。 */
 export const getFileActorMotion = (): FileActorMotionApi | null => motionBridge.get();
+
+/** 元信息 section 挂载时登记。 */
+export const provideFileActorMeta = (api: FileActorMetaApi): void => metaBridge.provide(api);
+/** 元信息 section 卸载时注销。 */
+export const resetFileActorMeta = (api: FileActorMetaApi): void => metaBridge.reset(api);
+/** 单例侧读取。 */
+export const getFileActorMeta = (): FileActorMetaApi | null => metaBridge.get();

@@ -6,6 +6,7 @@ import UIImagePage from '@app/components/inspector/UIImagePage.vue';
 import FileActorPage from '@app/components/inspector/FileActorPage.vue';
 import { inspectorEls } from '../element-registry.ts';
 import { getUiElementControls } from '@app/composables/ui-element-page-controls';
+import { getFileActorMeta } from '@app/composables/file-actor-page-bridge';
 
 vi.mock('@app/inspector/inspector.ts', () => ({
 	Inspector: {
@@ -15,6 +16,17 @@ vi.mock('@app/inspector/inspector.ts', () => ({
 		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)
 	}
 }));
+
+const FILE_ACTOR_LIST_IDS = [
+	'fileActor-sprites',
+	'fileActor-attributes',
+	'fileActor-skills',
+	'fileActor-equipments',
+	'fileActor-inventory',
+	'fileActor-events',
+	'fileActor-scripts',
+	'fileActor-parameter-pane'
+];
 
 const missingOf = (ids: string[]): string[] =>
 	ids.filter((id) => !(inspectorEls.get(id) instanceof HTMLElement));
@@ -52,27 +64,20 @@ describe('inspector 元素注册表', () => {
 		expect(getUiElementControls(), '卸载后应注销').toBeNull();
 	});
 
-	it('FileActorPage：已有具名 ref 的控件在 onMounted 里被命令式登记', async () => {
+	it('FileActorPage：元信息 section 交出 clearLists，8 张列表不再进注册表', async () => {
 		const wrapper = mount(FileActorPage, {
 			attachTo: document.body,
 			global: { plugins: [initYamiI18n()] }
 		});
 		await nextTick();
 
-		expect(
-			missingOf([
-				'fileActor-sprites',
-				'fileActor-attributes',
-				'fileActor-skills',
-				'fileActor-equipments',
-				'fileActor-inventory',
-				'fileActor-events',
-				'fileActor-scripts',
-				'fileActor-parameter-pane'
-			])
-		).toEqual([]);
+		expect(missingOf([...FILE_ACTOR_LIST_IDS])).toEqual(FILE_ACTOR_LIST_IDS);
+		const meta = getFileActorMeta();
+		// 只断言接缝在：clearLists() 要在真实 Inspector 绑定后才安全，这里用不到副作用
+		expect(typeof meta?.clearLists).toBe('function');
 
 		wrapper.unmount();
+		expect(getFileActorMeta(), '卸载后应注销').toBeNull();
 	});
 
 	it('控件表存的是控件本身（组件实例），不再是注册表里的裸元素', async () => {
