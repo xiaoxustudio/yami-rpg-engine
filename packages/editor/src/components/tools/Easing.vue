@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="easing" :ref="registryRef(dataEls, 'easing')" @confirm="onConfirm">
+	<WindowFrame id="easing" ref="frame" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.easing.title') }}
@@ -10,7 +10,7 @@
 			<div class="legend">{{ t('components.easing-list.label') }}</div>
 			<TreeList
 				id="easing-list"
-				:ref="registryRef(dataEls, 'easing-list')"
+				ref="listRef"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -23,31 +23,20 @@
 		<EasingPointsSection />
 		<div class="field-set" id="easing-curve-fieldset">
 			<div class="legend">{{ t('components.easing-curve-canvas.label') }}</div>
-			<canvas
-				id="easing-curve-canvas"
-				:ref="registryRef(dataEls, 'easing-curve-canvas')"
-				width="0"
-				height="0"
-				tabindex="-1"
-			/>
+			<canvas id="easing-curve-canvas" ref="curveRef" width="0" height="0" tabindex="-1" />
 			<RadioBox name="easing-scale" value="1">100%</RadioBox>
 			<RadioBox name="easing-scale" value="0.5">50%</RadioBox>
 		</div>
 		<div class="field-set" id="easing-preview-fieldset">
 			<div class="legend">{{ t('components.easing-preview-canvas.label') }}</div>
-			<canvas
-				id="easing-preview-canvas"
-				:ref="registryRef(dataEls, 'easing-preview-canvas')"
-				width="0"
-				height="0"
-			/>
+			<canvas id="easing-preview-canvas" ref="previewRef" width="0" height="0" />
 			<div class="grid-box" id="easing-preview-grid">
 				<div class="text">{{ t('components.easing-preview-reverse.label') }}</div>
 				<SelectBox
 					:label="t('components.easing-preview-reverse.label')"
 					id="easing-preview-reverse"
 					v-tip="t('components.easing-preview-reverse.tip')"
-					:ref="registryRef(dataEls, 'easing-preview-reverse')"
+					ref="previewReverseRef"
 					v-model="form.preview.reverse"
 				/>
 				<div class="text">{{ t('components.easing-preview-duration.label') }}</div>
@@ -78,11 +67,15 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, type VNode } from 'vue';
+import { h, onMounted, onUnmounted, ref, type VNode } from 'vue';
 import type { YamiEvent } from '@app/types/editor-event';
-import { dataEls } from '@app/data/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
+import {
+	provideEasingWindowHandles,
+	resetEasingWindowHandles,
+	type EasingWindowHandles
+} from '@app/composables/easing-handles';
+import type { YamiElement } from '@app/types/element-api';
 import { Easing } from '@app/data/transition-window.ts';
 import { useEasingWindow } from '@app/composables/useEasingWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -137,7 +130,34 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 	return [h('span', { class: ['node-icon', ['icon-command', 'flow']] })];
 };
 
-onMounted(() => {});
+/** 窗口根 / 列表 / 两条画布 / 预览开关一次交给单例（它长期持有这些节点）。 */
+const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+const listRef = ref<unknown>(null);
+const curveRef = ref<unknown>(null);
+const previewRef = ref<unknown>(null);
+const previewReverseRef = ref<unknown>(null);
+
+const rootOf = (target: unknown): YamiElement | null => {
+	const instance = target as { root?: unknown; $el?: unknown } | null;
+	const el = instance?.root ?? instance?.$el ?? target;
+	return el instanceof HTMLElement ? (el as YamiElement) : null;
+};
+
+let handles: EasingWindowHandles | null = null;
+
+onMounted(() => {
+	const root = rootOf(frame.value);
+	const list = rootOf(listRef.value);
+	const curve = rootOf(curveRef.value);
+	const preview = rootOf(previewRef.value);
+	const previewReverse = rootOf(previewReverseRef.value);
+	if (!root || !list || !curve || !preview || !previewReverse) return;
+	handles = { root, list, curve, preview, previewReverse };
+	provideEasingWindowHandles(handles);
+	onUnmounted(() => {
+		if (handles) resetEasingWindowHandles(handles);
+	});
+});
 </script>
 <style>
 #easing {

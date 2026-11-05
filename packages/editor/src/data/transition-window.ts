@@ -1,6 +1,5 @@
 import { getListConfig, setTreeItemText, radioProxyMap, type RadioProxyElement } from '@ui-kit';
-import { dataEls } from '@app/data/element-registry';
-import { registryElements, registryElement } from '@app/utils/element-registry';
+import { getEasingPointsHandles, getEasingWindowHandles } from '@app/composables/easing-handles';
 import { getRelativeCoords, relate } from '@app/utils/element-utils';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
@@ -172,11 +171,12 @@ export const Easing = EasingBase as typeof EasingBase & EasingSlots;
 
 function ensureDomBound() {
 	if (Easing.list) return;
-	const list = dataEls.get('easing-list') as YamiElement;
-	if (!list) return;
+	const handles = getEasingWindowHandles();
+	if (!handles) return;
+	const list = handles.list;
 	Easing.list = list as NonNullable<typeof Easing.list>;
-	Easing.curve = registryElement<EasingCanvasShape>(dataEls, 'easing-curve-canvas');
-	Easing.preview = registryElement<EasingCanvasShape>(dataEls, 'easing-preview-canvas');
+	Easing.curve = handles.curve as unknown as EasingCanvasShape;
+	Easing.preview = handles.preview as unknown as EasingCanvasShape;
 	list.saveSelection = Easing.list_saveSelection;
 	list.restoreSelection = Easing.list_restoreSelection;
 	list.updateItemName = Easing.list_updateItemName as (item: unknown) => unknown;
@@ -214,25 +214,23 @@ Easing.initialize = () => {
 	getListConfig(list).updaters.push(list.updateTextNode);
 
 	applyLocalizedItems('easing-mode', [2, 5, 8], (items) =>
-		dataEls.get('easing-mode')?.loadItems?.(items)
+		getEasingPointsHandles()?.mode?.loadItems?.(items)
 	);
 
 	applyLocalizedItems('easing-preview-reverse', [true, false], (items) =>
-		dataEls.get('easing-preview-reverse')?.loadItems?.(items)
+		getEasingWindowHandles()?.previewReverse?.loadItems?.(items)
 	);
 
 	const inputs = [];
 	for (let i = 0; i < 8; i++) {
 		inputs.push($(`#easing-points-${i}-x`), $(`#easing-points-${i}-y`));
 	}
-	dataEls
-		.get('easing-mode')
-		?.enableHiddenMode?.()
-		.relate([
-			{ case: 2, targets: inputs.slice(0, 4) },
-			{ case: 5, targets: inputs.slice(0, 10) },
-			{ case: 8, targets: inputs }
-		]);
+	getEasingPointsHandles()?.mode?.enableHiddenMode?.();
+	getEasingPointsHandles()?.mode?.relate?.([
+		{ case: 2, targets: inputs.slice(0, 4) },
+		{ case: 5, targets: inputs.slice(0, 10) },
+		{ case: 8, targets: inputs }
+	]);
 
 	Easing.scale = 1;
 	const easingScaleInit = radioProxyMap['easing-scale'] as RadioProxyElement | undefined;
@@ -282,29 +280,18 @@ Easing.initialize = () => {
 
 	window.addEventListener('dprchange', Easing.dprchange as EventListener);
 	window.addEventListener('themechange', Easing.themechange as EventListener);
-	on(dataEls.get('easing') as YamiElement, 'close', Easing.windowClose);
-	on(dataEls.get('easing') as YamiElement, 'closed', Easing.windowClosed);
-	on(dataEls.get('easing-points-grid') as YamiElement, 'change', Easing.dataChange);
+	const windowHandles = getEasingWindowHandles();
+	if (windowHandles) {
+		on(windowHandles.root, 'close', Easing.windowClose);
+		on(windowHandles.root, 'closed', Easing.windowClosed);
+	}
+	const pointsHandles = getEasingPointsHandles();
+	if (pointsHandles) on(pointsHandles.grid, 'change', Easing.dataChange);
 	on(list, 'keydown', Easing.listKeydown);
-	on(dataEls.get('easing-mode') as YamiElement, 'input', Easing.modeSelect);
-	registryElements(dataEls, [
-		'easing-points-0-x',
-		'easing-points-0-y',
-		'easing-points-1-x',
-		'easing-points-1-y',
-		'easing-points-2-x',
-		'easing-points-2-y',
-		'easing-points-3-x',
-		'easing-points-3-y',
-		'easing-points-4-x',
-		'easing-points-4-y',
-		'easing-points-5-x',
-		'easing-points-5-y',
-		'easing-points-6-x',
-		'easing-points-6-y',
-		'easing-points-7-x',
-		'easing-points-7-y'
-	]).forEach((el) => on(el, 'input', Easing.pointInput));
+	if (pointsHandles) on(pointsHandles.mode, 'input', Easing.modeSelect);
+	for (const el of Object.values(pointsHandles?.points ?? {})) {
+		on(el, 'input', Easing.pointInput);
+	}
 	const easingScale = radioProxyMap['easing-scale'] as RadioProxyElement | undefined;
 	if (easingScale) on(easingScale, 'input', Easing.scaleInput);
 	if (Easing.curve) {

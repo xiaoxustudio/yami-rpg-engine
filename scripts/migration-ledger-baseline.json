@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-05T06:11:46.109Z",
+	"generatedAt": "2026-11-05T06:31:18.714Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -131,8 +131,8 @@
 			"label": "元素注册表寻址（*Els.get、registryElement(s)）",
 			"target": "zero",
 			"value": {
-				"total": 728,
-				"files": 166
+				"total": 717,
+				"files": 165
 			}
 		},
 		"legacy-ui-lines": {
@@ -223,8 +223,8 @@
 			"label": "双重断言 as unknown as",
 			"target": "zero",
 			"value": {
-				"total": 2,
-				"files": 2
+				"total": 4,
+				"files": 3
 			}
 		},
 		"unremovable-listeners": {
@@ -263,8 +263,8 @@
 			"label": "YamiElement 类型引用（元素契约存量）",
 			"target": "zero",
 			"value": {
-				"total": 534,
-				"files": 102
+				"total": 543,
+				"files": 105
 			}
 		}
 	}
