@@ -1,6 +1,5 @@
 import { $, getElementWriter } from '@app/utils/dom';
-import { inspectorEls } from './element-registry.ts';
-import { registryElements } from '@app/utils/element-registry';
+import { getUiElementControls } from '@app/composables/ui-element-page-controls';
 import { clear, disable, enable, hide, on, show } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
@@ -24,6 +23,13 @@ const SIZE_INPUT_IDS = [
 	'uiElement-transform-skewY',
 	'uiElement-transform-opacity'
 ];
+
+/** 页面控件表（section 挂载时填进来）；未挂载时返回 null，调用点照旧判空。 */
+const elOf = (id: string): YamiElement | null =>
+	(getUiElementControls()?.[id] as YamiElement | null | undefined) ?? null;
+
+const elsOf = (ids: string[]): YamiElement[] =>
+	ids.map((id) => elOf(id)).filter((el): el is YamiElement => el != null);
 
 /** 共享分组（事件 / 脚本 / 参数）只写在 uiImage 页模板里；切到其它 UI 页时要靠 pageSwitch 搬过去。 */
 const UI_ELEMENT_PAGE_TYPES = new Set([
@@ -98,26 +104,26 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 
 	UIElement.initialize = function (this: typeof UIElement) {
 		if (this._elementInitialized) return;
-		if (!inspectorEls.get('uiElement-name')) return;
+		if (!elOf('uiElement-name')) return;
 		this._elementInitialized = true;
-		this.nameBox = inspectorEls.get('uiElement-name') as YamiElement;
-		this.pointerEvents = inspectorEls.get('uiElement-pointerEvents') as YamiElement;
-		this.generalGroup = inspectorEls.get('uiElement-general-group') as YamiElement;
-		this.transformGroup = inspectorEls.get('uiElement-transform-group') as YamiElement;
-		this.eventsGroup = inspectorEls.get('uiElement-events-group') as YamiElement;
-		this.scriptsGroup = inspectorEls.get('uiElement-scripts-group') as YamiElement;
-		this.parameterPane = inspectorEls.get('uiElement-parameter-pane') as YamiElement;
-		this.pointerEvents.loadItems([
+		this.nameBox = elOf('uiElement-name');
+		this.pointerEvents = elOf('uiElement-pointerEvents');
+		this.generalGroup = elOf('uiElement-general-group');
+		this.transformGroup = elOf('uiElement-transform-group');
+		this.eventsGroup = elOf('uiElement-events-group');
+		this.scriptsGroup = elOf('uiElement-scripts-group');
+		this.parameterPane = elOf('uiElement-parameter-pane');
+		this.pointerEvents?.loadItems([
 			{ name: 'Enabled', value: 'enabled' },
 			{ name: 'Disabled', value: 'disabled' },
 			{ name: 'Skipped', value: 'skipped' }
 		]);
 
-		inspectorEls.get('uiElement-events')?.bind?.(new EventListInterface(this, UIOwner));
+		elOf('uiElement-events')?.bind?.(new EventListInterface(this, UIOwner));
 
-		inspectorEls.get('uiElement-scripts')?.bind?.(new ScriptListInterface(this, UIOwner));
+		elOf('uiElement-scripts')?.bind?.(new ScriptListInterface(this, UIOwner));
 
-		this.parameterPane.bind(inspectorEls.get('uiElement-scripts'));
+		this.parameterPane?.bind?.(elOf('uiElement-scripts'));
 
 		on(Inspector.manager, 'switch', this.pageSwitch!);
 		// 首次选中 UI 元素时，`Inspector.open` 的 `manager.switch(type)` 往往早于这里注册监听；
@@ -129,7 +135,7 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 		}
 		const alignElements = $('.uiElement-transform-align');
 		alignElements.forEach((el) => on(el, 'click', this.alignmentClick!));
-		const otherElements = registryElements(inspectorEls, [
+		const otherElements = elsOf([
 			'uiElement-name',
 			'uiElement-pointerEvents',
 			'uiElement-transform-anchorX',
@@ -153,7 +159,7 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 		otherElements.forEach((el: HTMLElement) =>
 			on(el, 'blur', Inspector.inputBlur!(this, UIOwner))
 		);
-		registryElements(inspectorEls, ['uiElement-events', 'uiElement-scripts']).forEach((el) =>
+		elsOf(['uiElement-events', 'uiElement-scripts']).forEach((el) =>
 			on(el, 'change', getUIStore().listChange)
 		);
 	};
@@ -182,14 +188,14 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 	UIElement.lockSizeInputs = function (this: typeof UIElement) {
 		if (!this.synchronous) {
 			this.synchronous = true;
-			disable(registryElements(inspectorEls, SIZE_INPUT_IDS));
+			disable(elsOf(SIZE_INPUT_IDS));
 		}
 	};
 
 	UIElement.unlockSizeInputs = function (this: typeof UIElement) {
 		if (this.synchronous) {
 			this.synchronous = false;
-			enable(registryElements(inspectorEls, SIZE_INPUT_IDS));
+			enable(elsOf(SIZE_INPUT_IDS));
 		}
 	};
 
@@ -222,7 +228,7 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 			write('events');
 			write('scripts');
 			(
-				inspectorEls.get('uiImage-vue-mount') as HTMLElement & {
+				elOf('uiImage-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();
@@ -232,9 +238,9 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 	UIElement.close = function (this: typeof UIElement) {
 		if (this.target) {
 			this.target = null;
-			clear(inspectorEls.get('uiElement-events'));
-			clear(inspectorEls.get('uiElement-scripts'));
-			clear(inspectorEls.get('uiElement-parameter-pane'));
+			clear(elOf('uiElement-events'));
+			clear(elOf('uiElement-scripts'));
+			clear(elOf('uiElement-parameter-pane'));
 		}
 	};
 
@@ -328,10 +334,10 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 		const node = UIElement.target!;
 		const elements = node.instances;
 		const transform = node.transform;
-		const changes: { input: HTMLElement; oldValue: number; newValue: number }[] = [];
+		const changes: { input: HTMLElement | null; oldValue: number; newValue: number }[] = [];
 		if (x !== undefined) {
 			if (transform.anchorX !== x) {
-				const input = inspectorEls.get('uiElement-transform-anchorX') as YamiElement;
+				const input = elOf('uiElement-transform-anchorX');
 				changes.push({
 					input: input,
 					oldValue: transform.anchorX,
@@ -340,7 +346,7 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 				elements.setProperty('transform-anchorX', x);
 			}
 			if (transform.x !== 0) {
-				const input = inspectorEls.get('uiElement-transform-x') as YamiElement;
+				const input = elOf('uiElement-transform-x');
 				changes.push({
 					input: input,
 					oldValue: transform.x,
@@ -349,7 +355,7 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 				elements.setProperty('transform-x', 0);
 			}
 			if (transform.x2 !== x) {
-				const input = inspectorEls.get('uiElement-transform-x2') as YamiElement;
+				const input = elOf('uiElement-transform-x2');
 				changes.push({
 					input: input,
 					oldValue: transform.x2,
@@ -360,7 +366,7 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 		}
 		if (y !== undefined) {
 			if (transform.anchorY !== y) {
-				const input = inspectorEls.get('uiElement-transform-anchorY') as YamiElement;
+				const input = elOf('uiElement-transform-anchorY');
 				changes.push({
 					input: input,
 					oldValue: transform.anchorY,
@@ -369,7 +375,7 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 				elements.setProperty('transform-anchorY', y);
 			}
 			if (transform.y !== 0) {
-				const input = inspectorEls.get('uiElement-transform-y') as YamiElement;
+				const input = elOf('uiElement-transform-y');
 				changes.push({
 					input: input,
 					oldValue: transform.y,
@@ -378,7 +384,7 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 				elements.setProperty('transform-y', 0);
 			}
 			if (transform.y2 !== y) {
-				const input = inspectorEls.get('uiElement-transform-y2') as YamiElement;
+				const input = elOf('uiElement-transform-y2');
 				changes.push({
 					input: input,
 					oldValue: transform.y2,
@@ -398,7 +404,7 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 				changes: changes
 			});
 			(
-				inspectorEls.get('uiImage-vue-mount') as HTMLElement & {
+				elOf('uiImage-vue-mount') as HTMLElement & {
 					sync?: () => void;
 				}
 			)?.sync?.();

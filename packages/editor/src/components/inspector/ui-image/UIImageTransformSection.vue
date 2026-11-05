@@ -1,9 +1,5 @@
 <template>
-	<DetailBox
-		id="uiElement-transform-group"
-		:ref="registryRef(inspectorEls, 'uiElement-transform-group')"
-		open
-	>
+	<DetailBox id="uiElement-transform-group" :ref="bind('uiElement-transform-group')" open>
 		<DetailSummary>{{
 			t('components.uiElement-transform-grid.label') || 'Transform'
 		}}</DetailSummary>
@@ -68,7 +64,7 @@
 				<NumberBox
 					id="uiElement-transform-anchorX"
 					v-tip="t('components.uiElement-transform-anchorX.tip')"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-anchorX')"
+					:ref="bind('uiElement-transform-anchorX')"
 					v-model="form.anchorX"
 					min="-100"
 					max="100"
@@ -79,7 +75,7 @@
 				<NumberBox
 					id="uiElement-transform-anchorY"
 					v-tip="t('components.uiElement-transform-anchorY.tip')"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-anchorY')"
+					:ref="bind('uiElement-transform-anchorY')"
 					v-model="form.anchorY"
 					min="-100"
 					max="100"
@@ -93,7 +89,7 @@
 				<NumberBox
 					id="uiElement-transform-x"
 					v-tip="t('components.uiElement-transform-x.tip')"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-x')"
+					:ref="bind('uiElement-transform-x')"
 					v-model="form.x"
 					min="-10000"
 					max="10000"
@@ -104,7 +100,7 @@
 				<NumberBox
 					id="uiElement-transform-x2"
 					v-tip="t('components.uiElement-transform-x2.tip')"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-x2')"
+					:ref="bind('uiElement-transform-x2')"
 					v-model="form.x2"
 					min="-100"
 					max="100"
@@ -119,7 +115,7 @@
 				<NumberBox
 					id="uiElement-transform-y"
 					v-tip="t('components.uiElement-transform-y.tip')"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-y')"
+					:ref="bind('uiElement-transform-y')"
 					v-model="form.y"
 					min="-10000"
 					max="10000"
@@ -130,7 +126,7 @@
 				<NumberBox
 					id="uiElement-transform-y2"
 					v-tip="t('components.uiElement-transform-y2.tip')"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-y2')"
+					:ref="bind('uiElement-transform-y2')"
 					v-model="form.y2"
 					min="-100"
 					max="100"
@@ -146,7 +142,7 @@
 			<div id="uiElement-transform-width-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-width"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-width')"
+					:ref="bind('uiElement-transform-width')"
 					v-tip="t('components.uiElement-transform-width.tip')"
 					v-model="form.width"
 					min="-10000"
@@ -157,7 +153,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-width2"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-width2')"
+					:ref="bind('uiElement-transform-width2')"
 					v-tip="t('components.uiElement-transform-width2.tip')"
 					v-model="form.width2"
 					min="-100"
@@ -174,7 +170,7 @@
 			<div id="uiElement-transform-height-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-height"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-height')"
+					:ref="bind('uiElement-transform-height')"
 					v-tip="t('components.uiElement-transform-height.tip')"
 					v-model="form.height"
 					min="-10000"
@@ -185,7 +181,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-height2"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-height2')"
+					:ref="bind('uiElement-transform-height2')"
 					v-tip="t('components.uiElement-transform-height2.tip')"
 					v-model="form.height2"
 					min="-100"
@@ -205,7 +201,7 @@
 			>
 				<NumberBox
 					id="uiElement-transform-rotation"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-rotation')"
+					:ref="bind('uiElement-transform-rotation')"
 					v-tip="t('components.uiElement-transform-rotation.tip')"
 					v-model="form.rotation"
 					min="-36000"
@@ -221,7 +217,7 @@
 			<div id="uiElement-transform-scale-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-scaleX"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-scaleX')"
+					:ref="bind('uiElement-transform-scaleX')"
 					v-tip="t('components.uiElement-transform-scaleX.tip')"
 					v-model="form.scaleX"
 					min="-100"
@@ -232,7 +228,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-scaleY"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-scaleY')"
+					:ref="bind('uiElement-transform-scaleY')"
 					v-tip="t('components.uiElement-transform-scaleY.tip')"
 					v-model="form.scaleY"
 					min="-100"
@@ -248,7 +244,7 @@
 			<div id="uiElement-transform-skew-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-skewX"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-skewX')"
+					:ref="bind('uiElement-transform-skewX')"
 					v-tip="t('components.uiElement-transform-skewX.tip')"
 					v-model="form.skewX"
 					min="-100"
@@ -259,7 +255,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-skewY"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-skewY')"
+					:ref="bind('uiElement-transform-skewY')"
 					v-tip="t('components.uiElement-transform-skewY.tip')"
 					v-model="form.skewY"
 					min="-100"
@@ -275,7 +271,7 @@
 			<div id="uiElement-transform-opacity-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiElement-transform-opacity"
-					:ref="registryRef(inspectorEls, 'uiElement-transform-opacity')"
+					:ref="bind('uiElement-transform-opacity')"
 					v-tip="t('components.uiElement-transform-opacity.tip')"
 					v-model="form.opacity"
 					min="0"
@@ -291,13 +287,20 @@
 
 <script setup lang="ts">
 import { inject } from 'vue';
+import {
+	UI_ELEMENT_CONTROLS_KEY,
+	createControlBinder,
+	type UiElementControlTable
+} from '@app/composables/ui-element-page-controls';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import { uiImageContextKey } from './context.ts';
+
+/** section 往页面那张表里填自己那一半。 */
+const controls = inject<UiElementControlTable>(UI_ELEMENT_CONTROLS_KEY, {});
+const bind = createControlBinder(controls);
 
 const { t } = useI18n();
 const { form, onParamInput } = inject(uiImageContextKey)!;

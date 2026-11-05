@@ -1,47 +1,46 @@
 <template>
 	<UIImageGeneralSection />
 	<UIImageTransformSection />
-	<DetailBox
-		id="uiElement-events-group"
-		:ref="registryRef(inspectorEls, 'uiElement-events-group')"
-		open
-	>
+	<DetailBox id="uiElement-events-group" :ref="bind('uiElement-events-group')" open>
 		<DetailSummary>{{ t('components.uiElement-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="uiElement-events"
 			v-tip="t('components.uiElement-events.tip')"
-			:ref="registryRef(inspectorEls, 'uiElement-events')"
+			:ref="bind('uiElement-events')"
 			class="inspector-list"
 			filter="element"
 			flexible
 		></ParamList>
 	</DetailBox>
-	<DetailBox
-		id="uiElement-scripts-group"
-		:ref="registryRef(inspectorEls, 'uiElement-scripts-group')"
-		open
-	>
+	<DetailBox id="uiElement-scripts-group" :ref="bind('uiElement-scripts-group')" open>
 		<DetailSummary>{{ t('components.uiElement-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="uiElement-scripts"
 			v-tip="t('components.uiElement-scripts.tip')"
-			:ref="registryRef(inspectorEls, 'uiElement-scripts')"
+			:ref="bind('uiElement-scripts')"
 			class="inspector-list"
 			flexible
 		></ParamList>
 	</DetailBox>
 	<ParameterPane
 		id="uiElement-parameter-pane"
-		:ref="registryRef(inspectorEls, 'uiElement-parameter-pane')"
+		:ref="bind('uiElement-parameter-pane')"
 	></ParameterPane>
 	<UIImagePropertiesSection />
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
+import { onMounted, onUnmounted, provide } from 'vue';
+import {
+	UI_ELEMENT_CONTROLS_KEY,
+	createControlBinder,
+	provideUiElementControls,
+	resetUiElementControls,
+	type UiElementControlTable
+} from '@app/composables/ui-element-page-controls';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef, registryElements } from '@app/utils/element-registry';
+import { registryElements } from '@app/utils/element-registry';
 import { useUIImagePage } from '@app/composables/useUIImagePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -56,6 +55,11 @@ import UIImageGeneralSection from './ui-image/UIImageGeneralSection.vue';
 import UIImageTransformSection from './ui-image/UIImageTransformSection.vue';
 import UIImagePropertiesSection from './ui-image/UIImagePropertiesSection.vue';
 
+/** 页面建表：section 往里填，单例按 key 读。 */
+const controls: UiElementControlTable = {};
+provide(UI_ELEMENT_CONTROLS_KEY, controls);
+const bind = createControlBinder(controls);
+
 const { t } = useI18n();
 
 const { form, sync, onParamInput: onParamInputEvent } = useUIImagePage();
@@ -69,6 +73,8 @@ provide(uiImageContextKey, { form, onParamInput });
 const { bindInput, bindSliders } = useInspectorInput();
 
 onMounted(() => {
+	provideUiElementControls(controls);
+	onUnmounted(() => resetUiElementControls(controls));
 	const uiImage = Inspector.uiImage;
 	if (!uiImage) return;
 	const elements = registryElements(inspectorEls, [

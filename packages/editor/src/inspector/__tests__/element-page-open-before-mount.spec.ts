@@ -1,10 +1,13 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPageManagerElement } from '@ui-kit';
 
 vi.unmock('@app/inspector/element-page.ts');
 
 import { Inspector } from '@app/inspector/inspector.ts';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import {
+	provideUiElementControls,
+	type UiElementControlTable
+} from '@app/composables/ui-element-page-controls';
 import '@app/inspector/element-page.ts';
 import type { YamiElement } from '@app/types/element-api';
 
@@ -26,7 +29,16 @@ const openNode = (pointerEvents: string | undefined): never =>
 	({ name: 'X', pointerEvents, transform: {}, instances: {} }) as never;
 
 describe('UIElement.open 与「控件尚未登记」', () => {
+	let controls: UiElementControlTable = {};
+
+	beforeEach(() => {
+		controls = {};
+		// 每个用例都换一张空表并登记给单例，避免上一条用例的键残留
+		provideUiElementControls(controls);
+	});
+
 	it('控件还没登记时 open() 不抛错（旧代码正是在这里炸）', () => {
+		provideUiElementControls(controls);
 		Inspector.uiElement.pointerEvents = null;
 		Inspector.uiElement.target = null;
 		expect(() => Inspector.uiElement.open(openNode('enabled'))).not.toThrow();
@@ -36,14 +48,15 @@ describe('UIElement.open 与「控件尚未登记」', () => {
 		Inspector.manager = document.createElement('div');
 		const pointerEvents = makeEl();
 		pointerEvents.classList.add('hidden');
-		inspectorEls.set('uiElement-name', makeEl());
-		inspectorEls.set('uiElement-pointerEvents', pointerEvents);
-		inspectorEls.set('uiElement-general-group', makeEl());
-		inspectorEls.set('uiElement-transform-group', makeEl());
-		inspectorEls.set('uiElement-events-group', makeEl());
-		inspectorEls.set('uiElement-scripts-group', makeEl());
-		inspectorEls.set('uiElement-parameter-pane', makeEl());
+		controls['uiElement-name'] = makeEl() as never;
+		controls['uiElement-pointerEvents'] = pointerEvents as never;
+		controls['uiElement-general-group'] = makeEl() as never;
+		controls['uiElement-transform-group'] = makeEl() as never;
+		controls['uiElement-events-group'] = makeEl() as never;
+		controls['uiElement-scripts-group'] = makeEl() as never;
+		controls['uiElement-parameter-pane'] = makeEl() as never;
 
+		provideUiElementControls(controls);
 		Inspector.uiElement._elementInitialized = false;
 		Inspector.uiElement.pointerEvents = null;
 
@@ -57,8 +70,8 @@ describe('UIElement.open 与「控件尚未登记」', () => {
 
 	it('控件在首次 open 时**确实还没登记** ⇒ 必须安排重试（旧代码 `?? NaN` 让这条路径恒不执行）', async () => {
 		Inspector.manager = document.createElement('div');
-		inspectorEls.set('uiElement-name', null);
-		inspectorEls.set('uiElement-pointerEvents', null);
+		controls['uiElement-name'] = null as never;
+		controls['uiElement-pointerEvents'] = null as never;
 		Inspector.uiElement._elementInitialized = false;
 		Inspector.uiElement._openRetry = undefined;
 		Inspector.uiElement.pointerEvents = null;
@@ -70,13 +83,13 @@ describe('UIElement.open 与「控件尚未登记」', () => {
 
 		const pointerEvents = makeEl();
 		pointerEvents.classList.add('hidden');
-		inspectorEls.set('uiElement-name', makeEl());
-		inspectorEls.set('uiElement-pointerEvents', pointerEvents);
-		inspectorEls.set('uiElement-general-group', makeEl());
-		inspectorEls.set('uiElement-transform-group', makeEl());
-		inspectorEls.set('uiElement-events-group', makeEl());
-		inspectorEls.set('uiElement-scripts-group', makeEl());
-		inspectorEls.set('uiElement-parameter-pane', makeEl());
+		controls['uiElement-name'] = makeEl() as never;
+		controls['uiElement-pointerEvents'] = pointerEvents as never;
+		controls['uiElement-general-group'] = makeEl() as never;
+		controls['uiElement-transform-group'] = makeEl() as never;
+		controls['uiElement-events-group'] = makeEl() as never;
+		controls['uiElement-scripts-group'] = makeEl() as never;
+		controls['uiElement-parameter-pane'] = makeEl() as never;
 
 		await new Promise((r) => setTimeout(r, 0));
 		await new Promise((r) => setTimeout(r, 0));
@@ -103,15 +116,15 @@ describe('UIElement.open 与「控件尚未登记」', () => {
 		const transformGroup = makeEl();
 		imagePage.append(eventsGroup, scriptsGroup, parameterPane, generalGroup, transformGroup);
 
-		inspectorEls.set('uiElement-name', makeEl());
-		inspectorEls.set('uiElement-pointerEvents', makeEl());
-		inspectorEls.set('uiElement-general-group', generalGroup);
-		inspectorEls.set('uiElement-transform-group', transformGroup);
-		inspectorEls.set('uiElement-events-group', eventsGroup);
-		inspectorEls.set('uiElement-scripts-group', scriptsGroup);
-		inspectorEls.set('uiElement-parameter-pane', parameterPane);
-		inspectorEls.set('uiElement-events', makeEl());
-		inspectorEls.set('uiElement-scripts', makeEl());
+		controls['uiElement-name'] = makeEl() as never;
+		controls['uiElement-pointerEvents'] = makeEl() as never;
+		controls['uiElement-general-group'] = generalGroup as never;
+		controls['uiElement-transform-group'] = transformGroup as never;
+		controls['uiElement-events-group'] = eventsGroup as never;
+		controls['uiElement-scripts-group'] = scriptsGroup as never;
+		controls['uiElement-parameter-pane'] = parameterPane as never;
+		controls['uiElement-events'] = makeEl() as never;
+		controls['uiElement-scripts'] = makeEl() as never;
 
 		Inspector.uiElement._elementInitialized = false;
 		Inspector.uiElement.pointerEvents = null;
