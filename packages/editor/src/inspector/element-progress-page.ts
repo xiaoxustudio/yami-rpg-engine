@@ -1,4 +1,4 @@
-import { inspectorEls } from './element-registry.ts';
+import { getUiProgressBarPage } from '@app/composables/ui-page-apis';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
 import { UIOwner } from './ui-owner.ts';
@@ -65,11 +65,7 @@ import { UIOwner } from './ui-owner.ts';
 
 			Inspector.uiElement.open(node);
 
-			(
-				inspectorEls.get('uiProgressBar-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			getUiProgressBarPage()?.sync();
 		}
 	};
 

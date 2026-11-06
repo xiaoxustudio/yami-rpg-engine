@@ -11,15 +11,18 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
+import { onMounted, onUnmounted, provide } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryElements } from '@app/utils/element-registry';
+import { queryElementsByIds } from '@app/utils/dom';
 import { useUIProgressBarPage } from '@app/composables/useUIProgressBarPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import {
+	provideUiProgressBarPage,
+	resetUiProgressBarPage,
+	type UiPageApi
+} from '@app/composables/ui-page-apis';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { uiProgressBarContextKey } from './ui-progress-bar/context.ts';
@@ -41,7 +44,7 @@ const { bindInput, bindSliders } = useInspectorInput();
 onMounted(() => {
 	const uiProgressBar = Inspector.uiProgressBar;
 	if (!uiProgressBar) return;
-	const elements = registryElements(inspectorEls, [
+	const elements = queryElementsByIds([
 		'uiProgressBar-image',
 		'uiProgressBar-display',
 		'uiProgressBar-clip',
@@ -59,7 +62,7 @@ onMounted(() => {
 		'uiProgressBar-color-2',
 		'uiProgressBar-color-3'
 	]);
-	const sliders = registryElements(inspectorEls, [
+	const sliders = queryElementsByIds([
 		'uiProgressBar-color-0-slider',
 		'uiProgressBar-color-1-slider',
 		'uiProgressBar-color-2-slider',
@@ -68,10 +71,9 @@ onMounted(() => {
 	bindInput(elements, getUIStore(), uiProgressBar);
 	bindSliders(sliders);
 
-	const el = inspectorEls.get('uiProgressBar-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: UiPageApi = { sync };
+	provideUiProgressBarPage(bridgeApi);
+	onUnmounted(() => resetUiProgressBarPage(bridgeApi));
 	sync();
 });
 </script>

@@ -3,7 +3,6 @@
 	<TextArea
 		:label="t('components.uiDialogBox-content.label') || 'Content'"
 		id="uiDialogBox-content"
-		:ref="registryRef(inspectorEls, 'uiDialogBox-content')"
 		v-tip="t('components.uiDialogBox-content.tip')"
 		:model-value="form.content"
 		menu="tag-localization"
@@ -15,7 +14,6 @@
 	<NumberBox
 		:label="t('components.uiDialogBox-interval.label') || 'Print Interval'"
 		id="uiDialogBox-interval"
-		:ref="registryRef(inspectorEls, 'uiDialogBox-interval')"
 		v-tip="t('components.uiDialogBox-interval.tip')"
 		v-model="form.interval"
 		min="0"
@@ -107,7 +105,6 @@
 	<ColorBox
 		:label="t('components.uiDialogBox-color.label') || 'Color'"
 		id="uiDialogBox-color"
-		:ref="registryRef(inspectorEls, 'uiDialogBox-color')"
 		v-tip="t('components.uiDialogBox-color.tip')"
 		v-model="form.color"
 		@input="onParamInput"
@@ -117,7 +114,6 @@
 		:label="t('components.uiDialogBox-font.label') || 'Font'"
 		id="uiDialogBox-font"
 		:placeholder="t('components.uiDialogBox-font.placeholder')"
-		:ref="registryRef(inspectorEls, 'uiDialogBox-font')"
 		v-tip="t('components.uiDialogBox-font.tip')"
 		v-model="form.font"
 		@input="onParamInput"
@@ -136,8 +132,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
 import ColorBox from '@app/components/common/ColorBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
@@ -172,13 +166,6 @@ const elLetterSpacingSlider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elLetterSpacing = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'uiDialogBox-size', elSize.value);
-	registerElement(inspectorEls, 'uiDialogBox-lineSpacing', elLineSpacing.value);
-	registerElement(inspectorEls, 'uiDialogBox-letterSpacing', elLetterSpacing.value);
-	registerElement(inspectorEls, 'uiDialogBox-typeface', elTypeface.value);
-	registerElement(inspectorEls, 'uiDialogBox-size-slider', elSizeSlider.value);
-	registerElement(inspectorEls, 'uiDialogBox-lineSpacing-slider', elLineSpacingSlider.value);
-	registerElement(inspectorEls, 'uiDialogBox-letterSpacing-slider', elLetterSpacingSlider.value);
 	elTypeface.value?.loadItems([
 		{
 			name: t('components.uiDialogBox-typeface.options.regular.name'),

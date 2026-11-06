@@ -2,7 +2,6 @@
 	<div class="text">{{ t('components.uiProgressBar-image.label') || 'Image' }}</div>
 	<CustomBox
 		id="uiProgressBar-image"
-		:ref="registryRef(inspectorEls, 'uiProgressBar-image')"
 		v-tip="t('components.uiProgressBar-image.tip')"
 		v-model="form.image"
 		type="file"
@@ -99,7 +98,6 @@
 	<NumberBox
 		:label="t('components.uiProgressBar-step.label') || 'Step'"
 		id="uiProgressBar-step"
-		:ref="registryRef(inspectorEls, 'uiProgressBar-step')"
 		v-tip="t('components.uiProgressBar-step.tip')"
 		v-model="form.step"
 		min="0"
@@ -110,7 +108,6 @@
 	<NumberBox
 		:label="t('components.uiProgressBar-progress.label') || 'Progress'"
 		id="uiProgressBar-progress"
-		:ref="registryRef(inspectorEls, 'uiProgressBar-progress')"
 		v-tip="t('components.uiProgressBar-progress.tip')"
 		v-model="form.progress"
 		min="0"
@@ -133,8 +130,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -167,14 +162,6 @@ const relate = (
 };
 
 onMounted(() => {
-	registerElement(inspectorEls, 'uiProgressBar-display', elDisplay.value);
-	registerElement(inspectorEls, 'uiProgressBar-clip', elClip.value);
-	registerElement(inspectorEls, 'uiProgressBar-type', elType.value);
-	registerElement(inspectorEls, 'uiProgressBar-centerX', elCenterX.value);
-	registerElement(inspectorEls, 'uiProgressBar-centerY', elCenterY.value);
-	registerElement(inspectorEls, 'uiProgressBar-startAngle', elStartAngle.value);
-	registerElement(inspectorEls, 'uiProgressBar-centralAngle', elCentralAngle.value);
-	registerElement(inspectorEls, 'uiProgressBar-blend', elBlend.value);
 	loadItems(elDisplay.value, [
 		{ name: 'Stretch', value: 'stretch' },
 		{ name: 'Clip', value: 'clip' }

@@ -11,15 +11,18 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
+import { onMounted, onUnmounted, provide } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryElements } from '@app/utils/element-registry';
+import { queryElementsByIds } from '@app/utils/dom';
 import { useUIDialogBoxPage } from '@app/composables/useUIDialogBoxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import {
+	provideUiDialogBoxPage,
+	resetUiDialogBoxPage,
+	type UiPageApi
+} from '@app/composables/ui-page-apis';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { uiDialogBoxContextKey } from './ui-dialog-box/context.ts';
@@ -41,7 +44,7 @@ const { bindInput, bindSliders } = useInspectorInput();
 onMounted(() => {
 	const uiDialogBox = Inspector.uiDialogBox;
 	if (!uiDialogBox) return;
-	const elements = registryElements(inspectorEls, [
+	const elements = queryElementsByIds([
 		'uiDialogBox-content',
 		'uiDialogBox-interval',
 		'uiDialogBox-size',
@@ -57,7 +60,7 @@ onMounted(() => {
 		'uiDialogBox-effect-color',
 		'uiDialogBox-blend'
 	]);
-	const sliders = registryElements(inspectorEls, [
+	const sliders = queryElementsByIds([
 		'uiDialogBox-size-slider',
 		'uiDialogBox-lineSpacing-slider',
 		'uiDialogBox-letterSpacing-slider'
@@ -65,10 +68,9 @@ onMounted(() => {
 	bindInput(elements, getUIStore(), uiDialogBox);
 	bindSliders(sliders);
 
-	const el = inspectorEls.get('uiDialogBox-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: UiPageApi = { sync };
+	provideUiDialogBoxPage(bridgeApi);
+	onUnmounted(() => resetUiDialogBoxPage(bridgeApi));
 	sync();
 });
 </script>

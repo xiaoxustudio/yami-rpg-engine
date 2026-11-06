@@ -1,5 +1,5 @@
 import { getElementReader } from '@app/utils/dom';
-import { inspectorEls } from './element-registry.ts';
+import { getUiDialogBoxPage } from '@app/composables/ui-page-apis';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
 import { UIOwner } from './ui-owner.ts';
@@ -61,11 +61,7 @@ import { UIOwner } from './ui-owner.ts';
 		if (this.target !== node) {
 			this.target = node;
 			Inspector.uiElement.open(node);
-			(
-				inspectorEls.get('uiDialogBox-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			getUiDialogBoxPage()?.sync();
 		}
 	};
 
