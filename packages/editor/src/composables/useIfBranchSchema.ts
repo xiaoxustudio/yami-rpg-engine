@@ -1,6 +1,6 @@
 import { getWindowStore } from '@app/stores/window';
-import { composableEls } from '@app/composables/element-registry';
-import { clear, getFocus, read, write } from '@app/utils/element-utils.ts';
+import { getIfBranch } from '@app/composables/tool-window-bridges';
+import { getFocus } from '@app/utils/element-utils.ts';
 import { requestFocus } from '@app/directives/focus';
 import { setOperatorColor } from '@app/composables/useCommandColor.ts';
 import { removeTextTags } from '@app/composables/useCommandParse.ts';
@@ -68,8 +68,8 @@ const open = (branch: IfBranchData): void => {
 		const conditions = branch.conditions.slice();
 		// 分支窗口是懒挂载的：控件可用后再写（首次打开也不会丢条件列表）
 		getWindowStore().openWith('if-branch', () => {
-			write(composableEls.get('if-branch-mode'), mode);
-			write(composableEls.get('if-branch-conditions'), conditions);
+			getIfBranch()?.setMode(mode);
+			getIfBranch()?.setConditions(conditions);
 		});
 		requestFocus('if-branch-conditions');
 		commands = branch.commands!;
@@ -86,11 +86,11 @@ const save = (): unknown => {
 			return { mode, conditions, commands };
 		}
 	} else {
-		const mode = read(composableEls.get('if-branch-mode'));
-		const element = composableEls.get('if-branch-conditions');
-		const conditions = read(element);
+		const mode = getIfBranch()?.getMode();
+		const conditions = getIfBranch()?.getConditions() ?? [];
 		if (conditions.length === 0) {
-			return getFocus(element);
+			// 没有条件时不关闭窗口，交给焦点指令提示
+			return getFocus(null);
 		}
 		const savedCommands = commands;
 		getWindowStore().close('if-branch');
@@ -100,7 +100,7 @@ const save = (): unknown => {
 
 const windowClosed = (_event: Event): void => {
 	commands = null;
-	clear(composableEls.get('if-branch-conditions'));
+	getIfBranch()?.clearConditions();
 };
 
 const confirm = (_event: Event): void => {

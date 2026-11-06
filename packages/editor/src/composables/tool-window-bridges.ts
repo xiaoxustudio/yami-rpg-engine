@@ -42,3 +42,19 @@ export const getSwitchBranch = (): SwitchBranchApi | null => switchBranchBridge.
 export const provideReference = (api: ReferenceApi): void => referenceBridge.provide(api);
 export const resetReference = (api: ReferenceApi): void => referenceBridge.reset(api);
 export const getReference = (): ReferenceApi | null => referenceBridge.get();
+
+export interface IfBranchApi {
+	/** 打开时写入模式与条件列表。 */
+	setMode(mode: unknown): void;
+	getMode(): unknown;
+	setConditions(conditions: unknown[]): void;
+	getConditions(): unknown[];
+	/** 关闭时清空条件列表。 */
+	clearConditions(): void;
+}
+
+const ifBranchBridge = createFormBridge<IfBranchApi>('ifBranch');
+
+export const provideIfBranch = (api: IfBranchApi): void => ifBranchBridge.provide(api);
+export const resetIfBranch = (api: IfBranchApi): void => ifBranchBridge.reset(api);
+export const getIfBranch = (): IfBranchApi | null => ifBranchBridge.get();

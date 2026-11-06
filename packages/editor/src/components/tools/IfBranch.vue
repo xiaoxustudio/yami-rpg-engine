@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="if-branch" :ref="registryRef(fieldEls, 'if-branch')" @confirm="onConfirm">
+	<WindowFrame id="if-branch" ref="frame" @confirm="onConfirm" @closed="onWindowClosed">
 		<template #title
 			><TitleBar
 				>{{ t('components.if-branch.title') }}
@@ -12,26 +12,22 @@
 				:label="t('components.if-branch-mode.label')"
 				id="if-branch-mode"
 				v-tip="t('components.if-branch-mode.tip')"
-				:ref="registryRef(fieldEls, 'if-branch-mode')"
+				ref="modeRef"
 			/>
 			<div class="text">{{ t('components.if-branch-conditions.label') }}</div>
-			<ParamList
-				id="if-branch-conditions"
-				:ref="registryRef(fieldEls, 'if-branch-conditions')"
-				v-focus
-			/>
+			<ParamList id="if-branch-conditions" ref="conditionsRef" v-focus />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
-import { onMounted } from 'vue';
+import {
+	provideIfBranch,
+	resetIfBranch,
+	type IfBranchApi
+} from '@app/composables/tool-window-bridges';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { on } from '@app/utils/element-utils.ts';
 import { useIfBranchSchema } from '@app/composables/useIfBranchSchema';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 
@@ -41,7 +37,6 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
-import type { YamiElement } from '@app/types/element-api';
 
 const { t } = useI18n();
 
@@ -49,15 +44,36 @@ const onConfirm = () => {
 	IfBranch?.confirm?.(new Event('click'));
 };
 
+const modeRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const conditionsRef = ref<InstanceType<typeof ParamList> | null>(null);
+
+const bridgeApi: IfBranchApi = {
+	setMode: (mode) => {
+		modeRef.value?.write?.(mode);
+	},
+	getMode: () => modeRef.value?.read?.(),
+	setConditions: (conditions) => {
+		conditionsRef.value?.write?.(conditions);
+	},
+	getConditions: () => (conditionsRef.value?.read?.() as unknown[]) ?? [],
+	clearConditions: () => {
+		conditionsRef.value?.clear?.();
+	}
+};
+
+/** 关闭时通知单例（原来靠本地注册表取根元素挂监听）。 */
+const onWindowClosed = (): void => {
+	IfBranch.windowClosed?.(new Event('closed'));
+};
+
 onMounted(() => {
-	fieldEls.get('if-branch-conditions')?.bind?.(IfCondition);
-	const modeEl = fieldEls.get('if-branch-mode') as YamiElement;
-	if (!modeEl) return;
-	modeEl.loadItems([
+	conditionsRef.value?.bind?.(IfCondition);
+	modeRef.value?.loadItems([
 		{ name: 'Meet All', value: 'all' },
 		{ name: 'Meet Any', value: 'any' }
 	]);
-	on(fieldEls.get('if-branch'), 'closed', () => IfBranch.windowClosed?.(new Event('closed')));
+	provideIfBranch(bridgeApi);
+	onUnmounted(() => resetIfBranch(bridgeApi));
 });
 </script>
 
