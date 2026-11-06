@@ -6,22 +6,9 @@
 				<div class="close" /></TitleBar
 		></template>
 
-		<canvas
-			id="color-palette-canvas"
-			:ref="registryRef(colorEls, 'color-palette-canvas')"
-			width="256"
-			height="194"
-		/>
-		<div
-			class="box"
-			id="color-palette-frame"
-			:ref="registryRef(colorEls, 'color-palette-frame')"
-		>
-			<div
-				class="box"
-				id="color-palette-cursor"
-				:ref="registryRef(colorEls, 'color-palette-cursor')"
-			/>
+		<canvas id="color-palette-canvas" :ref="bind('paletteCanvas')" width="256" height="194" />
+		<div class="box" id="color-palette-frame" :ref="bind('paletteFrame')">
+			<div class="box" id="color-palette-cursor" :ref="bind('paletteCursor')" />
 		</div>
 		<div class="grid-box" id="color-index-grid">
 			<RadioBox name="color-index" value="0" @input="onIndexedInput" />
@@ -41,21 +28,12 @@
 			<RadioBox name="color-index" value="14" @input="onIndexedInput" />
 			<RadioBox name="color-index" value="15" @input="onIndexedInput" />
 		</div>
-		<canvas
-			id="color-pillar-canvas"
-			:ref="registryRef(colorEls, 'color-pillar-canvas')"
-			width="20"
-			height="256"
-		/>
-		<div class="box" id="color-pillar-frame" :ref="registryRef(colorEls, 'color-pillar-frame')">
-			<div
-				class="box"
-				id="color-pillar-cursor"
-				:ref="registryRef(colorEls, 'color-pillar-cursor')"
-			/>
+		<canvas id="color-pillar-canvas" :ref="bind('pillarCanvas')" width="20" height="256" />
+		<div class="box" id="color-pillar-frame" :ref="bind('pillarFrame')">
+			<div class="box" id="color-pillar-cursor" :ref="bind('pillarCursor')" />
 		</div>
 		<div class="box" id="color-viewer-frame">
-			<div class="box" id="color-viewer" :ref="registryRef(colorEls, 'color-viewer')" />
+			<div class="box" id="color-viewer" :ref="bind('viewer')" />
 		</div>
 		<div class="grid-box" id="color-rgba-grid">
 			<div class="text">#</div>
@@ -63,7 +41,7 @@
 				:label="'#'"
 				id="color-hex"
 				v-tip="t('components.color-hex.tip')"
-				:ref="registryRef(colorEls, 'color-hex')"
+				:ref="bind('hex')"
 				v-focus
 				v-model="form.hex"
 				@beforeinput="onHexBeforeinput"
@@ -114,10 +92,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Color, colorEls } from '@app/tools/color-picker-window.ts';
+import { colorNodes } from '@app/composables/color-nodes';
+import { Color } from '@app/tools/color-picker-window.ts';
 import { useColorWindow } from '@app/composables/useColorWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -151,12 +129,17 @@ const onConfirm = () => {
 	color.confirm();
 };
 
+const { bind, dispose } = colorNodes.scoped();
+
 onMounted(() => {
-	registerElement(colorEls, 'color', frame.value?.root ?? null);
+	colorNodes.set('root', frame.value?.root ?? null);
 	const el = frame.value?.root;
-	if (el) {
-		on(el, 'closed', () => color.onWindowClosed());
-	}
+	if (el) on(el, 'closed', () => color.onWindowClosed());
+});
+
+onUnmounted(() => {
+	dispose();
+	colorNodes.clear('root', frame.value?.root ?? null);
 });
 </script>
 

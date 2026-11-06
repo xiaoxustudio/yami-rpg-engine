@@ -1,7 +1,8 @@
+import { colorNodes } from '@app/composables/color-nodes';
 import { useColorWindow, type ColorForm } from '@app/composables/useColorWindow';
 import { radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { elementDataOf } from '@ui-kit';
-import { createElementRegistry, registryElement } from '@app/utils/element-registry';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { $ } from '@app/utils/dom';
 import { relate, getRelativeCoords, on, read, setTooltip } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
@@ -79,15 +80,17 @@ interface ColorSlots {
 }
 
 Color.initialize = function (this: typeof Color) {
-	if (!colorEls.get('color-hex')) return;
-	colorEls.get('color-hex')?.setMaxLength?.(8);
+	if (!colorNodes.pick('hex')) return;
+	(
+		colorNodes.pick('hex') as (HTMLElement & { setMaxLength?: (n: number) => void }) | null
+	)?.setMaxLength?.(8);
 
 	const colorIndex = radioProxyMap['color-index'] as RadioProxyElement | undefined;
 	if (colorIndex) colorIndex.cancelable = true;
 
-	(colorEls.get('color') as YamiElement)?.addEventListener('closed', this.windowClosed);
-	on(colorEls.get('color-palette-frame') as YamiElement, 'pointerdown', this.palettePointerdown);
-	on(colorEls.get('color-pillar-frame') as YamiElement, 'pointerdown', this.pillarPointerdown);
+	(colorNodes.pick('root') as YamiElement)?.addEventListener('closed', this.windowClosed);
+	on(colorNodes.pick('paletteFrame') as YamiElement, 'pointerdown', this.palettePointerdown);
+	on(colorNodes.pick('pillarFrame') as YamiElement, 'pointerdown', this.pillarPointerdown);
 	$('[name="color-index"]').forEach((el) =>
 		el.addEventListener('pointerdown', this.indexedColorPointerdown!)
 	);
@@ -121,7 +124,7 @@ Color.open = function (this: typeof Color, ...args: unknown[]) {
 };
 
 Color.drawPalette = function (this: typeof Color) {
-	const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-palette-canvas')!;
+	const canvas = colorNodes.pick('paletteCanvas') as HTMLCanvasElement;
 	if (!elementDataOf<{ initialized?: boolean }>(canvas).initialized) {
 		elementDataOf<{ initialized?: boolean }>(canvas).initialized = true;
 
@@ -169,7 +172,7 @@ Color.drawPalette = function (this: typeof Color) {
 
 Color.drawPillar = function (this: typeof Color, ...args: unknown[]) {
 	const [r, g, b] = args[0] as [number, number, number];
-	const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-pillar-canvas')!;
+	const canvas = colorNodes.pick('pillarCanvas') as HTMLCanvasElement;
 	const context = canvas.getContext('2d', { willReadFrequently: true })!;
 	const gradient = context.createLinearGradient(0, 0.5, 0, 255.5);
 	gradient.addColorStop(0, `rgba(${r}, ${g}, ${b})`);
@@ -180,14 +183,14 @@ Color.drawPillar = function (this: typeof Color, ...args: unknown[]) {
 
 Color.drawViewer = function (this: typeof Color, ...args: unknown[]) {
 	const [r, g, b, a] = args[0] as [number, number, number, number];
-	(colorEls.get('color-viewer') as YamiElement).style.backgroundColor =
+	(colorNodes.pick('viewer') as YamiElement).style.backgroundColor =
 		`rgba(${r}, ${g}, ${b}, ${a / 255})`;
 };
 
 Color.setPaletteCursor = function (this: typeof Color, ...args: unknown[]) {
 	const x = args[0] as number;
 	const y = args[1] as number;
-	const cursor = colorEls.get('color-palette-cursor') as YamiElement;
+	const cursor = colorNodes.pick('paletteCursor') as YamiElement;
 	this.paletteX = x;
 	this.paletteY = y;
 	cursor.style.left = `${x - 5}px`;
@@ -196,7 +199,7 @@ Color.setPaletteCursor = function (this: typeof Color, ...args: unknown[]) {
 
 Color.setPillarCursor = function (this: typeof Color, ...args: unknown[]) {
 	const y = args[0] as number;
-	const cursor = colorEls.get('color-pillar-cursor') as YamiElement;
+	const cursor = colorNodes.pick('pillarCursor') as YamiElement;
 	this.pillarY = y;
 	cursor.style.top = `${y}px`;
 };
@@ -204,7 +207,7 @@ Color.setPillarCursor = function (this: typeof Color, ...args: unknown[]) {
 Color.getRGBFromPalette = function (this: typeof Color) {
 	const x = Math.round(this.paletteX);
 	const y = Math.round(this.paletteY);
-	const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-palette-canvas')!;
+	const canvas = colorNodes.pick('paletteCanvas') as HTMLCanvasElement;
 	const context = canvas.getContext('2d')!;
 	const [r, g, b, _a] = context.getImageData(x, y, 1, 1).data;
 	return [r, g, b];
@@ -212,7 +215,7 @@ Color.getRGBFromPalette = function (this: typeof Color) {
 
 Color.getRGBFromPillar = function (this: typeof Color) {
 	const y = Math.round(this.pillarY);
-	const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-pillar-canvas')!;
+	const canvas = colorNodes.pick('pillarCanvas') as HTMLCanvasElement;
 	const context = canvas.getContext('2d')!;
 	const [r, g, b, _a] = context.getImageData(0, y, 1, 1).data;
 	return [r, g, b];
@@ -299,7 +302,7 @@ Color.palettePointerdown = function (this: typeof Color, event: ColorDrag) {
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
 			}
-			const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-palette-canvas')!;
+			const canvas = colorNodes.pick('paletteCanvas') as HTMLCanvasElement;
 			const coords = getRelativeCoords(event, canvas);
 			const x = clamp(coords.x, 0, 255);
 			const y = clamp(coords.y, 0, 193);
@@ -328,7 +331,7 @@ Color.pillarPointerdown = function (this: typeof Color, event: ColorDrag) {
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
 			}
-			const canvas = registryElement<HTMLCanvasElement>(colorEls, 'color-pillar-canvas')!;
+			const canvas = colorNodes.pick('pillarCanvas') as HTMLCanvasElement;
 			const coords = getRelativeCoords(event, canvas);
 			const y = clamp(coords.y, 0, 255);
 			this.setPillarCursor(y);
