@@ -1,6 +1,6 @@
 import { getWindowStore } from '@app/stores/window';
-import { composableEls } from '@app/composables/element-registry';
-import { clear, getFocus, read, write } from '@app/utils/element-utils';
+import { getSwitchBranch } from '@app/composables/tool-window-bridges';
+import { getFocus } from '@app/utils/element-utils';
 import { requestFocus } from '@app/directives/focus';
 import { removeTextTags } from '@app/composables/useCommandParse.ts';
 import { commandState } from '@app/composables/useCommandState.ts';
@@ -56,7 +56,7 @@ const open = (branch: SwitchBranchData): void => {
 		const conditions = branch.conditions.slice();
 		// 分支窗口是懒挂载的：控件可用后再写（首次打开也不会丢条件列表）
 		getWindowStore().openWith('switch-branch', () => {
-			write(composableEls.get('switch-branch-conditions'), conditions);
+			getSwitchBranch()?.setConditions(conditions);
 		});
 		requestFocus('switch-branch-conditions');
 		commands = branch.commands;
@@ -72,10 +72,10 @@ const save = (): unknown => {
 			return { conditions, commands };
 		}
 	} else {
-		const element = composableEls.get('switch-branch-conditions');
-		const conditions = read(element);
+		const conditions = getSwitchBranch()?.getConditions() ?? [];
 		if (conditions.length === 0) {
-			return getFocus(element);
+			// 没有条件时不关闭窗口，交给焦点指令提示
+			return getFocus(null);
 		}
 		const savedCommands = commands;
 		getWindowStore().close('switch-branch');
@@ -85,7 +85,7 @@ const save = (): unknown => {
 
 const windowClosed = (_event: Event): void => {
 	commands = null;
-	clear(composableEls.get('switch-branch-conditions'));
+	getSwitchBranch()?.clearConditions();
 };
 
 const confirm = (_event: Event): void => {

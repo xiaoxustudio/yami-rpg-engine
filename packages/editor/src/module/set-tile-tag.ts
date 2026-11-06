@@ -1,8 +1,6 @@
-import { moduleEls } from '@app/module/element-registry';
+import { getSetTileTag } from '@app/composables/tool-window-bridges';
 import { Window } from '@app/tools/window-object.ts';
-import { on, read, write } from '@app/utils/element-utils.ts';
 import { requestFocus } from '@app/directives/focus';
-import type { YamiElement } from '@app/types/element-api';
 
 export const SetTileTag: {
 	callback: ((tag: unknown) => void) | null;
@@ -19,14 +17,13 @@ export const SetTileTag: {
 };
 
 SetTileTag.initialize = function () {
-	if (!moduleEls.get('setTileTag')) return;
-	on(moduleEls.get('setTileTag') as YamiElement, 'closed', this.windowClosed!);
+	// 窗口自己监听 closed 并回调（不再按 id 取根元素）
 };
 
 SetTileTag.open = function (tag: unknown, callback: (tag: unknown) => void) {
 	this.callback = callback;
 	Window.open!('setTileTag');
-	write(moduleEls.get('setTileTag-tag') as YamiElement, tag);
+	getSetTileTag()?.setTag(tag);
 	requestFocus('setTileTag-tag', 'all');
 };
 
@@ -35,6 +32,6 @@ SetTileTag.windowClosed = function (this: typeof SetTileTag) {
 }.bind(SetTileTag);
 
 SetTileTag.confirm = function (this: typeof SetTileTag) {
-	this.callback!(read(moduleEls.get('setTileTag-tag') as YamiElement));
+	this.callback!(getSetTileTag()?.getTag());
 	Window.close!('setTileTag');
 }.bind(SetTileTag);

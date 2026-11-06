@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="switch-branch"
-		:ref="registryRef(fieldEls, 'switch-branch')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="switch-branch" ref="frame" @confirm="onConfirm" @closed="onWindowClosed">
 		<template #title
 			><TitleBar
 				>{{ t('components.switch-branch.title') }}
@@ -12,23 +8,19 @@
 
 		<div class="grid-box">
 			<div class="text">{{ t('components.switch-branch-conditions.label') }}</div>
-			<ParamList
-				id="switch-branch-conditions"
-				:ref="registryRef(fieldEls, 'switch-branch-conditions')"
-				v-focus
-			/>
+			<ParamList id="switch-branch-conditions" ref="conditionsRef" v-focus />
 		</div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
-import { onMounted } from 'vue';
+import {
+	provideSwitchBranch,
+	resetSwitchBranch,
+	type SwitchBranchApi
+} from '@app/composables/tool-window-bridges';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { on } from '@app/utils/element-utils.ts';
 import { useSwitchBranchSchema } from '@app/composables/useSwitchBranchSchema';
 import { useSwitchConditionSchema } from '@app/composables/useSwitchConditionSchema';
 
@@ -44,11 +36,27 @@ const onConfirm = () => {
 	SwitchBranch?.confirm?.(new Event('click'));
 };
 
+const conditionsRef = ref<InstanceType<typeof ParamList> | null>(null);
+
+const bridgeApi: SwitchBranchApi = {
+	setConditions: (conditions) => {
+		conditionsRef.value?.write?.(conditions);
+	},
+	getConditions: () => (conditionsRef.value?.read?.() as unknown[]) ?? [],
+	clearConditions: () => {
+		conditionsRef.value?.clear?.();
+	}
+};
+
+/** 关闭时通知单例（原来靠本地注册表取根元素挂监听）。 */
+const onWindowClosed = (): void => {
+	SwitchBranch.windowClosed?.(new Event('closed'));
+};
+
 onMounted(() => {
-	fieldEls.get('switch-branch-conditions')?.bind?.(SwitchCondition);
-	on(fieldEls.get('switch-branch'), 'closed', () =>
-		SwitchBranch.windowClosed?.(new Event('closed'))
-	);
+	conditionsRef.value?.bind?.(SwitchCondition);
+	provideSwitchBranch(bridgeApi);
+	onUnmounted(() => resetSwitchBranch(bridgeApi));
 });
 </script>
 
