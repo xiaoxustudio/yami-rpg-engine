@@ -6,15 +6,11 @@
 		value="scene-object"
 	>
 		<div class="box" id="scene-list-head" :ref="registryRef(sceneEls, 'scene-list-head')">
-			<TextBox
-				id="scene-searcher"
-				:ref="registryRef(sceneEls, 'scene-searcher')"
-				name="search"
-			></TextBox>
+			<TextBox id="scene-searcher" :ref="bind('searcher')" name="search"></TextBox>
 		</div>
 		<TreeList
 			id="scene-list"
-			:ref="registryRef(sceneEls, 'scene-list')"
+			:ref="bind('list')"
 			padded
 			:node-extras="sceneNodeExtras"
 			:node-icon-renderer="sceneNodeIcon"
@@ -28,16 +24,20 @@
 </template>
 
 <script setup lang="ts">
-import { h, type VNode } from 'vue';
+import { h, type VNode, onUnmounted } from 'vue';
 import { sceneEls } from '@app/scene/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import TextBox from '@app/components/common/TextBox.vue';
+import { sceneNodes } from '@app/composables/scene-nodes';
 import TreeList from '@app/components/common/TreeList.vue';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { getSceneStore } from '@app/stores/scene';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { encodeURL } from '@app/utils/css';
+
+const { bind, dispose } = sceneNodes.scoped();
+onUnmounted(dispose);
 
 const loadCluster = () => import('@app/tools/window-cluster');
 const Scene = getLazyWindow('scene', () => loadCluster().then((m) => m.Scene));

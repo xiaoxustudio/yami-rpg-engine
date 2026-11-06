@@ -1,7 +1,7 @@
+import { sceneEls } from '@app/scene/element-registry';
+import { sceneNodes } from '@app/composables/scene-nodes';
 import { elementDataOf } from '@ui-kit';
 import type { MenuItem } from '@ui-kit';
-import { sceneEls } from '@app/scene/element-registry';
-import { registryElement } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { addScrollbars, hide, show, on, write, clear, rect } from '@app/utils/element-utils.ts';
 import { getListConfig } from '@ui-kit';
@@ -237,16 +237,16 @@ export interface SceneContextShape {
 type PresetNodeShape = { presetId: string; children?: unknown } & Record<string, unknown>;
 
 export const Scene = {
-	page: sceneEls.get('scene') as YamiElement,
-	head: sceneEls.get('scene-head') as YamiElement,
-	body: hide(sceneEls.get('scene-body') as YamiElement),
-	info: sceneEls.get('scene-info') as YamiElement,
-	screen: sceneEls.get('scene-screen') as YamiElement,
+	page: sceneNodes.pick('page') as YamiElement,
+	head: sceneNodes.pick('head') as YamiElement,
+	body: hide(sceneNodes.pick('body') as YamiElement),
+	info: sceneNodes.pick('info') as YamiElement,
+	screen: sceneNodes.pick('screen') as YamiElement,
 	marquee:
-		registryElement<SceneShape['marquee']>(sceneEls, 'scene-marquee') ??
+		(sceneNodes.pick('marquee') as (HTMLElement & SceneMarqueeExtensions) | null) ??
 		({} as SceneShape['marquee']),
-	searcher: sceneEls.get('scene-searcher') as YamiElement,
-	list: (sceneEls.get('scene-list') as never) || ({} as never),
+	searcher: sceneNodes.pick('searcher') as YamiElement,
+	list: (sceneNodes.pick('list') as never as never) || ({} as never),
 	dragging: null,
 	brush: null,
 	symbol: null,
@@ -513,19 +513,19 @@ elementDataOf<{ head: HTMLElement }>(Scene.list).head = sceneEls.get(
 ) as YamiElement;
 
 Scene.initialize = function (this: SceneShape) {
-	this.page = sceneEls.get('scene') as YamiElement;
-	this.head = sceneEls.get('scene-head') as YamiElement;
-	this.body = hide(sceneEls.get('scene-body') as YamiElement);
-	this.info = sceneEls.get('scene-info') as YamiElement;
-	this.screen = sceneEls.get('scene-screen') as YamiElement;
+	this.page = sceneNodes.pick('page') as YamiElement;
+	this.head = sceneNodes.pick('head') as YamiElement;
+	this.body = hide(sceneNodes.pick('body') as YamiElement);
+	this.info = sceneNodes.pick('info') as YamiElement;
+	this.screen = sceneNodes.pick('screen') as YamiElement;
 	const oldMarquee = this.marquee;
-	this.marquee = registryElement<SceneShape['marquee']>(sceneEls, 'scene-marquee')!;
+	this.marquee = sceneNodes.pick('marquee') as never;
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
-	this.searcher = sceneEls.get('scene-searcher') as YamiElement;
+	this.searcher = sceneNodes.pick('searcher') as YamiElement;
 	const oldList = this.list;
-	this.list = registryElement<HTMLElement & SceneListExtensions>(sceneEls, 'scene-list')!;
+	this.list = sceneNodes.pick('list') as never;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}

@@ -1,11 +1,6 @@
 <template>
-	<div class="page-frame" id="scene" :ref="registryRef(sceneEls, 'scene')" value="scene">
-		<div
-			class="box"
-			id="scene-head"
-			:ref="registryRef(sceneEls, 'scene-head')"
-			@pointerdown="onSceneHeadPointerdown"
-		>
+	<div class="page-frame" id="scene" :ref="bind('page')" value="scene">
+		<div class="box" id="scene-head" :ref="bind('head')" @pointerdown="onSceneHeadPointerdown">
 			<div class="box" id="scene-head-start" @pointerdown="onSceneSwitchPointerdown">
 				<div
 					class="item toolbar-item"
@@ -158,29 +153,33 @@
 				></SliderBox>
 			</div>
 		</div>
-		<div class="box" id="scene-body" :ref="registryRef(sceneEls, 'scene-body')">
+		<div class="box" id="scene-body" :ref="bind('body')">
 			<div
 				class="box"
 				id="scene-screen"
-				:ref="registryRef(sceneEls, 'scene-screen')"
+				:ref="bind('screen')"
 				tabindex="-1"
 				@keydown="onSceneScreenKeydown"
 				@wheel="onSceneScreenWheel"
 			>
 				<MarqueeArea
 					id="scene-marquee"
-					:ref="registryRef(sceneEls, 'scene-marquee')"
+					:ref="bind('marquee')"
 					@pointerdown="onSceneMarqueePointerdown"
 					@doubleclick="onSceneMarqueeDoubleclick"
 				></MarqueeArea>
 			</div>
-			<div class="text" id="scene-info" :ref="registryRef(sceneEls, 'scene-info')"></div>
+			<div class="text" id="scene-info" :ref="bind('info')"></div>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
+const { bind, dispose } = sceneNodes.scoped();
+onUnmounted(dispose);
+import { onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { sceneNodes } from '@app/composables/scene-nodes';
 import { sceneEls } from '@app/scene/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry';
 import { registryRef } from '@app/utils/element-registry';
