@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="team" :ref="registryRef(composableEls, 'team')" @confirm="onConfirm">
+	<WindowFrame id="team" ref="frame" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.team.title') }}
@@ -9,7 +9,7 @@
 		<div class="field-set input pad" id="team-list-fieldset">
 			<TreeList
 				id="team-list"
-				:ref="registryRef(composableEls, 'team-list')"
+				ref="listRef"
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
 				@select="onListSelect"
@@ -21,11 +21,14 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, type VNode } from 'vue';
+import { h, onMounted, onUnmounted, ref, type VNode } from 'vue';
 import type { YamiEvent } from '@app/types/editor-event';
-import { composableEls } from '@app/composables/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
+import {
+	provideTeamHandles,
+	resetTeamHandles,
+	type TeamHandles
+} from '@app/composables/team-handles';
 import { Team } from '@app/data/team-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -91,7 +94,23 @@ const onConfirm = () => {
 	Team?.confirm?.(new Event('click'));
 };
 
-onMounted(() => {});
+const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+const listRef = ref<InstanceType<typeof TreeList> | null>(null);
+
+let handles: TeamHandles | null = null;
+
+onMounted(() => {
+	const root = frame.value?.root ?? null;
+	const list = listRef.value?.root ?? null;
+	if (!root || !list) return;
+	handles = { root, list };
+	provideTeamHandles(handles);
+	onUnmounted(() => {
+		if (handles) resetTeamHandles(handles);
+	});
+	// 句柄就位后再 initialize（窗口系统的首次调用可能早于挂载，早调会 no-op）
+	Team?.initialize?.();
+});
 </script>
 
 <style>

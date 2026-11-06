@@ -1,6 +1,6 @@
 import { getListConfig, isTreeItemRendered, setTreeItemText, treeItemOf } from '@ui-kit';
 import { getWindowStore } from '@app/stores/window';
-import { composableEls } from '@app/composables/element-registry';
+import { getTeamHandles } from '@app/composables/team-handles';
 import { getFocus, hasClass, on } from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/utils/event-accessors';
 import { File } from '@app/file/file-system-core.ts';
@@ -86,7 +86,9 @@ function mountListMethods(listElement: TeamListElement): void {
 }
 
 function initialize(): void {
-	const current = composableEls.get('team-list') as TeamListElement | null;
+	const handles = getTeamHandles();
+	if (!handles) return;
+	const current = handles.list as TeamListElement | null;
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
@@ -103,8 +105,8 @@ function initialize(): void {
 	// oxlint-disable-next-line unbound-method
 	getListConfig(listElement).updaters.push(listElement.updateTextNode);
 
-	on(composableEls.get('team'), 'close', windowClose);
-	on(composableEls.get('team'), 'closed', windowClosed);
+	on(handles.root, 'close', windowClose);
+	on(handles.root, 'closed', windowClosed);
 	on(listElement, 'keydown', listKeydown);
 	on(listElement, 'pointerdown', listPointerdown);
 }
