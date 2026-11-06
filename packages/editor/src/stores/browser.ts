@@ -1,5 +1,5 @@
+import { projectNodes } from '@app/composables/engine-nodes';
 import { defineStore } from 'pinia';
-import { storesEls } from '@app/stores/element-registry';
 import { Editor } from '@app/services/project/editor.ts';
 import { shallowRef } from 'vue';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
@@ -382,7 +382,7 @@ export const useBrowserStore = defineStore('browser', () => {
 			return;
 		}
 		initRetryCount = 0;
-		Browser.page = storesEls.get('project') as YamiElement;
+		Browser.page = projectNodes.pick('page') as YamiElement;
 		Browser.searcher = (
 			Browser.links?.head as (HTMLElement & { searcher?: HTMLElement }) | undefined
 		)?.searcher;

@@ -2,7 +2,7 @@
 	<div class="page-frame" id="particle-layer" value="particle-layer">
 		<TreeList
 			id="particle-list"
-			:ref="registryRef(particleEls, 'particle-list')"
+			:ref="bind('list')"
 			padded
 			:node-extras="particleNodeExtras"
 			:node-icon-renderer="particleNodeIcon"
@@ -11,13 +11,15 @@
 </template>
 
 <script setup lang="ts">
-import { h, type VNode } from 'vue';
-import { particleEls } from '@app/particle/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { h, type VNode, onUnmounted } from 'vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { File } from '@app/file/file-system-core.ts';
 import { setIconClip } from '@app/utils/icon-clip';
+
+import { particleNodes as particleNodeTable } from '@app/composables/engine-nodes';
+const { bind, dispose } = particleNodeTable.scoped();
+onUnmounted(dispose);
 
 const loadCluster = () => import('@app/tools/window-cluster');
 const Particle = getLazyWindow('particle', () => loadCluster().then((m) => m.Particle));

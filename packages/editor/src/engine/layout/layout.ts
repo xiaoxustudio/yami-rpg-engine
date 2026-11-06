@@ -1,7 +1,7 @@
+import { projectNodes } from '@app/composables/engine-nodes';
 import { getUiNode, UI_NODE_IDS } from '@app/composables/ui-nodes';
 import { elementDataOf } from '@ui-kit';
 import { relate, hideDragImage, getRelativeCoords } from '@app/utils/element-utils';
-import { storesEls } from '@app/stores/element-registry';
 import { renderDetached } from '@app/utils/dom';
 import { getLayoutNode, LAYOUT_NODE_IDS } from '@app/composables/layout-nodes';
 import { queryElementsByIds } from '@app/utils/dom';
@@ -884,7 +884,7 @@ Layout.logDiagnostics = function (this: typeof Layout, verbose?: boolean) {
 			problems.push(...findGroupOverlaps(probes));
 		}
 	}
-	const browser = storesEls.get('project-browser') as HTMLElement | null;
+	const browser = projectNodes.pick('browser') as HTMLElement | null;
 	if (browser !== null) {
 		const br = browser.getBoundingClientRect();
 		lines.push(`#project-browser: ${describe(browser)}`);

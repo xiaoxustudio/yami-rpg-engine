@@ -1,14 +1,12 @@
 <template>
-	<div class="page-frame" id="project" :ref="registryRef(storesEls, 'project')" value="project">
-		<div
-			class="file-browser"
-			id="project-browser"
-			:ref="registryRef(storesEls, 'project-browser')"
-		></div>
+	<div class="page-frame" id="project" :ref="bind('page')" value="project">
+		<div class="file-browser" id="project-browser" :ref="bind('browser')"></div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { storesEls } from '@app/stores/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { onUnmounted } from 'vue';
+import { projectNodes as projectNodeTable } from '@app/composables/engine-nodes';
+const { bind, dispose } = projectNodeTable.scoped();
+onUnmounted(dispose);
 </script>

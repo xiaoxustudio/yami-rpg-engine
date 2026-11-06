@@ -1,3 +1,4 @@
+import { particleNodes } from '@app/composables/engine-nodes';
 import { Particle } from './particle-window.ts';
 import { particleEls } from '@app/particle/element-registry';
 import type { ParticleHistoryData } from './particle-window.ts';
@@ -31,7 +32,7 @@ Particle.initialize = function () {
 		Object.assign(this.marquee, oldMarquee);
 	}
 	const oldList = this.list;
-	this.list = particleEls.get('particle-list') as never;
+	this.list = particleNodes.pick('list') as never;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}

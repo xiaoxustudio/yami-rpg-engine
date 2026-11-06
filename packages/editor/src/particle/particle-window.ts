@@ -1,3 +1,4 @@
+import { particleNodes } from '@app/composables/engine-nodes';
 import { particleEls } from '@app/particle/element-registry';
 import { registryElement } from '@app/utils/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
@@ -261,7 +262,7 @@ export const Particle = {
 	marquee: particleEls.get('particle-marquee') as YamiElement & {
 		pointerevent: unknown;
 	},
-	list: (particleEls.get('particle-list') as never) || ({} as never),
+	list: (particleNodes.pick('list') as never) || ({} as never),
 	dragging: null,
 	history: null,
 	restartKey: false,
