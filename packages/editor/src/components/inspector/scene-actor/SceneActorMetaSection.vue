@@ -22,11 +22,7 @@
 			flexible
 		></ParamList>
 	</DetailBox>
-	<DetailBox
-		id="sceneActor-scripts-detail"
-		:ref="registryRef(inspectorEls, 'sceneActor-scripts-detail')"
-		open
-	>
+	<DetailBox id="sceneActor-scripts-detail" ref="scriptsDetailRef" open>
 		<DetailSummary>{{ t('components.sceneActor-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			ref="elScripts"
@@ -40,10 +36,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryElements, registryRef } from '@app/utils/element-registry';
+import {
+	provideSceneActorMeta,
+	resetSceneActorMeta,
+	type SceneActorMetaApi
+} from '@app/composables/inspector-section-bridges';
+import { clear, hide, show } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/tools/condition-list.ts';
@@ -60,22 +60,44 @@ const elConditions = ref<InstanceType<typeof ParamList> | null>(null);
 const elEvents = ref<InstanceType<typeof ParamList> | null>(null);
 const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
+const scriptsDetailRef = ref<{ root?: HTMLElement } | null>(null);
+
+const bridgeApi: SceneActorMetaApi = {
+	clearLists: () => {
+		for (const control of [
+			elConditions.value,
+			elEvents.value,
+			elScripts.value,
+			elParameterPane.value
+		]) {
+			clear(control?.root ?? null);
+		}
+	},
+	setScriptsDetailVisible: (visible) => {
+		const detail = scriptsDetailRef.value?.root ?? null;
+		const pane = elParameterPane.value?.root ?? null;
+		if (visible) {
+			show(detail);
+			show(pane);
+		} else {
+			hide(detail);
+			hide(pane);
+		}
+	}
+};
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneActor-conditions', elConditions.value);
-	registerElement(inspectorEls, 'sceneActor-events', elEvents.value);
-	registerElement(inspectorEls, 'sceneActor-scripts', elScripts.value);
-	registerElement(inspectorEls, 'sceneActor-parameter-pane', elParameterPane.value);
+	provideSceneActorMeta(bridgeApi);
+	onUnmounted(() => resetSceneActorMeta(bridgeApi));
 	const editor = Inspector.sceneActor;
 	if (!editor) return;
 	elConditions.value?.bind(new ConditionListInterface(editor, Scene));
 	elEvents.value?.bind(new EventListInterface(editor, Scene));
 	elScripts.value?.bind(new ScriptListInterface(editor as { target?: { id: string } }, Scene));
 	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
-	registryElements(inspectorEls, [
-		'sceneActor-conditions',
-		'sceneActor-events',
-		'sceneActor-scripts'
-	]).forEach((el) => el.addEventListener('change', Scene.listChange));
+	for (const control of [elConditions.value, elEvents.value, elScripts.value]) {
+		const root = control?.root ?? null;
+		if (root) root.addEventListener('change', Scene.listChange);
+	}
 });
 </script>

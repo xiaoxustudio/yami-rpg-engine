@@ -1,13 +1,13 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
+import { getFileTriggerAnimation } from '@app/composables/inspector-section-bridges';
 import { inspectorEls } from './element-registry.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { clear, read, write } from '@app/utils/element-utils';
+import { clear } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import type { TriggerForm } from '@app/composables/useFileTriggerPage';
-import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileTriggerShape {
@@ -195,9 +195,7 @@ import type { YamiElement } from '@app/types/element-api';
 		event: Event & { value?: string }
 	) {
 		if (!event.value) return;
-		const elMotion = inspectorEls.get('fileTrigger-motion') as YamiElement;
-		elMotion.loadItems(Animation.getMotionListItems!(event.value));
-		write(elMotion, read(elMotion));
+		getFileTriggerAnimation()?.reloadMotions(Animation.getMotionListItems!(event.value));
 	};
 
 	FileTrigger.listChange = function (this: typeof FileTrigger, _event: Event) {

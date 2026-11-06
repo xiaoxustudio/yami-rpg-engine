@@ -21,7 +21,7 @@
 				:label="t('components.fileTrigger-motion.label') || 'Motion'"
 				id="fileTrigger-motion"
 				v-tip="t('components.fileTrigger-motion.tip')"
-				:ref="registryRef(inspectorEls, 'fileTrigger-motion')"
+				ref="motionRef"
 				v-model="form.motion"
 				@input="onParamInput"
 			/>
@@ -60,10 +60,13 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registryRef } from '@app/utils/element-registry';
+import {
+	provideFileTriggerAnimation,
+	resetFileTriggerAnimation,
+	type FileTriggerAnimationApi
+} from '@app/composables/inspector-section-bridges';
 import { Inspector } from '@app/inspector/inspector.ts';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -94,5 +97,21 @@ onMounted(() => {
 			value: false
 		}
 	]);
+});
+
+/** 动作下拉：换动画后由单例经桥要求重灌候选项并回写旧值。 */
+const motionRef = ref<InstanceType<typeof SelectBox> | null>(null);
+
+const bridgeApi: FileTriggerAnimationApi = {
+	reloadMotions: (items) => {
+		motionRef.value?.loadItems(items);
+		const prev = motionRef.value?.read?.();
+		motionRef.value?.write2?.(prev);
+	}
+};
+
+onMounted(() => {
+	provideFileTriggerAnimation(bridgeApi);
+	onUnmounted(() => resetFileTriggerAnimation(bridgeApi));
 });
 </script>

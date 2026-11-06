@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-const d = JSON.parse(readFileSync(`${process.env.TEMP}/inv6.json`, 'utf8'));
+const d = JSON.parse(readFileSync(`${process.env.TEMP}/inv11.json`, 'utf8'));
 const windows = d.windows;
 
 /** consumer 文件 → 它卡住了哪些窗口。 */

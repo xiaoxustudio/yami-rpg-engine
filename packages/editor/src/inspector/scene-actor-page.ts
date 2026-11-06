@@ -1,7 +1,7 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
+import { getSceneActorMeta } from '@app/composables/inspector-section-bridges';
 import { inspectorEls } from './element-registry.ts';
-import { clear, hide, show } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -83,10 +83,7 @@ import { radians } from '@app/utils/math';
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
 			this.target = null;
-			clear(inspectorEls.get('sceneActor-conditions'));
-			clear(inspectorEls.get('sceneActor-events'));
-			clear(inspectorEls.get('sceneActor-scripts'));
-			clear(inspectorEls.get('sceneActor-parameter-pane'));
+			getSceneActorMeta()?.clearLists();
 		}
 	};
 
@@ -162,12 +159,10 @@ import { radians } from '@app/utils/math';
 	SceneActor.typeWrite = function (this: typeof SceneActor, event: YamiEvent) {
 		switch (event.value) {
 			case 'local':
-				show(inspectorEls.get('sceneActor-scripts-detail'));
-				show(inspectorEls.get('sceneActor-parameter-pane'));
+				getSceneActorMeta()?.setScriptsDetailVisible(true);
 				break;
 			case 'global':
-				hide(inspectorEls.get('sceneActor-scripts-detail'));
-				hide(inspectorEls.get('sceneActor-parameter-pane'));
+				getSceneActorMeta()?.setScriptsDetailVisible(false);
 				break;
 		}
 	};
