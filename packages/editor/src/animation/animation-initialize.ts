@@ -1,3 +1,4 @@
+import { animationNodes } from '@app/composables/animation-nodes';
 import { elementDataOf } from '@ui-kit';
 import type { AnimationElement } from '@app/animation/animation-window.ts';
 import { Animation } from './animation-window.ts';
@@ -32,19 +33,19 @@ import type { YamiElement } from '@app/types/element-api';
 import { roundTo } from '@app/utils/math';
 
 Animation.initialize = function (this: typeof Animation) {
-	this.page = animationEls.get('animation') as typeof this.page;
-	this.head = animationEls.get('animation-head') as typeof this.head;
-	this.screen = animationEls.get('animation-screen') as typeof this.screen;
+	this.page = animationNodes.pick('animation') as typeof this.page;
+	this.head = animationNodes.pick('head') as typeof this.head;
+	this.screen = animationNodes.pick('screen') as typeof this.screen;
 	const oldMarquee = this.marquee;
-	this.marquee = animationEls.get('animation-marquee') as typeof this.marquee;
+	this.marquee = animationNodes.pick('marquee') as typeof this.marquee;
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
-	this.body = animationEls.get('animation-body') as AnimationElement;
+	this.body = animationNodes.pick('body') as AnimationElement;
 	this.dirList = animationEls.get('animation-dirList') as typeof this.dirList;
-	this.searcher = animationEls.get('animation-searcher') as typeof this.searcher;
+	this.searcher = animationNodes.pick('searcher') as typeof this.searcher;
 	const oldList = this.list;
-	this.list = animationEls.get('animation-list') as typeof this.list;
+	this.list = animationNodes.pick('list') as typeof this.list;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
@@ -55,19 +56,19 @@ Animation.initialize = function (this: typeof Animation) {
 		'animation-list-head'
 	) as YamiElement;
 	const oldLayerList = this.layerList;
-	this.layerList = animationEls.get('animation-layer-list') as typeof this.layerList;
+	this.layerList = animationNodes.pick('layerList') as typeof this.layerList;
 	if (oldLayerList && this.layerList && oldLayerList !== this.layerList) {
 		Object.assign(this.layerList, oldLayerList);
 	}
 	const oldTimeline = this.timeline;
-	this.timeline = animationEls.get('animation-timeline') as typeof this.timeline;
+	this.timeline = animationNodes.pick('timeline') as typeof this.timeline;
 	if (oldTimeline && this.timeline && oldTimeline !== this.timeline) {
 		Object.assign(this.timeline, oldTimeline);
 	}
 	elementDataOf<{ head: HTMLElement }>(this.timeline).head = animationEls.get(
 		'animation-timeline-head'
 	) as YamiElement;
-	this.toolbar = animationEls.get('animation-timeline-toolbar') as typeof this.toolbar;
+	this.toolbar = animationNodes.pick('timelineToolbar') as typeof this.toolbar;
 	const oldOuterTimelineList = this.outerTimelineList;
 	this.outerTimelineList = animationEls.get(
 		'animation-timeline-list-outer'
@@ -107,15 +108,15 @@ Animation.initialize = function (this: typeof Animation) {
 	this.timelineMarqueeShift = animationEls.get(
 		'animation-timeline-marquee-shift'
 	) as typeof this.timelineMarqueeShift;
-	this.outerRuler = animationEls.get('animation-timeline-ruler-outer') as typeof this.outerRuler;
-	this.innerRuler = animationEls.get('animation-timeline-ruler-inner') as typeof this.innerRuler;
+	this.outerRuler = animationNodes.pick('timelineRulerOuter') as typeof this.outerRuler;
+	this.innerRuler = animationNodes.pick('timelineRulerInner') as typeof this.innerRuler;
 	this.outerPointerArea = animationEls.get(
 		'animation-timeline-pointer-area-outer'
 	) as typeof this.outerPointerArea;
 	this.innerPointerArea = animationEls.get(
 		'animation-timeline-pointer-area-inner'
 	) as typeof this.innerPointerArea;
-	this.pointer = animationEls.get('animation-timeline-pointer') as typeof this.pointer;
+	this.pointer = animationNodes.pick('timelinePointer') as typeof this.pointer;
 	if (this.screen) addSetScrollMethod(this.screen);
 	hide(this.body);
 	hide(this.timeline);

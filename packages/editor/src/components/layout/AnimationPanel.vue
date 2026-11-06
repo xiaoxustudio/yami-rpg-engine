@@ -1,14 +1,9 @@
 <template>
-	<div
-		class="page-frame"
-		id="animation"
-		:ref="registryRef(animationEls, 'animation')"
-		value="animation"
-	>
+	<div class="page-frame" id="animation" :ref="bind('animation')" value="animation">
 		<div
 			class="box"
 			id="animation-head"
-			:ref="registryRef(animationEls, 'animation-head')"
+			:ref="bind('head')"
 			@pointerdown="onAnimationHeadPointerdown"
 		>
 			<div class="box" id="animation-head-start" @pointerdown="onAnimationSwitchPointerdown">
@@ -68,18 +63,18 @@
 				></SliderBox>
 			</div>
 		</div>
-		<div class="box" id="animation-body" :ref="registryRef(animationEls, 'animation-body')">
+		<div class="box" id="animation-body" :ref="bind('body')">
 			<div
 				class="box"
 				id="animation-screen"
-				:ref="registryRef(animationEls, 'animation-screen')"
+				:ref="bind('screen')"
 				tabindex="-1"
 				@keydown="onAnimationScreenKeydown"
 				@wheel="onAnimationScreenWheel"
 			>
 				<MarqueeArea
 					id="animation-marquee"
-					:ref="registryRef(animationEls, 'animation-marquee')"
+					:ref="bind('marquee')"
 					@pointerdown="onAnimationMarqueePointerdown"
 					@doubleclick="onAnimationMarqueeDoubleclick"
 				></MarqueeArea>
@@ -100,11 +95,11 @@
 </template>
 
 <script setup lang="ts">
+import { animationNodes } from '@app/composables/animation-nodes';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { computed, onMounted, ref } from 'vue';
-import { animationEls } from '@app/animation/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { registryRef } from '@app/utils/element-registry';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
@@ -154,7 +149,6 @@ const onDirPointerdown = (index: number): void => {
 };
 
 onMounted(() => {
-	registerElement(animationEls, 'animation-dirList', dirListEl.value);
 	const el = dirListEl.value;
 	if (!el) return;
 	attachElementApi(el, { setDirItems, setDirDirection });
@@ -181,4 +175,6 @@ const onAnimationMarqueePointerdown = (event: PointerEvent) => {
 const onAnimationMarqueeDoubleclick = (event: PointerEvent) => {
 	Animation?.marqueeDoubleclick?.(event);
 };
+const { bind, dispose } = animationNodes.scoped();
+onUnmounted(dispose);
 </script>

@@ -1,3 +1,4 @@
+import { animationNodes } from '@app/composables/animation-nodes';
 import { elementDataOf } from '@ui-kit';
 import type { YamiElement } from '@app/types/element-api';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
@@ -447,42 +448,37 @@ export const Animation = {
 	scrollRight: null!,
 	scrollBottom: null!,
 	page:
-		(animationEls.get('animation') as AnimationShape['page']) ?? ({} as AnimationShape['page']),
-	head:
-		(animationEls.get('animation-head') as AnimationShape['head']) ??
-		({} as AnimationShape['head']),
-	body:
-		(animationEls.get('animation-body') as AnimationShape['body']) ??
-		({} as AnimationShape['body']),
+		(animationNodes.pick('animation') as AnimationShape['page']) ??
+		({} as AnimationShape['page']),
+	head: (animationNodes.pick('head') as AnimationShape['head']) ?? ({} as AnimationShape['head']),
+	body: (animationNodes.pick('body') as AnimationShape['body']) ?? ({} as AnimationShape['body']),
 	screen:
-		(animationEls.get('animation-screen') as AnimationShape['screen']) ??
+		(animationNodes.pick('screen') as AnimationShape['screen']) ??
 		({} as AnimationShape['screen']),
 	marquee:
-		(animationEls.get('animation-marquee') as AnimationShape['marquee']) ??
+		(animationNodes.pick('marquee') as AnimationShape['marquee']) ??
 		({} as AnimationShape['marquee']),
 	dirList:
 		(animationEls.get('animation-dirList') as AnimationShape['dirList']) ??
 		({} as AnimationShape['dirList']),
 	searcher:
-		(animationEls.get('animation-searcher') as AnimationShape['searcher']) ??
+		(animationNodes.pick('searcher') as AnimationShape['searcher']) ??
 		({} as AnimationShape['searcher']),
-	list:
-		(animationEls.get('animation-list') as AnimationShape['list']) ??
-		({} as AnimationShape['list']),
+	list: (animationNodes.pick('list') as AnimationShape['list']) ?? ({} as AnimationShape['list']),
 	layerList:
-		(animationEls.get('animation-layer-list') as AnimationShape['layerList']) ??
+		(animationNodes.pick('layerList') as AnimationShape['layerList']) ??
 		({} as AnimationShape['layerList']),
 	timeline:
-		(animationEls.get('animation-timeline') as AnimationShape['timeline']) ??
+		(animationNodes.pick('timeline') as AnimationShape['timeline']) ??
 		({} as AnimationShape['timeline']),
 	toolbar:
-		(animationEls.get('animation-timeline-toolbar') as AnimationShape['toolbar']) ??
+		(animationNodes.pick('timelineToolbar') as AnimationShape['toolbar']) ??
 		({} as AnimationShape['toolbar']),
 	outerRuler:
-		(animationEls.get('animation-timeline-ruler-outer') as AnimationShape['outerRuler']) ??
+		(animationNodes.pick('timelineRulerOuter') as AnimationShape['outerRuler']) ??
 		({} as AnimationShape['outerRuler']),
 	innerRuler:
-		(animationEls.get('animation-timeline-ruler-inner') as AnimationShape['innerRuler']) ??
+		(animationNodes.pick('timelineRulerInner') as AnimationShape['innerRuler']) ??
 		({} as AnimationShape['innerRuler']),
 	outerTimelineList:
 		(animationEls.get(
@@ -493,10 +489,10 @@ export const Animation = {
 			'animation-timeline-list-inner'
 		) as AnimationShape['innerTimelineList']) ?? ({} as AnimationShape['innerTimelineList']),
 	timelineCursor:
-		(animationEls.get('animation-timeline-cursor') as AnimationShape['timelineCursor']) ??
+		(animationNodes.pick('timelineCursor') as AnimationShape['timelineCursor']) ??
 		({} as AnimationShape['timelineCursor']),
 	timelineMarquee:
-		(animationEls.get('animation-timeline-marquee') as AnimationShape['timelineMarquee']) ??
+		(animationNodes.pick('timelineMarquee') as AnimationShape['timelineMarquee']) ??
 		({} as AnimationShape['timelineMarquee']),
 	timelineMarqueeShift:
 		(animationEls.get(
@@ -512,7 +508,7 @@ export const Animation = {
 			'animation-timeline-pointer-area-inner'
 		) as AnimationShape['innerPointerArea']) ?? ({} as AnimationShape['innerPointerArea']),
 	pointer:
-		(animationEls.get('animation-timeline-pointer') as AnimationShape['pointer']) ??
+		(animationNodes.pick('timelinePointer') as AnimationShape['pointer']) ??
 		({} as AnimationShape['pointer']),
 	dirTags: null,
 	dragging: null,

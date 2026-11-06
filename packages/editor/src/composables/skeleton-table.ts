@@ -23,6 +23,11 @@ export interface SkeletonTable<K extends string> {
 	get(key: K): HTMLElement | null;
 	/** 读取，取不到时按 id 兜底查询。 */
 	pick(key: K): HTMLElement | null;
+	/**
+	 * 组件作用域：`bind(key)` 直接当模板 `:ref` 用，`dispose()` 在 `onUnmounted` 里调。
+	 * 适合「一个组件登记一批节点」的场景，省掉一堆具名 ref。
+	 */
+	scoped(): { bind(key: K): (target: unknown) => void; dispose(): void };
 }
 
 /** 建一张骨架节点表。 */
@@ -38,6 +43,23 @@ export const createSkeletonTable = <K extends string>(ids: Record<K, string>): S
 			if (element && nodes[key] === element) delete nodes[key];
 		},
 		get: (key) => nodes[key] ?? null,
-		pick: (key) => nodes[key] ?? queryElementsByIds([ids[key]])[0] ?? null
+		pick: (key) => nodes[key] ?? queryElementsByIds([ids[key]])[0] ?? null,
+		scoped: () => {
+			const bound: Array<[K, HTMLElement]> = [];
+			return {
+				bind: (key) => (target: unknown) => {
+					const instance = target as { root?: unknown; $el?: unknown } | null;
+					const el = instance?.root ?? instance?.$el ?? target;
+					if (!(el instanceof HTMLElement)) return;
+					nodes[key] = el;
+					bound.push([key, el]);
+				},
+				dispose: () => {
+					for (const [key, el] of bound.splice(0)) {
+						if (nodes[key] === el) delete nodes[key];
+					}
+				}
+			};
+		}
 	};
 };

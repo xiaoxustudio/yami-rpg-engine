@@ -1,24 +1,11 @@
 <template>
-	<div
-		class="page-frame"
-		id="animation-motion"
-		:ref="registryRef(animationEls, 'animation-motion')"
-		value="animation-motion"
-	>
-		<div
-			class="box"
-			id="animation-list-head"
-			:ref="registryRef(animationEls, 'animation-list-head')"
-		>
-			<TextBox
-				id="animation-searcher"
-				:ref="registryRef(animationEls, 'animation-searcher')"
-				name="search"
-			></TextBox>
+	<div class="page-frame" id="animation-motion" :ref="bind('motion')" value="animation-motion">
+		<div class="box" id="animation-list-head" :ref="bind('listHead')">
+			<TextBox id="animation-searcher" :ref="bind('searcher')" name="search"></TextBox>
 		</div>
 		<TreeList
 			id="animation-list"
-			:ref="registryRef(animationEls, 'animation-list')"
+			:ref="bind('list')"
 			padded
 			:node-extras="animationNodeExtras"
 			:node-icon-renderer="animationNodeIcon"
@@ -32,9 +19,8 @@
 </template>
 
 <script setup lang="ts">
-import { h, type VNode } from 'vue';
-import { animationEls } from '@app/animation/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { animationNodes } from '@app/composables/animation-nodes';
+import { h, type VNode, onUnmounted } from 'vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import { getLazyWindow } from '@app/tools/window-registry';
@@ -69,4 +55,6 @@ const onAnimationListPopup = (event: Event & { value?: unknown }) => {
 const onAnimationListChange = (event: Event) => {
 	Animation?.listChange?.(event);
 };
+const { bind, dispose } = animationNodes.scoped();
+onUnmounted(dispose);
 </script>

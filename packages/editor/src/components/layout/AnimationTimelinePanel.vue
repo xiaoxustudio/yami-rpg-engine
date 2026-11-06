@@ -2,18 +2,14 @@
 	<div
 		class="page-frame"
 		id="animation-timeline"
-		:ref="registryRef(animationEls, 'animation-timeline')"
+		:ref="bind('timeline')"
 		value="animation-timeline"
 	>
-		<div
-			class="box"
-			id="animation-timeline-head"
-			:ref="registryRef(animationEls, 'animation-timeline-head')"
-		>
+		<div class="box" id="animation-timeline-head" :ref="bind('timelineHead')">
 			<div
 				class="box"
 				id="animation-timeline-toolbar"
-				:ref="registryRef(animationEls, 'animation-timeline-toolbar')"
+				:ref="bind('timelineToolbar')"
 				@pointerdown="onTimelineToolbarPointerdown"
 			>
 				<div
@@ -97,21 +93,17 @@
 					</svg>
 				</div>
 			</div>
-			<div
-				class="box"
-				id="animation-timeline-ruler-outer"
-				:ref="registryRef(animationEls, 'animation-timeline-ruler-outer')"
-			>
+			<div class="box" id="animation-timeline-ruler-outer" :ref="bind('timelineRulerOuter')">
 				<div
 					class="box"
 					id="animation-timeline-ruler-inner"
-					:ref="registryRef(animationEls, 'animation-timeline-ruler-inner')"
+					:ref="bind('timelineRulerInner')"
 				></div>
 			</div>
 		</div>
 		<TreeList
 			id="animation-layer-list"
-			:ref="registryRef(animationEls, 'animation-layer-list')"
+			:ref="bind('layerList')"
 			:node-extras="layerNodeExtras"
 			:node-icon-renderer="layerNodeIcon"
 			@select="onLayerListSelect"
@@ -122,44 +114,36 @@
 		<div
 			class="box"
 			id="animation-timeline-list-outer"
-			:ref="registryRef(animationEls, 'animation-timeline-list-outer')"
+			:ref="bind('timelineListOuter')"
 			tabindex="0"
 		>
 			<div
 				class="box"
 				id="animation-timeline-list-inner"
-				:ref="registryRef(animationEls, 'animation-timeline-list-inner')"
+				:ref="bind('timelineListInner')"
 			></div>
-			<div
-				class="box"
-				id="animation-timeline-cursor"
-				:ref="registryRef(animationEls, 'animation-timeline-cursor')"
-			></div>
-			<div
-				class="box"
-				id="animation-timeline-marquee"
-				:ref="registryRef(animationEls, 'animation-timeline-marquee')"
-			></div>
+			<div class="box" id="animation-timeline-cursor" :ref="bind('timelineCursor')"></div>
+			<div class="box" id="animation-timeline-marquee" :ref="bind('timelineMarquee')"></div>
 			<div
 				class="box"
 				id="animation-timeline-marquee-shift"
-				:ref="registryRef(animationEls, 'animation-timeline-marquee-shift')"
+				:ref="bind('timelineMarqueeShift')"
 			></div>
 		</div>
 		<div
 			class="box"
 			id="animation-timeline-pointer-area-outer"
-			:ref="registryRef(animationEls, 'animation-timeline-pointer-area-outer')"
+			:ref="bind('timelinePointerAreaOuter')"
 		>
 			<div
 				class="box"
 				id="animation-timeline-pointer-area-inner"
-				:ref="registryRef(animationEls, 'animation-timeline-pointer-area-inner')"
+				:ref="bind('timelinePointerAreaInner')"
 			>
 				<div
 					class="box"
 					id="animation-timeline-pointer"
-					:ref="registryRef(animationEls, 'animation-timeline-pointer')"
+					:ref="bind('timelinePointer')"
 				></div>
 			</div>
 		</div>
@@ -167,10 +151,9 @@
 </template>
 
 <script setup lang="ts">
+import { animationNodes } from '@app/composables/animation-nodes';
 import { useI18n } from 'vue-i18n';
-import { h, type VNode } from 'vue';
-import { animationEls } from '@app/animation/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { h, type VNode, onUnmounted } from 'vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import { getLazyWindow } from '@app/tools/window-registry';
 import { getAnimationStore } from '@app/stores/animation';
@@ -281,4 +264,6 @@ const onLayerListChange = (event: Event) => {
 const onTimelineToolbarPointerdown = (event: PointerEvent) => {
 	Animation?.timelineToolbarPointerdown?.(event);
 };
+const { bind, dispose } = animationNodes.scoped();
+onUnmounted(dispose);
 </script>

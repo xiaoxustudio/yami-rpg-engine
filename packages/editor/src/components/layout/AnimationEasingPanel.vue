@@ -1,31 +1,22 @@
 <template>
-	<div
-		class="page-frame"
-		id="animation-easing"
-		:ref="registryRef(animationEls, 'animation-easing')"
-		value="animation-easing"
-	>
-		<div
-			class="box"
-			id="animation-easing-head"
-			:ref="registryRef(animationEls, 'animation-easing-head')"
-		>
+	<div class="page-frame" id="animation-easing" :ref="bind('easing')" value="animation-easing">
+		<div class="box" id="animation-easing-head" :ref="bind('easingHead')">
 			<div
 				class="item toolbar-item"
 				id="animation-easing-settings"
-				:ref="registryRef(animationEls, 'animation-easing-settings')"
+				:ref="bind('easingSettings')"
 				value="bezier"
 			></div>
 			<SelectBox
 				id="animation-easing-id"
-				:ref="registryRef(animationEls, 'animation-easing-id')"
+				:ref="bind('easingId')"
 				@write="onEasingIdWrite"
 				@input="onEasingIdInput"
 			></SelectBox>
 		</div>
 		<canvas
 			id="animation-easing-canvas"
-			:ref="registryRef(animationEls, 'animation-easing-canvas')"
+			:ref="bind('easingCanvas')"
 			width="0"
 			height="0"
 		></canvas>
@@ -33,8 +24,8 @@
 </template>
 
 <script setup lang="ts">
-import { animationEls } from '@app/animation/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { animationNodes } from '@app/composables/animation-nodes';
+import { onUnmounted } from 'vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { getLazyWindow } from '@app/tools/window-registry';
 
@@ -47,4 +38,6 @@ const onEasingIdWrite = (value: unknown) => {
 const onEasingIdInput = (value: unknown) => {
 	Curve?.easingIdInput?.({ value });
 };
+const { bind, dispose } = animationNodes.scoped();
+onUnmounted(dispose);
 </script>
