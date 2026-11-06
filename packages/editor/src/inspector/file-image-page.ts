@@ -1,11 +1,10 @@
-import { inspectorEls } from './element-registry.ts';
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { hide } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
 import type { FileMeta } from '@app/data/metadata-manifest.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileImageInfo {
@@ -65,11 +64,7 @@ import type { YamiElement } from '@app/types/element-api';
 			}).then(() => {
 				if (this.symbol === symbol) {
 					this.symbol = null;
-					(
-						inspectorEls.get('fileImage') as HTMLElement & {
-							updateImage?: () => void;
-						}
-					)?.updateImage?.();
+					inspectorPageSync.fileImage.get()?.updateImage?.();
 					const width = image.naturalWidth;
 					const height = image.naturalHeight;
 					this.info!.resolution = `${width} x ${height}`;
@@ -90,9 +85,7 @@ import type { YamiElement } from '@app/types/element-api';
 	};
 
 	FileImage.update = function (this: typeof FileImage) {
-		const el = inspectorEls.get('fileImage') as YamiElement;
-		if (!el) return;
-		(el as HTMLElement & { update?: () => void }).update?.();
+		inspectorPageSync.fileImage.get()?.sync();
 	};
 
 	Inspector.fileImage = FileImage;

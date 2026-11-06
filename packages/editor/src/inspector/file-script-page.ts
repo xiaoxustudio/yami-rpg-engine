@@ -1,11 +1,10 @@
-import { inspectorEls } from './element-registry.ts';
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Data } from '@app/data/data-object.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
 import type { FileMeta } from '@app/data/metadata-manifest.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileScriptShape {
@@ -75,9 +74,7 @@ export default class Plugin {
 	};
 
 	FileScript.update = function (this: typeof FileScript) {
-		const el = inspectorEls.get('fileScript') as YamiElement;
-		if (!el) return;
-		(el as HTMLElement & { update?: () => void }).update?.();
+		inspectorPageSync.fileScript.get()?.sync();
 	};
 
 	FileScript.windowLocalize = function (this, _event: Event) {

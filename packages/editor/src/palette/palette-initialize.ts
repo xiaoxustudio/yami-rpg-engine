@@ -1,8 +1,7 @@
 import { Palette } from './palette.ts';
 import type { PaletteCanvasElement, PaletteMarqueeExtensions } from './palette.ts';
 import { registryElement } from '@app/utils/element-registry';
-import { renderDetached } from '@app/utils/dom';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { queryElementsByIds, renderDetached } from '@app/utils/dom';
 import { paletteEls } from '@app/palette/element-registry';
 import { addScrollbars, hide, on } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
@@ -16,7 +15,7 @@ import type { YamiElement } from '@app/types/element-api';
 
 Palette.initialize = function (this: typeof Palette) {
 	if (!paletteEls.get('palette-frame')) return;
-	this.page = inspectorEls.get('fileTileset') as YamiElement;
+	this.page = (queryElementsByIds(['fileTileset'])[0] ?? null) as YamiElement;
 	this.head = paletteEls.get('palette-head') as YamiElement;
 	this.body = paletteEls.get('palette-body') as YamiElement;
 	this.window = hide(paletteEls.get('palette-frame') as YamiElement);

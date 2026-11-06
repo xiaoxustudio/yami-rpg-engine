@@ -128,13 +128,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileAudioPage } from '@app/composables/useFileAudioPage';
 import { useEventListener } from '@app/composables/useEventListener';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
@@ -215,10 +215,9 @@ onMounted(() => {
 		el?.addEventListener('resize', fileAudio.windowResize);
 	}
 
-	const el = inspectorEls.get('fileAudio');
-	if (el) {
-		attachElementApi(el, { update: sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.fileAudio.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.fileAudio.reset(bridgeApi));
 	sync();
 });
 </script>

@@ -1,11 +1,10 @@
-import { inspectorEls } from './element-registry.ts';
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { File } from '@app/file/file-system-core.ts';
 import { FileItem } from '@app/services/file-system/file-item.ts';
 import type { FileMeta } from '@app/data/metadata-manifest.ts';
 import { AudioManager } from '@app/audio/audio-manager.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileVideoInfo {
@@ -104,9 +103,7 @@ import type { YamiElement } from '@app/types/element-api';
 	};
 
 	FileVideo.update = function (this: typeof FileVideo) {
-		const el = inspectorEls.get('fileVideo') as YamiElement;
-		if (!el) return;
-		(el as HTMLElement & { update?: () => void }).update?.();
+		inspectorPageSync.fileVideo.get()?.sync();
 	};
 
 	Inspector.fileVideo = FileVideo;

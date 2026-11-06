@@ -1,4 +1,4 @@
-import { inspectorEls } from './element-registry.ts';
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { padZero } from '@app/utils/number';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass, hasClass, hide, removeClass, show } from '@app/utils/element-utils';
@@ -8,7 +8,6 @@ import { FileItem } from '@app/services/file-system/file-item.ts';
 import type { FileMeta } from '@app/data/metadata-manifest.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Timer } from '@app/utils/timer';
-import type { YamiElement } from '@app/types/element-api';
 import type { YamiEvent } from '@app/types/editor-event';
 import { roundTo } from '@app/utils/math';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
@@ -207,9 +206,7 @@ import { getDevicePixelContentBoxSize } from '@app/utils/css';
 	};
 
 	FileAudio.update = function (this: typeof FileAudio) {
-		const el = inspectorEls.get('fileAudio') as YamiElement;
-		if (!el) return;
-		(el as HTMLElement & { update?: () => void }).update?.();
+		inspectorPageSync.fileAudio.get()?.sync();
 	};
 
 	FileAudio.updateCanvas = function (this: typeof FileAudio) {

@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { inspectorEls } from './element-registry.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass, disable, enable, read, removeClass } from '@app/utils/element-utils';
@@ -83,7 +84,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 					break;
 			}
 
-			(inspectorEls.get('fileTileset') as HTMLElement & { sync?: () => void })?.sync?.();
+			inspectorPageSync.fileTileset.get()?.sync();
 		}
 	};
 

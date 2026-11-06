@@ -23,12 +23,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileScriptPage } from '@app/composables/useFileScriptPage';
 import { useEventListener } from '@app/composables/useEventListener';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -61,10 +60,9 @@ onMounted(() => {
 		localizeHandler.value = onLocalize;
 		localizeEnabled.value = true;
 	}
-	const el = inspectorEls.get('fileScript');
-	if (el) {
-		attachElementApi(el, { update: sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.fileScript.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.fileScript.reset(bridgeApi));
 	sync();
 });
 </script>

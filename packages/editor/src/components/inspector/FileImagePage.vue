@@ -31,13 +31,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFileImagePage } from '@app/composables/useFileImagePage';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement } from '@app/utils/element-registry';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 
@@ -56,8 +56,10 @@ onMounted(() => {
 	registerElement(inspectorEls, 'fileImage-image', elImage.value);
 
 	const el = inspectorEls.get('fileImage');
+	const bridgeApi: PageSyncApi = { sync, updateImage };
+	inspectorPageSync.fileImage.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.fileImage.reset(bridgeApi));
 	if (!el) return;
-	attachElementApi(el, { updateImage, update: sync });
 	el.addEventListener('resize', windowResize);
 	sync();
 });

@@ -5,11 +5,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
+import { onMounted, provide, onUnmounted } from 'vue';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { useFileTriggerPage } from '@app/composables/useFileTriggerPage';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import { fileTriggerContextKey } from './file-trigger/context.ts';
 import FileTriggerPropertiesSection from './file-trigger/FileTriggerPropertiesSection.vue';
 import FileTriggerAnimationSection from './file-trigger/FileTriggerAnimationSection.vue';
@@ -26,10 +25,9 @@ provide(fileTriggerContextKey, { form, onParamInput });
 onMounted(() => {
 	const editor = Inspector.fileTrigger;
 	if (!editor) return;
-	const el = inspectorEls.get('fileTrigger-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync, form });
-	}
+	const bridgeApi: PageSyncApi = { sync, form };
+	inspectorPageSync.fileTrigger.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.fileTrigger.reset(bridgeApi));
 	sync();
 });
 </script>

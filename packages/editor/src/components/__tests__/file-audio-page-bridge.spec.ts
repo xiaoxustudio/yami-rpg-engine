@@ -1,3 +1,5 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
+const getFileAudioPage = () => inspectorPageSync.fileAudio.get();
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { registerElement } from '@app/utils/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
@@ -60,10 +62,11 @@ describe('FileAudioPage（文件音频信息响应式渲染桥接）', () => {
 		return wrapper;
 	};
 
-	it('onMounted 挂载 update 桥接并渲染默认值', async () => {
+	it('onMounted 交出 update 页面桥并渲染默认值', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('fileAudio') as UpdateEl;
-		expect(typeof el.update).toBe('function');
+		const element = document.getElementById('fileAudio') as UpdateEl;
+		expect(typeof element.update, '元素上不该再有 update').toBe('undefined');
+		expect(typeof getFileAudioPage()?.sync, '桥上应有 sync').toBe('function');
 		expect(document.getElementById('fileAudio-name')?.textContent).toBe('');
 		expect(document.getElementById('fileAudio-size')?.textContent).toBe('');
 		expect(document.getElementById('fileAudio-duration')?.textContent).toBe('');
@@ -84,7 +87,7 @@ describe('FileAudioPage（文件音频信息响应式渲染桥接）', () => {
 			bitrate: '128Kbps'
 		};
 		fileAudio.params = { volume: 0.5, pan: -0.5, dry: 0.8, wet: 0.2 };
-		(document.getElementById('fileAudio') as UpdateEl).update?.();
+		getFileAudioPage()?.sync();
 		await wrapper.vm.$nextTick();
 		expect(document.getElementById('fileAudio-name')?.textContent).toBe('bgm.mp3');
 		expect(document.getElementById('fileAudio-size')?.textContent).toBe('1.5 MB');

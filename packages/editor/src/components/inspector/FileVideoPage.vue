@@ -41,13 +41,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileVideoPage } from '@app/composables/useFileVideoPage';
 import { useEventListener } from '@app/composables/useEventListener';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 
@@ -64,10 +63,9 @@ onMounted(() => {
 	if (fileVideo) {
 		fileVideo.video = elVideo.value;
 	}
-	const el = inspectorEls.get('fileVideo');
-	if (el) {
-		attachElementApi(el, { update: sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.fileVideo.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.fileVideo.reset(bridgeApi));
 	sync();
 });
 </script>

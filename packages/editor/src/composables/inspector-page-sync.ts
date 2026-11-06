@@ -11,6 +11,9 @@ import { createFormBridge } from './form-bridge';
 export interface PageSyncApi {
 	/** 让页面按最新数据重渲染。 */
 	sync(): void;
+	/** 图片页专用：重新取一次图片尺寸/预览（少量单例要）。 */
+	updateImage?(): void;
+
 	/** 页面表单真源（少数单例要读它做分支判断）。 */
 	form?: Record<string, unknown>;
 }
@@ -18,6 +21,7 @@ export interface PageSyncApi {
 const make = (name: string) => createFormBridge<PageSyncApi>(name);
 
 export const inspectorPageSync = {
+	fileVideo: make('fileVideoPage'),
 	fileTrigger: make('fileTriggerPage'),
 	uiButton: make('uiButtonPage'),
 	fileImage: make('fileImagePage'),

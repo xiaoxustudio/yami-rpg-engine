@@ -4,11 +4,10 @@
 </template>
 
 <script setup lang="ts">
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import '@app/inspector/file-tileset-page.ts';
-import { onMounted, provide } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { onMounted, provide, onUnmounted } from 'vue';
 import { useFileTilesetPage } from '@app/composables/useFileTilesetPage';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import { fileTilesetContextKey } from './file-tileset/context.ts';
 import FileTilesetPaletteSection from './file-tileset/FileTilesetPaletteSection.vue';
 import FileTilesetGeneralSection from './file-tileset/FileTilesetGeneralSection.vue';
@@ -22,10 +21,9 @@ const onParamInput = (value: unknown): void => {
 provide(fileTilesetContextKey, { form, onParamInput });
 
 onMounted(() => {
-	const el = inspectorEls.get('fileTileset');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.fileTileset.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.fileTileset.reset(bridgeApi));
 	sync();
 });
 </script>
