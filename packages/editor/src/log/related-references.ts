@@ -1,12 +1,11 @@
 import { elementDataOf } from '@ui-kit';
 import { GlobalClipboard } from '@app/utils/clipboard';
-import { logEls } from '@app/log/element-registry';
+import { getReference } from '@app/composables/tool-window-bridges';
 import { Window } from '@app/tools/window-object.ts';
-import { on, addClass, removeClass, clear, hasClass } from '@app/utils/element-utils.ts';
+import { addClass, removeClass, hasClass } from '@app/utils/element-utils.ts';
 import { Menu } from '@app/components/menu-list.ts';
 import { Data } from '@app/data/data-object.ts';
 import { getYamiI18n } from '@app/i18n';
-import type { YamiElement } from '@app/types/element-api';
 import { clone as deepClone } from '@app/utils/object';
 import { empty as fnEmpty } from '@app/utils/function';
 
@@ -109,13 +108,8 @@ export const Reference = {
 	getPointermoveListener: null as ((...args: unknown[]) => (event: PointerEvent) => void) | null
 };
 
-Reference.initialize = function () {
-	const refEl = logEls.get('reference') as YamiElement;
-	if (!refEl) return;
-	on(refEl, 'closed', this.windowClosed!);
-	const refListEl = logEls.get('reference-list') as YamiElement;
-	if (refListEl) on(refListEl, 'popup', this.listPopup!);
-};
+/** 事件（closed / popup）已由窗口自己接到 Reference.windowClosed / Reference.listPopup。 */
+Reference.initialize = function () {};
 
 Reference.findAllGuids = function (targetGuid = '') {
 	const usedMap: Record<string, ReferenceContent> = {};
@@ -827,7 +821,7 @@ Reference.update = function (items: ReferenceItem[]) {
 } as ((...args: unknown[]) => void) | null;
 
 Reference.windowClosed = function (_event: Event) {
-	clear(logEls.get('reference-list') as YamiElement);
+	getReference()?.clearList();
 } as ((...args: unknown[]) => void) | null;
 
 Reference.listPopup = function (event: PointerEvent & { value?: ReferenceItem | null }) {

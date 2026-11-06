@@ -1,41 +1,41 @@
 <template>
-	<WindowFrame id="reference" :ref="registryRef(logEls, 'reference')" no-buttons>
+	<WindowFrame id="reference" ref="frame" no-buttons @closed="onWindowClosed">
 		<template #title
 			><TitleBar
 				>Reference
 				<div class="close"></div></TitleBar
 		></template>
 
-		<CommonList id="reference-list" :ref="registryRef(fieldEls, 'reference-list')" />
+		<CommonList id="reference-list" ref="listRef" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import {
-	createElementRegistry,
-	registerElement,
-	registryElement,
-	registryRef
-} from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-import { logEls } from '@app/log/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
-import { h, onMounted, type VNode } from 'vue';
+	provideReference,
+	resetReference,
+	type ReferenceApi
+} from '@app/composables/tool-window-bridges';
+import { h, onMounted, onUnmounted, ref, type VNode } from 'vue';
 import { renderDetached } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CommonList from '@app/components/common/CommonList.vue';
-import { registerReferenceUpdate, type ReferenceItem } from '@app/log/related-references.ts';
+import {
+	Reference,
+	registerReferenceUpdate,
+	type ReferenceItem
+} from '@app/log/related-references.ts';
+import { on } from '@app/utils/element-utils';
 
 const updateItems = (items: ReferenceItem[]): void => {
-	const list = registryElement<
-		HTMLElement & {
-			reload(): void;
-			appendElement(element: HTMLElement): void;
-			update(): void;
-		}
-	>(fieldEls, 'reference-list');
+	const list = (listRef.value?.root ?? null) as
+		| (HTMLElement & {
+				reload(): void;
+				appendElement(element: HTMLElement): void;
+				update(): void;
+		  })
+		| null;
 	if (!list) return;
 	list.reload();
 	for (const item of items) {
@@ -58,9 +58,28 @@ const updateItems = (items: ReferenceItem[]): void => {
 	list.update();
 };
 
+const listRef = ref<InstanceType<typeof CommonList> | null>(null);
+
+const bridgeApi: ReferenceApi = {
+	clearList: () => {
+		listRef.value?.clear?.();
+	}
+};
+
+/** 关闭时通知单例（原来靠注册表取根元素挂监听）。 */
+const onWindowClosed = (): void => {
+	Reference.windowClosed?.(new Event('closed'));
+};
+
 onMounted(() => {
-	registerElement(logEls, 'reference-list', fieldEls.get('reference-list'));
+	provideReference(bridgeApi);
+	onUnmounted(() => resetReference(bridgeApi));
 	registerReferenceUpdate(updateItems);
+	const root = listRef.value?.root ?? null;
+	if (root)
+		on(root, 'popup', (event) =>
+			Reference.listPopup?.(event as PointerEvent & { value?: never })
+		);
 });
 </script>
 
