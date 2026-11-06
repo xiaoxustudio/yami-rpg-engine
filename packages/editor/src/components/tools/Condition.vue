@@ -12,7 +12,7 @@
 				:label="t('components.condition-type.label')"
 				id="condition-type"
 				v-tip="t('components.condition-type.tip')"
-				:ref="registryRef(conditionEls, 'condition-type')"
+				ref="typeRef"
 				v-focus
 				v-model="form.type"
 				@write="onTypeWrite"
@@ -21,7 +21,7 @@
 			<CustomBox
 				id="condition-key"
 				v-tip="t('components.condition-key.tip')"
-				:ref="registryRef(conditionEls, 'condition-key')"
+				ref="keyRef"
 				v-focus
 				type="global-variable"
 				filter="all"
@@ -32,7 +32,7 @@
 				:label="t('components.condition-boolean-operation.label')"
 				id="condition-boolean-operation"
 				v-tip="t('components.condition-boolean-operation.tip')"
-				:ref="registryRef(conditionEls, 'condition-boolean-operation')"
+				ref="booleanOperationRef"
 				v-model="form.booleanOperation"
 			/>
 			<div class="text">{{ t('components.condition-boolean-value.label') }}</div>
@@ -40,7 +40,7 @@
 				:label="t('components.condition-boolean-value.label')"
 				id="condition-boolean-value"
 				v-tip="t('components.condition-boolean-value.tip')"
-				:ref="registryRef(conditionEls, 'condition-boolean-value')"
+				ref="booleanValueRef"
 				v-model="form.booleanValue"
 			/>
 			<div class="text">{{ t('components.condition-number-operation.label') }}</div>
@@ -48,7 +48,7 @@
 				:label="t('components.condition-number-operation.label')"
 				id="condition-number-operation"
 				v-tip="t('components.condition-number-operation.tip')"
-				:ref="registryRef(conditionEls, 'condition-number-operation')"
+				ref="numberOperationRef"
 				v-model="form.numberOperation"
 			/>
 			<div class="text">{{ t('components.condition-number-value.label') }}</div>
@@ -56,7 +56,7 @@
 				:label="t('components.condition-number-value.label')"
 				id="condition-number-value"
 				v-tip="t('components.condition-number-value.tip')"
-				:ref="registryRef(conditionEls, 'condition-number-value')"
+				ref="numberValueRef"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
@@ -67,7 +67,7 @@
 				:label="t('components.condition-string-operation.label')"
 				id="condition-string-operation"
 				v-tip="t('components.condition-string-operation.tip')"
-				:ref="registryRef(conditionEls, 'condition-string-operation')"
+				ref="stringOperationRef"
 				v-model="form.stringOperation"
 			/>
 			<div class="text">{{ t('components.condition-string-value.label') }}</div>
@@ -75,7 +75,7 @@
 				:label="t('components.condition-string-value.label')"
 				id="condition-string-value"
 				v-tip="t('components.condition-string-value.tip')"
-				:ref="registryRef(conditionEls, 'condition-string-value')"
+				ref="stringValueRef"
 				v-model="form.stringValue"
 			/>
 		</div>
@@ -83,11 +83,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import type { YamiElement } from '@app/types/element-api';
-import { conditionEls } from '@app/tools/condition-list';
-import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
+import {
+	provideCondition,
+	resetCondition,
+	type ConditionApi
+} from '@app/composables/condition-bridge';
+import { controlRoot, toControl } from '@app/composables/control-refs';
 import { ConditionListInterface, form } from '@app/tools/condition-list.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -105,7 +109,49 @@ const onConfirm = () => {
 	(ConditionListInterface?.target as YamiElement | undefined)?.save?.();
 };
 
-onMounted(() => {});
+/** 8 个条件控件：模板 ref 就位后经桥交出（逻辑名 → 控件）。 */
+const typeRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const keyRef = ref<InstanceType<typeof CustomBox> | null>(null);
+const booleanOperationRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const booleanValueRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const numberOperationRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const numberValueRef = ref<InstanceType<typeof NumberBox> | null>(null);
+const stringOperationRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const stringValueRef = ref<InstanceType<typeof TextArea> | null>(null);
+
+const controlsOf = (): Record<string, unknown> => ({
+	type: typeRef.value,
+	key: keyRef.value,
+	booleanOperation: booleanOperationRef.value,
+	booleanValue: booleanValueRef.value,
+	numberOperation: numberOperationRef.value,
+	numberValue: numberValueRef.value,
+	stringOperation: stringOperationRef.value,
+	stringValue: stringValueRef.value
+});
+
+const bridgeApi: ConditionApi = {
+	control: (name) => toControl(controlsOf()[name] ?? null),
+	relateGroups: (groups) => {
+		const type = typeRef.value;
+		if (!type) return;
+		// `relate()` 的目标是 DOM 语义：用 controlRoot 取根元素
+		type.enableHiddenMode?.();
+		(type as unknown as { relate?: (list: unknown[]) => void }).relate?.(
+			groups.map((group) => ({
+				case: group.case,
+				targets: group.targets.map((name) =>
+					controlRoot(toControl(controlsOf()[name] ?? null))
+				)
+			}))
+		);
+	}
+};
+
+onMounted(() => {
+	provideCondition(bridgeApi);
+	onUnmounted(() => resetCondition(bridgeApi));
+});
 </script>
 
 <style>

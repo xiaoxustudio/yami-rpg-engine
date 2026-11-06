@@ -1,7 +1,7 @@
+import { getCondition } from '@app/composables/condition-bridge';
 import { reactive } from 'vue';
 import { createElementRegistry } from '@app/utils/element-registry';
-import { registryElement } from '@app/utils/element-registry';
-import { treeOwnerListOf, type CustomBoxApi } from '@ui-kit';
+import { treeOwnerListOf } from '@ui-kit';
 import { Window } from '@app/tools/window-object.ts';
 import { onToolWindowMounted } from '@app/tools/tool-window-host';
 import { Command } from '@app/commands/command-object.ts';
@@ -226,20 +226,24 @@ export class ConditionListInterface implements IListInterface {
 			case 'global-boolean':
 			case 'global-number':
 			case 'global-string':
-				registryElement<CustomBoxApi>(conditionEls, 'condition-key')!.filter =
-					type.slice(7);
+				// `filter` 是 CustomBox 的元素能力，这里按它的最小形状断言
+				const keyBox = getCondition()?.control('key') as
+					| { filter?: string }
+					| null
+					| undefined;
+				if (keyBox) keyBox.filter = type.slice(7);
 				break;
 		}
 	}
 
 	static initialize() {
-		const typeEl = conditionEls.get('condition-type');
+		const typeEl = getCondition()?.control('type');
 		if (!typeEl) {
 			// 条件窗口是懒挂载的：首次打开前控件不在注册表，高亮行关系与选项都会丢
 			onToolWindowMounted('condition', () => ConditionListInterface.initialize());
 			return;
 		}
-		typeEl.loadItems([
+		typeEl.loadItems?.([
 			{ name: 'Global - Boolean', value: 'global-boolean' },
 			{ name: 'Global - Number', value: 'global-number' },
 			{ name: 'Global - String', value: 'global-string' },
@@ -248,71 +252,52 @@ export class ConditionListInterface implements IListInterface {
 			{ name: 'Self - String', value: 'self-string' }
 		]);
 
-		typeEl.enableHiddenMode().relate([
+		getCondition()?.relateGroups([
 			{
 				case: 'global-boolean',
-				targets: [
-					conditionEls.get('condition-key'),
-					conditionEls.get('condition-boolean-operation'),
-					conditionEls.get('condition-boolean-value')
-				]
+				targets: ['key', 'booleanOperation', 'booleanValue']
 			},
 			{
 				case: 'global-number',
-				targets: [
-					conditionEls.get('condition-key'),
-					conditionEls.get('condition-number-operation'),
-					conditionEls.get('condition-number-value')
-				]
+				targets: ['key', 'numberOperation', 'numberValue']
 			},
 			{
 				case: 'global-string',
-				targets: [
-					conditionEls.get('condition-key'),
-					conditionEls.get('condition-string-operation'),
-					conditionEls.get('condition-string-value')
-				]
+				targets: ['key', 'stringOperation', 'stringValue']
 			},
 			{
 				case: 'self-boolean',
-				targets: [
-					conditionEls.get('condition-boolean-operation'),
-					conditionEls.get('condition-boolean-value')
-				]
+				targets: ['booleanOperation', 'booleanValue']
 			},
 			{
 				case: 'self-number',
-				targets: [
-					conditionEls.get('condition-number-operation'),
-					conditionEls.get('condition-number-value')
-				]
+				targets: ['numberOperation', 'numberValue']
 			},
 			{
 				case: 'self-string',
-				targets: [
-					conditionEls.get('condition-string-operation'),
-					conditionEls.get('condition-string-value')
-				]
+				targets: ['stringOperation', 'stringValue']
 			}
 		]);
 
 		applyLocalizedItems('condition-boolean-operation', ['equal', 'unequal'], (items) =>
-			conditionEls.get('condition-boolean-operation')?.loadItems?.(items)
+			getCondition()?.control('booleanOperation')?.loadItems?.(items)
 		);
 
-		conditionEls.get('condition-boolean-value')?.loadItems?.([
-			{ name: 'False', value: false },
-			{ name: 'True', value: true }
-		]);
+		getCondition()
+			?.control('booleanValue')
+			?.loadItems?.([
+				{ name: 'False', value: false },
+				{ name: 'True', value: true }
+			]);
 
 		applyLocalizedItems(
 			'condition-number-operation',
 			['equal', 'unequal', 'greater-or-equal', 'less-or-equal', 'greater', 'less'],
-			(items) => conditionEls.get('condition-number-operation')?.loadItems?.(items)
+			(items) => getCondition()?.control('numberOperation')?.loadItems?.(items)
 		);
 
 		applyLocalizedItems('condition-string-operation', ['equal', 'unequal'], (items) =>
-			conditionEls.get('condition-string-operation')?.loadItems?.(items)
+			getCondition()?.control('stringOperation')?.loadItems?.(items)
 		);
 	}
 }

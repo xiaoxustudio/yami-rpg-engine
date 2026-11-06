@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-06T12:43:32.791Z",
+	"generatedAt": "2026-11-06T13:52:25.502Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -131,8 +131,8 @@
 			"label": "元素注册表寻址（*Els.get、registryElement(s)）",
 			"target": "zero",
 			"value": {
-				"total": 477,
-				"files": 109
+				"total": 456,
+				"files": 108
 			}
 		},
 		"legacy-ui-lines": {
@@ -223,8 +223,8 @@
 			"label": "双重断言 as unknown as",
 			"target": "zero",
 			"value": {
-				"total": 4,
-				"files": 3
+				"total": 5,
+				"files": 4
 			}
 		},
 		"unremovable-listeners": {
