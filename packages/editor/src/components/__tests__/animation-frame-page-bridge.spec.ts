@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { registerElement } from '@app/utils/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
@@ -59,8 +60,6 @@ vi.mock('@app/stores/local', () => ({
 	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
-type SyncEl = HTMLElement & { sync?: () => void };
-
 describe('animation-frame 页（inspector sync 响应式桥接回归保护）', () => {
 	beforeEach(() => {
 		document.body.innerHTML = '';
@@ -101,15 +100,14 @@ describe('animation-frame 页（inspector sync 响应式桥接回归保护）', 
 
 		it('onMounted 挂载 sync 桥接到 #animJointFrame-vue-mount 容器', async () => {
 			const wrapper = await mountPage('animJointFrame-vue-mount', AnimJointFramePage);
-			const el = document.getElementById('animJointFrame-vue-mount') as SyncEl;
-			expect(typeof el.sync).toBe('function');
+			expect(typeof inspectorPageSync.animJointFrame.get()?.sync).toBe('function');
 			wrapper.unmount();
 		});
 
 		it('sync 桥接把 legacy target 渲染到控件（open 后初始化）', async () => {
 			const wrapper = await mountPage('animJointFrame-vue-mount', AnimJointFramePage);
 			animJointFrame.target = makeFrame();
-			(document.getElementById('animJointFrame-vue-mount') as SyncEl).sync?.();
+			inspectorPageSync.animJointFrame.get()?.sync();
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
 			expect(read('animJointFrame-x')).toBe(10);
@@ -124,7 +122,7 @@ describe('animation-frame 页（inspector sync 响应式桥接回归保护）', 
 		it('控件 input 转发 update 并保持 form 与 target 同步', async () => {
 			const wrapper = await mountPage('animJointFrame-vue-mount', AnimJointFramePage);
 			animJointFrame.target = makeFrame();
-			(document.getElementById('animJointFrame-vue-mount') as SyncEl).sync?.();
+			inspectorPageSync.animJointFrame.get()?.sync();
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
 			animJointFrame.update.mockImplementation(() => {
@@ -159,15 +157,14 @@ describe('animation-frame 页（inspector sync 响应式桥接回归保护）', 
 
 		it('onMounted 挂载 sync 桥接到 #animParticleFrame-vue-mount 容器', async () => {
 			const wrapper = await mountPage('animParticleFrame-vue-mount', AnimParticleFramePage);
-			const el = document.getElementById('animParticleFrame-vue-mount') as SyncEl;
-			expect(typeof el.sync).toBe('function');
+			expect(typeof inspectorPageSync.animParticleFrame.get()?.sync).toBe('function');
 			wrapper.unmount();
 		});
 
 		it('sync 桥接把 legacy target 渲染到控件（open 后初始化）', async () => {
 			const wrapper = await mountPage('animParticleFrame-vue-mount', AnimParticleFramePage);
 			animParticleFrame.target = makeFrame();
-			(document.getElementById('animParticleFrame-vue-mount') as SyncEl).sync?.();
+			inspectorPageSync.animParticleFrame.get()?.sync();
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
 			expect(read('animParticleFrame-x')).toBe(10);
@@ -180,7 +177,7 @@ describe('animation-frame 页（inspector sync 响应式桥接回归保护）', 
 		it('控件 input 转发 update 并保持 form 与 target 同步', async () => {
 			const wrapper = await mountPage('animParticleFrame-vue-mount', AnimParticleFramePage);
 			animParticleFrame.target = makeFrame();
-			(document.getElementById('animParticleFrame-vue-mount') as SyncEl).sync?.();
+			inspectorPageSync.animParticleFrame.get()?.sync();
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
 			animParticleFrame.update.mockImplementation(() => {
@@ -211,15 +208,14 @@ describe('animation-frame 页（inspector sync 响应式桥接回归保护）', 
 
 		it('onMounted 挂载 sync 桥接到 #animSoundFrame-vue-mount 容器', async () => {
 			const wrapper = await mountPage('animSoundFrame-vue-mount', AnimSoundFramePage);
-			const el = document.getElementById('animSoundFrame-vue-mount') as SyncEl;
-			expect(typeof el.sync).toBe('function');
+			expect(typeof inspectorPageSync.animSoundFrame.get()?.sync).toBe('function');
 			wrapper.unmount();
 		});
 
 		it('sync 桥接把 legacy target 渲染到控件（open 后初始化）', async () => {
 			const wrapper = await mountPage('animSoundFrame-vue-mount', AnimSoundFramePage);
 			animSoundFrame.target = makeFrame();
-			(document.getElementById('animSoundFrame-vue-mount') as SyncEl).sync?.();
+			inspectorPageSync.animSoundFrame.get()?.sync();
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
 			expect(read('animSoundFrame-sound')).toBe('bgm.ogg');
@@ -230,7 +226,7 @@ describe('animation-frame 页（inspector sync 响应式桥接回归保护）', 
 		it('控件 input 转发 update 并保持 form 与 target 同步', async () => {
 			const wrapper = await mountPage('animSoundFrame-vue-mount', AnimSoundFramePage);
 			animSoundFrame.target = makeFrame();
-			(document.getElementById('animSoundFrame-vue-mount') as SyncEl).sync?.();
+			inspectorPageSync.animSoundFrame.get()?.sync();
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
 			animSoundFrame.update.mockImplementation(() => {

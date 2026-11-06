@@ -39,15 +39,15 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { onMounted, ref } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useAnimSpriteLayerPage } from '@app/composables/useAnimSpriteLayerPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Animation } from '@app/animation/animation-window.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -87,10 +87,9 @@ onMounted(() => {
 		data.direction = Animation.direction;
 	});
 
-	const el = inspectorEls.get('animSpriteLayer-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.animSpriteLayer.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.animSpriteLayer.reset(bridgeApi));
 	sync();
 });
 </script>

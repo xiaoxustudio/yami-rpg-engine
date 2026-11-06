@@ -33,15 +33,15 @@
 </template>
 
 <script setup lang="ts">
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import '@app/inspector/file-ui-page.ts';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFileUIPage } from '@app/composables/useFileUIPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -59,10 +59,9 @@ onMounted(() => {
 	const editor = Inspector.fileUI;
 	if (!editor) return;
 
-	const el = inspectorEls.get('fileUI-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.fileUI.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.fileUI.reset(bridgeApi));
 
 	const elements = [elWidth.value?.root, elHeight.value?.root].filter(
 		(el): el is HTMLElement => el != null

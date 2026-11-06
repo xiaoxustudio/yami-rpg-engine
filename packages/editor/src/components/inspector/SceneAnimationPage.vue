@@ -4,14 +4,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { onMounted, provide, onUnmounted } from 'vue';
 import { registryElements } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useSceneAnimationPage } from '@app/composables/useSceneAnimationPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import { sceneAnimationContextKey } from './scene-animation/context.ts';
 import SceneAnimationPropertiesSection from './scene-animation/SceneAnimationPropertiesSection.vue';
 import SceneAnimationMetaSection from './scene-animation/SceneAnimationMetaSection.vue';
@@ -29,10 +29,9 @@ const { bindInput, bindSliders } = useInspectorInput();
 onMounted(() => {
 	const editor = Inspector.sceneAnimation;
 	if (!editor) return;
-	const el = inspectorEls.get('sceneAnimation-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.sceneAnimation.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.sceneAnimation.reset(bridgeApi));
 	const elements = registryElements(inspectorEls, [
 		'sceneAnimation-name',
 		'sceneAnimation-animationId',

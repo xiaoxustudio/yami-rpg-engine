@@ -1,4 +1,4 @@
-import { inspectorEls } from './element-registry.ts';
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Curve } from '@app/animation/curve-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -46,11 +46,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			this.target = frame;
 			this.motion = Animation.motion;
 			Curve.load!(frame);
-			(
-				inspectorEls.get('animParticleFrame-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.animParticleFrame.get()?.sync();
 		}
 	};
 
@@ -67,11 +63,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 		this: typeof AnimParticleFrame,
 		_options: Record<string, unknown>
 	) {
-		(
-			inspectorEls.get('animParticleFrame-vue-mount') as HTMLElement & {
-				sync?: () => void;
-			}
-		)?.sync?.();
+		inspectorPageSync.animParticleFrame.get()?.sync();
 	};
 
 	AnimParticleFrame.update = function (

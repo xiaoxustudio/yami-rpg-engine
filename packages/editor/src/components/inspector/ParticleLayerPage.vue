@@ -9,14 +9,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
+import { onMounted, provide, onUnmounted } from 'vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import { registryElements } from '@app/utils/element-registry';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Particle } from '@app/particle/particle-window.ts';
 import { useParticleLayerPage } from '@app/composables/useParticleLayerPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import { particleLayerContextKey } from './particle-layer/context.ts';
 import ParticleLayerGeneralSection from './particle-layer/ParticleLayerGeneralSection.vue';
 import ParticleLayerAnchorSection from './particle-layer/ParticleLayerAnchorSection.vue';
@@ -40,10 +40,9 @@ onMounted(() => {
 	const editor = Inspector.particleLayer;
 	if (!editor) return;
 
-	const el = inspectorEls.get('particleLayer-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync, form });
-	}
+	const bridgeApi: PageSyncApi = { sync, form };
+	inspectorPageSync.particleLayer.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.particleLayer.reset(bridgeApi));
 	const elements = registryElements(inspectorEls, [
 		'particleLayer-name',
 		'particleLayer-area-type',

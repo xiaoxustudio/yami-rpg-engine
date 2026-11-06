@@ -50,14 +50,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { useAnimParticleLayerPage } from '@app/composables/useAnimParticleLayerPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -82,10 +81,9 @@ onMounted(() => {
 	const editor = Inspector.animParticleLayer;
 	if (!editor) return;
 
-	const el = inspectorEls.get('animParticleLayer-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.animParticleLayer.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.animParticleLayer.reset(bridgeApi));
 
 	elPosition.value?.loadItems([
 		{

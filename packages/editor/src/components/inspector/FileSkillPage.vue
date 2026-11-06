@@ -74,15 +74,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
 import { AttributeListInterface } from '@app/tools/property-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
 import { useFileSkillPage } from '@app/composables/useFileSkillPage';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -110,10 +109,9 @@ onMounted(() => {
 	const editor = Inspector.fileSkill;
 	if (!editor) return;
 
-	const el = inspectorEls.get('fileSkill-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.fileSkill.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.fileSkill.reset(bridgeApi));
 
 	elAttributes.value?.bind(new AttributeListInterface());
 	elEvents.value?.bind(new EventListInterface(editor));

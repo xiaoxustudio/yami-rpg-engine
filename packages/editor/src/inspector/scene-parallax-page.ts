@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
 import { inspectorEls } from './element-registry.ts';
 import { clear } from '@app/utils/element-utils';
@@ -77,11 +78,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('conditions');
 			write('events');
 			write('scripts');
-			(
-				inspectorEls.get('sceneParallax-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.sceneParallax.get()?.sync();
 		}
 	};
 
@@ -98,11 +95,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 	};
 
 	SceneParallax.write = function (this: typeof SceneParallax, _options: Record<string, unknown>) {
-		(
-			inspectorEls.get('sceneParallax-vue-mount') as HTMLElement & {
-				sync?: () => void;
-			}
-		)?.sync?.();
+		inspectorPageSync.sceneParallax.get()?.sync();
 	};
 
 	SceneParallax.update = function (

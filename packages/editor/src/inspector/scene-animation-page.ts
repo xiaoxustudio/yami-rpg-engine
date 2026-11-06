@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
 import { inspectorEls } from './element-registry.ts';
 import { clear, read, write } from '@app/utils/element-utils';
@@ -76,11 +77,7 @@ import { registryElement } from '@app/utils/element-registry';
 			write('conditions');
 			write('events');
 			write('scripts');
-			(
-				inspectorEls.get('sceneAnimation-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.sceneAnimation.get()?.sync();
 		}
 	};
 
@@ -101,11 +98,7 @@ import { registryElement } from '@app/utils/element-registry';
 		this: typeof SceneAnimation,
 		_options: Record<string, unknown>
 	) {
-		(
-			inspectorEls.get('sceneAnimation-vue-mount') as HTMLElement & {
-				sync?: () => void;
-			}
-		)?.sync?.();
+		inspectorPageSync.sceneAnimation.get()?.sync();
 	};
 
 	SceneAnimation.update = function (

@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { registerElement } from '@app/utils/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
@@ -99,8 +100,6 @@ vi.mock('@app/stores/local', () => ({
 	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
-type SyncEl = HTMLElement & { sync?: () => void };
-
 describe('ParticleLayerPage（particleLayer inspector 响应式双向绑定桥接）', () => {
 	beforeAll(() => {
 		HTMLCanvasElement.prototype.getContext = function () {
@@ -167,15 +166,14 @@ describe('ParticleLayerPage（particleLayer inspector 响应式双向绑定桥�
 
 	it('onMounted 挂载 sync 桥接到 #particleLayer-vue-mount 容器', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('particleLayer-vue-mount') as SyncEl;
-		expect(typeof el.sync).toBe('function');
+		expect(typeof inspectorPageSync.particleLayer.get()?.sync).toBe('function');
 		wrapper.unmount();
 	}, 30000);
 
 	it('sync 桥接把 legacy target 渲染到控件（open 后初始化，含嵌套默认值）', async () => {
 		const wrapper = await mountPage();
 		particleLayer.target = makeLayer();
-		(document.getElementById('particleLayer-vue-mount') as SyncEl).sync?.();
+		inspectorPageSync.particleLayer.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		expect(read('particleLayer-name')).toBe('Layer 1');
@@ -226,7 +224,7 @@ describe('ParticleLayerPage（particleLayer inspector 响应式双向绑定桥�
 	it('easingId 缺失时使用 legacy easingDefaultId 默认值', async () => {
 		const wrapper = await mountPage();
 		particleLayer.target = makeLayer({ color: { mode: 'easing' } });
-		(document.getElementById('particleLayer-vue-mount') as SyncEl).sync?.();
+		inspectorPageSync.particleLayer.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		expect(read('particleLayer-color-easingId')).toBe('ease-linear');
@@ -235,9 +233,8 @@ describe('ParticleLayerPage（particleLayer inspector 响应式双向绑定桥�
 
 	it('切换 target 后再次 sync 更新控件显示', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('particleLayer-vue-mount') as SyncEl;
 		particleLayer.target = makeLayer();
-		el.sync?.();
+		inspectorPageSync.particleLayer.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		particleLayer.target = makeLayer({
@@ -245,7 +242,7 @@ describe('ParticleLayerPage（particleLayer inspector 响应式双向绑定桥�
 			area: { type: 'point', x: 99, y: 0 },
 			color: { mode: 'texture', tint: [10, 20, 30, 255] }
 		});
-		el.sync?.();
+		inspectorPageSync.particleLayer.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		expect(read('particleLayer-name')).toBe('Layer 2');
@@ -259,9 +256,8 @@ describe('ParticleLayerPage（particleLayer inspector 响应式双向绑定桥�
 
 	it('控件 input 经 composable 调用 update 并保持 form 与 target 同步', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('particleLayer-vue-mount') as SyncEl;
 		particleLayer.target = makeLayer();
-		el.sync?.();
+		inspectorPageSync.particleLayer.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		particleLayer.update.mockImplementation(() => {

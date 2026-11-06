@@ -5,14 +5,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { onMounted, provide, onUnmounted } from 'vue';
 import { registryElements } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useSceneParallaxPage } from '@app/composables/useSceneParallaxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import { sceneParallaxContextKey } from './scene-parallax/context.ts';
 import SceneParallaxGeneralSection from './scene-parallax/SceneParallaxGeneralSection.vue';
 import SceneParallaxTransformSection from './scene-parallax/SceneParallaxTransformSection.vue';
@@ -31,10 +31,9 @@ const { bindInput, bindSliders } = useInspectorInput();
 onMounted(() => {
 	const editor = Inspector.sceneParallax;
 	if (!editor) return;
-	const el = inspectorEls.get('sceneParallax-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.sceneParallax.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.sceneParallax.reset(bridgeApi));
 	const elements = registryElements(inspectorEls, [
 		'sceneParallax-name',
 		'sceneParallax-image',

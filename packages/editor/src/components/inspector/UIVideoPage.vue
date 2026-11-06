@@ -60,15 +60,14 @@
 </template>
 
 <script setup lang="ts">
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import '@app/inspector/element-video-page.ts';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUIVideoPage } from '@app/composables/useUIVideoPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -158,10 +157,9 @@ onMounted(() => {
 	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, getUIStore(), editor);
 
-	const el = inspectorEls.get('uiVideo-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.uiVideo.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.uiVideo.reset(bridgeApi));
 	sync();
 });
 </script>

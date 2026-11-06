@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
 import { inspectorEls } from './element-registry.ts';
 import { clear } from '@app/utils/element-utils';
@@ -51,11 +52,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('conditions');
 			write('events');
 			write('scripts');
-			(
-				inspectorEls.get('sceneRegion-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.sceneRegion.get()?.sync();
 		}
 	};
 
@@ -72,11 +69,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 	};
 
 	SceneRegion.write = function (this: typeof SceneRegion, _options: Record<string, unknown>) {
-		(
-			inspectorEls.get('sceneRegion-vue-mount') as HTMLElement & {
-				sync?: () => void;
-			}
-		)?.sync?.();
+		inspectorPageSync.sceneRegion.get()?.sync();
 	};
 
 	SceneRegion.update = function (

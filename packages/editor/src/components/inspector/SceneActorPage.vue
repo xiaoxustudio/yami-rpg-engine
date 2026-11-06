@@ -4,15 +4,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide, ref } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { onMounted, provide, ref, onUnmounted } from 'vue';
 import { registryElements } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useSceneActorPage } from '@app/composables/useSceneActorPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { useEventListener } from '@app/composables/useEventListener';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import { sceneActorContextKey } from './scene-actor/context.ts';
 import SceneActorPropertiesSection from './scene-actor/SceneActorPropertiesSection.vue';
 import SceneActorMetaSection from './scene-actor/SceneActorMetaSection.vue';
@@ -36,10 +36,9 @@ useEventListener(window, 'datachange', (event) => datachangeHandler.value?.(even
 onMounted(() => {
 	const editor = Inspector.sceneActor;
 	if (!editor) return;
-	const el = inspectorEls.get('sceneActor-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.sceneActor.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.sceneActor.reset(bridgeApi));
 	datachangeHandler.value = editor.datachange as EventListener;
 	datachangeEnabled.value = true;
 	const elements = registryElements(inspectorEls, [

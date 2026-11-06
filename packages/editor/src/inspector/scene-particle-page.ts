@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
 import { inspectorEls } from './element-registry.ts';
 import { clear } from '@app/utils/element-utils';
@@ -64,11 +65,7 @@ import { radians } from '@app/utils/math';
 			write('conditions');
 			write('events');
 			write('scripts');
-			(
-				inspectorEls.get('sceneParticle-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.sceneParticle.get()?.sync();
 		}
 	};
 
@@ -85,11 +82,7 @@ import { radians } from '@app/utils/math';
 	};
 
 	SceneParticle.write = function (this: typeof SceneParticle, _options: Record<string, unknown>) {
-		(
-			inspectorEls.get('sceneParticle-vue-mount') as HTMLElement & {
-				sync?: () => void;
-			}
-		)?.sync?.();
+		inspectorPageSync.sceneParticle.get()?.sync();
 	};
 
 	SceneParticle.update = function (

@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { registerElement } from '@app/utils/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
@@ -50,8 +51,6 @@ vi.mock('@app/stores/local', () => ({
 	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
-type SyncEl = HTMLElement & { sync?: () => void };
-
 describe('SceneLightPage（sceneLight inspector 响应式双向绑定桥接）', () => {
 	beforeEach(() => {
 		document.body.innerHTML = '';
@@ -102,15 +101,14 @@ describe('SceneLightPage（sceneLight inspector 响应式双向绑定桥接）',
 
 	it('onMounted 挂载 sync 桥接到 #sceneLight-vue-mount 容器', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('sceneLight-vue-mount') as SyncEl;
-		expect(typeof el.sync).toBe('function');
+		expect(typeof inspectorPageSync.sceneLight.get()?.sync).toBe('function');
 		wrapper.unmount();
 	});
 
 	it('sync 桥接把 legacy target 渲染到控件（open 后初始化）', async () => {
 		const wrapper = await mountPage();
 		sceneLight.target = makeLight();
-		(document.getElementById('sceneLight-vue-mount') as SyncEl).sync?.();
+		inspectorPageSync.sceneLight.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		expect(read('sceneLight-name')).toBe('Light 1');
@@ -133,13 +131,12 @@ describe('SceneLightPage（sceneLight inspector 响应式双向绑定桥接）',
 
 	it('切换 target 后再次 sync 更新控件显示', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('sceneLight-vue-mount') as SyncEl;
 		sceneLight.target = makeLight();
-		el.sync?.();
+		inspectorPageSync.sceneLight.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		sceneLight.target = makeLight({ name: 'Light 2', x: 99, direct: 0.2 });
-		el.sync?.();
+		inspectorPageSync.sceneLight.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		expect(read('sceneLight-name')).toBe('Light 2');

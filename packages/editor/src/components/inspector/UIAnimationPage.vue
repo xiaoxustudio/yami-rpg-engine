@@ -94,15 +94,15 @@
 
 <script setup lang="ts">
 import '@app/inspector/element-animation-page.ts';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registerElement } from '@app/utils/element-registry';
-import { onMounted, ref } from 'vue';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUIAnimationPage } from '@app/composables/useUIAnimationPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -152,10 +152,9 @@ onMounted(() => {
 	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, getUIStore(), uiAnimation);
 
-	const el = inspectorEls.get('uiAnimation-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.uiAnimation.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.uiAnimation.reset(bridgeApi));
 	sync();
 });
 </script>

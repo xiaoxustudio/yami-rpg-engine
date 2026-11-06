@@ -5,14 +5,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
+import { onMounted, provide, onUnmounted } from 'vue';
 import { registryElements } from '@app/utils/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import { useUIButtonPage } from '@app/composables/useUIButtonPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import { uiButtonContextKey } from './ui-button/context.ts';
 import UIButtonImageSection from './ui-button/UIButtonImageSection.vue';
 import UIButtonContentSection from './ui-button/UIButtonContentSection.vue';
@@ -86,10 +86,9 @@ onMounted(() => {
 	bindInput(elements, getUIStore(), uiButton);
 	bindSliders(sliders);
 
-	const el = inspectorEls.get('uiButton-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync, form });
-	}
+	const bridgeApi: PageSyncApi = { sync, form };
+	inspectorPageSync.uiButton.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.uiButton.reset(bridgeApi));
 	sync();
 });
 </script>

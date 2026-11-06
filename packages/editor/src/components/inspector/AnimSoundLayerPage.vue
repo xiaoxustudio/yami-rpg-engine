@@ -20,14 +20,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useAnimSoundLayerPage } from '@app/composables/useAnimSoundLayerPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Animation } from '@app/animation/animation-window.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -68,10 +67,9 @@ onMounted(() => {
 			});
 		}
 	}
-	const el = inspectorEls.get('animSoundLayer-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.animSoundLayer.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.animSoundLayer.reset(bridgeApi));
 	sync();
 });
 </script>

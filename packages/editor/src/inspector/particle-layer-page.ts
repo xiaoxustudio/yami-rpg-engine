@@ -1,9 +1,9 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { inspectorEls } from './element-registry.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Particle } from '@app/particle/particle-window.ts';
 import type { ParticleForm } from '@app/composables/useParticleLayerPage';
-import { registryElement } from '@app/utils/element-registry';
 
 {
 	interface ParticleLayerShape {
@@ -129,11 +129,7 @@ import { registryElement } from '@app/utils/element-registry';
 				?.loadItems?.(Data.createEasingItems!());
 			this.easingDefaultId = Data.easings[0].id;
 
-			(
-				inspectorEls.get('particleLayer-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.particleLayer.get()?.sync();
 		}
 	};
 
@@ -170,10 +166,9 @@ import { registryElement } from '@app/utils/element-registry';
 					delete area.width;
 					delete area.height;
 					delete area.radius;
-					const form = registryElement<HTMLElement & { form?: ParticleForm }>(
-						inspectorEls,
-						'particleLayer-vue-mount'
-					)?.form;
+					const form = inspectorPageSync.particleLayer.get()?.form as
+						| ParticleForm
+						| undefined;
 					switch (value) {
 						case 'point':
 							area.x = form?.area.x;
@@ -287,10 +282,9 @@ import { registryElement } from '@app/utils/element-registry';
 					delete color.endMin;
 					delete color.endMax;
 					delete color.tint;
-					const form = registryElement<HTMLElement & { form?: ParticleForm }>(
-						inspectorEls,
-						'particleLayer-vue-mount'
-					)?.form;
+					const form = inspectorPageSync.particleLayer.get()?.form as
+						| ParticleForm
+						| undefined;
 					switch (value) {
 						case 'fixed':
 							color.rgba = [

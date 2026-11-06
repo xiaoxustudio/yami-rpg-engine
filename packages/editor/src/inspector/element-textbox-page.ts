@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { inspectorEls } from './element-registry.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
@@ -88,11 +89,7 @@ import { registryElement } from '@app/utils/element-registry';
 			number.decimals = node.decimals;
 			Inspector.uiElement.open(node);
 
-			(
-				inspectorEls.get('uiTextBox-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.uiTextBox.get()?.sync();
 		}
 	};
 

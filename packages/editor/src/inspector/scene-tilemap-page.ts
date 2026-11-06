@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { elementDataOf } from '@ui-kit';
 import { getElementWriter } from '@app/utils/dom';
 import { inspectorEls } from './element-registry.ts';
@@ -109,11 +110,7 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 			write('conditions');
 			write('events');
 			write('scripts');
-			(
-				inspectorEls.get('sceneTilemap-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.sceneTilemap.get()?.sync();
 		}
 	};
 
@@ -130,11 +127,7 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 	};
 
 	SceneTilemap.write = function (this: typeof SceneTilemap, _options: Record<string, unknown>) {
-		(
-			inspectorEls.get('sceneTilemap-vue-mount') as HTMLElement & {
-				sync?: () => void;
-			}
-		)?.sync?.();
+		inspectorPageSync.sceneTilemap.get()?.sync();
 	};
 
 	SceneTilemap.update = function (

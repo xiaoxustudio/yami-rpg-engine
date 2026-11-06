@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { registerElement } from '@app/utils/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
@@ -47,8 +48,6 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
 	getLocalStore: () => ({ syncState: vi.fn() })
 }));
-
-type SyncEl = HTMLElement & { sync?: () => void };
 
 describe('UIImagePage（uiElement inspector 响应式双向绑定桥接）', () => {
 	beforeEach(() => {
@@ -103,15 +102,14 @@ describe('UIImagePage（uiElement inspector 响应式双向绑定桥接）', () 
 
 	it('onMounted 挂载 sync 桥接到 #uiImage-vue-mount 容器', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('uiImage-vue-mount') as SyncEl;
-		expect(typeof el.sync).toBe('function');
+		expect(typeof inspectorPageSync.uiImage.get()?.sync).toBe('function');
 		wrapper.unmount();
 	});
 
 	it('sync 桥接把 legacy target 渲染到控件（open 后初始化）', async () => {
 		const wrapper = await mountPage();
 		uiElement.target = makeElement();
-		(document.getElementById('uiImage-vue-mount') as SyncEl).sync?.();
+		inspectorPageSync.uiImage.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		expect(read('uiElement-name')).toBe('Image 1');
@@ -129,13 +127,12 @@ describe('UIImagePage（uiElement inspector 响应式双向绑定桥接）', () 
 
 	it('切换 target 后再次 sync 更新控件显示', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('uiImage-vue-mount') as SyncEl;
 		uiElement.target = makeElement();
-		el.sync?.();
+		inspectorPageSync.uiImage.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		uiElement.target = makeElement({ name: 'Image 2', transform: { x: 99, rotation: 0 } });
-		el.sync?.();
+		inspectorPageSync.uiImage.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		expect(read('uiElement-name')).toBe('Image 2');
@@ -146,9 +143,8 @@ describe('UIImagePage（uiElement inspector 响应式双向绑定桥接）', () 
 
 	it('控件 input 经 composable onParamInput 调用 update 并保持 form 与 target 同步', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('uiImage-vue-mount') as SyncEl;
 		uiElement.target = makeElement();
-		el.sync?.();
+		inspectorPageSync.uiImage.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		uiElement.update.mockImplementation((target: ElementData, key: string, value: unknown) => {

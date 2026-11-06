@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
 import { inspectorEls } from './element-registry.ts';
 import { clear } from '@app/utils/element-utils';
@@ -66,11 +67,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 			write('conditions');
 			write('events');
 			write('scripts');
-			(
-				inspectorEls.get('sceneLight-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.sceneLight.get()?.sync();
 		}
 	};
 
@@ -87,11 +84,7 @@ import { Scene } from '@app/scene/scene-window.ts';
 	};
 
 	SceneLight.write = function (this: typeof SceneLight, _options: Record<string, unknown>) {
-		(
-			inspectorEls.get('sceneLight-vue-mount') as HTMLElement & {
-				sync?: () => void;
-			}
-		)?.sync?.();
+		inspectorPageSync.sceneLight.get()?.sync();
 	};
 
 	SceneLight.update = function (

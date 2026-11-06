@@ -1,4 +1,4 @@
-import { inspectorEls } from './element-registry.ts';
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { read } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
@@ -64,11 +64,7 @@ import { UIOwner } from './ui-owner.ts';
 			this.target = node;
 
 			Inspector.uiElement.open(node);
-			(
-				inspectorEls.get('uiWindow-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.uiWindow.get()?.sync();
 		}
 	};
 

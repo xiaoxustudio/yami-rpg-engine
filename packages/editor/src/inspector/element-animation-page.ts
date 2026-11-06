@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { inspectorEls } from './element-registry.ts';
 import { read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
@@ -66,11 +67,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 			this.target = node;
 
 			Inspector.uiElement.open(node);
-			(
-				inspectorEls.get('uiAnimation-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.uiAnimation.get()?.sync();
 		}
 	};
 

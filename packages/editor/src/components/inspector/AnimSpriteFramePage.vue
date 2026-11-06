@@ -254,8 +254,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { computed, onMounted, ref, onUnmounted } from 'vue';
 import { engineEls } from '@app/engine/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
@@ -264,7 +263,7 @@ import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Sprite } from '@app/engine/sprite/sprite.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Animation } from '@app/animation/animation-window.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -349,10 +348,9 @@ onMounted(() => {
 	bindSliders(sliders);
 	Sprite.initialize();
 
-	const el = inspectorEls.get('animSpriteFrame-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.animSpriteFrame.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.animSpriteFrame.reset(bridgeApi));
 	sync();
 });
 </script>

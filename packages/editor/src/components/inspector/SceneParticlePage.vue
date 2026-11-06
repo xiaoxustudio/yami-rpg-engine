@@ -4,14 +4,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { onMounted, provide, onUnmounted } from 'vue';
 import { registryElements } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useSceneParticlePage } from '@app/composables/useSceneParticlePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import { sceneParticleContextKey } from './scene-particle/context.ts';
 import SceneParticlePropertiesSection from './scene-particle/SceneParticlePropertiesSection.vue';
 import SceneParticleMetaSection from './scene-particle/SceneParticleMetaSection.vue';
@@ -29,10 +29,9 @@ const { bindInput, bindSliders } = useInspectorInput();
 onMounted(() => {
 	const editor = Inspector.sceneParticle;
 	if (!editor) return;
-	const el = inspectorEls.get('sceneParticle-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.sceneParticle.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.sceneParticle.reset(bridgeApi));
 	try {
 		const elements = registryElements(inspectorEls, [
 			'sceneParticle-name',

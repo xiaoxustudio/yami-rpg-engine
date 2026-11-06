@@ -4,14 +4,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { onMounted, provide, onUnmounted } from 'vue';
 import { registryElements } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useSceneLightPage } from '@app/composables/useSceneLightPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import { sceneLightContextKey } from './scene-light/context.ts';
 import SceneLightPropertiesSection from './scene-light/SceneLightPropertiesSection.vue';
 import SceneLightMetaSection from './scene-light/SceneLightMetaSection.vue';
@@ -29,10 +29,9 @@ const { bindInput, bindSliders } = useInspectorInput();
 onMounted(() => {
 	const editor = Inspector.sceneLight;
 	if (!editor) return;
-	const el = inspectorEls.get('sceneLight-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.sceneLight.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.sceneLight.reset(bridgeApi));
 	try {
 		const elements = registryElements(inspectorEls, [
 			'sceneLight-name',

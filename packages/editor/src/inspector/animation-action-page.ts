@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { inspectorEls } from './element-registry.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -47,11 +48,7 @@ import { write } from '@app/utils/element-utils.ts';
 	AnimMotion.open = function (this: typeof AnimMotion, motion: Record<string, unknown>) {
 		if (this.target !== motion) {
 			this.target = motion;
-			(
-				inspectorEls.get('animMotion-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.animMotion.get()?.sync();
 		}
 	};
 

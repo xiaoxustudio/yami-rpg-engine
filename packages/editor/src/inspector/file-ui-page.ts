@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { inspectorEls } from './element-registry.ts';
 import { registryElements } from '@app/utils/element-registry';
 import { addClass, read, removeClass } from '@app/utils/element-utils';
@@ -72,11 +73,7 @@ import type { YamiElement } from '@app/types/element-api';
 
 			addClass(this.button, 'selected');
 
-			(
-				inspectorEls.get('fileUI-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.fileUI.get()?.sync();
 		}
 	};
 

@@ -29,14 +29,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUIReferencePage } from '@app/composables/useUIReferencePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -63,10 +62,9 @@ onMounted(() => {
 		);
 		bindInput(elements, getUIStore(), uiReference);
 	}
-	const el = inspectorEls.get('uiReference-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.uiReference.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.uiReference.reset(bridgeApi));
 	sync();
 });
 </script>

@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
 import { inspectorEls } from './element-registry.ts';
 import { clear, hide, show } from '@app/utils/element-utils';
@@ -73,11 +74,7 @@ import { radians } from '@app/utils/math';
 			write('conditions');
 			write('events');
 			write('scripts');
-			(
-				inspectorEls.get('sceneActor-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.sceneActor.get()?.sync();
 		}
 	};
 
@@ -94,11 +91,7 @@ import { radians } from '@app/utils/math';
 	};
 
 	SceneActor.write = function (this: typeof SceneActor, _options: Record<string, unknown>) {
-		(
-			inspectorEls.get('sceneActor-vue-mount') as HTMLElement & {
-				sync?: () => void;
-			}
-		)?.sync?.();
+		inspectorPageSync.sceneActor.get()?.sync();
 	};
 
 	SceneActor.update = function (

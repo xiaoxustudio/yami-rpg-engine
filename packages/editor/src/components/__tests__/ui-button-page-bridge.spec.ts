@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { registerElement } from '@app/utils/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
@@ -73,8 +74,6 @@ vi.mock('@app/stores/local', () => ({
 	getLocalStore: () => ({ syncState: vi.fn() })
 }));
 
-type SyncEl = HTMLElement & { sync?: () => void };
-
 describe('UIButtonPage（uiButton inspector 响应式双向绑定桥接）', () => {
 	beforeEach(() => {
 		document.body.innerHTML = '';
@@ -141,15 +140,14 @@ describe('UIButtonPage（uiButton inspector 响应式双向绑定桥接）', () 
 
 	it('onMounted 挂载 sync 桥接到 #uiButton-vue-mount 容器', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('uiButton-vue-mount') as SyncEl;
-		expect(typeof el.sync).toBe('function');
+		expect(typeof inspectorPageSync.uiButton.get()?.sync).toBe('function');
 		wrapper.unmount();
 	});
 
 	it('sync 桥接把 legacy target 渲染到控件（open 后初始化）', async () => {
 		const wrapper = await mountPage();
 		uiButton.target = makeButton();
-		(document.getElementById('uiButton-vue-mount') as SyncEl).sync?.();
+		inspectorPageSync.uiButton.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		expect(read('uiButton-display')).toBe('stretch');
@@ -182,9 +180,8 @@ describe('UIButtonPage（uiButton inspector 响应式双向绑定桥接）', () 
 
 	it('切换 target 后再次 sync 更新控件显示（含 tint 数组与 textEffect 默认值）', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('uiButton-vue-mount') as SyncEl;
 		uiButton.target = makeButton();
-		el.sync?.();
+		inspectorPageSync.uiButton.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		uiButton.target = makeButton({
@@ -193,7 +190,7 @@ describe('UIButtonPage（uiButton inspector 响应式双向绑定桥接）', () 
 			content: 'Button 2',
 			textEffect: { type: 'none' }
 		});
-		el.sync?.();
+		inspectorPageSync.uiButton.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		expect(read('uiButton-display')).toBe('clip');
@@ -209,9 +206,8 @@ describe('UIButtonPage（uiButton inspector 响应式双向绑定桥接）', () 
 
 	it('控件 input 经 composable onParamInput 调用 update 并保持 form 与 target 同步', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('uiButton-vue-mount') as SyncEl;
 		uiButton.target = makeButton();
-		el.sync?.();
+		inspectorPageSync.uiButton.get()?.sync();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		uiButton.update.mockImplementation((target: ButtonData, key: string, value: unknown) => {

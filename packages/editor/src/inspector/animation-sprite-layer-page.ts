@@ -1,3 +1,4 @@
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { inspectorEls } from './element-registry.ts';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -42,11 +43,7 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			const items = Animation.getSpriteListItems!(id);
 			inspectorEls.get('animSpriteLayer-sprite')?.loadItems?.(items);
 
-			(
-				inspectorEls.get('animSpriteLayer-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.animSpriteLayer.get()?.sync();
 		}
 	};
 

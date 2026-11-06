@@ -1,4 +1,4 @@
-import { inspectorEls } from './element-registry.ts';
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { write } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -6,7 +6,6 @@ import { getUIStore } from '@app/stores/ui';
 import { UIOwner, type UIOwnerShape } from './ui-owner.ts';
 import type { ButtonForm } from '@app/composables/useUIButtonPage';
 import type { YamiEvent } from '@app/types/editor-event';
-import { registryElement } from '@app/utils/element-registry';
 
 {
 	interface UIButtonShape {
@@ -107,11 +106,7 @@ import { registryElement } from '@app/utils/element-registry';
 			);
 			Inspector.uiElement.open(node);
 
-			(
-				inspectorEls.get('uiButton-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.uiButton.get()?.sync();
 		}
 	};
 
@@ -244,10 +239,7 @@ import { registryElement } from '@app/utils/element-registry';
 			}
 			case 'textEffect-type':
 				if (node.textEffect.type !== value) {
-					const form = registryElement<HTMLElement & { form?: ButtonForm }>(
-						inspectorEls,
-						'uiButton-vue-mount'
-					)?.form;
+					const form = inspectorPageSync.uiButton.get()?.form as ButtonForm | undefined;
 					const textEffect: Record<string, unknown> = { type: value };
 					switch (value) {
 						case 'none':

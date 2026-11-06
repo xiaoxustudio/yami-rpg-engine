@@ -39,13 +39,13 @@ import {
 	type UiElementControlTable
 } from '@app/composables/ui-element-page-controls';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registryElements } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useUIImagePage } from '@app/composables/useUIImagePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import ParamList from '@app/components/common/ParamList.vue';
@@ -100,10 +100,9 @@ onMounted(() => {
 	bindInput(elements, getUIStore(), uiImage);
 	bindSliders(sliders);
 
-	const el = inspectorEls.get('uiImage-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.uiImage.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.uiImage.reset(bridgeApi));
 	sync();
 });
 </script>

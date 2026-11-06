@@ -11,12 +11,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
+import { onMounted, provide, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { useSceneRegionPage } from '@app/composables/useSceneRegionPage';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { sceneRegionContextKey } from './scene-region/context.ts';
@@ -36,10 +35,9 @@ provide(sceneRegionContextKey, { form, onParamInput });
 onMounted(() => {
 	const editor = Inspector.sceneRegion;
 	if (!editor) return;
-	const el = inspectorEls.get('sceneRegion-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.sceneRegion.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.sceneRegion.reset(bridgeApi));
 	sync();
 });
 </script>

@@ -4,14 +4,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, provide } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { onMounted, provide, onUnmounted } from 'vue';
 import { registryElements } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useSceneTilemapPage } from '@app/composables/useSceneTilemapPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import { sceneTilemapContextKey } from './scene-tilemap/context.ts';
 import SceneTilemapPropertiesSection from './scene-tilemap/SceneTilemapPropertiesSection.vue';
 import SceneTilemapMetaSection from './scene-tilemap/SceneTilemapMetaSection.vue';
@@ -29,10 +29,9 @@ const { bindInput } = useInspectorInput();
 onMounted(() => {
 	const editor = Inspector.sceneTilemap;
 	if (!editor) return;
-	const el = inspectorEls.get('sceneTilemap-vue-mount');
-	if (el) {
-		attachElementApi(el, { sync });
-	}
+	const bridgeApi: PageSyncApi = { sync };
+	inspectorPageSync.sceneTilemap.provide(bridgeApi);
+	onUnmounted(() => inspectorPageSync.sceneTilemap.reset(bridgeApi));
 	const elements = registryElements(inspectorEls, [
 		'sceneTilemap-name',
 		'sceneTilemap-layer',
