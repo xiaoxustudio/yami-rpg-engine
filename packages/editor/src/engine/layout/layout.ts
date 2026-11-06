@@ -1,9 +1,10 @@
 import { elementDataOf } from '@ui-kit';
 import { relate, hideDragImage, getRelativeCoords } from '@app/utils/element-utils';
-import { engineEls } from '@app/engine/element-registry';
 import { uiEls } from '@app/engine/ui/element-registry';
 import { storesEls } from '@app/stores/element-registry';
 import { renderDetached } from '@app/utils/dom';
+import { getLayoutNode, LAYOUT_NODE_IDS } from '@app/composables/layout-nodes';
+import { queryElementsByIds } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import {
 	on,
@@ -565,9 +566,16 @@ export const Layout: DynamicShape = {
 };
 
 Layout.initialize = function () {
-	this.manager = engineEls.get('workspace-page-manager') as YamiElement;
-	const nav = engineEls.get('layout-nav') as YamiElement;
-	const manager = engineEls.get('layout-page-manager') as YamiElement;
+	// 交接表优先；引擎初始化早于组件挂载时退回按 id 查（id 由 LayoutPanel 固定渲染）
+	this.manager = (getLayoutNode('workspace') ??
+		queryElementsByIds([LAYOUT_NODE_IDS.workspace])[0] ??
+		null) as YamiElement;
+	const nav = (getLayoutNode('nav') ??
+		queryElementsByIds([LAYOUT_NODE_IDS.nav])[0] ??
+		null) as YamiElement;
+	const manager = (getLayoutNode('pageManager') ??
+		queryElementsByIds([LAYOUT_NODE_IDS.pageManager])[0] ??
+		null) as YamiElement;
 	const items = (this.items = {} as LayoutItems);
 	const isElement = (node: Node): boolean => node.nodeType === 1;
 	const paletteNavs = Array.from(nav?.childNodes ?? []).filter(isElement) as HTMLElement[];

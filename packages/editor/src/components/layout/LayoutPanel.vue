@@ -1,8 +1,5 @@
 <template>
-	<PageManager
-		id="workspace-page-manager"
-		:ref="registryRef(engineEls, 'workspace-page-manager')"
-	>
+	<PageManager id="workspace-page-manager" ref="workspaceEl">
 		<HomePanel />
 		<div class="page-frame" value="directory">
 			<div class="box" id="layout-content">
@@ -20,9 +17,8 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue';
-import { engineEls } from '@app/engine/element-registry';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { clearLayoutNode, setLayoutNode } from '@app/composables/layout-nodes';
 import PageManager from '@app/components/common/PageManager.vue';
 import LayoutPaletteHost from '@app/components/layout/LayoutPaletteHost.vue';
 import HomePanel from '@app/components/layout/HomePanel.vue';
@@ -35,12 +31,19 @@ import { getAnimationStore } from '@app/stores/animation';
 import { registerLayoutItems } from '@app/engine/layout/layout.ts';
 import { collectPaletteItems } from '@app/components/layout/palette-items';
 
+const workspaceEl = ref<InstanceType<typeof PageManager> | null>(null);
 const paletteNavEl = ref<InstanceType<typeof WorkspaceNav> | null>(null);
 const paletteManagerEl = ref<InstanceType<typeof WorkspacePages> | null>(null);
 
 onMounted(() => {
-	registerElement(engineEls, 'layout-nav', paletteNavEl.value);
-	registerElement(engineEls, 'layout-page-manager', paletteManagerEl.value);
+	setLayoutNode('workspace', workspaceEl.value?.$el ?? null);
+	setLayoutNode('nav', paletteNavEl.value?.$el ?? null);
+	setLayoutNode('pageManager', paletteManagerEl.value?.$el ?? null);
+	onUnmounted(() => {
+		clearLayoutNode('workspace', workspaceEl.value?.$el ?? null);
+		clearLayoutNode('nav', paletteNavEl.value?.$el ?? null);
+		clearLayoutNode('pageManager', paletteManagerEl.value?.$el ?? null);
+	});
 	nextTick(() => {
 		getUIStore().initialize();
 		getParticleStore().initialize();
