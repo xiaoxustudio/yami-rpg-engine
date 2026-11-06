@@ -1,3 +1,4 @@
+import { spriteNodes } from '@app/composables/sprite-nodes';
 import { screenScrollData } from '../screen-scroll-data';
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
@@ -123,17 +124,17 @@ export const Sprite = {
 } satisfies Partial<SpriteModule> as SpriteModule;
 
 Sprite.initialize = function (this: typeof Sprite) {
-	this.body = engineEls.get('sprite-body') as YamiElement;
-	this.window = engineEls.get('sprite-frame') as YamiElement;
+	this.body = spriteNodes.pick('body') as YamiElement;
+	this.window = spriteNodes.pick('frame') as YamiElement;
 	hide(this.window);
 	this.canvas = registryElement<HTMLCanvasElement & { dpr?: number }>(
 		engineEls,
 		'sprite-canvas'
 	)!;
-	this.info = engineEls.get('sprite-info') as YamiElement;
-	this.slider = engineEls.get('sprite-zoom') as YamiElement;
-	this.screen = engineEls.get('sprite-screen') as SpriteScreen;
-	this.marquee = engineEls.get('sprite-marquee') as SpriteMarquee;
+	this.info = spriteNodes.pick('info') as YamiElement;
+	this.slider = spriteNodes.pick('zoom') as YamiElement;
+	this.screen = spriteNodes.pick('screen') as SpriteScreen;
+	this.marquee = spriteNodes.pick('marquee') as SpriteMarquee;
 	addScrollbars(this.screen);
 
 	this.context = this.canvas.getContext('2d', { desynchronized: true })!;
@@ -156,12 +157,8 @@ Sprite.initialize = function (this: typeof Sprite) {
 
 	window.addEventListener('themechange', this.themechange as EventListener);
 	on(inspectorEls.get('animSpriteFrame-vue-mount') as YamiElement, 'resize', this.windowResize);
-	on(
-		engineEls.get('animSpriteFrame-properties-detail') as YamiElement,
-		'toggle',
-		this.windowResize
-	);
-	on(engineEls.get('animSpriteFrame-sprite-detail') as YamiElement, 'toggle', this.windowResize);
+	on(spriteNodes.pick('propertiesDetail') as YamiElement, 'toggle', this.windowResize);
+	on(spriteNodes.pick('spriteDetail') as YamiElement, 'toggle', this.windowResize);
 	on(this.screen, 'userscroll', this.screenUserscroll);
 };
 

@@ -1,15 +1,11 @@
 <template>
-	<DetailBox
-		id="animSpriteFrame-sprite-detail"
-		:ref="registryRef(engineEls, 'animSpriteFrame-sprite-detail')"
-		open
-	>
+	<DetailBox id="animSpriteFrame-sprite-detail" ref="spriteDetailRef" open>
 		<DetailSummary id="animSpriteFrame-sprite-summary">
 			<div class="text" id="sprite-label">{{ t('components.sprite-label.content') }}</div>
-			<div class="box" id="sprite-info" :ref="registryRef(engineEls, 'sprite-info')"></div>
+			<div class="box" id="sprite-info" ref="infoRef"></div>
 			<SliderBox
 				id="sprite-zoom"
-				:ref="registryRef(engineEls, 'sprite-zoom')"
+				ref="zoomRef"
 				name="zoom"
 				min="0"
 				max="4"
@@ -18,25 +14,20 @@
 				@focus="onZoomFocus"
 			></SliderBox>
 		</DetailSummary>
-		<div class="box" id="sprite-body" :ref="registryRef(engineEls, 'sprite-body')">
-			<div class="box" id="sprite-frame" :ref="registryRef(engineEls, 'sprite-frame')">
-				<canvas
-					id="sprite-canvas"
-					:ref="registryRef(engineEls, 'sprite-canvas')"
-					width="0"
-					height="0"
-				></canvas>
+		<div class="box" id="sprite-body" ref="bodyRef">
+			<div class="box" id="sprite-frame" ref="frameRef">
+				<canvas id="sprite-canvas" ref="canvasRef" width="0" height="0"></canvas>
 				<div
 					class="box"
 					id="sprite-screen"
-					:ref="registryRef(engineEls, 'sprite-screen')"
+					ref="screenRef"
 					tabindex="-1"
 					@keydown="onScreenKeydown"
 					@wheel="onScreenWheel"
 				>
 					<MarqueeArea
 						id="sprite-marquee"
-						:ref="registryRef(engineEls, 'sprite-marquee')"
+						ref="marqueeRef"
 						@pointerdown="onMarqueePointerdown"
 					></MarqueeArea>
 				</div>
@@ -46,9 +37,9 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { engineEls } from '@app/engine/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { spriteNodes, type SpriteNodeKey } from '@app/composables/sprite-nodes';
 import { Sprite } from '@app/engine/sprite/sprite.ts';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -72,4 +63,33 @@ const onScreenWheel = (event: WheelEvent) => {
 const onMarqueePointerdown = (event: PointerEvent) => {
 	Sprite?.marqueePointerdown?.(event);
 };
+
+/** 骨架节点登记：模板 ref 就位后写进 spriteNodes，卸载注销。 */
+const spriteDetailRef = ref<{ root?: HTMLElement } | null>(null);
+const infoRef = ref<HTMLElement | null>(null);
+const zoomRef = ref<{ root?: HTMLElement } | null>(null);
+const bodyRef = ref<HTMLElement | null>(null);
+const frameRef = ref<HTMLElement | null>(null);
+const canvasRef = ref<HTMLElement | null>(null);
+const screenRef = ref<{ root?: HTMLElement } | null>(null);
+const marqueeRef = ref<{ root?: HTMLElement } | null>(null);
+
+const rootsOf = (): Array<[SpriteNodeKey, HTMLElement | null]> => [
+	['spriteDetail', spriteDetailRef.value?.root ?? null],
+	['info', infoRef.value],
+	['zoom', zoomRef.value?.root ?? null],
+	['body', bodyRef.value],
+	['frame', frameRef.value],
+	['canvas', canvasRef.value],
+	['screen', screenRef.value?.root ?? null],
+	['marquee', marqueeRef.value?.root ?? null]
+];
+
+onMounted(() => {
+	for (const [key, element] of rootsOf()) spriteNodes.set(key, element);
+});
+
+onUnmounted(() => {
+	for (const [key, element] of rootsOf()) spriteNodes.clear(key, element);
+});
 </script>
