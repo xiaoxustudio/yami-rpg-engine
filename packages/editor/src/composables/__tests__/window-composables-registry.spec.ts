@@ -9,6 +9,7 @@ import LightGetter from '@app/components/tools/LightGetter.vue';
 import ObjectGetter from '@app/components/tools/ObjectGetter.vue';
 import { composableEls } from '@app/composables/element-registry';
 import { getTileNodeHandles } from '@app/composables/auto-tile-handles';
+import { getTeamHandles } from '@app/composables/team-handles';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
@@ -52,7 +53,11 @@ describe('窗口 composable 读注册表', () => {
 
 	it('Team：窗口与列表登记，确认按钮走 SFC 的 @confirm', async () => {
 		const wrapper = await mountSettle(Team);
-		expectRegistered(['team', 'team-list']);
+		// 迁移后控件不再进注册表：窗口交出 { root, list } 句柄表
+		const handles = getTeamHandles();
+		expect(handles?.root.id).toBe('team');
+		expect(handles?.list.id).toBe('team-list');
+		expect(composableEls.get('team-list')).toBeUndefined();
 
 		const { Team: TeamController } = await import('@app/data/team-window.ts');
 		const button = document.getElementById('team-confirm');

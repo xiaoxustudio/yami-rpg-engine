@@ -1,5 +1,6 @@
 import { getWindowFormsStore } from '@app/stores/window-forms';
 import { composableEls } from '@app/composables/element-registry';
+import { getLanguage } from '@app/composables/language-window-bridge';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getWindowStore } from '@app/stores/window';
@@ -579,17 +580,16 @@ const languages: LanguagesInterface = {
 	open: function (language = { name: '', font: '', scale: 1 }) {
 		// 语言窗口是懒挂载的：控件可用后再写（首次打开时 loadItems 会直接抛错）
 		getWindowStore().openWith('language', () => {
-			el('language-name').loadItems(languages.createAllItems());
-			el('language-name').write2(language.name);
-			write(composableEls.get('language-font'), language.font);
-			write(composableEls.get('language-scale'), language.scale);
+			const api = getLanguage();
+			api?.loadNameItems(languages.createAllItems());
+			api?.setLanguage({ name: language.name, font: language.font, scale: language.scale });
 		});
 		requestFocus('language-name');
 	},
 	confirm: function (this: LanguagesInterface) {
 		if (languageList.inserting) {
 			const langList = getProjectStore().data!.localization.languages;
-			const langName = read(composableEls.get('language-name'));
+			const langName = getLanguage()?.getLanguage().name;
 			if (langList.find((lang: { name: string }) => lang.name === langName)) {
 				return requestFocus('language-name');
 			}
@@ -598,11 +598,7 @@ const languages: LanguagesInterface = {
 		getWindowStore().close('language');
 	},
 	save: function () {
-		return {
-			name: read(composableEls.get('language-name')),
-			font: read(composableEls.get('language-font')),
-			scale: read(composableEls.get('language-scale'))
-		};
+		return getLanguage()?.getLanguage() ?? { name: '', font: '', scale: 1 };
 	},
 	update: function () {
 		const selectBox = el('config-localization-default');

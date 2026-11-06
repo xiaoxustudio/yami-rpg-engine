@@ -11,14 +11,14 @@
 			<SelectBox
 				:label="t('components.language-name.label')"
 				id="language-name"
-				:ref="registryRef(composableEls, 'language-name')"
+				ref="nameRef"
 				v-tip="t('components.language-name.tip')"
 				v-focus
 			/>
 			<div class="text">{{ t('components.language-font.label') }}</div>
 			<CustomBox
 				id="language-font"
-				:ref="registryRef(composableEls, 'language-font')"
+				ref="fontRef"
 				v-tip="t('components.language-font.tip')"
 				type="file"
 				filter="font"
@@ -27,7 +27,7 @@
 			<NumberBox
 				:label="t('components.language-scale.label')"
 				id="language-scale"
-				:ref="registryRef(composableEls, 'language-scale')"
+				ref="scaleRef"
 				v-tip="t('components.language-scale.tip')"
 				min="0.5"
 				max="2"
@@ -38,10 +38,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { composableEls } from '@app/composables/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import {
+	provideLanguage,
+	resetLanguage,
+	type LanguageApi
+} from '@app/composables/language-window-bridge';
 import { useProjectSettingsWindow } from '@app/composables/useProjectSettingsWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -57,7 +60,30 @@ const onConfirm = () => {
 	settings.languages.confirm();
 };
 
-onMounted(() => {});
+const nameRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const fontRef = ref<InstanceType<typeof CustomBox> | null>(null);
+const scaleRef = ref<InstanceType<typeof NumberBox> | null>(null);
+
+const bridgeApi: LanguageApi = {
+	loadNameItems: (items) => {
+		nameRef.value?.loadItems?.(items);
+	},
+	setLanguage: ({ name, font, scale }) => {
+		nameRef.value?.write2?.(name);
+		fontRef.value?.write?.(font);
+		scaleRef.value?.write?.(scale);
+	},
+	getLanguage: () => ({
+		name: (nameRef.value?.read?.() as string) ?? '',
+		font: (fontRef.value?.read?.() as string) ?? '',
+		scale: (scaleRef.value?.read?.() as number) ?? 1
+	})
+};
+
+onMounted(() => {
+	provideLanguage(bridgeApi);
+	onUnmounted(() => resetLanguage(bridgeApi));
+});
 </script>
 
 <style>

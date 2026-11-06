@@ -6,7 +6,8 @@ import SwitchBranch from '@app/components/tools/SwitchBranch.vue';
 import IfCondition from '@app/components/tools/IfCondition.vue';
 import SetNumberOperand from '@app/components/tools/SetNumberOperand.vue';
 import { composableEls } from '@app/composables/element-registry';
-import { registryElement } from '@app/utils/element-registry';
+import { getIfBranch } from '@app/composables/tool-window-bridges';
+import { getSwitchBranch } from '@app/composables/tool-window-bridges';
 import { getIfConditionBridge } from '@app/composables/if-condition-bridge';
 import { getSetNumberOperandBridge } from '@app/composables/set-number-operand-bridge';
 
@@ -34,28 +35,31 @@ describe('分支/条件表单注册表', () => {
 		document.body.innerHTML = '';
 	});
 
-	it('IfBranch：控件与 conditions 列表都登记，且 ParamList 真的被 bind', async () => {
+	it('IfBranch：控件经窗口桥交出，条件列表真的被 bind', async () => {
 		const wrapper = await mountSettle(IfBranch);
 
-		expect(composableEls.get('if-branch-mode')?.id).toBe('if-branch-mode');
-		const conditions = composableEls.get('if-branch-conditions') as unknown as BoundList | null;
-		expect(conditions?.id).toBe('if-branch-conditions');
-		expect(conditions).toBe(document.getElementById('if-branch-conditions'));
+		const api = getIfBranch();
+		expect(api, '窗口应交出 IfBranch 桥').toBeTruthy();
+		expect(composableEls.get('if-branch-conditions')).toBeFalsy();
+		const conditions = document.getElementById('if-branch-conditions') as BoundList | null;
 		expect(conditions?.object, 'if-branch-conditions 未被 bind').toBeTruthy();
 		expect(typeof conditions?.object?.parse).toBe('function');
 
 		wrapper.unmount();
+		expect(getIfBranch(), '卸载后应注销').toBeNull();
 	});
 
-	it('SwitchBranch：conditions 列表同样登记并被 bind', async () => {
+	it('SwitchBranch：条件列表经窗口桥交出并被 bind', async () => {
 		const wrapper = await mountSettle(SwitchBranch);
 
-		const conditions = registryElement<BoundList>(composableEls, 'switch-branch-conditions');
-		expect(conditions?.id).toBe('switch-branch-conditions');
-		expect(conditions).toBe(document.getElementById('switch-branch-conditions'));
+		const api = getSwitchBranch();
+		expect(api, '窗口应交出 SwitchBranch 桥').toBeTruthy();
+		expect(composableEls.get('switch-branch-conditions')).toBeFalsy();
+		const conditions = document.getElementById('switch-branch-conditions') as BoundList | null;
 		expect(conditions?.object, 'switch-branch-conditions 未被 bind').toBeTruthy();
 
 		wrapper.unmount();
+		expect(getSwitchBranch(), '卸载后应注销').toBeNull();
 	});
 
 	it('IfCondition：控件实例注册表镜像出元素，窗口元素按 id 登记', async () => {

@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils';
 import Language from '@app/components/tools/Language.vue';
 import { useProjectSettingsWindow } from '@app/composables/useProjectSettingsWindow';
 import { composableEls } from '@app/composables/element-registry';
+import { getLanguage } from '@app/composables/language-window-bridge';
 import { getProjectStore } from '@app/stores/project';
 import { Window } from '@app/tools/window-object.ts';
 import { focusTarget } from '@app/directives/focus';
@@ -80,9 +81,11 @@ describe('语言窗口注册表', () => {
 		const wrapper = mount(Language, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 
+		// 迁移后控件不再进注册表：窗口交出桥，读写都经它
 		for (const id of LANGUAGE_IDS) {
-			expect(composableEls.get(id)?.id, `${id} 未登记`).toBe(id);
+			expect(composableEls.get(id), `${id} 不该再进注册表`).toBeFalsy();
 		}
+		expect(getLanguage(), '窗口应交出 Language 桥').toBeTruthy();
 
 		getProjectStore().data = {
 			localization: { languages: [{ name: 'zh', font: '', scale: 1 }], default: 'zh' }
@@ -92,9 +95,10 @@ describe('语言窗口注册表', () => {
 		settings.languages.target = { save };
 		settings.languages.initialize({ inserting: true });
 
-		const nameControl = composableEls.get('language-name') as unknown as HTMLElement & {
-			loadItems(items: unknown[]): void;
-			write2(value: unknown): void;
+		const nameControl = {
+			loadItems: (items: unknown[]) => getLanguage()?.loadNameItems(items),
+			write2: (value: unknown) =>
+				getLanguage()?.setLanguage({ name: String(value), font: '', scale: 1 })
 		};
 		nameControl.loadItems([
 			{ name: '中文', value: 'zh' },
