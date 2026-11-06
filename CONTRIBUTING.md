@@ -63,8 +63,9 @@ node scripts/oneoff/audit-expose-vs-attach.mjs                       # 包装组
 node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --apply   # 生成桥模块并给窗口接线
 ```
 
-- 88 个 `.vue` 仍用 `registryRef(...)`（472 个控件 id），其中 **80 个**「有全局消费方或 schema 按 id 动态读」；
-- 台账三轴：`element-registry-lookups` 686 / 162 文件、`yami-element-refs` 511 / 97、`element-api-attach` 112；
+- 64 个 `.vue` 仍用 `registryRef(...)`（391 个控件 id），其中 **55 个**「有全局消费方或 schema 按 id 动态读」；
+- 台账三轴：`element-registry-lookups` 477 / 109 文件、`yami-element-refs` 505 / 95、`element-api-attach` 73；
+- ⚠️ **`element-api-attach` 的 73 处里绝大多数在 `packages/ui-kit`**（42 个文件，`createXxxApi(el, …)` 这类元素 API 的**实现**），editor 侧只剩 3 处（`TreeList` 的 `getMenuState` 工厂入参、`KeyboardBox`、`PageManager`）。把这条轴清零等于重写 ui-kit 的 API 形态，属于**独立工程**，不要混在窗口迁移里做；
 - 74 个 `attachElementApi` 组件里 47 个的 `defineExpose` **不全**（多为 inspector 页的 `sync` / `update` / `form`）：迁到实例之前必须补齐，否则调用点在运行期静默变 `undefined`。
 
 **存量是碎片化的，不存在「再迁一批就清零」**：119 个消费方文件里最重的那个也只卡 5 个窗口（`report-blocked-by-consumer.mjs` 的输出）。所以一批的粒度应该是**一个消费方 + 它卡住的 1–5 个窗口**，而不是一个目录。
