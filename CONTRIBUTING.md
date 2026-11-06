@@ -105,6 +105,10 @@ node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --appl
 - **每个窗口复制一份 ref 表助手**：44 份副本已经漂移过一次口径，接缝只能有一份；
 - ⚠️ **只认字面量 id 的清单会假绿**：`useProjectSettingsWindow.ts` 用 `el(id)`（变量）读控件，`contract-inventory` 看不见，迁移后测试直接 `undefined.bind` 崩；同理 `titleEls.get(...)` 这类**别的注册表**的读也是消费方（早期只认 `composableEls`，把 45 个窗口误判成 clean）。动手前先跑 `triage-registry-windows.mjs` 看动态读；
 - ⚠️ **登记侧不上台账**：`registryRef` 窗口数只出现在清单里，`element-registry-lookups` 只数**读**。一批只改登记侧时轴不会降，别以为白干了，也别用轴没降当「没成效」的证据；
+- ⚠️ **「没人读这条登记」不能靠静态分析判**（2026-11-06 实测吃过亏）：`audit-dead-by-file.mjs` 报出 30 条「全死」登记，删完 `if-condition-bridge` 与 `deferred-window-smoke` 直接红 —— 漏掉的三类读法是
+  ①变量 id 的循环登记（`registerElement(composableEls, id, …)` 的 id 在 schema 里以字面量出现）、
+  ②`registryElement<T>(composableEls, '…')!.filter = …` 这种「取到就写属性」、
+  ③冒烟测试统计「接线了的控件数」。**注册侧删不删，只有跑测试能定**；
 - ⚠️ **改 `.vue` 的类型必须过 `typecheck:vue`**：`tsc` 对 `.vue` 是假绿（15 个 `clear(el)` 站点就是 vue-tsc 抓到的）；
 - ⚠️ **`relate()` 的 `targets` 仍是 DOM 语义**（`select-box-core` 读写 `element.style` 与兄弟标签），必须传 `controlRoot(...)`；这是 P3 之前拆不掉 `attachElementApi` 的主要原因；
 - ⚠️ **`write2()` 在新列表里找不到旧值时会把第一项当默认值写进去**：只在「原来就有选中值」时回写，否则会变成替用户选一个（`SetAnimationComponent` 那条单测就是这么红的）；
