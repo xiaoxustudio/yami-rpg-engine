@@ -1,3 +1,5 @@
+import { getUiNode, UI_NODE_IDS } from '@app/composables/ui-nodes';
+import { queryElementsByIds } from '@app/utils/dom';
 import { defineStore } from 'pinia';
 import { getLazyWindow, loadWindow } from '@app/tools/window-registry';
 import { editorDomainsReady } from '@app/bootstrap';
@@ -109,11 +111,17 @@ export const useUIStore = defineStore('ui', () => {
 	 * 必须 `markRaw`，否则 Pinia 的代理同样会破坏同一性。
 	 */
 	const listEl = (): YamiElement | null =>
-		(uiEls.get('ui-list') as YamiElement | undefined) ?? null;
+		(getUiNode('list') ??
+			queryElementsByIds([UI_NODE_IDS.list])[0] ??
+			null) as YamiElement | null;
 	const headEl = (): YamiElement | null =>
-		(uiEls.get('ui-head') as YamiElement | undefined) ?? null;
+		(getUiNode('head') ??
+			queryElementsByIds([UI_NODE_IDS.head])[0] ??
+			null) as YamiElement | null;
 	const bodyEl = (): YamiElement | null =>
-		(uiEls.get('ui-body') as YamiElement | undefined) ?? null;
+		(getUiNode('body') ??
+			queryElementsByIds([UI_NODE_IDS.body])[0] ??
+			null) as YamiElement | null;
 	const screenEl = (): YamiElement | null =>
 		(uiEls.get('ui-screen') as YamiElement | undefined) ?? null;
 	const history = shallowRef<History | null>(null);
@@ -153,7 +161,11 @@ export const useUIStore = defineStore('ui', () => {
 
 	async function waitForUiElements(): Promise<void> {
 		for (let i = 0; i < 120; i++) {
-			if (uiEls.get('ui-list') && uiEls.get('ui-screen')) return;
+			if (
+				(getUiNode('list') ?? queryElementsByIds([UI_NODE_IDS.list])[0] ?? null) &&
+				uiEls.get('ui-screen')
+			)
+				return;
 			// oxlint-disable-next-line no-await-in-loop
 			await new Promise<void>((resolve) => setTimeout(resolve, 16));
 		}

@@ -3,6 +3,7 @@ import { getUIStore, uiStateKeys } from '@app/stores/ui';
 import { UI } from '@app/engine/ui/ui-singleton.ts';
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import { uiEls } from '@app/engine/ui/element-registry';
+import { setUiNode, type UiNodeKey } from '@app/composables/ui-nodes';
 import type { UINodeShape } from '@app/engine/ui/element-classes.ts';
 
 /**
@@ -140,7 +141,19 @@ describe('useUIStore（UI 状态反转：store 为源）', () => {
 		] as const;
 
 		/** 就地登记，返回还原函数——注册表是模块级共享 Map，不能污染同文件其他用例 */
+		const KEY_OF: Record<string, UiNodeKey | null> = {
+			'ui-list': 'list',
+			'ui-head': 'head',
+			'ui-body': 'body',
+			'ui-screen': null
+		};
+
 		const seed = (id: string, el: unknown): (() => void) => {
+			const key = KEY_OF[id];
+			if (key) {
+				setUiNode(key, el as HTMLElement | null);
+				return () => setUiNode(key, null);
+			}
 			const had = uiEls.has(id);
 			const prev = uiEls.get(id);
 			uiEls.set(id, el as never);
@@ -182,7 +195,7 @@ describe('useUIStore（UI 状态反转：store 为源）', () => {
 			const restore = seed('ui-list', first);
 			try {
 				expect(store.elements.list).toBe(first);
-				uiEls.set('ui-list', second as never);
+				setUiNode('list', second as unknown as HTMLElement);
 				expect(store.elements.list, '注册表换元素后应随之变化（不是缓存快照）').toBe(
 					second
 				);
@@ -197,7 +210,7 @@ describe('useUIStore（UI 状态反转：store 为源）', () => {
 			try {
 				expect(store.elements.list, '预置：登记前应为 null').toBe(null);
 				const el = { tag: 'late' };
-				uiEls.set('ui-list', el as never);
+				setUiNode('list', el as unknown as HTMLElement);
 				expect(
 					store.elements.list,
 					'登记前读过一次之后，登记后必须能读出元素（computed 会永久缓存 null）'

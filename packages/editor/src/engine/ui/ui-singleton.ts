@@ -1,3 +1,5 @@
+import { getUiNode, UI_NODE_IDS } from '@app/composables/ui-nodes';
+import { queryElementsByIds } from '@app/utils/dom';
 import { elementDataOf } from '@ui-kit';
 import { uiEls } from '@app/engine/ui/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
@@ -150,8 +152,10 @@ export type UIDragEvent = UIPointerEvent & {
 
 export const UI = {
 	page: uiEls.get('ui') as YamiElement,
-	head: uiEls.get('ui-head') as YamiElement,
-	body: hide(uiEls.get('ui-body') as YamiElement),
+	head: (getUiNode('head') ?? queryElementsByIds([UI_NODE_IDS.head])[0] ?? null) as YamiElement,
+	body: hide(
+		(getUiNode('body') ?? queryElementsByIds([UI_NODE_IDS.body])[0] ?? null) as YamiElement
+	),
 	screen: uiEls.get('ui-screen') as YamiElement,
 	marquee: ((uiEls.get('ui-marquee') as YamiElement) ||
 		({} as YamiElement)) as UIShape['marquee'],

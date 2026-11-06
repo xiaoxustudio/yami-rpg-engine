@@ -14,7 +14,7 @@
 		</div>
 		<TreeList
 			id="ui-list"
-			:ref="registryRef(uiEls, 'ui-list')"
+			ref="listEl"
 			padded
 			:node-extras="uiNodeExtras"
 			:node-icon-renderer="uiNodeIcon"
@@ -28,9 +28,10 @@
 </template>
 
 <script setup lang="ts">
-import { h, type VNode } from 'vue';
+import { h, onMounted, onUnmounted, ref, type VNode } from 'vue';
 import { uiEls } from '@app/engine/ui/element-registry';
 import { registryRef } from '@app/utils/element-registry';
+import { clearUiNode, setUiNode } from '@app/composables/ui-nodes';
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
@@ -195,4 +196,10 @@ const onUiListOpen = (event: Event) => {
 const onUiListChange = (event: Event) => {
 	UI?.listChange?.(event);
 };
+const listEl = ref<InstanceType<typeof TreeList> | null>(null);
+
+onMounted(() => {
+	setUiNode('list', listEl.value?.root ?? null);
+	onUnmounted(() => clearUiNode('list', listEl.value?.root ?? null));
+});
 </script>

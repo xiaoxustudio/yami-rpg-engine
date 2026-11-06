@@ -1,6 +1,6 @@
+import { getUiNode, UI_NODE_IDS } from '@app/composables/ui-nodes';
 import { elementDataOf } from '@ui-kit';
 import { relate, hideDragImage, getRelativeCoords } from '@app/utils/element-utils';
-import { uiEls } from '@app/engine/ui/element-registry';
 import { storesEls } from '@app/stores/element-registry';
 import { renderDetached } from '@app/utils/dom';
 import { getLayoutNode, LAYOUT_NODE_IDS } from '@app/composables/layout-nodes';
@@ -628,8 +628,10 @@ Layout.initialize = function () {
 	this.heads = [
 		Scene.head,
 		elementDataOf<{ head: HTMLElement }>(Scene.list).head,
-		uiEls.get('ui-head'),
-		elementDataOf<{ head: HTMLElement }>(uiEls.get('ui-list') ?? {}).head,
+		getUiNode('head') ?? queryElementsByIds([UI_NODE_IDS.head])[0] ?? null,
+		elementDataOf<{ head: HTMLElement }>(
+			getUiNode('list') ?? queryElementsByIds([UI_NODE_IDS.list])[0] ?? {}
+		).head,
 		Animation.head,
 		elementDataOf<{ head: HTMLElement }>(Animation.list).head,
 		elementDataOf<{ head: HTMLElement }>(Animation.timeline).head,
@@ -1475,7 +1477,7 @@ Layout.pageSwitch = function (event: YamiEvent) {
 			break;
 		}
 		case 'ui': {
-			const body = uiEls.get('ui-body')!;
+			const body = (getUiNode('body') ?? queryElementsByIds([UI_NODE_IDS.body])[0] ?? null)!;
 			const target = body.firstChild;
 			body.insertBefore(GL.canvas, target);
 			break;

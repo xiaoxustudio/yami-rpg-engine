@@ -1,3 +1,5 @@
+import { getUiNode, UI_NODE_IDS } from '@app/composables/ui-nodes';
+import { queryElementsByIds } from '@app/utils/dom';
 import { elementDataOf } from '@ui-kit';
 import { getListConfig } from '@ui-kit';
 import { uiEls } from '@app/engine/ui/element-registry';
@@ -20,8 +22,12 @@ import { roundTo } from '@app/utils/math';
 /** 初始化 UI 域模块的 DOM 引用与状态。 */
 const initialize = function (this: UIShape) {
 	this.page = uiEls.get('ui') as YamiElement;
-	this.head = uiEls.get('ui-head') as YamiElement;
-	this.body = hide(uiEls.get('ui-body') as YamiElement);
+	this.head = (getUiNode('head') ??
+		queryElementsByIds([UI_NODE_IDS.head])[0] ??
+		null) as YamiElement;
+	this.body = hide(
+		(getUiNode('body') ?? queryElementsByIds([UI_NODE_IDS.body])[0] ?? null) as YamiElement
+	);
 	this.screen = uiEls.get('ui-screen') as YamiElement & {
 		rawScrollLeft: number;
 		rawScrollTop: number;

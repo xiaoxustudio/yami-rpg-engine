@@ -1,11 +1,6 @@
 <template>
 	<div class="page-frame" id="ui" :ref="registryRef(uiEls, 'ui')" value="ui">
-		<div
-			class="box"
-			id="ui-head"
-			:ref="registryRef(uiEls, 'ui-head')"
-			@pointerdown="onUiHeadPointerdown"
-		>
+		<div class="box" id="ui-head" ref="headEl" @pointerdown="onUiHeadPointerdown">
 			<div class="box" id="ui-head-start" @pointerdown="onUiSwitchPointerdown">
 				<div
 					class="item toolbar-item"
@@ -97,7 +92,7 @@
 				></SliderBox>
 			</div>
 		</div>
-		<div class="box" id="ui-body" :ref="registryRef(uiEls, 'ui-body')">
+		<div class="box" id="ui-body" ref="bodyEl">
 			<div
 				class="box"
 				id="ui-screen"
@@ -118,11 +113,13 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { uiEls } from '@app/engine/ui/element-registry';
 import { engineEls } from '@app/engine/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry';
 import { registryRef } from '@app/utils/element-registry';
+import { clearUiNode, setUiNode } from '@app/composables/ui-nodes';
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
@@ -159,4 +156,15 @@ const onUiMarqueePointerdown = (event: PointerEvent) => {
 const onUiMarqueeDoubleclick = (event: PointerEvent) => {
 	UI?.marqueeDoubleclick?.(event);
 };
+const headEl = ref<HTMLElement | null>(null);
+const bodyEl = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+	setUiNode('head', headEl.value);
+	setUiNode('body', bodyEl.value);
+	onUnmounted(() => {
+		clearUiNode('head', headEl.value);
+		clearUiNode('body', bodyEl.value);
+	});
+});
 </script>
