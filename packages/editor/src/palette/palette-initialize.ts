@@ -1,8 +1,7 @@
+import { paletteNodes } from '@app/composables/palette-nodes';
 import { Palette } from './palette.ts';
 import type { PaletteCanvasElement, PaletteMarqueeExtensions } from './palette.ts';
-import { registryElement } from '@app/utils/element-registry';
 import { queryElementsByIds, renderDetached } from '@app/utils/dom';
-import { paletteEls } from '@app/palette/element-registry';
 import { addScrollbars, hide, on } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { h } from 'vue';
@@ -14,20 +13,20 @@ import { useTileNodeWindow } from '@app/composables/useTileNodeWindow';
 import type { YamiElement } from '@app/types/element-api';
 
 Palette.initialize = function (this: typeof Palette) {
-	if (!paletteEls.get('palette-frame')) return;
+	if (!paletteNodes.pick('frame')) return;
 	this.page = (queryElementsByIds(['fileTileset'])[0] ?? null) as YamiElement;
-	this.head = paletteEls.get('palette-head') as YamiElement;
-	this.body = paletteEls.get('palette-body') as YamiElement;
-	this.window = hide(paletteEls.get('palette-frame') as YamiElement);
-	this.canvas = registryElement<PaletteCanvasElement>(paletteEls, 'palette-canvas')!;
-	this.screen = paletteEls.get('palette-screen') as YamiElement;
-	this.marquee = paletteEls.get('palette-marquee') as YamiElement & PaletteMarqueeExtensions;
-	this.itemScroll = paletteEls.get('palette-scroll') as YamiElement;
-	this.itemPriority = paletteEls.get('palette-priority') as YamiElement;
-	this.itemTag = paletteEls.get('palette-tag') as YamiElement;
-	this.itemTerrain = paletteEls.get('palette-terrain') as YamiElement;
-	this.itemEdit = paletteEls.get('palette-edit') as YamiElement;
-	this.zoomSlider = paletteEls.get('palette-zoom') as YamiElement;
+	this.head = paletteNodes.pick('head') as YamiElement;
+	this.body = paletteNodes.pick('body') as YamiElement;
+	this.window = hide(paletteNodes.pick('frame') as YamiElement);
+	this.canvas = paletteNodes.pick('canvas') as PaletteCanvasElement;
+	this.screen = paletteNodes.pick('screen') as YamiElement;
+	this.marquee = paletteNodes.pick('marquee') as YamiElement & PaletteMarqueeExtensions;
+	this.itemScroll = paletteNodes.pick('scroll') as YamiElement;
+	this.itemPriority = paletteNodes.pick('priority') as YamiElement;
+	this.itemTag = paletteNodes.pick('tag') as YamiElement;
+	this.itemTerrain = paletteNodes.pick('terrain') as YamiElement;
+	this.itemEdit = paletteNodes.pick('edit') as YamiElement;
+	this.zoomSlider = paletteNodes.pick('zoom') as YamiElement;
 	addScrollbars(this.screen);
 
 	this.context = this.canvas.getContext('2d', { desynchronized: true })!;
@@ -135,7 +134,7 @@ Palette.initialize = function (this: typeof Palette) {
 
 	window.addEventListener('themechange', this.themechange);
 	on(this.page, 'resize', this.windowResize);
-	on(paletteEls.get('fileTileset-general-detail') as YamiElement, 'toggle', this.windowResize);
+	on(paletteNodes.pick('detail') as YamiElement, 'toggle', this.windowResize);
 	on(this.screen, 'userscroll', this.screenUserscroll);
 	on(this.screen, 'blur', this.screenBlur);
 

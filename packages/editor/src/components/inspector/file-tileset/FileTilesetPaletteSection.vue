@@ -1,15 +1,10 @@
 <template>
-	<div
-		class="box"
-		id="palette-head"
-		:ref="registryRef(paletteEls, 'palette-head')"
-		@pointerdown="onHeadPointerdown"
-	>
+	<div class="box" id="palette-head" :ref="bind('head')" @pointerdown="onHeadPointerdown">
 		<div class="box" id="palette-head-start" @pointerdown="onToolbarPointerdown">
 			<div
 				id="palette-scroll"
 				v-tip="t('components.palette-scroll.tip')"
-				:ref="registryRef(paletteEls, 'palette-scroll')"
+				:ref="bind('scroll')"
 				class="item toolbar-item"
 				value="scroll"
 				:class="{ selected: palette.scrollable }"
@@ -17,7 +12,7 @@
 			<div
 				id="palette-priority"
 				v-tip="t('components.palette-priority.tip')"
-				:ref="registryRef(paletteEls, 'palette-priority')"
+				:ref="bind('priority')"
 				class="item toolbar-item"
 				value="priority"
 				:class="{ selected: palette.mode === 'priority' }"
@@ -25,7 +20,7 @@
 			<div
 				id="palette-tag"
 				v-tip="t('components.palette-tag.tip')"
-				:ref="registryRef(paletteEls, 'palette-tag')"
+				:ref="bind('tag')"
 				class="item toolbar-item"
 				value="tag"
 				:class="{ selected: palette.mode === 'tag' }"
@@ -33,7 +28,7 @@
 			<div
 				id="palette-terrain"
 				v-tip="t('components.palette-terrain.tip')"
-				:ref="registryRef(paletteEls, 'palette-terrain')"
+				:ref="bind('terrain')"
 				class="item toolbar-item"
 				value="terrain"
 				:class="{ selected: palette.mode === 'terrain' }"
@@ -41,7 +36,7 @@
 			<div
 				id="palette-edit"
 				v-tip="t('components.palette-edit.tip')"
-				:ref="registryRef(paletteEls, 'palette-edit')"
+				:ref="bind('edit')"
 				class="item toolbar-item"
 				value="edit"
 				:class="{ selected: palette.mode === 'edit' }"
@@ -56,7 +51,7 @@
 		</div>
 		<SliderBox
 			id="palette-zoom"
-			:ref="registryRef(paletteEls, 'palette-zoom')"
+			:ref="bind('zoom')"
 			name="zoom"
 			min="0"
 			max="4"
@@ -65,25 +60,20 @@
 			@focus="onZoomFocus"
 		/>
 	</div>
-	<div class="box" id="palette-body" :ref="registryRef(paletteEls, 'palette-body')">
-		<div class="box" id="palette-frame" :ref="registryRef(paletteEls, 'palette-frame')">
-			<canvas
-				id="palette-canvas"
-				:ref="registryRef(paletteEls, 'palette-canvas')"
-				width="0"
-				height="0"
-			></canvas>
+	<div class="box" id="palette-body" :ref="bind('body')">
+		<div class="box" id="palette-frame" :ref="bind('frame')">
+			<canvas id="palette-canvas" :ref="bind('canvas')" width="0" height="0"></canvas>
 			<div
 				class="box"
 				id="palette-screen"
-				:ref="registryRef(paletteEls, 'palette-screen')"
+				:ref="bind('screen')"
 				tabindex="-1"
 				@keydown="onScreenKeydown"
 				@wheel="onScreenWheel"
 			>
 				<MarqueeArea
 					id="palette-marquee"
-					:ref="registryRef(paletteEls, 'palette-marquee')"
+					:ref="bind('marquee')"
 					@pointerdown="onMarqueePointerdown"
 					@doubleclick="onMarqueeDoubleclick"
 				></MarqueeArea>
@@ -94,15 +84,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { paletteEls } from '@app/palette/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { paletteNodes } from '@app/composables/palette-nodes';
 import { focus } from '@app/utils/element-utils';
 import { Palette } from '@app/palette/palette.ts';
 import { getPaletteStore } from '@app/stores/palette';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
+
+const { bind, dispose } = paletteNodes.scoped();
+onUnmounted(dispose);
 
 const { t } = useI18n();
 const palette = getPaletteStore();

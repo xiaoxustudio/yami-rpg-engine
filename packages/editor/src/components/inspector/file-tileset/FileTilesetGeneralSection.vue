@@ -1,9 +1,5 @@
 <template>
-	<DetailBox
-		id="fileTileset-general-detail"
-		:ref="registryRef(paletteEls, 'fileTileset-general-detail')"
-		open
-	>
+	<DetailBox id="fileTileset-general-detail" :ref="bind('detail')" open>
 		<DetailSummary>{{
 			t('components.fileTileset-general-grid.label') || 'Tileset'
 		}}</DetailSummary>
@@ -110,16 +106,19 @@
 </template>
 
 <script setup lang="ts">
-import { inject } from 'vue';
+import { inject, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { paletteEls } from '@app/palette/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { registryRef } from '@app/utils/element-registry';
+import { inspectorEls } from '@app/inspector/element-registry';
+import { paletteNodes } from '@app/composables/palette-nodes';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import { fileTilesetContextKey } from './context.ts';
+
+const { bind, dispose } = paletteNodes.scoped();
+onUnmounted(dispose);
 
 const { t } = useI18n();
 const { form, onParamInput } = inject(fileTilesetContextKey)!;
