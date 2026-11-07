@@ -1,3 +1,4 @@
+import { variableNodes } from '@app/composables/variable-nodes';
 import { getListConfig } from '@ui-kit';
 import { variableEls } from '@app/variable/element-registry';
 import { on, hide, read, write } from '@app/utils/element-utils.ts';
@@ -119,18 +120,18 @@ export const Variable = variable as VariableModule;
 
 function ensureDomBound() {
 	if (Variable.list) return;
-	const list = variableEls.get('variable-list') as YamiElement;
+	const list = variableNodes.pick('list') as YamiElement;
 	if (!list) return;
 	Variable.list = list;
-	Variable.panel = variableEls.get('variable-properties-flex') as YamiElement;
+	Variable.panel = variableNodes.pick('properties') as YamiElement;
 	hide(Variable.panel);
 	Variable.manager = registryElement<PageManagerApi>(variableEls, 'variable-value-manager')!;
-	Variable.searcher = variableEls.get('variable-searcher') as YamiElement;
-	Variable.inputs.name = variableEls.get('variable-name') as YamiElement;
-	Variable.inputs.value = variableEls.get('variable-value-box') as YamiElement;
-	Variable.inputs.number = variableEls.get('variable-value-number') as YamiElement;
-	Variable.inputs.string = variableEls.get('variable-value-string') as YamiElement;
-	Variable.inputs.note = variableEls.get('variable-note') as YamiElement;
+	Variable.searcher = variableNodes.pick('searcher') as YamiElement;
+	Variable.inputs.name = variableNodes.pick('name') as YamiElement;
+	Variable.inputs.value = variableNodes.pick('valueBox') as YamiElement;
+	Variable.inputs.number = variableNodes.pick('valueNumber') as YamiElement;
+	Variable.inputs.string = variableNodes.pick('valueString') as YamiElement;
+	Variable.inputs.note = variableNodes.pick('note') as YamiElement;
 	Variable.list.saveScroll = Variable.list_saveScroll;
 	Variable.list.restoreScroll = Variable.list_restoreScroll;
 	Variable.list.cancelSearch = Variable.list_cancelSearch;
@@ -311,8 +312,8 @@ Variable.initialize = function () {
 		getVariableStore().state.changed = true;
 	};
 
-	on(variableEls.get('variable') as YamiElement, 'close', this.windowClose!);
-	on(variableEls.get('variable') as YamiElement, 'closed', this.windowClosed!);
+	on(variableNodes.pick('root') as YamiElement, 'close', this.windowClose!);
+	on(variableNodes.pick('root') as YamiElement, 'closed', this.windowClosed!);
 	on(list, 'keydown', this.listKeydown!);
 	on(list, 'pointerdown', this.listPointerdown!);
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {

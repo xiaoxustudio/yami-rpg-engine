@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="variable"
-		:ref="registryRef(variableEls, 'variable')"
+		:ref="bind('root')"
 		show-apply
 		mode="center"
 		@apply="onApply"
@@ -17,7 +17,7 @@
 			<div class="legend">{{ t('components.variable-list.label') }}</div>
 			<TreeList
 				id="variable-list"
-				:ref="registryRef(variableEls, 'variable-list')"
+				:ref="bind('list')"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -28,20 +28,15 @@
 			/>
 		</div>
 		<VariablePropertiesSection />
-		<TextBox
-			id="variable-searcher"
-			:ref="registryRef(variableEls, 'variable-searcher')"
-			name="search"
-		/>
+		<TextBox id="variable-searcher" :ref="bind('searcher')" name="search" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, type VNode } from 'vue';
+import { h, onMounted, type VNode, onUnmounted } from 'vue';
 import type { YamiEvent, YamiMouseEvent } from '@app/types/editor-event';
-import { variableEls } from '@app/variable/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
+import { variableNodes } from '@app/composables/variable-nodes';
 import { Variable } from '@app/variable/variable.ts';
 import { parseMultiLineString } from '@app/composables/useCommandParse.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -50,6 +45,9 @@ import { getVariableStore } from '@app/stores/variable';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import VariablePropertiesSection from './variable/VariablePropertiesSection.vue';
+
+const { bind, dispose } = variableNodes.scoped();
+onUnmounted(dispose);
 
 const onConfirm = () => {
 	Variable?.confirm?.(new Event('click'));

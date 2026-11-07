@@ -1,18 +1,14 @@
 <template>
 	<div class="field-set" id="variable-properties-fieldset">
 		<div class="legend">{{ t('components.variable-properties-flex.label') }}</div>
-		<div
-			class="flex-box"
-			id="variable-properties-flex"
-			:ref="registryRef(variableEls, 'variable-properties-flex')"
-		>
+		<div class="flex-box" id="variable-properties-flex" :ref="bind('properties')">
 			<div class="flex-item">
 				<div class="text">{{ t('components.variable-name.label') }}</div>
 				<TextBox
 					:label="t('components.variable-name.label')"
 					id="variable-name"
 					v-tip="t('components.variable-name.tip')"
-					:ref="registryRef(variableEls, 'variable-name')"
+					:ref="bind('name')"
 					@input="onNameInput"
 				/>
 			</div>
@@ -128,11 +124,7 @@
 					</div></RadioBox
 				>
 			</div>
-			<div
-				class="flex-item"
-				id="variable-value-box"
-				:ref="registryRef(variableEls, 'variable-value-box')"
-			>
+			<div class="flex-item" id="variable-value-box" :ref="bind('valueBox')">
 				<div class="text">{{ t('components.variable-value-manager.label') }}</div>
 				<PageManager
 					id="variable-value-manager"
@@ -160,7 +152,7 @@
 						<NumberBox
 							id="variable-value-number"
 							v-tip="t('components.variable-value-number.tip')"
-							:ref="registryRef(variableEls, 'variable-value-number')"
+							:ref="bind('valueNumber')"
 							min="-1000000000"
 							max="1000000000"
 							decimals="10"
@@ -170,7 +162,7 @@
 						<TextArea
 							id="variable-value-string"
 							v-tip="t('components.variable-value-string.tip')"
-							:ref="registryRef(variableEls, 'variable-value-string')"
+							:ref="bind('valueString')"
 						/>
 					</div>
 				</PageManager>
@@ -181,7 +173,7 @@
 					:label="t('components.variable-note.label')"
 					id="variable-note"
 					v-tip="t('components.variable-note.tip')"
-					:ref="registryRef(variableEls, 'variable-note')"
+					:ref="bind('note')"
 				/>
 			</div>
 		</div>
@@ -189,7 +181,9 @@
 </template>
 
 <script setup lang="ts">
+import { onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { variableNodes } from '@app/composables/variable-nodes';
 import { variableEls } from '@app/variable/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { Variable } from '@app/variable/variable.ts';
@@ -198,6 +192,9 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
+
+const { bind, dispose } = variableNodes.scoped();
+onUnmounted(dispose);
 
 const { t } = useI18n();
 
