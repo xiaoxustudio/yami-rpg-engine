@@ -1,10 +1,8 @@
 import { Command } from '@app/commands/command-object.ts';
-import { type CustomBoxApi } from '@ui-kit';
-import { composableEls } from '@app/composables/element-registry';
-import { registryElement } from '@app/utils/element-registry';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
 import { requestFocus } from '@app/directives/focus';
+import type { ControlApi } from '@app/composables/control-refs';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -74,22 +72,6 @@ Command.cases.setBoolean = new CommandSchema({
 const form = dynamicForm(() => getCommandSchemaFormsStore().setBooleanForm);
 import { dynamicForm } from '@app/composables/dynamic-form';
 import { getCommandSchemaFormsStore } from '@app/stores/command-schema-forms';
-
-const writeHandler = (event: { value: string }): void => {
-	let filter = 'all';
-	switch (event.value) {
-		case 'variable':
-			filter = 'boolean';
-			break;
-		case 'list':
-			filter = 'object';
-			break;
-	}
-	const element = registryElement<CustomBoxApi>(composableEls, 'setBoolean-common-variable');
-	if (element) {
-		element.filter = filter;
-	}
-};
 
 const load = ({
 	variable = { type: 'local', key: '' },
@@ -194,11 +176,36 @@ const save = (): unknown => {
 };
 
 const schema = Command.cases.setBoolean;
-schema.writeHandler = writeHandler;
 schema.customLoad = load;
 schema.customSave = save;
 schema.onInitialize = (): void => {};
 
-export function useSetBooleanCommandSchema() {
+export interface SetBooleanSchemaOptions {
+	/**
+	 * 窗口的控件表 getter（`useControlRefs` 建的那张）。
+	 *
+	 * `writeHandler` 要写的 `filter` 是 `CustomBox` 的**组件实例**能力，实例上不可写属性；
+	 * 没有这张表就只能按 id 从注册表取裸元素，那正是要拆掉的契约。给 getter 而不是表本身：
+	 * 表要到窗口挂载后才有内容，而 `writeHandler` 是窗口 `setup` 期就交给模板的。
+	 */
+	controls?: () => Partial<Record<string, ControlApi | null>>;
+}
+
+export function useSetBooleanCommandSchema(options: SetBooleanSchemaOptions = {}) {
+	const writeHandler = (event: { value: string }): void => {
+		let filter = 'all';
+		switch (event.value) {
+			case 'variable':
+				filter = 'boolean';
+				break;
+			case 'list':
+				filter = 'object';
+				break;
+		}
+		options.controls?.()['setBoolean-common-variable']?.setFilter?.(filter);
+	};
+	// `Command.cases.*.writeHandler` 是既有挂点（编辑路径与真机调试都按 schema 取），
+	// 因此每次挂载都覆盖成**当前窗口的**那一份：表是窗口私有的，不能用模块级单例兜底。
+	schema.writeHandler = writeHandler;
 	return { form, load, save, writeHandler };
 }

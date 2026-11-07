@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setBoolean" :ref="registryRef(fieldEls, 'setBoolean')" @confirm="onConfirm">
+	<WindowFrame id="setBoolean" :ref="controlRef('setBoolean')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.setBoolean.title') }}
@@ -10,7 +10,7 @@
 			<div class="text">{{ t('components.setBoolean-variable.label') }}</div>
 			<CustomBox
 				id="setBoolean-variable"
-				:ref="registryRef(fieldEls, 'setBoolean-variable')"
+				:ref="controlRef('setBoolean-variable')"
 				v-tip="t('components.setBoolean-variable.tip')"
 				v-focus
 				type="variable"
@@ -21,7 +21,7 @@
 			<SelectBox
 				:label="t('components.setBoolean-operation.label')"
 				id="setBoolean-operation"
-				:ref="registryRef(fieldEls, 'setBoolean-operation')"
+				:ref="controlRef('setBoolean-operation')"
 				v-model="form.operation"
 			/>
 			<div class="text">{{ t('components.setBoolean-operand-type.label') }}</div>
@@ -29,7 +29,7 @@
 				:label="t('components.setBoolean-operand-type.label')"
 				id="setBoolean-operand-type"
 				v-tip="t('components.setBoolean-operand-type.tip')"
-				:ref="registryRef(fieldEls, 'setBoolean-operand-type')"
+				:ref="controlRef('setBoolean-operand-type')"
 				v-model="form['operand-type']"
 				@write="onWrite"
 			/>
@@ -38,14 +38,14 @@
 				:label="t('components.setBoolean-constant-value.label')"
 				id="setBoolean-constant-value"
 				v-tip="t('components.setBoolean-constant-value.tip')"
-				:ref="registryRef(fieldEls, 'setBoolean-constant-value')"
+				:ref="controlRef('setBoolean-constant-value')"
 				v-model="form['constant-value']"
 			/>
 			<div class="text">{{ t('components.setBoolean-common-variable.label') }}</div>
 			<CustomBox
 				id="setBoolean-common-variable"
 				v-tip="t('components.setBoolean-common-variable.tip')"
-				:ref="registryRef(fieldEls, 'setBoolean-common-variable')"
+				:ref="controlRef('setBoolean-common-variable')"
 				v-focus
 				type="variable"
 				filter="all"
@@ -55,7 +55,7 @@
 			<NumberVar
 				id="setBoolean-list-index"
 				v-tip="t('components.setBoolean-list-index.tip')"
-				:ref="registryRef(fieldEls, 'setBoolean-list-index')"
+				:ref="controlRef('setBoolean-list-index')"
 				min="0"
 				max="1000000000"
 				v-model="form['list-index']"
@@ -64,7 +64,7 @@
 			<StringVar
 				id="setBoolean-parameter-key"
 				v-tip="t('components.setBoolean-parameter-key.tip')"
-				:ref="registryRef(fieldEls, 'setBoolean-parameter-key')"
+				:ref="controlRef('setBoolean-parameter-key')"
 				v-focus
 				v-model="form['parameter-key']"
 			/>
@@ -73,7 +73,7 @@
 				:label="t('components.setBoolean-script.label')"
 				id="setBoolean-script"
 				v-tip="t('components.setBoolean-script.tip')"
-				:ref="registryRef(fieldEls, 'setBoolean-script')"
+				:ref="controlRef('setBoolean-script')"
 				v-focus
 				v-model="script"
 			/>
@@ -82,11 +82,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
+import { setupSetBooleanFields } from '@app/composables/useSetBooleanFields';
 
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetBooleanCommandSchema } from '@app/composables/commands/useSetBooleanCommandSchema';
@@ -97,10 +94,25 @@ import NumberVar from '@app/components/common/NumberVar.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'setBoolean'
+	| 'setBoolean-common-variable'
+	| 'setBoolean-constant-value'
+	| 'setBoolean-list-index'
+	| 'setBoolean-operand-type'
+	| 'setBoolean-operation'
+	| 'setBoolean-parameter-key'
+	| 'setBoolean-script'
+	| 'setBoolean-variable';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
-const { form, save, writeHandler } = useSetBooleanCommandSchema();
+const { form, save, writeHandler } = useSetBooleanCommandSchema({ controls: () => controls });
 
 const script = computed({
 	get: () => form.script as string,
@@ -110,7 +122,7 @@ const script = computed({
 });
 
 const onWrite = (value: unknown) => {
-	writeHandler?.({ value: value as string });
+	writeHandler({ value: value as string });
 };
 
 const onConfirm = () => {
@@ -118,43 +130,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('setBoolean-operation', ['set', 'not', 'and', 'or', 'xor'], (items) =>
-		fieldEls.get('setBoolean-operation')?.loadItems?.(items)
-	);
-	useLocalizedOptions(
-		'setBoolean-operand-type',
-		['constant', 'variable', 'list', 'parameter', 'script'],
-		(items) => fieldEls.get('setBoolean-operand-type')?.loadItems?.(items)
-	);
-	fieldEls
-		.get('setBoolean-operand-type')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{
-				case: 'constant',
-				targets: [fieldEls.get('setBoolean-constant-value')]
-			},
-			{
-				case: 'variable',
-				targets: [fieldEls.get('setBoolean-common-variable')]
-			},
-			{
-				case: 'list',
-				targets: [
-					fieldEls.get('setBoolean-common-variable'),
-					fieldEls.get('setBoolean-list-index')
-				]
-			},
-			{
-				case: 'parameter',
-				targets: [fieldEls.get('setBoolean-parameter-key')]
-			},
-			{ case: 'script', targets: [fieldEls.get('setBoolean-script')] }
-		]);
-	fieldEls.get('setBoolean-constant-value')?.loadItems?.([
-		{ name: 'False', value: false },
-		{ name: 'True', value: true }
-	]);
+	setupSetBooleanFields(controls);
 });
 </script>
 

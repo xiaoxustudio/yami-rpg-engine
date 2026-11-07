@@ -52,7 +52,7 @@ pnpm start:prod   # 先构建再以生产模式启动
 
 **元素契约迁移：控件从「元素 API」到组件 `defineExpose`**
 
-现状（2026-11-04 实测；**数字真源是脚本，不是本文**）：
+现状（2026-11-08 实测；**数字真源是脚本，不是本文**）：
 
 ```shell
 node scripts/contract-inventory.mjs                                  # 还挂着 registryRef 的窗口 / 控件 id / 谁在读它们
@@ -63,10 +63,10 @@ node scripts/oneoff/audit-expose-vs-attach.mjs                       # 包装组
 node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --apply   # 生成桥模块并给窗口接线
 ```
 
-- 59 个 `.vue` 仍用 `registryRef(...)`（340 个控件 id），其中 **50 个**「有全局消费方或 schema 按 id 动态读」；
-- 台账三轴：`element-registry-lookups` 390 / 105 文件、`yami-element-refs` 505 / 95、`element-api-attach` 73；
+- 53 个 `.vue` 仍用 `registryRef(...)`（278 个控件 id），其中 **44 个**「有全局消费方或 schema 按 id 动态读」；
+- 台账三轴：`element-registry-lookups` 274 / 94 文件、`yami-element-refs` 488 / 93、`element-api-attach` 73；
 - ⚠️ **`element-api-attach` 的 73 处里绝大多数在 `packages/ui-kit`**（42 个文件，`createXxxApi(el, …)` 这类元素 API 的**实现**），editor 侧只剩 3 处（`TreeList` 的 `getMenuState` 工厂入参、`KeyboardBox`、`PageManager`）。把这条轴清零等于重写 ui-kit 的 API 形态，属于**独立工程**，不要混在窗口迁移里做；
-- 74 个 `attachElementApi` 组件里 47 个的 `defineExpose` **不全**（多为 inspector 页的 `sync` / `update` / `form`）：迁到实例之前必须补齐，否则调用点在运行期静默变 `undefined`。
+- 32 个 `attachElementApi` 组件里还剩 5 个的 `defineExpose` **不全**（`TreeList.getMenuState`、`AnimationPanel.setDirDirection`、`ExportApk`/`QrCode` 的 `update`、`VariableGetter2.getForm`）：迁到实例之前必须补齐，否则调用点在运行期静默变 `undefined`。
 
 **存量是碎片化的，不存在「再迁一批就清零」**：119 个消费方文件里最重的那个也只卡 5 个窗口（`report-blocked-by-consumer.mjs` 的输出）。所以一批的粒度应该是**一个消费方 + 它卡住的 1–5 个窗口**，而不是一个目录。
 
@@ -114,6 +114,7 @@ node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --appl
 - ⚠️ **`relate()` 的 `targets` 仍是 DOM 语义**（`select-box-core` 读写 `element.style` 与兄弟标签），必须传 `controlRoot(...)`；这是 P3 之前拆不掉 `attachElementApi` 的主要原因；
 - ⚠️ **`write2()` 在新列表里找不到旧值时会把第一项当默认值写进去**：只在「原来就有选中值」时回写，否则会变成替用户选一个（`SetAnimationComponent` 那条单测就是这么红的）；
 - ⚠️ **默认写路径是拼出来的 id**：`useCommandSchema` 的 `load` 用 `${name}-${field}` 去注册表取元素，所以非 `skipWrite` 的命令窗口必须先传 `controls: () => 控件表` 才迁得动（`WebSocketSend` 是第一个这么迁的）；
+- ⚠️ **`filter` 是根元素上的自有属性，既不是 prop 也不是 attribute**：`custom-box-opts` 的 getter（`VariableGetter.open(el)` 一类）打开选择框时读的就是 `el.filter`。迁成组件实例后必须走 `CustomBox` 暴露的 `setFilter(...)` —— 写成 `control.filter = x` 是**静默 no-op**（实例代理上没有这个可写成员，`tsc` / `vue-tsc` 都不会报），「换操作数类型 → 变量框可选项过滤」就这么悄悄失效；
 - ⚠️ **清的 import 要按 specifier 摘，不要整行删**：`import { Selection, textCaptureEls }` 同行时，整行删会把还被用到的 `Selection` 一起删掉 —— 而 `Selection` 正好是 DOM 全局类名，删完不报「找不到名字」，只报一串 `Property 'xxx' does not exist` 的怪错（文本捕获族四个窗口踩过）。
 
 

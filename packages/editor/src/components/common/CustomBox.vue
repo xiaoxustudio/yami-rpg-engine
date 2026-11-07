@@ -96,12 +96,14 @@ const on = (
 /**
  * 切换候选项过滤。
  *
- * `filter` 在 ui-kit 里是**根元素属性**语义（`getAttribute('filter')` 决定可选项与拖放类型），
- * 不是可写的 prop：旧契约正是靠 `registryElement(id).filter = x` 直接写属性。迁到组件实例后
- * 必须把这个写口显式 expose，否则「换操作数类型 → 变量框可选项过滤」会静默 no-op。
+ * 写的是根元素上的 `filter` **属性值**（普通自有属性），不是 Vue prop：`custom-box-opts` 的
+ * getter（`VariableGetter.open(el)` 一类）在打开选择框时读的就是 `el.filter` 这个成员。
+ * 旧契约正是靠 `registryElement(id).filter = x` 直接赋值；迁到组件实例后必须把这个写口显式
+ * expose，否则「换操作数类型 → 变量框可选项过滤」会静默 no-op。
  */
 const setFilter = (value: string): void => {
-	root.value?.setAttribute('filter', value);
+	const el = root.value as (HTMLElement & { filter?: string }) | null;
+	if (el) el.filter = value;
 };
 
 defineExpose({ read, write, input, enable, disable, focus, on, setFilter, root });
