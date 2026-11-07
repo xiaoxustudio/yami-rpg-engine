@@ -1,31 +1,37 @@
 /**
- * UI 引擎骨架节点（`ui-head` / `ui-list` / `ui-body`）的交接表。
+ * UI 引擎骨架节点表（统一走 skeleton-table）。
  *
- * 与 `layout-nodes.ts` 同一模式：节点由 `UiPanel.vue` / `UiElementPanel.vue` 独占渲染，
- * 之前登记进 `uiEls`，引擎按 id 取（`ui-initialize` / `ui-singleton` / `layout` / `stores/ui`）。
- * 现在改成类型化小表；取不到时调用方按 `UI_NODE_IDS` 兜底（引擎初始化时序可能早于挂载）。
+ * 节点由 `UiPanel.vue`（页 / 头 / 体 / 屏幕 / 选框）与 `UiElementPanel.vue`（列表 / 列表头 / 搜索框）
+ * 渲染；引擎侧（`ui-initialize` / `ui-singleton` / `layout` / `stores/ui`）读表，`pick` 带 id 兜底
+ * —— 引擎初始化可能早于组件挂载，这条兜底是刻意的。
  */
-export type UiNodeKey = 'head' | 'list' | 'body';
+import { createSkeletonTable } from './skeleton-table';
 
-/** 键 → 稳定的 DOM id（兜底查询与排查用）。 */
-export const UI_NODE_IDS: Record<UiNodeKey, string> = {
+export type UiNodeKey =
+	| 'head'
+	| 'list'
+	| 'body'
+	| 'page'
+	| 'screen'
+	| 'marquee'
+	| 'searcher'
+	| 'listHead';
+
+export const uiNodes = createSkeletonTable<UiNodeKey>({
 	head: 'ui-head',
 	list: 'ui-list',
-	body: 'ui-body'
-};
+	body: 'ui-body',
+	page: 'ui',
+	screen: 'ui-screen',
+	marquee: 'ui-marquee',
+	searcher: 'ui-searcher',
+	listHead: 'ui-list-head'
+});
 
-const nodes: Partial<Record<UiNodeKey, HTMLElement>> = {};
-
-/** 组件挂载时登记自己拥有的节点。 */
-export const setUiNode = (key: UiNodeKey, element: HTMLElement | null): void => {
-	if (element) nodes[key] = element;
-	else delete nodes[key];
-};
-
-/** 组件卸载时注销（只在仍是自己那一份时清）。 */
-export const clearUiNode = (key: UiNodeKey, element: HTMLElement | null): void => {
-	if (element && nodes[key] === element) delete nodes[key];
-};
-
-/** 引擎侧读取。 */
-export const getUiNode = (key: UiNodeKey): HTMLElement | null => nodes[key] ?? null;
+/** 兼容旧调用点（早先引入的 `getUiNode` / `setUiNode` / `clearUiNode` / `UI_NODE_IDS` 名字）。 */
+export const UI_NODE_IDS = uiNodes.ids;
+export const getUiNode = (key: UiNodeKey): HTMLElement | null => uiNodes.pick(key);
+export const setUiNode = (key: UiNodeKey, element: HTMLElement | null): void =>
+	uiNodes.set(key, element);
+export const clearUiNode = (key: UiNodeKey, element: HTMLElement | null): void =>
+	uiNodes.clear(key, element);

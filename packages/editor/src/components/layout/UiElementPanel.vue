@@ -5,12 +5,8 @@
 		:ref="registryRef(uiEls, 'ui-element')"
 		value="ui-element"
 	>
-		<div class="box" id="ui-list-head" :ref="registryRef(uiEls, 'ui-list-head')">
-			<TextBox
-				id="ui-searcher"
-				:ref="registryRef(uiEls, 'ui-searcher')"
-				name="search"
-			></TextBox>
+		<div class="box" id="ui-list-head" :ref="bind('listHead')">
+			<TextBox id="ui-searcher" :ref="bind('searcher')" name="search"></TextBox>
 		</div>
 		<TreeList
 			id="ui-list"
@@ -31,7 +27,7 @@
 import { h, onMounted, onUnmounted, ref, type VNode } from 'vue';
 import { uiEls } from '@app/engine/ui/element-registry';
 import { registryRef } from '@app/utils/element-registry';
-import { clearUiNode, setUiNode } from '@app/composables/ui-nodes';
+import { clearUiNode, setUiNode, uiNodes } from '@app/composables/ui-nodes';
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
@@ -196,10 +192,14 @@ const onUiListOpen = (event: Event) => {
 const onUiListChange = (event: Event) => {
 	UI?.listChange?.(event);
 };
+const { bind, dispose } = uiNodes.scoped();
 const listEl = ref<InstanceType<typeof TreeList> | null>(null);
 
 onMounted(() => {
 	setUiNode('list', listEl.value?.root ?? null);
-	onUnmounted(() => clearUiNode('list', listEl.value?.root ?? null));
+	onUnmounted(() => {
+		dispose();
+		clearUiNode('list', listEl.value?.root ?? null);
+	});
 });
 </script>

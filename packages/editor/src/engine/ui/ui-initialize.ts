@@ -3,7 +3,6 @@ import { queryElementsByIds } from '@app/utils/dom';
 import { elementDataOf } from '@ui-kit';
 import { getListConfig } from '@ui-kit';
 import { uiEls } from '@app/engine/ui/element-registry';
-import { registryElement } from '@app/utils/element-registry.ts';
 import type { UIShape, UINodeShape, UIControlPoints, UIListNodeShape } from './ui-singleton.ts';
 import { UIEngine } from './ui-engine.ts';
 import type { DynamicShape } from '@app/types/shapes.ts';
@@ -21,32 +20,32 @@ import { roundTo } from '@app/utils/math';
 
 /** 初始化 UI 域模块的 DOM 引用与状态。 */
 const initialize = function (this: UIShape) {
-	this.page = uiEls.get('ui') as YamiElement;
+	this.page = getUiNode('page') as YamiElement;
 	this.head = (getUiNode('head') ??
 		queryElementsByIds([UI_NODE_IDS.head])[0] ??
 		null) as YamiElement;
 	this.body = hide(
 		(getUiNode('body') ?? queryElementsByIds([UI_NODE_IDS.body])[0] ?? null) as YamiElement
 	);
-	this.screen = uiEls.get('ui-screen') as YamiElement & {
+	this.screen = getUiNode('screen') as YamiElement & {
 		rawScrollLeft: number;
 		rawScrollTop: number;
 	};
 	const oldMarquee = this.marquee;
-	this.marquee = uiEls.get('ui-marquee') as YamiElement;
+	this.marquee = getUiNode('marquee') as YamiElement;
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
-	this.searcher = registryElement<UIShape['searcher']>(uiEls, 'ui-searcher')!;
+	this.searcher = getUiNode('searcher') as UIShape['searcher'];
 	const oldList = this.list;
-	this.list = registryElement<UIListNodeShape>(uiEls, 'ui-list')!;
+	this.list = getUiNode('list') as UIListNodeShape;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
 	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = uiEls.get(
 		'ui-element'
 	) as YamiElement;
-	elementDataOf<{ head: HTMLElement }>(this.list).head = uiEls.get('ui-list-head') as YamiElement;
+	elementDataOf<{ head: HTMLElement }>(this.list).head = getUiNode('listHead') as YamiElement;
 	if (this.screen) addScrollbars(this.screen);
 
 	const points: UIControlPoints = {
