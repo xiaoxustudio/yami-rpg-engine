@@ -1,12 +1,10 @@
-﻿import { YamiIpc } from '@app/services/ipc/bridge.ts';
+import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { moduleEls } from '@app/module/element-registry';
-import { titleEls } from '@app/title/element-registry';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { enable } from '@app/utils/element-utils.ts';
+import { getExportApk } from '@app/composables/title-window-bridges';
 import { Path } from '@app/utils/config';
 import { Editor } from '@app/services/project/editor.ts';
 import { TemplatesPath } from './global.ts';
-import type { YamiElement } from '@app/types/element-api';
 
 interface ApkConfig {
 	[k: string]: unknown;
@@ -37,13 +35,13 @@ export const ApkBuilder = new (class {
 	apkLog(log: ApkLogEntry) {
 		this.notifyLogContent();
 		if (log.done) {
-			enable(titleEls.get('export-apk-button') as YamiElement);
+			getExportApk()?.setButtonEnabled(true);
 		}
 	}
 	reset() {
 		this.logs.length = 0;
 		this.notifyLogContent();
-		enable(titleEls.get('export-apk-button') as YamiElement);
+		getExportApk()?.setButtonEnabled(true);
 	}
 	clearLog() {
 		this.logs = [];

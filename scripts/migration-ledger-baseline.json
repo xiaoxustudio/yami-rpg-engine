@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-07T08:19:53.533Z",
+	"generatedAt": "2026-11-07T08:44:56.924Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -75,8 +75,8 @@
 			"label": "文本直写 .textContent =（应改模板插值）",
 			"target": "stable",
 			"value": {
-				"total": 111,
-				"files": 43
+				"total": 110,
+				"files": 42
 			}
 		},
 		"dom-tree-walk": {
@@ -131,7 +131,7 @@
 			"label": "元素注册表寻址（*Els.get、registryElement(s)）",
 			"target": "zero",
 			"value": {
-				"total": 371,
+				"total": 368,
 				"files": 103
 			}
 		},
@@ -263,8 +263,8 @@
 			"label": "YamiElement 类型引用（元素契约存量）",
 			"target": "zero",
 			"value": {
-				"total": 497,
-				"files": 94
+				"total": 494,
+				"files": 93
 			}
 		}
 	}
