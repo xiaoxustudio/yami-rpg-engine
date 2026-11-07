@@ -3,7 +3,6 @@ import { queryElementsByIds } from '@app/utils/dom';
 import { elementDataOf } from '@ui-kit';
 import { uiEls } from '@app/engine/ui/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
-import { registryElement } from '@app/utils/element-registry.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import '@app/engine/ui/ui-engine.ts';
@@ -151,16 +150,15 @@ export type UIDragEvent = UIPointerEvent & {
 };
 
 export const UI = {
-	page: uiEls.get('ui') as YamiElement,
+	page: getUiNode('page') as YamiElement,
 	head: (getUiNode('head') ?? queryElementsByIds([UI_NODE_IDS.head])[0] ?? null) as YamiElement,
 	body: hide(
 		(getUiNode('body') ?? queryElementsByIds([UI_NODE_IDS.body])[0] ?? null) as YamiElement
 	),
-	screen: uiEls.get('ui-screen') as YamiElement,
-	marquee: ((uiEls.get('ui-marquee') as YamiElement) ||
-		({} as YamiElement)) as UIShape['marquee'],
-	searcher: registryElement<UIShape['searcher']>(uiEls, 'ui-searcher')!,
-	list: registryElement<UIListNodeShape>(uiEls, 'ui-list') ?? ({} as UIListNodeShape),
+	screen: getUiNode('screen') as YamiElement,
+	marquee: ((getUiNode('marquee') as YamiElement) || ({} as YamiElement)) as UIShape['marquee'],
+	searcher: getUiNode('searcher') as UIShape['searcher'],
+	list: (getUiNode('list') as UIListNodeShape) ?? ({} as UIListNodeShape),
 	dragging: null as UIDragEvent | null,
 	hover: null as HoverNode | null,
 	translationKey: 0b0000,
@@ -169,7 +167,7 @@ export const UI = {
 } satisfies Partial<UIShape> as Partial<UIShape> as UIShape;
 
 elementDataOf<{ page?: HTMLElement | null }>(UI.list).page = uiEls.get('ui-element') as YamiElement;
-elementDataOf<{ head: HTMLElement }>(UI.list).head = uiEls.get('ui-list-head') as YamiElement;
+elementDataOf<{ head: HTMLElement }>(UI.list).head = getUiNode('listHead') as YamiElement;
 EventBus.once('editor_loaded', () => {
 	UI.list.restoreRecursiveStates = Scene.list
 		.restoreRecursiveStates as UIShape['list']['restoreRecursiveStates'];
