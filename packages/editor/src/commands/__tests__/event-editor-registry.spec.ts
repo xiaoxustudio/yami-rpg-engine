@@ -5,21 +5,12 @@ import { mount } from '@vue/test-utils';
 import EventWindow from '@app/components/tools/Event.vue';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { eventEditorEls } from '@app/commands/event-editor-initialize.ts';
+import { eventEditorNodes } from '@app/composables/editor-window-nodes';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
-
-const REGISTERED_IDS = [
-	'event',
-	'event-open-list',
-	'event-commands',
-	'event-commands-fieldset',
-	'event-commands-gutter-outer',
-	'event-commands-gutter-inner',
-	'event-type'
-];
 
 describe('事件编辑器元素注册表', () => {
 	beforeEach(() => {
@@ -30,15 +21,24 @@ describe('事件编辑器元素注册表', () => {
 		eventEditorEls.clear();
 	});
 
-	it('Event.vue 登记 7 个元素（元素本身，且 id 与注册键一致）', async () => {
+	it('Event.vue 把 7 个元素交出到 eventEditorNodes（键的 id 与元素 id 一致）', async () => {
 		const wrapper = mount(EventWindow, { attachTo: document.body });
 		await nextTick();
 
-		for (const id of REGISTERED_IDS) {
-			const element = eventEditorEls.get(id);
-			expect(element, `注册表缺少 ${id}`).toBeInstanceOf(HTMLElement);
-			expect(element?.id, `${id} 的元素 id 不一致`).toBe(id);
+		const missing: string[] = [];
+		const mismatched: string[] = [];
+		for (const key of Object.keys(eventEditorNodes.ids) as Array<
+			keyof typeof eventEditorNodes.ids
+		>) {
+			const element = eventEditorNodes.get(key);
+			const id = eventEditorNodes.ids[key];
+			if (!(element instanceof HTMLElement)) {
+				missing.push(id);
+				continue;
+			}
+			if (element.id !== id) mismatched.push(`${id} → ${element.id}`);
 		}
+		expect({ missing, mismatched }).toEqual({ missing: [], mismatched: [] });
 
 		wrapper.unmount();
 	});

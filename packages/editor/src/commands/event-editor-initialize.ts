@@ -1,3 +1,4 @@
+import { eventEditorNodes } from '@app/composables/editor-window-nodes';
 import { EventEditor } from './event-editor.ts';
 import type {
 	EventCommandListShape,
@@ -32,8 +33,8 @@ function ensureDomBound() {
 		eventEditorEls,
 		'event-commands'
 	)!;
-	EventEditor.outerGutter = eventEditorEls.get('event-commands-gutter-outer') as YamiElement;
-	EventEditor.innerGutter = eventEditorEls.get('event-commands-gutter-inner') as YamiElement;
+	EventEditor.outerGutter = eventEditorNodes.pick('gutterOuter') as YamiElement;
+	EventEditor.innerGutter = eventEditorNodes.pick('gutterInner') as YamiElement;
 	getElementData(list).lastScrollTop = 0;
 	EventEditor.list.close = null;
 	EventEditor.list.closeMultiple = null;
@@ -488,7 +489,7 @@ EventEditor.initialize = function (this: EventEditorShape) {
 	this.innerGutter.style.paddingBottom = `${PADDING_BOTTOM}px`;
 
 	window.addEventListener('localize', this.windowLocalize!);
-	const frame = eventEditorEls.get('event');
+	const frame = eventEditorNodes.pick('root');
 	if (frame) {
 		on(frame, 'close', this.windowClose!);
 		on(frame, 'closed', this.windowClosed!);
@@ -497,9 +498,9 @@ EventEditor.initialize = function (this: EventEditorShape) {
 	on(this.list, 'pointerdown', this.listPointerdown!, { capture: true });
 	on(this.list, 'select', this.listSelect!);
 	on(this.list, 'popup', this.listPopup!);
-	const typeEl = eventEditorEls.get('event-type');
+	const typeEl = eventEditorNodes.pick('type');
 	if (typeEl) on(typeEl, 'input', this.typeInput!);
-	const commandListEl = eventEditorEls.get('event-commands');
+	const commandListEl = eventEditorNodes.pick('commands');
 	if (commandListEl) on(commandListEl, 'change', this.commandListChange!);
 	on(this.commandList, 'update', this.commandListUpdate!);
 	on(this.commandList, 'scroll', this.commandListScroll!);

@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="event"
-		:ref="registryRef(eventEditorEls, 'event')"
+		:ref="bind('root')"
 		show-apply
 		class="opaque"
 		@apply="onApply"
@@ -18,7 +18,7 @@
 			<div class="legend">{{ t('components.event-open-list.label') }}</div>
 			<TreeList
 				id="event-open-list"
-				:ref="registryRef(eventEditorEls, 'event-open-list')"
+				:ref="bind('openList')"
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
 			/>
@@ -30,30 +30,19 @@
 		>
 			<div class="legend">{{ t('components.event-commands-gutter-background.label') }}</div>
 			<div class="box" id="event-commands-gutter-background" />
-			<CommandList id="event-commands" :ref="registryRef(eventEditorEls, 'event-commands')" />
-			<div
-				class="box"
-				id="event-commands-gutter-outer"
-				:ref="registryRef(eventEditorEls, 'event-commands-gutter-outer')"
-			>
-				<div
-					class="box"
-					id="event-commands-gutter-inner"
-					:ref="registryRef(eventEditorEls, 'event-commands-gutter-inner')"
-				/>
+			<CommandList id="event-commands" :ref="bind('commands')" />
+			<div class="box" id="event-commands-gutter-outer" :ref="bind('gutterOuter')">
+				<div class="box" id="event-commands-gutter-inner" :ref="bind('gutterInner')" />
 			</div>
 		</div>
-		<SelectBox
-			id="event-type"
-			v-tip="t('components.event-type.tip')"
-			:ref="registryRef(eventEditorEls, 'event-type')"
-		/>
+		<SelectBox id="event-type" v-tip="t('components.event-type.tip')" :ref="bind('type')" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, type VNode } from 'vue';
+import { h, onMounted, type VNode, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { eventEditorNodes } from '@app/composables/editor-window-nodes';
 import { removeTextTags, parseEventType } from '@app/composables/useCommandParse.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { eventEditorEls } from '@app/commands/event-editor-initialize.ts';
@@ -63,6 +52,9 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CommandList from '@app/components/common/CommandList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+const { bind, dispose } = eventEditorNodes.scoped();
+onUnmounted(dispose);
 
 const { t } = useI18n();
 

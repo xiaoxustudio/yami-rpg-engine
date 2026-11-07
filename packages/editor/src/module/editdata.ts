@@ -1,4 +1,4 @@
-import { moduleEls } from '@app/module/element-registry';
+import { editDataNodes } from '@app/composables/editor-window-nodes';
 import { eventEditorEls } from '@app/commands/event-editor-initialize.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { getFocus, hasClass, hide, on, show } from '@app/utils/element-utils.ts';
@@ -45,7 +45,7 @@ export const EditDataInstance = new (class {
 		theme: ''
 	};
 	isCreated = false;
-	mark = moduleEls.get('edit-data-mark') as YamiElement;
+	mark = editDataNodes.pick('mark') as YamiElement;
 	editorParent: HTMLElement | null = null;
 	editorDom: HTMLElement | null = null;
 	eventListDom: EventListCursorDom | null = null;
@@ -55,11 +55,11 @@ export const EditDataInstance = new (class {
 
 	bindDom() {
 		if (this.editorParent) return;
-		this.mark = moduleEls.get('edit-data-mark') as YamiElement;
-		this.editorParent = moduleEls.get('edit-data') as YamiElement;
-		this.editorDom = moduleEls.get('edit-data-current') as YamiElement;
+		this.mark = editDataNodes.pick('mark') as YamiElement;
+		this.editorParent = editDataNodes.pick('root') as YamiElement;
+		this.editorDom = editDataNodes.pick('current') as YamiElement;
 		this.eventListDom = registryElement<EventListCursorDom>(eventEditorEls, 'event-commands');
-		on(moduleEls.get('edit-data') as YamiElement, 'resize', () => {
+		on(editDataNodes.pick('root') as YamiElement, 'resize', () => {
 			this.resize();
 		});
 
@@ -105,7 +105,7 @@ export const EditDataInstance = new (class {
 		});
 	}
 	isMaximized() {
-		return hasClass(moduleEls.get('edit-data') as YamiElement, 'maximized');
+		return hasClass(editDataNodes.pick('root') as YamiElement, 'maximized');
 	}
 	resize() {
 		const content = this.editorDom!;

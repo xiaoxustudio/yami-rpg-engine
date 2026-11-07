@@ -1,35 +1,27 @@
 <template>
-	<WindowFrame id="edit-data" :ref="registryRef(moduleEls, 'edit-data')" @confirm="onConfirm">
+	<WindowFrame id="edit-data" :ref="bind('root')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.edit-data.title') }}
-				<div
-					class="text hidden"
-					id="edit-data-mark"
-					:ref="registryRef(moduleEls, 'edit-data-mark')"
-				>
-					✱
-				</div>
+				<div class="text hidden" id="edit-data-mark" :ref="bind('mark')">✱</div>
 				<div class="maximize" id="edit-data-maximize" />
 				<div class="close" /> </TitleBar
 		></template>
 
-		<div
-			class="box"
-			id="edit-data-current"
-			:ref="registryRef(moduleEls, 'edit-data-current')"
-		></div>
+		<div class="box" id="edit-data-current" :ref="bind('current')"></div>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { EditDataInstance } from '@app/module/editdata.ts';
-import { onMounted } from 'vue';
-import { moduleEls } from '@app/module/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { editDataNodes } from '@app/composables/editor-window-nodes';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
+
+const { bind, dispose } = editDataNodes.scoped();
+onUnmounted(dispose);
 
 const onConfirm = () => {
 	EditDataInstance?.save?.();
