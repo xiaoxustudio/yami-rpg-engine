@@ -1,14 +1,9 @@
 <template>
-	<div
-		class="page-frame"
-		id="particle"
-		:ref="registryRef(particleEls, 'particle')"
-		value="particle"
-	>
+	<div class="page-frame" id="particle" :ref="bind('page')" value="particle">
 		<div
 			class="box"
 			id="particle-head"
-			:ref="registryRef(particleEls, 'particle-head')"
+			:ref="bind('head')"
 			@pointerdown="onParticleHeadPointerdown"
 		>
 			<div class="box" id="particle-head-start" @pointerdown="onParticleViewPointerdown">
@@ -49,7 +44,7 @@
 				<NumberBox
 					id="particle-speed"
 					v-tip="t('components.particle-speed.tip')"
-					:ref="registryRef(particleEls, 'particle-speed')"
+					:ref="bind('speed')"
 					min="0"
 					max="4"
 					step="0.05"
@@ -71,38 +66,39 @@
 				></SliderBox>
 			</div>
 		</div>
-		<div class="box" id="particle-body" :ref="registryRef(particleEls, 'particle-body')">
+		<div class="box" id="particle-body" :ref="bind('body')">
 			<div
 				class="box"
 				id="particle-screen"
-				:ref="registryRef(particleEls, 'particle-screen')"
+				:ref="bind('screen')"
 				tabindex="-1"
 				@keydown="onParticleScreenKeydown"
 				@wheel="onParticleScreenWheel"
 			>
 				<MarqueeArea
 					id="particle-marquee"
-					:ref="registryRef(particleEls, 'particle-marquee')"
+					:ref="bind('marquee')"
 					@pointerdown="onParticleMarqueePointerdown"
 				></MarqueeArea>
 			</div>
-			<div
-				class="text"
-				id="particle-info"
-				:ref="registryRef(particleEls, 'particle-info')"
-			></div>
+			<div class="text" id="particle-info" :ref="bind('info')"></div>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
+import { onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { particlePanelNodes } from '@app/composables/particle-nodes';
 import { particleEls } from '@app/particle/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import { getLazyWindow } from '@app/tools/window-registry';
+
+const { bind, dispose } = particlePanelNodes.scoped();
+onUnmounted(dispose);
 
 const { t } = useI18n();
 

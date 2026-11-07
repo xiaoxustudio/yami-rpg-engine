@@ -1,6 +1,6 @@
 import { particleNodes } from '@app/composables/engine-nodes';
+import { particlePanelNodes } from '@app/composables/particle-nodes';
 import { Particle } from './particle-window.ts';
-import { particleEls } from '@app/particle/element-registry';
 import type { ParticleHistoryData } from './particle-window.ts';
 import { getListConfig } from '@ui-kit';
 import { addSetScrollMethod, hide, on } from '@app/utils/element-utils.ts';
@@ -14,18 +14,18 @@ import type { YamiElement } from '@app/types/element-api';
 import { roundTo } from '@app/utils/math';
 
 Particle.initialize = function () {
-	this.page = particleEls.get('particle') as YamiElement;
-	this.head = particleEls.get('particle-head') as YamiElement & {
+	this.page = particlePanelNodes.pick('page') as YamiElement;
+	this.head = particlePanelNodes.pick('head') as YamiElement & {
 		width: number;
 	};
-	this.body = hide(particleEls.get('particle-body') as YamiElement);
-	this.info = particleEls.get('particle-info') as YamiElement;
-	this.screen = particleEls.get('particle-screen') as YamiElement & {
+	this.body = hide(particlePanelNodes.pick('body') as YamiElement);
+	this.info = particlePanelNodes.pick('info') as YamiElement;
+	this.screen = particlePanelNodes.pick('screen') as YamiElement & {
 		rawScrollLeft: number;
 		rawScrollTop: number;
 	};
 	const oldMarquee = this.marquee;
-	this.marquee = particleEls.get('particle-marquee') as YamiElement & {
+	this.marquee = particlePanelNodes.pick('marquee') as YamiElement & {
 		pointerevent: unknown;
 	};
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
@@ -121,7 +121,7 @@ Particle.initialize = function () {
 	window.addEventListener('keydown', this.keydown!);
 	on(this.page, 'resize', this.windowResize!);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored!);
-	on(particleEls.get('particle-speed') as YamiElement, 'input', this.speedInput!);
+	on(particlePanelNodes.pick('speed') as YamiElement, 'input', this.speedInput!);
 	on(this.screen, 'userscroll', this.screenUserscroll!);
 	on(this.screen, 'blur', this.screenBlur!);
 	on(this.marquee, 'pointermove', this.marqueePointermove!);
