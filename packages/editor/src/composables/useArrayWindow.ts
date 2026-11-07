@@ -3,7 +3,7 @@ import { getWindowFormsStore } from '@app/stores/window-forms';
 import { composableEls } from '@app/composables/element-registry';
 import { h } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { on, read } from '@app/utils/element-utils';
+import { read } from '@app/utils/element-utils';
 import { renderDetached } from '@app/utils/dom';
 import { requestFocus } from '@app/directives/focus';
 import { getYamiI18n } from '@app/i18n';
@@ -174,7 +174,6 @@ interface ArrayListInterface {
 	parsers: Record<string, (value: unknown) => string>;
 	defaults: Record<string, number | string>;
 	windows: Record<string, string>;
-	inputs: Record<string, YamiElement>;
 	initialize(list: HTMLElement): void;
 	parse(value: unknown, data: unknown, index: number): HTMLElement[];
 	open(value: unknown): void;
@@ -198,25 +197,12 @@ const windows: Record<string, string> = {
 	string: 'arrayList-string'
 };
 
-const inputs: Record<string, YamiElement> = {
-	get number() {
-		return composableEls.get('arrayList-number-value') as YamiElement;
-	},
-	get string() {
-		return composableEls.get('arrayList-string-value') as YamiElement;
-	}
-};
-
 const listInterface: ArrayListInterface = {
 	parsers,
 	defaults,
 	windows,
-	inputs,
-	initialize: function (this: unknown, list: YamiElement) {
-		const numberConfirm = composableEls.get('arrayList-number-confirm') as YamiElement;
-		if (numberConfirm) on(numberConfirm, 'click', () => list.save());
-		const stringConfirm = composableEls.get('arrayList-string-confirm') as YamiElement;
-		if (stringConfirm) on(stringConfirm, 'click', () => list.save());
+	initialize: function (this: unknown, _list: YamiElement) {
+		// 列表窗口的「确认」按钮在组件内部（ui-kit），编辑器侧不再按 id 取元素挂监听
 	},
 	parse: function (value: unknown, data: unknown, index: number) {
 		const { filter } = targetState!;
