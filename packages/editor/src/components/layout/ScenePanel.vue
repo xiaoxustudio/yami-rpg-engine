@@ -49,42 +49,42 @@
 					<div
 						class="item toolbar-item hidden"
 						id="scene-layer-tilemap-1"
-						:ref="registryRef(sceneEls, 'scene-layer-tilemap-1')"
+						:ref="bind('tilemap1')"
 						value="1"
 						hotkey="1"
 					></div>
 					<div
 						class="item toolbar-item hidden"
 						id="scene-layer-tilemap-2"
-						:ref="registryRef(sceneEls, 'scene-layer-tilemap-2')"
+						:ref="bind('tilemap2')"
 						value="2"
 						hotkey="2"
 					></div>
 					<div
 						class="item toolbar-item hidden"
 						id="scene-layer-tilemap-3"
-						:ref="registryRef(sceneEls, 'scene-layer-tilemap-3')"
+						:ref="bind('tilemap3')"
 						value="3"
 						hotkey="3"
 					></div>
 					<div
 						class="item toolbar-item hidden"
 						id="scene-layer-tilemap-4"
-						:ref="registryRef(sceneEls, 'scene-layer-tilemap-4')"
+						:ref="bind('tilemap4')"
 						value="4"
 						hotkey="4"
 					></div>
 					<div
 						class="item toolbar-item hidden"
 						id="scene-layer-tilemap-5"
-						:ref="registryRef(sceneEls, 'scene-layer-tilemap-5')"
+						:ref="bind('tilemap5')"
 						value="5"
 						hotkey="5"
 					></div>
 					<div
 						class="item toolbar-item hidden"
 						id="scene-layer-tilemap-6"
-						:ref="registryRef(sceneEls, 'scene-layer-tilemap-6')"
+						:ref="bind('tilemap6')"
 						value="6"
 						hotkey="6"
 					></div>

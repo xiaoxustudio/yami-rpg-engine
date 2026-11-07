@@ -1,4 +1,4 @@
-import { sceneEls } from '@app/scene/element-registry';
+import { sceneNodes } from '@app/composables/scene-nodes';
 import { addClass, hide, removeClass, setTooltip, show } from '@app/utils/element-utils';
 import { Scene } from './scene-window.ts';
 import type { YamiElement } from '@app/types/element-api';
@@ -64,22 +64,22 @@ export class TilemapShortcuts {
 	static initialize(): void {
 		this.elements = {
 			get 1() {
-				return sceneEls.get('scene-layer-tilemap-1') as YamiElement;
+				return sceneNodes.pick('tilemap1') as YamiElement;
 			},
 			get 2() {
-				return sceneEls.get('scene-layer-tilemap-2') as YamiElement;
+				return sceneNodes.pick('tilemap2') as YamiElement;
 			},
 			get 3() {
-				return sceneEls.get('scene-layer-tilemap-3') as YamiElement;
+				return sceneNodes.pick('tilemap3') as YamiElement;
 			},
 			get 4() {
-				return sceneEls.get('scene-layer-tilemap-4') as YamiElement;
+				return sceneNodes.pick('tilemap4') as YamiElement;
 			},
 			get 5() {
-				return sceneEls.get('scene-layer-tilemap-5') as YamiElement;
+				return sceneNodes.pick('tilemap5') as YamiElement;
 			},
 			get 6() {
-				return sceneEls.get('scene-layer-tilemap-6') as YamiElement;
+				return sceneNodes.pick('tilemap6') as YamiElement;
 			}
 		};
 		const { elements } = this;

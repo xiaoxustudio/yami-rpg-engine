@@ -14,7 +14,13 @@ export type SceneNodeKey =
 	| 'screen'
 	| 'marquee'
 	| 'list'
-	| 'searcher';
+	| 'searcher'
+	| 'tilemap1'
+	| 'tilemap2'
+	| 'tilemap3'
+	| 'tilemap4'
+	| 'tilemap5'
+	| 'tilemap6';
 
 export const sceneNodes = createSkeletonTable<SceneNodeKey>({
 	page: 'scene',
@@ -24,5 +30,11 @@ export const sceneNodes = createSkeletonTable<SceneNodeKey>({
 	screen: 'scene-screen',
 	marquee: 'scene-marquee',
 	list: 'scene-list',
-	searcher: 'scene-searcher'
+	searcher: 'scene-searcher',
+	tilemap1: 'scene-layer-tilemap-1',
+	tilemap2: 'scene-layer-tilemap-2',
+	tilemap3: 'scene-layer-tilemap-3',
+	tilemap4: 'scene-layer-tilemap-4',
+	tilemap5: 'scene-layer-tilemap-5',
+	tilemap6: 'scene-layer-tilemap-6'
 });
