@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-07T06:12:06.358Z",
+	"generatedAt": "2026-11-07T06:38:30.204Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -76,7 +76,7 @@
 			"target": "stable",
 			"value": {
 				"total": 111,
-				"files": 42
+				"files": 43
 			}
 		},
 		"dom-tree-walk": {
@@ -131,7 +131,7 @@
 			"label": "元素注册表寻址（*Els.get、registryElement(s)）",
 			"target": "zero",
 			"value": {
-				"total": 412,
+				"total": 404,
 				"files": 106
 			}
 		},
@@ -263,8 +263,8 @@
 			"label": "YamiElement 类型引用（元素契约存量）",
 			"target": "zero",
 			"value": {
-				"total": 505,
-				"files": 95
+				"total": 497,
+				"files": 94
 			}
 		}
 	}

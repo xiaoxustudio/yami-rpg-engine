@@ -3,11 +3,7 @@
 		<template #title><TitleBar>进度</TitleBar></template>
 
 		<div class="flex-box" id="windowProgress-flex">
-			<div
-				class="text"
-				id="windowProgress-info"
-				:ref="registryRef(titleEls, 'windowProgress-info')"
-			/>
+			<div class="text" id="windowProgress-info" ref="infoRef" />
 			<div
 				class="box"
 				id="windowProgress-box"
@@ -20,13 +16,29 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { titleEls } from '@app/title/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
+import {
+	provideWindowProgress,
+	resetWindowProgress,
+	type WindowProgressApi
+} from '@app/composables/title-window-bridges';
 
-onMounted(() => {});
+const infoRef = ref<HTMLElement | null>(null);
+
+const bridgeApi: WindowProgressApi = {
+	setInfo: (text) => {
+		if (infoRef.value) infoRef.value.textContent = text;
+	}
+};
+
+onMounted(() => {
+	provideWindowProgress(bridgeApi);
+	onUnmounted(() => resetWindowProgress(bridgeApi));
+});
 </script>
 
 <style>

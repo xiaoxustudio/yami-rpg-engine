@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="export-apk" :ref="registryRef(titleEls, 'export-apk')" no-buttons>
+	<WindowFrame id="export-apk" ref="frame" no-buttons @closed="onWindowClosed">
 		<template #title
 			><TitleBar
 				>构建APK
@@ -19,7 +19,8 @@
 				<TextBox
 					:label="'应用图标'"
 					id="export-apk-apkIcon"
-					:ref="registryRef(titleEls, 'export-apk-apkIcon')"
+					ref="iconRef"
+					@mouseenter="onIconHover"
 					v-model="exportApkForm.apkIcon"
 				/>
 				<div class="text">应用包名</div>
@@ -71,23 +72,23 @@
 				</div>
 			</div>
 		</div>
-		<button
-			id="export-apk-button"
-			:ref="registryRef(titleEls, 'export-apk-button')"
-			name="export-to-apk"
-		/>
+		<button id="export-apk-button" ref="buttonRef" @click="onBuildClick" name="export-to-apk" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { moduleEls } from '@app/module/element-registry';
-import { titleEls } from '@app/title/element-registry';
-import { registryRef, registerElement } from '@app/utils/element-registry';
+import { registerElement } from '@app/utils/element-registry';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import { ApkBuilder } from '@app/module/apkbuilder.ts';
+import {
+	provideExportApk,
+	resetExportApk,
+	type ExportApkApi
+} from '@app/composables/title-window-bridges';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import { exportApkForm, Menubar } from '@app/title/menu-bar';
 
@@ -115,6 +116,42 @@ onMounted(() => {
 	if (!el) return;
 	attachElementApi(el, { update });
 	update();
+});
+
+const buttonRef = ref<HTMLElement | null>(null);
+
+/** 事件与「按钮可用性」都收在窗口里；menu-bar 只注册回调。 */
+let closedHandler: (() => void) | null = null;
+let iconHoverHandler: (() => void) | null = null;
+let buildClickHandler: (() => void) | null = null;
+
+const onWindowClosed = (): void => closedHandler?.();
+const onIconHover = (): void => iconHoverHandler?.();
+const onBuildClick = (): void => buildClickHandler?.();
+
+const bridgeApi: ExportApkApi = {
+	onClosed: (handler) => {
+		closedHandler = handler;
+	},
+	onIconHover: (handler) => {
+		iconHoverHandler = handler;
+	},
+	onBuildClick: (handler) => {
+		buildClickHandler = handler;
+	},
+	setButtonEnabled: (enabled) => {
+		const button =
+			(buttonRef.value as { root?: HTMLElement } | null)?.root ??
+			(buttonRef.value as HTMLElement | null);
+		if (!button) return;
+		if (enabled) button.removeAttribute('disabled');
+		else button.setAttribute('disabled', '');
+	}
+};
+
+onMounted(() => {
+	provideExportApk(bridgeApi);
+	onUnmounted(() => resetExportApk(bridgeApi));
 });
 </script>
 

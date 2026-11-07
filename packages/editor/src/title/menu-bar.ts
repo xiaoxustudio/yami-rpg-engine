@@ -1,3 +1,4 @@
+import { getExportApk, getWindowProgress } from '@app/composables/title-window-bridges';
 import { macRedoKey } from '@app/utils/event-accessors';
 import { createDetachedElement } from '@app/utils/dom';
 import { titleEls } from '@app/title/element-registry';
@@ -7,15 +8,7 @@ import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { SettingConfig } from '@app/services/project/setting-config';
 import type { MenuItem } from '@ui-kit';
 import { treeRowCount, treeRowItemAt } from '@ui-kit';
-import {
-	addClass,
-	disable,
-	enable,
-	hasClass,
-	rect,
-	removeClass,
-	setTooltip
-} from '@app/utils/element-utils';
+import { addClass, hasClass, rect, removeClass } from '@app/utils/element-utils';
 import { h, reactive, render, watch } from 'vue';
 import { Path } from '@app/utils/config';
 import { Animation } from '@app/animation/animation-window.ts';
@@ -734,21 +727,16 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 					enabled: open,
 					click: async () => {
 						Window.open!('windowProgress');
-						const progressInfo = titleEls.get('windowProgress-info') as YamiElement;
-						progressInfo.textContent = '加载中...';
+						getWindowProgress()?.setInfo('加载中...');
 						// 导出 APK 窗口是懒挂载的：控件可用后再挂 closed（首次打开也不丢）
 						Window.openWith!('export-apk', () => {
-							titleEls.get('export-apk')?.addEventListener(
-								'closed',
-								() => {
-									if (stopExportApkFormWatch) {
-										stopExportApkFormWatch();
-										stopExportApkFormWatch = null;
-									}
-									ApkBuilder.reset!();
-								},
-								{ once: true }
-							);
+							getExportApk()?.onClosed(() => {
+								if (stopExportApkFormWatch) {
+									stopExportApkFormWatch();
+									stopExportApkFormWatch = null;
+								}
+								ApkBuilder.reset!();
+							});
 						});
 						const pConfig = Path.resolve!(
 							Path.dirname!(Editor.config!.project!),
@@ -798,34 +786,29 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 								});
 								apkConfigSave();
 							});
-							(titleEls.get('export-apk-apkIcon') as YamiElement)?.addEventListener?.(
-								'mouseenter',
-								(_e: Event) =>
-									setTooltip(
-										titleEls.get('export-apk-apkIcon') as YamiElement,
-										ApkBuilder.processPathOnly!(config.iconPath)
-									)
-							);
-							(titleEls.get('export-apk-button') as YamiElement)?.addEventListener?.(
-								'click',
-								(_e: Event) => {
-									disable(titleEls.get('export-apk-button') as YamiElement);
-									apkConfigSave();
-									SettingConfig.load();
-									ApkBuilder.build!({
-										...config,
-										...SettingConfig.config.apkbuild,
-										...SettingConfig.config.signed
-									});
-								}
-							);
+							getExportApk()?.onIconHover(() => {
+								// 提示文案由窗口侧提供元素；这里只给内容
+								getExportApk()?.setIconTooltip?.(
+									ApkBuilder.processPathOnly!(config.iconPath)
+								);
+							});
+							getExportApk()?.onBuildClick(() => {
+								getExportApk()?.setButtonEnabled(false);
+								apkConfigSave();
+								SettingConfig.load();
+								ApkBuilder.build!({
+									...config,
+									...SettingConfig.config.apkbuild,
+									...SettingConfig.config.signed
+								});
+							});
 							if (ApkBuilder.isBuilding!()) {
-								disable(titleEls.get('export-apk-button') as YamiElement);
+								getExportApk()?.setButtonEnabled(false);
 								ApkBuilder.logs.forEach((log) => {
 									ApkBuilder.apkLog!(log);
 								});
 							} else {
-								enable(titleEls.get('export-apk-button') as YamiElement);
+								getExportApk()?.setButtonEnabled(true);
 							}
 							Window.closeById!('windowProgress');
 						});
@@ -1114,7 +1097,6 @@ Menubar.hrefClick = function (this: typeof Menubar, event: MouseEvent) {
 };
 
 import { getMenubarStore } from '@app/stores/menubar';
-import type { YamiElement } from '@app/types/element-api';
 
 /** 关于弹窗里的版本号：元素缺失时静默跳过（不把可能为 null 的元素强转成元素类型）。 */
 const writeTitleText = (id: string, text: string | undefined): void => {
