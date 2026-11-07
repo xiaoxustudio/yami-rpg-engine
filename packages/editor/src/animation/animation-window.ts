@@ -459,7 +459,7 @@ export const Animation = {
 		(animationNodes.pick('marquee') as AnimationShape['marquee']) ??
 		({} as AnimationShape['marquee']),
 	dirList:
-		(animationEls.get('animation-dirList') as AnimationShape['dirList']) ??
+		(animationNodes.pick('dirList') as AnimationShape['dirList']) ??
 		({} as AnimationShape['dirList']),
 	searcher:
 		(animationNodes.pick('searcher') as AnimationShape['searcher']) ??

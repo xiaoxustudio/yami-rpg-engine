@@ -149,6 +149,7 @@ const onDirPointerdown = (index: number): void => {
 };
 
 onMounted(() => {
+	animationNodes.set('dirList', dirListEl.value);
 	const el = dirListEl.value;
 	if (!el) return;
 	attachElementApi(el, { setDirItems, setDirDirection });

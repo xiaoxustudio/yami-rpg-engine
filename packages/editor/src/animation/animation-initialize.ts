@@ -42,7 +42,7 @@ Animation.initialize = function (this: typeof Animation) {
 		Object.assign(this.marquee, oldMarquee);
 	}
 	this.body = animationNodes.pick('body') as AnimationElement;
-	this.dirList = animationEls.get('animation-dirList') as typeof this.dirList;
+	this.dirList = animationNodes.pick('dirList') as typeof this.dirList;
 	this.searcher = animationNodes.pick('searcher') as typeof this.searcher;
 	const oldList = this.list;
 	this.list = animationNodes.pick('list') as typeof this.list;

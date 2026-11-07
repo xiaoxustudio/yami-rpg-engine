@@ -7,6 +7,7 @@
 import { createSkeletonTable } from './skeleton-table';
 
 export type AnimationNodeKey =
+	| 'dirList'
 	| 'animation'
 	| 'head'
 	| 'body'
@@ -37,6 +38,7 @@ export type AnimationNodeKey =
 	| 'easingCanvas';
 
 export const animationNodes = createSkeletonTable<AnimationNodeKey>({
+	dirList: 'animation-dirList',
 	animation: 'animation',
 	head: 'animation-head',
 	body: 'animation-body',
