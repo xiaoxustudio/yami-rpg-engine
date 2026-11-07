@@ -1104,5 +1104,26 @@ vi.mock('@app/stores/local', () => ({
 			expect(saved).not.toHaveBeenCalled();
 			wrapper.unmount();
 		});
+
+		it('writeHandler 经控件实例切 common-variable 的 filter（不再按 id 查注册表）', () => {
+			// 契约：`filter` 是 CustomBox 实例的 `setFilter`，不是元素上的可写属性。
+			const setFilter = vi.fn();
+			const { writeHandler } = useSetStringCommandSchema({
+				controls: () => ({ 'setString-operand-common-variable': { setFilter } })
+			});
+			writeHandler({ value: 'string' });
+			expect(setFilter).toHaveBeenLastCalledWith('string');
+			writeHandler({ value: 'object' });
+			expect(setFilter).toHaveBeenLastCalledWith('object');
+			writeHandler({ value: 'list' });
+			expect(setFilter).toHaveBeenLastCalledWith('object');
+			writeHandler({ value: 'constant' });
+			expect(setFilter).toHaveBeenLastCalledWith('all');
+		});
+
+		it('writeHandler 在窗口未挂载（无控件表）时是 no-op', () => {
+			const { writeHandler } = useSetStringCommandSchema();
+			expect(() => writeHandler({ value: 'string' })).not.toThrow();
+		});
 	});
 }

@@ -1,5 +1,4 @@
 import { Command } from '@app/commands/command-object.ts';
-import { composableEls } from '@app/composables/element-registry';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { getYamiI18n } from '@app/i18n';
@@ -9,7 +8,7 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
-import { registryElement } from '@app/utils/element-registry';
+import type { ControlApi } from '@app/composables/control-refs';
 
 export type SetStringOperand = {
 	type: string;
@@ -291,7 +290,18 @@ Command.cases.setString = new CommandSchema({
 	}
 });
 
-export function useSetStringCommandSchema() {
+export interface SetStringSchemaOptions {
+	/**
+	 * 窗口的控件表 getter（`useControlRefs` 建的那张）。
+	 *
+	 * `writeHandler` 要写的 `filter` 是 `CustomBox` 的**组件实例**能力；没有这张表就只能按 id
+	 * 从注册表取裸元素，那正是要拆掉的契约。给 getter 而不是表本身：schema 在窗口 `setup`
+	 * 里就要求到，而表要到挂载后才有内容。
+	 */
+	controls?: () => Partial<Record<string, ControlApi | null>>;
+}
+
+export function useSetStringCommandSchema(options: SetStringSchemaOptions = {}) {
 	const { form, load, commit } = useCommandSchema('setString', {
 		skipWrite: true,
 		onLoad() {
@@ -594,13 +604,8 @@ export function useSetStringCommandSchema() {
 				filter = 'object';
 				break;
 		}
-		const element = registryElement<HTMLElement & { filter?: string }>(
-			composableEls,
-			'setString-operand-common-variable'
-		);
-		if (element) {
-			element.filter = filter;
-		}
+		// `filter` 是 CustomBox 的元素级能力：控件表由窗口传入，用实例方法写
+		options.controls?.()['setString-operand-common-variable']?.setFilter?.(filter);
 	};
 	Command.cases.setString.customLoad = onLoad;
 	Command.cases.setString.customSave = onSave;

@@ -149,12 +149,8 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter = 'object';
 			break;
 	}
-	// `filter` 是 CustomBox 的元素级能力：按最小形状断言后写
-	const commonVariable = getNumberOperand()?.control('commonVariable') as
-		| { filter?: string }
-		| null
-		| undefined;
-	if (commonVariable) commonVariable.filter = filter;
+	// `filter` 是 CustomBox 的元素级能力：实例上要显式 setFilter（写裸属性会静默 no-op）
+	getNumberOperand()?.control('commonVariable')?.setFilter?.(filter);
 };
 
 const parseMathMethod = (operand: NumberOperandData): string | undefined => {

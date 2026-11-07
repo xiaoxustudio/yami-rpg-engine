@@ -379,7 +379,7 @@ const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
-const { form, save, writeHandler } = useSetStringCommandSchema();
+const { form, save, writeHandler } = useSetStringCommandSchema({ controls: () => controls });
 
 const commonValue = computed({
 	get: () => form.commonValue as string,

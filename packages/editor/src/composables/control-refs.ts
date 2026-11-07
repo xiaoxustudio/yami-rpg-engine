@@ -33,6 +33,15 @@ export interface ControlApi extends FormFieldControl {
 	toggleRelatedElements?: () => void;
 	enable?: () => void;
 	disable?: () => void;
+	/**
+	 * 切换候选项过滤（`CustomBox` / `SelectBox` 的 `filter`）。
+	 *
+	 * 为什么是方法而不是可写属性：`filter` 在 ui-kit 侧是**根元素属性**语义
+	 * （`getAttribute('filter')` 决定可选项与拖放类型），组件实例上没有同名可写成员。
+	 * 旧契约靠 `registryElement(id).filter = x` 直接写属性；收口成实例方法后语义不变，
+	 * 否则「换操作数类型 → 变量框可选项过滤」会静默失效。
+	 */
+	setFilter?: (value: string) => void;
 	getFocus?: (mode?: string) => void;
 	input?: (...args: unknown[]) => unknown;
 	update?: (...args: unknown[]) => unknown;

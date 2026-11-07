@@ -93,7 +93,18 @@ const on = (
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
-defineExpose({ read, write, input, enable, disable, focus, on, root });
+/**
+ * 切换候选项过滤。
+ *
+ * `filter` 在 ui-kit 里是**根元素属性**语义（`getAttribute('filter')` 决定可选项与拖放类型），
+ * 不是可写的 prop：旧契约正是靠 `registryElement(id).filter = x` 直接写属性。迁到组件实例后
+ * 必须把这个写口显式 expose，否则「换操作数类型 → 变量框可选项过滤」会静默 no-op。
+ */
+const setFilter = (value: string): void => {
+	root.value?.setAttribute('filter', value);
+};
+
+defineExpose({ read, write, input, enable, disable, focus, on, setFilter, root });
 
 /**
  * `localize` 全局事件。
