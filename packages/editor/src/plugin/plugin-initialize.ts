@@ -1,5 +1,5 @@
+import { pluginNodes } from '@app/composables/tool-window-nodes';
 import { PluginManager } from './plugin.ts';
-import { pluginEls } from '@app/plugin/element-registry';
 import type { PluginItemShape } from './plugin.ts';
 import { getListConfig } from '@ui-kit';
 import { clear, getFocus, hide, on, show } from '@app/utils/element-utils.ts';
@@ -12,13 +12,13 @@ import { clone as deepClone } from '@app/utils/object';
 
 function ensureDomBound() {
 	if (PluginManager.list) return;
-	const list = pluginEls.get('plugin-list') as YamiElement;
+	const list = pluginNodes.pick('list') as YamiElement;
 	if (!list) return;
 	PluginManager.list = list;
-	PluginManager.overviewPane = pluginEls.get('plugin-overview-detail') as YamiElement;
+	PluginManager.overviewPane = pluginNodes.pick('overviewDetail') as YamiElement;
 	hide(PluginManager.overviewPane);
-	PluginManager.overview = pluginEls.get('plugin-overview') as YamiElement;
-	PluginManager.parameterPane = pluginEls.get('plugin-parameter-pane') as YamiElement;
+	PluginManager.overview = pluginNodes.pick('overview') as YamiElement;
+	PluginManager.parameterPane = pluginNodes.pick('parameterPane') as YamiElement;
 	hide(PluginManager.parameterPane);
 	list.updateTextNode = PluginManager.list_updateTextNode as (
 		...args: unknown[]
@@ -58,8 +58,8 @@ PluginManager.initialize = function (this: typeof PluginManager) {
 		(this.parameterPane as TreeListElement).bind(list);
 	}
 
-	on(pluginEls.get('plugin') as YamiElement, 'close', this.windowClose!);
-	on(pluginEls.get('plugin') as YamiElement, 'closed', this.windowClosed!);
+	on(pluginNodes.pick('root') as YamiElement, 'close', this.windowClose!);
+	on(pluginNodes.pick('root') as YamiElement, 'closed', this.windowClosed!);
 	on(list, 'keydown', this.listKeydown!);
 	on(list, 'unselect', this.listUnselect!);
 	on(this.overview, 'pointerdown', this.overviewPointerdown!);

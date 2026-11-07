@@ -1,5 +1,5 @@
+import { localizationNodes } from '@app/composables/tool-window-nodes';
 import { createTextAreaElement, elementDataOf, getListConfig } from '@ui-kit';
-import { localEls } from '@app/local/element-registry';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { Window } from '@app/tools/window-object.ts';
 import {
@@ -144,14 +144,14 @@ export const Localization = {
 
 function ensureDomBound() {
 	if (Localization.list) return;
-	const list = localEls.get('localization-list') as YamiElement;
+	const list = localizationNodes.pick('list') as YamiElement;
 	if (!list) return;
 	Localization.list = list as TreeListElement;
-	Localization.panel = localEls.get('localization-inspector') as HTMLElement & {
+	Localization.panel = localizationNodes.pick('inspector') as HTMLElement & {
 		item: LocalizationItem | null;
 	};
 	hide(Localization.panel);
-	Localization.searcher = localEls.get('localization-searcher') as HTMLElement & {
+	Localization.searcher = localizationNodes.pick('searcher') as HTMLElement & {
 		addCloseButton(): void;
 		deleteInputContent(): void;
 	};
@@ -214,7 +214,7 @@ Localization.initialize = function () {
 		this.changed = true;
 	};
 
-	on(localEls.get('localization') as YamiElement, 'close', this.windowClose);
+	on(localizationNodes.pick('root') as YamiElement, 'close', this.windowClose);
 
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
@@ -225,8 +225,8 @@ Localization.initialize = function () {
 	on(this.searcher, 'input', this.searcherInput);
 	on(this.searcher, 'compositionend', this.searcherInput);
 
-	on(localEls.get('localization-to-excel') as YamiElement, 'click', this.toExcel);
-	on(localEls.get('localization-from-excel') as YamiElement, 'click', this.fromExcel);
+	on(localizationNodes.pick('toExcel') as YamiElement, 'click', this.toExcel);
+	on(localizationNodes.pick('fromExcel') as YamiElement, 'click', this.fromExcel);
 
 	ExportLanguage.initialize();
 	ImportLanguage.initialize();

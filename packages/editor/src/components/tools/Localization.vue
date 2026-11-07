@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="localization"
-		:ref="registryRef(localEls, 'localization')"
+		:ref="bind('root')"
 		show-apply
 		mode="center"
 		@apply="onApply"
@@ -17,7 +17,7 @@
 			<div class="legend">{{ t('components.localization-list.label') }}</div>
 			<TreeList
 				id="localization-list"
-				:ref="registryRef(localEls, 'localization-list')"
+				:ref="bind('list')"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -27,43 +27,27 @@
 				@popup="onListPopup"
 			/>
 		</div>
-		<div
-			class="box"
-			id="localization-inspector"
-			:ref="registryRef(localEls, 'localization-inspector')"
-		/>
-		<TextBox
-			id="localization-searcher"
-			:ref="registryRef(localEls, 'localization-searcher')"
-			name="search"
-		/>
-		<button
-			id="localization-from-excel"
-			:ref="registryRef(localEls, 'localization-from-excel')"
-			name="from-excel"
-		>
+		<div class="box" id="localization-inspector" :ref="bind('inspector')" />
+		<TextBox id="localization-searcher" :ref="bind('searcher')" name="search" />
+		<button id="localization-from-excel" :ref="bind('fromExcel')" name="from-excel">
 			from-excel
 		</button>
-		<button
-			id="localization-to-excel"
-			:ref="registryRef(localEls, 'localization-to-excel')"
-			name="to-excel"
-		>
-			to-excel
-		</button>
+		<button id="localization-to-excel" :ref="bind('toExcel')" name="to-excel">to-excel</button>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, type VNode } from 'vue';
-import { localEls } from '@app/local/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { h, onMounted, type VNode, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { localizationNodes } from '@app/composables/tool-window-nodes';
 import { Localization } from '@app/local/local-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+const { bind, dispose } = localizationNodes.scoped();
+onUnmounted(dispose);
 
 const onConfirm = () => {
 	Localization?.confirm?.(new Event('click'));

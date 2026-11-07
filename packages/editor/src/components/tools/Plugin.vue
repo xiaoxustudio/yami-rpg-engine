@@ -1,11 +1,5 @@
 <template>
-	<WindowFrame
-		id="plugin"
-		:ref="registryRef(pluginEls, 'plugin')"
-		show-apply
-		@apply="onApply"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="plugin" :ref="bind('root')" show-apply @apply="onApply" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.plugin.title') }}
@@ -16,7 +10,7 @@
 			<div class="legend">{{ t('components.plugin-list.label') }}</div>
 			<TreeList
 				id="plugin-list"
-				:ref="registryRef(pluginEls, 'plugin-list')"
+				:ref="bind('list')"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -27,25 +21,18 @@
 			/>
 		</div>
 		<div class="box" id="plugin-inspector">
-			<DetailBox
-				id="plugin-overview-detail"
-				:ref="registryRef(pluginEls, 'plugin-overview-detail')"
-				open
-			>
+			<DetailBox id="plugin-overview-detail" :ref="bind('overviewDetail')" open>
 				<DetailSummary>{{ t('components.plugin-overview.label') }}</DetailSummary>
 				<div
 					class="box"
 					id="plugin-overview"
-					:ref="registryRef(pluginEls, 'plugin-overview')"
+					:ref="bind('overview')"
 					@update="syncOverview"
 				>
 					<PluginOverview :meta="overviewMeta" :detailed="overviewDetailed" />
 				</div>
 			</DetailBox>
-			<ParameterPane
-				id="plugin-parameter-pane"
-				:ref="registryRef(pluginEls, 'plugin-parameter-pane')"
-			>
+			<ParameterPane id="plugin-parameter-pane" :ref="bind('parameterPane')">
 				<DetailBox id="plugin-parameter-detail" open>
 					<DetailSummary>{{ t('components.plugin-parameter-grid.label') }}</DetailSummary>
 					<div class="detail-grid" id="plugin-parameter-grid" />
@@ -56,10 +43,9 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, ref, shallowRef, type VNode } from 'vue';
-import { pluginEls } from '@app/plugin/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { h, onMounted, ref, shallowRef, type VNode, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { pluginNodes } from '@app/composables/tool-window-nodes';
 import { File } from '@app/file/file-system-core.ts';
 import { getBrowserStore } from '@app/stores/browser';
 import { PluginManager } from '@app/plugin/plugin.ts';
@@ -71,6 +57,9 @@ import DetailSummary from '@app/components/common/DetailSummary.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';
+
+const { bind, dispose } = pluginNodes.scoped();
+onUnmounted(dispose);
 
 const { t } = useI18n();
 
