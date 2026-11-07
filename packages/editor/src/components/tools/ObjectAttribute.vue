@@ -12,7 +12,7 @@
 				:label="t('components.object-attribute-key.label')"
 				id="object-attribute-key"
 				v-tip="t('components.object-attribute-key.tip')"
-				:ref="registryRef(objectAttributeEls, 'object-attribute-key')"
+				ref="keyRef"
 				v-focus
 				v-model="form.key"
 				@write="onKeyWrite"
@@ -22,7 +22,7 @@
 				:label="t('components.object-attribute-boolean-value.label')"
 				id="object-attribute-boolean-value"
 				v-tip="t('components.object-attribute-boolean-value.tip')"
-				:ref="registryRef(objectAttributeEls, 'object-attribute-boolean-value')"
+				ref="booleanRef"
 				v-focus
 				v-model="form.booleanValue"
 			/>
@@ -31,7 +31,7 @@
 				:label="t('components.object-attribute-number-value.label')"
 				id="object-attribute-number-value"
 				v-tip="t('components.object-attribute-number-value.tip')"
-				:ref="registryRef(objectAttributeEls, 'object-attribute-number-value')"
+				ref="numberRef"
 				v-focus
 				min="-1000000000"
 				max="1000000000"
@@ -43,7 +43,7 @@
 				:label="t('components.object-attribute-string-value.label')"
 				id="object-attribute-string-value"
 				v-tip="t('components.object-attribute-string-value.tip')"
-				:ref="registryRef(objectAttributeEls, 'object-attribute-string-value')"
+				ref="stringRef"
 				v-focus
 				menu="tag-localization"
 				v-model="form.stringValue"
@@ -53,7 +53,7 @@
 				:label="t('components.object-attribute-enum-value.label')"
 				id="object-attribute-enum-value"
 				v-tip="t('components.object-attribute-enum-value.tip')"
-				:ref="registryRef(objectAttributeEls, 'object-attribute-enum-value')"
+				ref="enumRef"
 				v-focus
 				v-model="form.enumValue"
 			/>
@@ -62,11 +62,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import type { YamiElement } from '@app/types/element-api';
-import { objectAttributeEls } from '@app/tools/property-list';
-import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
+import {
+	provideObjectAttribute,
+	resetObjectAttribute,
+	type ObjectAttributeApi
+} from '@app/composables/object-attribute-bridge';
+import { controlRoot, toControl } from '@app/composables/control-refs';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -84,6 +88,33 @@ const onConfirm = () => {
 };
 
 onMounted(() => {});
+
+const keyRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const booleanRef = ref<InstanceType<typeof SelectBox> | null>(null);
+const numberRef = ref<InstanceType<typeof NumberBox> | null>(null);
+const stringRef = ref<InstanceType<typeof TextArea> | null>(null);
+const enumRef = ref<InstanceType<typeof SelectBox> | null>(null);
+
+const controlsOf = (): Record<string, unknown> => ({
+	key: keyRef.value,
+	boolean: booleanRef.value,
+	number: numberRef.value,
+	string: stringRef.value,
+	enum: enumRef.value
+});
+
+const bridgeApi: ObjectAttributeApi = {
+	control: (name) => toControl(controlsOf()[name] ?? null),
+	elementsOf: (names) =>
+		names
+			.map((name) => controlRoot(toControl(controlsOf()[name] ?? null)))
+			.filter((element): element is HTMLElement => element != null)
+};
+
+onMounted(() => {
+	provideObjectAttribute(bridgeApi);
+	onUnmounted(() => resetObjectAttribute(bridgeApi));
+});
 </script>
 
 <style>

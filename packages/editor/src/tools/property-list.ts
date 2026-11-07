@@ -1,3 +1,4 @@
+import { getObjectAttribute } from '@app/composables/object-attribute-bridge';
 import { reactive } from 'vue';
 import { createElementRegistry } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
@@ -139,7 +140,7 @@ export class AttributeListInterface implements IListInterface {
 		const numberValue = type === 'number' ? (item.value as number) : 0;
 		const stringValue = type === 'string' ? (item.value as string) : '';
 		const enumValue = type === 'enum' ? (item.value as string) : '';
-		const keyBox = objectAttributeEls.get('object-attribute-key');
+		const keyBox = getObjectAttribute()?.control('key');
 		keyBox?.loadItems?.(Attribute.getAttributeItems(this.group, 'boolean number string'));
 		const invalid = !Attribute.getGroupAttribute(this.group, key);
 		if (invalid) AttributeListInterface.typeBox.write(type);
@@ -156,7 +157,7 @@ export class AttributeListInterface implements IListInterface {
 				return requestFocus('object-attribute-string-value', 'all');
 			case 'enum': {
 				const attr = Attribute.getGroupAttribute(this.group, key);
-				const enumBox = objectAttributeEls.get('object-attribute-enum-value');
+				const enumBox = getObjectAttribute()?.control('enum');
 				if (attr && enumBox) {
 					enumBox?.loadItems?.(Enum.getStringItems(attr.enum));
 				}
@@ -204,18 +205,15 @@ export class AttributeListInterface implements IListInterface {
 		]);
 
 		this.typeBox.enableHiddenMode().relate([
-			{
-				case: 'boolean',
-				targets: [objectAttributeEls.get('object-attribute-boolean-value')]
-			},
-			{ case: 'number', targets: [objectAttributeEls.get('object-attribute-number-value')] },
-			{ case: 'string', targets: [objectAttributeEls.get('object-attribute-string-value')] },
-			{ case: 'enum', targets: [objectAttributeEls.get('object-attribute-enum-value')] }
+			{ case: 'boolean', targets: getObjectAttribute()?.elementsOf(['boolean']) ?? [] },
+			{ case: 'number', targets: getObjectAttribute()?.elementsOf(['number']) ?? [] },
+			{ case: 'string', targets: getObjectAttribute()?.elementsOf(['string']) ?? [] },
+			{ case: 'enum', targets: getObjectAttribute()?.elementsOf(['enum']) ?? [] }
 		]);
 
-		const boolValEl = objectAttributeEls.get('object-attribute-boolean-value');
+		const boolValEl = getObjectAttribute()?.control('boolean');
 		if (!boolValEl) return;
-		boolValEl.loadItems([
+		boolValEl.loadItems?.([
 			{ name: 'False', value: false },
 			{ name: 'True', value: true }
 		]);
@@ -240,7 +238,7 @@ export class AttributeListInterface implements IListInterface {
 		if (attr) {
 			AttributeListInterface.typeBox.write(attr.type);
 			if (attr.type === 'enum') {
-				const enumBox = objectAttributeEls.get('object-attribute-enum-value');
+				const enumBox = getObjectAttribute()?.control('enum');
 				enumBox?.loadItems?.(Enum.getStringItems(attr.enum));
 				form.enumValue = Enum.getDefStringId(attr.enum);
 			}
