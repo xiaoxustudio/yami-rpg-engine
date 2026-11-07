@@ -1,6 +1,6 @@
-import { getWindowStore } from '@app/stores/window';
-import { type CustomBoxApi } from '@ui-kit';
 import { composableEls } from '@app/composables/element-registry';
+import { getNumberOperand } from '@app/composables/number-operand-bridge';
+import { getWindowStore } from '@app/stores/window';
 import { hide, read, show } from '@app/utils/element-utils';
 import { requestFocus } from '@app/directives/focus';
 import { setNumberColor, setScriptColor } from '@app/composables/useCommandColor.ts';
@@ -29,7 +29,6 @@ import { VariableGetter } from '@app/commands/accessors/variable-accessor-window
 import { Data } from '@app/data/data-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { getYamiI18n } from '@app/i18n';
-import { registryElement } from '@app/utils/element-registry';
 import { getSetNumberOperandBridge } from '@app/composables/set-number-operand-bridge';
 
 const t = (key: string, named?: Record<string, unknown>) =>
@@ -150,8 +149,12 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter = 'object';
 			break;
 	}
-	registryElement<CustomBoxApi>(composableEls, 'setNumber-operand-common-variable')!.filter =
-		filter;
+	// `filter` 是 CustomBox 的元素级能力：按最小形状断言后写
+	const commonVariable = getNumberOperand()?.control('commonVariable') as
+		| { filter?: string }
+		| null
+		| undefined;
+	if (commonVariable) commonVariable.filter = filter;
 };
 
 const parseMathMethod = (operand: NumberOperandData): string | undefined => {
@@ -371,7 +374,7 @@ const parse = (
 	let operation;
 	let operator;
 	if (index === 0) {
-		operation = read(composableEls.get('setNumber-operation')) ?? 'set';
+		operation = read(getNumberOperand()?.control('operation')) ?? 'set';
 		switch (operation) {
 			case 'set':
 				operator = '= ';
@@ -435,13 +438,13 @@ const open = (
 	// 操作数窗口是懒挂载的：控件可用后再 save/show/hide 与填冷却键（首次打开也不丢）
 	getWindowStore().openWith('setNumber-operand', () => {
 		if (isFirstOperand) {
-			composableEls.get('setNumber-operation')?.save();
-			show(composableEls.get('setNumber-operation'));
+			(getNumberOperand()?.control('operation') as { save?: () => void } | null)?.save?.();
+			show(getNumberOperand()?.control('operation'));
 			requestFocus('setNumber-operation');
-			hide(composableEls.get('setNumber-operand-operation'));
+			hide(getNumberOperand()?.control('operandOperation'));
 		} else {
-			hide(composableEls.get('setNumber-operation'));
-			show(composableEls.get('setNumber-operand-operation'));
+			hide(getNumberOperand()?.control('operation'));
+			show(getNumberOperand()?.control('operandOperation'));
 			requestFocus('setNumber-operand-operation');
 		}
 
@@ -846,7 +849,7 @@ const save = (): unknown => {
 			break;
 		}
 	}
-	composableEls.get('setNumber-operation')?.save();
+	(getNumberOperand()?.control('operation') as { save?: () => void } | null)?.save?.();
 	getWindowStore().close('setNumber-operand');
 	return operand;
 };

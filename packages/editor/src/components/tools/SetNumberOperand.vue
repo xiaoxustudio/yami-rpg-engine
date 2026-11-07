@@ -293,6 +293,12 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
+import {
+	provideNumberOperand,
+	resetNumberOperand,
+	type NumberOperandApi
+} from '@app/composables/number-operand-bridge';
+import { toControl } from '@app/composables/control-refs';
 import { useI18n } from 'vue-i18n';
 import { composableEls } from '@app/composables/element-registry';
 import { getFormFields, setFormFields } from '@app/composables/form-fields';
@@ -428,6 +434,8 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	provideNumberOperand(bridgeApi);
+	onUnmounted(() => resetNumberOperand(bridgeApi));
 	const el = frame.value?.root;
 	if (el) {
 		registerElement(composableEls, 'setNumber-operand', el);
@@ -439,6 +447,18 @@ onMounted(() => {
 	onUnmounted(() => resetSetNumberOperandBridge(api));
 	setupSetNumberOperandFields(fieldEls, el);
 });
+
+/** 交给 schema 的桥：按逻辑名取控件（fieldEls 由 fieldRef 填好）。 */
+const bridgeApi: NumberOperandApi = {
+	control: (name) => {
+		const map: Record<string, string> = {
+			operation: 'setNumber-operation',
+			operandOperation: 'setNumber-operand-operation',
+			commonVariable: 'setNumber-operand-common-variable'
+		};
+		return toControl((fieldEls as Record<string, unknown>)[map[name]] ?? null);
+	}
+};
 </script>
 
 <style>
