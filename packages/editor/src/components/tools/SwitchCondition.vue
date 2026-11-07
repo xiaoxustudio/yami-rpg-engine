@@ -1,10 +1,5 @@
 <template>
-	<WindowFrame
-		id="switch-condition"
-		:ref="registryRef(fieldEls, 'switch-condition')"
-		scrollable
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="switch-condition" :ref="bind('root')" scrollable @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.switch-condition.title') }}
@@ -17,7 +12,7 @@
 				:label="t('components.switch-condition-type.label')"
 				id="switch-condition-type"
 				v-tip="t('components.switch-condition-type.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-type')"
+				:ref="bind('type')"
 				v-focus
 				v-model="form.type"
 			/>
@@ -26,7 +21,7 @@
 				:label="t('components.switch-condition-boolean-value.label')"
 				id="switch-condition-boolean-value"
 				v-tip="t('components.switch-condition-boolean-value.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-boolean-value')"
+				:ref="bind('boolean')"
 				v-model="form.booleanValue"
 			/>
 			<div class="text">{{ t('components.switch-condition-number-value.label') }}</div>
@@ -34,7 +29,7 @@
 				:label="t('components.switch-condition-number-value.label')"
 				id="switch-condition-number-value"
 				v-tip="t('components.switch-condition-number-value.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-number-value')"
+				:ref="bind('number')"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
@@ -45,7 +40,7 @@
 				:label="t('components.switch-condition-string-value.label')"
 				id="switch-condition-string-value"
 				v-tip="t('components.switch-condition-string-value.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-string-value')"
+				:ref="bind('string')"
 				v-model="form.stringValue"
 			/>
 			<div class="text">
@@ -54,7 +49,7 @@
 			<CustomBox
 				id="switch-condition-attribute-attributeId"
 				v-tip="t('components.switch-condition-attribute-attributeId.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-attribute-attributeId')"
+				:ref="bind('attribute')"
 				v-focus
 				type="attribute"
 				v-model="form.attributeId"
@@ -63,7 +58,7 @@
 			<CustomBox
 				id="switch-condition-enum-stringId"
 				v-tip="t('components.switch-condition-enum-stringId.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-enum-stringId')"
+				:ref="bind('enum')"
 				v-focus
 				type="enum-string"
 				v-model="form.stringId"
@@ -73,7 +68,7 @@
 				:label="t('components.switch-condition-keyboard-keycode.label')"
 				id="switch-condition-keyboard-keycode"
 				v-tip="t('components.switch-condition-keyboard-keycode.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-keyboard-keycode')"
+				:ref="bind('keyboard')"
 				v-focus
 			/>
 			<div class="text">{{ t('components.switch-condition-gamepad-button.label') }}</div>
@@ -81,7 +76,7 @@
 				:label="t('components.switch-condition-gamepad-button.label')"
 				id="switch-condition-gamepad-button"
 				v-tip="t('components.switch-condition-gamepad-button.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-gamepad-button')"
+				:ref="bind('gamepad')"
 				v-focus
 			/>
 			<div class="text">{{ t('components.switch-condition-mouse-button.label') }}</div>
@@ -89,14 +84,14 @@
 				:label="t('components.switch-condition-mouse-button.label')"
 				id="switch-condition-mouse-button"
 				v-tip="t('components.switch-condition-mouse-button.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-mouse-button')"
+				:ref="bind('mouse')"
 				v-model="form.mouseButton"
 			/>
 			<div class="text">{{ t('components.switch-condition-variable-variable.label') }}</div>
 			<CustomBox
 				id="switch-condition-variable-variable"
 				v-tip="t('components.switch-condition-variable-variable.tip')"
-				:ref="registryRef(fieldEls, 'switch-condition-variable-variable')"
+				:ref="bind('variable')"
 				v-focus
 				type="variable"
 				filter="all"
@@ -108,11 +103,13 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registerElement, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
-import { onMounted } from 'vue';
+import {
+	provideSwitchCondition,
+	resetSwitchCondition,
+	type SwitchConditionApi
+} from '@app/composables/switch-condition-bridge';
+import { controlRoot, toControl, type ControlApi } from '@app/composables/control-refs';
+import { onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSwitchConditionSchema } from '@app/composables/useSwitchConditionSchema';
 
@@ -130,15 +127,25 @@ import type { YamiElement } from '@app/types/element-api';
 
 const { t } = useI18n();
 
+/** 窗口内控件表：模板用 bind(key) 填，脚本按 key 取。 */
+const controls: Partial<Record<string, ControlApi | null>> = {};
+const bind = (key: string) => (target: unknown) => {
+	controls[key] = toControl(target);
+};
+const of = (key: string): ControlApi | null => controls[key] ?? null;
+
 const onConfirm = () => {
 	SwitchCondition?.confirm?.(new Event('click'));
 };
 
+const bridgeApi: SwitchConditionApi = {
+	control: (name) => (name === 'keyboard' ? of('keyboard') : of('gamepad'))
+};
+
 onMounted(() => {
-	for (const id of ['switch-condition-keyboard-keycode', 'switch-condition-gamepad-button']) {
-		registerElement(composableEls, id, fieldEls.get(id));
-	}
-	const typeEl = fieldEls.get('switch-condition-type') as YamiElement;
+	provideSwitchCondition(bridgeApi);
+	onUnmounted(() => resetSwitchCondition(bridgeApi));
+	const typeEl = of('type') as unknown as YamiElement;
 	if (!typeEl) return;
 	typeEl.loadItems([
 		{ name: 'None', value: 'none' },
@@ -153,40 +160,40 @@ onMounted(() => {
 		{ name: 'Variable', value: 'variable' }
 	]);
 
-	typeEl.enableHiddenMode().relate([
+	typeEl.enableHiddenMode?.()?.relate?.([
 		{
 			case: 'boolean',
-			targets: [fieldEls.get('switch-condition-boolean-value')]
+			targets: [controlRoot(of('boolean'))]
 		},
-		{ case: 'number', targets: [fieldEls.get('switch-condition-number-value')] },
-		{ case: 'string', targets: [fieldEls.get('switch-condition-string-value')] },
+		{ case: 'number', targets: [controlRoot(of('number'))] },
+		{ case: 'string', targets: [controlRoot(of('string'))] },
 		{
 			case: 'attribute',
-			targets: [fieldEls.get('switch-condition-attribute-attributeId')]
+			targets: [controlRoot(of('attribute'))]
 		},
-		{ case: 'enum', targets: [fieldEls.get('switch-condition-enum-stringId')] },
+		{ case: 'enum', targets: [controlRoot(of('enum'))] },
 		{
 			case: 'keyboard',
-			targets: [fieldEls.get('switch-condition-keyboard-keycode')]
+			targets: [controlRoot(of('keyboard'))]
 		},
 		{
 			case: 'gamepad',
-			targets: [fieldEls.get('switch-condition-gamepad-button')]
+			targets: [controlRoot(of('gamepad'))]
 		},
-		{ case: 'mouse', targets: [fieldEls.get('switch-condition-mouse-button')] },
+		{ case: 'mouse', targets: [controlRoot(of('mouse'))] },
 		{
 			case: 'variable',
-			targets: [fieldEls.get('switch-condition-variable-variable')]
+			targets: [controlRoot(of('variable'))]
 		}
 	]);
 
-	fieldEls.get('switch-condition-boolean-value')?.loadItems?.([
+	of('boolean')?.loadItems?.([
 		{ name: 'False', value: false },
 		{ name: 'True', value: true }
 	]);
 
 	useLocalizedOptions('switch-condition-mouse-button', [0, 1, 2, 3, 4], (items) =>
-		fieldEls.get('switch-condition-mouse-button')?.loadItems?.(items)
+		of('mouse')?.loadItems?.(items)
 	);
 });
 </script>

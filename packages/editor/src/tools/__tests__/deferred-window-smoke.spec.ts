@@ -235,7 +235,7 @@ describe('懒挂载工具窗口冒烟', () => {
 		// 断言不能空转：确实逐个检查了窗口里**仍登记在注册表**的控件。
 		// 这个数会随元素契约迁移单调下降（控件改由组件 ref / 桥交出），所以阈值跟着下调；
 		// 它守的是「没有整段空转」，不是「登记数不能少」。
-		expect(checkedControls).toBeGreaterThan(80);
+		expect(checkedControls).toBeGreaterThan(60);
 		expect(failures, failures.join('\n')).toEqual([]);
 	});
 });

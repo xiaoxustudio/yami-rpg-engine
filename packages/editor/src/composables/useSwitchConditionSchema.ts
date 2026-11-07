@@ -1,5 +1,5 @@
+import { getSwitchCondition } from '@app/composables/switch-condition-bridge';
 import { getWindowStore } from '@app/stores/window';
-import { composableEls } from '@app/composables/element-registry';
 import { read, write } from '@app/utils/element-utils';
 import { requestFocus } from '@app/directives/focus';
 import { getCommandFormsStore } from '@app/stores/command-forms';
@@ -228,11 +228,8 @@ const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): vo
 	});
 	// 分支条件窗口是懒挂载的：控件可用后再写键位（首次打开也不会丢）
 	getWindowStore().openWith('switch-condition', () => {
-		write(
-			composableEls.get('switch-condition-keyboard-keycode') as YamiElement,
-			keyboardKeycode
-		);
-		write(composableEls.get('switch-condition-gamepad-button') as YamiElement, gamepadButton);
+		write(getSwitchCondition()?.control('keyboard') as YamiElement, keyboardKeycode);
+		write(getSwitchCondition()?.control('gamepad') as YamiElement, gamepadButton);
 	});
 	requestFocus('switch-condition-type');
 };
@@ -279,7 +276,7 @@ const save = (): SwitchConditionData | undefined => {
 		}
 		case 'keyboard': {
 			const keycode = read(
-				composableEls.get('switch-condition-keyboard-keycode') as YamiElement
+				getSwitchCondition()?.control('keyboard') as YamiElement
 			) as string;
 			if (keycode === '') {
 				requestFocus('switch-condition-keyboard-keycode');
@@ -289,9 +286,7 @@ const save = (): SwitchConditionData | undefined => {
 			break;
 		}
 		case 'gamepad': {
-			const button = read(
-				composableEls.get('switch-condition-gamepad-button') as YamiElement
-			) as number;
+			const button = read(getSwitchCondition()?.control('gamepad') as YamiElement) as number;
 			if (button === -1) {
 				requestFocus('switch-condition-gamepad-button');
 				return undefined;
