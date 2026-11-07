@@ -2,7 +2,6 @@ import { animationNodes } from '@app/composables/animation-nodes';
 import { elementDataOf } from '@ui-kit';
 import type { YamiElement } from '@app/types/element-api';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
-import { animationEls } from '@app/animation/element-registry';
 import type { ParticleEmitterShape } from '@app/particle/particle-window.ts';
 import type { History } from '@app/tools/history.ts';
 import { getAnimationStore } from '@app/stores/animation';
@@ -481,13 +480,11 @@ export const Animation = {
 		(animationNodes.pick('timelineRulerInner') as AnimationShape['innerRuler']) ??
 		({} as AnimationShape['innerRuler']),
 	outerTimelineList:
-		(animationEls.get(
-			'animation-timeline-list-outer'
-		) as AnimationShape['outerTimelineList']) ?? ({} as AnimationShape['outerTimelineList']),
+		(animationNodes.pick('timelineListOuter') as AnimationShape['outerTimelineList']) ??
+		({} as AnimationShape['outerTimelineList']),
 	innerTimelineList:
-		(animationEls.get(
-			'animation-timeline-list-inner'
-		) as AnimationShape['innerTimelineList']) ?? ({} as AnimationShape['innerTimelineList']),
+		(animationNodes.pick('timelineListInner') as AnimationShape['innerTimelineList']) ??
+		({} as AnimationShape['innerTimelineList']),
 	timelineCursor:
 		(animationNodes.pick('timelineCursor') as AnimationShape['timelineCursor']) ??
 		({} as AnimationShape['timelineCursor']),
@@ -495,18 +492,14 @@ export const Animation = {
 		(animationNodes.pick('timelineMarquee') as AnimationShape['timelineMarquee']) ??
 		({} as AnimationShape['timelineMarquee']),
 	timelineMarqueeShift:
-		(animationEls.get(
-			'animation-timeline-marquee-shift'
-		) as AnimationShape['timelineMarqueeShift']) ??
+		(animationNodes.pick('timelineMarqueeShift') as AnimationShape['timelineMarqueeShift']) ??
 		({} as AnimationShape['timelineMarqueeShift']),
 	outerPointerArea:
-		(animationEls.get(
-			'animation-timeline-pointer-area-outer'
-		) as AnimationShape['outerPointerArea']) ?? ({} as AnimationShape['outerPointerArea']),
+		(animationNodes.pick('timelinePointerAreaOuter') as AnimationShape['outerPointerArea']) ??
+		({} as AnimationShape['outerPointerArea']),
 	innerPointerArea:
-		(animationEls.get(
-			'animation-timeline-pointer-area-inner'
-		) as AnimationShape['innerPointerArea']) ?? ({} as AnimationShape['innerPointerArea']),
+		(animationNodes.pick('timelinePointerAreaInner') as AnimationShape['innerPointerArea']) ??
+		({} as AnimationShape['innerPointerArea']),
 	pointer:
 		(animationNodes.pick('timelinePointer') as AnimationShape['pointer']) ??
 		({} as AnimationShape['pointer']),
@@ -548,15 +541,15 @@ export const Animation = {
 	Player: null
 } satisfies Partial<AnimationShape> as Partial<AnimationShape> as AnimationShape;
 
-elementDataOf<{ page?: HTMLElement | null }>(Animation.list).page = animationEls.get(
-	'animation-motion'
+elementDataOf<{ page?: HTMLElement | null }>(Animation.list).page = animationNodes.pick(
+	'motion'
 ) as YamiElement;
-elementDataOf<{ head: HTMLElement }>(Animation.list).head = animationEls.get(
-	'animation-list-head'
+elementDataOf<{ head: HTMLElement }>(Animation.list).head = animationNodes.pick(
+	'listHead'
 ) as YamiElement;
 
-elementDataOf<{ head: HTMLElement }>(Animation.timeline).head = animationEls.get(
-	'animation-timeline-head'
+elementDataOf<{ head: HTMLElement }>(Animation.timeline).head = animationNodes.pick(
+	'timelineHead'
 ) as YamiElement;
 
 elementDataOf<{ dragging: PointerEvent | null }>(Animation.outerTimelineList).dragging = null;

@@ -2,7 +2,6 @@ import { animationNodes } from '@app/composables/animation-nodes';
 import { elementDataOf } from '@ui-kit';
 import type { AnimationElement } from '@app/animation/animation-window.ts';
 import { Animation } from './animation-window.ts';
-import { animationEls } from '@app/animation/element-registry';
 import type {
 	AnimationMotion,
 	AnimationHistoryObject,
@@ -49,11 +48,11 @@ Animation.initialize = function (this: typeof Animation) {
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = animationEls.get(
-		'animation-motion'
+	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = animationNodes.pick(
+		'motion'
 	) as YamiElement;
-	elementDataOf<{ head: HTMLElement }>(this.list).head = animationEls.get(
-		'animation-list-head'
+	elementDataOf<{ head: HTMLElement }>(this.list).head = animationNodes.pick(
+		'listHead'
 	) as YamiElement;
 	const oldLayerList = this.layerList;
 	this.layerList = animationNodes.pick('layerList') as typeof this.layerList;
@@ -65,13 +64,13 @@ Animation.initialize = function (this: typeof Animation) {
 	if (oldTimeline && this.timeline && oldTimeline !== this.timeline) {
 		Object.assign(this.timeline, oldTimeline);
 	}
-	elementDataOf<{ head: HTMLElement }>(this.timeline).head = animationEls.get(
-		'animation-timeline-head'
+	elementDataOf<{ head: HTMLElement }>(this.timeline).head = animationNodes.pick(
+		'timelineHead'
 	) as YamiElement;
 	this.toolbar = animationNodes.pick('timelineToolbar') as typeof this.toolbar;
 	const oldOuterTimelineList = this.outerTimelineList;
-	this.outerTimelineList = animationEls.get(
-		'animation-timeline-list-outer'
+	this.outerTimelineList = animationNodes.pick(
+		'timelineListOuter'
 	) as typeof this.outerTimelineList;
 	if (
 		oldOuterTimelineList &&
@@ -81,8 +80,8 @@ Animation.initialize = function (this: typeof Animation) {
 		Object.assign(this.outerTimelineList, oldOuterTimelineList);
 	}
 	const oldInnerTimelineList = this.innerTimelineList;
-	this.innerTimelineList = animationEls.get(
-		'animation-timeline-list-inner'
+	this.innerTimelineList = animationNodes.pick(
+		'timelineListInner'
 	) as typeof this.innerTimelineList;
 	if (
 		oldInnerTimelineList &&
@@ -92,29 +91,25 @@ Animation.initialize = function (this: typeof Animation) {
 		Object.assign(this.innerTimelineList, oldInnerTimelineList);
 	}
 	const oldTimelineCursor = this.timelineCursor;
-	this.timelineCursor = animationEls.get(
-		'animation-timeline-cursor'
-	) as typeof this.timelineCursor;
+	this.timelineCursor = animationNodes.pick('timelineCursor') as typeof this.timelineCursor;
 	if (oldTimelineCursor && this.timelineCursor && oldTimelineCursor !== this.timelineCursor) {
 		Object.assign(this.timelineCursor, oldTimelineCursor);
 	}
 	const oldTimelineMarquee = this.timelineMarquee;
-	this.timelineMarquee = animationEls.get(
-		'animation-timeline-marquee'
-	) as typeof this.timelineMarquee;
+	this.timelineMarquee = animationNodes.pick('timelineMarquee') as typeof this.timelineMarquee;
 	if (oldTimelineMarquee && this.timelineMarquee && oldTimelineMarquee !== this.timelineMarquee) {
 		Object.assign(this.timelineMarquee, oldTimelineMarquee);
 	}
-	this.timelineMarqueeShift = animationEls.get(
-		'animation-timeline-marquee-shift'
+	this.timelineMarqueeShift = animationNodes.pick(
+		'timelineMarqueeShift'
 	) as typeof this.timelineMarqueeShift;
 	this.outerRuler = animationNodes.pick('timelineRulerOuter') as typeof this.outerRuler;
 	this.innerRuler = animationNodes.pick('timelineRulerInner') as typeof this.innerRuler;
-	this.outerPointerArea = animationEls.get(
-		'animation-timeline-pointer-area-outer'
+	this.outerPointerArea = animationNodes.pick(
+		'timelinePointerAreaOuter'
 	) as typeof this.outerPointerArea;
-	this.innerPointerArea = animationEls.get(
-		'animation-timeline-pointer-area-inner'
+	this.innerPointerArea = animationNodes.pick(
+		'timelinePointerAreaInner'
 	) as typeof this.innerPointerArea;
 	this.pointer = animationNodes.pick('timelinePointer') as typeof this.pointer;
 	if (this.screen) addSetScrollMethod(this.screen);
