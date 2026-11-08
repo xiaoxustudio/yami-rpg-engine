@@ -1,5 +1,5 @@
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
-import { serviceEls } from '@app/services/element-registry';
+import { getQrCodeBridge, type QrCodeButtonId } from '@app/composables/qr-code-bridge';
 import { Window } from '@app/tools/window-object.ts';
 import { disable, enable, on } from '@app/utils/element-utils.ts';
 import { Path } from '@app/utils/config';
@@ -11,13 +11,18 @@ import { Deployment, DeploymentForm } from '@app/title/deploy-project-window.ts'
 export const WebServer = new (class {
 	port = 5959;
 	constructor() {}
+	/** 按钮来自窗口交出的桥（懒挂载：未挂载时为空，不按 id 去全局注册表找）。 */
+	private control(id: QrCodeButtonId): HTMLElement | null {
+		return getQrCodeBridge()?.control(id) ?? null;
+	}
 	bindButtons() {
-		const startBtn = serviceEls.get('qr-start-button') as HTMLElement;
+		const startBtn = this.control('qr-start-button');
 		if (!startBtn) return;
 		on(startBtn, 'click', () => {
 			this.start!(Path.slash(Editor.config!.project!));
 		});
-		on(serviceEls.get('qr-close-button') as HTMLElement, 'click', () => this.stop!());
+		const closeBtn = this.control('qr-close-button');
+		on(closeBtn, 'click', () => this.stop!());
 	}
 	get enable() {
 		return YamiIpc.sync.getServerState();
@@ -46,11 +51,11 @@ export const WebServer = new (class {
 	}
 	load() {
 		if (this.enable) {
-			disable(serviceEls.get('qr-start-button') as HTMLElement);
-			enable(serviceEls.get('qr-close-button') as HTMLElement);
+			disable(this.control('qr-start-button'));
+			enable(this.control('qr-close-button'));
 		} else {
-			disable(serviceEls.get('qr-close-button') as HTMLElement);
-			enable(serviceEls.get('qr-start-button') as HTMLElement);
+			disable(this.control('qr-close-button'));
+			enable(this.control('qr-start-button'));
 		}
 	}
 	async open() {
@@ -60,7 +65,8 @@ export const WebServer = new (class {
 		let index = 0;
 		let url = `http://${ips[index]}:${WebServer.port}`;
 		this.setContent!(url, (await WebServer.toDataUrl(url)) ?? '');
-		on(serviceEls.get('qr-update-button') as HTMLElement, 'click', async () => {
+		const updateBtn = this.control('qr-update-button');
+		on(updateBtn, 'click', async () => {
 			index = index >= ips.length - 1 ? 0 : ++index;
 			url = `http://${ips[index]}:${WebServer.port}`;
 			this.setContent!(url, (await WebServer.toDataUrl(url)) ?? '');
@@ -68,10 +74,7 @@ export const WebServer = new (class {
 		this.load!();
 	}
 	setContent(url: string, img: string) {
-		const content = serviceEls.get('qr-code-content') as HTMLElement & {
-			update?: (value: { url: string; img: string }) => void;
-		};
-		content?.update?.({ url, img });
+		getQrCodeBridge()?.update({ url, img });
 	}
 	update(projectPath: string) {
 		if (!this.enable) return;

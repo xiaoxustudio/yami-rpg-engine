@@ -1,4 +1,4 @@
-import { serviceEls } from '@app/services/element-registry';
+import { getSettingWindowBridge } from '@app/composables/setting-window-bridge';
 import { on } from '@app/utils/element-utils.ts';
 import { GlobalPathForDir, GlobalPath } from '@app/utils/config';
 
@@ -72,7 +72,8 @@ export const SettingConfig = new (class {
 	private bindButtons() {
 		if (this._buttonsBound) return;
 		if (typeof document === 'undefined') return;
-		const settingEl = serviceEls.get('setting') as YamiElement;
+		// 帧根元素由窗口交出（懒挂载：未挂载时为空，MutationObserver 还会再叫一次）
+		const settingEl = getSettingWindowBridge()?.frame() as YamiElement | null;
 		if (!settingEl) return;
 		this._buttonsBound = true;
 		on(settingEl, 'open', this.open.bind(this));
@@ -82,7 +83,8 @@ export const SettingConfig = new (class {
 		this.bindButtons();
 		this.load();
 		this.render();
-		on(serviceEls.get('setting') as YamiElement, 'closed', () => this.close(), { once: true });
+		const frame = getSettingWindowBridge()?.frame() as YamiElement | null;
+		if (frame) on(frame, 'closed', () => this.close(), { once: true });
 	}
 	close() {
 		this.save();

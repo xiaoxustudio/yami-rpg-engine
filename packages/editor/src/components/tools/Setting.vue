@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setting" :ref="registryRef(serviceEls, 'setting')" @confirm="onConfirm">
+	<WindowFrame id="setting" ref="frame" @confirm="onConfirm">
 		<template #title
 			><TitleBar id="setting-title"
 				>{{ t('components.setting.title') }}
@@ -131,9 +131,11 @@
 
 <script setup lang="ts">
 import { Window } from '@app/tools/window-object.ts';
-import { onMounted } from 'vue';
-import { serviceEls } from '@app/services/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { onMounted, onUnmounted, ref } from 'vue';
+import {
+	provideSettingWindowBridge,
+	resetSettingWindowBridge
+} from '@app/composables/setting-window-bridge';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -148,7 +150,14 @@ const onConfirm = () => {
 
 const { t } = useI18n();
 
-onMounted(() => {});
+const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+
+onMounted(() => {
+	// 服务层只认「帧根元素」：设置项由 schema 渲染，没有固定控件可交
+	const api = { frame: () => frame.value?.root ?? null };
+	provideSettingWindowBridge(api);
+	onUnmounted(() => resetSettingWindowBridge(api));
+});
 </script>
 
 <style>

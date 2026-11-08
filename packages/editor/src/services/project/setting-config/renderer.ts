@@ -1,4 +1,4 @@
-import { serviceEls } from '@app/services/element-registry';
+import { getSettingWindowBridge } from '@app/composables/setting-window-bridge';
 import { addClass, on, removeClass, setTooltip, write } from '@app/utils/element-utils.ts';
 import { setLocalElement } from '@app/localize/dom-localizer';
 import { getYamiI18n } from '@app/i18n';
@@ -109,7 +109,7 @@ export class SettingRenderer {
 	 */
 	private byId(id: string): YamiElement | null {
 		if (id === '') return null;
-		const frame = serviceEls.get('setting') as HTMLElement | undefined;
+		const frame = getSettingWindowBridge()?.frame() ?? null;
 		return (frame?.querySelector(`#${CSS.escape(id)}`) as YamiElement | null) ?? null;
 	}
 
