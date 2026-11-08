@@ -38,8 +38,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryElements } from '@app/utils/element-registry';
+import { sceneTilemapNodes } from '@app/composables/inspector-scene-nodes';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/tools/condition-list.ts';
@@ -58,20 +57,20 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneTilemap-conditions', elConditions.value);
-	registerElement(inspectorEls, 'sceneTilemap-events', elEvents.value);
-	registerElement(inspectorEls, 'sceneTilemap-scripts', elScripts.value);
-	registerElement(inspectorEls, 'sceneTilemap-parameter-pane', elParameterPane.value);
+	sceneTilemapNodes.set('conditions', elConditions.value?.root ?? null);
+	sceneTilemapNodes.set('events', elEvents.value?.root ?? null);
+	sceneTilemapNodes.set('scripts', elScripts.value?.root ?? null);
+	sceneTilemapNodes.set('parameterPane', elParameterPane.value?.root ?? null);
 	const editor = Inspector.sceneTilemap;
 	if (!editor) return;
 	elConditions.value?.bind(new ConditionListInterface(editor, Scene));
 	elEvents.value?.bind(new EventListInterface(editor, Scene));
 	elScripts.value?.bind(new ScriptListInterface(editor as { target?: { id: string } }, Scene));
 	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
-	registryElements(inspectorEls, [
-		'sceneTilemap-conditions',
-		'sceneTilemap-events',
-		'sceneTilemap-scripts'
-	]).forEach((el) => el.addEventListener('change', Scene.listChange));
+	[
+		sceneTilemapNodes.pick('conditions'),
+		sceneTilemapNodes.pick('events'),
+		sceneTilemapNodes.pick('scripts')
+	].forEach((el) => el?.addEventListener('change', Scene.listChange));
 });
 </script>

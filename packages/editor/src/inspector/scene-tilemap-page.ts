@@ -1,7 +1,7 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { elementDataOf } from '@ui-kit';
 import { getElementWriter } from '@app/utils/dom';
-import { inspectorEls } from './element-registry.ts';
+import { sceneTilemapNodes } from '@app/composables/inspector-scene-nodes';
 import { clear, read, write } from '@app/utils/element-utils';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -119,10 +119,10 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
 			this.target = null;
-			clear(inspectorEls.get('sceneTilemap-conditions'));
-			clear(inspectorEls.get('sceneTilemap-events'));
-			clear(inspectorEls.get('sceneTilemap-scripts'));
-			clear(inspectorEls.get('sceneTilemap-parameter-pane'));
+			clear(sceneTilemapNodes.pick('conditions'));
+			clear(sceneTilemapNodes.pick('events'));
+			clear(sceneTilemapNodes.pick('scripts'));
+			clear(sceneTilemapNodes.pick('parameterPane'));
 		}
 	};
 
@@ -187,7 +187,7 @@ const managerData = (el: unknown): InspectorManagerData => elementDataOf<Inspect
 	) {
 		const lightBox =
 			SceneTilemap.lightBox ??
-			(inspectorEls.get('sceneTilemap-light') as typeof SceneTilemap.lightBox);
+			(sceneTilemapNodes.pick('light') as typeof SceneTilemap.lightBox);
 		if (!lightBox?.lightItems) return;
 		SceneTilemap.lightBox = lightBox;
 		const type = event.value === 'object' ? 'sprite' : 'tile';

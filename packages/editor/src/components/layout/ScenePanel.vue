@@ -27,7 +27,7 @@
 					class="item toolbar-item"
 					id="scene-switch-settings"
 					v-tip="t('components.scene-switch-settings.tip')"
-					:ref="registryRef(inspectorEls, 'scene-switch-settings')"
+					:ref="bind('switchSettings')"
 					value="settings"
 					hotkey="Alt+S"
 				></div>
@@ -180,8 +180,6 @@ onUnmounted(dispose);
 import { onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { sceneNodes } from '@app/composables/scene-nodes';
-import { inspectorEls } from '@app/inspector/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import { getLazyWindow } from '@app/tools/window-registry';

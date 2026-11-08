@@ -1,6 +1,7 @@
 import { getElementWriter } from '@app/utils/dom';
+import { fileSceneNodes } from '@app/composables/inspector-scene-nodes';
+import { sceneNodes } from '@app/composables/scene-nodes';
 import { getFileScenePage } from '@app/composables/file-scene-page-bridge';
-import { inspectorEls } from './element-registry.ts';
 import { addClass, clear, removeClass } from '@app/utils/element-utils';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -43,7 +44,7 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 	};
 
 	FileScene.initialize = function () {};
-	FileScene.button = inspectorEls.get('scene-switch-settings') as HTMLElement;
+	FileScene.button = sceneNodes.pick('switchSettings') as HTMLElement;
 	FileScene.owner = {
 		setTarget: (target: unknown) => {
 			if (FileScene.target !== target) {
@@ -130,9 +131,9 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 			this.target = null;
 
 			removeClass(this.button, 'selected');
-			clear(inspectorEls.get('fileScene-events'));
-			clear(inspectorEls.get('fileScene-scripts'));
-			clear(inspectorEls.get('fileScene-parameter-pane'));
+			clear(fileSceneNodes.pick('events'));
+			clear(fileSceneNodes.pick('scripts'));
+			clear(fileSceneNodes.pick('parameterPane'));
 		}
 	};
 

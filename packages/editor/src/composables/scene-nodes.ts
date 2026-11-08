@@ -20,6 +20,7 @@ export type SceneNodeKey =
 	| 'switchGrid'
 	| 'switchLight'
 	| 'switchAnimation'
+	| 'switchSettings'
 	| 'zoom'
 	| 'tilemap1'
 	| 'tilemap2'
@@ -42,6 +43,7 @@ export const sceneNodes = createSkeletonTable<SceneNodeKey>({
 	switchGrid: 'scene-switch-grid',
 	switchLight: 'scene-switch-light',
 	switchAnimation: 'scene-switch-animation',
+	switchSettings: 'scene-switch-settings',
 	zoom: 'scene-zoom',
 	tilemap1: 'scene-layer-tilemap-1',
 	tilemap2: 'scene-layer-tilemap-2',

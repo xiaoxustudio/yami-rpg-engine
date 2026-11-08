@@ -1,12 +1,11 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
-import { inspectorEls } from './element-registry.ts';
+import { sceneAnimationNodes } from '@app/composables/inspector-scene-nodes';
 import { clear, read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { radians } from '@app/utils/math';
-import { registryElement } from '@app/utils/element-registry';
 
 {
 	interface SceneAnimationData {
@@ -87,10 +86,10 @@ import { registryElement } from '@app/utils/element-registry';
 			Scene.updateTarget!();
 			this.target = null;
 			this.motions = null;
-			clear(inspectorEls.get('sceneAnimation-conditions'));
-			clear(inspectorEls.get('sceneAnimation-events'));
-			clear(inspectorEls.get('sceneAnimation-scripts'));
-			clear(inspectorEls.get('sceneAnimation-parameter-pane'));
+			clear(sceneAnimationNodes.pick('conditions'));
+			clear(sceneAnimationNodes.pick('events'));
+			clear(sceneAnimationNodes.pick('scripts'));
+			clear(sceneAnimationNodes.pick('parameterPane'));
 		}
 	};
 
@@ -179,10 +178,9 @@ import { registryElement } from '@app/utils/element-registry';
 		this: typeof SceneAnimation,
 		event: { value: string }
 	) {
-		const elMotion = registryElement<HTMLElement & { loadItems?: (items: unknown[]) => void }>(
-			inspectorEls,
-			'sceneAnimation-motion'
-		);
+		const elMotion = sceneAnimationNodes.pick('motion') as
+			| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+			| null;
 		const items = Animation.getMotionListItems!(event.value);
 		elMotion?.loadItems?.(items);
 		if (elMotion) {

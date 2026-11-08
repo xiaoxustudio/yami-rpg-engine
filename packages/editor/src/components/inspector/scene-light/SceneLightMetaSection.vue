@@ -38,8 +38,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryElements } from '@app/utils/element-registry';
+import { sceneLightNodes } from '@app/composables/inspector-scene-nodes';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/tools/condition-list.ts';
@@ -58,10 +57,10 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneLight-conditions', elConditions.value);
-	registerElement(inspectorEls, 'sceneLight-events', elEvents.value);
-	registerElement(inspectorEls, 'sceneLight-scripts', elScripts.value);
-	registerElement(inspectorEls, 'sceneLight-parameter-pane', elParameterPane.value);
+	sceneLightNodes.set('conditions', elConditions.value?.root ?? null);
+	sceneLightNodes.set('events', elEvents.value?.root ?? null);
+	sceneLightNodes.set('scripts', elScripts.value?.root ?? null);
+	sceneLightNodes.set('parameterPane', elParameterPane.value?.root ?? null);
 	const editor = Inspector.sceneLight;
 	if (!editor) return;
 	try {
@@ -71,11 +70,11 @@ onMounted(() => {
 			new ScriptListInterface(editor as { target?: { id: string } }, Scene)
 		);
 		elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
-		registryElements(inspectorEls, [
-			'sceneLight-conditions',
-			'sceneLight-events',
-			'sceneLight-scripts'
-		]).forEach((el) => el.addEventListener('change', Scene.listChange));
+		[
+			sceneLightNodes.pick('conditions'),
+			sceneLightNodes.pick('events'),
+			sceneLightNodes.pick('scripts')
+		].forEach((el) => el?.addEventListener('change', Scene.listChange));
 	} catch (e) {
 		console.warn('[SceneLightPage] meta init skipped:', (e as Error)?.message);
 	}

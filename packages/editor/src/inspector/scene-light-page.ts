@@ -1,6 +1,6 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
-import { inspectorEls } from './element-registry.ts';
+import { sceneLightNodes } from '@app/composables/inspector-scene-nodes';
 import { clear } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -76,10 +76,10 @@ import { Scene } from '@app/scene/scene-window.ts';
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
 			this.target = null;
-			clear(inspectorEls.get('sceneLight-conditions'));
-			clear(inspectorEls.get('sceneLight-events'));
-			clear(inspectorEls.get('sceneLight-scripts'));
-			clear(inspectorEls.get('sceneLight-parameter-pane'));
+			clear(sceneLightNodes.pick('conditions'));
+			clear(sceneLightNodes.pick('events'));
+			clear(sceneLightNodes.pick('scripts'));
+			clear(sceneLightNodes.pick('parameterPane'));
 		}
 	};
 
