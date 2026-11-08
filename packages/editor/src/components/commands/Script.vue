@@ -1,18 +1,12 @@
 <template>
-	<WindowFrame id="script" :ref="registryRef(composableEls, 'script')" @confirm="onConfirm">
+	<WindowFrame id="script" :ref="controlRef('script')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.script.title') }}
-				<div
-					class="text hidden"
-					id="script-mark"
-					:ref="registryRef(composableEls, 'script-mark')"
-				>
-					✱
-				</div>
+				<div class="text hidden" id="script-mark" :ref="controlRef('script-mark')">✱</div>
 				<button
 					id="script-change"
-					:ref="registryRef(composableEls, 'script-change')"
+					:ref="controlRef('script-change')"
 					name="script-change-ts"
 				>
 					切换为TS
@@ -21,17 +15,13 @@
 				<div class="close" /> </TitleBar
 		></template>
 
-		<div
-			class="box"
-			id="script-script"
-			:ref="registryRef(composableEls, 'script-script')"
-		></div>
+		<div class="box" id="script-script" :ref="controlRef('script-script')"></div>
 
 		<div class="hidden">
 			<div
 				class="text"
 				id="script-text-template"
-				:ref="registryRef(composableEls, 'script-text-template')"
+				:ref="controlRef('script-text-template')"
 			></div>
 		</div>
 	</WindowFrame>
@@ -40,14 +30,18 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { composableEls } from '@app/composables/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { useScriptCommandSchema } from '@app/composables/commands/useScriptCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'script' | 'script-change' | 'script-mark' | 'script-script' | 'script-text-template';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
-const { save, initialize } = useScriptCommandSchema();
+const { save, initialize } = useScriptCommandSchema({ controls: () => controls });
 
 const onConfirm = () => {
 	save();

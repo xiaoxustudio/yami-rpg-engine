@@ -1,5 +1,5 @@
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
-import { composableEls } from '@app/composables/element-registry';
+import { controlRoot, type ControlApi } from '@app/composables/control-refs';
 import { getFocus, hasClass, hide, on, show } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
@@ -11,10 +11,22 @@ import { Path } from '@app/utils/config';
 import { getMonaco } from '@app/utils/monaco';
 import { getWindowStore } from '@app/stores/window';
 import { CommandSchema } from '@app/commands/schema.ts';
-import type { YamiElement } from '@app/types/element-api';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
+
+type ScriptControls = () => Partial<Record<string, ControlApi | null>>;
+
+/**
+ * 控件表 getter：窗口挂载时由 `useScriptCommandSchema({ controls })` 登记。
+ *
+ * 这扇窗口是**模块级单例**（`editor` / `model` / `bound` 都在模块作用域），所以表由一个
+ * 模块变量持有，而不是每次调用都new一份 —— 桥只登记一次，`initialize()` 的副作用也只挂一次。
+ */
+let controlsOf: ScriptControls = () => ({});
+
+/** `script` / `script-script` 这些 id 在模板里都是普通 DOM 节点，`controlRoot` 直接给回元素本身。 */
+const control = (id: string): HTMLElement | null => controlRoot(controlsOf()[id]);
 
 Command.cases.script = new CommandSchema({
 	name: 'script',
@@ -33,9 +45,7 @@ Command.cases.script = new CommandSchema({
 	},
 	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
-		const text = composableEls.get('script-text-template')?.cloneNode(true) as
-			| HTMLElement
-			| undefined;
+		const text = control('script-text-template')?.cloneNode(true) as HTMLElement | undefined;
 		if (!text) return;
 		text.textContent = code;
 		const options = this.colorOptions;
@@ -266,18 +276,19 @@ const setChangeState = (value: boolean): void => {
 	if (changed !== value) {
 		changed = value;
 		if (value) {
-			show(composableEls.get('script-mark'));
+			show(control('script-mark'));
 		} else {
-			hide(composableEls.get('script-mark'));
+			hide(control('script-mark'));
 		}
 	}
 };
 
-const isMaximized = (): boolean => hasClass(composableEls.get('script'), 'maximized');
+const isMaximized = (): boolean => hasClass(control('script'), 'maximized');
 
 const resize = (): void => {
 	if (!editor) return;
-	const content = composableEls.get('script-script') as YamiElement;
+	const content = control('script-script');
+	if (!content) return;
 	const parent = content.parentElement!;
 	if (!isMaximized()) {
 		content.style.width = '';
@@ -302,53 +313,53 @@ const createEditor = async (): Promise<void> => {
 	const monaco = await getMonaco();
 	const { theme } = Title;
 	await Command.cases.script.createTheme(theme);
-	editor = monaco.editor.create(
-		composableEls.get('script-script') as YamiElement,
-		{
-			language: 'javascript',
-			theme: theme ?? '',
-			tabSize: 2,
-			fontSize: 14,
-			lineHeight: 14,
-			mouseWheelScrollSensitivity: (14 * 3) / 50,
-			fastScrollSensitivity: 5,
-			wordWrap: 'on',
-			matchBrackets: 'never',
-			folding: true,
-			formatOnType: false,
-			showDeprecated: false,
-			selectionHighlight: true,
-			detectIndentation: false,
-			insertSpaces: true,
-			roundedSelection: false,
-			overviewRulerBorder: false,
-			hideCursorInOverviewRuler: true,
-			automaticLayout: false,
-			hover: { enabled: true },
-			lightbulb: {
-				enabled: false as never
-			},
-			minimap: {
-				enabled: false
-			},
-			scrollbar: {
-				useShadows: false,
-				horizontalScrollbarSize: 12,
-				verticalScrollbarSize: 12
-			}
-		} as Parameters<typeof monaco.editor.create>[1]
-	);
+	const host = control('script-script');
+	if (!host) return;
+	editor = monaco.editor.create(host, {
+		language: 'javascript',
+		theme: theme ?? '',
+		tabSize: 2,
+		fontSize: 14,
+		lineHeight: 14,
+		mouseWheelScrollSensitivity: (14 * 3) / 50,
+		fastScrollSensitivity: 5,
+		wordWrap: 'on',
+		matchBrackets: 'never',
+		folding: true,
+		formatOnType: false,
+		showDeprecated: false,
+		selectionHighlight: true,
+		detectIndentation: false,
+		insertSpaces: true,
+		roundedSelection: false,
+		overviewRulerBorder: false,
+		hideCursorInOverviewRuler: true,
+		automaticLayout: false,
+		hover: { enabled: true },
+		lightbulb: {
+			enabled: false as never
+		},
+		minimap: {
+			enabled: false
+		},
+		scrollbar: {
+			useShadows: false,
+			horizontalScrollbarSize: 12,
+			verticalScrollbarSize: 12
+		}
+	} as Parameters<typeof monaco.editor.create>[1]);
 	model = editor!.getModel();
 
-	on(composableEls.get('script-change'), 'click', async () => {
+	// `script-change` 在模板里是 `<button>`：`name` 是表单控件成员，不在 HTMLElement 上
+	const changeButton = control('script-change') as (HTMLElement & { name?: string }) | null;
+	on(changeButton, 'click', async () => {
 		const currentLanguage = editor!.getModel()!.getLanguageId();
 		let languageId = currentLanguage === 'javascript' ? 'typescript' : 'javascript';
 		const get = (key: string) => t('confirmation.' + key);
-		const scriptChange = composableEls.get('script-change');
-		if (scriptChange) {
-			scriptChange.name =
+		if (changeButton) {
+			changeButton.name =
 				currentLanguage === 'javascript' ? 'script-change-ts' : 'script-change-js';
-			scriptChange.textContent = get(
+			changeButton.textContent = get(
 				currentLanguage === 'javascript' ? 'script-change-js' : 'script-change-ts'
 			);
 		}
@@ -463,7 +474,8 @@ const save = async (): Promise<void> => {
 const initialize = (): void => {
 	if (bound) return;
 	bound = true;
-	on(composableEls.get('script'), 'close', (event: Event) => {
+	const frame = control('script');
+	on(frame, 'close', (event: Event) => {
 		if (changed) {
 			event.preventDefault();
 			const get = (key: string) => t('confirmation.' + key);
@@ -490,15 +502,15 @@ const initialize = (): void => {
 		}
 	});
 
-	on(composableEls.get('script'), 'resize', () => {
+	on(frame, 'resize', () => {
 		resize();
 	});
 
-	on(composableEls.get('script'), 'closed', () => {
+	on(frame, 'closed', () => {
 		model?.setValue('');
 	});
 
-	on(composableEls.get('script'), 'keydown', (event: KeyboardEvent) => {
+	on(frame, 'keydown', (event: KeyboardEvent) => {
 		if (hasClass(event.target, 'inputarea')) {
 			switch (event.code) {
 				case 'Enter':
@@ -513,6 +525,12 @@ Command.cases.script.customLoad = load;
 Command.cases.script.customSave = save;
 Command.cases.script.onInitialize = (): void => {};
 
-export function useScriptCommandSchema() {
+export interface ScriptSchemaOptions {
+	/** 窗口的控件表 getter（`useControlRefs` 建的那张）。模块级单例只登记一次。 */
+	controls?: ScriptControls;
+}
+
+export function useScriptCommandSchema(options: ScriptSchemaOptions = {}) {
+	if (options.controls) controlsOf = options.controls;
 	return { form, save, load, initialize };
 }

@@ -5,7 +5,6 @@ import ScriptWindow from '@app/components/commands/Script.vue';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { Editor } from '@app/services/project/editor.ts';
-import { composableEls } from '@app/composables/element-registry';
 
 const { modelMock, monacoMock } = vi.hoisted(() => {
 	const modelMock = {
@@ -71,13 +70,12 @@ describe('Script 语言切换按钮的接线', () => {
 		vi.mocked(monacoMock.editor.create).mockClear();
 	});
 
-	it('createEditor 给 #script-change 挂了 click 监听（不是 no-op），且 monaco 宿主来自注册表', async () => {
+	it('createEditor 给 #script-change 挂了 click 监听（不是 no-op），且 monaco 宿主是窗口自己的元素', async () => {
 		const wrapper = mount(ScriptWindow, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 
-		const button = composableEls.get('script-change');
+		const button = document.getElementById('script-change');
 		expect(button).toBeTruthy();
-		expect(button).toBe(document.getElementById('script-change'));
 		const addEventListener = vi.spyOn(button as HTMLElement, 'addEventListener');
 
 		CommandSchema.insert(target, 'script');
@@ -90,7 +88,7 @@ describe('Script 语言切换按钮的接线', () => {
 		const createCalls = vi.mocked(monacoMock.editor.create).mock.calls as unknown as Array<
 			[unknown, unknown]
 		>;
-		expect(createCalls[0][0]).toBe(composableEls.get('script-script'));
+		expect(createCalls[0][0]).toBe(document.getElementById('script-script'));
 
 		wrapper.unmount();
 	});
