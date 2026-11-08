@@ -1,4 +1,4 @@
-import { animationEls } from '@app/animation/element-registry';
+import { animationNodes } from '@app/composables/animation-nodes';
 import { addClass, hide, on, rect, removeClass, show, write } from '@app/utils/element-utils.ts';
 import { elementDataValueOf } from '@ui-kit';
 import { Timer } from '@app/utils/timer';
@@ -8,7 +8,6 @@ import { Easing } from '@app/data/transition-window.ts';
 import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
 import type { EventPayloadFields, YamiEvent } from '@app/types/editor-event';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
-import { registryElement } from '@app/utils/element-registry';
 import { getCurveStore } from '@app/stores/curve';
 
 export type CurveState = 'closed' | 'open' | 'suspended';
@@ -102,12 +101,14 @@ let canvas: CurveCanvas | null = null;
 let curveMap: CurveMapInstance | null = null;
 
 const initialize = (): void => {
-	page = animationEls.get('animation-easing') ?? null;
-	head = animationEls.get('animation-easing-head') ?? null;
-	list = registryElement<CurveList>(animationEls, 'animation-easing-id')!;
-	canvas = registryElement<CurveCanvas>(animationEls, 'animation-easing-canvas')!;
+	// 骨架节点来自缓动面板交出的表（`pick` 带 id 兜底：引擎初始化可能早于面板挂载）
+	page = animationNodes.pick('easing');
+	head = animationNodes.pick('easingHead');
+	list = animationNodes.pick('easingId') as CurveList | null;
+	canvas = animationNodes.pick('easingCanvas') as CurveCanvas | null;
 	hide(page);
 	hide(list);
+	if (!page || !list || !canvas) return;
 
 	curveMap = new Easing.CurveMap!();
 
@@ -134,9 +135,9 @@ const initialize = (): void => {
 
 	window.addEventListener('themechange', themechange as EventListener);
 	window.addEventListener('datachange', datachange as EventListener);
-	on(page!, 'resize', windowResize as (event?: Event) => void);
+	on(page, 'resize', windowResize as (event?: Event) => void);
 	on(
-		animationEls.get('animation-easing-settings'),
+		animationNodes.pick('easingSettings'),
 		'pointerdown',
 		settingsPointerdown as (event: PointerEvent) => void
 	);
