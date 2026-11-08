@@ -6,21 +6,21 @@
 					class="item toolbar-item"
 					id="scene-switch-grid"
 					v-tip="t('components.scene-switch-grid.tip')"
-					:ref="registryRef(sceneEls, 'scene-switch-grid')"
+					:ref="bind('switchGrid')"
 					value="grid"
 				></div>
 				<div
 					class="item toolbar-item"
 					id="scene-switch-light"
 					v-tip="t('components.scene-switch-light.tip')"
-					:ref="registryRef(sceneEls, 'scene-switch-light')"
+					:ref="bind('switchLight')"
 					value="light"
 				></div>
 				<div
 					class="item toolbar-item"
 					id="scene-switch-animation"
 					v-tip="t('components.scene-switch-animation.tip')"
-					:ref="registryRef(sceneEls, 'scene-switch-animation')"
+					:ref="bind('switchAnimation')"
 					value="animation"
 				></div>
 				<div
@@ -36,7 +36,7 @@
 				<div
 					class="box"
 					id="scene-layer"
-					:ref="registryRef(sceneEls, 'scene-layer')"
+					:ref="bind('layerGroup')"
 					@pointerdown="onSceneLayerPointerdown"
 				>
 					<div
@@ -99,7 +99,7 @@
 				<div
 					class="box"
 					id="scene-brush"
-					:ref="registryRef(sceneEls, 'scene-brush')"
+					:ref="bind('brush')"
 					@pointerdown="onSceneBrushPointerdown"
 				>
 					<div
@@ -142,7 +142,7 @@
 			<div class="box" id="scene-head-end">
 				<SliderBox
 					id="scene-zoom"
-					:ref="registryRef(sceneEls, 'scene-zoom')"
+					:ref="bind('zoom')"
 					name="zoom"
 					min="0"
 					max="4"
@@ -180,7 +180,6 @@ onUnmounted(dispose);
 import { onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { sceneNodes } from '@app/composables/scene-nodes';
-import { sceneEls } from '@app/scene/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import SliderBox from '@app/components/common/SliderBox.vue';

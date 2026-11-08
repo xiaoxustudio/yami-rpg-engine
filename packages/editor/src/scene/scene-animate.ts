@@ -1,5 +1,5 @@
 import { elementDataOf } from '@ui-kit';
-import { sceneEls } from '@app/scene/element-registry';
+import { sceneNodes } from '@app/composables/scene-nodes';
 import { addClass, removeClass, hasClass } from '@app/utils/element-utils.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
@@ -25,7 +25,7 @@ Scene.switchLayer = (function IIFE() {
 	let items: Record<string, HTMLElement | null> = { tilemap: null };
 	let selection: HTMLElement | null | undefined = undefined;
 	const query = () => {
-		layerGroup = sceneEls.get('scene-layer') as YamiElement;
+		layerGroup = sceneNodes.pick('layerGroup') as YamiElement;
 		items = { tilemap: null };
 		if (layerGroup) {
 			for (const item of layerGroup.children) {
@@ -83,7 +83,7 @@ Scene.switchBrush = (function IIFE() {
 	let items: Record<string, HTMLElement> | null = null;
 	let selection: HTMLElement | null | undefined = null;
 	const query = () => {
-		list = sceneEls.get('scene-brush') as YamiElement;
+		list = sceneNodes.pick('brush') as YamiElement;
 		items = {} as Record<string, HTMLElement>;
 		if (list) {
 			for (const item of list.children) {
@@ -125,7 +125,7 @@ Scene.switchBrush = (function IIFE() {
 })();
 
 Scene.switchGrid = function (this: typeof Scene, enabled = !this.showGrid) {
-	const item = sceneEls.get('scene-switch-grid') as YamiElement;
+	const item = sceneNodes.pick('switchGrid') as YamiElement;
 	if (enabled) {
 		addClass(item, 'selected');
 	} else {
@@ -136,7 +136,7 @@ Scene.switchGrid = function (this: typeof Scene, enabled = !this.showGrid) {
 };
 
 Scene.switchLight = function (this: typeof Scene, enabled = !this.showLight) {
-	const item = sceneEls.get('scene-switch-light') as YamiElement;
+	const item = sceneNodes.pick('switchLight') as YamiElement;
 	if (enabled) {
 		addClass(item, 'selected');
 	} else {
@@ -147,7 +147,7 @@ Scene.switchLight = function (this: typeof Scene, enabled = !this.showLight) {
 };
 
 Scene.switchAnimation = function (this: typeof Scene, enabled = !this.showAnimation) {
-	const item = sceneEls.get('scene-switch-animation') as YamiElement;
+	const item = sceneNodes.pick('switchAnimation') as YamiElement;
 	this.showAnimation = enabled;
 	if (enabled) {
 		addClass(item, 'selected');
