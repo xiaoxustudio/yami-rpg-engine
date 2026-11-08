@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="registerEvent"
-		:ref="registryRef(fieldEls, 'registerEvent')"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="registerEvent" :ref="controlRef('registerEvent')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.registerEvent.title') }}
@@ -16,7 +12,7 @@
 				:label="t('components.registerEvent-target.label')"
 				id="registerEvent-target"
 				v-tip="t('components.registerEvent-target.tip')"
-				:ref="registryRef(fieldEls, 'registerEvent-target')"
+				:ref="controlRef('registerEvent-target')"
 				v-focus
 				v-model="form.target"
 				@write="onTargetWrite"
@@ -25,7 +21,7 @@
 			<CustomBox
 				id="registerEvent-actor"
 				v-tip="t('components.registerEvent-actor.tip')"
-				:ref="registryRef(fieldEls, 'registerEvent-actor')"
+				:ref="controlRef('registerEvent-actor')"
 				type="actor"
 				v-model="form.actor"
 			/>
@@ -33,7 +29,7 @@
 			<CustomBox
 				id="registerEvent-element"
 				v-tip="t('components.registerEvent-element.tip')"
-				:ref="registryRef(fieldEls, 'registerEvent-element')"
+				:ref="controlRef('registerEvent-element')"
 				type="element"
 				v-model="form.element"
 			/>
@@ -42,7 +38,7 @@
 				:label="t('components.registerEvent-operation.label')"
 				id="registerEvent-operation"
 				v-tip="t('components.registerEvent-operation.tip')"
-				:ref="registryRef(fieldEls, 'registerEvent-operation')"
+				:ref="controlRef('registerEvent-operation')"
 				v-model="form.operation"
 				@write="onOperationWrite"
 			/>
@@ -50,7 +46,7 @@
 			<SelectBox
 				:label="t('components.registerEvent-type.label')"
 				id="registerEvent-type"
-				:ref="registryRef(fieldEls, 'registerEvent-type')"
+				:ref="controlRef('registerEvent-type')"
 				v-tip="t('components.registerEvent-type.tip')"
 				v-model="form.type"
 				@write="onTypeWrite"
@@ -58,7 +54,7 @@
 			<div class="text">{{ t('components.registerEvent-priority.label') }}</div>
 			<CheckBox
 				id="registerEvent-priority"
-				:ref="registryRef(fieldEls, 'registerEvent-priority')"
+				:ref="controlRef('registerEvent-priority')"
 				v-tip="t('components.registerEvent-priority.tip')"
 				class="standard large"
 				v-model="form.priority"
@@ -66,7 +62,7 @@
 			<div class="text">{{ t('components.registerEvent-namespace.label') }}</div>
 			<CheckBox
 				id="registerEvent-namespace"
-				:ref="registryRef(fieldEls, 'registerEvent-namespace')"
+				:ref="controlRef('registerEvent-namespace')"
 				v-tip="t('components.registerEvent-namespace.tip')"
 				class="standard large"
 				v-model="form.namespace"
@@ -74,7 +70,7 @@
 			<div class="text">{{ t('components.registerEvent-tag.label') }}</div>
 			<StringVar
 				id="registerEvent-tag"
-				:ref="registryRef(fieldEls, 'registerEvent-tag')"
+				:ref="controlRef('registerEvent-tag')"
 				v-tip="t('components.registerEvent-tag.tip')"
 				v-focus
 				v-model="form.tag"
@@ -84,11 +80,8 @@
 </template>
 
 <script setup lang="ts">
-import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
+import { setupRegisterEventFields } from '@app/composables/useRegisterEventFields';
 
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRegisterEventCommandSchema } from '@app/composables/commands/useRegisterEventCommandSchema';
@@ -98,10 +91,27 @@ import CheckBox from '@app/components/common/CheckBox.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { useControlRefs } from '@app/composables/control-refs';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'registerEvent'
+	| 'registerEvent-actor'
+	| 'registerEvent-element'
+	| 'registerEvent-namespace'
+	| 'registerEvent-operation'
+	| 'registerEvent-priority'
+	| 'registerEvent-tag'
+	| 'registerEvent-target'
+	| 'registerEvent-type';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
-const { form, save, targetWrite, operationWrite, typeWrite } = useRegisterEventCommandSchema();
+const { form, save, targetWrite, operationWrite, typeWrite } = useRegisterEventCommandSchema({
+	controls: () => controls
+});
 
 const onTargetWrite = (value: unknown) => {
 	targetWrite?.({ value: value as string });
@@ -118,26 +128,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	useLocalizedOptions('registerEvent-target', ['global', 'actor', 'element'], (items) =>
-		fieldEls.get('registerEvent-target')?.loadItems?.(items)
-	);
-	fieldEls
-		.get('registerEvent-target')
-		?.enableHiddenMode?.()
-		?.relate?.([
-			{ case: 'actor', targets: [fieldEls.get('registerEvent-actor')] },
-			{ case: 'element', targets: [fieldEls.get('registerEvent-element')] }
-		]);
-	useLocalizedOptions(
-		'registerEvent-operation',
-		['register', 'unregister', 'reset'],
-		(items) => fieldEls.get('registerEvent-operation')?.loadItems?.(items),
-		{
-			register: 'command.registerEvent.alias.register',
-			unregister: 'command.registerEvent.alias.unregister',
-			reset: 'command.registerEvent.alias.reset'
-		}
-	);
+	setupRegisterEventFields(controls);
 });
 </script>
 

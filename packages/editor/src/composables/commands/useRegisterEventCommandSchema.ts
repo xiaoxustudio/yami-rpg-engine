@@ -1,5 +1,5 @@
 import { Command } from '@app/commands/command-object.ts';
-import { composableEls } from '@app/composables/element-registry';
+import { controlRoot, type ControlApi } from '@app/composables/control-refs';
 import { commit } from '@app/composables/useCommandSchema';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Enum } from '@app/enum/enum-window.ts';
@@ -129,6 +129,22 @@ Command.cases.registerEvent = new CommandSchema({
 let commands: unknown[] | null = null;
 let priorityEnabled = false;
 
+type RegisterEventControls = () => Partial<Record<string, ControlApi | null>>;
+
+/**
+ * 控件表 getter：窗口挂载时由 `useRegisterEventCommandSchema({ controls })` 登记。
+ *
+ * 这扇窗口是**模块级单例**（form 挂在 `command-schema-forms` store 上），所以表由一个模块
+ * 变量持有，而不是每次调用都换一份。
+ */
+let controlsOf: RegisterEventControls = () => ({});
+
+/**
+ * 控件根元素：`switchTypeAndTagInput` 一类要靠 `previousElementSibling` 找到配对的标签 `<div>`，
+ * 这是 DOM 语义，不是控件能力。
+ */
+const control = (id: string): HTMLElement | null => controlRoot(controlsOf()[id]);
+
 const form: RegisterEventData = {
 	get target(): RegisterEventData['target'] {
 		return getCommandSchemaFormsStore().registerEventData.target;
@@ -181,6 +197,9 @@ const form: RegisterEventData = {
 };
 
 const switchTypeAndTagInput = (): void => {
+	const typeInput = control('registerEvent-type');
+	const tagInput = control('registerEvent-tag');
+	if (!typeInput || !tagInput) return;
 	const showElement = (input: HTMLElement) => {
 		show(input.previousElementSibling);
 		show(input);
@@ -189,8 +208,6 @@ const switchTypeAndTagInput = (): void => {
 		hide(input.previousElementSibling);
 		hide(input);
 	};
-	const typeInput = composableEls.get('registerEvent-type') as HTMLElement;
-	const tagInput = composableEls.get('registerEvent-tag') as HTMLElement;
 	const target = form.target;
 	const operation = form.operation;
 	switch (target) {
@@ -248,7 +265,8 @@ const switchPriority = (): void => {
 	const target = form.target;
 	const operation = form.operation;
 	const type = form.type;
-	const priority = composableEls.get('registerEvent-priority') as HTMLElement;
+	const priority = control('registerEvent-priority');
+	if (!priority) return;
 	if (target === 'global' && operation === 'register' && type in priorityTypes) {
 		show(priority.previousElementSibling);
 		show(priority);
@@ -261,7 +279,8 @@ const switchPriority = (): void => {
 };
 
 const switchNamespace = (): void => {
-	const namespace = composableEls.get('registerEvent-namespace') as HTMLElement;
+	const namespace = control('registerEvent-namespace');
+	if (!namespace) return;
 	const operation = form.operation;
 	if (operation === 'register') {
 		show(namespace.previousElementSibling);
@@ -285,7 +304,7 @@ const createEventTypeItems = (target: string): Array<{ name: string; value: stri
 };
 
 const syncEventTypes = (target: string): void => {
-	const elEventType = composableEls.get('registerEvent-type');
+	const elEventType = controlsOf()['registerEvent-type'];
 	if (!elEventType) {
 		return;
 	}
@@ -451,6 +470,12 @@ schema.customLoad = load;
 schema.customSave = save;
 schema.onInitialize = (): void => {};
 
-export function useRegisterEventCommandSchema() {
+export interface RegisterEventSchemaOptions {
+	/** 窗口的控件表 getter（`useControlRefs` 建的那张）。模块级单例只登记一次。 */
+	controls?: RegisterEventControls;
+}
+
+export function useRegisterEventCommandSchema(options: RegisterEventSchemaOptions = {}) {
+	if (options.controls) controlsOf = options.controls;
 	return { form, load, save, targetWrite, operationWrite, typeWrite };
 }

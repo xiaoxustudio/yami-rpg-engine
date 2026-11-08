@@ -12,13 +12,12 @@ import { Command } from '@app/commands/command-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { Data } from '@app/data/data-object.ts';
+import { dataItemsOf } from '@app/__tests__/element-data-read';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
-
-type LoadableEl = HTMLElement & { loadItems?: (items: unknown[]) => void };
 
 const mountAndSettle = async (component: Parameters<typeof mount>[0]) => {
 	const wrapper = mount(component, { attachTo: document.body });
@@ -33,9 +32,10 @@ describe('命令表单 composable 注册表', () => {
 		document.body.innerHTML = '';
 	});
 
-	it('命令 SFC 的局部注册表镜像进 composableEls（注册键 ↔ 元素 id 一致）', async () => {
+	it('RegisterEvent：控件不再进注册表，目标/操作写盘走窗口自己的控件表', async () => {
 		const wrapper = await mountAndSettle(RegisterEvent);
 
+		// 迁移后控件只走模板 ref：注册表里没有它们，但 DOM 里当然还在
 		for (const id of [
 			'registerEvent-type',
 			'registerEvent-tag',
@@ -44,10 +44,8 @@ describe('命令表单 composable 注册表', () => {
 			'registerEvent-target',
 			'registerEvent-operation'
 		]) {
-			const el = composableEls.get(id);
-			expect(el, `${id} 未镜像`).toBeTruthy();
-			expect(el?.id).toBe(id);
-			expect(el).toBe(document.getElementById(id));
+			expect(composableEls.get(id), `${id} 不该再进注册表`).toBeFalsy();
+			expect(document.getElementById(id), `${id} 模板里应存在`).toBeTruthy();
 		}
 
 		wrapper.unmount();
@@ -69,13 +67,9 @@ describe('命令表单 composable 注册表', () => {
 		expect(getTransitionBridge(), '卸载后桥应注销').toBeNull();
 	});
 
-	it('RegisterEvent：targetWrite 经注册表刷新 type 控件（模块侧真的调到了控件）', async () => {
+	it('RegisterEvent：targetWrite 经控件表刷新 type 控件的候选项（模块侧真的调到了控件）', async () => {
 		const wrapper = await mountAndSettle(RegisterEvent);
 
-		const typeEl = composableEls.get('registerEvent-type') as unknown as LoadableEl;
-		expect(typeEl?.id).toBe('registerEvent-type');
-		const loadItems = vi.fn();
-		typeEl.loadItems = loadItems;
 		Enum.getMergedItems = vi.fn(() => [
 			{ name: 'Key Down', value: 'keydown' },
 			{ name: 'Key Up', value: 'keyup' }
@@ -84,9 +78,9 @@ describe('命令表单 composable 注册表', () => {
 
 		Command.cases.registerEvent.targetWrite!({ value: 'global' });
 
-		expect(loadItems).toHaveBeenCalled();
-		const lastItems = loadItems.mock.calls[loadItems.mock.calls.length - 1][0] as unknown[];
-		expect(lastItems.length).toBeGreaterThan(0);
+		// 结果落在控件的 DOM 数据上（`select-box-api` 把下拉项写进元素数据）
+		const items = dataItemsOf(document.getElementById('registerEvent-type'));
+		expect(items?.length).toBeGreaterThan(0);
 
 		wrapper.unmount();
 	});
