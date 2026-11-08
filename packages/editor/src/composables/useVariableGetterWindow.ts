@@ -1,6 +1,6 @@
 import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { elementDataOf, type CustomBoxApi } from '@ui-kit';
-import { composableEls } from '@app/composables/element-registry';
+import { controlRoot, type ControlApi } from '@app/composables/control-refs';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on } from '@app/utils/element-utils';
 import { getVariable } from '@app/utils/safe';
@@ -9,9 +9,36 @@ import { EventEditor } from '@app/commands/event-editor.ts';
 import { TextSuggestion, TextSuggestionTarget } from '@app/commands/text-tip.ts';
 import { selectBoxSetItemNames } from '@app/components/select-box.ts';
 import type { YamiElement } from '@app/types/element-api';
-import { registryElement } from '@app/utils/element-registry';
 
 type VarTypeItem = { name: string; value: string };
+
+type VariableGetterControls = () => Partial<Record<string, ControlApi | null>>;
+
+/**
+ * 两扇窗口（`variableGetter` / `variableGetter2`）各登记一张控件表。
+ *
+ * 这扇窗口是懒挂载的，单例在 `openWith` 之后才跑控件侧接线；表由窗口在 `onMounted` 时交出，
+ * 所以「取不到控件」= 窗口还没挂载，而不是注册表里没人登记。
+ */
+const controlTables: Record<string, VariableGetterControls> = {};
+
+export const provideVariableGetterControls = (
+	prefix: string,
+	table: VariableGetterControls
+): void => {
+	controlTables[prefix] = table;
+};
+
+/**
+ * 按 `prefix` 取控件**根元素**。
+ *
+ * 这个模块要的是元素语义：`enableHiddenMode().relate(...)` 的链式写法、`typeEl.setItemNames`
+ * 覆写、`TextSuggestion.listen(el)`、`registryElement<CustomBoxApi>().filter` 都落在元素上
+ * （P3 之前 ui-kit 的元素 API 仍在）。因此这里只换**寻址来源**，不换用法 —— 元素来自窗口
+ * 交出的表，而不是 `ElementRegistry`。
+ */
+const el = (prefix: string, id: string): YamiElement | null =>
+	controlRoot(controlTables[prefix]?.()[`${prefix}-${id}`] ?? null) as YamiElement | null;
 
 type VarTypeSet = {
 	all: VarTypeItem[];
@@ -213,15 +240,15 @@ const PRESET_TYPES = new Set(['actor', 'skill', 'state', 'equipment', 'item', 'e
  * 窗口是懒挂载的，控件不在注册表时静默返回；挂载完成后由 initialize / open 再跑一次。
  */
 const initializeWindow = (prefix: string): void => {
-	const typeEl = composableEls.get(`${prefix}-type`);
+	const typeEl = el(prefix, 'type');
 	if (!typeEl || initializedTypeEls.has(typeEl)) return;
 	initializedTypeEls.add(typeEl);
 	if (prefix === 'variableGetter2') {
 		// 同一次装配里每个控件只寻址一次：`preset-key` 原来在 4 个 case 里各取一遍。
-		const commonKeyEl = composableEls.get('variableGetter2-common-key');
-		const globalKeyEl = composableEls.get('variableGetter2-global-key');
-		const elementEl = composableEls.get('variableGetter2-element');
-		const presetKeyEl = composableEls.get('variableGetter2-preset-key');
+		const commonKeyEl = el(prefix, 'common-key');
+		const globalKeyEl = el(prefix, 'global-key');
+		const elementEl = el(prefix, 'element');
+		const presetKeyEl = el(prefix, 'preset-key');
 		typeEl.enableHiddenMode().relate([
 			{ case: 'local', targets: [commonKeyEl] },
 			{ case: 'global', targets: [globalKeyEl] },
@@ -233,15 +260,15 @@ const initializeWindow = (prefix: string): void => {
 		return;
 	}
 
-	const commonKeyEl = composableEls.get('variableGetter-common-key');
-	const globalKeyEl = composableEls.get('variableGetter-global-key');
-	const presetKeyEl = composableEls.get('variableGetter-preset-key');
-	const actorEl = composableEls.get('variableGetter-actor');
-	const skillEl = composableEls.get('variableGetter-skill');
-	const stateEl = composableEls.get('variableGetter-state');
-	const equipmentEl = composableEls.get('variableGetter-equipment');
-	const itemEl = composableEls.get('variableGetter-item');
-	const elementEl = composableEls.get('variableGetter-element');
+	const commonKeyEl = el(prefix, 'common-key');
+	const globalKeyEl = el(prefix, 'global-key');
+	const presetKeyEl = el(prefix, 'preset-key');
+	const actorEl = el(prefix, 'actor');
+	const skillEl = el(prefix, 'skill');
+	const stateEl = el(prefix, 'state');
+	const equipmentEl = el(prefix, 'equipment');
+	const itemEl = el(prefix, 'item');
+	const elementEl = el(prefix, 'element');
 
 	typeEl.enableHiddenMode().relate([
 		{ case: 'local', targets: [commonKeyEl] },
@@ -299,19 +326,17 @@ const initialize = (): void => {
 
 /** 控件侧的接线：类型项、隐藏行关系、全局键过滤、属性键清单、焦点。窗口挂载后才有效。 */
 const syncControls = (prefix: string, filter: string): boolean => {
-	const typeEl = composableEls.get(`${prefix}-type`);
+	const typeEl = el(prefix, 'type');
 	if (!typeEl) return false;
 	initializeWindow(prefix);
 	typeEl.loadItems(getTypeItems(filter, prefix));
 
-	const globalKeyEl = registryElement<CustomBoxApi>(composableEls, `${prefix}-global-key`);
+	const globalKeyEl = el(prefix, 'global-key') as CustomBoxApi | null;
 	if (globalKeyEl) {
 		globalKeyEl.filter = filter.startsWith('writable-') ? filter.slice(9) : filter;
 	}
 	if (prefix === 'variableGetter2') {
-		composableEls
-			.get(`${prefix}-preset-key`)
-			?.loadItems(Attribute.getAttributeItems('element', filter));
+		el(prefix, 'preset-key')?.loadItems?.(Attribute.getAttributeItems('element', filter));
 	} else if (PRESET_TYPES.has(form.type)) {
 		loadPresetKeys(form.type);
 	}
@@ -422,7 +447,7 @@ const isNone = (variable: { key: string }): boolean => {
 };
 
 const loadPresetKeys = (group: string): void => {
-	const keyBox = composableEls.get('variableGetter-preset-key');
+	const keyBox = el('variableGetter', 'preset-key');
 	if (!keyBox) return;
 	let type: string | undefined = undefined;
 	switch (filterState.filter) {
@@ -552,16 +577,16 @@ const typeInput = (event: Event & { value: string }): void => {
 		case 'item':
 		case 'equipment':
 		case 'element': {
-			const keyBox = registryElement<
-				HTMLElement & {
-					selectBox?: HTMLElement & {
-						textContent: string;
-						write(v: unknown): void;
-						read(): unknown;
-						dataItems: VarTypeItem[];
-					};
-				}
-			>(composableEls, 'variableGetter-preset-key');
+			const keyBox = el('variableGetter', 'preset-key') as
+				| (YamiElement & {
+						selectBox?: HTMLElement & {
+							textContent: string;
+							write(v: unknown): void;
+							read(): unknown;
+							dataItems: VarTypeItem[];
+						};
+				  })
+				| null;
 			const selectBox = keyBox?.selectBox ?? null;
 			if (!selectBox) break;
 			const attrName = selectBox.textContent;
@@ -590,7 +615,7 @@ const confirmCore = (prefix: string): void => {
 	// 「聚焦到出错的控件」在原实现里每个分支各寻址一次（7 处）；收紧成一处映射，
 	// 既没有重复寻址，也让「哪个字段没填」的映射集中可见。
 	const focusControl = (field: 'common-key' | 'global-key' | 'preset-key'): void => {
-		getFocus(composableEls.get(`${prefix}-${field}`));
+		getFocus(el(prefix, field));
 	};
 	const { target, filter } = state;
 	const data = form;

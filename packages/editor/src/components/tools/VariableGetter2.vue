@@ -11,13 +11,13 @@
 			<SelectBox
 				:label="t('components.variableGetter2-type.label')"
 				id="variableGetter2-type"
-				:ref="registryRef(composableEls, 'variableGetter2-type')"
+				:ref="controlRef('variableGetter2-type')"
 				v-tip="t('components.variableGetter2-type.tip')"
 			/>
 			<div class="text">{{ t('components.variableGetter2-element.label') }}</div>
 			<CustomBox
 				id="variableGetter2-element"
-				:ref="registryRef(composableEls, 'variableGetter2-element')"
+				:ref="controlRef('variableGetter2-element')"
 				v-tip="t('components.variableGetter2-element.tip')"
 				type="element"
 			/>
@@ -25,20 +25,20 @@
 			<TextBox
 				:label="t('components.variableGetter2-common-key.label')"
 				id="variableGetter2-common-key"
-				:ref="registryRef(composableEls, 'variableGetter2-common-key')"
+				:ref="controlRef('variableGetter2-common-key')"
 				v-tip="t('components.variableGetter2-common-key.tip')"
 			/>
 			<div class="text">{{ t('components.variableGetter2-preset-key.label') }}</div>
 			<SelectBox
 				:label="t('components.variableGetter2-preset-key.label')"
 				id="variableGetter2-preset-key"
-				:ref="registryRef(composableEls, 'variableGetter2-preset-key')"
+				:ref="controlRef('variableGetter2-preset-key')"
 				v-tip="t('components.variableGetter2-preset-key.tip')"
 			/>
 			<div class="text">{{ t('components.variableGetter2-global-key.label') }}</div>
 			<CustomBox
 				id="variableGetter2-global-key"
-				:ref="registryRef(composableEls, 'variableGetter2-global-key')"
+				:ref="controlRef('variableGetter2-global-key')"
 				v-tip="t('components.variableGetter2-global-key.tip')"
 				type="global-variable"
 			/>
@@ -48,17 +48,29 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { composableEls } from '@app/composables/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
-import { useVariableGetterWindow } from '@app/composables/useVariableGetterWindow';
+import {
+	provideVariableGetterControls,
+	useVariableGetterWindow
+} from '@app/composables/useVariableGetterWindow';
+import { useControlRefs } from '@app/composables/control-refs';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { on } from '@app/utils/element-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'variableGetter2-common-key'
+	| 'variableGetter2-element'
+	| 'variableGetter2-global-key'
+	| 'variableGetter2-preset-key'
+	| 'variableGetter2-type';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -71,11 +83,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	// 这扇窗口的 `setForm` / `getForm` 早就没消费方（表单由单例直接写控件），因此只交控件表
+	provideVariableGetterControls('variableGetter2', () => controls);
 	const el = frame.value?.root;
 	if (el) {
-		// 这里原来还挂了 `attachElementApi(el, { setForm, getForm })`，但全仓没有任何
-		// 消费方：变量取值窗口的表单是由 `useVariableGetterWindow` 直接写控件的。
-		// 元素契约收尾要求元素上不挂业务方法，这份死挂载因此直接删除（非"迁移"）。
 		on(el, 'closed', () => variableGetter.onWindow2Closed());
 	}
 });

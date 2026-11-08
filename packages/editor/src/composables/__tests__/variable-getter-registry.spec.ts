@@ -3,7 +3,10 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import VariableGetter from '@app/components/tools/VariableGetter.vue';
 import VariableGetter2 from '@app/components/tools/VariableGetter2.vue';
-import { useVariableGetterWindow } from '@app/composables/useVariableGetterWindow';
+import {
+	provideVariableGetterControls,
+	useVariableGetterWindow
+} from '@app/composables/useVariableGetterWindow';
 import { composableEls } from '@app/composables/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { Attribute } from '@app/attribute/attribute-window.ts';
@@ -39,8 +42,12 @@ const VARIABLE_GETTER2_IDS = [
 
 type LoadableEl = HTMLElement & { loadItems?: (items: unknown[]) => void };
 
+/** 控件按 id 从 DOM 取：迁移后窗口交的是控件表，注册表里已经没有它们了。 */
+const byId = <T extends HTMLElement = HTMLElement>(id: string): T | null =>
+	document.getElementById(id) as T | null;
+
 const loadItemsOf = (id: string): ReturnType<typeof vi.fn> => {
-	const el = composableEls.get(id) as unknown as LoadableEl;
+	const el = byId(id) as unknown as LoadableEl;
 	const spy = vi.fn();
 	el.loadItems = spy;
 	return spy;
@@ -48,7 +55,7 @@ const loadItemsOf = (id: string): ReturnType<typeof vi.fn> => {
 
 const makeTarget = (read?: () => unknown) => ({ dataValue: undefined, read, input: vi.fn() });
 
-describe('变量访问器窗口注册表', () => {
+describe('变量访问器窗口的控件交接', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
 		document.body.innerHTML = '';
@@ -57,38 +64,36 @@ describe('变量访问器窗口注册表', () => {
 		Window.isWindowOpen = vi.fn(() => false);
 	});
 
-	it('VariableGetter.vue 登记全部 10 个控件，注册键与元素 id 一致', async () => {
+	it('VariableGetter.vue 的 10 个控件不再进注册表，但都在 DOM 里', async () => {
 		const wrapper = mount(VariableGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 
 		for (const id of VARIABLE_GETTER_IDS) {
-			const el = composableEls.get(id);
-			expect(el, `${id} 未登记`).toBeTruthy();
-			expect(el?.id).toBe(id);
+			expect(composableEls.get(id), `${id} 不该再登记`).toBeFalsy();
+			expect(byId(id), `${id} 模板里应存在`).toBeTruthy();
 		}
 		expect(VARIABLE_GETTER_IDS).toHaveLength(10);
 
 		wrapper.unmount();
 	});
 
-	it('VariableGetter2.vue 登记全部 5 个控件，注册键与元素 id 一致', async () => {
+	it('VariableGetter2.vue 的 5 个控件不再进注册表，但都在 DOM 里', async () => {
 		const wrapper = mount(VariableGetter2, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 
 		for (const id of VARIABLE_GETTER2_IDS) {
-			const el = composableEls.get(id);
-			expect(el, `${id} 未登记`).toBeTruthy();
-			expect(el?.id).toBe(id);
+			expect(composableEls.get(id), `${id} 不该再登记`).toBeFalsy();
+			expect(byId(id), `${id} 模板里应存在`).toBeTruthy();
 		}
 
 		wrapper.unmount();
 	});
 
-	it('initialize 的 relate 目标取自注册表（local → common-key 控件元素）', async () => {
+	it('initialize 的 relate 目标取自窗口控件表（local → common-key 控件元素）', async () => {
 		const wrapper = mount(VariableGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 
-		const typeEl = composableEls.get('variableGetter-type') as unknown as HTMLElement & {
+		const typeEl = byId('variableGetter-type') as unknown as HTMLElement & {
 			enableHiddenMode(): { relate(cases: unknown[]): void };
 		};
 		const relate = vi.fn();
@@ -99,17 +104,17 @@ describe('变量访问器窗口注册表', () => {
 		expect(relate).toHaveBeenCalledTimes(1);
 		const cases = relate.mock.calls[0][0] as Array<{ case: string; targets: unknown[] }>;
 		const local = cases.find((c) => c.case === 'local');
-		expect(local?.targets[0]).toBe(composableEls.get('variableGetter-common-key'));
+		expect(local?.targets[0]).toBe(byId('variableGetter-common-key'));
 		const actor = cases.find((c) => c.case === 'actor');
 		expect(actor?.targets).toEqual([
-			composableEls.get('variableGetter-actor'),
-			composableEls.get('variableGetter-preset-key')
+			byId('variableGetter-actor'),
+			byId('variableGetter-preset-key')
 		]);
 
 		wrapper.unmount();
 	});
 
-	it('open 经注册表把类型选项写进控件（链路有效，不是静默 no-op）', async () => {
+	it('open 经窗口控件表把类型选项写进控件（链路有效，不是静默 no-op）', async () => {
 		const wrapper = mount(VariableGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 
@@ -159,7 +164,7 @@ describe('变量访问器窗口注册表', () => {
 		window.initialize();
 		window.open(makeTarget(() => ({ type: 'local', key: '' })) as never);
 
-		const commonKey = composableEls.get('variableGetter-common-key') as unknown as {
+		const commonKey = byId('variableGetter-common-key') as unknown as {
 			generator?: () => { name: string }[];
 		};
 		const items = commonKey.generator?.() ?? [];
@@ -169,7 +174,7 @@ describe('变量访问器窗口注册表', () => {
 		wrapper.unmount();
 	});
 
-	it('窗口2 分支只读 variableGetter2 前缀的注册项（两个窗口互不串台）', async () => {
+	it('窗口2 分支只碰 variableGetter2 前缀的控件（两个窗口互不串台）', async () => {
 		const wrapper = mount(VariableGetter2, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 
@@ -183,15 +188,14 @@ describe('变量访问器窗口注册表', () => {
 		});
 
 		expect(loadItems2).toHaveBeenCalledTimes(1);
-		expect(composableEls.get('variableGetter-type') ?? null).toBe(null);
+		expect(byId('variableGetter-type')).toBe(null);
 
 		wrapper.unmount();
 	});
 
-	it('注册表为空时 initialize / open 安全 no-op（不再有按 id 的隐式回退）', () => {
-		for (const id of [...VARIABLE_GETTER_IDS, ...VARIABLE_GETTER2_IDS]) {
-			composableEls.set(id, null);
-		}
+	it('控件表为空时 initialize / open 安全 no-op（不再有按 id 的隐式回退）', () => {
+		provideVariableGetterControls('variableGetter', () => ({}));
+		provideVariableGetterControls('variableGetter2', () => ({}));
 		const variableGetter = useVariableGetterWindow();
 		expect(() => variableGetter.initialize()).not.toThrow();
 		expect(() =>

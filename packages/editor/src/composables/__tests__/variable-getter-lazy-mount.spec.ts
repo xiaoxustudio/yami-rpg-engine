@@ -13,7 +13,6 @@ import {
 	setToolWindowHostContext
 } from '@app/tools/tool-window-host';
 import { useVariableGetterWindow } from '@app/composables/useVariableGetterWindow';
-import { composableEls } from '@app/composables/element-registry';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { elementDataOf } from '@app/utils/element-data';
@@ -42,10 +41,12 @@ toolWindowLoaders.variableGetter = () => Promise.resolve({ default: VariableGett
 
 type TypeControl = HTMLElement & { write(value: unknown): void };
 
-const typeControl = (): TypeControl => composableEls.get('variableGetter-type') as TypeControl;
+/** 控件按 id 从 DOM 取：窗口交的是控件表，注册表里已经没有它们了。 */
+const typeControl = (): TypeControl | null =>
+	document.getElementById('variableGetter-type') as TypeControl | null;
 
 const rowOf = (id: string): { control: string; label: string } => {
-	const control = composableEls.get(id) as HTMLElement | null;
+	const control = document.getElementById(id);
 	const label = control?.previousElementSibling as HTMLElement | null;
 	return { control: control?.style.display ?? '未登记', label: label?.style.display ?? '' };
 };
@@ -79,7 +80,8 @@ describe('变量窗口：首次 open 早于挂载（懒加载回归）', () => {
 		await flushPromises();
 
 		const typeEl = typeControl();
-		expect(typeEl, '窗口应当被挂载并登记控件').toBeTruthy();
+		expect(typeEl, '窗口应当被挂载并渲染控件').toBeTruthy();
+		if (!typeEl) return;
 
 		const typeData = elementDataOf<{ dataItems?: { value: string }[]; invalid?: boolean }>(
 			typeEl
