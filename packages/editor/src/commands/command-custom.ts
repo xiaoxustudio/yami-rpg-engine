@@ -1,4 +1,4 @@
-import { createElementRegistry, registryElement } from '@app/utils/element-registry';
+import { scriptCommandNodes } from '@app/composables/command-nodes';
 import { Window } from '@app/tools/window-object.ts';
 import { onToolWindowMounted } from '@app/tools/tool-window-host';
 import { clear, getFocus } from '@app/utils/element-utils';
@@ -79,8 +79,6 @@ interface ParameterPane extends YamiElement {
 	scriptChange: (event: Event) => void;
 }
 
-export const scriptCommandEls = createElementRegistry();
-
 Command.custom = {
 	customFolder: null as CustomFolder | null,
 	commandNameMap: null as Record<string, string> | null,
@@ -95,18 +93,15 @@ Command.custom = {
 			window.addEventListener('localize', this.windowLocalize);
 		}
 
-		this.windowFrame = registryElement<
-			HTMLElement & {
-				style: CSSStyleDeclaration;
-				absolute(x: number | null, y: number | null): void;
-				setTitle(title: string): void;
-			}
-		>(scriptCommandEls, 'scriptCommand')!;
-		this.parameterPane = registryElement<ParameterPane>(
-			scriptCommandEls,
-			'scriptCommand-parameter-pane'
-		)!;
-		this.parameterGrid = scriptCommandEls.get('scriptCommand-parameter-grid') as YamiElement;
+		this.windowFrame = scriptCommandNodes.pick('frame') as HTMLElement & {
+			style: CSSStyleDeclaration;
+			absolute(x: number | null, y: number | null): void;
+			setTitle(title: string): void;
+		};
+		this.parameterPane = scriptCommandNodes.pick(
+			'parameterPane'
+		) as unknown as typeof Command.custom.parameterPane;
+		this.parameterGrid = scriptCommandNodes.pick('parameterGrid') as YamiElement;
 
 		if (!this.parameterPane) {
 			// 脚本指令窗口是懒挂载的：initAll 时控件还不在注册表里，挂载后再接一次
@@ -123,10 +118,8 @@ Command.custom = {
 			this.windowFrame!.absolute(this.windowX, this.windowY);
 		};
 
-		const box = registryElement<ParameterWrapBox>(
-			scriptCommandEls,
-			'scriptCommand-parameter-detail'
-		)!;
+		const box = scriptCommandNodes.pick('parameterDetail') as unknown as ParameterWrapBox;
+		if (!box) return;
 		const wrap: ParameterWrap = { box, grid, children: [] };
 		box.wrap = wrap;
 		this.parameterPane.createDetailBox = function (): ParameterWrap {

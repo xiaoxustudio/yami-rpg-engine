@@ -1,5 +1,5 @@
 import { getListConfig } from '@ui-kit';
-import { createElementRegistry, registryElement } from '@app/utils/element-registry';
+import { customCommandNodes } from '@app/composables/command-nodes';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { getFocus, hide, on, show } from '@app/utils/element-utils.ts';
@@ -170,26 +170,19 @@ export const CustomCommand = {
 	close: null as ((id?: string) => void) | null
 } satisfies Partial<CustomCommandShape> as CustomCommandShape;
 
-export const customCommandEls = createElementRegistry();
-
 function ensureDomBound() {
 	if (CustomCommand.list) return;
-	const list = registryElement<CustomCommandList>(customCommandEls, 'command-list');
+	const list = customCommandNodes.pick('list') as CustomCommandList | null;
 	if (!list) return;
 	CustomCommand.list = list;
-	CustomCommand.overviewPane = registryElement<CustomCommandShape['overviewPane']>(
-		customCommandEls,
-		'command-overview-detail'
-	)!;
+	CustomCommand.overviewPane = customCommandNodes.pick(
+		'overviewPane'
+	) as CustomCommandShape['overviewPane'];
 	hide(CustomCommand.overviewPane);
-	CustomCommand.overview = registryElement<CustomCommandShape['overview']>(
-		customCommandEls,
-		'command-overview'
-	)!;
-	CustomCommand.settingsPane = registryElement<CustomCommandShape['settingsPane']>(
-		customCommandEls,
-		'command-settings-detail'
-	)!;
+	CustomCommand.overview = customCommandNodes.pick('overview') as CustomCommandShape['overview'];
+	CustomCommand.settingsPane = customCommandNodes.pick(
+		'settingsPane'
+	) as CustomCommandShape['settingsPane'];
 	hide(CustomCommand.settingsPane);
 	list.delete = PluginManager.list_delete as (item: CustomCommandData | null) => void;
 	list.updateTextNode = PluginManager.list_updateTextNode as (...args: unknown[]) => void;
@@ -211,7 +204,7 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	list.bind(() => this.data);
 	getListConfig(list).updaters.push(list.updateTextNode as (item: unknown) => void);
 
-	const frame = customCommandEls.get('command');
+	const frame = customCommandNodes.pick('frame');
 	frame?.addEventListener('close', this.windowClose!);
 	frame?.addEventListener('closed', this.windowClosed!);
 	on(list, 'keydown', this.listKeydown!);

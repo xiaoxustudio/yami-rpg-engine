@@ -1,11 +1,5 @@
 <template>
-	<WindowFrame
-		id="command"
-		:ref="registryRef(customCommandEls, 'command')"
-		show-apply
-		@apply="onApply"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="command" :ref="bind('frame')" show-apply @apply="onApply" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.command.title') }}
@@ -16,7 +10,7 @@
 			<div class="legend">{{ t('components.command-list.label') }}</div>
 			<TreeList
 				id="command-list"
-				:ref="registryRef(customCommandEls, 'command-list')"
+				:ref="bind('list')"
 				padded
 				:node-extras="nodeExtras"
 				:node-icon-renderer="nodeIconRenderer"
@@ -27,26 +21,18 @@
 			/>
 		</div>
 		<div class="box" id="command-inspector">
-			<DetailBox
-				id="command-overview-detail"
-				:ref="registryRef(customCommandEls, 'command-overview-detail')"
-				open
-			>
+			<DetailBox id="command-overview-detail" :ref="bind('overviewPane')" open>
 				<DetailSummary>{{ t('components.command-overview.label') }}</DetailSummary>
 				<div
 					class="box"
 					id="command-overview"
-					:ref="registryRef(customCommandEls, 'command-overview')"
+					:ref="bind('overview')"
 					@update="syncOverview"
 				>
 					<PluginOverview :meta="overviewMeta" detailed />
 				</div>
 			</DetailBox>
-			<DetailBox
-				id="command-settings-detail"
-				:ref="registryRef(customCommandEls, 'command-settings-detail')"
-				open
-			>
+			<DetailBox id="command-settings-detail" :ref="bind('settingsPane')" open>
 				<DetailSummary>{{ t('components.command-settings-grid.label') }}</DetailSummary>
 				<div class="detail-grid" id="command-settings-grid">
 					<div class="text">{{ t('components.command-alias.label') }}</div>
@@ -74,17 +60,13 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, ref, type VNode } from 'vue';
+import { h, onMounted, onUnmounted, ref, type VNode } from 'vue';
 import type { YamiEvent } from '@app/types/editor-event';
 import { useI18n } from 'vue-i18n';
 import { File } from '@app/file/file-system-core.ts';
 import { getBrowserStore } from '@app/stores/browser';
-import {
-	CustomCommand,
-	commandForm,
-	customCommandEls
-} from '@app/commands/custom-command-window.ts';
-import { registryRef } from '@app/utils/element-registry';
+import { CustomCommand, commandForm } from '@app/commands/custom-command-window.ts';
+import { customCommandNodes } from '@app/composables/command-nodes';
 import type { PluginMetaShape } from '@app/plugin/plugin.ts';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -95,6 +77,10 @@ import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
+
+// 面板节点交给模块（`custom-command-window.ts` 读表，不再按 id 摸注册表）
+const { bind, dispose } = customCommandNodes.scoped();
+onUnmounted(dispose);
 
 const overviewMeta = ref<PluginMetaShape | null>(null);
 
