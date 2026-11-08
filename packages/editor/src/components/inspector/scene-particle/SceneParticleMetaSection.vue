@@ -40,8 +40,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryElements } from '@app/utils/element-registry';
+import { sceneParticleNodes } from '@app/composables/inspector-scene-nodes';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/tools/condition-list.ts';
@@ -60,10 +59,10 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneParticle-conditions', elConditions.value);
-	registerElement(inspectorEls, 'sceneParticle-events', elEvents.value);
-	registerElement(inspectorEls, 'sceneParticle-scripts', elScripts.value);
-	registerElement(inspectorEls, 'sceneParticle-parameter-pane', elParameterPane.value);
+	sceneParticleNodes.set('conditions', elConditions.value?.root ?? null);
+	sceneParticleNodes.set('events', elEvents.value?.root ?? null);
+	sceneParticleNodes.set('scripts', elScripts.value?.root ?? null);
+	sceneParticleNodes.set('parameterPane', elParameterPane.value?.root ?? null);
 	const editor = Inspector.sceneParticle;
 	if (!editor) return;
 	try {
@@ -73,11 +72,11 @@ onMounted(() => {
 			new ScriptListInterface(editor as { target?: { id: string } }, Scene)
 		);
 		elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
-		registryElements(inspectorEls, [
-			'sceneParticle-conditions',
-			'sceneParticle-events',
-			'sceneParticle-scripts'
-		]).forEach((el) => el.addEventListener('change', Scene.listChange));
+		[
+			sceneParticleNodes.pick('conditions'),
+			sceneParticleNodes.pick('events'),
+			sceneParticleNodes.pick('scripts')
+		].forEach((el) => el?.addEventListener('change', Scene.listChange));
 	} catch (e) {
 		console.warn('[SceneParticlePage] meta init skipped:', (e as Error)?.message);
 	}

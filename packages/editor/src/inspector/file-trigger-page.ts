@@ -1,7 +1,7 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
+import { fileTriggerNodes } from '@app/composables/inspector-scene-nodes';
 import { getFileTriggerAnimation } from '@app/composables/inspector-section-bridges';
-import { inspectorEls } from './element-registry.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { clear } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
@@ -97,9 +97,9 @@ import type { TriggerForm } from '@app/composables/useFileTriggerPage';
 			this.target = null;
 			this.meta = null;
 			this.motions = null;
-			clear(inspectorEls.get('fileTrigger-events'));
-			clear(inspectorEls.get('fileTrigger-scripts'));
-			clear(inspectorEls.get('fileTrigger-parameter-pane'));
+			clear(fileTriggerNodes.pick('events'));
+			clear(fileTriggerNodes.pick('scripts'));
+			clear(fileTriggerNodes.pick('parameterPane'));
 		}
 	};
 

@@ -38,8 +38,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
+import { sceneRegionNodes } from '@app/composables/inspector-scene-nodes';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/tools/condition-list.ts';
@@ -58,10 +57,10 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneRegion-conditions', elConditions.value);
-	registerElement(inspectorEls, 'sceneRegion-events', elEvents.value);
-	registerElement(inspectorEls, 'sceneRegion-scripts', elScripts.value);
-	registerElement(inspectorEls, 'sceneRegion-parameter-pane', elParameterPane.value);
+	sceneRegionNodes.set('conditions', elConditions.value?.root ?? null);
+	sceneRegionNodes.set('events', elEvents.value?.root ?? null);
+	sceneRegionNodes.set('scripts', elScripts.value?.root ?? null);
+	sceneRegionNodes.set('parameterPane', elParameterPane.value?.root ?? null);
 	const editor = Inspector.sceneRegion;
 	if (!editor) return;
 	try {

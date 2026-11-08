@@ -48,3 +48,29 @@ export const sceneAnimationNodes = createSkeletonTable<SceneAnimationNodeKey>({
 	parameterPane: 'sceneAnimation-parameter-pane',
 	motion: 'sceneAnimation-motion'
 });
+
+/** 视差 / 粒子 / 区域 / 文件触发器四页是同一种形状：条件 / 事件 / 脚本 / 参数面板。 */
+export type SceneListPageNodeKey = 'conditions' | 'events' | 'scripts' | 'parameterPane';
+
+const listPageNodes = (
+	prefix: string
+): ReturnType<typeof createSkeletonTable<SceneListPageNodeKey>> =>
+	createSkeletonTable<SceneListPageNodeKey>({
+		conditions: `${prefix}-conditions`,
+		events: `${prefix}-events`,
+		scripts: `${prefix}-scripts`,
+		parameterPane: `${prefix}-parameter-pane`
+	});
+
+export const sceneParallaxNodes = listPageNodes('sceneParallax');
+export const sceneParticleNodes = listPageNodes('sceneParticle');
+export const sceneRegionNodes = listPageNodes('sceneRegion');
+
+/** 文件触发器页没有「条件」列表。 */
+export type FileTriggerNodeKey = 'events' | 'scripts' | 'parameterPane';
+
+export const fileTriggerNodes = createSkeletonTable<FileTriggerNodeKey>({
+	events: 'fileTrigger-events',
+	scripts: 'fileTrigger-scripts',
+	parameterPane: 'fileTrigger-parameter-pane'
+});

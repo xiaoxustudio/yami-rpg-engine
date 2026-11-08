@@ -28,8 +28,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
+import { fileTriggerNodes } from '@app/composables/inspector-scene-nodes';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
 import { ScriptListInterface } from '@app/tools/script-list.ts';
@@ -49,9 +48,9 @@ const onListChange = () => {
 };
 
 onMounted(() => {
-	registerElement(inspectorEls, 'fileTrigger-events', elEvents.value);
-	registerElement(inspectorEls, 'fileTrigger-scripts', elScripts.value);
-	registerElement(inspectorEls, 'fileTrigger-parameter-pane', elParameterPane.value);
+	fileTriggerNodes.set('events', elEvents.value?.root ?? null);
+	fileTriggerNodes.set('scripts', elScripts.value?.root ?? null);
+	fileTriggerNodes.set('parameterPane', elParameterPane.value?.root ?? null);
 	const editor = Inspector.fileTrigger;
 	if (!editor) return;
 	elEvents.value?.bind(new EventListInterface(editor));

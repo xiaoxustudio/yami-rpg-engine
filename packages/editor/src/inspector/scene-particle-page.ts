@@ -1,6 +1,6 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
-import { inspectorEls } from './element-registry.ts';
+import { sceneParticleNodes } from '@app/composables/inspector-scene-nodes';
 import { clear } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -74,10 +74,10 @@ import { radians } from '@app/utils/math';
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
 			this.target = null;
-			clear(inspectorEls.get('sceneParticle-conditions'));
-			clear(inspectorEls.get('sceneParticle-events'));
-			clear(inspectorEls.get('sceneParticle-scripts'));
-			clear(inspectorEls.get('sceneParticle-parameter-pane'));
+			clear(sceneParticleNodes.pick('conditions'));
+			clear(sceneParticleNodes.pick('events'));
+			clear(sceneParticleNodes.pick('scripts'));
+			clear(sceneParticleNodes.pick('parameterPane'));
 		}
 	};
 

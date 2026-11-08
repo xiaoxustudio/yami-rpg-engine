@@ -1,6 +1,6 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
-import { inspectorEls } from './element-registry.ts';
+import { sceneParallaxNodes } from '@app/composables/inspector-scene-nodes';
 import { clear } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -87,10 +87,10 @@ import { Scene } from '@app/scene/scene-window.ts';
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
 			this.target = null;
-			clear(inspectorEls.get('sceneParallax-conditions'));
-			clear(inspectorEls.get('sceneParallax-events'));
-			clear(inspectorEls.get('sceneParallax-scripts'));
-			clear(inspectorEls.get('sceneParallax-parameter-pane'));
+			clear(sceneParallaxNodes.pick('conditions'));
+			clear(sceneParallaxNodes.pick('events'));
+			clear(sceneParallaxNodes.pick('scripts'));
+			clear(sceneParallaxNodes.pick('parameterPane'));
 		}
 	};
 

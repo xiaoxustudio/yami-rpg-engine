@@ -40,8 +40,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryElements } from '@app/utils/element-registry';
+import { sceneParallaxNodes } from '@app/composables/inspector-scene-nodes';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/tools/condition-list.ts';
@@ -60,20 +59,20 @@ const elScripts = ref<InstanceType<typeof ParamList> | null>(null);
 const elParameterPane = ref<InstanceType<typeof ParameterPane> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneParallax-conditions', elConditions.value);
-	registerElement(inspectorEls, 'sceneParallax-events', elEvents.value);
-	registerElement(inspectorEls, 'sceneParallax-scripts', elScripts.value);
-	registerElement(inspectorEls, 'sceneParallax-parameter-pane', elParameterPane.value);
+	sceneParallaxNodes.set('conditions', elConditions.value?.root ?? null);
+	sceneParallaxNodes.set('events', elEvents.value?.root ?? null);
+	sceneParallaxNodes.set('scripts', elScripts.value?.root ?? null);
+	sceneParallaxNodes.set('parameterPane', elParameterPane.value?.root ?? null);
 	const editor = Inspector.sceneParallax;
 	if (!editor) return;
 	elConditions.value?.bind(new ConditionListInterface(editor, Scene));
 	elEvents.value?.bind(new EventListInterface(editor, Scene));
 	elScripts.value?.bind(new ScriptListInterface(editor as { target?: { id: string } }, Scene));
 	elParameterPane.value?.bind(elScripts.value?.root as HTMLElement);
-	registryElements(inspectorEls, [
-		'sceneParallax-conditions',
-		'sceneParallax-events',
-		'sceneParallax-scripts'
-	]).forEach((el) => el.addEventListener('change', Scene.listChange));
+	[
+		sceneParallaxNodes.pick('conditions'),
+		sceneParallaxNodes.pick('events'),
+		sceneParallaxNodes.pick('scripts')
+	].forEach((el) => el?.addEventListener('change', Scene.listChange));
 });
 </script>
