@@ -30,16 +30,17 @@ export interface ControlApi extends FormFieldControl {
 	/** 清空控件内容（`SelectBox` 换候选项 / 关窗时用）。 */
 	clear?: () => unknown;
 	enableHiddenMode?: () => unknown;
+	/** 换候选项后重建 tooltip（`SelectBox` 有，原来只挂在元素 API 上）。 */
+	createTooltip?: () => void;
 	toggleRelatedElements?: () => void;
 	enable?: () => void;
 	disable?: () => void;
 	/**
-	 * 切换候选项过滤（`CustomBox` / `SelectBox` 的 `filter`）。
+	 * 切换候选项过滤（`CustomBox` 的 `filter`）。
 	 *
-	 * 为什么是方法而不是可写属性：`filter` 在 ui-kit 侧是**根元素属性**语义
-	 * （`getAttribute('filter')` 决定可选项与拖放类型），组件实例上没有同名可写成员。
-	 * 旧契约靠 `registryElement(id).filter = x` 直接写属性；收口成实例方法后语义不变，
-	 * 否则「换操作数类型 → 变量框可选项过滤」会静默失效。
+	 * 为什么是方法而不是可写属性：`filter` 是控件**根元素上的自有属性**（既不是 prop 也不是
+	 * attribute），`custom-box-opts` 的 getter 打开选择框时读的就是 `el.filter`。组件实例代理上
+	 * 没有这个可写成员，`control.filter = x` 会静默 no-op 且类型检查也拦不住。
 	 */
 	setFilter?: (value: string) => void;
 	getFocus?: (mode?: string) => void;

@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import CallEvent from '@app/components/commands/CallEvent.vue';
-import { composableEls } from '@app/composables/element-registry';
 import { Command } from '@app/commands/command-object.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
@@ -18,8 +17,9 @@ vi.mock('@app/i18n', () => ({
 	getYamiI18n: () => ({ global: { t: () => '' } })
 }));
 
+// 窗口根元素按 id 取（不再走注册表 —— 那条契约正在拆除，测试不该守着它）
 const gridBox = (): HTMLElement =>
-	composableEls.get('callEvent')!.querySelector('.grid-box') as HTMLElement;
+	document.getElementById('callEvent')!.querySelector('.grid-box') as HTMLElement;
 
 /** 标签元素：类名是 `text call-event-component`（输入控件只有 call-event-component） */
 const labelsInGrid = (): HTMLElement[] =>

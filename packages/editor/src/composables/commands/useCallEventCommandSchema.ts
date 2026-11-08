@@ -1,6 +1,6 @@
 import { elementDataOf } from '@ui-kit';
 import { getFocus, read, write } from '@app/utils/element-utils';
-import { composableEls } from '@app/composables/element-registry';
+import { controlRoot, type ControlApi } from '@app/composables/control-refs';
 import { addClass, hide, setTooltip, show } from '@app/utils/element-utils';
 import { createTextAreaVar } from '@app/components/textarea-var.ts';
 import { Command } from '@app/commands/command-object.ts';
@@ -20,7 +20,6 @@ import { Selection } from '@app/tools/text-capture.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { Token } from '@app/commands/token.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import type { YamiElement } from '@app/types/element-api';
 
 interface CallEventArg {
 	type: string;
@@ -265,18 +264,35 @@ interface CallEventResultEl {
 	input: HTMLElement & CallEventInputApi;
 }
 
-export function useCallEventCommandSchema() {
+export interface CallEventSchemaOptions {
+	/**
+	 * 窗口的控件表 getter（`useControlRefs` 建的那张）。
+	 *
+	 * 这扇窗口里只有**模板里那几个**控件走表；参数行 / 返回值行是运行时用 `createXxxBox()`
+	 * 建出来的元素 API（那是 ui-kit 的那条轴，不在这次迁移范围内），它们只在本模块内被持有，
+	 * 不经过注册表。
+	 */
+	controls?: () => Partial<Record<string, ControlApi | null>>;
+}
+
+export function useCallEventCommandSchema(options: CallEventSchemaOptions = {}) {
 	const { form, load, commit } = useCommandSchema('callEvent', { skipWrite: true });
 	let parameters: CallEventParameter[] = [];
 	let eventResult: CallEventResultEl | null = null;
 	let pendingArgs: CallEventArg[] | null = [];
 	let createdEventId: string | null = null;
 
+	/** 窗口根元素（`WindowFrame` 的 `root`）—— 取 `grid-box` 与改高度都要它。 */
+	const frameRoot = (): HTMLElement | null => controlRoot(options.controls?.()['callEvent']);
+
+	const labelTemplate = (): HTMLElement | null =>
+		controlRoot(options.controls?.()['callEvent-label-template']);
+
 	const getGridBox = (): HTMLElement | null =>
-		(composableEls.get('callEvent')?.querySelector('.grid-box') as HTMLElement | null) ?? null;
+		(frameRoot()?.querySelector('.grid-box') as HTMLElement | null) ?? null;
 
 	const resizeWindow = (): void => {
-		const frame = composableEls.get('callEvent');
+		const frame = frameRoot();
 		const gridBox = getGridBox();
 		if (frame && gridBox) {
 			frame.style.height = `${gridBox.clientHeight + 78}px`;
@@ -321,9 +337,7 @@ export function useCallEventCommandSchema() {
 	const createParameterElements = (parameter: CallEventArg): void => {
 		const { type, key, note } = parameter;
 		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
-		const labelEl = composableEls.get('callEvent-label-template')?.cloneNode(true) as
-			| HTMLElement
-			| undefined;
+		const labelEl = labelTemplate()?.cloneNode(true) as HTMLElement | undefined;
 		if (!labelEl) return;
 		labelEl.textContent = name;
 		let input: HTMLElement & CallEventInputApi;
@@ -444,9 +458,7 @@ export function useCallEventCommandSchema() {
 		write(input, { type: 'local', key: '' });
 		const text = t('command.callEvent.return');
 		const tip = t('command.callEvent.return.tip');
-		const labelEl = composableEls.get('callEvent-label-template')?.cloneNode(true) as
-			| HTMLElement
-			| undefined;
+		const labelEl = labelTemplate()?.cloneNode(true) as HTMLElement | undefined;
 		if (!labelEl) return;
 		labelEl.textContent = text;
 		setTooltip(input, `<b>${text}</b>\n${tip}`);
@@ -506,12 +518,12 @@ export function useCallEventCommandSchema() {
 	const typeWrite = (event: { value: string }): void => {
 		const type = event.value;
 		if (type !== 'inherited') {
-			const elEventType = composableEls.get('callEvent-eventType') as YamiElement;
+			const elEventType = options.controls?.()['callEvent-eventType'];
 			const source = EventEditor.types?.[type] ?? EventEditor.types?.all;
 			if (!source) return;
 			const eventTypes = Enum.getMergedItems!(source, type + '-event');
-			elEventType.loadItems(eventTypes);
-			elEventType.createTooltip();
+			elEventType?.loadItems?.(eventTypes);
+			elEventType?.createTooltip?.();
 			write(elEventType, eventTypes[0].value);
 		}
 		for (const element of [
