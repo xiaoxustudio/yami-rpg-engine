@@ -121,35 +121,37 @@ describe('项目设置窗口注册表', () => {
 		vi.mocked(Data).config = null;
 	});
 
-	it('ProjectSettings.vue 登记窗口与控件，注册键与元素 id 一致', async () => {
+	it('ProjectSettings.vue 的控件不再进注册表，但都在 DOM 里', async () => {
 		const wrapper = mount(ProjectSettings, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 
-		expect(composableEls.get('project-settings')?.id).toBe('project-settings');
+		expect(composableEls.get('project-settings'), '帧不该再登记').toBeFalsy();
+		expect(document.getElementById('project-settings')).toBeTruthy();
 		for (const id of CONFIG_IDS) {
-			const el = composableEls.get(id);
-			expect(el, `${id} 未登记`).toBeTruthy();
-			expect(el?.id).toBe(id);
+			expect(composableEls.get(id), `${id} 不该再登记`).toBeFalsy();
+			expect(document.getElementById(id), `${id} 模板里应存在`).toBeTruthy();
 		}
 
 		wrapper.unmount();
 	});
 
-	it('initialize 经注册表给参数控件挂 loadItems / relate（不是静默 no-op）', async () => {
+	it('initialize 经窗口控件表给参数控件挂 loadItems / relate（不是静默 no-op）', async () => {
 		const wrapper = mount(ProjectSettings, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 
-		const display = composableEls.get('config-window-display') as unknown as LoadableEl;
+		const display = document.getElementById('config-window-display') as unknown as LoadableEl;
 		const loadItems = vi.fn();
 		display.loadItems = loadItems;
 
-		const sceneEnabled = composableEls.get(
+		const sceneEnabled = document.getElementById(
 			'config-collision-scene-enabled'
 		) as unknown as HTMLElement & {
 			enableHiddenMode(): { relate(cases: unknown[]): void };
+			relate?(cases: unknown[]): void;
 		};
 		const relate = vi.fn();
 		sceneEnabled.enableHiddenMode = () => ({ relate });
+		sceneEnabled.relate = relate;
 
 		useProjectSettingsWindow().initialize();
 
@@ -159,12 +161,14 @@ describe('项目设置窗口注册表', () => {
 		).toEqual(['windowed', 'maximized', 'fullscreen']);
 		expect(relate).toHaveBeenCalledTimes(1);
 		const cases = relate.mock.calls[0][0] as Array<{ case: unknown; targets: unknown[] }>;
-		expect(cases[0].targets[0]).toBe(composableEls.get('config-collision-scene-actorSize'));
+		expect(cases[0].targets[0]).toBe(
+			document.getElementById('config-collision-scene-actorSize')
+		);
 
 		wrapper.unmount();
 	});
 
-	it('参数控件的 input 经注册表接到 paramInput（写入 store.data）', async () => {
+	it('参数控件的 input 经窗口控件表接到 paramInput（写入 store.data）', async () => {
 		const wrapper = mount(ProjectSettings, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		vi.mocked(Data).config = makeConfig() as never;
@@ -172,7 +176,7 @@ describe('项目设置窗口注册表', () => {
 		settings.initialize();
 		settings.open();
 
-		const control = composableEls.get('config-window-title') as unknown as HTMLElement & {
+		const control = document.getElementById('config-window-title') as unknown as HTMLElement & {
 			write(value: unknown): void;
 		};
 		control.write('From registry');

@@ -1,10 +1,5 @@
 <template>
-	<WindowFrame
-		id="project-settings"
-		:ref="registryRef(composableEls, 'project-settings')"
-		buttons-id-prefix="project"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="project-settings" ref="frame" buttons-id-prefix="project" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.project-settings.title') }}
@@ -24,10 +19,13 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { composableEls } from '@app/composables/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { useProjectSettingsWindow } from '@app/composables/useProjectSettingsWindow';
+import {
+	getProjectSettingsFrame,
+	setProjectSettingsFrame
+} from '@app/composables/project-settings-controls';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import ProjectSettingsDisplaySection from './project-settings/ProjectSettingsDisplaySection.vue';
@@ -40,9 +38,20 @@ const { t } = useI18n();
 
 const settings = useProjectSettingsWindow();
 
+const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+
 const onConfirm = () => {
 	settings.confirm();
 };
+
+onMounted(() => {
+	// 单例要往帧上挂 close / closed / change 监听；各 section 自己交出控件
+	const el = frame.value?.root ?? null;
+	setProjectSettingsFrame(el);
+	onUnmounted(() => {
+		if (getProjectSettingsFrame() === el) setProjectSettingsFrame(null);
+	});
+});
 </script>
 
 <style>

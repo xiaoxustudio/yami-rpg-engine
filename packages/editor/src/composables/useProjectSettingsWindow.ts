@@ -1,5 +1,8 @@
 import { getWindowFormsStore } from '@app/stores/window-forms';
-import { composableEls } from '@app/composables/element-registry';
+import {
+	getProjectSettingsElement,
+	getProjectSettingsFrame
+} from '@app/composables/project-settings-controls';
 import { getLanguage } from '@app/composables/language-window-bridge';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
@@ -276,8 +279,13 @@ let changed = false;
 let tscStarted = false;
 let languageList: { inserting?: boolean } = {};
 
-/** 取注册表里的控件元素 */
-const el = (id: string): YamiElement => composableEls.get(id) as YamiElement;
+/**
+ * 取控件根元素：来自 5 个 section 交出的控件表。
+ *
+ * 这里仍要元素（`on` / `write` / `enableHiddenMode().relate(...)` 都是元素语义），
+ * 但寻址不再经过注册表 —— 窗口未挂载时返回 null，调用点一律可选链。
+ */
+const el = (id: string): YamiElement | null => getProjectSettingsElement(id) as YamiElement | null;
 
 const PARAM_IDS = [
 	'config-window-title',
@@ -328,85 +336,91 @@ const PARAM_IDS = [
 ];
 
 function initialize(): void {
-	if (!composableEls.get('config-window-display')) return;
-	el('config-window-display').loadItems([
+	if (!el('config-window-display')) return;
+	el('config-window-display')?.loadItems?.([
 		{ name: 'Windowed', value: 'windowed' },
 		{ name: 'Maximized', value: 'maximized' },
 		{ name: 'Fullscreen', value: 'fullscreen' }
 	]);
 
-	el('config-collision-actor-enabled').loadItems([
+	el('config-collision-actor-enabled')?.loadItems?.([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	el('config-collision-scene-enabled').loadItems([
+	el('config-collision-scene-enabled')?.loadItems?.([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	el('config-collision-scene-enabled')
-		.enableHiddenMode()
-		.relate([{ case: true, targets: [el('config-collision-scene-actorSize')] }]);
+	const sceneEnabled = el('config-collision-scene-enabled');
+	sceneEnabled?.enableHiddenMode?.();
+	// `enableHiddenMode` 返回 `unknown`（刻意不参与链式调用），所以拆成两句
+	(sceneEnabled as { relate?: (list: unknown[]) => void } | null | undefined)?.relate?.([
+		{ case: true, targets: [el('config-collision-scene-actorSize')] }
+	]);
 
-	el('config-collision-trigger-collideWithActorShape').loadItems([
+	el('config-collision-trigger-collideWithActorShape')?.loadItems?.([
 		{ name: "Collide With Actor's Shape", value: true },
 		{ name: "Collide With Actor's Anchor", value: false }
 	]);
 
-	el('config-text-importedFonts').bind(importedFonts);
+	el('config-text-importedFonts')?.bind?.(importedFonts);
 
-	el('config-text-highDefinition').loadItems([
+	el('config-text-highDefinition')?.loadItems?.([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
 
-	el('config-actor-tempAttributes').bind(new AttributeListInterface());
+	el('config-actor-tempAttributes')?.bind?.(new AttributeListInterface());
 
-	el('config-webgl-desynchronized').loadItems([
+	el('config-webgl-desynchronized')?.loadItems?.([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	el('config-webgl-textureMagFilter').loadItems([
+	el('config-webgl-textureMagFilter')?.loadItems?.([
 		{ name: 'Nearest', value: 'nearest' },
 		{ name: 'Linear', value: 'linear' }
 	]);
 
-	el('config-webgl-textureMinFilter').loadItems([
+	el('config-webgl-textureMinFilter')?.loadItems?.([
 		{ name: 'Nearest', value: 'nearest' },
 		{ name: 'Linear', value: 'linear' }
 	]);
 
-	el('config-script-autoCompile').loadItems([
+	el('config-script-autoCompile')?.loadItems?.([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	el('config-save-location').loadItems([
+	el('config-save-location')?.loadItems?.([
 		{ name: 'App Data', value: 'app-data' },
 		{ name: 'Documents', value: 'documents' },
 		{ name: 'Local Directory', value: 'local' }
 	]);
 
-	el('config-save-location')
-		.enableHiddenMode()
-		.relate([{ case: ['app-data', 'documents'], targets: [el('config-save-subdir')] }]);
+	const saveLocation = el('config-save-location');
+	saveLocation?.enableHiddenMode?.();
+	(saveLocation as { relate?: (list: unknown[]) => void } | null | undefined)?.relate?.([
+		{ case: ['app-data', 'documents'], targets: [el('config-save-subdir')] }
+	]);
 
-	el('config-localization-languages').bind(languages);
+	el('config-localization-languages')?.bind?.(languages);
 
-	el('config-preload').loadItems([
+	el('config-preload')?.loadItems?.([
 		{ name: 'Never', value: 'never' },
 		{ name: 'Always', value: 'always' },
 		{ name: 'Only on Deployment', value: 'deployed' }
 	]);
 
 	window.addEventListener('datachange', projectChange as EventListener);
-	on(composableEls.get('project-settings'), 'close', windowClose);
-	on(composableEls.get('project-settings'), 'closed', windowClosed);
-	on(composableEls.get('project-settings'), 'change', dataChange);
+	const frame = getProjectSettingsFrame();
+	on(frame, 'close', windowClose);
+	on(frame, 'closed', windowClosed);
+	on(frame, 'change', dataChange);
 	for (const id of PARAM_IDS) {
-		const control = composableEls.get(id);
+		const control = el(id);
 		if (control) on(control, 'input', paramInput);
 	}
 }
@@ -419,15 +433,15 @@ function open(): void {
 
 	getProjectStore().state = 'open';
 
-	el('config-soundAttenuation-easingId').loadItems(Data.createEasingItems());
+	el('config-soundAttenuation-easingId')?.loadItems?.(Data.createEasingItems());
 
 	const data = getProjectStore().data;
 	if (data) {
 		Object.assign(form, data);
-		write(composableEls.get('config-virtualAxis-up'), data.virtualAxis.up);
-		write(composableEls.get('config-virtualAxis-down'), data.virtualAxis.down);
-		write(composableEls.get('config-virtualAxis-left'), data.virtualAxis.left);
-		write(composableEls.get('config-virtualAxis-right'), data.virtualAxis.right);
+		write(el('config-virtualAxis-up'), data.virtualAxis.up);
+		write(el('config-virtualAxis-down'), data.virtualAxis.down);
+		write(el('config-virtualAxis-left'), data.virtualAxis.left);
+		write(el('config-virtualAxis-right'), data.virtualAxis.right);
 	}
 }
 
@@ -602,8 +616,9 @@ const languages: LanguagesInterface = {
 	},
 	update: function () {
 		const selectBox = el('config-localization-default');
+		if (!selectBox) return;
 		const defaultLang = read(selectBox);
-		selectBox.loadItems(languages.createValidItems());
+		selectBox.loadItems?.(languages.createValidItems());
 		if (defaultLang) write(selectBox, defaultLang);
 	},
 	createAllItems: function () {
