@@ -1,6 +1,5 @@
 import { particleNodes } from '@app/composables/engine-nodes';
-import { particleEls } from '@app/particle/element-registry';
-import { registryElement } from '@app/utils/element-registry';
+import { particlePanelNodes } from '@app/composables/particle-nodes';
 import { hide } from '@app/utils/element-utils.ts';
 import { getParticleStore } from '@app/stores/particle';
 
@@ -247,19 +246,21 @@ export interface ParticleShape {
 }
 
 export const Particle = {
-	page: particleEls.get('particle') as YamiElement,
-	head: registryElement<HTMLElement & { left: number; width: number; padding?: number }>(
-		particleEls,
-		'particle-head'
-	)!,
-	body: hide(particleEls.get('particle-body') as YamiElement),
-	info: particleEls.get('particle-info') as YamiElement,
-	screen: particleEls.get('particle-screen') as YamiElement & {
+	// 骨架节点由 `ParticlePanel.vue` 交出的表持有；`initialize()` 会再取一次（懒挂载）
+	page: particlePanelNodes.pick('page') as YamiElement,
+	head: particlePanelNodes.pick('head') as HTMLElement & {
+		left: number;
+		width: number;
+		padding?: number;
+	},
+	body: hide(particlePanelNodes.pick('body') as YamiElement),
+	info: particlePanelNodes.pick('info') as YamiElement,
+	screen: particlePanelNodes.pick('screen') as YamiElement & {
 		rawScrollLeft: number;
 		rawScrollTop: number;
 		pointerevent: unknown;
 	},
-	marquee: particleEls.get('particle-marquee') as YamiElement & {
+	marquee: particlePanelNodes.pick('marquee') as YamiElement & {
 		pointerevent: unknown;
 	},
 	list: (particleNodes.pick('list') as never) || ({} as never),

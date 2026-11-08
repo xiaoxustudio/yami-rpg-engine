@@ -11,14 +11,14 @@
 					class="item toolbar-item"
 					id="particle-view-wireframe"
 					v-tip="t('components.particle-view-wireframe.tip')"
-					:ref="registryRef(particleEls, 'particle-view-wireframe')"
+					:ref="bind('viewWireframe')"
 					value="wireframe"
 				></div>
 				<div
 					class="item toolbar-item"
 					id="particle-view-anchor"
 					v-tip="t('components.particle-view-anchor.tip')"
-					:ref="registryRef(particleEls, 'particle-view-anchor')"
+					:ref="bind('viewAnchor')"
 					value="anchor"
 				></div>
 			</div>
@@ -28,7 +28,7 @@
 						class="item toolbar-item"
 						id="particle-control-restart"
 						v-tip="t('components.particle-control-restart.tip')"
-						:ref="registryRef(particleEls, 'particle-control-restart')"
+						:ref="bind('controlRestart')"
 						value="restart"
 						hotkey="R"
 					></div>
@@ -36,7 +36,7 @@
 						class="item toolbar-item"
 						id="particle-control-pause"
 						v-tip="t('components.particle-control-pause.tip')"
-						:ref="registryRef(particleEls, 'particle-control-pause')"
+						:ref="bind('controlPause')"
 						value="pause"
 						hotkey="P"
 					></div>
@@ -55,7 +55,7 @@
 			<div class="box" id="particle-head-end">
 				<SliderBox
 					id="particle-zoom"
-					:ref="registryRef(particleEls, 'particle-zoom')"
+					:ref="bind('zoom')"
 					name="zoom"
 					min="0"
 					max="4"
@@ -90,8 +90,6 @@
 import { onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { particlePanelNodes } from '@app/composables/particle-nodes';
-import { particleEls } from '@app/particle/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';

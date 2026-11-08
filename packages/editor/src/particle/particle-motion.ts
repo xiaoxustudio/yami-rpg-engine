@@ -1,6 +1,6 @@
 import { screenScrollData } from '@app/engine/screen-scroll-data';
 import { Particle } from './particle-window.ts';
-import { particleEls } from '@app/particle/element-registry';
+import { particlePanelNodes } from '@app/composables/particle-nodes';
 import type { ParticleShape } from './particle-window.ts';
 import { Command } from '@app/commands/command-object.ts';
 import { headNavOf, lastNavItemOf } from '@app/engine/layout/layout.ts';
@@ -30,14 +30,14 @@ Particle.redo = function () {
 Particle.setSpeed = (function IIFE() {
 	return function (this: ParticleShape, speed: number) {
 		getParticleStore().speed = speed;
-		const numberBox = particleEls.get('particle-speed') as YamiElement;
+		const numberBox = particlePanelNodes.pick('speed') as YamiElement;
 		if (numberBox) write(numberBox, speed);
 	};
 })();
 
 Particle.setZoom = (function IIFE() {
 	return function (this: ParticleShape, zoom: number) {
-		const slider = particleEls.get('particle-zoom') as YamiElement;
+		const slider = particlePanelNodes.pick('zoom') as YamiElement;
 		if (getParticleStore().zoom !== zoom) {
 			let scale;
 			switch (zoom) {
@@ -648,7 +648,7 @@ Particle.stopRendering = function () {
 
 Particle.switchWireframe = (function IIFE() {
 	return function (this: ParticleShape, enabled: boolean = !getParticleStore().showWireframe) {
-		const item = particleEls.get('particle-view-wireframe') as YamiElement;
+		const item = particlePanelNodes.pick('viewWireframe') as YamiElement;
 		if (enabled) {
 			addClass(item, 'selected');
 		} else {
@@ -661,7 +661,7 @@ Particle.switchWireframe = (function IIFE() {
 
 Particle.switchAnchor = (function IIFE() {
 	return function (this: ParticleShape, enabled: boolean = !getParticleStore().showAnchor) {
-		const item = particleEls.get('particle-view-anchor') as YamiElement;
+		const item = particlePanelNodes.pick('viewAnchor') as YamiElement;
 		if (enabled) {
 			addClass(item, 'selected');
 		} else {
@@ -674,7 +674,7 @@ Particle.switchAnchor = (function IIFE() {
 
 Particle.switchPause = (function IIFE() {
 	return function (this: ParticleShape, enabled: boolean = !getParticleStore().paused) {
-		const item = particleEls.get('particle-control-pause') as YamiElement;
+		const item = particlePanelNodes.pick('controlPause') as YamiElement;
 		getParticleStore().paused = enabled;
 		if (enabled) {
 			addClass(item, 'selected');
