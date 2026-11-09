@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="simulateKey" :ref="registryRef(fieldEls, 'simulateKey')" @confirm="onConfirm">
+	<WindowFrame id="simulateKey" :ref="controlRef('simulateKey')" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.simulateKey.title') }}
@@ -12,7 +12,7 @@
 				:label="t('components.simulateKey-operation.label')"
 				id="simulateKey-operation"
 				v-tip="t('components.simulateKey-operation.tip')"
-				:ref="registryRef(fieldEls, 'simulateKey-operation')"
+				:ref="controlRef('simulateKey-operation')"
 				v-focus
 				v-model="form.operation"
 			/>
@@ -20,7 +20,7 @@
 			<KeyboardBox
 				:label="t('components.simulateKey-keycode.label')"
 				id="simulateKey-keycode"
-				:ref="registryRef(fieldEls, 'simulateKey-keycode')"
+				:ref="controlRef('simulateKey-keycode')"
 				v-tip="t('components.simulateKey-keycode.tip')"
 				@input="onKeycode"
 			/>
@@ -30,12 +30,9 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useControlRefs } from '@app/composables/control-refs';
 import { useSimulateKeyCommandSchema } from '@app/composables/useSimulateKeyCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -44,7 +41,12 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const { t } = useI18n();
 
-const { form, save } = useSimulateKeyCommandSchema();
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'simulateKey' | 'simulateKey-keycode' | 'simulateKey-operation';
+
+const { controls, controlRef } = useControlRefs<Id>();
+
+const { form, save } = useSimulateKeyCommandSchema({ controls: () => controls });
 
 const onKeycode = (value: number) => {
 	form.keycode = value;
@@ -56,7 +58,7 @@ const onConfirm = () => {
 
 onMounted(() => {
 	useLocalizedOptions('simulateKey-operation', ['click', 'press', 'release'], (items) =>
-		fieldEls.get('simulateKey-operation')?.loadItems?.(items)
+		controls['simulateKey-operation']?.loadItems?.(items)
 	);
 });
 </script>

@@ -51,11 +51,12 @@ describe('命令表单 write 循环读注册表', () => {
 		wrapper.unmount();
 	});
 
-	it('SimulateKey：write 循环用到的每个控件 id 都在 composableEls 里', async () => {
+	it('SimulateKey：write 循环的 id 已由窗口控件表接管（不再进注册表）', async () => {
 		const wrapper = await mountSettle(SimulateKey);
 
 		for (const id of loopIds('simulateKey')) {
-			expect(composableEls.get(id), `${id} 未登记`).toBeTruthy();
+			expect(composableEls.get(id), `${id} 不该再登记`).toBeFalsy();
+			expect(document.getElementById(id), `${id} 模板里应存在`).toBeTruthy();
 		}
 
 		wrapper.unmount();
