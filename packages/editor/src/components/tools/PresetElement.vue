@@ -1,10 +1,5 @@
 <template>
-	<WindowFrame
-		id="presetElement"
-		:ref="registryRef(composableEls, 'presetElement')"
-		mode="center"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="presetElement" :ref="bind('frame')" mode="center" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.presetElement.title') }}
@@ -13,20 +8,20 @@
 
 		<CustomBox
 			id="presetElement-uiId"
-			:ref="registryRef(composableEls, 'presetElement-uiId')"
+			:ref="bind('ui')"
 			type="file"
 			filter="ui"
 			@write="onUiIdWrite"
 		/>
 		<TreeList
 			id="presetElement-list"
-			:ref="registryRef(composableEls, 'presetElement-list')"
+			:ref="bind('list')"
 			:node-icon-renderer="nodeIconRenderer"
 			@open="onListOpen"
 		/>
 		<TextBox
 			id="presetElement-searcher"
-			:ref="registryRef(composableEls, 'presetElement-searcher')"
+			:ref="bind('searcher')"
 			name="search"
 			@input="onSearcherInput"
 			@compositionend="onSearcherInput"
@@ -35,9 +30,8 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, type VNode } from 'vue';
-import { composableEls } from '@app/composables/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { h, onMounted, onUnmounted, type VNode } from 'vue';
+import { presetElementNodes } from '@app/composables/window-nodes';
 import { useI18n } from 'vue-i18n';
 import { PresetElement } from '@app/composables/usePresetElementWindow';
 import { Data } from '@app/data/data-object.ts';
@@ -49,6 +43,9 @@ import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const { t } = useI18n();
+
+const { bind, dispose } = presetElementNodes.scoped();
+onUnmounted(dispose);
 
 interface PresetIconNode {
 	class?: string;

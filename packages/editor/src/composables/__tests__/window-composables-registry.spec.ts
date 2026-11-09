@@ -10,6 +10,7 @@ import ObjectGetter from '@app/components/tools/ObjectGetter.vue';
 import { composableEls } from '@app/composables/element-registry';
 import { getTileNodeHandles } from '@app/composables/auto-tile-handles';
 import { getTeamHandles } from '@app/composables/team-handles';
+import { presetElementNodes, presetObjectNodes } from '@app/composables/window-nodes';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
@@ -44,6 +45,13 @@ const expectRegistered = (ids: string[]) => {
 	}
 };
 
+const expectNotRegistered = (ids: string[]) => {
+	for (const id of ids) {
+		expect(composableEls.get(id), `${id} 不该再进注册表`).toBeFalsy();
+		expect(document.getElementById(id), `${id} 模板里应存在`).toBeTruthy();
+	}
+};
+
 describe('窗口 composable 读注册表', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
@@ -68,23 +76,29 @@ describe('窗口 composable 读注册表', () => {
 		wrapper.unmount();
 	});
 
-	it('PresetElement / PresetObject：框架、控件与列表全部登记', async () => {
+	it('PresetElement / PresetObject：框架、控件与列表改由窗口节点表交出', async () => {
 		const a = await mountSettle(PresetElement);
-		expectRegistered([
+		expectNotRegistered([
 			'presetElement',
 			'presetElement-uiId',
 			'presetElement-list',
 			'presetElement-searcher'
 		]);
+		for (const key of ['frame', 'ui', 'list', 'searcher'] as const) {
+			expect(presetElementNodes.get(key), `presetElementNodes.${key} 应交出`).toBeTruthy();
+		}
 		a.unmount();
 
 		const b = await mountSettle(PresetObject);
-		expectRegistered([
+		expectNotRegistered([
 			'presetObject',
 			'presetObject-sceneId',
 			'presetObject-list',
 			'presetObject-searcher'
 		]);
+		for (const key of ['frame', 'scene', 'list', 'searcher'] as const) {
+			expect(presetObjectNodes.get(key), `presetObjectNodes.${key} 应交出`).toBeTruthy();
+		}
 		b.unmount();
 	});
 

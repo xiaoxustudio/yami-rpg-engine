@@ -1,6 +1,6 @@
 import { computed } from 'vue';
 import { getWindowFormsStore } from '@app/stores/window-forms';
-import { composableEls } from '@app/composables/element-registry';
+import { arrayListNodes } from '@app/composables/window-nodes';
 import { h } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { read } from '@app/utils/element-utils';
@@ -236,22 +236,26 @@ const listInterface: ArrayListInterface = {
 	}
 };
 
-const getList = (): YamiElement => composableEls.get('arrayList-list') as YamiElement;
+const getList = (): YamiElement => arrayListNodes.pick('list') as YamiElement;
 
 const initialize = (): void => {
 	const list = getList();
 	if (!list) return;
 	list.bind(listInterface);
 
-	composableEls.get('arrayList')?.addEventListener?.('close', windowClose);
-	composableEls.get('arrayList')?.addEventListener?.('closed', windowClosed);
+	arrayListNodes.pick('frame')?.addEventListener?.('close', windowClose);
+	arrayListNodes.pick('frame')?.addEventListener?.('closed', windowClosed);
 };
 
 const open = (target: ArrayListTarget): void => {
 	targetState = target;
 	const label = target.previousSibling;
 	const alias = label.textContent;
-	composableEls.get('arrayList')?.setTitle?.(alias);
+	// 窗口标题写在帧元素上（`WindowFrame` 把 `setTitle` 挂到根元素）
+	const frame = arrayListNodes.pick('frame') as
+		| (HTMLElement & { setTitle?: (title: string) => void })
+		| null;
+	frame?.setTitle?.(alias ?? '');
 	openForm(read(target).slice(), (value) => {
 		targetState?.input?.(value);
 	});

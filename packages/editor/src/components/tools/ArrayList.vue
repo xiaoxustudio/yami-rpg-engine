@@ -12,8 +12,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { composableEls } from '@app/composables/element-registry';
-import { registerElement } from '@app/utils/element-registry';
+import { arrayListNodes } from '@app/composables/window-nodes';
 import { useArrayWindow } from '@app/composables/useArrayWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -46,8 +45,8 @@ watch(
 );
 
 onMounted(() => {
-	registerElement(composableEls, 'arrayList-list', elList.value);
-	registerElement(composableEls, 'arrayList', frame.value);
+	arrayListNodes.set('list', elList.value?.root ?? null);
+	arrayListNodes.set('frame', frame.value?.root ?? null);
 	const el = frame.value?.root;
 	if (el) {
 		on(el, 'closed', () => arrayWindow.onWindowClosed());

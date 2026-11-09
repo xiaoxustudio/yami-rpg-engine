@@ -1,5 +1,5 @@
 import { treeRowCount, treeRowItemAt, type TreeListRowApi } from '@ui-kit';
-import { composableEls } from '@app/composables/element-registry';
+import { presetObjectNodes } from '@app/composables/window-nodes';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
@@ -75,17 +75,17 @@ let nodes: PresetObjectNode[] | null = null;
 let initializedElement: PresetObjectListElement | null = null;
 
 function initialize(): void {
-	const current = composableEls.get('presetObject-list') as PresetObjectListElement | null;
+	const current = presetObjectNodes.pick('list') as PresetObjectListElement | null;
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
-	scene = composableEls.get('presetObject-sceneId') as YamiElement;
+	scene = presetObjectNodes.pick('scene') as YamiElement;
 	list = current;
-	searcher = composableEls.get('presetObject-searcher') as YamiElement;
+	searcher = presetObjectNodes.pick('searcher') as YamiElement;
 	list.bind(() => nodes);
 	searcher.addCloseButton();
 	on(searcher, 'keydown', searcherKeydown);
-	composableEls.get('presetObject')?.addEventListener('closed', windowClosed);
+	presetObjectNodes.pick('frame')?.addEventListener('closed', windowClosed);
 }
 
 function open(openTarget: PresetObjectTarget): void {

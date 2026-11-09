@@ -1,5 +1,5 @@
 import { treeRowCount, treeRowItemAt, type TreeListRowApi } from '@ui-kit';
-import { composableEls } from '@app/composables/element-registry';
+import { presetElementNodes } from '@app/composables/window-nodes';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
@@ -67,16 +67,16 @@ let nodes: PresetElementNode[] | null = null;
 let initializedElement: PresetElementList | null = null;
 
 function initialize(): void {
-	const current = composableEls.get('presetElement-list') as PresetElementList | null;
+	const current = presetElementNodes.pick('list') as PresetElementList | null;
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
-	ui = composableEls.get('presetElement-uiId') as YamiElement;
+	ui = presetElementNodes.pick('ui') as YamiElement;
 	list = current;
-	searcher = composableEls.get('presetElement-searcher') as YamiElement;
+	searcher = presetElementNodes.pick('searcher') as YamiElement;
 	list.bind(() => nodes);
 	on(searcher, 'keydown', searcherKeydown);
-	composableEls.get('presetElement')?.addEventListener('closed', windowClosed);
+	presetElementNodes.pick('frame')?.addEventListener('closed', windowClosed);
 }
 
 function open(openTarget: PresetElementTarget): void {

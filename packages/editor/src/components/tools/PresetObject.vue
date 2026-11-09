@@ -1,10 +1,5 @@
 <template>
-	<WindowFrame
-		id="presetObject"
-		:ref="registryRef(composableEls, 'presetObject')"
-		mode="center"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="presetObject" :ref="bind('frame')" mode="center" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.presetObject.title') }}
@@ -13,20 +8,20 @@
 
 		<CustomBox
 			id="presetObject-sceneId"
-			:ref="registryRef(composableEls, 'presetObject-sceneId')"
+			:ref="bind('scene')"
 			type="file"
 			filter="scene"
 			@write="onSceneIdWrite"
 		/>
 		<TreeList
 			id="presetObject-list"
-			:ref="registryRef(composableEls, 'presetObject-list')"
+			:ref="bind('list')"
 			:node-icon-renderer="nodeIconRenderer"
 			@open="onListOpen"
 		/>
 		<TextBox
 			id="presetObject-searcher"
-			:ref="registryRef(composableEls, 'presetObject-searcher')"
+			:ref="bind('searcher')"
 			name="search"
 			@input="onSearcherInput"
 			@compositionend="onSearcherInput"
@@ -35,9 +30,8 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, type VNode } from 'vue';
-import { composableEls } from '@app/composables/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { h, onMounted, onUnmounted, type VNode } from 'vue';
+import { presetObjectNodes } from '@app/composables/window-nodes';
 import { useI18n } from 'vue-i18n';
 import { PresetObject } from '@app/composables/usePresetObjectWindow';
 import { Data } from '@app/data/data-object.ts';
@@ -50,6 +44,9 @@ import TreeList from '@app/components/common/TreeList.vue';
 import { encodeURL } from '@app/utils/css';
 
 const { t } = useI18n();
+
+const { bind, dispose } = presetObjectNodes.scoped();
+onUnmounted(dispose);
 
 interface PresetIconNode {
 	class?: string;
