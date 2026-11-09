@@ -1,4 +1,5 @@
 import { $ } from '@app/utils/dom';
+import { shellNodes } from '@app/composables/shell-nodes';
 import { createElementRegistry, registerElement } from '@app/utils/element-registry';
 import { addClass, removeClass } from '@app/utils/element-utils';
 import { getWindowKeydowns } from '@app/tools/window-keydown-registry';
@@ -211,7 +212,7 @@ Window.open = function (this: typeof Window, id: string) {
 	if (!frames.includes(element)) {
 		(element as WindowFrame).open();
 		if (!Title.target) {
-			Title.target = windowShellEls.get('title') as typeof Title.target;
+			Title.target = shellNodes.pick('title') as typeof Title.target;
 		}
 		if (Title.target) {
 			Title.target.tabIndex = -1;

@@ -1,10 +1,5 @@
 <template>
-	<div
-		class="box"
-		id="title"
-		:ref="registryRef(windowShellEls, 'title')"
-		@pointerenter="onTitlePointerenter"
-	>
+	<div class="box" id="title" :ref="bind('title')" @pointerenter="onTitlePointerenter">
 		<div
 			class="box"
 			id="menu"
@@ -34,7 +29,7 @@
 		</div>
 		<TabBar
 			id="title-tabBar"
-			:ref="registryRef(titleEls, 'title-tabBar')"
+			:ref="bind('tabBar')"
 			@select="onTabBarSelect"
 			@closed="onTabBarClosed"
 			@popup="onTabBarPopup"
@@ -44,7 +39,7 @@
 				class="box"
 				id="title-play"
 				v-tip="t('components.title-play.tip')"
-				:ref="registryRef(titleEls, 'title-play')"
+				:ref="bind('play')"
 				hotkey="F4"
 				:class="{ selected: title.playing }"
 				@click="onPlayClick"
@@ -55,7 +50,7 @@
 			<div class="maximize" id="title-maximize" @click="onMaximizeClick"></div>
 			<div class="close" id="title-close" @click="onCloseClick"></div>
 		</div>
-		<div id="title-app-region" :ref="registryRef(titleEls, 'title-app-region')" />
+		<div id="title-app-region" :ref="bind('appRegion')" />
 	</div>
 	<LayoutPanel />
 	<Teleport to="#project-browser">
@@ -89,9 +84,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import TabBar from './components/common/TabBar.vue';
-import { titleEls } from '@app/title/element-registry';
-import { windowShellEls } from '@app/tools/window-object.ts';
-import { registryRef } from '@app/utils/element-registry';
+import { shellNodes } from '@app/composables/shell-nodes';
 import FileBrowser from './components/file-browser/FileBrowser.vue';
 import SearchHistoryDropdown from './components/file-browser/SearchHistoryDropdown.vue';
 import LayoutPanel from './components/layout/LayoutPanel.vue';
@@ -129,6 +122,9 @@ import { Menu } from '@app/components/menu-list';
 import { inspectorPages } from '@app/components/inspector/inspector-pages';
 
 const { t } = useI18n();
+
+// 外壳节点（标题栏 / 标签栏 / 播放按钮）交给模块：`title-bar.ts` 与 `window-object.ts` 读表
+const { bind } = shellNodes.scoped();
 
 const instance = getCurrentInstance();
 if (instance) setToolWindowHostContext(instance.appContext);

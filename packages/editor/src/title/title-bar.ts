@@ -1,7 +1,6 @@
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
-import { windowShellEls } from '@app/tools/window-object.ts';
-import { titleEls } from '@app/title/element-registry';
-import { uiEls } from '@app/engine/ui/element-registry';
+import { shellNodes } from '@app/composables/shell-nodes';
+import { uiNodes } from '@app/composables/ui-nodes';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
@@ -33,7 +32,6 @@ import { NewProject } from './new-project-window.ts';
 import type { YamiElement } from '@app/types/element-api';
 import type { YamiEvent, YamiMouseEvent } from '@app/types/editor-event';
 import { remove } from '@app/utils/array';
-import { registryElement } from '@app/utils/element-registry';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -171,8 +169,8 @@ export const Title = {
 } satisfies Partial<TitleShape> as TitleShape;
 
 Title.initialize = function (this: TitleShape) {
-	this.target = windowShellEls.get('title') as YamiElement;
-	this.tabBar = registryElement<TitleTabBarShape>(titleEls, 'title-tabBar')!;
+	this.target = shellNodes.pick('title') as YamiElement;
+	this.tabBar = shellNodes.pick('tabBar') as TitleTabBarShape;
 	if (this.tabBar) this.tabBar.data = [];
 	void YamiIpc.invoke.updateMaxMinIcon().then((mode: string) => {
 		switch (mode) {
@@ -188,7 +186,7 @@ Title.initialize = function (this: TitleShape) {
 		}
 	});
 
-	this.target.element = titleEls.get('title-app-region') as HTMLElement;
+	this.target.element = shellNodes.pick('appRegion') as HTMLElement;
 
 	this.pointerenter!();
 
@@ -398,7 +396,7 @@ Title.dispatchThemechangeEvent = (function IIFE() {
 })();
 
 Title.playGame = async function (this: TitleShape) {
-	const element = titleEls.get('title-play') as YamiElement;
+	const element = shellNodes.pick('play') as YamiElement;
 	if (Editor.state === 'open' && !getTitleStore().playing) {
 		getTitleStore().setPlaying(true);
 		addClass(element, 'selected');
@@ -618,7 +616,7 @@ Title.tabBarPointerdown = function (this: TitleShape, _event: YamiEvent) {
 			Layout.readyToFocus(Scene.screen);
 			break;
 		case 'ui':
-			Layout.readyToFocus(uiEls.get('ui-screen') as never);
+			Layout.readyToFocus(uiNodes.pick('screen') as never);
 			break;
 		case 'animation':
 			Layout.readyToFocus(Animation.screen);
@@ -646,7 +644,7 @@ Title.tabBarSelect = function (this: TitleShape, event: YamiEvent) {
 			Layout.manager.switch('ui');
 			void getUIStore()
 				.open(context)
-				.then(() => uiEls.get('ui-screen')?.focus())
+				.then(() => uiNodes.pick('screen')?.focus())
 				.catch((error: unknown) => console.warn('[ui] open failed:', error));
 			break;
 		case 'animation':
