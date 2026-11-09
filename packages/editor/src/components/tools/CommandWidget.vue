@@ -1,24 +1,18 @@
 <template>
-	<WindowFrame
-		id="command-widget"
-		:ref="registryRef(commandSuggestionEls, 'command-widget')"
-		no-buttons
-	>
+	<WindowFrame id="command-widget" :ref="bind('widget')" no-buttons>
 		<div class="text" id="command-searcher-mark">&gt;</div>
-		<TextBox
-			:label="'&gt;'"
-			id="command-searcher"
-			:ref="registryRef(commandSuggestionEls, 'command-searcher')"
-		/>
+		<TextBox :label="'&gt;'" id="command-searcher" :ref="bind('searcher')" />
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TextBox from '@app/components/common/TextBox.vue';
-import { commandSuggestionEls } from '@app/commands/command-tip';
-import { registryRef } from '@app/utils/element-registry';
+import { commandSuggestionNodes } from '@app/composables/suggestion-nodes';
+
+const { bind, dispose } = commandSuggestionNodes.scoped();
+onUnmounted(dispose);
 
 onMounted(() => {});
 </script>

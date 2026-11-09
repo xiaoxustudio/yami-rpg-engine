@@ -9,7 +9,7 @@ import {
 	type TreeListRowApi
 } from '@ui-kit';
 import { elementDataOf } from '@ui-kit';
-import { createElementRegistry, registryElement } from '@app/utils/element-registry';
+import { textSuggestionNodes } from '@app/composables/suggestion-nodes';
 import { getWindowStore } from '@app/stores/window';
 import { hasClass, hide, on, rect, show } from '@app/utils/element-utils';
 import { createDetachedElement } from '@app/utils/dom';
@@ -132,11 +132,9 @@ function createEmptyList(): TextSuggestionList {
 	};
 }
 
-export const textSuggestionEls = createElementRegistry();
-
 export const TextSuggestion: TextSuggestionShape = {
 	list:
-		registryElement<TextSuggestionList>(textSuggestionEls, 'text-suggestions') ??
+		(textSuggestionNodes.pick('suggestions') as unknown as TextSuggestionList) ??
 		createEmptyList(),
 	inserting: false,
 	target: null,
@@ -160,7 +158,7 @@ TextSuggestion.list.updateNodeElement = null;
 TextSuggestion.list.selectDefaultCommand = null;
 
 TextSuggestion.initialize = function (this: TextSuggestionShape): void {
-	const element = registryElement<TextSuggestionList>(textSuggestionEls, 'text-suggestions');
+	const element = textSuggestionNodes.pick('suggestions') as unknown as TextSuggestionList;
 	if (element && element !== this.list) {
 		element.updateNodeElement = this.list.updateNodeElement;
 		element.selectDefaultCommand = this.list.selectDefaultCommand;

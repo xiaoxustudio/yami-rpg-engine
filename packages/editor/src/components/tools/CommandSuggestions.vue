@@ -1,7 +1,7 @@
 <template>
 	<TreeList
 		id="command-suggestions"
-		:ref="registryRef(commandSuggestionEls, 'command-suggestions')"
+		:ref="bind('suggestions')"
 		class="hidden"
 		:node-extras="nodeExtras"
 		:node-icon-renderer="nodeIconRenderer"
@@ -9,10 +9,9 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, type VNode } from 'vue';
+import { h, onMounted, onUnmounted, type VNode } from 'vue';
 import { getLocalStore } from '@app/stores/local';
-import { commandSuggestionEls } from '@app/commands/command-tip';
-import { registryRef } from '@app/utils/element-registry';
+import { commandSuggestionNodes } from '@app/composables/suggestion-nodes';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const local = getLocalStore();
@@ -46,6 +45,9 @@ const nodeExtras = (item: unknown): VNode[] => {
 	}
 	return nodes;
 };
+
+const { bind, dispose } = commandSuggestionNodes.scoped();
+onUnmounted(dispose);
 
 onMounted(() => {});
 </script>

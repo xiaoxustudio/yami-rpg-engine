@@ -9,7 +9,7 @@ import {
 	type TreeListRowApi
 } from '@ui-kit';
 import { elementDataOf } from '@ui-kit';
-import { createElementRegistry, registryElement } from '@app/utils/element-registry';
+import { commandSuggestionNodes } from '@app/composables/suggestion-nodes';
 import { Window } from '@app/tools/window-object.ts';
 import { getWindowStore } from '@app/stores/window';
 import {
@@ -140,21 +140,16 @@ export const CommandSuggestion = {
 	listOpen: null
 } satisfies Partial<CommandSuggestionShape> as CommandSuggestionShape;
 
-export const commandSuggestionEls = createElementRegistry();
-
 function ensureDomBound() {
 	if (CommandSuggestion.widget) return;
-	const widget = registryElement<CommandSuggestionWidget>(commandSuggestionEls, 'command-widget');
+	const widget = commandSuggestionNodes.pick('widget') as CommandSuggestionWidget | null;
 	if (!widget) return;
 	CommandSuggestion.widget = widget;
-	CommandSuggestion.searcher = registryElement<CommandSuggestionSearcher>(
-		commandSuggestionEls,
-		'command-searcher'
-	)!;
-	CommandSuggestion.list = registryElement<HTMLElement & CommandSuggestionList>(
-		commandSuggestionEls,
-		'command-suggestions'
-	)!;
+	CommandSuggestion.searcher = commandSuggestionNodes.pick(
+		'searcher'
+	) as CommandSuggestionSearcher;
+	CommandSuggestion.list = commandSuggestionNodes.pick('suggestions') as HTMLElement &
+		CommandSuggestionList;
 	bindListMethods();
 }
 
