@@ -5,8 +5,7 @@
 
 <script setup lang="ts">
 import { onMounted, provide, ref, onUnmounted } from 'vue';
-import { registryElements } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { sceneActorNodes } from '@app/composables/inspector-page-nodes';
 import { useSceneActorPage } from '@app/composables/useSceneActorPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { useEventListener } from '@app/composables/useEventListener';
@@ -41,20 +40,20 @@ onMounted(() => {
 	onUnmounted(() => inspectorPageSync.sceneActor.reset(bridgeApi));
 	datachangeHandler.value = editor.datachange as EventListener;
 	datachangeEnabled.value = true;
-	const elements = registryElements(inspectorEls, [
-		'sceneActor-name',
-		'sceneActor-type',
-		'sceneActor-actorId',
-		'sceneActor-teamId',
-		'sceneActor-x',
-		'sceneActor-y',
-		'sceneActor-angle',
-		'sceneActor-scale'
-	]);
-	const sliders = registryElements(inspectorEls, [
-		'sceneActor-angle-slider',
-		'sceneActor-scale-slider'
-	]);
+	const elements = [
+		sceneActorNodes.pick('name'),
+		sceneActorNodes.pick('type'),
+		sceneActorNodes.pick('actorId'),
+		sceneActorNodes.pick('teamId'),
+		sceneActorNodes.pick('x'),
+		sceneActorNodes.pick('y'),
+		sceneActorNodes.pick('angle'),
+		sceneActorNodes.pick('scale')
+	].filter((el): el is HTMLElement => el != null);
+	const sliders = [
+		sceneActorNodes.pick('angleSlider'),
+		sceneActorNodes.pick('scaleSlider')
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, editor, Scene);
 	bindSliders(sliders);
 

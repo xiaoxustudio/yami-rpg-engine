@@ -108,3 +108,29 @@ export const uiButtonNodes = createSkeletonTable<UiButtonNodeKey>({
 	letterSpacingSlider: 'uiButton-letterSpacing-slider',
 	textPaddingSlider: 'uiButton-textPadding-slider'
 });
+
+/** 场景角色页：8 个输入 + 2 个滑块。 */
+export type SceneActorNodeKey =
+	| 'name'
+	| 'type'
+	| 'actorId'
+	| 'teamId'
+	| 'x'
+	| 'y'
+	| 'angle'
+	| 'scale'
+	| 'angleSlider'
+	| 'scaleSlider';
+
+export const sceneActorNodes = createSkeletonTable<SceneActorNodeKey>({
+	name: 'sceneActor-name',
+	type: 'sceneActor-type',
+	actorId: 'sceneActor-actorId',
+	teamId: 'sceneActor-teamId',
+	x: 'sceneActor-x',
+	y: 'sceneActor-y',
+	angle: 'sceneActor-angle',
+	scale: 'sceneActor-scale',
+	angleSlider: 'sceneActor-angle-slider',
+	scaleSlider: 'sceneActor-scale-slider'
+});

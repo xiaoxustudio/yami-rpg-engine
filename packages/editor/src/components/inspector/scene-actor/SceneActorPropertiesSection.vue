@@ -8,7 +8,7 @@
 			<TextBox
 				:label="t('components.sceneActor-name.label') || 'Name'"
 				id="sceneActor-name"
-				:ref="registryRef(inspectorEls, 'sceneActor-name')"
+				:ref="bind('name')"
 				v-tip="t('components.sceneActor-name.tip')"
 				v-model="form.name"
 				@input="onParamInput"
@@ -26,7 +26,7 @@
 			<div class="text">{{ t('components.sceneActor-actorId.label') || 'Actor' }}</div>
 			<CustomBox
 				id="sceneActor-actorId"
-				:ref="registryRef(inspectorEls, 'sceneActor-actorId')"
+				:ref="bind('actorId')"
 				v-tip="t('components.sceneActor-actorId.tip')"
 				:model-value="form.actorId"
 				type="file"
@@ -38,7 +38,7 @@
 				:label="t('components.sceneActor-teamId.label') || 'Team'"
 				id="sceneActor-teamId"
 				v-tip="t('components.sceneActor-teamId.tip')"
-				:ref="registryRef(inspectorEls, 'sceneActor-teamId')"
+				:ref="bind('teamId')"
 				v-model="form.teamId"
 				@input="onParamInput"
 			></SelectBox>
@@ -46,7 +46,7 @@
 			<NumberBox
 				:label="t('components.sceneActor-x.label') || 'X'"
 				id="sceneActor-x"
-				:ref="registryRef(inspectorEls, 'sceneActor-x')"
+				:ref="bind('x')"
 				v-tip="t('components.sceneActor-x.tip')"
 				v-model="form.x"
 				min="-128"
@@ -59,7 +59,7 @@
 			<NumberBox
 				:label="t('components.sceneActor-y.label') || 'Y'"
 				id="sceneActor-y"
-				:ref="registryRef(inspectorEls, 'sceneActor-y')"
+				:ref="bind('y')"
 				v-tip="t('components.sceneActor-y.tip')"
 				v-model="form.y"
 				min="-128"
@@ -126,10 +126,9 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { sceneActorNodes } from '@app/composables/inspector-page-nodes';
 import { Inspector } from '@app/inspector/inspector.ts';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -141,6 +140,9 @@ import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { sceneActorContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { bind, dispose } = sceneActorNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(sceneActorContextKey)!;
 
 const onTypeWrite = (value: unknown) => {
@@ -168,11 +170,11 @@ const synchronize = (
 };
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneActor-type', elType.value);
-	registerElement(inspectorEls, 'sceneActor-angle', elAngle.value);
-	registerElement(inspectorEls, 'sceneActor-scale', elScale.value);
-	registerElement(inspectorEls, 'sceneActor-angle-slider', elAngleSlider.value);
-	registerElement(inspectorEls, 'sceneActor-scale-slider', elScaleSlider.value);
+	sceneActorNodes.set('type', elType.value?.root ?? null);
+	sceneActorNodes.set('angle', elAngle.value?.root ?? null);
+	sceneActorNodes.set('scale', elScale.value?.root ?? null);
+	sceneActorNodes.set('angleSlider', elAngleSlider.value?.root ?? null);
+	sceneActorNodes.set('scaleSlider', elScaleSlider.value?.root ?? null);
 	elType.value?.loadItems([
 		{
 			name: t('components.sceneActor-type.options.local.name'),

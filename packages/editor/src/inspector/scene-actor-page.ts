@@ -1,7 +1,7 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { getElementWriter } from '@app/utils/dom';
 import { getSceneActorMeta } from '@app/composables/inspector-section-bridges';
-import { inspectorEls } from './element-registry.ts';
+import { sceneActorNodes } from '@app/composables/inspector-page-nodes';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -67,7 +67,7 @@ import { radians } from '@app/utils/math';
 		if (this.target !== actor) {
 			this.target = actor;
 
-			const elTeamId = inspectorEls.get('sceneActor-teamId') as YamiElement;
+			const elTeamId = sceneActorNodes.pick('teamId') as YamiElement;
 			elTeamId.loadItems(Data.createTeamItems!());
 
 			const write = getElementWriter('sceneActor', actor);
@@ -148,7 +148,7 @@ import { radians } from '@app/utils/math';
 
 	SceneActor.datachange = function (this: typeof SceneActor, event: Event & { key: string }) {
 		if (this.target && event.key === 'teams') {
-			const elTeamId = inspectorEls.get('sceneActor-teamId') as YamiElement;
+			const elTeamId = sceneActorNodes.pick('teamId') as YamiElement;
 			elTeamId.loadItems(Data.createTeamItems!());
 			this.target.teamId = '';
 			elTeamId.update();
