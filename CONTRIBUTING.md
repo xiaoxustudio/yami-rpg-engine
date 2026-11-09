@@ -78,6 +78,27 @@ node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --appl
 - **单例长期持有元素**（`image-crop-window.ts`、`enum-window.ts`、`tile-frame-index.ts`：把 list / panel / inputs 存成字段、跨 open/close 复用，还会往元素上挂方法）→ 窗口挂载时**一次性交出句柄表**（`composables/image-crop-handles.ts`、`enum-handles.ts`、`frame-index-handles.ts`），卸载注销；单例只读这份表。这类不能按「每次取一次元素」改，否则每次调用都要重新解析一遍；
 - **一批控件跨多个组件、单例都要**（`element-page.ts` 要页面 5 个 + general section 3 个 + transform section 17 个）→ **页持有控件表**：页面建表并 `provide(KEY)`，各 section 挂载时把自己那一半填进去，单例经桥按 key 读（`composables/ui-element-page-controls.ts`）。一个组件的 section 拆得越散，这条越省事。
 
+**引擎骨架 / 页面节点用「类型化小表」（第六种，也是现在的主力）**
+
+一批**长期存在、单实例、只有一两个主人**的节点（场景面板、粒子面板、动画骨架、inspector 各页的列表控件、命令面板、浮层）不再进共享注册表，而是各建一张 `createSkeletonTable<K>({ key: '稳定 id' })`（`composables/skeleton-table.ts`）：
+
+```ts
+export const sceneNodes = createSkeletonTable<SceneNodeKey>({ page: 'scene', head: 'scene-head' });
+
+// 组件侧：一个 scoped() 换掉一屏 registryRef
+const { bind, dispose } = sceneNodes.scoped();
+onUnmounted(dispose);
+// <div id="scene" :ref="bind('page')">
+
+// 引擎/页面模块侧：pick 读表
+const page = sceneNodes.pick('page');
+```
+
+- **`pick` 里的 id 兜底是刻意的**（引擎初始化可能早于组件挂载），删了会变成竞态 bug；
+- 模块级单例（`SearchString`、`useProjectSettingsWindow`、`CustomCommand`）**没有组件树**，所以表放在模块里：窗口挂载时 `bind` / `set`，模块 `pick`；
+- 页面 + 多 section 的形态（项目设置、inspector 页）用**登记式表**（`project-settings-controls.ts`、`inspector-scene-nodes.ts`）：section `set` 自己那一半、页面 `pick`；
+- 这些表的收益是**同一条轴**：消费方不再按 id 摸注册表，`element-registry-lookups` 才会下降；但节点本身仍可能挂着元素 API（`on` / `write` / `relate` 的 targets），那是 P3 的事，**不要**在这一步顺手改写成组件实例。
+
 
 
 **目标契约**：控件 = 组件实例，能力来自 `defineExpose`；控件寻址不再经过 `ElementRegistry`。按消费方分三条路径，**不要混用**：
