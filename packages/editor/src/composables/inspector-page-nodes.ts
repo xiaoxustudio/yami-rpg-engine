@@ -616,3 +616,10 @@ export const fileUiPageNodes = createSkeletonTable<FileUiPageNodeKey>({
 	width: 'fileUI-width',
 	height: 'fileUI-height'
 });
+
+/** 文件瓦片集页：图片框（页面模块按它启停）。 */
+export type FileTilesetNodeKey = 'image';
+
+export const fileTilesetNodes = createSkeletonTable<FileTilesetNodeKey>({
+	image: 'fileTileset-image'
+});

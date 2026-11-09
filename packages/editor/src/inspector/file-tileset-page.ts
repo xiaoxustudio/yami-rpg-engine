@@ -1,5 +1,5 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
-import { inspectorEls } from './element-registry.ts';
+import { fileTilesetNodes } from '@app/composables/inspector-page-nodes';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass, disable, enable, read, removeClass } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
@@ -77,10 +77,10 @@ import { Scene } from '@app/scene/scene-window.ts';
 
 			switch (tileset.type) {
 				case 'normal':
-					enable(inspectorEls.get('fileTileset-image'));
+					enable(fileTilesetNodes.pick('image'));
 					break;
 				case 'auto':
-					disable(inspectorEls.get('fileTileset-image'));
+					disable(fileTilesetNodes.pick('image'));
 					break;
 			}
 

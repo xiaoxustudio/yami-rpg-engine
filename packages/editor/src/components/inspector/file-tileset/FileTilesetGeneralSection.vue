@@ -8,7 +8,7 @@
 			<CustomBox
 				id="fileTileset-image"
 				v-tip="t('components.fileTileset-image.tip')"
-				:ref="registryRef(inspectorEls, 'fileTileset-image')"
+				:ref="bindTileset('image')"
 				v-model="form.image"
 				type="file"
 				filter="image"
@@ -108,8 +108,7 @@
 <script setup lang="ts">
 import { inject, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { registryRef } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry';
+import { fileTilesetNodes } from '@app/composables/inspector-page-nodes';
 import { paletteNodes } from '@app/composables/palette-nodes';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -119,6 +118,10 @@ import { fileTilesetContextKey } from './context.ts';
 
 const { bind, dispose } = paletteNodes.scoped();
 onUnmounted(dispose);
+
+// 图片框归 inspector 页的表；同一组件里已经有一个 `bind`，所以换个名字
+const { bind: bindTileset, dispose: disposeTileset } = fileTilesetNodes.scoped();
+onUnmounted(disposeTileset);
 
 const { t } = useI18n();
 const { form, onParamInput } = inject(fileTilesetContextKey)!;
