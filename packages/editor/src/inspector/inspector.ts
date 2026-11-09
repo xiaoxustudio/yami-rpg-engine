@@ -1,7 +1,7 @@
 import type { AnimationMotionData } from '@app/animation/animation-window.ts';
+import { inspectorPanelNodes } from '@app/composables/page-shell-nodes';
 import { Window } from '@app/tools/window-object.ts';
 import { elementDataOf } from '@ui-kit';
-import { inspectorEls } from './element-registry.ts';
 import { hasScrollBar, listenDraggingScrollbarEvent, read, write } from '@app/utils/element-utils';
 import { ParamHistory, registerParamHistoryProcessors } from '@app/composables/useParamHistory';
 
@@ -158,7 +158,7 @@ Inspector.initialize = function (this: typeof Inspector) {
 	if (this._initialized) {
 		return;
 	}
-	this.manager = inspectorEls.get('inspector-page-manager') as YamiElement;
+	this.manager = inspectorPanelNodes.pick('pageManager') as YamiElement;
 	if (!this.manager) return;
 	managerData(this.manager).focusing = null;
 	this.manager.oldValue = null;
@@ -216,7 +216,7 @@ Inspector.initialize = function (this: typeof Inspector) {
 		editor.owner.setTarget(target, meta);
 	};
 
-	inspectorEls.get('inspector')?.addEventListener?.('resize', this.inspectorResize);
+	inspectorPanelNodes.pick('panel')?.addEventListener?.('resize', this.inspectorResize);
 	this.manager.addEventListener('keydown', this.managerKeydown);
 
 	const initSub = (name: string) => {

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
+import { selectorNodes } from '@app/composables/page-shell-nodes';
 import { GlobalClipboard } from '@app/utils/clipboard';
-import { storesEls } from '@app/stores/element-registry';
 import type { MenuItem } from '@ui-kit';
 import { getWindowStore } from '@app/stores/window';
 import { shallowRef } from 'vue';
@@ -118,8 +118,8 @@ export const useSelectorStore = defineStore('selector', () => {
 		Selector.body?.on?.('open', bodyOpen);
 		Selector.body?.on?.('popup', bodyPopup);
 		Selector.head?.searcher?.on?.('keydown', searcherKeydown);
-		(storesEls.get('selector') as YamiElement)?.on?.('closed', windowClosed);
-		(storesEls.get('selector') as YamiElement)?.on?.('resize', windowResize);
+		(selectorNodes.pick('panel') as YamiElement)?.on?.('closed', windowClosed);
+		(selectorNodes.pick('panel') as YamiElement)?.on?.('resize', windowResize);
 		EventBus.once('editor_loaded', () => {
 			applyLocalizedTip(Selector.head?.searcher, 'selector-search');
 		});

@@ -1,4 +1,4 @@
-import { titleEls } from '@app/title/element-registry';
+import { windowProgressNodes } from '@app/composables/page-shell-nodes';
 import { getWindowProgress } from '@app/composables/title-window-bridges';
 
 export function showBootProgress(label: string, current?: number, total?: number): void {
@@ -8,7 +8,7 @@ export function showBootProgress(label: string, current?: number, total?: number
 			? `${label} ${current}/${total}`
 			: label
 	);
-	const bar = titleEls.get('windowProgress-bar') as HTMLElement | null;
+	const bar = windowProgressNodes.pick('bar');
 	if (!bar) return;
 	if (current !== undefined && total !== undefined && total > 0) {
 		bar.style.width = `${Math.round((current / total) * 100)}%`;
