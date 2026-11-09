@@ -134,3 +134,103 @@ export const sceneActorNodes = createSkeletonTable<SceneActorNodeKey>({
 	angleSlider: 'sceneActor-angle-slider',
 	scaleSlider: 'sceneActor-scale-slider'
 });
+
+/** 场景灯光页：输入 + 滑块。 */
+export type SceneLightNodeKey =
+	| 'name'
+	| 'type'
+	| 'blend'
+	| 'x'
+	| 'y'
+	| 'range'
+	| 'intensity'
+	| 'mask'
+	| 'anchorX'
+	| 'anchorY'
+	| 'width'
+	| 'height'
+	| 'angle'
+	| 'red'
+	| 'green'
+	| 'blue'
+	| 'direct'
+	| 'rangeSlider'
+	| 'intensitySlider'
+	| 'anchorXSlider'
+	| 'anchorYSlider'
+	| 'widthSlider'
+	| 'heightSlider'
+	| 'angleSlider'
+	| 'redSlider'
+	| 'greenSlider'
+	| 'blueSlider'
+	| 'directSlider';
+
+export const sceneLightNodes = createSkeletonTable<SceneLightNodeKey>({
+	name: 'sceneLight-name',
+	type: 'sceneLight-type',
+	blend: 'sceneLight-blend',
+	x: 'sceneLight-x',
+	y: 'sceneLight-y',
+	range: 'sceneLight-range',
+	intensity: 'sceneLight-intensity',
+	mask: 'sceneLight-mask',
+	anchorX: 'sceneLight-anchorX',
+	anchorY: 'sceneLight-anchorY',
+	width: 'sceneLight-width',
+	height: 'sceneLight-height',
+	angle: 'sceneLight-angle',
+	red: 'sceneLight-red',
+	green: 'sceneLight-green',
+	blue: 'sceneLight-blue',
+	direct: 'sceneLight-direct',
+	rangeSlider: 'sceneLight-range-slider',
+	intensitySlider: 'sceneLight-intensity-slider',
+	anchorXSlider: 'sceneLight-anchorX-slider',
+	anchorYSlider: 'sceneLight-anchorY-slider',
+	widthSlider: 'sceneLight-width-slider',
+	heightSlider: 'sceneLight-height-slider',
+	angleSlider: 'sceneLight-angle-slider',
+	redSlider: 'sceneLight-red-slider',
+	greenSlider: 'sceneLight-green-slider',
+	blueSlider: 'sceneLight-blue-slider',
+	directSlider: 'sceneLight-direct-slider'
+});
+
+/** 场景动画页：输入 + 滑块（页面级，与 meta section 的表分开）。 */
+export type SceneAnimationPageNodeKey =
+	| 'name'
+	| 'animationId'
+	| 'motion'
+	| 'rotatable'
+	| 'x'
+	| 'y'
+	| 'angle'
+	| 'scale'
+	| 'speed'
+	| 'opacity'
+	| 'priority'
+	| 'angleSlider'
+	| 'scaleSlider'
+	| 'speedSlider'
+	| 'opacitySlider'
+	| 'prioritySlider';
+
+export const sceneAnimationPageNodes = createSkeletonTable<SceneAnimationPageNodeKey>({
+	name: 'sceneAnimation-name',
+	animationId: 'sceneAnimation-animationId',
+	motion: 'sceneAnimation-motion',
+	rotatable: 'sceneAnimation-rotatable',
+	x: 'sceneAnimation-x',
+	y: 'sceneAnimation-y',
+	angle: 'sceneAnimation-angle',
+	scale: 'sceneAnimation-scale',
+	speed: 'sceneAnimation-speed',
+	opacity: 'sceneAnimation-opacity',
+	priority: 'sceneAnimation-priority',
+	angleSlider: 'sceneAnimation-angle-slider',
+	scaleSlider: 'sceneAnimation-scale-slider',
+	speedSlider: 'sceneAnimation-speed-slider',
+	opacitySlider: 'sceneAnimation-opacity-slider',
+	prioritySlider: 'sceneAnimation-priority-slider'
+});

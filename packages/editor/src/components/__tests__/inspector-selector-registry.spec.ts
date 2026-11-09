@@ -4,6 +4,7 @@ import { mount } from '@vue/test-utils';
 import SceneLightPage from '@app/components/inspector/SceneLightPage.vue';
 import UIImagePage from '@app/components/inspector/UIImagePage.vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { sceneLightNodes } from '@app/composables/inspector-page-nodes';
 import { registryElements, registerElement } from '@app/utils/element-registry';
 
 vi.mock('@app/stores/local', () => ({
@@ -43,7 +44,7 @@ describe('inspector 页批量取控件走注册表', () => {
 		inspectorEls.clear();
 	});
 
-	it('SceneLightPage：bindInput/bindSliders 用到的 id 全部已登记', async () => {
+	it('SceneLightPage：bindInput/bindSliders 用到的控件由节点表交出（不再进注册表）', async () => {
 		const ids = [
 			'sceneLight-name',
 			'sceneLight-type',
@@ -56,11 +57,15 @@ describe('inspector 页批量取控件走注册表', () => {
 		const wrapper = await mountWithHost(SceneLightPage, 'sceneLight-vue-mount');
 
 		for (const id of ids) {
-			expect(inspectorEls.get(id), `${id} 未登记（会静默少绑监听）`).toBeTruthy();
-			expect(inspectorEls.get(id)?.id).toBe(id);
+			expect(inspectorEls.get(id), `${id} 不该再登记`).toBeFalsy();
+			expect(document.getElementById(id), `${id} 模板里应存在`).toBeTruthy();
 		}
-		expect(registryElements(inspectorEls, ids).map((el) => el.id)).toEqual(ids);
-		expect(registryElements(inspectorEls, ids).length).toBe(ids.length);
+		// 表里的每个 key 都指向真实元素（bindInput 才有东西可绑）
+		for (const key of Object.keys(sceneLightNodes.ids) as Array<
+			keyof typeof sceneLightNodes.ids
+		>) {
+			expect(sceneLightNodes.pick(key), `sceneLightNodes.${key} 应可读`).toBeTruthy();
+		}
 
 		wrapper.unmount();
 	});

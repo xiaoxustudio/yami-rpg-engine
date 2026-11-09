@@ -5,8 +5,7 @@
 
 <script setup lang="ts">
 import { onMounted, provide, onUnmounted } from 'vue';
-import { registryElements } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { sceneLightNodes } from '@app/composables/inspector-page-nodes';
 import { useSceneLightPage } from '@app/composables/useSceneLightPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -33,38 +32,38 @@ onMounted(() => {
 	inspectorPageSync.sceneLight.provide(bridgeApi);
 	onUnmounted(() => inspectorPageSync.sceneLight.reset(bridgeApi));
 	try {
-		const elements = registryElements(inspectorEls, [
-			'sceneLight-name',
-			'sceneLight-type',
-			'sceneLight-blend',
-			'sceneLight-x',
-			'sceneLight-y',
-			'sceneLight-range',
-			'sceneLight-intensity',
-			'sceneLight-mask',
-			'sceneLight-anchorX',
-			'sceneLight-anchorY',
-			'sceneLight-width',
-			'sceneLight-height',
-			'sceneLight-angle',
-			'sceneLight-red',
-			'sceneLight-green',
-			'sceneLight-blue',
-			'sceneLight-direct'
-		]);
-		const sliders = registryElements(inspectorEls, [
-			'sceneLight-range-slider',
-			'sceneLight-intensity-slider',
-			'sceneLight-anchorX-slider',
-			'sceneLight-anchorY-slider',
-			'sceneLight-width-slider',
-			'sceneLight-height-slider',
-			'sceneLight-angle-slider',
-			'sceneLight-red-slider',
-			'sceneLight-green-slider',
-			'sceneLight-blue-slider',
-			'sceneLight-direct-slider'
-		]);
+		const elements = [
+			sceneLightNodes.pick('name'),
+			sceneLightNodes.pick('type'),
+			sceneLightNodes.pick('blend'),
+			sceneLightNodes.pick('x'),
+			sceneLightNodes.pick('y'),
+			sceneLightNodes.pick('range'),
+			sceneLightNodes.pick('intensity'),
+			sceneLightNodes.pick('mask'),
+			sceneLightNodes.pick('anchorX'),
+			sceneLightNodes.pick('anchorY'),
+			sceneLightNodes.pick('width'),
+			sceneLightNodes.pick('height'),
+			sceneLightNodes.pick('angle'),
+			sceneLightNodes.pick('red'),
+			sceneLightNodes.pick('green'),
+			sceneLightNodes.pick('blue'),
+			sceneLightNodes.pick('direct')
+		].filter((el): el is HTMLElement => el != null);
+		const sliders = [
+			sceneLightNodes.pick('rangeSlider'),
+			sceneLightNodes.pick('intensitySlider'),
+			sceneLightNodes.pick('anchorXSlider'),
+			sceneLightNodes.pick('anchorYSlider'),
+			sceneLightNodes.pick('widthSlider'),
+			sceneLightNodes.pick('heightSlider'),
+			sceneLightNodes.pick('angleSlider'),
+			sceneLightNodes.pick('redSlider'),
+			sceneLightNodes.pick('greenSlider'),
+			sceneLightNodes.pick('blueSlider'),
+			sceneLightNodes.pick('directSlider')
+		].filter((el): el is HTMLElement => el != null);
 		bindInput(elements, editor, Scene);
 		bindSliders(sliders);
 	} catch (e) {

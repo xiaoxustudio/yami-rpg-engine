@@ -8,7 +8,7 @@
 			<TextBox
 				:label="t('components.sceneAnimation-name.label') || 'Name'"
 				id="sceneAnimation-name"
-				:ref="registryRef(inspectorEls, 'sceneAnimation-name')"
+				:ref="bind('name')"
 				v-tip="t('components.sceneAnimation-name.tip')"
 				v-model="form.name"
 				@input="onParamInput"
@@ -31,7 +31,7 @@
 				:label="t('components.sceneAnimation-motion.label') || 'Motion'"
 				id="sceneAnimation-motion"
 				v-tip="t('components.sceneAnimation-motion.tip')"
-				:ref="registryRef(inspectorEls, 'sceneAnimation-motion')"
+				:ref="bind('motion')"
 				v-model="form.motion"
 				@input="onParamInput"
 			></SelectBox>
@@ -50,7 +50,7 @@
 			<NumberBox
 				:label="t('components.sceneAnimation-x.label') || 'X'"
 				id="sceneAnimation-x"
-				:ref="registryRef(inspectorEls, 'sceneAnimation-x')"
+				:ref="bind('x')"
 				v-tip="t('components.sceneAnimation-x.tip')"
 				v-model="form.x"
 				min="-128"
@@ -64,7 +64,7 @@
 			<NumberBox
 				:label="t('components.sceneAnimation-y.label') || 'Y'"
 				id="sceneAnimation-y"
-				:ref="registryRef(inspectorEls, 'sceneAnimation-y')"
+				:ref="bind('y')"
 				v-tip="t('components.sceneAnimation-y.tip')"
 				v-model="form.y"
 				min="-128"
@@ -212,10 +212,9 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { sceneAnimationPageNodes } from '@app/composables/inspector-page-nodes';
 import { Inspector } from '@app/inspector/inspector.ts';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -227,6 +226,9 @@ import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { sceneAnimationContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { bind, dispose } = sceneAnimationPageNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(sceneAnimationContextKey)!;
 
 const onAnimationIdWrite = (value: unknown) => {
@@ -252,18 +254,18 @@ const elPrioritySlider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elPriority = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneAnimation-animationId', elAnimationId.value);
-	registerElement(inspectorEls, 'sceneAnimation-rotatable', elRotatable.value);
-	registerElement(inspectorEls, 'sceneAnimation-angle', elAngle.value);
-	registerElement(inspectorEls, 'sceneAnimation-scale', elScale.value);
-	registerElement(inspectorEls, 'sceneAnimation-speed', elSpeed.value);
-	registerElement(inspectorEls, 'sceneAnimation-opacity', elOpacity.value);
-	registerElement(inspectorEls, 'sceneAnimation-priority', elPriority.value);
-	registerElement(inspectorEls, 'sceneAnimation-angle-slider', elAngleSlider.value);
-	registerElement(inspectorEls, 'sceneAnimation-scale-slider', elScaleSlider.value);
-	registerElement(inspectorEls, 'sceneAnimation-speed-slider', elSpeedSlider.value);
-	registerElement(inspectorEls, 'sceneAnimation-opacity-slider', elOpacitySlider.value);
-	registerElement(inspectorEls, 'sceneAnimation-priority-slider', elPrioritySlider.value);
+	sceneAnimationPageNodes.set('animationId', elAnimationId.value?.root ?? null);
+	sceneAnimationPageNodes.set('rotatable', elRotatable.value?.root ?? null);
+	sceneAnimationPageNodes.set('angle', elAngle.value?.root ?? null);
+	sceneAnimationPageNodes.set('scale', elScale.value?.root ?? null);
+	sceneAnimationPageNodes.set('speed', elSpeed.value?.root ?? null);
+	sceneAnimationPageNodes.set('opacity', elOpacity.value?.root ?? null);
+	sceneAnimationPageNodes.set('priority', elPriority.value?.root ?? null);
+	sceneAnimationPageNodes.set('angleSlider', elAngleSlider.value?.root ?? null);
+	sceneAnimationPageNodes.set('scaleSlider', elScaleSlider.value?.root ?? null);
+	sceneAnimationPageNodes.set('speedSlider', elSpeedSlider.value?.root ?? null);
+	sceneAnimationPageNodes.set('opacitySlider', elOpacitySlider.value?.root ?? null);
+	sceneAnimationPageNodes.set('prioritySlider', elPrioritySlider.value?.root ?? null);
 	elRotatable.value?.loadItems([
 		{
 			name: t('components.sceneAnimation-rotatable.options.true.name'),

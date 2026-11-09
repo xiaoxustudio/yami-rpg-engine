@@ -5,8 +5,7 @@
 
 <script setup lang="ts">
 import { onMounted, provide, onUnmounted } from 'vue';
-import { registryElements } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { sceneAnimationPageNodes } from '@app/composables/inspector-page-nodes';
 import { useSceneAnimationPage } from '@app/composables/useSceneAnimationPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -32,26 +31,26 @@ onMounted(() => {
 	const bridgeApi: PageSyncApi = { sync };
 	inspectorPageSync.sceneAnimation.provide(bridgeApi);
 	onUnmounted(() => inspectorPageSync.sceneAnimation.reset(bridgeApi));
-	const elements = registryElements(inspectorEls, [
-		'sceneAnimation-name',
-		'sceneAnimation-animationId',
-		'sceneAnimation-motion',
-		'sceneAnimation-rotatable',
-		'sceneAnimation-x',
-		'sceneAnimation-y',
-		'sceneAnimation-angle',
-		'sceneAnimation-scale',
-		'sceneAnimation-speed',
-		'sceneAnimation-opacity',
-		'sceneAnimation-priority'
-	]);
-	const sliders = registryElements(inspectorEls, [
-		'sceneAnimation-angle-slider',
-		'sceneAnimation-scale-slider',
-		'sceneAnimation-speed-slider',
-		'sceneAnimation-opacity-slider',
-		'sceneAnimation-priority-slider'
-	]);
+	const elements = [
+		sceneAnimationPageNodes.pick('name'),
+		sceneAnimationPageNodes.pick('animationId'),
+		sceneAnimationPageNodes.pick('motion'),
+		sceneAnimationPageNodes.pick('rotatable'),
+		sceneAnimationPageNodes.pick('x'),
+		sceneAnimationPageNodes.pick('y'),
+		sceneAnimationPageNodes.pick('angle'),
+		sceneAnimationPageNodes.pick('scale'),
+		sceneAnimationPageNodes.pick('speed'),
+		sceneAnimationPageNodes.pick('opacity'),
+		sceneAnimationPageNodes.pick('priority')
+	].filter((el): el is HTMLElement => el != null);
+	const sliders = [
+		sceneAnimationPageNodes.pick('angleSlider'),
+		sceneAnimationPageNodes.pick('scaleSlider'),
+		sceneAnimationPageNodes.pick('speedSlider'),
+		sceneAnimationPageNodes.pick('opacitySlider'),
+		sceneAnimationPageNodes.pick('prioritySlider')
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, editor, Scene);
 	bindSliders(sliders);
 

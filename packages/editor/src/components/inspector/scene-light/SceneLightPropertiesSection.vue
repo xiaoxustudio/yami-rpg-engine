@@ -8,7 +8,7 @@
 			<TextBox
 				:label="t('components.sceneLight-name.label') || 'Name'"
 				id="sceneLight-name"
-				:ref="registryRef(inspectorEls, 'sceneLight-name')"
+				:ref="bind('name')"
 				v-tip="t('components.sceneLight-name.tip')"
 				v-model="form.name"
 				@input="onParamInput"
@@ -35,7 +35,7 @@
 			<NumberBox
 				:label="t('components.sceneLight-x.label') || 'X'"
 				id="sceneLight-x"
-				:ref="registryRef(inspectorEls, 'sceneLight-x')"
+				:ref="bind('x')"
 				v-tip="t('components.sceneLight-x.tip')"
 				v-model="form.x"
 				@input="onParamInput"
@@ -48,7 +48,7 @@
 			<NumberBox
 				:label="t('components.sceneLight-y.label') || 'Y'"
 				id="sceneLight-y"
-				:ref="registryRef(inspectorEls, 'sceneLight-y')"
+				:ref="bind('y')"
 				v-tip="t('components.sceneLight-y.tip')"
 				v-model="form.y"
 				@input="onParamInput"
@@ -369,10 +369,9 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { sceneLightNodes } from '@app/composables/inspector-page-nodes';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -383,6 +382,9 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 import { sceneLightContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { bind, dispose } = sceneLightNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(sceneLightContextKey)!;
 
 type SyncTarget = HTMLElement & {
@@ -424,31 +426,31 @@ const elHeightBox = ref<HTMLElement | null>(null);
 const elAngleBox = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneLight-type', elType.value);
-	registerElement(inspectorEls, 'sceneLight-blend', elBlend.value);
-	registerElement(inspectorEls, 'sceneLight-range', elRange.value);
-	registerElement(inspectorEls, 'sceneLight-intensity', elIntensity.value);
-	registerElement(inspectorEls, 'sceneLight-mask', elMask.value);
-	registerElement(inspectorEls, 'sceneLight-anchorX', elAnchorX.value);
-	registerElement(inspectorEls, 'sceneLight-anchorY', elAnchorY.value);
-	registerElement(inspectorEls, 'sceneLight-width', elWidth.value);
-	registerElement(inspectorEls, 'sceneLight-height', elHeight.value);
-	registerElement(inspectorEls, 'sceneLight-angle', elAngle.value);
-	registerElement(inspectorEls, 'sceneLight-red', elRed.value);
-	registerElement(inspectorEls, 'sceneLight-green', elGreen.value);
-	registerElement(inspectorEls, 'sceneLight-blue', elBlue.value);
-	registerElement(inspectorEls, 'sceneLight-direct', elDirect.value);
-	registerElement(inspectorEls, 'sceneLight-range-slider', elRangeSlider.value);
-	registerElement(inspectorEls, 'sceneLight-intensity-slider', elIntensitySlider.value);
-	registerElement(inspectorEls, 'sceneLight-anchorX-slider', elAnchorXSlider.value);
-	registerElement(inspectorEls, 'sceneLight-anchorY-slider', elAnchorYSlider.value);
-	registerElement(inspectorEls, 'sceneLight-width-slider', elWidthSlider.value);
-	registerElement(inspectorEls, 'sceneLight-height-slider', elHeightSlider.value);
-	registerElement(inspectorEls, 'sceneLight-angle-slider', elAngleSlider.value);
-	registerElement(inspectorEls, 'sceneLight-red-slider', elRedSlider.value);
-	registerElement(inspectorEls, 'sceneLight-green-slider', elGreenSlider.value);
-	registerElement(inspectorEls, 'sceneLight-blue-slider', elBlueSlider.value);
-	registerElement(inspectorEls, 'sceneLight-direct-slider', elDirectSlider.value);
+	sceneLightNodes.set('type', elType.value?.root ?? null);
+	sceneLightNodes.set('blend', elBlend.value?.root ?? null);
+	sceneLightNodes.set('range', elRange.value?.root ?? null);
+	sceneLightNodes.set('intensity', elIntensity.value?.root ?? null);
+	sceneLightNodes.set('mask', elMask.value?.root ?? null);
+	sceneLightNodes.set('anchorX', elAnchorX.value?.root ?? null);
+	sceneLightNodes.set('anchorY', elAnchorY.value?.root ?? null);
+	sceneLightNodes.set('width', elWidth.value?.root ?? null);
+	sceneLightNodes.set('height', elHeight.value?.root ?? null);
+	sceneLightNodes.set('angle', elAngle.value?.root ?? null);
+	sceneLightNodes.set('red', elRed.value?.root ?? null);
+	sceneLightNodes.set('green', elGreen.value?.root ?? null);
+	sceneLightNodes.set('blue', elBlue.value?.root ?? null);
+	sceneLightNodes.set('direct', elDirect.value?.root ?? null);
+	sceneLightNodes.set('rangeSlider', elRangeSlider.value?.root ?? null);
+	sceneLightNodes.set('intensitySlider', elIntensitySlider.value?.root ?? null);
+	sceneLightNodes.set('anchorXSlider', elAnchorXSlider.value?.root ?? null);
+	sceneLightNodes.set('anchorYSlider', elAnchorYSlider.value?.root ?? null);
+	sceneLightNodes.set('widthSlider', elWidthSlider.value?.root ?? null);
+	sceneLightNodes.set('heightSlider', elHeightSlider.value?.root ?? null);
+	sceneLightNodes.set('angleSlider', elAngleSlider.value?.root ?? null);
+	sceneLightNodes.set('redSlider', elRedSlider.value?.root ?? null);
+	sceneLightNodes.set('greenSlider', elGreenSlider.value?.root ?? null);
+	sceneLightNodes.set('blueSlider', elBlueSlider.value?.root ?? null);
+	sceneLightNodes.set('directSlider', elDirectSlider.value?.root ?? null);
 	try {
 		elType.value?.loadItems([
 			{
