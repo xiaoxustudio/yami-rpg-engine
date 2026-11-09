@@ -89,7 +89,7 @@ const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
-const { form, save } = useSetVolumeCommandSchema();
+const { form, save } = useSetVolumeCommandSchema({ controls: () => controls });
 
 const duration = computed({
 	get: () => form.duration as number | string,

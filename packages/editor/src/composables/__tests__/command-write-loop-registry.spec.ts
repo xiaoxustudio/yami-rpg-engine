@@ -37,15 +37,15 @@ describe('命令表单 write 循环读注册表', () => {
 		document.body.innerHTML = '';
 	});
 
-	it('SetVolume：write 循环用到的每个控件 id 都在 composableEls 里', async () => {
+	it('SetVolume：write 循环的 id 已由窗口控件表接管（不再进注册表）', async () => {
 		const wrapper = await mountSettle(SetVolume);
 
 		const ids = loopIds('setVolume');
 		expect(ids.length).toBeGreaterThan(0);
 		for (const id of ids) {
-			const el = composableEls.get(id);
-			expect(el, `${id} 未登记（write 会静默 no-op）`).toBeTruthy();
-			expect(el?.id).toBe(id);
+			// 迁移后：注册表里没有它们，但模板里都在（schema 经 `controls` 表写）
+			expect(composableEls.get(id), `${id} 不该再登记`).toBeFalsy();
+			expect(document.getElementById(id), `${id} 模板里应存在`).toBeTruthy();
 		}
 
 		wrapper.unmount();
