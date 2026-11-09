@@ -8,7 +8,7 @@
 			<TextBox
 				:label="t('components.sceneTilemap-name.label') || 'Name'"
 				id="sceneTilemap-name"
-				:ref="registryRef(inspectorEls, 'sceneTilemap-name')"
+				:ref="bind('name')"
 				v-tip="t('components.sceneTilemap-name.tip')"
 				v-model="form.name"
 				@input="onParamInput"
@@ -27,7 +27,7 @@
 			<NumberBox
 				:label="t('components.sceneTilemap-order.label') || 'Order'"
 				id="sceneTilemap-order"
-				:ref="registryRef(inspectorEls, 'sceneTilemap-order')"
+				:ref="bind('order')"
 				v-model="form.order"
 				@input="onParamInput"
 				min="0"
@@ -56,7 +56,7 @@
 			<NumberBox
 				:label="t('components.sceneTilemap-x.label') || 'X'"
 				id="sceneTilemap-x"
-				:ref="registryRef(inspectorEls, 'sceneTilemap-x')"
+				:ref="bind('x')"
 				v-tip="t('components.sceneTilemap-x.tip')"
 				v-model="form.x"
 				@input="onParamInput"
@@ -70,7 +70,7 @@
 			<NumberBox
 				:label="t('components.sceneTilemap-y.label') || 'Y'"
 				id="sceneTilemap-y"
-				:ref="registryRef(inspectorEls, 'sceneTilemap-y')"
+				:ref="bind('y')"
 				v-tip="t('components.sceneTilemap-y.tip')"
 				v-model="form.y"
 				@input="onParamInput"
@@ -106,7 +106,7 @@
 			<NumberBox
 				:label="t('components.sceneTilemap-anchorX.label') || 'Anchor X'"
 				id="sceneTilemap-anchorX"
-				:ref="registryRef(inspectorEls, 'sceneTilemap-anchorX')"
+				:ref="bind('anchorX')"
 				v-tip="t('components.sceneTilemap-anchorX.tip')"
 				v-model="form.anchorX"
 				@input="onParamInput"
@@ -119,7 +119,7 @@
 			<NumberBox
 				:label="t('components.sceneTilemap-anchorY.label') || 'Anchor Y'"
 				id="sceneTilemap-anchorY"
-				:ref="registryRef(inspectorEls, 'sceneTilemap-anchorY')"
+				:ref="bind('anchorY')"
 				v-tip="t('components.sceneTilemap-anchorY.tip')"
 				v-model="form.anchorY"
 				@input="onParamInput"
@@ -132,7 +132,7 @@
 			<NumberBox
 				:label="t('components.sceneTilemap-offsetX.label') || 'Offset X'"
 				id="sceneTilemap-offsetX"
-				:ref="registryRef(inspectorEls, 'sceneTilemap-offsetX')"
+				:ref="bind('offsetX')"
 				v-tip="t('components.sceneTilemap-offsetX.tip')"
 				v-model="form.offsetX"
 				@input="onParamInput"
@@ -144,7 +144,7 @@
 			<NumberBox
 				:label="t('components.sceneTilemap-offsetY.label') || 'Offset Y'"
 				id="sceneTilemap-offsetY"
-				:ref="registryRef(inspectorEls, 'sceneTilemap-offsetY')"
+				:ref="bind('offsetY')"
 				v-tip="t('components.sceneTilemap-offsetY.tip')"
 				v-model="form.offsetY"
 				@input="onParamInput"
@@ -158,7 +158,7 @@
 			<NumberBox
 				:label="t('components.sceneTilemap-parallaxFactorX.label') || 'Parallax Factor X'"
 				id="sceneTilemap-parallaxFactorX"
-				:ref="registryRef(inspectorEls, 'sceneTilemap-parallaxFactorX')"
+				:ref="bind('parallaxFactorX')"
 				v-tip="t('components.sceneTilemap-parallaxFactorX.tip')"
 				v-model="form.parallaxFactorX"
 				@input="onParamInput"
@@ -173,7 +173,7 @@
 			<NumberBox
 				:label="t('components.sceneTilemap-parallaxFactorY.label') || 'Parallax Factor Y'"
 				id="sceneTilemap-parallaxFactorY"
-				:ref="registryRef(inspectorEls, 'sceneTilemap-parallaxFactorY')"
+				:ref="bind('parallaxFactorY')"
 				v-tip="t('components.sceneTilemap-parallaxFactorY.tip')"
 				v-model="form.parallaxFactorY"
 				@input="onParamInput"
@@ -186,7 +186,7 @@
 			<NumberBox
 				:label="t('components.sceneTilemap-opacity.label') || 'Opacity'"
 				id="sceneTilemap-opacity"
-				:ref="registryRef(inspectorEls, 'sceneTilemap-opacity')"
+				:ref="bind('opacity')"
 				v-tip="t('components.sceneTilemap-opacity.tip')"
 				v-model="form.opacity"
 				@input="onParamInput"
@@ -200,11 +200,10 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref, watch } from 'vue';
+import { inject, onMounted, ref, watch, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { sceneTilemapPageNodes } from '@app/composables/inspector-page-nodes';
 import { useEventListener } from '@app/composables/useEventListener';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getLocalStore } from '@app/stores/local';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -216,6 +215,9 @@ import { sceneTilemapContextKey } from './context.ts';
 
 const local = getLocalStore();
 const { t } = useI18n();
+
+const { bind, dispose } = sceneTilemapPageNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(sceneTilemapContextKey)!;
 
 const onLayerWrite = (value: unknown) => {
@@ -268,9 +270,9 @@ const refreshLocalizedItems = () => {
 };
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneTilemap-layer', elLayer.value);
-	registerElement(inspectorEls, 'sceneTilemap-light', elLight.value);
-	registerElement(inspectorEls, 'sceneTilemap-blend', elBlend.value);
+	sceneTilemapPageNodes.set('layer', elLayer.value?.root ?? null);
+	sceneTilemapPageNodes.set('light', elLight.value?.root ?? null);
+	sceneTilemapPageNodes.set('blend', elBlend.value?.root ?? null);
 	const editor = Inspector.sceneTilemap;
 	if (!editor) return;
 	elLayer.value?.loadItems([

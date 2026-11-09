@@ -8,7 +8,7 @@
 			<TextBox
 				:label="t('components.sceneParallax-name.label') || 'Name'"
 				id="sceneParallax-name"
-				:ref="registryRef(inspectorEls, 'sceneParallax-name')"
+				:ref="bind('name')"
 				v-tip="t('components.sceneParallax-name.tip')"
 				v-model="form.name"
 				@input="onParamInput"
@@ -16,7 +16,7 @@
 			<div class="text">{{ t('components.sceneParallax-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="sceneParallax-image"
-				:ref="registryRef(inspectorEls, 'sceneParallax-image')"
+				:ref="bind('image')"
 				v-tip="t('components.sceneParallax-image.tip')"
 				:model-value="form.image"
 				@input="onParamInput"
@@ -36,7 +36,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-order.label') || 'Order'"
 				id="sceneParallax-order"
-				:ref="registryRef(inspectorEls, 'sceneParallax-order')"
+				:ref="bind('order')"
 				v-tip="t('components.sceneParallax-order.tip')"
 				v-model="form.order"
 				@input="onParamInput"
@@ -67,7 +67,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-opacity.label') || 'Opacity'"
 				id="sceneParallax-opacity"
-				:ref="registryRef(inspectorEls, 'sceneParallax-opacity')"
+				:ref="bind('opacity')"
 				v-tip="t('components.sceneParallax-opacity.tip')"
 				v-model="form.opacity"
 				@input="onParamInput"
@@ -80,7 +80,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-x.label') || 'X'"
 				id="sceneParallax-x"
-				:ref="registryRef(inspectorEls, 'sceneParallax-x')"
+				:ref="bind('x')"
 				v-tip="t('components.sceneParallax-x.tip')"
 				v-model="form.x"
 				@input="onParamInput"
@@ -94,7 +94,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-y.label') || 'Y'"
 				id="sceneParallax-y"
-				:ref="registryRef(inspectorEls, 'sceneParallax-y')"
+				:ref="bind('y')"
 				v-tip="t('components.sceneParallax-y.tip')"
 				v-model="form.y"
 				@input="onParamInput"
@@ -109,11 +109,10 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { sceneParallaxPageNodes } from '@app/composables/inspector-page-nodes';
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -123,6 +122,9 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 import { sceneParallaxContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { bind, dispose } = sceneParallaxPageNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(sceneParallaxContextKey)!;
 
 const elLayer = ref<InstanceType<typeof SelectBox> | null>(null);
@@ -140,8 +142,8 @@ useLocalizedOptions('sceneParallax-blend', ['normal', 'additive', 'subtract'], (
 );
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneParallax-layer', elLayer.value);
-	registerElement(inspectorEls, 'sceneParallax-light', elLight.value);
-	registerElement(inspectorEls, 'sceneParallax-blend', elBlend.value);
+	sceneParallaxPageNodes.set('layer', elLayer.value?.root ?? null);
+	sceneParallaxPageNodes.set('light', elLight.value?.root ?? null);
+	sceneParallaxPageNodes.set('blend', elBlend.value?.root ?? null);
 });
 </script>

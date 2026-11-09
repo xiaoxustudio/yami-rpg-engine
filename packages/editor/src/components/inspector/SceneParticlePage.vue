@@ -5,8 +5,7 @@
 
 <script setup lang="ts">
 import { onMounted, provide, onUnmounted } from 'vue';
-import { registryElements } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { sceneParticlePageNodes } from '@app/composables/inspector-page-nodes';
 import { useSceneParticlePage } from '@app/composables/useSceneParticlePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -33,24 +32,24 @@ onMounted(() => {
 	inspectorPageSync.sceneParticle.provide(bridgeApi);
 	onUnmounted(() => inspectorPageSync.sceneParticle.reset(bridgeApi));
 	try {
-		const elements = registryElements(inspectorEls, [
-			'sceneParticle-name',
-			'sceneParticle-particleId',
-			'sceneParticle-x',
-			'sceneParticle-y',
-			'sceneParticle-angle',
-			'sceneParticle-scale',
-			'sceneParticle-speed',
-			'sceneParticle-opacity',
-			'sceneParticle-priority'
-		]);
-		const sliders = registryElements(inspectorEls, [
-			'sceneParticle-angle-slider',
-			'sceneParticle-scale-slider',
-			'sceneParticle-speed-slider',
-			'sceneParticle-opacity-slider',
-			'sceneParticle-priority-slider'
-		]);
+		const elements = [
+			sceneParticlePageNodes.pick('name'),
+			sceneParticlePageNodes.pick('particleId'),
+			sceneParticlePageNodes.pick('x'),
+			sceneParticlePageNodes.pick('y'),
+			sceneParticlePageNodes.pick('angle'),
+			sceneParticlePageNodes.pick('scale'),
+			sceneParticlePageNodes.pick('speed'),
+			sceneParticlePageNodes.pick('opacity'),
+			sceneParticlePageNodes.pick('priority')
+		].filter((el): el is HTMLElement => el != null);
+		const sliders = [
+			sceneParticlePageNodes.pick('angleSlider'),
+			sceneParticlePageNodes.pick('scaleSlider'),
+			sceneParticlePageNodes.pick('speedSlider'),
+			sceneParticlePageNodes.pick('opacitySlider'),
+			sceneParticlePageNodes.pick('prioritySlider')
+		].filter((el): el is HTMLElement => el != null);
 		bindInput(elements, editor, Scene);
 		bindSliders(sliders);
 	} catch (e) {

@@ -234,3 +234,135 @@ export const sceneAnimationPageNodes = createSkeletonTable<SceneAnimationPageNod
 	opacitySlider: 'sceneAnimation-opacity-slider',
 	prioritySlider: 'sceneAnimation-priority-slider'
 });
+
+/** 场景视差页：输入 + 滑块（页面级）。 */
+export type SceneParallaxPageNodeKey =
+	| 'name'
+	| 'image'
+	| 'layer'
+	| 'order'
+	| 'light'
+	| 'blend'
+	| 'opacity'
+	| 'x'
+	| 'y'
+	| 'scaleX'
+	| 'scaleY'
+	| 'repeatX'
+	| 'repeatY'
+	| 'anchorX'
+	| 'anchorY'
+	| 'offsetX'
+	| 'offsetY'
+	| 'parallaxFactorX'
+	| 'parallaxFactorY'
+	| 'shiftSpeedX'
+	| 'shiftSpeedY'
+	| 'tint0'
+	| 'tint1'
+	| 'tint2'
+	| 'tint3'
+	| 'tint0Slider'
+	| 'tint1Slider'
+	| 'tint2Slider'
+	| 'tint3Slider';
+
+export const sceneParallaxPageNodes = createSkeletonTable<SceneParallaxPageNodeKey>({
+	name: 'sceneParallax-name',
+	image: 'sceneParallax-image',
+	layer: 'sceneParallax-layer',
+	order: 'sceneParallax-order',
+	light: 'sceneParallax-light',
+	blend: 'sceneParallax-blend',
+	opacity: 'sceneParallax-opacity',
+	x: 'sceneParallax-x',
+	y: 'sceneParallax-y',
+	scaleX: 'sceneParallax-scaleX',
+	scaleY: 'sceneParallax-scaleY',
+	repeatX: 'sceneParallax-repeatX',
+	repeatY: 'sceneParallax-repeatY',
+	anchorX: 'sceneParallax-anchorX',
+	anchorY: 'sceneParallax-anchorY',
+	offsetX: 'sceneParallax-offsetX',
+	offsetY: 'sceneParallax-offsetY',
+	parallaxFactorX: 'sceneParallax-parallaxFactorX',
+	parallaxFactorY: 'sceneParallax-parallaxFactorY',
+	shiftSpeedX: 'sceneParallax-shiftSpeedX',
+	shiftSpeedY: 'sceneParallax-shiftSpeedY',
+	tint0: 'sceneParallax-tint-0',
+	tint1: 'sceneParallax-tint-1',
+	tint2: 'sceneParallax-tint-2',
+	tint3: 'sceneParallax-tint-3',
+	tint0Slider: 'sceneParallax-tint-0-slider',
+	tint1Slider: 'sceneParallax-tint-1-slider',
+	tint2Slider: 'sceneParallax-tint-2-slider',
+	tint3Slider: 'sceneParallax-tint-3-slider'
+});
+
+/** 场景粒子页：输入 + 滑块（页面级）。 */
+export type SceneParticlePageNodeKey =
+	| 'name'
+	| 'particleId'
+	| 'x'
+	| 'y'
+	| 'angle'
+	| 'scale'
+	| 'speed'
+	| 'opacity'
+	| 'priority'
+	| 'angleSlider'
+	| 'scaleSlider'
+	| 'speedSlider'
+	| 'opacitySlider'
+	| 'prioritySlider';
+
+export const sceneParticlePageNodes = createSkeletonTable<SceneParticlePageNodeKey>({
+	name: 'sceneParticle-name',
+	particleId: 'sceneParticle-particleId',
+	x: 'sceneParticle-x',
+	y: 'sceneParticle-y',
+	angle: 'sceneParticle-angle',
+	scale: 'sceneParticle-scale',
+	speed: 'sceneParticle-speed',
+	opacity: 'sceneParticle-opacity',
+	priority: 'sceneParticle-priority',
+	angleSlider: 'sceneParticle-angle-slider',
+	scaleSlider: 'sceneParticle-scale-slider',
+	speedSlider: 'sceneParticle-speed-slider',
+	opacitySlider: 'sceneParticle-opacity-slider',
+	prioritySlider: 'sceneParticle-priority-slider'
+});
+
+/** 场景瓦片层页：输入 + 滑块（页面级）。 */
+export type SceneTilemapPageNodeKey =
+	| 'name'
+	| 'layer'
+	| 'order'
+	| 'light'
+	| 'blend'
+	| 'x'
+	| 'y'
+	| 'anchorX'
+	| 'anchorY'
+	| 'offsetX'
+	| 'offsetY'
+	| 'parallaxFactorX'
+	| 'parallaxFactorY'
+	| 'opacity';
+
+export const sceneTilemapPageNodes = createSkeletonTable<SceneTilemapPageNodeKey>({
+	name: 'sceneTilemap-name',
+	layer: 'sceneTilemap-layer',
+	order: 'sceneTilemap-order',
+	light: 'sceneTilemap-light',
+	blend: 'sceneTilemap-blend',
+	x: 'sceneTilemap-x',
+	y: 'sceneTilemap-y',
+	anchorX: 'sceneTilemap-anchorX',
+	anchorY: 'sceneTilemap-anchorY',
+	offsetX: 'sceneTilemap-offsetX',
+	offsetY: 'sceneTilemap-offsetY',
+	parallaxFactorX: 'sceneTilemap-parallaxFactorX',
+	parallaxFactorY: 'sceneTilemap-parallaxFactorY',
+	opacity: 'sceneTilemap-opacity'
+});

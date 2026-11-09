@@ -5,8 +5,7 @@
 
 <script setup lang="ts">
 import { onMounted, provide, onUnmounted } from 'vue';
-import { registryElements } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { sceneTilemapPageNodes } from '@app/composables/inspector-page-nodes';
 import { useSceneTilemapPage } from '@app/composables/useSceneTilemapPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -32,22 +31,22 @@ onMounted(() => {
 	const bridgeApi: PageSyncApi = { sync };
 	inspectorPageSync.sceneTilemap.provide(bridgeApi);
 	onUnmounted(() => inspectorPageSync.sceneTilemap.reset(bridgeApi));
-	const elements = registryElements(inspectorEls, [
-		'sceneTilemap-name',
-		'sceneTilemap-layer',
-		'sceneTilemap-order',
-		'sceneTilemap-light',
-		'sceneTilemap-blend',
-		'sceneTilemap-x',
-		'sceneTilemap-y',
-		'sceneTilemap-anchorX',
-		'sceneTilemap-anchorY',
-		'sceneTilemap-offsetX',
-		'sceneTilemap-offsetY',
-		'sceneTilemap-parallaxFactorX',
-		'sceneTilemap-parallaxFactorY',
-		'sceneTilemap-opacity'
-	]);
+	const elements = [
+		sceneTilemapPageNodes.pick('name'),
+		sceneTilemapPageNodes.pick('layer'),
+		sceneTilemapPageNodes.pick('order'),
+		sceneTilemapPageNodes.pick('light'),
+		sceneTilemapPageNodes.pick('blend'),
+		sceneTilemapPageNodes.pick('x'),
+		sceneTilemapPageNodes.pick('y'),
+		sceneTilemapPageNodes.pick('anchorX'),
+		sceneTilemapPageNodes.pick('anchorY'),
+		sceneTilemapPageNodes.pick('offsetX'),
+		sceneTilemapPageNodes.pick('offsetY'),
+		sceneTilemapPageNodes.pick('parallaxFactorX'),
+		sceneTilemapPageNodes.pick('parallaxFactorY'),
+		sceneTilemapPageNodes.pick('opacity')
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, editor, Scene);
 
 	sync();

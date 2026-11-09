@@ -8,7 +8,7 @@
 			<TextBox
 				:label="t('components.sceneParticle-name.label') || 'Name'"
 				id="sceneParticle-name"
-				:ref="registryRef(inspectorEls, 'sceneParticle-name')"
+				:ref="bind('name')"
 				v-tip="t('components.sceneParticle-name.tip')"
 				v-model="form.name"
 				@input="onParamInput"
@@ -18,7 +18,7 @@
 			</div>
 			<CustomBox
 				id="sceneParticle-particleId"
-				:ref="registryRef(inspectorEls, 'sceneParticle-particleId')"
+				:ref="bind('particleId')"
 				v-tip="t('components.sceneParticle-particleId.tip')"
 				:model-value="form.particleId"
 				@input="onParamInput"
@@ -29,7 +29,7 @@
 			<NumberBox
 				:label="t('components.sceneParticle-x.label') || 'X'"
 				id="sceneParticle-x"
-				:ref="registryRef(inspectorEls, 'sceneParticle-x')"
+				:ref="bind('x')"
 				v-tip="t('components.sceneParticle-x.tip')"
 				v-model="form.x"
 				@input="onParamInput"
@@ -42,7 +42,7 @@
 			<NumberBox
 				:label="t('components.sceneParticle-y.label') || 'Y'"
 				id="sceneParticle-y"
-				:ref="registryRef(inspectorEls, 'sceneParticle-y')"
+				:ref="bind('y')"
 				v-tip="t('components.sceneParticle-y.tip')"
 				v-model="form.y"
 				@input="onParamInput"
@@ -189,10 +189,9 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { sceneParticlePageNodes } from '@app/composables/inspector-page-nodes';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
@@ -202,6 +201,9 @@ import DetailSummary from '@app/components/common/DetailSummary.vue';
 import { sceneParticleContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { bind, dispose } = sceneParticlePageNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(sceneParticleContextKey)!;
 
 type SyncTarget = HTMLElement & {
@@ -221,16 +223,16 @@ const elPrioritySlider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elPriority = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneParticle-angle', elAngle.value);
-	registerElement(inspectorEls, 'sceneParticle-scale', elScale.value);
-	registerElement(inspectorEls, 'sceneParticle-speed', elSpeed.value);
-	registerElement(inspectorEls, 'sceneParticle-opacity', elOpacity.value);
-	registerElement(inspectorEls, 'sceneParticle-priority', elPriority.value);
-	registerElement(inspectorEls, 'sceneParticle-angle-slider', elAngleSlider.value);
-	registerElement(inspectorEls, 'sceneParticle-scale-slider', elScaleSlider.value);
-	registerElement(inspectorEls, 'sceneParticle-speed-slider', elSpeedSlider.value);
-	registerElement(inspectorEls, 'sceneParticle-opacity-slider', elOpacitySlider.value);
-	registerElement(inspectorEls, 'sceneParticle-priority-slider', elPrioritySlider.value);
+	sceneParticlePageNodes.set('angle', elAngle.value?.root ?? null);
+	sceneParticlePageNodes.set('scale', elScale.value?.root ?? null);
+	sceneParticlePageNodes.set('speed', elSpeed.value?.root ?? null);
+	sceneParticlePageNodes.set('opacity', elOpacity.value?.root ?? null);
+	sceneParticlePageNodes.set('priority', elPriority.value?.root ?? null);
+	sceneParticlePageNodes.set('angleSlider', elAngleSlider.value?.root ?? null);
+	sceneParticlePageNodes.set('scaleSlider', elScaleSlider.value?.root ?? null);
+	sceneParticlePageNodes.set('speedSlider', elSpeedSlider.value?.root ?? null);
+	sceneParticlePageNodes.set('opacitySlider', elOpacitySlider.value?.root ?? null);
+	sceneParticlePageNodes.set('prioritySlider', elPrioritySlider.value?.root ?? null);
 	try {
 		elAngleSlider.value?.synchronize(elAngle.value?.root as SyncTarget);
 		elScaleSlider.value?.synchronize(elScale.value?.root as SyncTarget);

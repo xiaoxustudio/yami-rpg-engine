@@ -8,7 +8,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-scaleX.label') || 'Scale X'"
 				id="sceneParallax-scaleX"
-				:ref="registryRef(inspectorEls, 'sceneParallax-scaleX')"
+				:ref="bind('scaleX')"
 				v-tip="t('components.sceneParallax-scaleX.tip')"
 				v-model="form.scaleX"
 				@input="onParamInput"
@@ -21,7 +21,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-scaleY.label') || 'Scale Y'"
 				id="sceneParallax-scaleY"
-				:ref="registryRef(inspectorEls, 'sceneParallax-scaleY')"
+				:ref="bind('scaleY')"
 				v-tip="t('components.sceneParallax-scaleY.tip')"
 				v-model="form.scaleY"
 				@input="onParamInput"
@@ -34,7 +34,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-repeatX.label') || 'Repeat X'"
 				id="sceneParallax-repeatX"
-				:ref="registryRef(inspectorEls, 'sceneParallax-repeatX')"
+				:ref="bind('repeatX')"
 				v-tip="t('components.sceneParallax-repeatX.tip')"
 				v-model="form.repeatX"
 				@input="onParamInput"
@@ -45,7 +45,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-repeatY.label') || 'Repeat Y'"
 				id="sceneParallax-repeatY"
-				:ref="registryRef(inspectorEls, 'sceneParallax-repeatY')"
+				:ref="bind('repeatY')"
 				v-tip="t('components.sceneParallax-repeatY.tip')"
 				v-model="form.repeatY"
 				@input="onParamInput"
@@ -56,7 +56,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-anchorX.label') || 'Anchor X'"
 				id="sceneParallax-anchorX"
-				:ref="registryRef(inspectorEls, 'sceneParallax-anchorX')"
+				:ref="bind('anchorX')"
 				v-tip="t('components.sceneParallax-anchorX.tip')"
 				v-model="form.anchorX"
 				@input="onParamInput"
@@ -69,7 +69,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-anchorY.label') || 'Anchor Y'"
 				id="sceneParallax-anchorY"
-				:ref="registryRef(inspectorEls, 'sceneParallax-anchorY')"
+				:ref="bind('anchorY')"
 				v-tip="t('components.sceneParallax-anchorY.tip')"
 				v-model="form.anchorY"
 				@input="onParamInput"
@@ -82,7 +82,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-offsetX.label') || 'Offset X'"
 				id="sceneParallax-offsetX"
-				:ref="registryRef(inspectorEls, 'sceneParallax-offsetX')"
+				:ref="bind('offsetX')"
 				v-tip="t('components.sceneParallax-offsetX.tip')"
 				v-model="form.offsetX"
 				@input="onParamInput"
@@ -94,7 +94,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-offsetY.label') || 'Offset Y'"
 				id="sceneParallax-offsetY"
-				:ref="registryRef(inspectorEls, 'sceneParallax-offsetY')"
+				:ref="bind('offsetY')"
 				v-tip="t('components.sceneParallax-offsetY.tip')"
 				v-model="form.offsetY"
 				@input="onParamInput"
@@ -108,7 +108,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-parallaxFactorX.label') || 'Parallax Factor X'"
 				id="sceneParallax-parallaxFactorX"
-				:ref="registryRef(inspectorEls, 'sceneParallax-parallaxFactorX')"
+				:ref="bind('parallaxFactorX')"
 				v-tip="t('components.sceneParallax-parallaxFactorX.tip')"
 				v-model="form.parallaxFactorX"
 				@input="onParamInput"
@@ -123,7 +123,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-parallaxFactorY.label') || 'Parallax Factor Y'"
 				id="sceneParallax-parallaxFactorY"
-				:ref="registryRef(inspectorEls, 'sceneParallax-parallaxFactorY')"
+				:ref="bind('parallaxFactorY')"
 				v-tip="t('components.sceneParallax-parallaxFactorY.tip')"
 				v-model="form.parallaxFactorY"
 				@input="onParamInput"
@@ -138,7 +138,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-shiftSpeedX.label') || 'Shift Speed X'"
 				id="sceneParallax-shiftSpeedX"
-				:ref="registryRef(inspectorEls, 'sceneParallax-shiftSpeedX')"
+				:ref="bind('shiftSpeedX')"
 				v-tip="t('components.sceneParallax-shiftSpeedX.tip')"
 				v-model="form.shiftSpeedX"
 				@input="onParamInput"
@@ -154,7 +154,7 @@
 			<NumberBox
 				:label="t('components.sceneParallax-shiftSpeedY.label') || 'Shift Speed Y'"
 				id="sceneParallax-shiftSpeedY"
-				:ref="registryRef(inspectorEls, 'sceneParallax-shiftSpeedY')"
+				:ref="bind('shiftSpeedY')"
 				v-tip="t('components.sceneParallax-shiftSpeedY.tip')"
 				v-model="form.shiftSpeedY"
 				@input="onParamInput"
@@ -277,10 +277,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, ref } from 'vue';
+import { computed, inject, onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { sceneParallaxPageNodes } from '@app/composables/inspector-page-nodes';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -288,6 +287,9 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 import { sceneParallaxContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { bind, dispose } = sceneParallaxPageNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(sceneParallaxContextKey)!;
 
 const tint = computed(() => form.tint as number[]);
@@ -307,14 +309,14 @@ const elTint3Slider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elTint3 = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'sceneParallax-tint-0', elTint0.value);
-	registerElement(inspectorEls, 'sceneParallax-tint-1', elTint1.value);
-	registerElement(inspectorEls, 'sceneParallax-tint-2', elTint2.value);
-	registerElement(inspectorEls, 'sceneParallax-tint-3', elTint3.value);
-	registerElement(inspectorEls, 'sceneParallax-tint-0-slider', elTint0Slider.value);
-	registerElement(inspectorEls, 'sceneParallax-tint-1-slider', elTint1Slider.value);
-	registerElement(inspectorEls, 'sceneParallax-tint-2-slider', elTint2Slider.value);
-	registerElement(inspectorEls, 'sceneParallax-tint-3-slider', elTint3Slider.value);
+	sceneParallaxPageNodes.set('tint0', elTint0.value?.root ?? null);
+	sceneParallaxPageNodes.set('tint1', elTint1.value?.root ?? null);
+	sceneParallaxPageNodes.set('tint2', elTint2.value?.root ?? null);
+	sceneParallaxPageNodes.set('tint3', elTint3.value?.root ?? null);
+	sceneParallaxPageNodes.set('tint0Slider', elTint0Slider.value?.root ?? null);
+	sceneParallaxPageNodes.set('tint1Slider', elTint1Slider.value?.root ?? null);
+	sceneParallaxPageNodes.set('tint2Slider', elTint2Slider.value?.root ?? null);
+	sceneParallaxPageNodes.set('tint3Slider', elTint3Slider.value?.root ?? null);
 	elTint0Slider.value?.synchronize(elTint0.value?.root as SyncTarget);
 	elTint1Slider.value?.synchronize(elTint1.value?.root as SyncTarget);
 	elTint2Slider.value?.synchronize(elTint2.value?.root as SyncTarget);

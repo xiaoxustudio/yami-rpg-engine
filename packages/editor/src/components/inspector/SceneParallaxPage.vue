@@ -6,8 +6,7 @@
 
 <script setup lang="ts">
 import { onMounted, provide, onUnmounted } from 'vue';
-import { registryElements } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { sceneParallaxPageNodes } from '@app/composables/inspector-page-nodes';
 import { useSceneParallaxPage } from '@app/composables/useSceneParallaxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -34,39 +33,39 @@ onMounted(() => {
 	const bridgeApi: PageSyncApi = { sync };
 	inspectorPageSync.sceneParallax.provide(bridgeApi);
 	onUnmounted(() => inspectorPageSync.sceneParallax.reset(bridgeApi));
-	const elements = registryElements(inspectorEls, [
-		'sceneParallax-name',
-		'sceneParallax-image',
-		'sceneParallax-layer',
-		'sceneParallax-order',
-		'sceneParallax-light',
-		'sceneParallax-blend',
-		'sceneParallax-opacity',
-		'sceneParallax-x',
-		'sceneParallax-y',
-		'sceneParallax-scaleX',
-		'sceneParallax-scaleY',
-		'sceneParallax-repeatX',
-		'sceneParallax-repeatY',
-		'sceneParallax-anchorX',
-		'sceneParallax-anchorY',
-		'sceneParallax-offsetX',
-		'sceneParallax-offsetY',
-		'sceneParallax-parallaxFactorX',
-		'sceneParallax-parallaxFactorY',
-		'sceneParallax-shiftSpeedX',
-		'sceneParallax-shiftSpeedY',
-		'sceneParallax-tint-0',
-		'sceneParallax-tint-1',
-		'sceneParallax-tint-2',
-		'sceneParallax-tint-3'
-	]);
-	const sliders = registryElements(inspectorEls, [
-		'sceneParallax-tint-0-slider',
-		'sceneParallax-tint-1-slider',
-		'sceneParallax-tint-2-slider',
-		'sceneParallax-tint-3-slider'
-	]);
+	const elements = [
+		sceneParallaxPageNodes.pick('name'),
+		sceneParallaxPageNodes.pick('image'),
+		sceneParallaxPageNodes.pick('layer'),
+		sceneParallaxPageNodes.pick('order'),
+		sceneParallaxPageNodes.pick('light'),
+		sceneParallaxPageNodes.pick('blend'),
+		sceneParallaxPageNodes.pick('opacity'),
+		sceneParallaxPageNodes.pick('x'),
+		sceneParallaxPageNodes.pick('y'),
+		sceneParallaxPageNodes.pick('scaleX'),
+		sceneParallaxPageNodes.pick('scaleY'),
+		sceneParallaxPageNodes.pick('repeatX'),
+		sceneParallaxPageNodes.pick('repeatY'),
+		sceneParallaxPageNodes.pick('anchorX'),
+		sceneParallaxPageNodes.pick('anchorY'),
+		sceneParallaxPageNodes.pick('offsetX'),
+		sceneParallaxPageNodes.pick('offsetY'),
+		sceneParallaxPageNodes.pick('parallaxFactorX'),
+		sceneParallaxPageNodes.pick('parallaxFactorY'),
+		sceneParallaxPageNodes.pick('shiftSpeedX'),
+		sceneParallaxPageNodes.pick('shiftSpeedY'),
+		sceneParallaxPageNodes.pick('tint0'),
+		sceneParallaxPageNodes.pick('tint1'),
+		sceneParallaxPageNodes.pick('tint2'),
+		sceneParallaxPageNodes.pick('tint3')
+	].filter((el): el is HTMLElement => el != null);
+	const sliders = [
+		sceneParallaxPageNodes.pick('tint0Slider'),
+		sceneParallaxPageNodes.pick('tint1Slider'),
+		sceneParallaxPageNodes.pick('tint2Slider'),
+		sceneParallaxPageNodes.pick('tint3Slider')
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, editor, Scene);
 	bindSliders(sliders);
 
