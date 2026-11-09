@@ -2,7 +2,7 @@
 	<div class="text">{{ t('components.particleLayer-image.label') || 'Image' }}</div>
 	<CustomBox
 		id="particleLayer-image"
-		:ref="registryRef(inspectorEls, 'particleLayer-image')"
+		:ref="bind('image')"
 		v-tip="t('components.particleLayer-image.tip')"
 		type="file"
 		filter="image"
@@ -55,7 +55,7 @@
 	<NumberBox
 		:label="t('components.particleLayer-sprite-hframes.label') || 'Horiz Frames'"
 		id="particleLayer-sprite-hframes"
-		:ref="registryRef(inspectorEls, 'particleLayer-sprite-hframes')"
+		:ref="bind('spriteHframes')"
 		v-tip="t('components.particleLayer-sprite-hframes.tip')"
 		v-model="form.sprite.hframes"
 		@input="onParamInput"
@@ -68,7 +68,7 @@
 	<NumberBox
 		:label="t('components.particleLayer-sprite-vframes.label') || 'Vert Frames'"
 		id="particleLayer-sprite-vframes"
-		:ref="registryRef(inspectorEls, 'particleLayer-sprite-vframes')"
+		:ref="bind('spriteVframes')"
 		v-tip="t('components.particleLayer-sprite-vframes.tip')"
 		v-model="form.sprite.vframes"
 		@input="onParamInput"
@@ -92,10 +92,9 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { particleLayerPageNodes } from '@app/composables/inspector-page-nodes';
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -103,6 +102,9 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 import { particleLayerContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { bind, dispose } = particleLayerPageNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(particleLayerContextKey)!;
 
 const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
@@ -119,11 +121,11 @@ useLocalizedOptions('particleLayer-light', ['raw', 'global', 'ambient'], (items)
 );
 
 onMounted(() => {
-	registerElement(inspectorEls, 'particleLayer-blend', elBlend.value);
-	registerElement(inspectorEls, 'particleLayer-light', elLight.value);
-	registerElement(inspectorEls, 'particleLayer-sort', elSort.value);
-	registerElement(inspectorEls, 'particleLayer-sprite-mode', elSpriteMode.value);
-	registerElement(inspectorEls, 'particleLayer-sprite-interval', elSpriteInterval.value);
+	particleLayerPageNodes.set('blend', elBlend.value?.root ?? null);
+	particleLayerPageNodes.set('light', elLight.value?.root ?? null);
+	particleLayerPageNodes.set('sort', elSort.value?.root ?? null);
+	particleLayerPageNodes.set('spriteMode', elSpriteMode.value?.root ?? null);
+	particleLayerPageNodes.set('spriteInterval', elSpriteInterval.value?.root ?? null);
 	elSort.value?.loadItems([
 		{
 			name: t('components.particleLayer-sort.options.youngest-in-front.name'),

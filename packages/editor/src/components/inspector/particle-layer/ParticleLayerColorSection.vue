@@ -17,7 +17,7 @@
 		<NumberBox
 			:label="t('components.particleLayer-color-rgba-box.label') || 'Color'"
 			id="particleLayer-color-rgba-0"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-rgba-0')"
+			:ref="bind('colorRgba0')"
 			v-tip="t('components.particleLayer-color-rgba-0.tip')"
 			v-model="form.color.rgba[0]"
 			@input="onParamInput"
@@ -28,7 +28,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-rgba-1"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-rgba-1')"
+			:ref="bind('colorRgba1')"
 			v-tip="t('components.particleLayer-color-rgba-1.tip')"
 			v-model="form.color.rgba[1]"
 			@input="onParamInput"
@@ -39,7 +39,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-rgba-2"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-rgba-2')"
+			:ref="bind('colorRgba2')"
 			v-tip="t('components.particleLayer-color-rgba-2.tip')"
 			v-model="form.color.rgba[2]"
 			@input="onParamInput"
@@ -50,7 +50,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-rgba-3"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-rgba-3')"
+			:ref="bind('colorRgba3')"
 			v-tip="t('components.particleLayer-color-rgba-3.tip')"
 			v-model="form.color.rgba[3]"
 			@input="onParamInput"
@@ -67,7 +67,7 @@
 		<NumberBox
 			:label="t('components.particleLayer-color-min-box.label') || 'Color Min'"
 			id="particleLayer-color-min-0"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-min-0')"
+			:ref="bind('colorMin0')"
 			v-tip="t('components.particleLayer-color-min-0.tip')"
 			v-model="form.color.min[0]"
 			@input="onParamInput"
@@ -78,7 +78,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-min-1"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-min-1')"
+			:ref="bind('colorMin1')"
 			v-tip="t('components.particleLayer-color-min-1.tip')"
 			v-model="form.color.min[1]"
 			@input="onParamInput"
@@ -89,7 +89,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-min-2"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-min-2')"
+			:ref="bind('colorMin2')"
 			v-tip="t('components.particleLayer-color-min-2.tip')"
 			v-model="form.color.min[2]"
 			@input="onParamInput"
@@ -100,7 +100,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-min-3"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-min-3')"
+			:ref="bind('colorMin3')"
 			v-tip="t('components.particleLayer-color-min-3.tip')"
 			v-model="form.color.min[3]"
 			@input="onParamInput"
@@ -117,7 +117,7 @@
 		<NumberBox
 			:label="t('components.particleLayer-color-max-box.label') || 'Color Max'"
 			id="particleLayer-color-max-0"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-max-0')"
+			:ref="bind('colorMax0')"
 			v-tip="t('components.particleLayer-color-max-0.tip')"
 			v-model="form.color.max[0]"
 			@input="onParamInput"
@@ -128,7 +128,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-max-1"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-max-1')"
+			:ref="bind('colorMax1')"
 			v-tip="t('components.particleLayer-color-max-1.tip')"
 			v-model="form.color.max[1]"
 			@input="onParamInput"
@@ -139,7 +139,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-max-2"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-max-2')"
+			:ref="bind('colorMax2')"
 			v-tip="t('components.particleLayer-color-max-2.tip')"
 			v-model="form.color.max[2]"
 			@input="onParamInput"
@@ -150,7 +150,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-max-3"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-max-3')"
+			:ref="bind('colorMax3')"
 			v-tip="t('components.particleLayer-color-max-3.tip')"
 			v-model="form.color.max[3]"
 			@input="onParamInput"
@@ -178,7 +178,7 @@
 		<NumberBox
 			:label="t('components.particleLayer-color-startMin-box.label') || 'Color Start Min'"
 			id="particleLayer-color-startMin-0"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-startMin-0')"
+			:ref="bind('colorStartMin0')"
 			v-tip="t('components.particleLayer-color-startMin-0.tip')"
 			v-model="form.color.startMin[0]"
 			@input="onParamInput"
@@ -189,7 +189,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-startMin-1"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-startMin-1')"
+			:ref="bind('colorStartMin1')"
 			v-tip="t('components.particleLayer-color-startMin-1.tip')"
 			v-model="form.color.startMin[1]"
 			@input="onParamInput"
@@ -200,7 +200,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-startMin-2"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-startMin-2')"
+			:ref="bind('colorStartMin2')"
 			v-tip="t('components.particleLayer-color-startMin-2.tip')"
 			v-model="form.color.startMin[2]"
 			@input="onParamInput"
@@ -211,7 +211,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-startMin-3"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-startMin-3')"
+			:ref="bind('colorStartMin3')"
 			v-tip="t('components.particleLayer-color-startMin-3.tip')"
 			v-model="form.color.startMin[3]"
 			@input="onParamInput"
@@ -228,7 +228,7 @@
 		<NumberBox
 			:label="t('components.particleLayer-color-startMax-box.label') || 'Color Start Max'"
 			id="particleLayer-color-startMax-0"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-startMax-0')"
+			:ref="bind('colorStartMax0')"
 			v-tip="t('components.particleLayer-color-startMax-0.tip')"
 			v-model="form.color.startMax[0]"
 			@input="onParamInput"
@@ -239,7 +239,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-startMax-1"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-startMax-1')"
+			:ref="bind('colorStartMax1')"
 			v-tip="t('components.particleLayer-color-startMax-1.tip')"
 			v-model="form.color.startMax[1]"
 			@input="onParamInput"
@@ -250,7 +250,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-startMax-2"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-startMax-2')"
+			:ref="bind('colorStartMax2')"
 			v-tip="t('components.particleLayer-color-startMax-2.tip')"
 			v-model="form.color.startMax[2]"
 			@input="onParamInput"
@@ -261,7 +261,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-startMax-3"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-startMax-3')"
+			:ref="bind('colorStartMax3')"
 			v-tip="t('components.particleLayer-color-startMax-3.tip')"
 			v-model="form.color.startMax[3]"
 			@input="onParamInput"
@@ -278,7 +278,7 @@
 		<NumberBox
 			:label="t('components.particleLayer-color-endMin-box.label') || 'Color End Min'"
 			id="particleLayer-color-endMin-0"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-endMin-0')"
+			:ref="bind('colorEndMin0')"
 			v-tip="t('components.particleLayer-color-endMin-0.tip')"
 			v-model="form.color.endMin[0]"
 			@input="onParamInput"
@@ -289,7 +289,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-endMin-1"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-endMin-1')"
+			:ref="bind('colorEndMin1')"
 			v-tip="t('components.particleLayer-color-endMin-1.tip')"
 			v-model="form.color.endMin[1]"
 			@input="onParamInput"
@@ -300,7 +300,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-endMin-2"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-endMin-2')"
+			:ref="bind('colorEndMin2')"
 			v-tip="t('components.particleLayer-color-endMin-2.tip')"
 			v-model="form.color.endMin[2]"
 			@input="onParamInput"
@@ -311,7 +311,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-endMin-3"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-endMin-3')"
+			:ref="bind('colorEndMin3')"
 			v-tip="t('components.particleLayer-color-endMin-3.tip')"
 			v-model="form.color.endMin[3]"
 			@input="onParamInput"
@@ -328,7 +328,7 @@
 		<NumberBox
 			:label="t('components.particleLayer-color-endMax-box.label') || 'Color End Max'"
 			id="particleLayer-color-endMax-0"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-endMax-0')"
+			:ref="bind('colorEndMax0')"
 			v-tip="t('components.particleLayer-color-endMax-0.tip')"
 			v-model="form.color.endMax[0]"
 			@input="onParamInput"
@@ -339,7 +339,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-endMax-1"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-endMax-1')"
+			:ref="bind('colorEndMax1')"
 			v-tip="t('components.particleLayer-color-endMax-1.tip')"
 			v-model="form.color.endMax[1]"
 			@input="onParamInput"
@@ -350,7 +350,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-endMax-2"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-endMax-2')"
+			:ref="bind('colorEndMax2')"
 			v-tip="t('components.particleLayer-color-endMax-2.tip')"
 			v-model="form.color.endMax[2]"
 			@input="onParamInput"
@@ -361,7 +361,7 @@
 		>
 		<NumberBox
 			id="particleLayer-color-endMax-3"
-			:ref="registryRef(inspectorEls, 'particleLayer-color-endMax-3')"
+			:ref="bind('colorEndMax3')"
 			v-tip="t('components.particleLayer-color-endMax-3.tip')"
 			v-model="form.color.endMax[3]"
 			@input="onParamInput"
@@ -486,16 +486,18 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { particleLayerPageNodes } from '@app/composables/inspector-page-nodes';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import { particleLayerContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { bind, dispose } = particleLayerPageNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(particleLayerContextKey)!;
 
 type SyncTarget = HTMLElement & {
@@ -526,16 +528,16 @@ const elTint3Slider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elTint3 = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'particleLayer-color-mode', elColorMode.value);
-	registerElement(inspectorEls, 'particleLayer-color-tint-0', elTint0.value);
-	registerElement(inspectorEls, 'particleLayer-color-tint-1', elTint1.value);
-	registerElement(inspectorEls, 'particleLayer-color-tint-2', elTint2.value);
-	registerElement(inspectorEls, 'particleLayer-color-tint-3', elTint3.value);
-	registerElement(inspectorEls, 'particleLayer-color-tint-0-slider', elTint0Slider.value);
-	registerElement(inspectorEls, 'particleLayer-color-tint-1-slider', elTint1Slider.value);
-	registerElement(inspectorEls, 'particleLayer-color-tint-2-slider', elTint2Slider.value);
-	registerElement(inspectorEls, 'particleLayer-color-tint-3-slider', elTint3Slider.value);
-	registerElement(inspectorEls, 'particleLayer-color-easingId', elColorEasingId.value);
+	particleLayerPageNodes.set('colorMode', elColorMode.value?.root ?? null);
+	particleLayerPageNodes.set('colorTint0', elTint0.value?.root ?? null);
+	particleLayerPageNodes.set('colorTint1', elTint1.value?.root ?? null);
+	particleLayerPageNodes.set('colorTint2', elTint2.value?.root ?? null);
+	particleLayerPageNodes.set('colorTint3', elTint3.value?.root ?? null);
+	particleLayerPageNodes.set('colorTint0Slider', elTint0Slider.value?.root ?? null);
+	particleLayerPageNodes.set('colorTint1Slider', elTint1Slider.value?.root ?? null);
+	particleLayerPageNodes.set('colorTint2Slider', elTint2Slider.value?.root ?? null);
+	particleLayerPageNodes.set('colorTint3Slider', elTint3Slider.value?.root ?? null);
+	particleLayerPageNodes.set('colorEasingId', elColorEasingId.value?.root ?? null);
 	elColorMode.value?.loadItems([
 		{
 			name: t('components.particleLayer-color-mode.options.fixed.name'),

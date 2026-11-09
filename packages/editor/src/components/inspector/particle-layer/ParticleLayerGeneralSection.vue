@@ -8,7 +8,7 @@
 			<TextBox
 				:label="t('components.particleLayer-name.label') || 'Name'"
 				id="particleLayer-name"
-				:ref="registryRef(inspectorEls, 'particleLayer-name')"
+				:ref="bind('name')"
 				v-tip="t('components.particleLayer-name.tip')"
 				v-model="form.name"
 				@input="onParamInput"
@@ -94,7 +94,7 @@
 			<NumberBox
 				:label="t('components.particleLayer-count.label') || 'Emission Count'"
 				id="particleLayer-count"
-				:ref="registryRef(inspectorEls, 'particleLayer-count')"
+				:ref="bind('count')"
 				v-tip="t('components.particleLayer-count.tip')"
 				v-model="form.count"
 				@input="onParamInput"
@@ -107,7 +107,7 @@
 			<NumberBox
 				:label="t('components.particleLayer-delay.label') || 'Initial Delay'"
 				id="particleLayer-delay"
-				:ref="registryRef(inspectorEls, 'particleLayer-delay')"
+				:ref="bind('delay')"
 				v-tip="t('components.particleLayer-delay.tip')"
 				v-model="form.delay"
 				@input="onParamInput"
@@ -119,7 +119,7 @@
 			<NumberBox
 				:label="t('components.particleLayer-interval.label') || 'Interval'"
 				id="particleLayer-interval"
-				:ref="registryRef(inspectorEls, 'particleLayer-interval')"
+				:ref="bind('interval')"
 				v-tip="t('components.particleLayer-interval.tip')"
 				v-model="form.interval"
 				@input="onParamInput"
@@ -131,7 +131,7 @@
 			<NumberBox
 				:label="t('components.particleLayer-lifetime.label') || 'Lifetime'"
 				id="particleLayer-lifetime"
-				:ref="registryRef(inspectorEls, 'particleLayer-lifetime')"
+				:ref="bind('lifetime')"
 				v-tip="t('components.particleLayer-lifetime.tip')"
 				v-model="form.lifetime"
 				@input="onParamInput"
@@ -145,7 +145,7 @@
 			<NumberBox
 				:label="t('components.particleLayer-lifetimeDev.label') || 'Lifetime Dev'"
 				id="particleLayer-lifetimeDev"
-				:ref="registryRef(inspectorEls, 'particleLayer-lifetimeDev')"
+				:ref="bind('lifetimeDev')"
 				v-tip="t('components.particleLayer-lifetimeDev.tip')"
 				v-model="form.lifetimeDev"
 				@input="onParamInput"
@@ -157,7 +157,7 @@
 			<NumberBox
 				:label="t('components.particleLayer-fadeout.label') || 'Fadeout'"
 				id="particleLayer-fadeout"
-				:ref="registryRef(inspectorEls, 'particleLayer-fadeout')"
+				:ref="bind('fadeout')"
 				v-tip="t('components.particleLayer-fadeout.tip')"
 				v-model="form.fadeout"
 				@input="onParamInput"
@@ -170,10 +170,9 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { particleLayerPageNodes } from '@app/composables/inspector-page-nodes';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -182,6 +181,9 @@ import TextBox from '@app/components/common/TextBox.vue';
 import { particleLayerContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { bind, dispose } = particleLayerPageNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(particleLayerContextKey)!;
 
 const elAreaType = ref<InstanceType<typeof SelectBox> | null>(null);
@@ -192,12 +194,12 @@ const elAreaHeight = ref<InstanceType<typeof NumberBox> | null>(null);
 const elAreaRadius = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'particleLayer-area-type', elAreaType.value);
-	registerElement(inspectorEls, 'particleLayer-area-x', elAreaX.value);
-	registerElement(inspectorEls, 'particleLayer-area-y', elAreaY.value);
-	registerElement(inspectorEls, 'particleLayer-area-width', elAreaWidth.value);
-	registerElement(inspectorEls, 'particleLayer-area-height', elAreaHeight.value);
-	registerElement(inspectorEls, 'particleLayer-area-radius', elAreaRadius.value);
+	particleLayerPageNodes.set('areaType', elAreaType.value?.root ?? null);
+	particleLayerPageNodes.set('areaX', elAreaX.value?.root ?? null);
+	particleLayerPageNodes.set('areaY', elAreaY.value?.root ?? null);
+	particleLayerPageNodes.set('areaWidth', elAreaWidth.value?.root ?? null);
+	particleLayerPageNodes.set('areaHeight', elAreaHeight.value?.root ?? null);
+	particleLayerPageNodes.set('areaRadius', elAreaRadius.value?.root ?? null);
 	elAreaType.value?.loadItems([
 		{
 			name: t('components.particleLayer-area-type.options.point.name'),
