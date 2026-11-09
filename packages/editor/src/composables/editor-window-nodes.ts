@@ -19,6 +19,7 @@ export const editDataNodes = createSkeletonTable<EditDataNodeKey>({
 export type EventEditorNodeKey =
 	| 'root'
 	| 'commands'
+	| 'fieldset'
 	| 'gutterInner'
 	| 'gutterOuter'
 	| 'openList'
@@ -27,6 +28,7 @@ export type EventEditorNodeKey =
 export const eventEditorNodes = createSkeletonTable<EventEditorNodeKey>({
 	root: 'event',
 	commands: 'event-commands',
+	fieldset: 'event-commands-fieldset',
 	gutterInner: 'event-commands-gutter-inner',
 	gutterOuter: 'event-commands-gutter-outer',
 	openList: 'event-open-list',

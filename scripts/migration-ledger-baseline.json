@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-09T08:04:07.729Z",
+	"generatedAt": "2026-11-09T08:24:19.032Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -131,8 +131,8 @@
 			"label": "元素注册表寻址（*Els.get、registryElement(s)）",
 			"target": "zero",
 			"value": {
-				"total": 99,
-				"files": 59
+				"total": 95,
+				"files": 58
 			}
 		},
 		"legacy-ui-lines": {
@@ -263,8 +263,8 @@
 			"label": "YamiElement 类型引用（元素契约存量）",
 			"target": "zero",
 			"value": {
-				"total": 486,
-				"files": 91
+				"total": 491,
+				"files": 92
 			}
 		}
 	}

@@ -9,7 +9,8 @@ import { clear, hide, show } from '@app/utils/element-utils.ts';
 import { setTreeItemClass } from '@ui-kit';
 import { getElementWriter, renderDetached } from '@app/utils/dom';
 import { h } from 'vue';
-import { eventEditorEls } from './event-editor-initialize.ts';
+import { eventEditorNodes } from '@app/composables/editor-window-nodes';
+import type { YamiElement } from '@app/types/element-api';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { Data } from '@app/data/data-object.ts';
@@ -84,8 +85,8 @@ EventEditor.getItemByEvent = function (this: EventEditorShape, event: EventEdito
 
 EventEditor.openCommandList = function (this: EventEditorShape, item: EventListItem) {
 	this.fetchCommandBuffer!(item);
-	const fieldset = eventEditorEls.get('event-commands-fieldset');
-	const typeEl = eventEditorEls.get('event-type');
+	const fieldset = eventEditorNodes.pick('fieldset') as YamiElement | null;
+	const typeEl = eventEditorNodes.pick('type') as YamiElement | null;
 	if (fieldset) show(fieldset);
 	if (typeEl) show(typeEl);
 
@@ -111,8 +112,8 @@ EventEditor.openCommandList = function (this: EventEditorShape, item: EventListI
 
 EventEditor.closeCommandList = function (this: EventEditorShape) {
 	clear(this.commandList);
-	const fieldset = eventEditorEls.get('event-commands-fieldset');
-	const typeEl = eventEditorEls.get('event-type');
+	const fieldset = eventEditorNodes.pick('fieldset') as YamiElement | null;
+	const typeEl = eventEditorNodes.pick('type') as YamiElement | null;
 	if (fieldset) hide(fieldset);
 	if (typeEl) hide(typeEl);
 };

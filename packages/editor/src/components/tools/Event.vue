@@ -23,11 +23,7 @@
 				:node-icon-renderer="nodeIconRenderer"
 			/>
 		</div>
-		<div
-			class="field-set input pad"
-			id="event-commands-fieldset"
-			:ref="registryRef(eventEditorEls, 'event-commands-fieldset')"
-		>
+		<div class="field-set input pad" id="event-commands-fieldset" :ref="bind('fieldset')">
 			<div class="legend">{{ t('components.event-commands-gutter-background.label') }}</div>
 			<div class="box" id="event-commands-gutter-background" />
 			<CommandList id="event-commands" :ref="bind('commands')" />
@@ -45,8 +41,6 @@ import { useI18n } from 'vue-i18n';
 import { eventEditorNodes } from '@app/composables/editor-window-nodes';
 import { removeTextTags, parseEventType } from '@app/composables/useCommandParse.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
-import { eventEditorEls } from '@app/commands/event-editor-initialize.ts';
-import { registryRef } from '@app/utils/element-registry';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CommandList from '@app/components/common/CommandList.vue';
