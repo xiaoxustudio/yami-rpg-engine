@@ -1,5 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { parseResourceReleases, type GitHubRelease } from '@app/module/resource-release.ts';
+
+const netGet = vi.hoisted(() => vi.fn());
+vi.mock('@app/services/ipc/net.ts', () => ({ Net: { get: netGet } }));
+
+const rateLimited = (status = 403) => ({ response: { status, headers: {} } });
 
 const asset = (name: string, size = 100, digest: string | null = null) => ({
 	name,
@@ -80,5 +85,56 @@ describe('parseResourceReleases（GitHub Release → 资源列表）', () => {
 		]);
 		expect(resources).toHaveLength(1);
 		expect(resources[0].version).toBe('1.0.22');
+	});
+});
+
+describe('fetchResourceReleases（GitHub 限流 403）', () => {
+	beforeEach(() => {
+		vi.resetModules();
+		netGet.mockReset();
+	});
+
+	it('没有可用缓存时给出限流错误，并在一段时间内不再打接口', async () => {
+		netGet.mockRejectedValue(rateLimited());
+		const { fetchResourceReleases } = await import('@app/module/resource-release.ts');
+
+		await expect(fetchResourceReleases()).rejects.toThrow(/限流/);
+		// 静默期内即使强制刷新也不再请求：否则每次开面板都刷一条 403。
+		await expect(fetchResourceReleases(true)).rejects.toThrow(/限流/);
+		expect(netGet).toHaveBeenCalledTimes(1);
+	});
+
+	it('有上次成功的列表时，403 沿用缓存而不是把面板清空', async () => {
+		netGet
+			.mockResolvedValueOnce({
+				status: 200,
+				data: [release('template-v1.0.22', [asset('arpg-ts-chinese_pack.zip')])],
+				headers: { etag: 'W/"abc"' }
+			})
+			.mockRejectedValueOnce(rateLimited());
+		const { fetchResourceReleases } = await import('@app/module/resource-release.ts');
+
+		const first = await fetchResourceReleases();
+		expect(first).toHaveLength(1);
+		const second = await fetchResourceReleases(true);
+		expect(second).toEqual(first);
+		expect(netGet).toHaveBeenCalledTimes(2);
+	});
+
+	it('304 命中时沿用缓存', async () => {
+		netGet
+			.mockResolvedValueOnce({
+				status: 200,
+				data: [release('template-v1.0.22', [asset('arpg-ts-chinese_pack.zip')])],
+				headers: { etag: 'W/"abc"' }
+			})
+			.mockResolvedValueOnce({ status: 304, data: '', headers: {} });
+		const { fetchResourceReleases } = await import('@app/module/resource-release.ts');
+
+		const first = await fetchResourceReleases();
+		const second = await fetchResourceReleases(true);
+		expect(second).toEqual(first);
+		const headers = (netGet.mock.calls[1][1] as { headers: Record<string, string> }).headers;
+		expect(headers['If-None-Match']).toBe('W/"abc"');
 	});
 });

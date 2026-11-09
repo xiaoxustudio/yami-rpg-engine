@@ -65,6 +65,21 @@ vi.mock('@app/palette/palette', () => ({
 	Palette: { updateBackground: vi.fn() }
 }));
 
+const spriteNodeStubs = vi.hoisted(() => ({
+	nodes: {} as Record<string, HTMLElement | null>
+}));
+
+vi.mock('@app/composables/sprite-nodes', () => ({
+	spriteNodes: {
+		pick: (key: string) => spriteNodeStubs.nodes[key] ?? null,
+		get: (key: string) => spriteNodeStubs.nodes[key] ?? null,
+		set: (key: string, el: HTMLElement | null) => {
+			spriteNodeStubs.nodes[key] = el;
+		},
+		clear: () => {}
+	}
+}));
+
 import { Sprite } from '@app/engine/sprite/sprite.ts';
 import '@app/utils/css';
 
@@ -338,5 +353,39 @@ describe('Sprite.saveToProject / loadFromProject', () => {
 		const project = { sprite: { zoom: 4 } };
 		Sprite.loadFromProject(project as any);
 		expect(Sprite.zoom).toBe(4);
+	});
+});
+
+describe('Sprite.initialize', () => {
+	beforeEach(() => {
+		document.body.innerHTML = '';
+		spriteNodeStubs.nodes = {};
+		Sprite.state = 'closed';
+		(Sprite as any).canvas = undefined;
+		(Sprite as any).context = undefined;
+		(Sprite as any)._wired = false;
+	});
+
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	it('骨架节点还没登记时不抛错，也不去访问画布', () => {
+		expect(() => Sprite.initialize()).not.toThrow();
+		expect((Sprite as any).canvas).toBeUndefined();
+		expect((Sprite as any).context).toBeUndefined();
+	});
+
+	it('画布在、但 2D 上下文不可用时不抛错，保持未初始化', () => {
+		const canvas = document.createElement('canvas');
+		canvas.getContext = (() => null) as typeof canvas.getContext;
+		const screen = document.createElement('div') as unknown as HTMLElement & {
+			updateScrollbars: () => void;
+		};
+		screen.updateScrollbars = vi.fn();
+		spriteNodeStubs.nodes = { canvas, screen };
+		expect(() => Sprite.initialize()).not.toThrow();
+		expect((Sprite as any).context).toBeUndefined();
+		expect(Sprite.state).toBe('closed');
 	});
 });

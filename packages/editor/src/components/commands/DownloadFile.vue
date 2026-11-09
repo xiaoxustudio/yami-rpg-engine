@@ -79,7 +79,6 @@
 import { computed, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDownloadFileCommandSchema } from '@app/composables/commands/useDownloadFileCommandSchema';
-import { disable, enable } from '@app/utils/element-utils';
 import { RequestkeyValueBind } from '@app/composables/commands/useRequestURLCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -121,29 +120,34 @@ const isBackground = computed({
 });
 
 const onIsBackgroundInput = (value: boolean) => {
-	if (value) {
-		enable(controls['downloadFile-isBackground-path']);
-	} else {
-		disable(controls['downloadFile-isBackground-path']);
-	}
+	setPathEnabled(value);
 };
 
 const onConfirm = () => {
 	save();
 };
 
+/**
+ * 「写入路径」的开关。
+ *
+ * 控件表里存的是组件实例，`enable` / `disable` 是 `defineExpose` 的能力 —— 直接把实例丢给
+ * `element-utils` 的 `enable` / `disable` 会在 `classList` 上静默失败（旧写法就是这样）。
+ */
+const setPathEnabled = (enabled: boolean): void => {
+	const control = controls['downloadFile-isBackground-path'];
+	if (enabled) control?.enable?.();
+	else control?.disable?.();
+};
+
 /** 控件级能力：schema 载入时按 `isBackground` 开关「写入路径」。 */
 const bridgeApi: DownloadFileBridge = {
-	setPathEnabled: (enabled) => {
-		const control = controls['downloadFile-isBackground-path'];
-		if (enabled) control?.enable?.();
-		else control?.disable?.();
-	}
+	setPathEnabled
 };
+
+onUnmounted(() => resetDownloadFileBridge(bridgeApi));
 
 onMounted(() => {
 	provideDownloadFileBridge(bridgeApi);
-	onUnmounted(() => resetDownloadFileBridge(bridgeApi));
 	controls['downloadFile-method']?.loadItems?.([
 		{ name: 'GET', value: 'GET' },
 		{ name: 'POST', value: 'POST' },
@@ -153,7 +157,7 @@ onMounted(() => {
 	controls['downloadFile-isBackground']?.relate?.([
 		controlRoot(controls['downloadFile-isBackground-path'])
 	]);
-	disable(controls['downloadFile-isBackground-path']);
+	setPathEnabled(false);
 	controls['downloadFile-header']?.bind?.(RequestkeyValueBind);
 	controls['downloadFile-data']?.bind?.(RequestkeyValueBind);
 });

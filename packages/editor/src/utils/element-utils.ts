@@ -24,6 +24,22 @@ export interface ScrollableElement extends HTMLElement {
 	rawScrollTop?: number;
 }
 
+/**
+ * 组件实例 → 根元素。
+ *
+ * 契约迁移后控件表里存的是**组件实例**（`defineExpose({ root })`），但 `show` / `hide` /
+ * `disable` 这类是 DOM 语义。调用点按约定应当传 `controlRoot(...)`；这里再兜一层，是为了让
+ * 「漏改一处」退化成可控的 no-op + 一条告警，而不是每次选中都刷一屏 `has no classList`。
+ */
+export const elementOf = (el: unknown): Element | null => {
+	if (el == null) return null;
+	if (el instanceof Element) return el;
+	const target = el as { root?: unknown; $el?: unknown };
+	if (target.root instanceof Element) return target.root;
+	if (target.$el instanceof Element) return target.$el;
+	return null;
+};
+
 export function on(
 	// oxlint-disable-next-line no-explicit-any
 	el: any,
@@ -40,11 +56,16 @@ export function on(
 		el.on(type, listener, options);
 		return;
 	}
-	if (type === 'doubleclick') {
-		attachDoubleclick(el, listener, options);
+	const target = elementOf(el);
+	if (!target) {
+		console.error('[on] el is not a DOM element or control, type:', type, 'el:', el);
 		return;
 	}
-	el.addEventListener(type, listener, options);
+	if (type === 'doubleclick') {
+		attachDoubleclick(target, listener, options);
+		return;
+	}
+	target.addEventListener(type, listener, options);
 }
 
 export function off(
@@ -60,11 +81,13 @@ export function off(
 		el.off(type, listener, options);
 		return;
 	}
+	const target = elementOf(el);
+	if (!target) return;
 	if (type === 'doubleclick') {
-		detachDoubleclick(el, listener, options);
+		detachDoubleclick(target, listener, options);
 		return;
 	}
-	el.removeEventListener(type, listener, options);
+	target.removeEventListener(type, listener, options);
 }
 
 export function emit(el: EventTarget, type: string, detail?: unknown): boolean {
@@ -72,24 +95,21 @@ export function emit(el: EventTarget, type: string, detail?: unknown): boolean {
 }
 
 export function show<T>(el: T): T {
-	const target = el as { classList?: DOMTokenList } | null | undefined;
-	if (!target) return el;
-	removeClass(target, 'hidden');
+	if (el == null) return el;
+	removeClass(el, 'hidden');
 	return el;
 }
 
 export function hide<T>(el: T): T {
-	const target = el as { classList?: DOMTokenList } | null | undefined;
-	if (!target) return el;
-	addClass(target, 'hidden');
+	if (el == null) return el;
+	addClass(el, 'hidden');
 	return el;
 }
 
 export function addClass(el: unknown, className: string): boolean {
-	const target = el as { classList?: DOMTokenList } | null | undefined;
-	if (!target) return false;
-	if (!target.classList) {
-		console.error('[addClass] el has no classList:', el, 'stack:', new Error().stack);
+	const target = elementOf(el);
+	if (!target) {
+		if (el != null) console.error('[addClass] el has no classList:', el);
 		return false;
 	}
 	if (!target.classList.contains(className)) {
@@ -100,10 +120,9 @@ export function addClass(el: unknown, className: string): boolean {
 }
 
 export function removeClass(el: unknown, className: string): boolean {
-	const target = el as { classList?: DOMTokenList } | null | undefined;
-	if (!target) return false;
-	if (!target.classList) {
-		console.error('[removeClass] el has no classList:', el, 'stack:', new Error().stack);
+	const target = elementOf(el);
+	if (!target) {
+		if (el != null) console.error('[removeClass] el has no classList:', el);
 		return false;
 	}
 	if (target.classList.contains(className)) {
@@ -114,8 +133,8 @@ export function removeClass(el: unknown, className: string): boolean {
 }
 
 export function hasClass(el: unknown, className: string): boolean {
-	const target = el as { classList?: DOMTokenList } | null | undefined;
-	if (!target || !target.classList) return false;
+	const target = elementOf(el);
+	if (!target) return false;
 	return target.classList.contains(className);
 }
 

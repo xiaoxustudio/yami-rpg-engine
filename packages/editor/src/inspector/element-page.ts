@@ -1,5 +1,7 @@
 import { $, getElementWriter } from '@app/utils/dom';
 import { getUiElementControls } from '@app/composables/ui-element-page-controls';
+import { controlRoot, type ControlApi } from '@app/composables/control-refs';
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { clear, disable, enable, hide, on, show } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { EventListInterface } from '@app/tools/event-list.ts';
@@ -24,9 +26,16 @@ const SIZE_INPUT_IDS = [
 	'uiElement-transform-opacity'
 ];
 
-/** 页面控件表（section 挂载时填进来）；未挂载时返回 null，调用点照旧判空。 */
-const elOf = (id: string): YamiElement | null =>
-	(getUiElementControls()?.[id] as YamiElement | null | undefined) ?? null;
+/**
+ * 页面控件表（section 挂载时填进来）；未挂载时返回 null，调用点照旧判空。
+ *
+ * 表里存的是**控件实例**（`defineExpose`），所以这里分两把：能力调用走 `controlOf`，
+ * 需要 DOM 的站点（`show` / `hide` / `disable` / 挂载分组）走 `elOf` 取根元素 —— 直接把实例
+ * 传给 DOM 助手的后果是 `classList` 读不到，控件静默不隐藏、控制台刷警告。
+ */
+const controlOf = (id: string): ControlApi | null => getUiElementControls()?.[id] ?? null;
+
+const elOf = (id: string): YamiElement | null => controlRoot(controlOf(id)) as YamiElement | null;
 
 const elsOf = (ids: string[]): YamiElement[] =>
 	ids.map((id) => elOf(id)).filter((el): el is YamiElement => el != null);
@@ -113,17 +122,17 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 		this.eventsGroup = elOf('uiElement-events-group');
 		this.scriptsGroup = elOf('uiElement-scripts-group');
 		this.parameterPane = elOf('uiElement-parameter-pane');
-		this.pointerEvents?.loadItems([
+		controlOf('uiElement-pointerEvents')?.loadItems?.([
 			{ name: 'Enabled', value: 'enabled' },
 			{ name: 'Disabled', value: 'disabled' },
 			{ name: 'Skipped', value: 'skipped' }
 		]);
 
-		elOf('uiElement-events')?.bind?.(new EventListInterface(this, UIOwner));
+		controlOf('uiElement-events')?.bind?.(new EventListInterface(this, UIOwner));
 
-		elOf('uiElement-scripts')?.bind?.(new ScriptListInterface(this, UIOwner));
+		controlOf('uiElement-scripts')?.bind?.(new ScriptListInterface(this, UIOwner));
 
-		this.parameterPane?.bind?.(elOf('uiElement-scripts'));
+		controlOf('uiElement-parameter-pane')?.bind?.(elOf('uiElement-scripts'));
 
 		on(Inspector.manager, 'switch', this.pageSwitch!);
 		// 首次选中 UI 元素时，`Inspector.open` 的 `manager.switch(type)` 往往早于这里注册监听；
@@ -188,14 +197,14 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 	UIElement.lockSizeInputs = function (this: typeof UIElement) {
 		if (!this.synchronous) {
 			this.synchronous = true;
-			disable(elsOf(SIZE_INPUT_IDS));
+			for (const el of elsOf(SIZE_INPUT_IDS)) disable(el);
 		}
 	};
 
 	UIElement.unlockSizeInputs = function (this: typeof UIElement) {
 		if (this.synchronous) {
 			this.synchronous = false;
-			enable(elsOf(SIZE_INPUT_IDS));
+			for (const el of elsOf(SIZE_INPUT_IDS)) enable(el);
 		}
 	};
 
@@ -227,11 +236,8 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 			}
 			write('events');
 			write('scripts');
-			(
-				elOf('uiImage-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			// 页面按最新 target 重渲染：控件表迁移后 `sync` 走页桥，不再挂在 `#uiImage-vue-mount` 上。
+			inspectorPageSync.uiImage.get()?.sync();
 		}
 	};
 
@@ -403,11 +409,7 @@ const UI_ELEMENT_PAGE_TYPES = new Set([
 				target: UIElement.target,
 				changes: changes
 			});
-			(
-				elOf('uiImage-vue-mount') as HTMLElement & {
-					sync?: () => void;
-				}
-			)?.sync?.();
+			inspectorPageSync.uiImage.get()?.sync();
 		}
 	};
 

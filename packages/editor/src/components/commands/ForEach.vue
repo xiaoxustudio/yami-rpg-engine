@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame ref="frame" id="forEach" @confirm="onConfirm">
+	<WindowFrame :ref="controlRef('forEach')" id="forEach" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.forEach.title') }}

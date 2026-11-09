@@ -4,6 +4,7 @@ import { createPageManagerElement } from '@ui-kit';
 vi.unmock('@app/inspector/element-page.ts');
 
 import { Inspector } from '@app/inspector/inspector.ts';
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import {
 	provideUiElementControls,
 	type UiElementControlTable
@@ -96,6 +97,34 @@ describe('UIElement.open 与「控件尚未登记」', () => {
 
 		expect(Inspector.uiElement.pointerEvents).toBe(pointerEvents);
 		expect(pointerEvents.classList.contains('hidden')).toBe(false);
+	});
+
+	it('open() 通过页桥触发 sync：UI 元素切换后属性页跟着刷新', () => {
+		Inspector.manager = document.createElement('div');
+		const pageSync = { sync: vi.fn() };
+		inspectorPageSync.uiImage.provide(pageSync);
+
+		for (const id of [
+			'uiElement-name',
+			'uiElement-pointerEvents',
+			'uiElement-general-group',
+			'uiElement-transform-group',
+			'uiElement-events-group',
+			'uiElement-scripts-group',
+			'uiElement-parameter-pane'
+		]) {
+			controls[id] = makeEl() as never;
+		}
+		provideUiElementControls(controls);
+		Inspector.uiElement._elementInitialized = false;
+		Inspector.uiElement.pointerEvents = null;
+		Inspector.uiElement.target = null;
+		Inspector.uiElement._openRetry = undefined;
+
+		Inspector.uiElement.open(openNode('enabled'));
+
+		expect(pageSync.sync).toHaveBeenCalledTimes(1);
+		inspectorPageSync.uiImage.reset(pageSync);
 	});
 
 	it('首次 open 前已经 switch 过：initialize 会把事件/脚本/参数分组搬进当前页', () => {

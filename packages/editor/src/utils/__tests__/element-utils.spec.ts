@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
 	hide,
 	show,
@@ -10,7 +10,8 @@ import {
 	write,
 	addClass,
 	removeClass,
-	hasClass
+	hasClass,
+	on
 } from '@app/utils/element-utils';
 
 describe('element-utils 低依赖工具（回归保护）', () => {
@@ -95,5 +96,29 @@ describe('element-utils 低依赖工具（回归保护）', () => {
 		Object.defineProperty(el, 'scrollWidth', { value: 100, configurable: true });
 		Object.defineProperty(el, 'scrollHeight', { value: 100, configurable: true });
 		expect(hasScrollBar(el)).toBe(false);
+	});
+
+	it('组件实例（defineExpose 的 root）解析到根元素：show/hide/addClass 不再静默失败', () => {
+		const el = document.createElement('div');
+		const control = { root: el };
+		hide(control);
+		expect(el.classList.contains('hidden')).toBe(true);
+		show(control);
+		expect(el.classList.contains('hidden')).toBe(false);
+		expect(addClass(control, 'x')).toBe(true);
+		expect(hasClass(control, 'x')).toBe(true);
+		expect(removeClass(control, 'x')).toBe(true);
+	});
+
+	it('on 从组件实例解析根元素；解析不到时不抛错', () => {
+		const el = document.createElement('div');
+		const listener = vi.fn();
+		on({ root: el }, 'click', listener);
+		el.dispatchEvent(new Event('click'));
+		expect(listener).toHaveBeenCalledTimes(1);
+
+		const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+		expect(() => on({} as never, 'click', listener)).not.toThrow();
+		spy.mockRestore();
 	});
 });

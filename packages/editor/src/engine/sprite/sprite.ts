@@ -1,9 +1,6 @@
 import { spriteNodes } from '@app/composables/sprite-nodes';
 import { screenScrollData } from '../screen-scroll-data';
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { engineEls } from '@app/engine/element-registry';
-import { registryElement } from '@app/utils/element-registry';
 import { addScrollbars, on, show, hide, clear, read, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -110,6 +107,8 @@ interface SpriteModule {
 	marqueePointerdown: (event: YamiMouseEvent & { dragKey?: boolean }) => void;
 	pointerup: (event: YamiMouseEvent) => void;
 	pointermove: (event: YamiMouseEvent) => void;
+	/** 全局监听（themechange）是否已接：面板反复挂载只接一次。 */
+	_wired?: boolean;
 }
 
 export const Sprite = {
@@ -123,43 +122,65 @@ export const Sprite = {
 	updateBackground: Palette?.updateBackground ?? (() => {})
 } satisfies Partial<SpriteModule> as SpriteModule;
 
+/** 骨架节点可能还没登记（页面未挂载）；`on` 对 null 会告警，这里直接跳过。 */
+const listen = (
+	el: HTMLElement | null,
+	type: string,
+	listener: (event: YamiEvent) => void
+): void => {
+	if (el) on(el, type, listener);
+};
+
 Sprite.initialize = function (this: typeof Sprite) {
-	this.body = spriteNodes.pick('body') as YamiElement;
-	this.window = spriteNodes.pick('frame') as YamiElement;
-	hide(this.window);
-	this.canvas = registryElement<HTMLCanvasElement & { dpr?: number }>(
-		engineEls,
-		'sprite-canvas'
-	)!;
-	this.info = spriteNodes.pick('info') as YamiElement;
-	this.slider = spriteNodes.pick('zoom') as YamiElement;
-	this.screen = spriteNodes.pick('screen') as SpriteScreen;
-	this.marquee = spriteNodes.pick('marquee') as SpriteMarquee;
-	addScrollbars(this.screen);
+	const canvas = spriteNodes.pick('canvas') as (HTMLCanvasElement & { dpr?: number }) | null;
+	const screen = spriteNodes.pick('screen') as SpriteScreen | null;
+	// 骨架节点由 `AnimSpriteFrameSpriteSection` 挂载时交给 `spriteNodes`。页面还没挂载时这里
+	// 取不到画布 —— 直接返回，等下一次 initialize。取不到就调用 `getContext` 会直接抛
+	// （旧代码按 `engineEls` 取画布，迁移后那条链已断，canvas 恒为 null）。
+	if (!canvas || !screen) return;
 
-	this.context = this.canvas.getContext('2d', { desynchronized: true })!;
+	const context =
+		this.canvas === canvas && this.context
+			? this.context
+			: canvas.getContext('2d', { desynchronized: true });
+	// 画布不可用（上下文丢失 / 未实现）：保持未初始化，下次挂载再试，不要往下摸 DOM。
+	if (!context) return;
 
-	this.zoomTimer = new Timer({
-		duration: 80,
-		update: (timer) => {
-			if (this.state === 'open') {
-				const { elapsed, duration, start, end } = timer;
-				const time = elapsed / duration;
-				this.scale = start * (1 - time) + end * time;
-				this.resize();
-				this.requestRendering();
-			} else {
-				this.scale = timer.end;
-				return false;
+	if (this.canvas !== canvas || this.context !== context) {
+		this.body = spriteNodes.pick('body') as YamiElement;
+		this.window = spriteNodes.pick('frame') as YamiElement;
+		hide(this.window);
+		this.canvas = canvas;
+		this.info = spriteNodes.pick('info') as YamiElement;
+		this.slider = spriteNodes.pick('zoom') as YamiElement;
+		this.screen = screen;
+		this.marquee = spriteNodes.pick('marquee') as SpriteMarquee;
+		this.context = context;
+		this.zoomTimer = new Timer({
+			duration: 80,
+			update: (timer) => {
+				if (this.state === 'open') {
+					const { elapsed, duration, start, end } = timer;
+					const time = elapsed / duration;
+					this.scale = start * (1 - time) + end * time;
+					this.resize();
+					this.requestRendering();
+				} else {
+					this.scale = timer.end;
+					return false;
+				}
 			}
-		}
-	});
-
-	window.addEventListener('themechange', this.themechange as EventListener);
-	on(inspectorEls.get('animSpriteFrame-vue-mount') as YamiElement, 'resize', this.windowResize);
-	on(spriteNodes.pick('propertiesDetail') as YamiElement, 'toggle', this.windowResize);
-	on(spriteNodes.pick('spriteDetail') as YamiElement, 'toggle', this.windowResize);
-	on(this.screen, 'userscroll', this.screenUserscroll);
+		});
+		addScrollbars(screen);
+		on(screen, 'userscroll', this.screenUserscroll);
+		listen(spriteNodes.pick('propertiesDetail'), 'toggle', this.windowResize);
+		listen(spriteNodes.pick('spriteDetail'), 'toggle', this.windowResize);
+	}
+	// 全局监听只接一次：面板反复挂载不该重复注册 themechange。
+	if (!this._wired) {
+		this._wired = true;
+		window.addEventListener('themechange', this.themechange as EventListener);
+	}
 };
 
 Sprite.open = function (this: typeof Sprite, target: { spriteX: number; spriteY: number } | null) {
