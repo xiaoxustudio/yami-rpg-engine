@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { storesEls } from '@app/stores/element-registry';
+import { searchStringNodes } from '@app/composables/search-string-nodes';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 import { Window } from '@app/tools/window-object.ts';
@@ -40,14 +40,14 @@ export const SearchString = new (class {
 	private bindButtons() {
 		getSearchStringStore().syncState();
 		if (this._bound) return;
-		const win = storesEls.get('event-search-string') as YamiElement;
+		const win = searchStringNodes.pick('frame') as YamiElement;
 		if (!win) return;
 		this._bound = true;
 		this.window = win;
-		this.log = storesEls.get('event-search-string-log') as YamiElement;
-		this.search = storesEls.get('event-search-string-search') as YamiElement;
-		this.previousButton = storesEls.get('event-search-string-previous') as YamiElement;
-		this.nextButton = storesEls.get('event-search-string-next') as YamiElement;
+		this.log = searchStringNodes.pick('log') as YamiElement;
+		this.search = searchStringNodes.pick('search') as YamiElement;
+		this.previousButton = searchStringNodes.pick('previous') as YamiElement;
+		this.nextButton = searchStringNodes.pick('next') as YamiElement;
 		on(win, 'keydown', (e: KeyboardEvent) => {
 			if (e.key == 'Enter' && this.lastArr.length > 0) {
 				this.next();

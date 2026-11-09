@@ -1,9 +1,5 @@
 <template>
-	<WindowFrame
-		id="event-search-string"
-		:ref="registryRef(storesEls, 'event-search-string')"
-		no-buttons
-	>
+	<WindowFrame id="event-search-string" :ref="bind('frame')" no-buttons>
 		<template #title
 			><TitleBar
 				>{{ t('components.event-search-string.title') }}
@@ -16,7 +12,7 @@
 				:label="t('components.event-search-string-search.label')"
 				id="event-search-string-search"
 				v-tip="t('components.event-search-string-search.tip')"
-				:ref="registryRef(storesEls, 'event-search-string-search')"
+				:ref="bind('search')"
 			/>
 			<div class="text">{{ t('components.event-search-string-case-insensitive.label') }}</div>
 			<CheckBox
@@ -41,33 +37,18 @@
 				class="standard"
 				v-model="matchLine"
 			/>
-			<div
-				class="text"
-				id="event-search-string-log"
-				:ref="registryRef(storesEls, 'event-search-string-log')"
-			></div>
+			<div class="text" id="event-search-string-log" :ref="bind('log')"></div>
 		</div>
-		<button
-			id="event-search-string-previous"
-			:ref="registryRef(storesEls, 'event-search-string-previous')"
-			name="previous"
-		>
+		<button id="event-search-string-previous" :ref="bind('previous')" name="previous">
 			上一个
 		</button>
-		<button
-			id="event-search-string-next"
-			:ref="registryRef(storesEls, 'event-search-string-next')"
-			name="next"
-		>
-			下一个
-		</button>
+		<button id="event-search-string-next" :ref="bind('next')" name="next">下一个</button>
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue';
-import { storesEls } from '@app/stores/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { computed, onMounted, onUnmounted, watch } from 'vue';
+import { searchStringNodes } from '@app/composables/search-string-nodes';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -78,6 +59,9 @@ import TextBox from '@app/components/common/TextBox.vue';
 const { t } = useI18n();
 
 const searchStore = getSearchStringStore();
+
+const { bind, dispose } = searchStringNodes.scoped();
+onUnmounted(dispose);
 
 const caseInsensitive = computed({
 	get: () => searchStore.searchMode.caseInsensitive,
