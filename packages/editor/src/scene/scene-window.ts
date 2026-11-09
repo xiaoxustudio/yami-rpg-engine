@@ -1,4 +1,3 @@
-import { sceneEls } from '@app/scene/element-registry';
 import { sceneNodes } from '@app/composables/scene-nodes';
 import { elementDataOf } from '@ui-kit';
 import type { MenuItem } from '@ui-kit';
@@ -505,12 +504,10 @@ const marqueeData = (el: unknown): SceneMarqueeData => elementDataOf<SceneMarque
 Scene.marquee.pointerevent = null;
 Scene.marquee.previewTiles = false;
 
-elementDataOf<{ page?: HTMLElement | null }>(Scene.list).page = sceneEls.get(
-	'scene-object'
+elementDataOf<{ page?: HTMLElement | null }>(Scene.list).page = sceneNodes.pick(
+	'objectPage'
 ) as YamiElement;
-elementDataOf<{ head: HTMLElement }>(Scene.list).head = sceneEls.get(
-	'scene-list-head'
-) as YamiElement;
+elementDataOf<{ head: HTMLElement }>(Scene.list).head = sceneNodes.pick('listHead') as YamiElement;
 
 Scene.initialize = function (this: SceneShape) {
 	this.page = sceneNodes.pick('page') as YamiElement;
@@ -529,11 +526,11 @@ Scene.initialize = function (this: SceneShape) {
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = sceneEls.get(
-		'scene-object'
+	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = sceneNodes.pick(
+		'objectPage'
 	) as YamiElement;
-	elementDataOf<{ head: HTMLElement }>(this.list).head = sceneEls.get(
-		'scene-list-head'
+	elementDataOf<{ head: HTMLElement }>(this.list).head = sceneNodes.pick(
+		'listHead'
 	) as YamiElement;
 	if (this.screen) addScrollbars(this.screen);
 

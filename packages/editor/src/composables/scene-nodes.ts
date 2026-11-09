@@ -15,6 +15,8 @@ export type SceneNodeKey =
 	| 'marquee'
 	| 'list'
 	| 'searcher'
+	| 'objectPage'
+	| 'listHead'
 	| 'layerGroup'
 	| 'brush'
 	| 'switchGrid'
@@ -38,6 +40,8 @@ export const sceneNodes = createSkeletonTable<SceneNodeKey>({
 	marquee: 'scene-marquee',
 	list: 'scene-list',
 	searcher: 'scene-searcher',
+	objectPage: 'scene-object',
+	listHead: 'scene-list-head',
 	layerGroup: 'scene-layer',
 	brush: 'scene-brush',
 	switchGrid: 'scene-switch-grid',

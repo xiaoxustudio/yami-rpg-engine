@@ -1,11 +1,6 @@
 <template>
-	<div
-		class="page-frame"
-		id="scene-object"
-		:ref="registryRef(sceneEls, 'scene-object')"
-		value="scene-object"
-	>
-		<div class="box" id="scene-list-head" :ref="registryRef(sceneEls, 'scene-list-head')">
+	<div class="page-frame" id="scene-object" :ref="bind('objectPage')" value="scene-object">
+		<div class="box" id="scene-list-head" :ref="bind('listHead')">
 			<TextBox id="scene-searcher" :ref="bind('searcher')" name="search"></TextBox>
 		</div>
 		<TreeList
@@ -25,8 +20,6 @@
 
 <script setup lang="ts">
 import { h, type VNode, onUnmounted } from 'vue';
-import { sceneEls } from '@app/scene/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import TextBox from '@app/components/common/TextBox.vue';
 import { sceneNodes } from '@app/composables/scene-nodes';
 import TreeList from '@app/components/common/TreeList.vue';
