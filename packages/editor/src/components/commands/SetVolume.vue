@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="setVolume"
-		:ref="registryRef(fieldEls, 'setVolume')"
+		:ref="controlRef('setVolume')"
 		@confirm="onConfirm"
 		@open="onWindowOpen"
 	>
@@ -17,14 +17,14 @@
 				:label="t('components.setVolume-type.label')"
 				id="setVolume-type"
 				v-tip="t('components.setVolume-type.tip')"
-				:ref="registryRef(fieldEls, 'setVolume-type')"
+				:ref="controlRef('setVolume-type')"
 				v-focus
 				v-model="form.type"
 			/>
 			<div class="text">{{ t('components.setVolume-volume.label') }}</div>
 			<NumberVar
 				id="setVolume-volume"
-				:ref="registryRef(fieldEls, 'setVolume-volume')"
+				:ref="controlRef('setVolume-volume')"
 				v-tip="t('components.setVolume-volume.tip')"
 				min="0"
 				max="1"
@@ -36,7 +36,7 @@
 			<SelectBox
 				:label="t('components.setVolume-easingId.label')"
 				id="setVolume-easingId"
-				:ref="registryRef(fieldEls, 'setVolume-easingId')"
+				:ref="controlRef('setVolume-easingId')"
 				name="easing"
 				v-model="form.easingId"
 			/>
@@ -44,7 +44,7 @@
 			<NumberBox
 				:label="t('components.setVolume-duration.label')"
 				id="setVolume-duration"
-				:ref="registryRef(fieldEls, 'setVolume-duration')"
+				:ref="controlRef('setVolume-duration')"
 				name="duration"
 				min="0"
 				max="3600000"
@@ -55,7 +55,7 @@
 			<SelectBox
 				:label="t('components.setVolume-wait.label')"
 				id="setVolume-wait"
-				:ref="registryRef(fieldEls, 'setVolume-wait')"
+				:ref="controlRef('setVolume-wait')"
 				name="wait"
 				v-model="form.wait"
 			/>
@@ -64,13 +64,10 @@
 </template>
 
 <script setup lang="ts">
-import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useControlRefs } from '@app/composables/control-refs';
+import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
 import { useSetVolumeCommandSchema } from '@app/composables/useSetVolumeCommandSchema';
 import { Data } from '@app/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -78,6 +75,17 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id =
+	| 'setVolume'
+	| 'setVolume-duration'
+	| 'setVolume-easingId'
+	| 'setVolume-type'
+	| 'setVolume-volume'
+	| 'setVolume-wait';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -96,18 +104,18 @@ const onConfirm = () => {
 
 /** 窗口打开时刷新候选项。 */
 const onWindowOpen = () => {
-	fieldEls.get('setVolume-easingId')?.loadItems?.(Data.createEasingItems!());
+	controls['setVolume-easingId']?.loadItems?.(Data.createEasingItems!());
 };
 
 onMounted(() => {
-	fieldEls.get('setVolume-type')?.loadItems?.([
+	controls['setVolume-type']?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' },
 		{ name: 'SE', value: 'se' }
 	]);
 	useLocalizedOptions('setVolume-wait', [true, false], (items) =>
-		fieldEls.get('setVolume-wait')?.loadItems?.(items)
+		controls['setVolume-wait']?.loadItems?.(items)
 	);
 });
 </script>
