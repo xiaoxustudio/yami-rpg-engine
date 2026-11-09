@@ -5,8 +5,6 @@ import {
 	registerLayoutItems,
 	resetRegisteredLayoutItems
 } from '@app/engine/layout/layout.ts';
-import { engineEls } from '@app/engine/element-registry';
-import { registerElement } from '@app/utils/element-registry';
 import { registerLayout } from './layout-spec-utils';
 
 const DIRECTORY = {
@@ -37,8 +35,6 @@ const makeFixture = () => {
 	paletteManager.id = 'layout-page-manager';
 	paletteManager.className = 'page-manager';
 	directory.append(paletteNav, paletteManager);
-	registerElement(engineEls, 'layout-nav', paletteNav);
-	registerElement(engineEls, 'layout-page-manager', paletteManager);
 
 	const items = {} as Record<string, HTMLElement> & {
 		list: HTMLElement[];

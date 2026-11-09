@@ -1,4 +1,4 @@
-import { sceneEls } from '@app/scene/element-registry';
+import { sceneNodes } from '@app/composables/scene-nodes';
 import { write } from '@app/utils/element-utils';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -18,7 +18,7 @@ Scene.updateTransform = SceneCameraEngine.updateTransform;
 
 Scene.setZoom = (function IIFE() {
 	return function (this: typeof Scene, zoom: number) {
-		const slider = sceneEls.get('scene-zoom') as YamiElement;
+		const slider = sceneNodes.pick('zoom') as YamiElement;
 		if (this.zoom !== zoom) {
 			let scale;
 			switch (zoom) {

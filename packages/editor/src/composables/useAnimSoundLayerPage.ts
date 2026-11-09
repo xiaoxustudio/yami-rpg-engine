@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { composableEls } from '@app/composables/element-registry';
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 
@@ -45,11 +45,7 @@ AnimSoundLayer.open = function (this: typeof AnimSoundLayer, layer: AnimSoundLay
 		this.target = layer;
 		this.motion = Animation.motion;
 
-		(
-			composableEls.get('animSoundLayer-vue-mount') as HTMLElement & {
-				sync?: () => void;
-			}
-		)?.sync?.();
+		inspectorPageSync.animSoundLayer.get()?.sync();
 	}
 };
 

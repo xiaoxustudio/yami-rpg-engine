@@ -1,6 +1,6 @@
 import { screenScrollData } from '@app/engine/screen-scroll-data';
 import { Particle } from './particle-window.ts';
-import { particleEls } from '@app/particle/element-registry';
+import { particlePanelNodes } from '@app/composables/particle-nodes';
 import type { ParticleConfigShape, ParticleShape } from './particle-window.ts';
 import { File } from '@app/file/file-system-core.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
@@ -79,7 +79,7 @@ Particle.keydown = function (event: KeyboardEvent) {
 						Particle.restartKey = true;
 						Particle.restart!();
 						addClass(
-							particleEls.get('particle-control-restart') as YamiElement,
+							particlePanelNodes.pick('controlRestart') as YamiElement,
 							'selected'
 						);
 						window.addEventListener('keyup', Particle.restartKeyup!);
@@ -105,7 +105,7 @@ Particle.restartKeyup = function (event: KeyboardEvent) {
 		case undefined:
 			if (Particle.restartKey) {
 				Particle.restartKey = false;
-				removeClass(particleEls.get('particle-control-restart') as YamiElement, 'selected');
+				removeClass(particlePanelNodes.pick('controlRestart') as YamiElement, 'selected');
 				window.removeEventListener('keyup', Particle.restartKeyup!);
 				window.removeEventListener('blur', Particle.restartKeyup!);
 			}

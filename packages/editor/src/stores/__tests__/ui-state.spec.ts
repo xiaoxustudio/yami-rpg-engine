@@ -2,8 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getUIStore, uiStateKeys } from '@app/stores/ui';
 import { UI } from '@app/engine/ui/ui-singleton.ts';
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
-import { uiEls } from '@app/engine/ui/element-registry';
-import { setUiNode, type UiNodeKey } from '@app/composables/ui-nodes';
+import { getUiNode, setUiNode, type UiNodeKey } from '@app/composables/ui-nodes';
 import type { UINodeShape } from '@app/engine/ui/element-classes.ts';
 
 /**
@@ -132,7 +131,7 @@ describe('useUIStore（UI 状态反转：store 为源）', () => {
 		store.mode = null;
 	});
 
-	describe('DOM 引用从元素注册表派生', () => {
+	describe('DOM 引用从骨架节点表派生', () => {
 		const derived = [
 			['list', 'ui-list'],
 			['head', 'ui-head'],
@@ -140,27 +139,19 @@ describe('useUIStore（UI 状态反转：store 为源）', () => {
 			['screen', 'ui-screen']
 		] as const;
 
-		/** 就地登记，返回还原函数——注册表是模块级共享 Map，不能污染同文件其他用例 */
-		const KEY_OF: Record<string, UiNodeKey | null> = {
+		/** 就地登记，返回还原函数——节点表是模块级共享表，不能污染同文件其他用例 */
+		const KEY_OF: Record<string, UiNodeKey> = {
 			'ui-list': 'list',
 			'ui-head': 'head',
 			'ui-body': 'body',
-			'ui-screen': null
+			'ui-screen': 'screen'
 		};
 
 		const seed = (id: string, el: unknown): (() => void) => {
 			const key = KEY_OF[id];
-			if (key) {
-				setUiNode(key, el as HTMLElement | null);
-				return () => setUiNode(key, null);
-			}
-			const had = uiEls.has(id);
-			const prev = uiEls.get(id);
-			uiEls.set(id, el as never);
-			return () => {
-				if (had) uiEls.set(id, prev as never);
-				else uiEls.delete(id);
-			};
+			const prev = getUiNode(key);
+			setUiNode(key, el as HTMLElement | null);
+			return () => setUiNode(key, prev);
 		};
 
 		it('未登记时为 null（不抛错）', () => {
@@ -188,7 +179,7 @@ describe('useUIStore（UI 状态反转：store 为源）', () => {
 			}
 		});
 
-		it('跟随注册表**当前**内容，而不是首次读到的快照', () => {
+		it('跟随节点表**当前**内容，而不是首次读到的快照', () => {
 			const store = getUIStore();
 			const first = { tag: 'first' };
 			const second = { tag: 'second' };
@@ -196,7 +187,7 @@ describe('useUIStore（UI 状态反转：store 为源）', () => {
 			try {
 				expect(store.elements.list).toBe(first);
 				setUiNode('list', second as unknown as HTMLElement);
-				expect(store.elements.list, '注册表换元素后应随之变化（不是缓存快照）').toBe(
+				expect(store.elements.list, '节点表换元素后应随之变化（不是缓存快照）').toBe(
 					second
 				);
 			} finally {

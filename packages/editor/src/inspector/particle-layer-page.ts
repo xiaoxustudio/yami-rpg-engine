@@ -1,5 +1,5 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
-import { inspectorEls } from './element-registry.ts';
+import { particleLayerPageNodes } from '@app/composables/inspector-page-nodes';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { Particle } from '@app/particle/particle-window.ts';
@@ -124,9 +124,11 @@ import type { ParticleForm } from '@app/composables/useParticleLayerPage';
 		if (this.target !== layer) {
 			this.target = layer;
 
-			inspectorEls
-				.get('particleLayer-color-easingId')
-				?.loadItems?.(Data.createEasingItems!());
+			(
+				particleLayerPageNodes.pick('colorEasingId') as
+					| (HTMLElement & { loadItems?: (items: unknown[]) => unknown })
+					| null
+			)?.loadItems?.(Data.createEasingItems!());
 			this.easingDefaultId = Data.easings[0].id;
 
 			inspectorPageSync.particleLayer.get()?.sync();

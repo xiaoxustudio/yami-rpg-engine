@@ -1,9 +1,5 @@
 <template>
-	<DetailBox
-		id="animSpriteFrame-properties-detail"
-		:ref="registryRef(engineEls, 'animSpriteFrame-properties-detail')"
-		open
-	>
+	<DetailBox id="animSpriteFrame-properties-detail" open>
 		<DetailSummary>{{
 			t('components.animSpriteFrame-properties-grid.label') || 'Frame'
 		}}</DetailSummary>
@@ -255,8 +251,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, onUnmounted } from 'vue';
-import { engineEls } from '@app/engine/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useAnimSpriteFramePage } from '@app/composables/useAnimSpriteFramePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';

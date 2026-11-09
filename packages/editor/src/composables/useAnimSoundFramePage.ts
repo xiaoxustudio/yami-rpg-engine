@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { composableEls } from '@app/composables/element-registry';
+import { inspectorPageSync } from '@app/composables/inspector-page-sync';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 
@@ -35,11 +35,7 @@ AnimSoundFrame.open = function (this: typeof AnimSoundFrame, frame: Record<strin
 	if (this.target !== frame) {
 		this.target = frame;
 		this.motion = Animation.motion;
-		(
-			composableEls.get('animSoundFrame-vue-mount') as HTMLElement & {
-				sync?: () => void;
-			}
-		)?.sync?.();
+		inspectorPageSync.animSoundFrame.get()?.sync();
 	}
 };
 
@@ -52,11 +48,7 @@ AnimSoundFrame.close = function (this: typeof AnimSoundFrame) {
 };
 
 AnimSoundFrame.write = function (this: typeof AnimSoundFrame, _options: Record<string, unknown>) {
-	(
-		composableEls.get('animSoundFrame-vue-mount') as HTMLElement & {
-			sync?: () => void;
-		}
-	)?.sync?.();
+	inspectorPageSync.animSoundFrame.get()?.sync();
 };
 
 AnimSoundFrame.update = function (

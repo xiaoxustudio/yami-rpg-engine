@@ -6,7 +6,6 @@ import { editorDomainsReady } from '@app/bootstrap';
 import { computed, markRaw, shallowRef } from 'vue';
 import { pinia } from './pinia';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
-import { uiEls } from '@app/engine/ui/element-registry';
 import { StageColor, safeHex } from '@app/utils/stage-color';
 import type { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import type { History } from '@app/tools/history.ts';
@@ -104,10 +103,10 @@ export const useUIStore = defineStore('ui', () => {
 	const controlPointTexture = shallowRef<ImageTexture | null>(null);
 	const inspectorTypeMap = shallowRef<Record<string, string> | null>(null);
 	/**
-	 * `elements.list` / `.head` / `.body` / `.screen` 一律从**元素注册表**读取，而不是靠桥接写入。
+	 * `elements.list` / `.head` / `.body` / `.screen` 一律从**骨架节点表**读取，而不是靠桥接写入。
 	 *
-	 * 必须是每次读都重新求值且只读的 getter：`uiEls` 是无响应性的普通 `Map`，用 `computed`
-	 * 会永久缓存首次读到的 `null`；用 `reactive(new Map())` 会破坏元素同一性；`elements`
+	 * 必须是每次读都重新求值且只读的 getter：`uiNodes` 底层是普通对象、无响应性，用 `computed`
+	 * 会永久缓存首次读到的 `null`；用 `reactive` 会破坏元素同一性；`elements`
 	 * 必须 `markRaw`，否则 Pinia 的代理同样会破坏同一性。
 	 */
 	const listEl = (): YamiElement | null =>
@@ -123,7 +122,9 @@ export const useUIStore = defineStore('ui', () => {
 			queryElementsByIds([UI_NODE_IDS.body])[0] ??
 			null) as YamiElement | null;
 	const screenEl = (): YamiElement | null =>
-		(uiEls.get('ui-screen') as YamiElement | undefined) ?? null;
+		(getUiNode('screen') ??
+			queryElementsByIds([UI_NODE_IDS.screen])[0] ??
+			null) as YamiElement | null;
 	const history = shallowRef<History | null>(null);
 	const matrix = shallowRef<Matrix>(new Matrix());
 	const root = shallowRef<UIElementInstance | null>(null);
@@ -161,11 +162,10 @@ export const useUIStore = defineStore('ui', () => {
 
 	async function waitForUiElements(): Promise<void> {
 		for (let i = 0; i < 120; i++) {
-			if (
-				(getUiNode('list') ?? queryElementsByIds([UI_NODE_IDS.list])[0] ?? null) &&
-				uiEls.get('ui-screen')
-			)
-				return;
+			const list = getUiNode('list') ?? queryElementsByIds([UI_NODE_IDS.list])[0] ?? null;
+			const screen =
+				getUiNode('screen') ?? queryElementsByIds([UI_NODE_IDS.screen])[0] ?? null;
+			if (list && screen) return;
 			// oxlint-disable-next-line no-await-in-loop
 			await new Promise<void>((resolve) => setTimeout(resolve, 16));
 		}
