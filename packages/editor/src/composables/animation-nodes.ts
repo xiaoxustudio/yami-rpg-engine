@@ -35,7 +35,8 @@ export type AnimationNodeKey =
 	| 'easingHead'
 	| 'easingSettings'
 	| 'easingId'
-	| 'easingCanvas';
+	| 'easingCanvas'
+	| 'switchSettings';
 
 export const animationNodes = createSkeletonTable<AnimationNodeKey>({
 	dirList: 'animation-dirList',
@@ -66,5 +67,6 @@ export const animationNodes = createSkeletonTable<AnimationNodeKey>({
 	easingHead: 'animation-easing-head',
 	easingSettings: 'animation-easing-settings',
 	easingId: 'animation-easing-id',
-	easingCanvas: 'animation-easing-canvas'
+	easingCanvas: 'animation-easing-canvas',
+	switchSettings: 'animation-switch-settings'
 });

@@ -1,6 +1,6 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
-import { inspectorEls } from './element-registry.ts';
-import { registryElements } from '@app/utils/element-registry';
+import { fileUiPageNodes } from '@app/composables/inspector-page-nodes';
+import { uiNodes } from '@app/composables/ui-nodes';
 import { addClass, read, removeClass } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -35,8 +35,8 @@ import type { YamiElement } from '@app/types/element-api';
 	};
 
 	FileUI.initialize = function (this: typeof FileUI) {
-		if (!inspectorEls.get('ui-switch-settings')) return;
-		this.button = inspectorEls.get('ui-switch-settings') as YamiElement;
+		if (!uiNodes.pick('switchSettings')) return;
+		this.button = uiNodes.pick('switchSettings') as YamiElement;
 		this.owner = {
 			setTarget: (target: Record<string, unknown>) => {
 				if (this.target !== target) {
@@ -51,7 +51,9 @@ import type { YamiElement } from '@app/types/element-api';
 			}
 		};
 
-		const elements = registryElements(inspectorEls, ['fileUI-width', 'fileUI-height']);
+		const elements = [fileUiPageNodes.pick('width'), fileUiPageNodes.pick('height')].filter(
+			(el): el is HTMLElement => el != null
+		);
 		elements.forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
 		elements.forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, this.owner))

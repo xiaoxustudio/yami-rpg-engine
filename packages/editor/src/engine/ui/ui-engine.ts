@@ -1,7 +1,7 @@
 import { screenScrollData } from '../screen-scroll-data';
 import { getUIStore, loadUI, registerUIEngine } from '@app/stores/ui';
 import { getLazyWindow } from '@app/tools/window-registry';
-import { engineEls } from '@app/engine/element-registry';
+import { uiNodes } from '@app/composables/ui-nodes';
 import { getRelativeCoords } from '@app/utils/element-utils';
 import { write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
@@ -56,7 +56,7 @@ export const UIEngine = {} as UIEngineShape;
 
 UIEngine.setZoom = (function IIFE() {
 	return function (this: UIShape, zoom: number) {
-		const slider = engineEls.get('ui-zoom') as YamiElement;
+		const slider = uiNodes.pick('zoom') as YamiElement;
 		if (getUIStore().zoom !== zoom) {
 			let scale;
 			switch (zoom) {

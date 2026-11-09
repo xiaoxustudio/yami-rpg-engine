@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { inspectorEls } from './element-registry.ts';
+import { animationNodes } from '@app/composables/animation-nodes';
 import { getElementWriter } from '@app/utils/dom';
 import { Window } from '@app/tools/window-object.ts';
 import { addClass, on, removeClass } from '@app/utils/element-utils';
@@ -35,7 +35,7 @@ import type { YamiElement } from '@app/types/element-api';
 	};
 
 	FileAnimation.initialize = function () {};
-	FileAnimation.button = inspectorEls.get('animation-switch-settings') as YamiElement;
+	FileAnimation.button = animationNodes.pick('switchSettings') as YamiElement;
 	FileAnimation.owner = {
 		setTarget: (target: unknown) => {
 			if (FileAnimation.target !== target) {

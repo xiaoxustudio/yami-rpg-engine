@@ -1,7 +1,6 @@
 import { getUiNode, UI_NODE_IDS } from '@app/composables/ui-nodes';
 import { queryElementsByIds } from '@app/utils/dom';
 import { elementDataOf } from '@ui-kit';
-import { uiEls } from '@app/engine/ui/element-registry';
 import { hide } from '@app/utils/element-utils.ts';
 import { EventBus } from '@app/utils/event-bus.ts';
 import { Scene } from '@app/scene/scene-window.ts';
@@ -166,7 +165,9 @@ export const UI = {
 	zoomTimer: null as Timer | null
 } satisfies Partial<UIShape> as Partial<UIShape> as UIShape;
 
-elementDataOf<{ page?: HTMLElement | null }>(UI.list).page = uiEls.get('ui-element') as YamiElement;
+elementDataOf<{ page?: HTMLElement | null }>(UI.list).page = getUiNode(
+	'elementPage'
+) as YamiElement;
 elementDataOf<{ head: HTMLElement }>(UI.list).head = getUiNode('listHead') as YamiElement;
 EventBus.once('editor_loaded', () => {
 	UI.list.restoreRecursiveStates = Scene.list

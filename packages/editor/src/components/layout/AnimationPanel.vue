@@ -34,7 +34,7 @@
 					class="item toolbar-item"
 					id="animation-switch-settings"
 					v-tip="t('components.animation-switch-settings.tip')"
-					:ref="registryRef(inspectorEls, 'animation-switch-settings')"
+					:ref="bind('switchSettings')"
 					value="settings"
 				></div>
 			</div>
@@ -98,8 +98,6 @@
 import { animationNodes } from '@app/composables/animation-nodes';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';

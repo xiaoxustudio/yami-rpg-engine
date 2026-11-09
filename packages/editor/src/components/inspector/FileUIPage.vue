@@ -33,11 +33,10 @@
 </template>
 
 <script setup lang="ts">
-import { registerElement } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import '@app/inspector/file-ui-page.ts';
 import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { fileUiPageNodes } from '@app/composables/inspector-page-nodes';
 import { useFileUIPage } from '@app/composables/useFileUIPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -66,8 +65,8 @@ onMounted(() => {
 	const elements = [elWidth.value?.root, elHeight.value?.root].filter(
 		(el): el is HTMLElement => el != null
 	);
-	if (elWidth.value?.root) registerElement(inspectorEls, 'fileUI-width', elWidth.value.root);
-	if (elHeight.value?.root) registerElement(inspectorEls, 'fileUI-height', elHeight.value.root);
+	fileUiPageNodes.set('width', elWidth.value?.root ?? null);
+	fileUiPageNodes.set('height', elHeight.value?.root ?? null);
 	bindInput(elements, editor, editor.owner as { history: unknown });
 
 	sync();

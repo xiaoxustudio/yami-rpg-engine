@@ -1,10 +1,5 @@
 <template>
-	<div
-		class="page-frame"
-		id="ui-element"
-		:ref="registryRef(uiEls, 'ui-element')"
-		value="ui-element"
-	>
+	<div class="page-frame" id="ui-element" :ref="bind('elementPage')" value="ui-element">
 		<div class="box" id="ui-list-head" :ref="bind('listHead')">
 			<TextBox id="ui-searcher" :ref="bind('searcher')" name="search"></TextBox>
 		</div>
@@ -25,8 +20,6 @@
 
 <script setup lang="ts">
 import { h, onMounted, onUnmounted, ref, type VNode } from 'vue';
-import { uiEls } from '@app/engine/ui/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { clearUiNode, setUiNode, uiNodes } from '@app/composables/ui-nodes';
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import TextBox from '@app/components/common/TextBox.vue';

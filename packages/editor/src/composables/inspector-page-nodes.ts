@@ -608,3 +608,11 @@ export const uiImagePageNodes = createSkeletonTable<UiImagePageNodeKey>({
 	tint2Slider: 'uiImage-tint-2-slider',
 	tint3Slider: 'uiImage-tint-3-slider'
 });
+
+/** 文件 UI 页：宽 / 高两个数字框（模块自己挂 focus/blur）。 */
+export type FileUiPageNodeKey = 'width' | 'height';
+
+export const fileUiPageNodes = createSkeletonTable<FileUiPageNodeKey>({
+	width: 'fileUI-width',
+	height: 'fileUI-height'
+});

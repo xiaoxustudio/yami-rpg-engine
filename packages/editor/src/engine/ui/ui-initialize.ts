@@ -1,8 +1,7 @@
-import { getUiNode, UI_NODE_IDS } from '@app/composables/ui-nodes';
+import { getUiNode, uiNodes, UI_NODE_IDS } from '@app/composables/ui-nodes';
 import { queryElementsByIds } from '@app/utils/dom';
 import { elementDataOf } from '@ui-kit';
 import { getListConfig } from '@ui-kit';
-import { uiEls } from '@app/engine/ui/element-registry';
 import type { UIShape, UINodeShape, UIControlPoints, UIListNodeShape } from './ui-singleton.ts';
 import { UIEngine } from './ui-engine.ts';
 import type { DynamicShape } from '@app/types/shapes.ts';
@@ -42,8 +41,8 @@ const initialize = function (this: UIShape) {
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
-	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = uiEls.get(
-		'ui-element'
+	elementDataOf<{ page?: HTMLElement | null }>(this.list).page = uiNodes.pick(
+		'elementPage'
 	) as YamiElement;
 	elementDataOf<{ head: HTMLElement }>(this.list).head = getUiNode('listHead') as YamiElement;
 	if (this.screen) addScrollbars(this.screen);

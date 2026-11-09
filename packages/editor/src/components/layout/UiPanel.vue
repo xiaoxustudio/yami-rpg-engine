@@ -6,7 +6,7 @@
 					class="item toolbar-item"
 					id="ui-switch-settings"
 					v-tip="t('components.ui-switch-settings.tip')"
-					:ref="registryRef(inspectorEls, 'ui-switch-settings')"
+					:ref="bind('switchSettings')"
 					value="settings"
 				></div>
 			</div>
@@ -81,7 +81,7 @@
 			<div class="box" id="ui-head-end">
 				<SliderBox
 					id="ui-zoom"
-					:ref="registryRef(engineEls, 'ui-zoom')"
+					:ref="bind('zoom')"
 					name="zoom"
 					min="0"
 					max="4"
@@ -115,9 +115,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { engineEls } from '@app/engine/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { uiNodes } from '@app/composables/ui-nodes';
 import { clearUiNode, setUiNode } from '@app/composables/ui-nodes';
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';

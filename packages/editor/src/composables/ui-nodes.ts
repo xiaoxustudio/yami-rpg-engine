@@ -15,7 +15,10 @@ export type UiNodeKey =
 	| 'screen'
 	| 'marquee'
 	| 'searcher'
-	| 'listHead';
+	| 'listHead'
+	| 'switchSettings'
+	| 'zoom'
+	| 'elementPage';
 
 export const uiNodes = createSkeletonTable<UiNodeKey>({
 	head: 'ui-head',
@@ -25,7 +28,10 @@ export const uiNodes = createSkeletonTable<UiNodeKey>({
 	screen: 'ui-screen',
 	marquee: 'ui-marquee',
 	searcher: 'ui-searcher',
-	listHead: 'ui-list-head'
+	listHead: 'ui-list-head',
+	switchSettings: 'ui-switch-settings',
+	zoom: 'ui-zoom',
+	elementPage: 'ui-element'
 });
 
 /** 兼容旧调用点（早先引入的 `getUiNode` / `setUiNode` / `clearUiNode` / `UI_NODE_IDS` 名字）。 */
