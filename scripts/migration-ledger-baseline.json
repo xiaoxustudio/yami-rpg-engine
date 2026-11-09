@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-09T16:08:05.929Z",
+	"generatedAt": "2026-11-09T16:45:42.601Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",

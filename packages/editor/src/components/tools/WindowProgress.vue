@@ -4,12 +4,8 @@
 
 		<div class="flex-box" id="windowProgress-flex">
 			<div class="text" id="windowProgress-info" ref="infoRef" />
-			<div
-				class="box"
-				id="windowProgress-box"
-				:ref="registryRef(titleEls, 'windowProgress-box')"
-			>
-				<div id="windowProgress-bar" :ref="registryRef(titleEls, 'windowProgress-bar')" />
+			<div class="box" id="windowProgress-box" :ref="bind('box')">
+				<div id="windowProgress-bar" :ref="bind('bar')" />
 			</div>
 		</div>
 	</WindowFrame>
@@ -17,8 +13,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { titleEls } from '@app/title/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { windowProgressNodes } from '@app/composables/page-shell-nodes';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import {
@@ -28,6 +23,8 @@ import {
 } from '@app/composables/title-window-bridges';
 
 const infoRef = ref<HTMLElement | null>(null);
+
+const { bind } = windowProgressNodes.scoped();
 
 const bridgeApi: WindowProgressApi = {
 	setInfo: (text) => {

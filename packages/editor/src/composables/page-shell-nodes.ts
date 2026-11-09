@@ -21,3 +21,16 @@ export const inspectorPanelNodes = createSkeletonTable<InspectorPanelNodeKey>({
 	panel: 'inspector',
 	pageManager: 'inspector-page-manager'
 });
+
+export type SelectorNodeKey = 'panel';
+
+export const selectorNodes = createSkeletonTable<SelectorNodeKey>({
+	panel: 'selector'
+});
+
+export type WindowProgressNodeKey = 'bar' | 'box';
+
+export const windowProgressNodes = createSkeletonTable<WindowProgressNodeKey>({
+	bar: 'windowProgress-bar',
+	box: 'windowProgress-box'
+});

@@ -1,10 +1,5 @@
 <template>
-	<WindowFrame
-		id="selector"
-		:ref="registryRef(storesEls, 'selector')"
-		mode="center"
-		@confirm="onConfirm"
-	>
+	<WindowFrame id="selector" :ref="bind('panel')" mode="center" @confirm="onConfirm">
 		<template #title
 			><TitleBar
 				>{{ t('components.selector.title') }}
@@ -21,8 +16,7 @@
 <script setup lang="ts">
 import { getSelectorStore } from '@app/stores/selector.ts';
 import { onMounted } from 'vue';
-import { storesEls } from '@app/stores/element-registry';
-import { registryRef } from '@app/utils/element-registry';
+import { selectorNodes } from '@app/composables/page-shell-nodes';
 import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -33,6 +27,8 @@ const onConfirm = () => {
 };
 
 const { t } = useI18n();
+
+const { bind } = selectorNodes.scoped();
 
 onMounted(() => {});
 </script>
