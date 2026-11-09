@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame
 		id="setVideo"
-		:ref="registryRef(fieldEls, 'setVideo')"
+		:ref="controlRef('setVideo')"
 		@confirm="onConfirm"
 		@closed="onClosed"
 	>
@@ -15,7 +15,7 @@
 			<div class="text">{{ t('components.setVideo-element.label') }}</div>
 			<CustomBox
 				id="setVideo-element"
-				:ref="registryRef(fieldEls, 'setVideo-element')"
+				:ref="controlRef('setVideo-element')"
 				v-tip="t('components.setVideo-element.tip')"
 				v-focus
 				type="element"
@@ -24,7 +24,7 @@
 			<div class="text">{{ t('components.setVideo-properties.label') }}</div>
 			<ParamList
 				id="setVideo-properties"
-				:ref="registryRef(fieldEls, 'setVideo-properties')"
+				:ref="controlRef('setVideo-properties')"
 				v-focus
 				v-model="form.properties"
 			/>
@@ -33,12 +33,9 @@
 </template>
 
 <script setup lang="ts">
-import { createElementRegistry, registryRef } from '@app/utils/element-registry';
-import { composableEls } from '@app/composables/element-registry';
-
-const fieldEls = createElementRegistry(composableEls);
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { controlRoot, useControlRefs } from '@app/composables/control-refs';
 import { useSetVideoCommandSchema } from '@app/composables/commands/useSetVideoCommandSchema';
 import { clear } from '@app/utils/element-utils';
 import { VideoProperty } from '@app/commands/property-window/set-video-property-window.ts';
@@ -46,6 +43,11 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+
+/** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
+type Id = 'setVideo' | 'setVideo-element' | 'setVideo-properties';
+
+const { controls, controlRef } = useControlRefs<Id>();
 
 const { t } = useI18n();
 
@@ -57,11 +59,11 @@ const onConfirm = () => {
 
 /** 窗口关闭时清理。 */
 const onClosed = () => {
-	clear(fieldEls.get('setVideo-properties'));
+	clear(controlRoot(controls['setVideo-properties']));
 };
 
 onMounted(() => {
-	fieldEls.get('setVideo-properties')?.bind?.(VideoProperty);
+	controls['setVideo-properties']?.bind?.(VideoProperty);
 });
 </script>
 
