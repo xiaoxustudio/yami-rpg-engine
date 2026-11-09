@@ -17,55 +17,68 @@ EventEditor.openLocalEvent = function (
 	filter: string,
 	name: string,
 	event: EventEditorEventShape,
-	callback: (() => void) | null
+	callback: (() => void) | null,
+	assign?: (item: EventListItem) => void
 ) {
-	this.initialize!();
-	this.unpackOpenEvents!();
-	Window.open!('event');
-	window.addEventListener('keydown', this.windowKeydown!);
-
-	const list = this.list;
-	const item = list.createLocalEventItem!(inserting, filter, name, event, callback);
-	list.addNodeTo!(item, null);
-	list.update!();
-	list.select!(item);
-	list.restoreScroll!();
-	list.scrollToSelection!('middle');
-
-	getFocus(list);
-	return item;
-};
-
-EventEditor.openGlobalEvent = function (this: EventEditorShape, guid: string) {
-	this.initialize!();
-	if (!Window.isWindowOpen!('event')) {
+	let created: EventListItem | null = null;
+	const prepare = () => {
+		this.initialize!();
 		this.unpackOpenEvents!();
-		Window.open!('event');
 		window.addEventListener('keydown', this.windowKeydown!);
-	} else if (read(this.list)?.id === guid) {
-		return;
-	}
 
-	const list = this.list;
-	const item = this.getItemById!(guid);
-	if (item) {
-		list.initialize!();
-		list.select!(item);
-		list.expandToSelection!(false);
-		list.update!();
-		list.restoreScroll!();
-		this.openCommandList!(item);
-	} else {
-		const item = list.createGlobalEventItem!(guid);
+		const list = this.list;
+		const item = list.createLocalEventItem!(inserting, filter, name, event, callback);
 		list.addNodeTo!(item, null);
 		list.update!();
 		list.select!(item);
 		list.restoreScroll!();
-		this.openCommandList!(item);
-	}
-	list.scrollToSelection!('middle');
+		list.scrollToSelection!('middle');
 
-	getFocus(list);
+		getFocus(list);
+		created = item;
+		assign?.(item);
+	};
+	// 事件窗口是懒挂载的：首次打开时控件还不存在，建项要等挂载 + 接线完成。
+	// `openWith` 的同步分支（窗口已挂载，绝大多数情况）会当场建好并返回；
+	// 首次打开由 `assign` 回传到调用方。
+	Window.openWith!('event', prepare);
+	return created;
+};
+
+EventEditor.openGlobalEvent = function (this: EventEditorShape, guid: string) {
+	const wasOpen = Window.isWindowOpen!('event');
+	if (wasOpen && read(this.list)?.id === guid) {
+		return;
+	}
+
+	Window.openWith!('event', () => {
+		this.initialize!();
+		if (!wasOpen) {
+			this.unpackOpenEvents!();
+			window.addEventListener('keydown', this.windowKeydown!);
+		}
+
+		const list = this.list;
+		const item = this.getItemById!(guid);
+		if (item) {
+			list.initialize!();
+			list.select!(item);
+			list.expandToSelection!(false);
+			list.update!();
+			list.restoreScroll!();
+			this.openCommandList!(item);
+		} else {
+			const created = list.createGlobalEventItem!(guid);
+			list.addNodeTo!(created, null);
+			list.update!();
+			list.select!(created);
+			list.restoreScroll!();
+			this.openCommandList!(created);
+		}
+		list.scrollToSelection!('middle');
+
+		getFocus(list);
+	});
 };
 
 EventEditor.openRelatedEvents = function (this: EventEditorShape, contexts: EventRelatedContext[]) {

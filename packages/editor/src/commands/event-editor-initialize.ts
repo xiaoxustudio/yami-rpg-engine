@@ -8,7 +8,6 @@ import type {
 	EventListItem
 } from './event-editor.ts';
 import { getListConfig, treeRowCount, treeRowItemAt } from '@ui-kit';
-import { createElementRegistry, registryElement } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { on, read } from '@app/utils/element-utils.ts';
 import { getElementData } from '@app/utils/element-data';
@@ -22,17 +21,15 @@ import { getEventEditorStore } from '@app/stores/event-editor';
 import type { YamiElement } from '@app/types/element-api';
 import { ROW_HEIGHT } from '@app/constants/editor.ts';
 
-export const eventEditorEls = createElementRegistry();
-
 function ensureDomBound() {
 	if (EventEditor.list) return;
-	const list = registryElement<HTMLElement & EventEditorList>(eventEditorEls, 'event-open-list');
+	// `Event.vue` 挂载时才把节点交给 `eventEditorNodes`：表里取不到就是窗口还没挂载，
+	// 调用方必须走 `Window.openWith('event', …)` 的 prepare（旧代码读的是已无人写入的
+	// 注册表，`list` 恒为 undefined，运行期在 `unpackOpenEvents` 的 `createGlobalEventItem` 上崩）。
+	const list = eventEditorNodes.pick('openList') as (HTMLElement & EventEditorList) | null;
 	if (!list) return;
 	EventEditor.list = list;
-	EventEditor.commandList = registryElement<EventCommandListShape>(
-		eventEditorEls,
-		'event-commands'
-	)!;
+	EventEditor.commandList = eventEditorNodes.pick('commands') as EventCommandListShape;
 	EventEditor.outerGutter = eventEditorNodes.pick('gutterOuter') as YamiElement;
 	EventEditor.innerGutter = eventEditorNodes.pick('gutterInner') as YamiElement;
 	getElementData(list).lastScrollTop = 0;

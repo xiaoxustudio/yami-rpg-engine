@@ -158,7 +158,10 @@ export class EventListInterface implements IListInterface {
 				filter,
 				fileName,
 				event,
-				callback
+				callback,
+				(item: Record<string, unknown>) => {
+					this.eventItem = item;
+				}
 			);
 		} else if (target.presetId) {
 			const id = target.presetId;
@@ -172,7 +175,10 @@ export class EventListInterface implements IListInterface {
 					filter,
 					eventName,
 					event,
-					callback
+					callback,
+					(item: Record<string, unknown>) => {
+						this.eventItem = item;
+					}
 				);
 			}
 		}

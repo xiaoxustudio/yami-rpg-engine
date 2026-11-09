@@ -1,5 +1,4 @@
-import { editDataNodes } from '@app/composables/editor-window-nodes';
-import { eventEditorEls } from '@app/commands/event-editor-initialize.ts';
+import { editDataNodes, eventEditorNodes } from '@app/composables/editor-window-nodes';
 import { Window } from '@app/tools/window-object.ts';
 import { getFocus, hasClass, hide, on, show } from '@app/utils/element-utils.ts';
 import { Command } from '@app/commands/command-object.ts';
@@ -12,7 +11,6 @@ import { h } from 'vue';
 import { renderDetached } from '@app/utils/dom';
 
 import { getMonaco } from '@app/utils/monaco';
-import { registryElement } from '@app/utils/element-registry';
 import type * as monacoNs from 'monaco-editor';
 import type { YamiElement } from '@app/types/element-api';
 
@@ -58,7 +56,8 @@ export const EditDataInstance = new (class {
 		this.mark = editDataNodes.pick('mark') as YamiElement;
 		this.editorParent = editDataNodes.pick('root') as YamiElement;
 		this.editorDom = editDataNodes.pick('current') as YamiElement;
-		this.eventListDom = registryElement<EventListCursorDom>(eventEditorEls, 'event-commands');
+		this.eventListDom =
+			(eventEditorNodes.pick('commands') as EventListCursorDom | null) ?? null;
 		on(editDataNodes.pick('root') as YamiElement, 'resize', () => {
 			this.resize();
 		});
@@ -159,8 +158,9 @@ export const EditDataInstance = new (class {
 		const modelValue = this.model!.getValue();
 		const parse = this.parseJSON(modelValue);
 		if (!parse) return;
-		const originalStart = this.eventListDom!.start;
-		const originalEnd = this.eventListDom!.end;
+		const eventList = this.eventListDom;
+		const originalStart = eventList?.start;
+		const originalEnd = eventList?.end;
 
 		let hasChanges = false;
 
@@ -199,11 +199,11 @@ export const EditDataInstance = new (class {
 		}
 
 		if (hasChanges) {
-			this.eventListDom!.dispatchEvent(new Event('change', { bubbles: true }));
+			eventList?.dispatchEvent(new Event('change', { bubbles: true }));
 		}
 
-		this.eventListDom!.update();
-		this.eventListDom!.select(originalStart, originalEnd);
+		eventList?.update();
+		eventList?.select(originalStart, originalEnd);
 
 		this.currentContent = null;
 		this.setChangeState(false);

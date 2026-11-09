@@ -4,21 +4,32 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import EventWindow from '@app/components/tools/Event.vue';
 import { EventEditor } from '@app/commands/event-editor.ts';
-import { eventEditorEls } from '@app/commands/event-editor-initialize.ts';
 import { eventEditorNodes } from '@app/composables/editor-window-nodes';
+// 绑定方法由这两个模块挂到 EventEditor 上（应用入口按同样顺序 import）
+import '@app/commands/event-editor-initialize.ts';
+import '@app/commands/event-editor-commands.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
 	getLocalStore: () => ({ syncState: vi.fn(), components: {} })
 }));
 
-describe('事件编辑器元素注册表', () => {
+const clearNodes = () => {
+	for (const key of Object.keys(eventEditorNodes.ids) as Array<
+		keyof typeof eventEditorNodes.ids
+	>) {
+		eventEditorNodes.set(key, null);
+	}
+};
+
+describe('事件编辑器节点表', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
+		document.body.innerHTML = '';
 		EventEditor.list = undefined as unknown as typeof EventEditor.list;
 		EventEditor.commandList = undefined as unknown as typeof EventEditor.commandList;
 		EventEditor._initialized = false;
-		eventEditorEls.clear();
+		clearNodes();
 	});
 
 	it('Event.vue 把 7 个元素交出到 eventEditorNodes（键的 id 与元素 id 一致）', async () => {
@@ -43,7 +54,7 @@ describe('事件编辑器元素注册表', () => {
 		wrapper.unmount();
 	});
 
-	it('initialize 从注册表绑定 list / commandList / 两侧 gutter', async () => {
+	it('initialize 从节点表绑定 list / commandList / 两侧 gutter', async () => {
 		const wrapper = mount(EventWindow, { attachTo: document.body });
 		await nextTick();
 
@@ -66,16 +77,33 @@ describe('事件编辑器元素注册表', () => {
 
 		EventEditor.initialize!();
 
-		expect(EventEditor.list).toBe(eventEditorEls.get('event-open-list'));
-		expect(EventEditor.commandList).toBe(eventEditorEls.get('event-commands'));
-		expect(EventEditor.outerGutter).toBe(eventEditorEls.get('event-commands-gutter-outer'));
-		expect(EventEditor.innerGutter).toBe(eventEditorEls.get('event-commands-gutter-inner'));
+		expect(EventEditor.list).toBe(eventEditorNodes.get('openList'));
+		expect(EventEditor.commandList).toBe(eventEditorNodes.get('commands'));
+		expect(EventEditor.outerGutter).toBe(eventEditorNodes.get('gutterOuter'));
+		expect(EventEditor.innerGutter).toBe(eventEditorNodes.get('gutterInner'));
 
 		wrapper.unmount();
 	});
 
-	it('注册表为空时（未挂载）initialize 不改动既有绑定且不抛错', () => {
-		eventEditorEls.clear();
+	it('initialize 之后 list 上的建项能力可用（旧代码从空注册表取 list，运行期在 createGlobalEventItem 上崩）', async () => {
+		const wrapper = mount(EventWindow, { attachTo: document.body });
+		await nextTick();
+
+		EventEditor.initialize!();
+
+		const list = EventEditor.list as unknown as {
+			createLocalEventItem?: unknown;
+			createGlobalEventItem?: unknown;
+		};
+		expect(list).toBeInstanceOf(HTMLElement);
+		expect(typeof list.createLocalEventItem).toBe('function');
+		expect(typeof list.createGlobalEventItem).toBe('function');
+
+		wrapper.unmount();
+	});
+
+	it('节点表为空时（未挂载）initialize 不改动既有绑定且不抛错', () => {
+		clearNodes();
 		const saved = EventEditor.list;
 		expect(() => EventEditor.initialize!()).not.toThrow();
 		expect(EventEditor.list).toBe(saved);
