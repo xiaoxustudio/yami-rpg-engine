@@ -1,5 +1,5 @@
 import Path from 'node:path';
-import { moduleEls } from '@app/module/element-registry';
+import { homeNodes } from '@app/composables/page-shell-nodes';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import fsExtra from 'fs-extra';
@@ -90,7 +90,7 @@ export let homeElem: HTMLElement | null = null;
 window.addEventListener(
 	'vue-app-mounted',
 	() => {
-		homeElem = moduleEls.get('home-version') as YamiElement;
+		homeElem = homeNodes.pick('version') as YamiElement;
 		if (homeElem) {
 			homeElem.textContent = `当前社区版本：${CommunityVersion} 当前编辑器版本：${Updater.latestEditorVersion} 
 当前项目版本：${Updater.latestProjectVersion}`;

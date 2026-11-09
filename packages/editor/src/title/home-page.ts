@@ -1,5 +1,5 @@
 import { SettingConfig } from '@app/services/project/setting-config';
-import { titleEls } from '@app/title/element-registry';
+import { homeNodes } from '@app/composables/page-shell-nodes';
 import { addClass, hasClass, on, rect, removeClass } from '@app/utils/element-utils';
 import { Path } from '@app/utils/config';
 import { File } from '@app/file/file-system-core.ts';
@@ -104,8 +104,8 @@ Home.initialize = function (this: typeof Home) {
 
 Home.updateCenterPosition = function (this: typeof Home) {
 	if (Layout.manager?.index === 'home') {
-		const elPage = titleEls.get('home') as YamiElement;
-		const elContent = titleEls.get('home-content') as YamiElement;
+		const elPage = homeNodes.pick('page') as YamiElement;
+		const elContent = homeNodes.pick('content') as YamiElement;
 		const pageRect = rect(elPage);
 		const contentRect = rect(elContent);
 		const left = (pageRect.width - contentRect.width) / 2;
