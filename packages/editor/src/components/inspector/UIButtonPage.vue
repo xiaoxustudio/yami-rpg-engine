@@ -6,8 +6,7 @@
 
 <script setup lang="ts">
 import { onMounted, provide, onUnmounted } from 'vue';
-import { registryElements } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { uiButtonNodes } from '@app/composables/inspector-page-nodes';
 import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import { useUIButtonPage } from '@app/composables/useUIButtonPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -31,58 +30,58 @@ const { bindInput, bindSliders } = useInspectorInput();
 onMounted(() => {
 	const uiButton = Inspector.uiButton;
 	if (!uiButton) return;
-	const elements = registryElements(inspectorEls, [
-		'uiButton-display',
-		'uiButton-normalImage',
-		'uiButton-normalClip',
-		'uiButton-hoverImage',
-		'uiButton-hoverClip',
-		'uiButton-activeImage',
-		'uiButton-activeClip',
-		'uiButton-flip',
-		'uiButton-border',
-		'uiButton-imagePadding',
-		'uiButton-imageOpacity',
-		'uiButton-imageEffect',
-		'uiButton-normalTint-0',
-		'uiButton-normalTint-1',
-		'uiButton-normalTint-2',
-		'uiButton-normalTint-3',
-		'uiButton-hoverTint-0',
-		'uiButton-hoverTint-1',
-		'uiButton-hoverTint-2',
-		'uiButton-hoverTint-3',
-		'uiButton-activeTint-0',
-		'uiButton-activeTint-1',
-		'uiButton-activeTint-2',
-		'uiButton-activeTint-3',
-		'uiButton-direction',
-		'uiButton-horizontalAlign',
-		'uiButton-verticalAlign',
-		'uiButton-content',
-		'uiButton-size',
-		'uiButton-letterSpacing',
-		'uiButton-textPadding',
-		'uiButton-font',
-		'uiButton-typeface',
-		'uiButton-textEffect-type',
-		'uiButton-textEffect-shadowOffsetX',
-		'uiButton-textEffect-shadowOffsetY',
-		'uiButton-textEffect-strokeWidth',
-		'uiButton-textEffect-color',
-		'uiButton-normalColor',
-		'uiButton-hoverColor',
-		'uiButton-activeColor',
-		'uiButton-hoverSound',
-		'uiButton-clickSound'
-	]);
-	const sliders = registryElements(inspectorEls, [
-		'uiButton-imagePadding-slider',
-		'uiButton-imageOpacity-slider',
-		'uiButton-size-slider',
-		'uiButton-letterSpacing-slider',
-		'uiButton-textPadding-slider'
-	]);
+	const elements = [
+		uiButtonNodes.pick('display'),
+		uiButtonNodes.pick('normalImage'),
+		uiButtonNodes.pick('normalClip'),
+		uiButtonNodes.pick('hoverImage'),
+		uiButtonNodes.pick('hoverClip'),
+		uiButtonNodes.pick('activeImage'),
+		uiButtonNodes.pick('activeClip'),
+		uiButtonNodes.pick('flip'),
+		uiButtonNodes.pick('border'),
+		uiButtonNodes.pick('imagePadding'),
+		uiButtonNodes.pick('imageOpacity'),
+		uiButtonNodes.pick('imageEffect'),
+		uiButtonNodes.pick('normalTint0'),
+		uiButtonNodes.pick('normalTint1'),
+		uiButtonNodes.pick('normalTint2'),
+		uiButtonNodes.pick('normalTint3'),
+		uiButtonNodes.pick('hoverTint0'),
+		uiButtonNodes.pick('hoverTint1'),
+		uiButtonNodes.pick('hoverTint2'),
+		uiButtonNodes.pick('hoverTint3'),
+		uiButtonNodes.pick('activeTint0'),
+		uiButtonNodes.pick('activeTint1'),
+		uiButtonNodes.pick('activeTint2'),
+		uiButtonNodes.pick('activeTint3'),
+		uiButtonNodes.pick('direction'),
+		uiButtonNodes.pick('horizontalAlign'),
+		uiButtonNodes.pick('verticalAlign'),
+		uiButtonNodes.pick('content'),
+		uiButtonNodes.pick('size'),
+		uiButtonNodes.pick('letterSpacing'),
+		uiButtonNodes.pick('textPadding'),
+		uiButtonNodes.pick('font'),
+		uiButtonNodes.pick('typeface'),
+		uiButtonNodes.pick('textEffectType'),
+		uiButtonNodes.pick('textEffectShadowOffsetX'),
+		uiButtonNodes.pick('textEffectShadowOffsetY'),
+		uiButtonNodes.pick('textEffectStrokeWidth'),
+		uiButtonNodes.pick('textEffectColor'),
+		uiButtonNodes.pick('normalColor'),
+		uiButtonNodes.pick('hoverColor'),
+		uiButtonNodes.pick('activeColor'),
+		uiButtonNodes.pick('hoverSound'),
+		uiButtonNodes.pick('clickSound')
+	].filter((el): el is HTMLElement => el != null);
+	const sliders = [
+		uiButtonNodes.pick('imagePaddingSlider'),
+		uiButtonNodes.pick('imageOpacitySlider'),
+		uiButtonNodes.pick('sizeSlider'),
+		uiButtonNodes.pick('letterSpacingSlider'),
+		uiButtonNodes.pick('textPaddingSlider')
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, getUIStore(), uiButton);
 	bindSliders(sliders);
 

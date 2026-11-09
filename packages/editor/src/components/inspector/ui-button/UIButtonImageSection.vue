@@ -18,7 +18,7 @@
 			</div>
 			<CustomBox
 				id="uiButton-normalImage"
-				:ref="registryRef(inspectorEls, 'uiButton-normalImage')"
+				:ref="bind('normalImage')"
 				v-tip="t('components.uiButton-normalImage.tip')"
 				:model-value="form.normalImage"
 				@input="onParamInput"
@@ -38,7 +38,7 @@
 			<div class="text">{{ t('components.uiButton-hoverImage.label') || 'Hover Image' }}</div>
 			<CustomBox
 				id="uiButton-hoverImage"
-				:ref="registryRef(inspectorEls, 'uiButton-hoverImage')"
+				:ref="bind('hoverImage')"
 				v-tip="t('components.uiButton-hoverImage.tip')"
 				:model-value="form.hoverImage"
 				@input="onParamInput"
@@ -60,7 +60,7 @@
 			</div>
 			<CustomBox
 				id="uiButton-activeImage"
-				:ref="registryRef(inspectorEls, 'uiButton-activeImage')"
+				:ref="bind('activeImage')"
 				v-tip="t('components.uiButton-activeImage.tip')"
 				:model-value="form.activeImage"
 				@input="onParamInput"
@@ -172,7 +172,7 @@
 			>
 				<NumberBox
 					id="uiButton-normalTint-0"
-					:ref="registryRef(inspectorEls, 'uiButton-normalTint-0')"
+					:ref="bind('normalTint0')"
 					v-model="form.normalTint[0]"
 					@input="onParamInput"
 					min="-255"
@@ -181,7 +181,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-normalTint-1"
-					:ref="registryRef(inspectorEls, 'uiButton-normalTint-1')"
+					:ref="bind('normalTint1')"
 					v-model="form.normalTint[1]"
 					@input="onParamInput"
 					min="-255"
@@ -190,7 +190,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-normalTint-2"
-					:ref="registryRef(inspectorEls, 'uiButton-normalTint-2')"
+					:ref="bind('normalTint2')"
 					v-model="form.normalTint[2]"
 					@input="onParamInput"
 					min="-255"
@@ -199,7 +199,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-normalTint-3"
-					:ref="registryRef(inspectorEls, 'uiButton-normalTint-3')"
+					:ref="bind('normalTint3')"
 					v-model="form.normalTint[3]"
 					@input="onParamInput"
 					min="0"
@@ -218,7 +218,7 @@
 			>
 				<NumberBox
 					id="uiButton-hoverTint-0"
-					:ref="registryRef(inspectorEls, 'uiButton-hoverTint-0')"
+					:ref="bind('hoverTint0')"
 					v-model="form.hoverTint[0]"
 					@input="onParamInput"
 					min="-255"
@@ -227,7 +227,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-hoverTint-1"
-					:ref="registryRef(inspectorEls, 'uiButton-hoverTint-1')"
+					:ref="bind('hoverTint1')"
 					v-model="form.hoverTint[1]"
 					@input="onParamInput"
 					min="-255"
@@ -236,7 +236,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-hoverTint-2"
-					:ref="registryRef(inspectorEls, 'uiButton-hoverTint-2')"
+					:ref="bind('hoverTint2')"
 					v-model="form.hoverTint[2]"
 					@input="onParamInput"
 					min="-255"
@@ -245,7 +245,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-hoverTint-3"
-					:ref="registryRef(inspectorEls, 'uiButton-hoverTint-3')"
+					:ref="bind('hoverTint3')"
 					v-model="form.hoverTint[3]"
 					@input="onParamInput"
 					min="0"
@@ -264,7 +264,7 @@
 			>
 				<NumberBox
 					id="uiButton-activeTint-0"
-					:ref="registryRef(inspectorEls, 'uiButton-activeTint-0')"
+					:ref="bind('activeTint0')"
 					v-model="form.activeTint[0]"
 					@input="onParamInput"
 					min="-255"
@@ -273,7 +273,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-activeTint-1"
-					:ref="registryRef(inspectorEls, 'uiButton-activeTint-1')"
+					:ref="bind('activeTint1')"
 					v-model="form.activeTint[1]"
 					@input="onParamInput"
 					min="-255"
@@ -282,7 +282,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-activeTint-2"
-					:ref="registryRef(inspectorEls, 'uiButton-activeTint-2')"
+					:ref="bind('activeTint2')"
 					v-model="form.activeTint[2]"
 					@input="onParamInput"
 					min="-255"
@@ -291,7 +291,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiButton-activeTint-3"
-					:ref="registryRef(inspectorEls, 'uiButton-activeTint-3')"
+					:ref="bind('activeTint3')"
 					v-model="form.activeTint[3]"
 					@input="onParamInput"
 					min="0"
@@ -304,10 +304,9 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { uiButtonNodes } from '@app/composables/inspector-page-nodes';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -317,6 +316,9 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 import { uiButtonContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { bind, dispose } = uiButtonNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(uiButtonContextKey)!;
 
 type SyncTarget = HTMLElement & {
@@ -361,17 +363,17 @@ const elHoverTintBox = ref<HTMLElement | null>(null);
 const elActiveTintBox = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'uiButton-display', elDisplay.value);
-	registerElement(inspectorEls, 'uiButton-normalClip', elNormalClip.value);
-	registerElement(inspectorEls, 'uiButton-hoverClip', elHoverClip.value);
-	registerElement(inspectorEls, 'uiButton-activeClip', elActiveClip.value);
-	registerElement(inspectorEls, 'uiButton-flip', elFlip.value);
-	registerElement(inspectorEls, 'uiButton-border', elBorder.value);
-	registerElement(inspectorEls, 'uiButton-imagePadding', elImagePadding.value);
-	registerElement(inspectorEls, 'uiButton-imageOpacity', elImageOpacity.value);
-	registerElement(inspectorEls, 'uiButton-imageEffect', elImageEffect.value);
-	registerElement(inspectorEls, 'uiButton-imagePadding-slider', elImagePaddingSlider.value);
-	registerElement(inspectorEls, 'uiButton-imageOpacity-slider', elImageOpacitySlider.value);
+	uiButtonNodes.set('display', elDisplay.value?.root ?? null);
+	uiButtonNodes.set('normalClip', elNormalClip.value?.root ?? null);
+	uiButtonNodes.set('hoverClip', elHoverClip.value?.root ?? null);
+	uiButtonNodes.set('activeClip', elActiveClip.value?.root ?? null);
+	uiButtonNodes.set('flip', elFlip.value?.root ?? null);
+	uiButtonNodes.set('border', elBorder.value?.root ?? null);
+	uiButtonNodes.set('imagePadding', elImagePadding.value?.root ?? null);
+	uiButtonNodes.set('imageOpacity', elImageOpacity.value?.root ?? null);
+	uiButtonNodes.set('imageEffect', elImageEffect.value?.root ?? null);
+	uiButtonNodes.set('imagePaddingSlider', elImagePaddingSlider.value?.root ?? null);
+	uiButtonNodes.set('imageOpacitySlider', elImageOpacitySlider.value?.root ?? null);
 	loadItems(elDisplay.value, [
 		{ name: 'Stretch', value: 'stretch' },
 		{ name: 'Tile', value: 'tile' },

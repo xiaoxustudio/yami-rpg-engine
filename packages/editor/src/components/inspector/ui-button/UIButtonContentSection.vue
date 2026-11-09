@@ -74,7 +74,7 @@
 			<TextBox
 				:label="t('components.uiButton-content.label') || 'Content'"
 				id="uiButton-content"
-				:ref="registryRef(inspectorEls, 'uiButton-content')"
+				:ref="bind('content')"
 				v-tip="t('components.uiButton-content.tip')"
 				v-model="form.content"
 				@input="onParamInput"
@@ -167,7 +167,7 @@
 				:label="t('components.uiButton-font.label') || 'Font'"
 				id="uiButton-font"
 				:placeholder="t('components.uiButton-font.placeholder')"
-				:ref="registryRef(inspectorEls, 'uiButton-font')"
+				:ref="bind('font')"
 				v-tip="t('components.uiButton-font.tip')"
 				v-model="form.font"
 				@input="onParamInput"
@@ -249,7 +249,7 @@
 			<ColorBox
 				:label="t('components.uiButton-normalColor.label') || 'Normal Color'"
 				id="uiButton-normalColor"
-				:ref="registryRef(inspectorEls, 'uiButton-normalColor')"
+				:ref="bind('normalColor')"
 				v-tip="t('components.uiButton-normalColor.tip')"
 				v-model="form.normalColor"
 				@input="onParamInput"
@@ -258,7 +258,7 @@
 			<ColorBox
 				:label="t('components.uiButton-hoverColor.label') || 'Hover Color'"
 				id="uiButton-hoverColor"
-				:ref="registryRef(inspectorEls, 'uiButton-hoverColor')"
+				:ref="bind('hoverColor')"
 				v-tip="t('components.uiButton-hoverColor.tip')"
 				v-model="form.hoverColor"
 				@input="onParamInput"
@@ -269,7 +269,7 @@
 			<ColorBox
 				:label="t('components.uiButton-activeColor.label') || 'Active Color'"
 				id="uiButton-activeColor"
-				:ref="registryRef(inspectorEls, 'uiButton-activeColor')"
+				:ref="bind('activeColor')"
 				v-tip="t('components.uiButton-activeColor.tip')"
 				v-model="form.activeColor"
 				@input="onParamInput"
@@ -279,10 +279,9 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { uiButtonNodes } from '@app/composables/inspector-page-nodes';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import ColorBox from '@app/components/common/ColorBox.vue';
@@ -294,6 +293,9 @@ import TextBox from '@app/components/common/TextBox.vue';
 import { uiButtonContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { bind, dispose } = uiButtonNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(uiButtonContextKey)!;
 
 type SyncTarget = HTMLElement & {
@@ -337,19 +339,19 @@ const elStrokeWidth = ref<InstanceType<typeof NumberBox> | null>(null);
 const elEffectColor = ref<InstanceType<typeof ColorBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'uiButton-direction', elDirection.value);
-	registerElement(inspectorEls, 'uiButton-size', elSize.value);
-	registerElement(inspectorEls, 'uiButton-letterSpacing', elLetterSpacing.value);
-	registerElement(inspectorEls, 'uiButton-textPadding', elTextPadding.value);
-	registerElement(inspectorEls, 'uiButton-typeface', elTypeface.value);
-	registerElement(inspectorEls, 'uiButton-textEffect-type', elTextEffectType.value);
-	registerElement(inspectorEls, 'uiButton-textEffect-shadowOffsetX', elShadowOffsetX.value);
-	registerElement(inspectorEls, 'uiButton-textEffect-shadowOffsetY', elShadowOffsetY.value);
-	registerElement(inspectorEls, 'uiButton-textEffect-strokeWidth', elStrokeWidth.value);
-	registerElement(inspectorEls, 'uiButton-textEffect-color', elEffectColor.value);
-	registerElement(inspectorEls, 'uiButton-size-slider', elSizeSlider.value);
-	registerElement(inspectorEls, 'uiButton-letterSpacing-slider', elLetterSpacingSlider.value);
-	registerElement(inspectorEls, 'uiButton-textPadding-slider', elTextPaddingSlider.value);
+	uiButtonNodes.set('direction', elDirection.value?.root ?? null);
+	uiButtonNodes.set('size', elSize.value?.root ?? null);
+	uiButtonNodes.set('letterSpacing', elLetterSpacing.value?.root ?? null);
+	uiButtonNodes.set('textPadding', elTextPadding.value?.root ?? null);
+	uiButtonNodes.set('typeface', elTypeface.value?.root ?? null);
+	uiButtonNodes.set('textEffectType', elTextEffectType.value?.root ?? null);
+	uiButtonNodes.set('textEffectShadowOffsetX', elShadowOffsetX.value?.root ?? null);
+	uiButtonNodes.set('textEffectShadowOffsetY', elShadowOffsetY.value?.root ?? null);
+	uiButtonNodes.set('textEffectStrokeWidth', elStrokeWidth.value?.root ?? null);
+	uiButtonNodes.set('textEffectColor', elEffectColor.value?.root ?? null);
+	uiButtonNodes.set('sizeSlider', elSizeSlider.value?.root ?? null);
+	uiButtonNodes.set('letterSpacingSlider', elLetterSpacingSlider.value?.root ?? null);
+	uiButtonNodes.set('textPaddingSlider', elTextPaddingSlider.value?.root ?? null);
 	loadItems(elDirection.value, [
 		{ name: 'Horizontal', value: 'horizontal-tb' },
 		{ name: 'Vertical', value: 'vertical-lr' }
