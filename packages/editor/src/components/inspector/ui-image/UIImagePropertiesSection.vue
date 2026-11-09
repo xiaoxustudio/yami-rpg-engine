@@ -7,7 +7,7 @@
 			<div class="text">{{ t('components.uiImage-image.label') || 'Image' }}</div>
 			<CustomBox
 				id="uiImage-image"
-				:ref="registryRef(inspectorEls, 'uiImage-image')"
+				:ref="bind('image')"
 				v-tip="t('components.uiImage-image.tip')"
 				v-model="form.image"
 				type="file"
@@ -49,7 +49,7 @@
 			>
 				<NumberBox
 					id="uiImage-shiftX"
-					:ref="registryRef(inspectorEls, 'uiImage-shiftX')"
+					:ref="bind('shiftX')"
 					v-tip="t('components.uiImage-shiftX.tip')"
 					v-model="form.shiftX"
 					min="-10000"
@@ -59,7 +59,7 @@
 				></NumberBox>
 				<NumberBox
 					id="uiImage-shiftY"
-					:ref="registryRef(inspectorEls, 'uiImage-shiftY')"
+					:ref="bind('shiftY')"
 					v-tip="t('components.uiImage-shiftY.tip')"
 					v-model="form.shiftY"
 					min="-10000"
@@ -197,10 +197,9 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement, registryRef } from '@app/utils/element-registry';
+import { uiImagePageNodes } from '@app/composables/inspector-page-nodes';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -210,6 +209,9 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 import { uiImageContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { bind, dispose } = uiImagePageNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(uiImageContextKey)!;
 
 const elDisplay = ref<InstanceType<typeof SelectBox> | null>(null);
@@ -242,19 +244,19 @@ const synchronize = (
 };
 
 onMounted(() => {
-	registerElement(inspectorEls, 'uiImage-display', elDisplay.value);
-	registerElement(inspectorEls, 'uiImage-flip', elFlip.value);
-	registerElement(inspectorEls, 'uiImage-blend', elBlend.value);
-	registerElement(inspectorEls, 'uiImage-clip', elClip.value);
-	registerElement(inspectorEls, 'uiImage-border', elBorder.value);
-	registerElement(inspectorEls, 'uiImage-tint-0', elTint0.value);
-	registerElement(inspectorEls, 'uiImage-tint-1', elTint1.value);
-	registerElement(inspectorEls, 'uiImage-tint-2', elTint2.value);
-	registerElement(inspectorEls, 'uiImage-tint-3', elTint3.value);
-	registerElement(inspectorEls, 'uiImage-tint-0-slider', elTint0Slider.value);
-	registerElement(inspectorEls, 'uiImage-tint-1-slider', elTint1Slider.value);
-	registerElement(inspectorEls, 'uiImage-tint-2-slider', elTint2Slider.value);
-	registerElement(inspectorEls, 'uiImage-tint-3-slider', elTint3Slider.value);
+	uiImagePageNodes.set('display', elDisplay.value?.root ?? null);
+	uiImagePageNodes.set('flip', elFlip.value?.root ?? null);
+	uiImagePageNodes.set('blend', elBlend.value?.root ?? null);
+	uiImagePageNodes.set('clip', elClip.value?.root ?? null);
+	uiImagePageNodes.set('border', elBorder.value?.root ?? null);
+	uiImagePageNodes.set('tint0', elTint0.value?.root ?? null);
+	uiImagePageNodes.set('tint1', elTint1.value?.root ?? null);
+	uiImagePageNodes.set('tint2', elTint2.value?.root ?? null);
+	uiImagePageNodes.set('tint3', elTint3.value?.root ?? null);
+	uiImagePageNodes.set('tint0Slider', elTint0Slider.value?.root ?? null);
+	uiImagePageNodes.set('tint1Slider', elTint1Slider.value?.root ?? null);
+	uiImagePageNodes.set('tint2Slider', elTint2Slider.value?.root ?? null);
+	uiImagePageNodes.set('tint3Slider', elTint3Slider.value?.root ?? null);
 	elDisplay.value?.loadItems([
 		{
 			name: t('components.uiImage-display.options.stretch.name'),

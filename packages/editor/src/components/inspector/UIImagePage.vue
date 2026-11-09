@@ -39,8 +39,7 @@ import {
 	type UiElementControlTable
 } from '@app/composables/ui-element-page-controls';
 import { useI18n } from 'vue-i18n';
-import { registryElements } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { uiImagePageNodes } from '@app/composables/inspector-page-nodes';
 import { useUIImagePage } from '@app/composables/useUIImagePage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -77,26 +76,26 @@ onMounted(() => {
 	onUnmounted(() => resetUiElementControls(controls));
 	const uiImage = Inspector.uiImage;
 	if (!uiImage) return;
-	const elements = registryElements(inspectorEls, [
-		'uiImage-image',
-		'uiImage-display',
-		'uiImage-flip',
-		'uiImage-blend',
-		'uiImage-shiftX',
-		'uiImage-shiftY',
-		'uiImage-clip',
-		'uiImage-border',
-		'uiImage-tint-0',
-		'uiImage-tint-1',
-		'uiImage-tint-2',
-		'uiImage-tint-3'
-	]);
-	const sliders = registryElements(inspectorEls, [
-		'uiImage-tint-0-slider',
-		'uiImage-tint-1-slider',
-		'uiImage-tint-2-slider',
-		'uiImage-tint-3-slider'
-	]);
+	const elements = [
+		uiImagePageNodes.pick('image'),
+		uiImagePageNodes.pick('display'),
+		uiImagePageNodes.pick('flip'),
+		uiImagePageNodes.pick('blend'),
+		uiImagePageNodes.pick('shiftX'),
+		uiImagePageNodes.pick('shiftY'),
+		uiImagePageNodes.pick('clip'),
+		uiImagePageNodes.pick('border'),
+		uiImagePageNodes.pick('tint0'),
+		uiImagePageNodes.pick('tint1'),
+		uiImagePageNodes.pick('tint2'),
+		uiImagePageNodes.pick('tint3')
+	].filter((el): el is HTMLElement => el != null);
+	const sliders = [
+		uiImagePageNodes.pick('tint0Slider'),
+		uiImagePageNodes.pick('tint1Slider'),
+		uiImagePageNodes.pick('tint2Slider'),
+		uiImagePageNodes.pick('tint3Slider')
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, getUIStore(), uiImage);
 	bindSliders(sliders);
 

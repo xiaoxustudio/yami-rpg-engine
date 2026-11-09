@@ -570,3 +570,41 @@ export const particleLayerPageNodes = createSkeletonTable<ParticleLayerPageNodeK
 	colorTint2Slider: 'particleLayer-color-tint-2-slider',
 	colorTint3Slider: 'particleLayer-color-tint-3-slider'
 });
+
+/** UI 图片页：输入与滑块。 */
+export type UiImagePageNodeKey =
+	| 'image'
+	| 'display'
+	| 'flip'
+	| 'blend'
+	| 'shiftX'
+	| 'shiftY'
+	| 'clip'
+	| 'border'
+	| 'tint0'
+	| 'tint1'
+	| 'tint2'
+	| 'tint3'
+	| 'tint0Slider'
+	| 'tint1Slider'
+	| 'tint2Slider'
+	| 'tint3Slider';
+
+export const uiImagePageNodes = createSkeletonTable<UiImagePageNodeKey>({
+	image: 'uiImage-image',
+	display: 'uiImage-display',
+	flip: 'uiImage-flip',
+	blend: 'uiImage-blend',
+	shiftX: 'uiImage-shiftX',
+	shiftY: 'uiImage-shiftY',
+	clip: 'uiImage-clip',
+	border: 'uiImage-border',
+	tint0: 'uiImage-tint-0',
+	tint1: 'uiImage-tint-1',
+	tint2: 'uiImage-tint-2',
+	tint3: 'uiImage-tint-3',
+	tint0Slider: 'uiImage-tint-0-slider',
+	tint1Slider: 'uiImage-tint-1-slider',
+	tint2Slider: 'uiImage-tint-2-slider',
+	tint3Slider: 'uiImage-tint-3-slider'
+});

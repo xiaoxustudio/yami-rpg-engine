@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import SceneLightPage from '@app/components/inspector/SceneLightPage.vue';
 import UIImagePage from '@app/components/inspector/UIImagePage.vue';
 import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { sceneLightNodes } from '@app/composables/inspector-page-nodes';
+import { sceneLightNodes, uiImagePageNodes } from '@app/composables/inspector-page-nodes';
 import { registryElements, registerElement } from '@app/utils/element-registry';
 
 vi.mock('@app/stores/local', () => ({
@@ -70,11 +70,19 @@ describe('inspector 页批量取控件走注册表', () => {
 		wrapper.unmount();
 	});
 
-	it('UIImagePage：滑杆与显示控件都已登记（本刀补的 41 个自由 :ref 之一）', async () => {
+	it('UIImagePage：滑杆与显示控件由节点表交出（不再进注册表）', async () => {
 		const wrapper = await mountWithHost(UIImagePage, 'uiImage-vue-mount', ['uiImage-image']);
 
 		for (const id of ['uiImage-tint-0-slider', 'uiImage-tint-1-slider', 'uiImage-display']) {
-			expect(inspectorEls.get(id), `${id} 未登记`).toBeTruthy();
+			expect(inspectorEls.get(id), `${id} 不该再登记`).toBeFalsy();
+			expect(document.getElementById(id), `${id} 模板里应存在`).toBeTruthy();
+		}
+		expect(uiImagePageNodes.pick('display')).toBeTruthy();
+		// 每个 key 都能取到元素（bindInput / bindSliders 才有东西可绑）
+		for (const key of Object.keys(uiImagePageNodes.ids) as Array<
+			keyof typeof uiImagePageNodes.ids
+		>) {
+			expect(uiImagePageNodes.pick(key), `uiImagePageNodes.${key} 应可读`).toBeTruthy();
 		}
 
 		wrapper.unmount();
