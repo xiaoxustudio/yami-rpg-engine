@@ -1,8 +1,8 @@
 import '@app/inspector/file-image-page.ts';
+import { inspectorPageRoots } from '@app/composables/inspector-page-nodes';
 import { reactive } from 'vue';
 import { hide, show } from '@app/utils/element-utils';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { getDevicePixelContentBoxSize } from '@app/utils/css';
 
 interface FileImageForm {
@@ -28,7 +28,7 @@ export function useFileImagePage() {
 	};
 
 	const updateImage = (): void => {
-		const image = (inspectorEls.get('fileImage-image') as HTMLImageElement | null) ?? null;
+		const image = inspectorPageRoots.pick('fileImageImage') as HTMLImageElement | null;
 		if (!image) return;
 		hide(image);
 		const frame = image.parentElement!;

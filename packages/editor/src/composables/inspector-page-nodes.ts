@@ -623,3 +623,18 @@ export type FileTilesetNodeKey = 'image';
 export const fileTilesetNodes = createSkeletonTable<FileTilesetNodeKey>({
 	image: 'fileTileset-image'
 });
+
+/**
+ * 文件类 inspector 页的**页面根**与页内图片框。
+ *
+ * 这些节点由 `PageManager` 在运行期渲染（页面组件里没有可挂 ref 的根），
+ * 所以没有登记方，只靠 `pick` 的稳定 id 兜底 —— 页面模块要它们只是为了挂 `resize`。
+ */
+export type InspectorPageDomKey = 'fileAudio' | 'fileFont' | 'fileImage' | 'fileImageImage';
+
+export const inspectorPageRoots = createSkeletonTable<InspectorPageDomKey>({
+	fileAudio: 'fileAudio',
+	fileFont: 'fileFont',
+	fileImage: 'fileImage',
+	fileImageImage: 'fileImage-image'
+});

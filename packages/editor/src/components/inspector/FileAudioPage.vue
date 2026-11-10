@@ -128,10 +128,10 @@
 </template>
 
 <script setup lang="ts">
+import { inspectorPageRoots } from '@app/composables/inspector-page-nodes';
 import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useFileAudioPage } from '@app/composables/useFileAudioPage';
 import { useEventListener } from '@app/composables/useEventListener';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -211,7 +211,8 @@ onMounted(() => {
 		const onThemeChange = fileAudio.themechange;
 		themechangeHandler.value = onThemeChange;
 		themechangeEnabled.value = true;
-		const el = inspectorEls.get('fileAudio');
+		// 页面根由 PageManager 渲染：按 DOM id 取（不再按 id 摸 inspectorEls）
+		const el = inspectorPageRoots.pick('fileAudio');
 		el?.addEventListener('resize', fileAudio.windowResize);
 	}
 

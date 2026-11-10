@@ -31,13 +31,12 @@
 </template>
 
 <script setup lang="ts">
+import { inspectorPageRoots } from '@app/composables/inspector-page-nodes';
 import { inspectorPageSync, type PageSyncApi } from '@app/composables/inspector-page-sync';
 import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFileImagePage } from '@app/composables/useFileImagePage';
 import { Inspector } from '@app/inspector/inspector.ts';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 
@@ -53,9 +52,8 @@ onMounted(() => {
 		fileImage.image = elImage.value;
 	}
 
-	registerElement(inspectorEls, 'fileImage-image', elImage.value);
-
-	const el = inspectorEls.get('fileImage');
+	// 页面根由 PageManager 渲染：按 DOM id 取（不再按 id 摸 inspectorEls）
+	const el = inspectorPageRoots.pick('fileImage');
 	const bridgeApi: PageSyncApi = { sync, updateImage };
 	inspectorPageSync.fileImage.provide(bridgeApi);
 	onUnmounted(() => inspectorPageSync.fileImage.reset(bridgeApi));

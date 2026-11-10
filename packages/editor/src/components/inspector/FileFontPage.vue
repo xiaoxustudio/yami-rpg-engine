@@ -31,9 +31,9 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
 import { useI18n } from 'vue-i18n';
 import { useFileFontPage } from '@app/composables/useFileFontPage';
+import { inspectorPageRoots } from '@app/composables/inspector-page-nodes';
 import { Inspector } from '@app/inspector/inspector.ts';
 import {
 	provideFileFontPageBridge,
@@ -68,7 +68,8 @@ onMounted(() => {
 	fileFont.previews = [
 		...(gridEl.value?.querySelectorAll<HTMLElement>('.fileFont-preview') ?? [])
 	] as NonNullable<typeof fileFont.previews>;
-	const el = inspectorEls.get('fileFont');
+	// 页面根由 PageManager 渲染：按 DOM id 取（不再按 id 摸 inspectorEls）
+	const el = inspectorPageRoots.pick('fileFont');
 	// 页面根元素由页面管理器登记，`resize` 事件也由它派发；这里只挂监听，不再往元素上挂方法。
 	if (el) el.addEventListener('resize', fileFont.windowResize);
 	provideFileFontPageBridge(bridgeApi);
