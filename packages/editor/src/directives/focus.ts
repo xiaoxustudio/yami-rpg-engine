@@ -1,5 +1,6 @@
 import { reactive, watch } from 'vue';
 import type { ObjectDirective } from 'vue';
+import { getElementCapabilities } from '@ui-kit';
 import type { YamiElement } from '@app/types/element-api';
 
 export interface FocusRequest {
@@ -17,8 +18,14 @@ export function requestFocus(id: string, mode?: string): void {
 }
 
 const applyFocus = (el: HTMLElement, mode?: string): void => {
-	const target = el as YamiElement;
 	setTimeout(() => {
+		// 能力优先：控件在挂载时把自定义焦点登记到元素上（WeakMap），元素本身不再挂方法
+		const capabilities = getElementCapabilities(el);
+		if (capabilities?.getFocus) {
+			capabilities.getFocus(mode);
+			return;
+		}
+		const target = el as YamiElement;
 		if (typeof target.getFocus === 'function') {
 			target.getFocus(mode);
 			return;

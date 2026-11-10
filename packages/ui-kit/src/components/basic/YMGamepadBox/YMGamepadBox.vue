@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { attachApi } from '../../../utils/attach-api';
+import { setElementCapabilities } from '../../../utils/element-capabilities';
 
 interface Props {
 	id?: string;
@@ -154,9 +154,10 @@ const inputBlur = (): void => {
 };
 
 onMounted(() => {
-	const el = root.value as HTMLElement & { [k: string]: unknown };
+	const el = root.value;
 	if (!el) return;
-	attachApi(el, { read, write, enable, disable, getFocus });
+	// `v-focus` 只拿得到根元素，自定义焦点能力按元素登记（组件实例上另有 defineExpose）
+	setElementCapabilities(el, { getFocus: (mode?: string) => getFocus(mode ?? '') });
 });
 
 onUnmounted(() => {

@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 // 一次性探针：包装组件的 defineExpose 成员 vs attachElementApi 成员，找出「只有元素上才有」的成员。
 // 迁移到组件实例（defineExpose）时，这类成员会在调用点静默变成 undefined。
+// `AUDIT_DIRS=a,b node …` 换目录（ui-kit 侧用 `AUDIT_DIRS=packages/ui-kit/src`）。
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const ROOT = process.cwd();
-const dirs = ['packages/editor/src/components/common', 'packages/editor/src/components'];
+const dirs = (
+	process.env.AUDIT_DIRS ?? 'packages/editor/src/components/common,packages/editor/src/components'
+)
+	.split(',')
+	.filter(Boolean);
 
 function walk(dir, out = []) {
 	for (const name of readdirSync(dir)) {
@@ -65,7 +70,9 @@ const rows = [];
 for (const file of files) {
 	const text = readFileSync(file, 'utf8');
 	const expose = blockAfter(text, 'defineExpose(');
-	const attach = blockAfter(text, 'attachElementApi(');
+	const attachMarkers = ['attachElementApi(', 'attachApi('];
+	const marker = attachMarkers.find((m) => text.includes(m));
+	const attach = marker ? blockAfter(text, marker) : null;
 	if (!attach) continue;
 	const exposed = expose ? keysOf(expose) : [];
 	const attached = keysOf(attach.replace(/^[^,]*,/, ''));

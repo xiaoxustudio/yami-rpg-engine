@@ -3,17 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { YMGamepadBox } from '@ui-kit';
-import { attachElementApi } from '@app/utils/attach-element-api';
-
-interface GamepadBoxElement extends HTMLElement {
-	read(): number | null;
-	write(button: number): void;
-	enable(): void;
-	disable(): void;
-	getFocus(mode: string): HTMLInputElement | null;
-}
 
 interface Props {
 	id?: string;
@@ -39,10 +30,4 @@ const disable = (): void => ym.value?.disable();
 const getFocus = (mode: string): HTMLInputElement | null => ym.value?.getFocus(mode) ?? null;
 
 defineExpose({ read, write, enable, disable, getFocus, root });
-
-onMounted(() => {
-	const el = root.value as GamepadBoxElement | null;
-	if (!el) return;
-	attachElementApi(el, { read, write, enable, disable, getFocus });
-});
 </script>

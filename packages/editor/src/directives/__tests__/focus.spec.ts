@@ -1,8 +1,9 @@
-﻿import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, nextTick, withDirectives } from 'vue';
 import { mount } from '@vue/test-utils';
 import { focusTarget, requestFocus, vFocus } from '@app/directives/focus';
 import type { YamiElement } from '@app/types/element-api';
+import { setElementCapabilities } from '@ui-kit';
 
 const flushFocus = async (): Promise<void> => {
 	await nextTick();
@@ -21,6 +22,20 @@ const mountWithFocus = (id: string, tagName = 'input', props: Record<string, unk
 describe('v-focus 指令与 requestFocus 基建', () => {
 	beforeEach(() => {
 		focusTarget.current = null;
+	});
+
+	it('requestFocus 优先走能力表，元素上不再需要挂方法', async () => {
+		const wrapper = mountWithFocus('capability-target', 'div');
+		const el = document.getElementById('capability-target') as HTMLElement;
+		const getFocus = vi.fn();
+		setElementCapabilities(el, { getFocus });
+		const legacy = vi.fn();
+		(el as unknown as YamiElement).getFocus = legacy;
+		requestFocus('capability-target', 'end');
+		await flushFocus();
+		expect(getFocus).toHaveBeenCalledWith('end');
+		expect(legacy).not.toHaveBeenCalled();
+		wrapper.unmount();
 	});
 
 	it('requestFocus 命中 id 时优先调用元素 getFocus API', async () => {

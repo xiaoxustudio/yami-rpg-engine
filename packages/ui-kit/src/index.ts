@@ -221,6 +221,12 @@ export {
 } from './utils/tree-data-context';
 export { createScrollListener, type ScrollListenerApi } from './utils/scroll-listener';
 export { attachApi } from './utils/attach-api';
+export {
+	clearElementCapabilities,
+	getElementCapabilities,
+	setElementCapabilities,
+	type ElementCapabilities
+} from './utils/element-capabilities';
 export type { YamiElement, YamiElementApi, YamiListElement } from './utils/element-contract';
 export { getListConfig, type ListConfig } from './utils/list-config';
 export {

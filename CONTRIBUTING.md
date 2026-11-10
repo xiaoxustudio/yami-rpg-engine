@@ -64,14 +64,9 @@ node scripts/oneoff/audit-expose-vs-attach.mjs                       # 包装组
 node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --apply   # 生成桥模块并给窗口接线
 ```
 
-- **业务窗口已全部迁到控件表**：`registryRef` 只剩 `utils/__tests__/element-registry.spec.ts`（对 `registryRef` 自身的测试，P4 删它时一并删）；
-- 台账三轴：`element-registry-lookups` **3 / 3 文件**、`yami-element-refs` 488 / 92、`element-api-attach` 72；
-- 剩下 3 处寻址**都不是控件 id**，是三类「兜底 / 窗口管理器」：
-  1. `composables/useCommandSchema.ts`：**默认写路径**的兜底（`controls` 没传时按 `${name}-${field}` 查注册表）。命令表单里还有大量窗口没接 `controls`，这条兜底要等它们接完才能删；取不到控件时会打一条 dev 警告（每 id 一次）——用它来点名还没接表的窗口；
-  2. `tools/window-object.ts`：按窗口 id 找 `WindowFrame` 根（`windowShellEls`，本身就是窗口注册表，不是控件表）；
-  3. `utils/timer.ts`：按窗口 id 批量取窗口根。
-- ⚠️ **`element-api-attach` 的 72 处里绝大多数在 `packages/ui-kit`**（42 个文件，`createXxxApi(el, …)` 这类元素 API 的**实现**），editor 侧只剩 3 处（`TreeList` 的 `getMenuState` 工厂入参、`KeyboardBox`、`PageManager`）。把这条轴清零等于重写 ui-kit 的 API 形态，属于**独立工程**，不要混在窗口迁移里做；
-- 仍往 `composableEls` 里登记的窗口只剩 4 个（`IfCondition`、`LightGetter`、`ObjectGetter`、`SetNumberOperand` 的根/字段循环），对应的 spec 还断言它们「已登记」——这四处是 P4 前的最后一批登记侧清理。
+- **元素注册表已整体拆除**：13 个按域拆分的 `element-registry.ts` 与 `utils/element-registry.ts` 已删除，业务代码里不再有 `registryRef` / `*Els` / 按 id 摸注册表的读法；spec 侧改用只在测试里可见的 `src/__tests__/test-registry.ts`（压测 imperative 组件用，不进生产构建）。
+- 台账三轴：`element-registry-lookups` **0 / 0 文件**（已清零）、`yami-element-refs` 481 / 91、`element-api-attach` 70；
+- 收尾只剩 P3 一条装配轴，做法见下一节「P3：元素 API → 能力缝」。
 
 **存量是碎片化的，不存在「再迁一批就清零」**：119 个消费方文件里最重的那个也只卡 5 个窗口（`report-blocked-by-consumer.mjs` 的输出）。所以一批的粒度应该是**一个消费方 + 它卡住的 1–5 个窗口**，而不是一个目录。
 
@@ -103,6 +98,19 @@ const page = sceneNodes.pick('page');
 - 模块级单例（`SearchString`、`useProjectSettingsWindow`、`CustomCommand`）**没有组件树**，所以表放在模块里：窗口挂载时 `bind` / `set`，模块 `pick`；
 - 页面 + 多 section 的形态（项目设置、inspector 页）用**登记式表**（`project-settings-controls.ts`、`inspector-scene-nodes.ts`）：section `set` 自己那一半、页面 `pick`；
 - 这些表的收益是**同一条轴**：消费方不再按 id 摸注册表，`element-registry-lookups` 才会下降；但节点本身仍可能挂着元素 API（`on` / `write` / `relate` 的 targets），那是 P3 的事，**不要**在这一步顺手改写成组件实例。
+
+**P3：元素 API → 能力缝**（`element-api-attach` 归零的唯一剩余路径）
+
+`attachApi(el, api)` / `attachElementApi(el, api)` 把方法挂到**元素**上。控件能力现在都走 `defineExpose`，真正还需要按元素查的只剩两类「天然是 DOM」的能力：
+
+| 能力 | 谁只拿得到元素 | 收尾方式 |
+| --- | --- | --- |
+| `getFocus(mode)` | `v-focus` 指令（Vue 交给指令的只有根元素） | 组件 `onMounted` 里 `setElementCapabilities(el, { getFocus })`；指令先查能力表，再回退原生 `focus()` |
+| `enable` / `disable` | `relate()` 的 targets 是行 / 控件根，`select-box-core` 还要读写 `style.display` 与兄弟标签 | 同上登记；`enableElement` / `disableElement` 先查表，再回退 `classList` |
+
+- 能力表在 `packages/ui-kit/src/utils/element-capabilities.ts`（WeakMap，按元素查）。**只放 DOM 型能力**；`read` / `write` / `loadItems` / `relate` 这些控件能力**不许进表** —— 它们只能从组件实例上拿；
+- editor 侧 `components/common/*.vue` 都是单子节点透传，根元素就是 ui-kit 组件的根：能力登记在 ui-kit 组件里就覆盖了包装层，包装层的 `attachElementApi` 可以直接删；
+- 每个组件按「先登记能力 → 删 `attachElementApi` → 删 api 模块里的 `attachApi`」三步走，台账轴按文件下降；api 模块里 `box.write(...)` 这类**经元素回读自己**的写法要改成闭包直调（`write(...)`），否则删 attach 后就是运行期 undefined。
 
 
 

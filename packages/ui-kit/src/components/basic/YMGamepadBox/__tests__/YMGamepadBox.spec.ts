@@ -51,12 +51,14 @@ describe('YMGamepadBox', () => {
 		expect(wrapper.classes()).not.toContain('disabled');
 	});
 
-	it('exposes bridge functions on root element', () => {
+	it('exposes the API on the component instance, not on the root element', () => {
 		const wrapper = mount(YMGamepadBox);
-		const el = wrapper.element as unknown as GamepadBoxElement;
-		expect(typeof el.read).toBe('function');
-		expect(typeof el.write).toBe('function');
-		expect(typeof el.getFocus).toBe('function');
+		const vm = wrapper.vm as unknown as GamepadBoxElement;
+		expect(typeof vm.read).toBe('function');
+		expect(typeof vm.write).toBe('function');
+		expect(typeof vm.getFocus).toBe('function');
+		const el = wrapper.element as unknown as Record<string, unknown>;
+		expect(el.read).toBeUndefined();
 	});
 
 	it('stops interval on unmount', () => {
