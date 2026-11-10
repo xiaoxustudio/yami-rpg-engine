@@ -119,8 +119,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -170,15 +168,6 @@ const synchronize = (
 };
 
 onMounted(() => {
-	registerElement(inspectorEls, 'uiProgressBar-colorMode', elColorMode.value);
-	registerElement(inspectorEls, 'uiProgressBar-color-0', elColor0.value);
-	registerElement(inspectorEls, 'uiProgressBar-color-1', elColor1.value);
-	registerElement(inspectorEls, 'uiProgressBar-color-2', elColor2.value);
-	registerElement(inspectorEls, 'uiProgressBar-color-3', elColor3.value);
-	registerElement(inspectorEls, 'uiProgressBar-color-0-slider', elColor0Slider.value);
-	registerElement(inspectorEls, 'uiProgressBar-color-1-slider', elColor1Slider.value);
-	registerElement(inspectorEls, 'uiProgressBar-color-2-slider', elColor2Slider.value);
-	registerElement(inspectorEls, 'uiProgressBar-color-3-slider', elColor3Slider.value);
 	loadItems(elColorMode.value, [
 		{ name: 'Texture Sampling', value: 'texture' },
 		{ name: 'Fixed', value: 'fixed' }

@@ -9,21 +9,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { YMConfirmation } from '@ui-kit';
 import { getConfirmationStore } from '@app/stores/confirmation';
 import { measureText } from '@app/utils/dom';
-import { registerElement } from '@app/utils/element-registry';
-import { windowShellEls } from '@app/tools/window-object.ts';
 
 const store = getConfirmationStore();
 
 const ym = ref<{ focusFirstButton(): void; $el?: HTMLElement } | null>(null);
-
-onMounted(() => {
-	const root = ym.value?.$el;
-	if (root) registerElement(windowShellEls, 'confirmation', root);
-});
 
 const contentStyle = computed(() => {
 	const measure = measureText(store.message);

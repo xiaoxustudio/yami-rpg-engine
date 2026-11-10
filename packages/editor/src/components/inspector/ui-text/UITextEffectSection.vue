@@ -84,8 +84,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
 import ColorBox from '@app/components/common/ColorBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -103,13 +101,6 @@ const elStrokeWidth = ref<InstanceType<typeof NumberBox> | null>(null);
 const elEffectColor = ref<InstanceType<typeof ColorBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'uiText-effect-type', elEffectType.value);
-	registerElement(inspectorEls, 'uiText-effect-shadowOffsetX', elShadowOffsetX.value);
-	registerElement(inspectorEls, 'uiText-effect-shadowOffsetY', elShadowOffsetY.value);
-	registerElement(inspectorEls, 'uiText-effect-strokeWidth', elStrokeWidth.value);
-	registerElement(inspectorEls, 'uiText-effect-color', elEffectColor.value);
-	registerElement(inspectorEls, 'uiText-overflow', elOverflow.value);
-	registerElement(inspectorEls, 'uiText-blend', elBlend.value);
 	elEffectType.value?.loadItems([
 		{
 			name: t('components.uiText-effect-type.options.none.name'),

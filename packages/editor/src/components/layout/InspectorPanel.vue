@@ -7,27 +7,18 @@
 				class="page-frame"
 				:id="frame.id"
 				:value="frame.value"
-				:ref="frameRef(frame)"
 			></div>
 		</PageManager>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { inspectorEls } from '@app/inspector/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { inspectorPanelNodes } from '@app/composables/page-shell-nodes';
-import {
-	inspectorMountFrames,
-	type InspectorMountFrame
-} from '@app/components/inspector/inspector-pages';
+import { inspectorMountFrames } from '@app/components/inspector/inspector-pages';
 import PageManager from '@app/components/common/PageManager.vue';
 
-// 面板根与页面管理器交给 inspector 单例（读表）；其余挂载帧仍按各自注册表登记
+// 面板根与页面管理器交给 inspector 单例（读表）。
+// 挂载帧的 id 由页管理器渲染，页面组件按 DOM id 取（`inspectorPageRoots.pick` 的兜底）；
+// 这里不再挂 ref —— `inspectorEls` 的读者已归零，登记只会留下一份会过期的副本。
 const { bind } = inspectorPanelNodes.scoped();
-
-const frameRef = (frame: InspectorMountFrame): ((el: unknown) => void) | undefined => {
-	if (frame.registry === 'inspector') return registryRef(inspectorEls, frame.id);
-	return undefined;
-};
 </script>

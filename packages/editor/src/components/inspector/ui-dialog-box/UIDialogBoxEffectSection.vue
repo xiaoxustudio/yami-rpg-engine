@@ -75,8 +75,6 @@
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
 import ColorBox from '@app/components/common/ColorBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -93,12 +91,6 @@ const elStrokeWidth = ref<InstanceType<typeof NumberBox> | null>(null);
 const elEffectColor = ref<InstanceType<typeof ColorBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'uiDialogBox-effect-type', elEffectType.value);
-	registerElement(inspectorEls, 'uiDialogBox-effect-shadowOffsetX', elShadowOffsetX.value);
-	registerElement(inspectorEls, 'uiDialogBox-effect-shadowOffsetY', elShadowOffsetY.value);
-	registerElement(inspectorEls, 'uiDialogBox-effect-strokeWidth', elStrokeWidth.value);
-	registerElement(inspectorEls, 'uiDialogBox-effect-color', elEffectColor.value);
-	registerElement(inspectorEls, 'uiDialogBox-blend', elBlend.value);
 	elEffectType.value?.loadItems([
 		{
 			name: t('components.uiDialogBox-effect-type.options.none.name'),

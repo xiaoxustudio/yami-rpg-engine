@@ -28,9 +28,7 @@ import { YMWindowFrame } from '@ui-kit';
 import { Layout } from '@app/engine/layout/layout';
 import { getLocalStore } from '@app/stores/local';
 import { setLocalElement, type LocalComponentItem } from '@app/localize/dom-localizer';
-import { registerElement } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
-import { windowShellEls } from '@app/tools/window-object.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import { useEventListener } from '@app/composables/useEventListener';
 
@@ -175,7 +173,6 @@ onMounted(() => {
 		setPosition,
 		on
 	});
-	if (el.id !== '') registerElement(windowShellEls, el.id, el);
 	for (const button of el.querySelectorAll<HTMLElement>('[name="cancel"]')) {
 		button.addEventListener('click', () => {
 			if (el.id !== '') Window.close!(el.id);
