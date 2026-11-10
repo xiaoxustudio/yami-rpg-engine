@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame ref="frame" id="if-condition" @confirm="onConfirm" scrollable>
+	<WindowFrame id="if-condition" @confirm="onConfirm" scrollable>
 		<template #title
 			><TitleBar
 				>{{ t('components.if-condition.title') }}
@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 import { toControl } from '@app/composables/control-refs';
@@ -150,14 +150,11 @@ const fieldRef = (id: string) => (el: unknown) => {
 	fieldEls[id] = control;
 };
 
-const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
-
 const onConfirm = () => {
 	IfCondition?.confirm?.(new Event('click'));
 };
 
 onMounted(() => {
-	const el = frame.value?.root;
 	// 表单桥走模块而不是元素属性：元素契约收尾后 el 上不该再挂业务方法。
 	// 真机 E2E 在 debug 模式下由桥模块另开一条只读通道（utils/debug-bridges.ts）。
 	const api = {

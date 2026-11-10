@@ -1,5 +1,4 @@
 import { reactive } from 'vue';
-import { composableEls } from '@app/composables/element-registry';
 import type { ControlApi } from '@app/composables/control-refs';
 import { Command } from '@app/commands/command-object.ts';
 import { commandCases } from '@app/commands/command-registry.ts';
@@ -46,10 +45,10 @@ export function useCommandSchema(name: string, options: UseCommandSchemaOptions 
 			const table = options.controls?.();
 			for (const field of fields) {
 				const id = `${name}-${field.domId ?? field.key}`;
-				const control = table ? (table[id] ?? null) : composableEls.get(id);
+				// 只有控件表这一条路：注册表兜底已随窗口迁移删掉（126 个 schema 里
+				// 125 个 skipWrite，唯一写控件的 `webSocketSend` 也早已传表）。
+				const control = table ? (table[id] ?? null) : null;
 				if (!control && !warnedMissing.has(id)) {
-					// 兜底路径取不到控件就是「静默写不进去」：窗口还没迁表或 id 拼错都会走到这里。
-					// 只提示一次（同一 id 不刷屏），并且不进生产包。
 					warnedMissing.add(id);
 					if (import.meta.env.DEV) {
 						console.warn(
