@@ -647,3 +647,63 @@ export const animationPageNodes = createSkeletonTable<AnimationPageNodeKey>({
 	sprite: 'animSpriteLayer-sprite',
 	uiMotion: 'uiAnimation-motion'
 });
+
+/** UI 文本框页：类型 / 对齐 / 文本 / 数值等输入。 */
+export type UiTextBoxPageNodeKey =
+	| 'type'
+	| 'align'
+	| 'text'
+	| 'maxLength'
+	| 'number'
+	| 'min'
+	| 'max'
+	| 'decimals'
+	| 'padding'
+	| 'size'
+	| 'font'
+	| 'color'
+	| 'selectionColor'
+	| 'selectionBgColor';
+
+export const uiTextBoxPageNodes = createSkeletonTable<UiTextBoxPageNodeKey>({
+	type: 'uiTextBox-type',
+	align: 'uiTextBox-align',
+	text: 'uiTextBox-text',
+	maxLength: 'uiTextBox-maxLength',
+	number: 'uiTextBox-number',
+	min: 'uiTextBox-min',
+	max: 'uiTextBox-max',
+	decimals: 'uiTextBox-decimals',
+	padding: 'uiTextBox-padding',
+	size: 'uiTextBox-size',
+	font: 'uiTextBox-font',
+	color: 'uiTextBox-color',
+	selectionColor: 'uiTextBox-selectionColor',
+	selectionBgColor: 'uiTextBox-selectionBgColor'
+});
+
+/** UI 窗口页：布局与溢出输入。 */
+export type UiWindowPageNodeKey =
+	| 'layout'
+	| 'scrollX'
+	| 'scrollY'
+	| 'gridWidth'
+	| 'gridHeight'
+	| 'gridGapX'
+	| 'gridGapY'
+	| 'paddingX'
+	| 'paddingY'
+	| 'overflow';
+
+export const uiWindowPageNodes = createSkeletonTable<UiWindowPageNodeKey>({
+	layout: 'uiWindow-layout',
+	scrollX: 'uiWindow-scrollX',
+	scrollY: 'uiWindow-scrollY',
+	gridWidth: 'uiWindow-gridWidth',
+	gridHeight: 'uiWindow-gridHeight',
+	gridGapX: 'uiWindow-gridGapX',
+	gridGapY: 'uiWindow-gridGapY',
+	paddingX: 'uiWindow-paddingX',
+	paddingY: 'uiWindow-paddingY',
+	overflow: 'uiWindow-overflow'
+});

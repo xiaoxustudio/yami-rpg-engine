@@ -1,9 +1,8 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
-import { inspectorEls } from './element-registry.ts';
+import { uiTextBoxPageNodes } from '@app/composables/inspector-page-nodes';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
 import { UIOwner } from './ui-owner.ts';
-import { registryElement } from '@app/utils/element-registry';
 
 {
 	interface UITextBoxShape {
@@ -83,7 +82,7 @@ import { registryElement } from '@app/utils/element-registry';
 		if (this.target !== node) {
 			this.target = node;
 
-			const number = inspectorEls.get('uiTextBox-number') as NumberBoxHostElement;
+			const number = uiTextBoxPageNodes.pick('number') as NumberBoxHostElement;
 			(number.input! as HTMLInputElement).min = node.min;
 			(number.input! as HTMLInputElement).max = node.max;
 			number.decimals = node.decimals;
@@ -140,9 +139,9 @@ import { registryElement } from '@app/utils/element-registry';
 				if (node[key] !== value) {
 					(node as Record<string, unknown>)[key] = value;
 					node.instances.setProperty(key, value);
-					const numberEl = registryElement<
-						NumberBoxHostElement & { input?: Record<string, unknown> }
-					>(inspectorEls, 'uiTextBox-number');
+					const numberEl = uiTextBoxPageNodes.pick('number') as
+						| (NumberBoxHostElement & { input?: Record<string, unknown> })
+						| null;
 					if (numberEl?.input) numberEl.input[key] = value;
 				}
 				break;
@@ -150,8 +149,8 @@ import { registryElement } from '@app/utils/element-registry';
 				if (node.decimals !== value) {
 					node.decimals = value as number;
 					node.instances.setProperty(key, value);
-					const decimalsEl = inspectorEls.get(
-						'uiTextBox-number'
+					const decimalsEl = uiTextBoxPageNodes.pick(
+						'number'
 					) as NumberBoxHostElement | null;
 					if (decimalsEl) decimalsEl.decimals = value as number;
 				}

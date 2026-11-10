@@ -13,8 +13,7 @@
 <script setup lang="ts">
 import { onMounted, provide, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { registryElements } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { uiWindowPageNodes } from '@app/composables/inspector-page-nodes';
 import '@app/inspector/element-window-page.ts';
 import { useUIWindowPage } from '@app/composables/useUIWindowPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -42,18 +41,18 @@ const { bindInput } = useInspectorInput();
 onMounted(() => {
 	const uiWindow = Inspector.uiWindow;
 	if (!uiWindow) return;
-	const elements = registryElements(inspectorEls, [
-		'uiWindow-layout',
-		'uiWindow-scrollX',
-		'uiWindow-scrollY',
-		'uiWindow-gridWidth',
-		'uiWindow-gridHeight',
-		'uiWindow-gridGapX',
-		'uiWindow-gridGapY',
-		'uiWindow-paddingX',
-		'uiWindow-paddingY',
-		'uiWindow-overflow'
-	]);
+	const elements = [
+		uiWindowPageNodes.pick('layout'),
+		uiWindowPageNodes.pick('scrollX'),
+		uiWindowPageNodes.pick('scrollY'),
+		uiWindowPageNodes.pick('gridWidth'),
+		uiWindowPageNodes.pick('gridHeight'),
+		uiWindowPageNodes.pick('gridGapX'),
+		uiWindowPageNodes.pick('gridGapY'),
+		uiWindowPageNodes.pick('paddingX'),
+		uiWindowPageNodes.pick('paddingY'),
+		uiWindowPageNodes.pick('overflow')
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, getUIStore(), uiWindow);
 
 	const bridgeApi: PageSyncApi = { sync };

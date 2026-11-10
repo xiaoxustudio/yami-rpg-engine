@@ -86,16 +86,18 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, onUnmounted } from 'vue';
+import { uiTextBoxPageNodes } from '@app/composables/inspector-page-nodes';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { uiTextBoxContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { dispose } = uiTextBoxPageNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(uiTextBoxContextKey)!;
 
 const elType = ref<InstanceType<typeof SelectBox> | null>(null);
@@ -108,14 +110,14 @@ const elMax = ref<InstanceType<typeof NumberBox> | null>(null);
 const elDecimals = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'uiTextBox-type', elType.value);
-	registerElement(inspectorEls, 'uiTextBox-align', elAlign.value);
-	registerElement(inspectorEls, 'uiTextBox-text', elText.value);
-	registerElement(inspectorEls, 'uiTextBox-maxLength', elMaxLength.value);
-	registerElement(inspectorEls, 'uiTextBox-min', elMin.value);
-	registerElement(inspectorEls, 'uiTextBox-max', elMax.value);
-	registerElement(inspectorEls, 'uiTextBox-decimals', elDecimals.value);
-	registerElement(inspectorEls, 'uiTextBox-number', elNumber.value);
+	uiTextBoxPageNodes.set('type', elType.value?.root ?? null);
+	uiTextBoxPageNodes.set('align', elAlign.value?.root ?? null);
+	uiTextBoxPageNodes.set('text', elText.value?.root ?? null);
+	uiTextBoxPageNodes.set('maxLength', elMaxLength.value?.root ?? null);
+	uiTextBoxPageNodes.set('min', elMin.value?.root ?? null);
+	uiTextBoxPageNodes.set('max', elMax.value?.root ?? null);
+	uiTextBoxPageNodes.set('decimals', elDecimals.value?.root ?? null);
+	uiTextBoxPageNodes.set('number', elNumber.value?.root ?? null);
 	elType.value?.loadItems([
 		{
 			name: t('components.uiTextBox-type.options.text.name'),

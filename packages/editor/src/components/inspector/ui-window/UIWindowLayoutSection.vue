@@ -107,15 +107,17 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, onUnmounted } from 'vue';
+import { uiWindowPageNodes } from '@app/composables/inspector-page-nodes';
 import { useI18n } from 'vue-i18n';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
-import { registerElement } from '@app/utils/element-registry';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { uiWindowContextKey } from './context.ts';
 
 const { t } = useI18n();
+
+const { dispose } = uiWindowPageNodes.scoped();
+onUnmounted(dispose);
 const { form, onParamInput } = inject(uiWindowContextKey)!;
 
 const elLayout = ref<InstanceType<typeof SelectBox> | null>(null);
@@ -129,15 +131,15 @@ const elPaddingX = ref<InstanceType<typeof NumberBox> | null>(null);
 const elPaddingY = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'uiWindow-layout', elLayout.value);
-	registerElement(inspectorEls, 'uiWindow-scrollX', elScrollX.value);
-	registerElement(inspectorEls, 'uiWindow-scrollY', elScrollY.value);
-	registerElement(inspectorEls, 'uiWindow-gridWidth', elGridWidth.value);
-	registerElement(inspectorEls, 'uiWindow-gridHeight', elGridHeight.value);
-	registerElement(inspectorEls, 'uiWindow-gridGapX', elGridGapX.value);
-	registerElement(inspectorEls, 'uiWindow-gridGapY', elGridGapY.value);
-	registerElement(inspectorEls, 'uiWindow-paddingX', elPaddingX.value);
-	registerElement(inspectorEls, 'uiWindow-paddingY', elPaddingY.value);
+	uiWindowPageNodes.set('layout', elLayout.value?.root ?? null);
+	uiWindowPageNodes.set('scrollX', elScrollX.value?.root ?? null);
+	uiWindowPageNodes.set('scrollY', elScrollY.value?.root ?? null);
+	uiWindowPageNodes.set('gridWidth', elGridWidth.value?.root ?? null);
+	uiWindowPageNodes.set('gridHeight', elGridHeight.value?.root ?? null);
+	uiWindowPageNodes.set('gridGapX', elGridGapX.value?.root ?? null);
+	uiWindowPageNodes.set('gridGapY', elGridGapY.value?.root ?? null);
+	uiWindowPageNodes.set('paddingX', elPaddingX.value?.root ?? null);
+	uiWindowPageNodes.set('paddingY', elPaddingY.value?.root ?? null);
 	elLayout.value?.loadItems([
 		{
 			name: t('components.uiWindow-layout.options.normal.name'),

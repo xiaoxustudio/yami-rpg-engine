@@ -13,8 +13,7 @@
 <script setup lang="ts">
 import { onMounted, provide, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { registryElements } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { uiTextBoxPageNodes } from '@app/composables/inspector-page-nodes';
 import { useUITextBoxPage } from '@app/composables/useUITextBoxPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -41,22 +40,22 @@ const { bindInput } = useInspectorInput();
 onMounted(() => {
 	const uiTextBox = Inspector.uiTextBox;
 	if (!uiTextBox) return;
-	const elements = registryElements(inspectorEls, [
-		'uiTextBox-type',
-		'uiTextBox-align',
-		'uiTextBox-text',
-		'uiTextBox-maxLength',
-		'uiTextBox-number',
-		'uiTextBox-min',
-		'uiTextBox-max',
-		'uiTextBox-decimals',
-		'uiTextBox-padding',
-		'uiTextBox-size',
-		'uiTextBox-font',
-		'uiTextBox-color',
-		'uiTextBox-selectionColor',
-		'uiTextBox-selectionBgColor'
-	]);
+	const elements = [
+		uiTextBoxPageNodes.pick('type'),
+		uiTextBoxPageNodes.pick('align'),
+		uiTextBoxPageNodes.pick('text'),
+		uiTextBoxPageNodes.pick('maxLength'),
+		uiTextBoxPageNodes.pick('number'),
+		uiTextBoxPageNodes.pick('min'),
+		uiTextBoxPageNodes.pick('max'),
+		uiTextBoxPageNodes.pick('decimals'),
+		uiTextBoxPageNodes.pick('padding'),
+		uiTextBoxPageNodes.pick('size'),
+		uiTextBoxPageNodes.pick('font'),
+		uiTextBoxPageNodes.pick('color'),
+		uiTextBoxPageNodes.pick('selectionColor'),
+		uiTextBoxPageNodes.pick('selectionBgColor')
+	].filter((el): el is HTMLElement => el != null);
 	bindInput(elements, getUIStore(), uiTextBox);
 
 	const bridgeApi: PageSyncApi = { sync };
