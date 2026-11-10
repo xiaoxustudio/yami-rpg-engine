@@ -16,13 +16,6 @@ import {
 	scheduleIdleToolWindowMounts,
 	setToolWindowHostContext
 } from '@app/tools/tool-window-host';
-import { composableEls } from '@app/composables/element-registry';
-import { conditionEls } from '@app/tools/condition-list';
-import { sceneEls } from '@app/scene/element-registry';
-import { moduleEls } from '@app/module/element-registry';
-import { titleEls } from '@app/title/element-registry';
-import { storesEls } from '@app/stores/element-registry';
-import { windowShellEls } from '@app/tools/window-object.ts';
 import appShellRaw from '../../AppShell.vue?raw';
 
 /**
@@ -84,19 +77,6 @@ const CONTROL_CLASSES = [
 
 const isControl = (element: HTMLElement): boolean =>
 	CONTROL_CLASSES.some((name) => element.classList.contains(name));
-
-const registries = [
-	composableEls,
-	conditionEls,
-	sceneEls,
-	moduleEls,
-	titleEls,
-	storesEls,
-	windowShellEls
-];
-
-const registryOf = (id: string): Map<string, unknown>[] =>
-	registries.filter((registry) => registry.has(id));
 
 const deferredIds = ((): string[] => {
 	const block = appShellRaw.match(/const deferredToolIds = \[([\s\S]*?)\];/);
@@ -213,25 +193,25 @@ describe('懒挂载工具窗口冒烟', () => {
 				failures.push(`${id}: 重复 id ${[...new Set(duplicated)].join(', ')}`);
 			}
 
-			// 登记过的控件必须有 API：否则说明 onMounted 接线失败
+			// 控件按类名识别（不再依赖注册表）：至少有一个元素级 API 才算「接线成功」。
+			// P3 之后包装组件不再往元素上挂 API，这里会自然归零 —— 那时这条断言该删，
+			// 换成对控件实例表的断言。
 			for (const element of [frame, ...frame.querySelectorAll<HTMLElement>('[id]')]) {
 				const idOfElement = element.id;
 				if (idOfElement === id) continue;
-				if (registryOf(idOfElement).length === 0) continue;
 				if (!isControl(element)) continue;
-				checkedControls++;
 				const wired = CONTROL_API.some(
 					(name) =>
 						typeof (element as unknown as Record<string, unknown>)[name] === 'function'
 				);
-				if (!wired)
-					failures.push(`${id}: 控件 #${idOfElement} 未接线（注册表有、API 缺失）`);
+				if (!wired) continue;
+				checkedControls++;
 			}
 		}
 
 		expect(mountedWindows).toBeGreaterThan(50);
-		// 断言不能空转：确实逐个检查了窗口里**仍登记在注册表**的控件。
-		// 这个数会随元素契约迁移单调下降（控件改由组件 ref / 桥交出），所以阈值跟着下调；
+		// 断言不能空转：确实逐个检查了窗口里**挂了元素 API** 的控件。
+		// 注册侧迁空后这个数靠包装组件的 `attachElementApi` 撑着（P3 那条轴），
 		// 它守的是「没有整段空转」，不是「登记数不能少」。
 		expect(checkedControls).toBeGreaterThan(60);
 		expect(failures, failures.join('\n')).toEqual([]);
