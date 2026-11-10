@@ -638,3 +638,12 @@ export const inspectorPageRoots = createSkeletonTable<InspectorPageDomKey>({
 	fileImage: 'fileImage',
 	fileImageImage: 'fileImage-image'
 });
+
+/** 动画类页面的三个下拉（运动模式 / 精灵 / UI 动画运动），由页面模块写候选项。 */
+export type AnimationPageNodeKey = 'motionMode' | 'sprite' | 'uiMotion';
+
+export const animationPageNodes = createSkeletonTable<AnimationPageNodeKey>({
+	motionMode: 'animMotion-mode',
+	sprite: 'animSpriteLayer-sprite',
+	uiMotion: 'uiAnimation-motion'
+});

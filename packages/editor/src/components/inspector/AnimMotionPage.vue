@@ -48,9 +48,8 @@
 
 <script setup lang="ts">
 import type { AnimationMotionData } from '@app/animation/animation-window.ts';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { animationPageNodes } from '@app/composables/inspector-page-nodes';
 import { onMounted, ref, onUnmounted } from 'vue';
-import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useAnimMotionPage } from '@app/composables/useAnimMotionPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -79,7 +78,7 @@ const elLoop = ref<InstanceType<typeof CheckBox> | null>(null);
 const elLoopStart = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'animMotion-mode', elMode.value);
+	animationPageNodes.set('motionMode', elMode.value?.root ?? null);
 	const animMotion = Inspector.animMotion;
 	if (!animMotion) return;
 

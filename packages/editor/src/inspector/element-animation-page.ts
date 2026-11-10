@@ -1,5 +1,5 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
-import { inspectorEls } from './element-registry.ts';
+import { animationPageNodes } from '@app/composables/inspector-page-nodes';
 import { read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
@@ -121,7 +121,7 @@ import type { YamiEvent } from '@app/types/editor-event';
 	};
 
 	UIAnimation.animationIdWrite = function (this: typeof UIAnimation, event: YamiEvent) {
-		const elMotion = inspectorEls.get('uiAnimation-motion') as YamiElement;
+		const elMotion = animationPageNodes.pick('uiMotion') as YamiElement;
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		write(elMotion, read(elMotion));
 	};

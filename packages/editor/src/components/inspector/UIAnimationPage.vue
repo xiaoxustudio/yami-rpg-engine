@@ -94,8 +94,7 @@
 
 <script setup lang="ts">
 import '@app/inspector/element-animation-page.ts';
-import { registerElement } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { animationPageNodes } from '@app/composables/inspector-page-nodes';
 import { onMounted, ref, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUIAnimationPage } from '@app/composables/useUIAnimationPage';
@@ -136,7 +135,7 @@ const elOffsetX = ref<InstanceType<typeof NumberBox> | null>(null);
 const elOffsetY = ref<InstanceType<typeof NumberBox> | null>(null);
 
 onMounted(() => {
-	registerElement(inspectorEls, 'uiAnimation-motion', elMotion.value);
+	animationPageNodes.set('uiMotion', elMotion.value?.root ?? null);
 	motionReady.value = true;
 	const uiAnimation = Inspector.uiAnimation;
 	if (!uiAnimation) return;

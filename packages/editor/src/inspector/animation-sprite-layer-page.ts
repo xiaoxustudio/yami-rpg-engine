@@ -1,5 +1,5 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
-import { inspectorEls } from './element-registry.ts';
+import { animationPageNodes } from '@app/composables/inspector-page-nodes';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 
@@ -40,8 +40,12 @@ import { Inspector } from '@app/inspector/inspector.ts';
 			this.motion = Animation.motion;
 
 			const id = Animation.meta.guid;
-			const items = Animation.getSpriteListItems!(id);
-			inspectorEls.get('animSpriteLayer-sprite')?.loadItems?.(items);
+			const items = Animation.getSpriteListItems!(id) as unknown[];
+			(
+				animationPageNodes.pick('sprite') as
+					| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+					| null
+			)?.loadItems?.(items);
 
 			inspectorPageSync.animSpriteLayer.get()?.sync();
 		}

@@ -1,5 +1,5 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
-import { inspectorEls } from './element-registry.ts';
+import { animationPageNodes } from '@app/composables/inspector-page-nodes';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { write } from '@app/utils/element-utils.ts';
@@ -60,7 +60,7 @@ import { write } from '@app/utils/element-utils.ts';
 
 	AnimMotion.write = function (this: typeof AnimMotion, options: Record<string, unknown>) {
 		if (options.mode !== undefined) {
-			write(inspectorEls.get('animMotion-mode'), options.mode);
+			write(animationPageNodes.pick('motionMode'), options.mode);
 		}
 	};
 

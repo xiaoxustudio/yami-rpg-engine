@@ -39,9 +39,8 @@
 
 <script setup lang="ts">
 import { useLocalizedOptions } from '@app/composables/useLocalizedOptions';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+import { animationPageNodes } from '@app/composables/inspector-page-nodes';
 import { onMounted, ref, onUnmounted } from 'vue';
-import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { useAnimSpriteLayerPage } from '@app/composables/useAnimSpriteLayerPage';
 import { useInspectorInput } from '@app/composables/useInspectorInput';
@@ -74,7 +73,7 @@ useLocalizedOptions('animSpriteLayer-light', ['raw', 'global', 'anchor'], (items
 );
 
 onMounted(() => {
-	registerElement(inspectorEls, 'animSpriteLayer-sprite', elSprite.value);
+	animationPageNodes.set('sprite', elSprite.value?.root ?? null);
 	const animSpriteLayer = Inspector.animSpriteLayer;
 	if (!animSpriteLayer) return;
 
