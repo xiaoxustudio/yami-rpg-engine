@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getNumberOperand } from '@app/composables/number-operand-bridge';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import IfBranch from '@app/components/tools/IfBranch.vue';
@@ -62,7 +63,7 @@ describe('分支/条件表单注册表', () => {
 		expect(getSwitchBranch(), '卸载后应注销').toBeNull();
 	});
 
-	it('IfCondition：控件实例注册表镜像出元素，窗口元素按 id 登记', async () => {
+	it('IfCondition：控件走控件表（不再镜像进注册表），桥与控件都在', async () => {
 		const wrapper = await mountSettle(IfCondition);
 
 		for (const id of [
@@ -70,24 +71,24 @@ describe('分支/条件表单注册表', () => {
 			'if-condition-common-variable',
 			'if-condition-operand-variable'
 		]) {
-			const el = composableEls.get(id);
-			expect(el, `${id} 未镜像`).toBeTruthy();
-			expect(el?.id).toBe(id);
-			expect(el).toBe(document.getElementById(id));
+			// 迁移后：注册表里没有它们，但模板里都在（schema 经桥的 control 读取）
+			expect(composableEls.get(id), `${id} 不该再镜像`).toBeFalsy();
+			expect(document.getElementById(id), `${id} 模板里应存在`).toBeTruthy();
 		}
-		const frame = composableEls.get('if-condition') as HTMLElement | null;
-		expect(frame?.id).toBe('if-condition');
-		// 表单桥已从「窗口根元素上的方法」迁到模块（composables/if-condition-bridge）：
-		// 元素上不该再有业务方法，桥由组件 onMounted 时登记。
-		expect((frame as unknown as { setForm?: unknown }).setForm).toBeUndefined();
+		expect(composableEls.get('if-condition'), '窗口根不该再登记').toBeFalsy();
+		expect(document.getElementById('if-condition')).toBeTruthy();
+
 		const bridge = getIfConditionBridge();
 		expect(typeof bridge?.setForm).toBe('function');
 		expect(typeof bridge?.getForm).toBe('function');
+		expect(bridge?.control('commonVariable'), '变量框应经桥交出').toBeTruthy();
+		expect(bridge?.control('operandVariable'), '操作数变量框应经桥交出').toBeTruthy();
+		expect(bridge?.control('shortcutKey'), '快捷名称框应经桥交出').toBeTruthy();
 
 		wrapper.unmount();
 	});
 
-	it('SetNumberOperand：控件实例注册表镜像出元素，窗口元素按 id 登记', async () => {
+	it('SetNumberOperand：控件走控件表（不再镜像进注册表），桥与控件都在', async () => {
 		const wrapper = await mountSettle(SetNumberOperand);
 
 		for (const id of [
@@ -95,15 +96,17 @@ describe('分支/条件表单注册表', () => {
 			'setNumber-operand-operation',
 			'setNumber-operand-common-variable'
 		]) {
-			const el = composableEls.get(id);
-			expect(el, `${id} 未镜像`).toBeTruthy();
-			expect(el?.id).toBe(id);
+			expect(composableEls.get(id), `${id} 不该再镜像`).toBeFalsy();
+			expect(document.getElementById(id), `${id} 模板里应存在`).toBeTruthy();
 		}
-		const frame = composableEls.get('setNumber-operand') as HTMLElement | null;
-		expect(frame?.id).toBe('setNumber-operand');
-		// 同 if-condition：窗口元素上不再挂业务方法，表单桥在模块上。
-		expect((frame as unknown as { setForm?: unknown }).setForm).toBeUndefined();
-		expect(typeof getSetNumberOperandBridge()?.setForm).toBe('function');
+		expect(composableEls.get('setNumber-operand'), '窗口根不该再登记').toBeFalsy();
+
+		const bridge = getSetNumberOperandBridge();
+		expect(typeof bridge?.setForm).toBe('function');
+		// 控件级能力走另一条桥（NumberOperandApi）：表单桥只负责 setForm/getForm
+		expect(getNumberOperand()?.control('commonVariable'), '变量框应经桥交出').toBeTruthy();
+		// 冷却键那一行是按操作数类型条件渲染的：未挂载时桥返回 null（与旧的按 id 取元素一致）
+		expect(() => getNumberOperand()?.control('cooldownKey')).not.toThrow();
 
 		wrapper.unmount();
 	});

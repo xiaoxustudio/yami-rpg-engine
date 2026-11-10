@@ -36,9 +36,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { composableEls } from '@app/composables/element-registry';
 import { getFormFields, setFormFields } from '@app/composables/form-fields';
-import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { ObjectGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
 import {
@@ -93,7 +91,6 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	registerElement(composableEls, 'objectGetter', frame.value);
 	// 表单桥走模块（presetGetterBridge），元素上不再挂业务方法。
 	// 控件元素按模板 ref 交给 composable：它不再按 id 去注册表取裸元素
 	objectGetter.initialize?.({

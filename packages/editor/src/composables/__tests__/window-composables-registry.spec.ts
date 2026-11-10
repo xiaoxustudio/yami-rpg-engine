@@ -37,14 +37,6 @@ const mountSettle = async (component: Parameters<typeof mount>[0]) => {
 	return wrapper;
 };
 
-const expectRegistered = (ids: string[]) => {
-	for (const id of ids) {
-		const el = composableEls.get(id);
-		expect(el, `${id} 未登记`).toBeTruthy();
-		expect(el?.id).toBe(id);
-	}
-};
-
 const expectNotRegistered = (ids: string[]) => {
 	for (const id of ids) {
 		expect(composableEls.get(id), `${id} 不该再进注册表`).toBeFalsy();
@@ -120,21 +112,22 @@ describe('窗口 composable 读注册表', () => {
 		expect(getTileNodeHandles(), '卸载后应注销').toBeNull();
 	});
 
-	it('PresetGetter 工厂：窗口只登记根元素，控件由模板 ref 交给 composable', async () => {
+	it('PresetGetter 工厂：窗口与控件都不进注册表，都由模板 ref 交给 composable', async () => {
 		const a = await mountSettle(LightGetter);
-		// 元素契约迁移后控件不再进注册表：窗口根元素仍登记（窗口激活 / 关闭钩子要用），
-		// 三个控件由 initialize(fields) 交接给 composable。
-		expectRegistered(['lightGetter']);
-		expect(composableEls.get('lightGetter-type')).toBeUndefined();
-		expect(composableEls.get('lightGetter-presetId')).toBeUndefined();
-		expect(composableEls.get('lightGetter-variable')).toBeUndefined();
+		// 迁移后窗口根也不再登记：窗口激活 / 关闭钩子由组件自己挂，控件由 initialize(fields) 交接。
+		expect(composableEls.get('lightGetter'), '窗口根不该再登记').toBeFalsy();
+		expect(document.getElementById('lightGetter'), '窗口根在 DOM 里').toBeTruthy();
+		for (const id of ['lightGetter-type', 'lightGetter-presetId', 'lightGetter-variable']) {
+			expect(composableEls.get(id), `${id} 不该再登记`).toBeFalsy();
+		}
 		a.unmount();
 
 		const b = await mountSettle(ObjectGetter);
-		expectRegistered(['objectGetter']);
-		expect(composableEls.get('objectGetter-type')).toBeUndefined();
-		expect(composableEls.get('objectGetter-presetId')).toBeUndefined();
-		expect(composableEls.get('objectGetter-variable')).toBeUndefined();
+		expect(composableEls.get('objectGetter'), '窗口根不该再登记').toBeFalsy();
+		expect(document.getElementById('objectGetter'), '窗口根在 DOM 里').toBeTruthy();
+		for (const id of ['objectGetter-type', 'objectGetter-presetId', 'objectGetter-variable']) {
+			expect(composableEls.get(id), `${id} 不该再登记`).toBeFalsy();
+		}
 		b.unmount();
 	});
 

@@ -300,9 +300,7 @@ import {
 } from '@app/composables/number-operand-bridge';
 import { toControl } from '@app/composables/control-refs';
 import { useI18n } from 'vue-i18n';
-import { composableEls } from '@app/composables/element-registry';
 import { getFormFields, setFormFields, type FormFieldControl } from '@app/composables/form-fields';
-import { registerElement } from '@app/utils/element-registry';
 import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema';
 import type { NumberOperandForm } from '@app/composables/useNumberOperandSchema';
 import {
@@ -411,21 +409,9 @@ const FIELD_BY_ID: Record<string, keyof NumberOperandForm> = {
 
 const fieldEls: SetNumberOperandFieldMap = {};
 
-/**
- * 控件实例 → 元素：普通元素直接用；组件实例优先 `$el`（**ref 回调时即已就绪**），
- * 回退到约定的 `root`（部分组件要到挂载后才赋值）。
- */
-const elementOf = (control: FieldControl | null): HTMLElement | null => {
-	if (control == null) return null;
-	if (control instanceof HTMLElement) return control;
-	const instance = control as FieldControl & { $el?: unknown };
-	return (instance.$el instanceof HTMLElement ? instance.$el : null) ?? instance.root ?? null;
-};
-
 const fieldRef = (id: string) => (el: unknown) => {
 	const control = el as FieldControl | null;
 	fieldEls[id] = control;
-	registerElement(composableEls, id, elementOf(control));
 };
 
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
@@ -442,9 +428,6 @@ onMounted(() => {
 	provideNumberOperand(bridgeApi);
 	onUnmounted(() => resetNumberOperand(bridgeApi));
 	const el = frame.value?.root;
-	if (el) {
-		registerElement(composableEls, 'setNumber-operand', el);
-	}
 	// 表单桥走模块而不是元素属性：元素契约收尾后 el 上不该再挂业务方法。
 	// 真机 E2E 在 debug 模式下由桥模块另开一条只读通道（utils/debug-bridges.ts）。
 	const api = { setForm, getForm };
