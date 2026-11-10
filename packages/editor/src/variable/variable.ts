@@ -1,6 +1,5 @@
 import { variableNodes } from '@app/composables/variable-nodes';
 import { getListConfig } from '@ui-kit';
-import { variableEls } from '@app/variable/element-registry';
 import { on, hide, read, write } from '@app/utils/element-utils.ts';
 import { RadioProxy } from '@ui-kit';
 import { History } from '@app/tools/history.ts';
@@ -11,7 +10,6 @@ import { getVariableStore, variableStateKeys } from '@app/stores/variable';
 import type { VariableItemShape } from '@app/stores/variable';
 import type { YamiElement } from '@app/types/element-api';
 import type { YamiMouseEvent } from '@app/types/editor-event';
-import { registryElement } from '@app/utils/element-registry';
 
 interface VariableModule {
 	list: YamiElement;
@@ -125,7 +123,7 @@ function ensureDomBound() {
 	Variable.list = list;
 	Variable.panel = variableNodes.pick('properties') as YamiElement;
 	hide(Variable.panel);
-	Variable.manager = registryElement<PageManagerApi>(variableEls, 'variable-value-manager')!;
+	Variable.manager = variableNodes.pick('valueManager') as unknown as PageManagerApi;
 	Variable.searcher = variableNodes.pick('searcher') as YamiElement;
 	Variable.inputs.name = variableNodes.pick('name') as YamiElement;
 	Variable.inputs.value = variableNodes.pick('valueBox') as YamiElement;

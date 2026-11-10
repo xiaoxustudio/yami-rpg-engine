@@ -109,7 +109,7 @@
 				>
 				<RadioBox
 					id="variable-type-object"
-					:ref="registryRef(variableEls, 'variable-type-object')"
+					:ref="bind('typeObject')"
 					name="variable-type"
 					class="standard"
 					value="object"
@@ -126,10 +126,7 @@
 			</div>
 			<div class="flex-item" id="variable-value-box" :ref="bind('valueBox')">
 				<div class="text">{{ t('components.variable-value-manager.label') }}</div>
-				<PageManager
-					id="variable-value-manager"
-					:ref="registryRef(variableEls, 'variable-value-manager')"
-				>
+				<PageManager id="variable-value-manager" :ref="bind('valueManager')">
 					<div class="page-frame" value="boolean">
 						<RadioBox
 							id="variable-value-boolean-false"
@@ -184,8 +181,6 @@
 import { onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { variableNodes } from '@app/composables/variable-nodes';
-import { variableEls } from '@app/variable/element-registry';
-import { registryRef } from '@app/utils/element-registry';
 import { Variable } from '@app/variable/variable.ts';
 import PageManager from '@app/components/common/PageManager.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';

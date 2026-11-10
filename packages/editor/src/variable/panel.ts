@@ -1,4 +1,4 @@
-import { variableEls } from '@app/variable/element-registry';
+import { variableNodes } from '@app/composables/variable-nodes';
 import { disable, enable, hide, read, show, write } from '@app/utils/element-utils.ts';
 import { getVariableStore } from '@app/stores/variable';
 import type { VariableItemShape } from '@app/stores/variable';
@@ -50,10 +50,10 @@ Variable.sortWrite = function (event: Event & { value?: number }) {
 	switch (event.value) {
 		case 0:
 		case 1:
-			disable(variableEls.get('variable-type-object') as YamiElement);
+			disable(variableNodes.pick('typeObject') as YamiElement);
 			break;
 		case 2:
-			enable(variableEls.get('variable-type-object') as YamiElement);
+			enable(variableNodes.pick('typeObject') as YamiElement);
 			break;
 	}
 };

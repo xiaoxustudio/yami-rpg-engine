@@ -15,7 +15,9 @@ export type VariableNodeKey =
 	| 'properties'
 	| 'valueBox'
 	| 'valueNumber'
-	| 'valueString';
+	| 'valueString'
+	| 'typeObject'
+	| 'valueManager';
 
 export const variableNodes = createSkeletonTable<VariableNodeKey>({
 	root: 'variable',
@@ -26,5 +28,7 @@ export const variableNodes = createSkeletonTable<VariableNodeKey>({
 	properties: 'variable-properties-flex',
 	valueBox: 'variable-value-box',
 	valueNumber: 'variable-value-number',
-	valueString: 'variable-value-string'
+	valueString: 'variable-value-string',
+	typeObject: 'variable-type-object',
+	valueManager: 'variable-value-manager'
 });
