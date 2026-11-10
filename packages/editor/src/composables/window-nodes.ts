@@ -30,3 +30,17 @@ export const presetObjectNodes = createSkeletonTable<PresetObjectNodeKey>({
 	scene: 'presetObject-sceneId',
 	searcher: 'presetObject-searcher'
 });
+
+/** 场景位移窗口（`scene-shift`）：`move-scene` 只挂 open/closed 监听。 */
+export type SceneShiftNodeKey = 'frame';
+
+export const sceneShiftNodes = createSkeletonTable<SceneShiftNodeKey>({
+	frame: 'scene-shift'
+});
+
+/** APK 导出窗口里的内容区：`apkbuilder` 只调它的 `update`。 */
+export type ExportApkNodeKey = 'content';
+
+export const exportApkNodes = createSkeletonTable<ExportApkNodeKey>({
+	content: 'export-apk-content'
+});

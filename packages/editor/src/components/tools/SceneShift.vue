@@ -34,9 +34,8 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
+import { sceneShiftNodes } from '@app/composables/window-nodes';
 import { getFormFields, setFormFields } from '@app/composables/form-fields';
-import { sceneEls } from '@app/scene/element-registry';
-import { registerElement } from '@app/utils/element-registry';
 import { useI18n } from 'vue-i18n';
 import { SceneShift, type SceneShiftForm } from '@app/scene/move-scene.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -78,7 +77,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	registerElement(sceneEls, 'scene-shift', frame.value);
+	sceneShiftNodes.set('frame', frame.value?.root ?? null);
 	// 表单桥走模块而不是元素属性：元素契约收尾后 el 上不该再挂业务方法。
 	const api = { setForm, getForm };
 	provideSceneShiftBridge(api);

@@ -1,5 +1,5 @@
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
-import { moduleEls } from '@app/module/element-registry';
+import { exportApkNodes } from '@app/composables/window-nodes';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { getExportApk } from '@app/composables/title-window-bridges';
 import { Path } from '@app/utils/config';
@@ -30,7 +30,7 @@ export const ApkBuilder = new (class {
 		void YamiIpc.invoke.buildApk(config);
 	}
 	notifyLogContent() {
-		(moduleEls.get('export-apk-content') as { update?: () => void } | null)?.update?.();
+		(exportApkNodes.pick('content') as { update?: () => void } | null)?.update?.();
 	}
 	apkLog(log: ApkLogEntry) {
 		this.notifyLogContent();

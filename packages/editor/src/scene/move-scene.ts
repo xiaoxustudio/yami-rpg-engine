@@ -1,4 +1,4 @@
-import { sceneEls } from '@app/scene/element-registry';
+import { sceneShiftNodes } from '@app/composables/window-nodes';
 import { getSceneShiftBridge } from '@app/composables/scene-shift-bridge';
 import { Window } from '@app/tools/window-object.ts';
 import { onToolWindowMounted } from '@app/tools/tool-window-host';
@@ -29,7 +29,7 @@ export const SceneShift: {
 SceneShift.initialize = function () {
 	// 场景平移窗口是懒挂载的：首次注册时窗口可能还没挂载，等挂载后再挂 closed 监听
 	onToolWindowMounted('scene-shift', () => {
-		const shiftEl = sceneEls.get('scene-shift') as YamiElement;
+		const shiftEl = sceneShiftNodes.pick('frame') as YamiElement;
 		if (!shiftEl || shiftEl === boundShiftEl) return;
 		boundShiftEl = shiftEl;
 		shiftEl.addEventListener('closed', this.windowClosed!);
