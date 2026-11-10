@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 import { getWindowStore } from '@app/stores/window';
-import { composableEls } from '@app/composables/element-registry';
+import { queryElementsByIds } from '@app/utils/dom';
 import { getFocus } from '@app/utils/element-utils';
 
 export interface FontForm {
@@ -83,7 +83,7 @@ const createTagWindow = <TForm extends object>(windowId: string) => {
 		getWindowStore().open(windowId);
 		Object.assign(form, data);
 		if (focusId) {
-			getFocus(composableEls.get(focusId), 'all');
+			getFocus(queryElementsByIds([focusId])[0] ?? null, 'all');
 		}
 	};
 
@@ -91,7 +91,7 @@ const createTagWindow = <TForm extends object>(windowId: string) => {
 		const data = form as TForm;
 		const focusId = validate?.(data);
 		if (focusId) {
-			getFocus(composableEls.get(focusId), 'all');
+			getFocus(queryElementsByIds([focusId])[0] ?? null, 'all');
 			return;
 		}
 		callback?.(data);

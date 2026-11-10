@@ -1,7 +1,7 @@
 import { getExportApk, getWindowProgress } from '@app/composables/title-window-bridges';
+import { queryElementsByIds } from '@app/utils/dom';
 import { macRedoKey } from '@app/utils/event-accessors';
 import { createDetachedElement } from '@app/utils/dom';
-import { titleEls } from '@app/title/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { registerWindowKeydown } from '@app/tools/window-keydown-registry';
 import { YamiIpc } from '@app/services/ipc/bridge.ts';
@@ -1100,7 +1100,7 @@ import { getMenubarStore } from '@app/stores/menubar';
 
 /** 关于弹窗里的版本号：元素缺失时静默跳过（不把可能为 null 的元素强转成元素类型）。 */
 const writeTitleText = (id: string, text: string | undefined): void => {
-	const el = titleEls.get(id);
+	const el = queryElementsByIds([id])[0] ?? null;
 	if (el) el.textContent = text ?? '';
 };
 
