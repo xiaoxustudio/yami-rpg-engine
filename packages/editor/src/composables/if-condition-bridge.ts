@@ -7,10 +7,18 @@
  */
 import type { IfConditionForm } from './useIfConditionSchema';
 import { createFormBridge } from './form-bridge';
+import type { ControlApi } from './control-refs';
 
 export interface IfConditionBridge {
 	setForm(data: Partial<IfConditionForm>): void;
 	getForm(): IfConditionForm;
+	/**
+	 * 按逻辑名取控件（`commonVariable` / `operandVariable`）。
+	 *
+	 * 这两个变量框的 `filter` 是根元素上的自有属性，schema 以前按 id 从注册表取元素再赋值；
+	 * 窗口迁成控件表后改由窗口交出控件实例（`setFilter`）。
+	 */
+	control(name: 'commonVariable' | 'operandVariable' | 'shortcutKey'): ControlApi | null;
 }
 
 const bridge = createFormBridge<IfConditionBridge>('if-condition');

@@ -16,6 +16,7 @@ import { useI18n } from 'vue-i18n';
 import { composableEls } from '@app/composables/element-registry';
 import { registerElement } from '@app/utils/element-registry';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
+import { toControl } from '@app/composables/control-refs';
 import type { IfConditionForm } from '@app/composables/useIfConditionSchema';
 import {
 	setupIfConditionFields,
@@ -176,7 +177,19 @@ onMounted(() => {
 	}
 	// 表单桥走模块而不是元素属性：元素契约收尾后 el 上不该再挂业务方法。
 	// 真机 E2E 在 debug 模式下由桥模块另开一条只读通道（utils/debug-bridges.ts）。
-	const api = { setForm, getForm };
+	const api = {
+		setForm,
+		getForm,
+		control: (name: 'commonVariable' | 'operandVariable' | 'shortcutKey') => {
+			const id =
+				name === 'commonVariable'
+					? 'if-condition-common-variable'
+					: name === 'operandVariable'
+						? 'if-condition-operand-variable'
+						: 'if-condition-actor-shortcutKey';
+			return toControl((fieldEls as Record<string, unknown>)[id] ?? null);
+		}
+	};
 	provideIfConditionBridge(api);
 	onUnmounted(() => resetIfConditionBridge(api));
 	setupIfConditionFields(fieldEls);

@@ -1,6 +1,4 @@
 import { getWindowStore } from '@app/stores/window';
-import { type CustomBoxApi } from '@ui-kit';
-import { composableEls } from '@app/composables/element-registry';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
 import {
 	setOperatorColor,
@@ -34,7 +32,6 @@ import { getYamiI18n } from '@app/i18n';
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { requestFocus } from '@app/directives/focus';
-import { registryElement } from '@app/utils/element-registry';
 import { getIfConditionBridge } from '@app/composables/if-condition-bridge';
 
 export interface IfConditionTarget {
@@ -175,8 +172,9 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter2 = 'all';
 			break;
 	}
-	registryElement<CustomBoxApi>(composableEls, 'if-condition-common-variable')!.filter = filter1;
-	registryElement<CustomBoxApi>(composableEls, 'if-condition-operand-variable')!.filter = filter2;
+	const bridge = getIfConditionBridge();
+	bridge?.control('commonVariable')?.setFilter?.(filter1);
+	bridge?.control('operandVariable')?.setFilter?.(filter2);
 };
 
 const parseBooleanOperation = ({ operation }: IfConditionData) => {
@@ -561,8 +559,8 @@ const open = (
 	}
 	// 条件窗口是懒挂载的：控件可用后再回填表单、填快捷名称清单（首次打开也不丢）
 	getWindowStore().openWith('if-condition', () => {
-		composableEls
-			.get('if-condition-actor-shortcutKey')
+		getIfConditionBridge()
+			?.control('shortcutKey')
 			?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 		// 表单桥来自模块（窗口组件 onMounted 时登记），不再从窗口根元素的 DOM 属性上取
 		const bridge = getIfConditionBridge();
