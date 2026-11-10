@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { createPinia, setActivePinia } from 'pinia';
 import { useCurveWindow, type CurveFrame } from '@app/composables/useCurveWindow';
-import { animationEls } from '@app/animation/element-registry';
+const animationEls = createElementRegistry();
 import { registerElement } from '@app/utils/element-registry';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Data } from '@app/data/data-object.ts';

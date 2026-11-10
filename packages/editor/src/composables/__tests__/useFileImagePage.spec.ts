@@ -1,8 +1,9 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 import { useFileImagePage } from '@app/composables/useFileImagePage';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+const inspectorEls = createElementRegistry();
 import { registerElement } from '@app/utils/element-registry';
 
 const fileImage = vi.hoisted(() => ({

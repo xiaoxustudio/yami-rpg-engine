@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
 import '@app/utils/array';
 import { getConfirmationStore } from '@app/stores/confirmation';
-import { Window, windowShellEls } from '@app/tools/window-object';
+import { Window } from '@app/tools/window-object';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { registerElement } from '@app/utils/element-registry';
 import { primeWindows } from '@app/tools/window-registry';
 
@@ -60,6 +61,9 @@ function makeFrame(id: string, closeResult = true): TestFrame {
 	createdFrames.push(frame);
 	return frame;
 }
+
+/** 窗口根注册表：生产侧已删（窗口根按 DOM id 查），这里保留一个本地实例给夹具用。 */
+const windowShellEls = createElementRegistry();
 
 describe('Window（window-object 模态/焦点/关闭链）', () => {
 	beforeEach(() => {

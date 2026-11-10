@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { registerElement } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+const inspectorEls = createElementRegistry();
 vi.setConfig({ testTimeout: 30000 });
 import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';

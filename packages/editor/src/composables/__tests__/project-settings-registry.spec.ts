@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ProjectSettings from '@app/components/tools/ProjectSettings.vue';
 import { useProjectSettingsWindow } from '@app/composables/useProjectSettingsWindow';
-import { composableEls } from '@app/composables/element-registry';
+const composableEls = createElementRegistry();
 import { getProjectStore } from '@app/stores/project';
 import { Window } from '@app/tools/window-object.ts';
 import { focusTarget } from '@app/directives/focus';

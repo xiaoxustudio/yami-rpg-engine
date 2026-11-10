@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import VariableGetter from '@app/components/tools/VariableGetter.vue';
@@ -7,7 +8,7 @@ import {
 	provideVariableGetterControls,
 	useVariableGetterWindow
 } from '@app/composables/useVariableGetterWindow';
-import { composableEls } from '@app/composables/element-registry';
+const composableEls = createElementRegistry();
 import { Window } from '@app/tools/window-object.ts';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';

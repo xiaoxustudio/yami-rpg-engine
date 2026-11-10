@@ -2,7 +2,6 @@ import { colorNodes } from '@app/composables/color-nodes';
 import { useColorWindow, type ColorForm } from '@app/composables/useColorWindow';
 import { radioProxyMap, type RadioProxyElement } from '@ui-kit';
 import { elementDataOf } from '@ui-kit';
-import { createElementRegistry } from '@app/utils/element-registry';
 import { $ } from '@app/utils/dom';
 import { relate, getRelativeCoords, on, read, setTooltip } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
@@ -16,8 +15,6 @@ const t = (key: string, named?: Record<string, unknown>) =>
 import { Rename } from '@app/composables/useRenameWindow';
 import type { YamiElement } from '@app/types/element-api';
 import { clamp } from '@app/utils/math';
-
-export const colorEls = createElementRegistry();
 
 type ColorTarget = {
 	input?: (value: number | string) => void;

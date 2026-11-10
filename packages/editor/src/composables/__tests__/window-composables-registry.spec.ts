@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import Team from '@app/components/tools/Team.vue';
@@ -7,7 +8,7 @@ import PresetObject from '@app/components/tools/PresetObject.vue';
 import AutoTileSelectNode from '@app/components/tools/AutoTileSelectNode.vue';
 import LightGetter from '@app/components/tools/LightGetter.vue';
 import ObjectGetter from '@app/components/tools/ObjectGetter.vue';
-import { composableEls } from '@app/composables/element-registry';
+const composableEls = createElementRegistry();
 import { getTileNodeHandles } from '@app/composables/auto-tile-handles';
 import { getTeamHandles } from '@app/composables/team-handles';
 import { presetElementNodes, presetObjectNodes } from '@app/composables/window-nodes';

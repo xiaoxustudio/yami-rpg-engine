@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SceneLightPage from '@app/components/inspector/SceneLightPage.vue';
 import UIImagePage from '@app/components/inspector/UIImagePage.vue';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+const inspectorEls = createElementRegistry();
 import { sceneLightNodes, uiImagePageNodes } from '@app/composables/inspector-page-nodes';
 import { registryElements, registerElement } from '@app/utils/element-registry';
 

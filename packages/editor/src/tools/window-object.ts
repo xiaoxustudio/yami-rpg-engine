@@ -1,6 +1,5 @@
 import { $, queryElementsByIds } from '@app/utils/dom';
 import { shellNodes } from '@app/composables/shell-nodes';
-import { createElementRegistry } from '@app/utils/element-registry';
 import { addClass, removeClass } from '@app/utils/element-utils';
 import { getWindowKeydowns } from '@app/tools/window-keydown-registry';
 import { getLazyWindow } from '@app/tools/window-registry';
@@ -452,8 +451,6 @@ Window.ambient.update = function (this: typeof Window) {
 const windowBridgeKeys = ['positionMode', 'absolutePos', 'overlapRoot', 'activeElement'] as const;
 import { getWindowStore } from '@app/stores/window';
 import type { YamiElement } from '@app/types/element-api';
-
-export const windowShellEls = createElementRegistry();
 
 for (const key of windowBridgeKeys) {
 	Object.defineProperty(Window, key, {

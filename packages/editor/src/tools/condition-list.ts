@@ -1,6 +1,5 @@
 import { getCondition } from '@app/composables/condition-bridge';
 import { reactive } from 'vue';
-import { createElementRegistry } from '@app/utils/element-registry';
 import { treeOwnerListOf } from '@ui-kit';
 import { Window } from '@app/tools/window-object.ts';
 import { onToolWindowMounted } from '@app/tools/tool-window-host';
@@ -16,8 +15,6 @@ import type { History } from '@app/tools/history.ts';
 import { getYamiI18n } from '@app/i18n';
 import { applyLocalizedItems } from '@app/utils/localized-items';
 import type { YamiElement } from '@app/types/element-api';
-
-export const conditionEls = createElementRegistry();
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});

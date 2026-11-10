@@ -1,8 +1,9 @@
 import { describe, expect, it, afterAll, beforeAll } from 'vitest';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { Palette } from '@app/palette/palette.ts';
 import '@app/palette/register.ts';
-import { paletteEls } from '@app/palette/element-registry.ts';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+const paletteEls = createElementRegistry();
+const inspectorEls = createElementRegistry();
 import { registerElement } from '@app/utils/element-registry';
 import { provideTileNodeHandles } from '@app/composables/auto-tile-handles';
 

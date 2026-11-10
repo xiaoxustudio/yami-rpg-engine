@@ -1,6 +1,5 @@
 import { getObjectAttribute } from '@app/composables/object-attribute-bridge';
 import { reactive } from 'vue';
-import { createElementRegistry } from '@app/utils/element-registry';
 import { Window } from '@app/tools/window-object.ts';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Command } from '@app/commands/command-object.ts';
@@ -12,8 +11,6 @@ import { GameLocal } from '@app/local/local-object.ts';
 
 import { IListInterface } from '@app/types/list-interface.ts';
 import { IUndoRedoHistory } from '@app/types/history.ts';
-
-export const objectAttributeEls = createElementRegistry();
 
 interface AttributeItemShape {
 	key: string;

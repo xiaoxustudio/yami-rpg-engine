@@ -6,7 +6,8 @@ import { getWindowStore, windowStateKeys } from '@app/stores/window';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Variable } from '@app/variable/variable.ts';
-import { Window, windowShellEls } from '@app/tools/window-object';
+import { Window } from '@app/tools/window-object';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { registerElement } from '@app/utils/element-registry';
 import { primeWindows } from '@app/tools/window-registry';
 
@@ -24,6 +25,9 @@ vi.mock('@app/tools/window-cluster', () => ({
 	Layout: stackLayoutMock,
 	Title: stackTitleMock
 }));
+
+/** 窗口根注册表：生产侧已删（窗口根按 DOM id 查），这里保留一个本地实例给夹具用。 */
+const windowShellEls = createElementRegistry();
 
 describe('useAttributeStore（Attribute 窗口状态桥接）', () => {
 	it('初始状态默认值', () => {

@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SetVolume from '@app/components/commands/SetVolume.vue';
 import SimulateKey from '@app/components/commands/SimulateKey.vue';
 import SetVideo from '@app/components/commands/SetVideo.vue';
-import { composableEls } from '@app/composables/element-registry';
+const composableEls = createElementRegistry();
 import { Command } from '@app/commands/command-object.ts';
 
 vi.mock('@app/stores/local', () => ({

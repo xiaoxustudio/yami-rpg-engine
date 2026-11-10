@@ -12,7 +12,7 @@ import {
 	isToolWindowReady,
 	setToolWindowHostContext
 } from '@app/tools/tool-window-host';
-import { conditionEls, ConditionListInterface, form } from '@app/tools/condition-list';
+import { ConditionListInterface, form } from '@app/tools/condition-list';
 import { Selection } from '@app/tools/text-capture';
 import { Window } from '@app/tools/window-object.ts';
 import { elementDataOf } from '@app/utils/element-data';
@@ -132,17 +132,17 @@ describe('懒挂载窗口：初始化与 open 后的控件写入', () => {
 		await nextTick();
 		await flushPromises();
 
-		const type = controlOf(conditionEls, 'condition-type');
+		const type = controlOf(null, 'condition-type');
 		expect(type, '窗口应当被挂载并登记控件').toBeTruthy();
 		const data = elementDataOf<{ dataItems?: { value: string }[]; invalid?: boolean }>(type);
 		expect((data.dataItems ?? []).map((item) => item.value)).toContain('global-number');
 		expect(data.invalid).toBe(false);
 
 		// global-number：变量 + 数字运算符/值可见，布尔与字符串行折叠
-		expect(rowOf(conditionEls, 'condition-key').control).not.toBe('none');
-		expect(rowOf(conditionEls, 'condition-number-value').control).not.toBe('none');
-		expect(rowOf(conditionEls, 'condition-boolean-value').control).toBe('none');
-		expect(rowOf(conditionEls, 'condition-boolean-value').label).toBe('none');
-		expect(rowOf(conditionEls, 'condition-string-value').control).toBe('none');
+		expect(rowOf(null, 'condition-key').control).not.toBe('none');
+		expect(rowOf(null, 'condition-number-value').control).not.toBe('none');
+		expect(rowOf(null, 'condition-boolean-value').control).toBe('none');
+		expect(rowOf(null, 'condition-boolean-value').label).toBe('none');
+		expect(rowOf(null, 'condition-string-value').control).toBe('none');
 	});
 });

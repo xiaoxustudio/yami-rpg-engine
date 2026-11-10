@@ -1,7 +1,8 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { registerElement } from '@app/utils/element-registry';
-import { inspectorEls } from '@app/inspector/element-registry.ts';
+const inspectorEls = createElementRegistry();
 import { mount } from '@vue/test-utils';
 import AnimJointFramePage from '@app/components/inspector/AnimJointFramePage.vue';
 import AnimParticleFramePage from '@app/components/inspector/AnimParticleFramePage.vue';
