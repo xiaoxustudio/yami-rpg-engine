@@ -1,6 +1,6 @@
-import { $ } from '@app/utils/dom';
+import { $, queryElementsByIds } from '@app/utils/dom';
 import { shellNodes } from '@app/composables/shell-nodes';
-import { createElementRegistry, registerElement } from '@app/utils/element-registry';
+import { createElementRegistry } from '@app/utils/element-registry';
 import { addClass, removeClass } from '@app/utils/element-utils';
 import { getWindowKeydowns } from '@app/tools/window-keydown-registry';
 import { getLazyWindow } from '@app/tools/window-registry';
@@ -121,18 +121,15 @@ Window.openWith = function (this: typeof Window, id: string, prepare: (() => voi
 };
 
 /**
- * 取窗口根元素：优先注册表，回退 DOM（并回填注册表）。
+ * 取窗口根元素：**只按 DOM id 找**。
  *
- * 注册表只覆盖走 `WindowFrame` / `registryRef` 的窗口；ui-kit 的 `YM*` 窗口（如 `fontSize`、
- * `font`）由 `YMWindowFrame` 自己把 `open/close/...` 挂到根元素上，不一定有人登记。
- * 以 DOM 为兜底后，「右键菜单里点字号/字体没反应」这类问题不会再出现。
+ * 以前先查 `windowShellEls` 再回退 DOM 并回填缓存。窗口侧迁到控件/节点表后，这张注册表已经
+ * 没有别的读者（所有 `registryRef` 都已移除），留着它只会让「谁是当前窗口根」有两个真源。
+ * 窗口根天生就有稳定 id（`WindowFrame` 的 id、ui-kit `YM*` 窗口的 id），按 id 查足够。
  */
 function findWindowElement(id: string): (HTMLElement & WindowFrame) | undefined {
-	const registered = windowShellEls.get(id) as (HTMLElement & WindowFrame) | undefined;
-	if (registered) return registered;
-	const dom: unknown = $(`#${id}` as `#${string}`);
+	const dom = queryElementsByIds([id])[0];
 	if (!(dom instanceof HTMLElement)) return undefined;
-	registerElement(windowShellEls, id, dom);
 	return dom as HTMLElement & WindowFrame;
 }
 

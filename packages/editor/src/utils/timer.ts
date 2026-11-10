@@ -1,6 +1,5 @@
 import { hasClass, on } from '@app/utils/element-utils';
-import { registryElements } from '@app/utils/element-registry';
-import { windowShellEls } from '@app/tools/window-object.ts';
+import { queryElementsByIds } from '@app/utils/dom';
 import { empty as fnEmpty } from '@app/utils/function';
 import { append, remove } from '@app/utils/array';
 
@@ -149,7 +148,7 @@ Timer.initialize = function (this: typeof Timer) {
 	const windowUnmaximize = () => {
 		this.animationWaiting--;
 	};
-	const windows = registryElements(windowShellEls, ['event', 'selector', 'imageClip']);
+	const windows = queryElementsByIds(['event', 'selector', 'imageClip']);
 	windows.forEach((el) => on(el, 'open', windowOpen));
 	windows.forEach((el) => on(el, 'closed', windowClosed));
 	windows.forEach((el) => on(el, 'maximize', windowMaximize));

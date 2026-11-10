@@ -99,7 +99,7 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		expect(document.body.style.pointerEvents).toBe('');
 	});
 
-	it('DOM 已挂载但未登记的窗口（ui-kit YM* 窗口）能打开并回填注册表', () => {
+	it('DOM 已挂载但未登记的窗口（ui-kit YM* 窗口）能按 id 打开', () => {
 		const el = document.createElement('div');
 		el.id = 'dom-only-window';
 		const frame = el as unknown as TestFrame;
@@ -113,11 +113,11 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		frame.enableAmbient = false;
 		document.body.appendChild(el);
 		createdFrames.push(frame);
+		// 窗口根只按 DOM id 找：注册表里不该有它
 		expect(windowShellEls.get('dom-only-window')).toBeUndefined();
 
 		Window.open!('dom-only-window');
 
-		expect(windowShellEls.get('dom-only-window')).toBe(frame);
 		expect(frame.open).toHaveBeenCalledTimes(1);
 		expect(Window.frames).toContain(frame);
 	});
