@@ -9,6 +9,9 @@ export function commit(data: Record<string, unknown>): unknown {
 	return Command.save?.(data);
 }
 
+/** 已提示过的「控件未就绪」id：同一条只提示一次，避免每次 edit 刷屏。 */
+const warnedMissing = new Set<string>();
+
 export interface UseCommandSchemaOptions {
 	onLoad?: (params: Record<string, unknown>) => void;
 	skipWrite?: boolean;
@@ -43,7 +46,18 @@ export function useCommandSchema(name: string, options: UseCommandSchemaOptions 
 			const table = options.controls?.();
 			for (const field of fields) {
 				const id = `${name}-${field.domId ?? field.key}`;
-				write(table ? (table[id] ?? null) : composableEls.get(id), form[field.key]);
+				const control = table ? (table[id] ?? null) : composableEls.get(id);
+				if (!control && !warnedMissing.has(id)) {
+					// 兜底路径取不到控件就是「静默写不进去」：窗口还没迁表或 id 拼错都会走到这里。
+					// 只提示一次（同一 id 不刷屏），并且不进生产包。
+					warnedMissing.add(id);
+					if (import.meta.env.DEV) {
+						console.warn(
+							`[useCommandSchema] ${name}: 控件未就绪，edit 路径写不进 ${id}`
+						);
+					}
+				}
+				write(control, form[field.key]);
 			}
 		}
 		options.onLoad?.(params);
