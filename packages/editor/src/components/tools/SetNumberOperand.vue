@@ -454,7 +454,8 @@ const bridgeApi: NumberOperandApi = {
 		const map: Record<string, string> = {
 			operation: 'setNumber-operation',
 			operandOperation: 'setNumber-operand-operation',
-			commonVariable: 'setNumber-operand-common-variable'
+			commonVariable: 'setNumber-operand-common-variable',
+			cooldownKey: 'setNumber-operand-cooldown-key'
 		};
 		return toControl((fieldEls as Record<string, unknown>)[map[name]] ?? null);
 	}

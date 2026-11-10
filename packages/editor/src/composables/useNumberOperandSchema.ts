@@ -1,4 +1,3 @@
-import { composableEls } from '@app/composables/element-registry';
 import { getNumberOperand } from '@app/composables/number-operand-bridge';
 import { getWindowStore } from '@app/stores/window';
 import { hide, read, show } from '@app/utils/element-utils';
@@ -444,8 +443,8 @@ const open = (
 			requestFocus('setNumber-operand-operation');
 		}
 
-		composableEls
-			.get('setNumber-operand-cooldown-key')
+		getNumberOperand()
+			?.control('cooldownKey')
 			?.loadItems?.(Enum.getStringItems!('cooldown-key'));
 	});
 

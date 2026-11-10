@@ -7,7 +7,11 @@
 import { createFormBridge } from './form-bridge';
 import type { ControlApi } from './control-refs';
 
-export type NumberOperandFieldKey = 'operation' | 'operandOperation' | 'commonVariable';
+export type NumberOperandFieldKey =
+	| 'operation'
+	| 'operandOperation'
+	| 'commonVariable'
+	| 'cooldownKey';
 
 export interface NumberOperandApi {
 	control(name: NumberOperandFieldKey): ControlApi | null;
