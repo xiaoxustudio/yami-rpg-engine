@@ -1,6 +1,3 @@
-import { composableEls } from './element-registry';
-import { registryElement } from '@app/utils/element-registry';
-
 export interface FormFieldControl {
 	read?: () => unknown;
 	write?: (value: unknown) => void;
@@ -8,14 +5,17 @@ export interface FormFieldControl {
 
 export type FieldControlGetter = (id: string) => FormFieldControl | null | undefined;
 
-const registryControl: FieldControlGetter = (id) =>
-	registryElement<HTMLElement & FormFieldControl>(composableEls, id);
-
+/**
+ * 把 `data` 写进 `form`，并顺带写进对应控件。
+ *
+ * `getControl` 是**必填**的：窗口迁成控件表之后，表单读写按逻辑 id 走表
+ * （`useControlRefs().controlOf` 或 `toControl(fieldEls[id])`），不再回落到 `ElementRegistry`。
+ */
 export const setFormFields = <T extends object>(
 	form: T,
 	data: Partial<T>,
 	fieldById: Record<string, keyof T>,
-	getControl: FieldControlGetter = registryControl
+	getControl: FieldControlGetter
 ): void => {
 	Object.assign(form, data);
 	for (const [id, field] of Object.entries(fieldById)) {
@@ -30,7 +30,7 @@ export const setFormFields = <T extends object>(
 export const getFormFields = <T extends object>(
 	form: T,
 	fieldById: Record<string, keyof T>,
-	getControl: FieldControlGetter = registryControl
+	getControl: FieldControlGetter
 ): T => {
 	const data = { ...form } as T;
 	for (const [id, field] of Object.entries(fieldById)) {

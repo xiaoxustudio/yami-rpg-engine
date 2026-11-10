@@ -301,7 +301,7 @@ import {
 import { toControl } from '@app/composables/control-refs';
 import { useI18n } from 'vue-i18n';
 import { composableEls } from '@app/composables/element-registry';
-import { getFormFields, setFormFields } from '@app/composables/form-fields';
+import { getFormFields, setFormFields, type FormFieldControl } from '@app/composables/form-fields';
 import { registerElement } from '@app/utils/element-registry';
 import { useNumberOperandSchema } from '@app/composables/useNumberOperandSchema';
 import type { NumberOperandForm } from '@app/composables/useNumberOperandSchema';
@@ -364,10 +364,15 @@ const form = reactive<NumberOperandForm>({
 	otherTeamId: ''
 });
 
-const setForm = (data: Partial<NumberOperandForm>): void =>
-	setFormFields<NumberOperandForm>(form, data, FIELD_BY_ID);
+/** 控件解析器：表单读写按逻辑控件走这张表，不再回落到 ElementRegistry。 */
+const controlOf = (id: string): FormFieldControl | null =>
+	toControl((fieldEls as Record<string, unknown>)[id] ?? null);
 
-const getForm = (): NumberOperandForm => getFormFields<NumberOperandForm>(form, FIELD_BY_ID);
+const setForm = (data: Partial<NumberOperandForm>): void =>
+	setFormFields<NumberOperandForm>(form, data, FIELD_BY_ID, controlOf);
+
+const getForm = (): NumberOperandForm =>
+	getFormFields<NumberOperandForm>(form, FIELD_BY_ID, controlOf);
 
 const FIELD_BY_ID: Record<string, keyof NumberOperandForm> = {
 	'setNumber-operand-operation': 'operation',
