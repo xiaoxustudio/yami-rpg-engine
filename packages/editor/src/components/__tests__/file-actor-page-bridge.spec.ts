@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createElementRegistry } from '@app/utils/element-registry';
-import { registerElement } from '@app/utils/element-registry';
-const inspectorEls = createElementRegistry();
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
+import { testRegisterElement } from '@app/__tests__/test-registry';
+const inspectorEls = createTestElementRegistry();
 import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';
 import FileActorPage from '@app/components/inspector/FileActorPage.vue';
@@ -62,7 +62,7 @@ describe('FileActorPage（fileActor inspector 响应式双向绑定桥接）', (
 		const host = document.createElement('div');
 		host.id = 'fileActor-vue-mount';
 		document.body.appendChild(host);
-		registerElement(inspectorEls, host.id, host);
+		testRegisterElement(inspectorEls, host.id, host);
 		const wrapper = mount(FileActorPage, {
 			attachTo: document.body,
 			global: { plugins: [initYamiI18n()] }

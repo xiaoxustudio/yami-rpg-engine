@@ -1,7 +1,7 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createElementRegistry } from '@app/utils/element-registry';
-import { registerElement } from '@app/utils/element-registry';
-const inspectorEls = createElementRegistry();
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
+import { testRegisterElement } from '@app/__tests__/test-registry';
+const inspectorEls = createTestElementRegistry();
 vi.setConfig({ testTimeout: 30000 });
 import { reactive } from 'vue';
 
@@ -58,7 +58,7 @@ const createMount = (id: string, form?: unknown): HTMLElement => {
 		(mount as unknown as { form: unknown }).form = form;
 	}
 	document.body.appendChild(mount);
-	registerElement(inspectorEls, id, mount);
+	testRegisterElement(inspectorEls, id, mount);
 	return mount;
 };
 
@@ -79,8 +79,8 @@ describe('inspector-change History 处理器（form 桥优先 + write/dispatch �
 		const inspector = document.createElement('div');
 		inspector.id = 'inspector';
 		document.body.appendChild(inspector);
-		registerElement(inspectorEls, 'inspector-page-manager', manager);
-		registerElement(inspectorEls, 'inspector', inspector);
+		testRegisterElement(inspectorEls, 'inspector-page-manager', manager);
+		testRegisterElement(inspectorEls, 'inspector', inspector);
 		Inspector.initialize();
 		processor = History.processors['inspector-change'] as (
 			operation: string,

@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import RegisterEvent from '@app/components/commands/RegisterEvent.vue';
 import Transition from '@app/components/commands/Transition.vue';
 import WebSocketSend from '@app/components/commands/WebSocketSend.vue';
-const composableEls = createElementRegistry();
+const composableEls = createTestElementRegistry();
 import { useTransitionCommandSchema } from '@app/composables/commands/useTransitionCommandSchema';
 import { getTransitionBridge } from '@app/composables/transition-bridge';
 import { getWebSocketSendBridge } from '@app/composables/web-socket-send-bridge';

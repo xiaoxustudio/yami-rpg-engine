@@ -1,8 +1,8 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { registerElement } from '@app/utils/element-registry';
-const inspectorEls = createElementRegistry();
+import { testRegisterElement } from '@app/__tests__/test-registry';
+const inspectorEls = createTestElementRegistry();
 vi.setConfig({ testTimeout: 30000 });
 import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';
@@ -118,7 +118,7 @@ describe('ParticleLayerPage（particleLayer inspector 响应式双向绑定桥�
 		const host = document.createElement('div');
 		host.id = 'particleLayer-vue-mount';
 		document.body.appendChild(host);
-		registerElement(inspectorEls, host.id, host);
+		testRegisterElement(inspectorEls, host.id, host);
 		const wrapper = mount(ParticleLayerPage, {
 			attachTo: document.body,
 			global: { plugins: [initYamiI18n()] }

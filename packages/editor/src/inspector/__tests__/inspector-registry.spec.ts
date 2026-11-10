@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';
 import UIImagePage from '@app/components/inspector/UIImagePage.vue';
 import FileActorPage from '@app/components/inspector/FileActorPage.vue';
-const inspectorEls = createElementRegistry();
+const inspectorEls = createTestElementRegistry();
 import { getUiElementControls } from '@app/composables/ui-element-page-controls';
 import { getFileActorMeta } from '@app/composables/file-actor-page-bridge';
 

@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import Language from '@app/components/tools/Language.vue';
 import { useProjectSettingsWindow } from '@app/composables/useProjectSettingsWindow';
-const composableEls = createElementRegistry();
+const composableEls = createTestElementRegistry();
 import { getLanguage } from '@app/composables/language-window-bridge';
 import { getProjectStore } from '@app/stores/project';
 import { Window } from '@app/tools/window-object.ts';

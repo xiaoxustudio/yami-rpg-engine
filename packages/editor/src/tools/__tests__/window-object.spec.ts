@@ -3,8 +3,8 @@ import { nextTick } from 'vue';
 import '@app/utils/array';
 import { getConfirmationStore } from '@app/stores/confirmation';
 import { Window } from '@app/tools/window-object';
-import { createElementRegistry } from '@app/utils/element-registry';
-import { registerElement } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
+import { testRegisterElement } from '@app/__tests__/test-registry';
 import { primeWindows } from '@app/tools/window-registry';
 
 const { layoutMock, titleMock } = vi.hoisted(() => ({
@@ -57,13 +57,13 @@ function makeFrame(id: string, closeResult = true): TestFrame {
 	frame.closeEventEnabled = true;
 	frame.enableAmbient = false;
 	document.body.appendChild(el);
-	registerElement(windowShellEls, id, frame);
+	testRegisterElement(windowShellEls, id, frame);
 	createdFrames.push(frame);
 	return frame;
 }
 
 /** 窗口根注册表：生产侧已删（窗口根按 DOM id 查），这里保留一个本地实例给夹具用。 */
-const windowShellEls = createElementRegistry();
+const windowShellEls = createTestElementRegistry();
 
 describe('Window（window-object 模态/焦点/关闭链）', () => {
 	beforeEach(() => {
@@ -80,7 +80,7 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 			document.body.appendChild(title);
 		}
 		titleMock.target = null;
-		registerElement(windowShellEls, 'title', document.getElementById('title'));
+		testRegisterElement(windowShellEls, 'title', document.getElementById('title'));
 	});
 
 	afterEach(() => {

@@ -7,8 +7,8 @@ import { Attribute } from '@app/attribute/attribute-window.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Variable } from '@app/variable/variable.ts';
 import { Window } from '@app/tools/window-object';
-import { createElementRegistry } from '@app/utils/element-registry';
-import { registerElement } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
+import { testRegisterElement } from '@app/__tests__/test-registry';
 import { primeWindows } from '@app/tools/window-registry';
 
 const { stackLayoutMock, stackTitleMock } = vi.hoisted(() => ({
@@ -27,7 +27,7 @@ vi.mock('@app/tools/window-cluster', () => ({
 }));
 
 /** 窗口根注册表：生产侧已删（窗口根按 DOM id 查），这里保留一个本地实例给夹具用。 */
-const windowShellEls = createElementRegistry();
+const windowShellEls = createTestElementRegistry();
 
 describe('useAttributeStore（Attribute 窗口状态桥接）', () => {
 	it('初始状态默认值', () => {
@@ -267,7 +267,7 @@ function makeStackFrame(id: string): StackTestFrame {
 	frame.closeEventEnabled = true;
 	frame.enableAmbient = false;
 	document.body.appendChild(el);
-	registerElement(windowShellEls, id, frame);
+	testRegisterElement(windowShellEls, id, frame);
 	stackFrames.push(frame);
 	return frame;
 }

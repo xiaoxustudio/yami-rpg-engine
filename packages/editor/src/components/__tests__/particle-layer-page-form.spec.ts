@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
-import { createElementRegistry } from '@app/utils/element-registry';
-import { registerElement } from '@app/utils/element-registry';
-const inspectorEls = createElementRegistry();
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
+import { testRegisterElement } from '@app/__tests__/test-registry';
+const inspectorEls = createTestElementRegistry();
 vi.setConfig({ testTimeout: 30000 });
 import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';
@@ -93,7 +93,7 @@ const mountPage = async () => {
 	const host = document.createElement('div');
 	host.id = 'particleLayer-vue-mount';
 	document.body.appendChild(host);
-	registerElement(inspectorEls, 'particleLayer-vue-mount', host);
+	testRegisterElement(inspectorEls, 'particleLayer-vue-mount', host);
 	const wrapper = mount(ParticleLayerPage, {
 		attachTo: document.body,
 		global: { plugins: [initYamiI18n()] }

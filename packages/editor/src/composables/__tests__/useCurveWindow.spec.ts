@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { createPinia, setActivePinia } from 'pinia';
 import { useCurveWindow, type CurveFrame } from '@app/composables/useCurveWindow';
-const animationEls = createElementRegistry();
-import { registerElement } from '@app/utils/element-registry';
+const animationEls = createTestElementRegistry();
+import { testRegisterElement } from '@app/__tests__/test-registry';
 import { Animation } from '@app/animation/animation-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Easing } from '@app/data/transition-window.ts';
@@ -130,7 +130,7 @@ describe('useCurveWindow（动画过渡曲线窗口 composable：渲染状态机
 			getDevicePixelContentBoxSize: () => ({ width: 100, height: 50 })
 		});
 		for (const id of CURVE_IDS) {
-			registerElement(animationEls, id, document.getElementById(id));
+			testRegisterElement(animationEls, id, document.getElementById(id));
 		}
 		vi.mocked(Data).easings = { map: {} };
 		(Animation.history.save as Mock).mockClear();

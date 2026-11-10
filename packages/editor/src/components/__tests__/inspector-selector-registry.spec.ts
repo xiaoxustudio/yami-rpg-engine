@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SceneLightPage from '@app/components/inspector/SceneLightPage.vue';
 import UIImagePage from '@app/components/inspector/UIImagePage.vue';
-const inspectorEls = createElementRegistry();
+const inspectorEls = createTestElementRegistry();
 import { sceneLightNodes, uiImagePageNodes } from '@app/composables/inspector-page-nodes';
-import { registryElements, registerElement } from '@app/utils/element-registry';
+import { testRegistryElements, testRegisterElement } from '@app/__tests__/test-registry';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),
@@ -25,12 +25,12 @@ const mountWithHost = async (
 	const host = document.createElement('div');
 	host.id = hostId;
 	document.body.appendChild(host);
-	registerElement(inspectorEls, hostId, host);
+	testRegisterElement(inspectorEls, hostId, host);
 	for (const id of extraIds) {
 		const el = document.createElement('div');
 		el.id = id;
 		document.body.appendChild(el);
-		registerElement(inspectorEls, id, el);
+		testRegisterElement(inspectorEls, id, el);
 	}
 	const wrapper = mount(component, { attachTo: document.body });
 	await wrapper.vm.$nextTick();
@@ -92,8 +92,8 @@ describe('inspector 页批量取控件走注册表', () => {
 	it('registryElements 会跳过未登记的 id（与旧选择器"取不到就不绑"语义一致）', () => {
 		const el = document.createElement('div');
 		el.id = 'only-one';
-		registerElement(inspectorEls, 'only-one', el);
+		testRegisterElement(inspectorEls, 'only-one', el);
 
-		expect(registryElements(inspectorEls, ['only-one', 'nope', 'missing'])).toEqual([el]);
+		expect(testRegistryElements(inspectorEls, ['only-one', 'nope', 'missing'])).toEqual([el]);
 	});
 });

@@ -1,8 +1,8 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { registerElement } from '@app/utils/element-registry';
-const inspectorEls = createElementRegistry();
+import { testRegisterElement } from '@app/__tests__/test-registry';
+const inspectorEls = createTestElementRegistry();
 import { mount } from '@vue/test-utils';
 import AnimJointFramePage from '@app/components/inspector/AnimJointFramePage.vue';
 import AnimParticleFramePage from '@app/components/inspector/AnimParticleFramePage.vue';
@@ -76,7 +76,7 @@ describe('animation-frame 页（inspector sync 响应式桥接回归保护）', 
 		const host = document.createElement('div');
 		host.id = mountId;
 		document.body.appendChild(host);
-		registerElement(inspectorEls, host.id, host);
+		testRegisterElement(inspectorEls, host.id, host);
 		const wrapper = mount(component, {
 			attachTo: document.body
 		});

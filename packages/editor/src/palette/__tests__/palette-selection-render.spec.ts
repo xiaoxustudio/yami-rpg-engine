@@ -1,10 +1,10 @@
 import { describe, expect, it, afterAll, beforeAll } from 'vitest';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { Palette } from '@app/palette/palette.ts';
 import '@app/palette/register.ts';
-const paletteEls = createElementRegistry();
-const inspectorEls = createElementRegistry();
-import { registerElement } from '@app/utils/element-registry';
+const paletteEls = createTestElementRegistry();
+const inspectorEls = createTestElementRegistry();
+import { testRegisterElement } from '@app/__tests__/test-registry';
 import { provideTileNodeHandles } from '@app/composables/auto-tile-handles';
 
 type SelectionShape = HTMLElement & { x: number; y: number };
@@ -23,19 +23,19 @@ describe('Palette selection 元素 Vue 渲染（拖拽选区覆盖层）', () =>
 		const el = document.createElement('div');
 		el.id = id;
 		document.body.appendChild(el);
-		registerElement(paletteEls, id, el);
+		testRegisterElement(paletteEls, id, el);
 	};
 
 	beforeAll(() => {
 		append('palette-frame');
 		append('fileTileset');
-		registerElement(inspectorEls, 'fileTileset', document.getElementById('fileTileset'));
+		testRegisterElement(inspectorEls, 'fileTileset', document.getElementById('fileTileset'));
 		append('palette-head');
 		append('palette-body');
 		const canvas = document.createElement('canvas');
 		canvas.id = 'palette-canvas';
 		document.body.appendChild(canvas);
-		registerElement(paletteEls, 'palette-canvas', canvas);
+		testRegisterElement(paletteEls, 'palette-canvas', canvas);
 		append('palette-screen');
 		append('palette-marquee');
 		append('palette-scroll');

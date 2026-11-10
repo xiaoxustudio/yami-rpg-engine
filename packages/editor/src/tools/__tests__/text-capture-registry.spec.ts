@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { createPinia, setActivePinia } from 'pinia';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
@@ -8,7 +8,7 @@ import TextPositionWindow from '@app/components/tools/TextPosition.vue';
 import TextEffectWindow from '@app/components/tools/TextEffect.vue';
 import InsertImageWindow from '@app/components/tools/InsertImage.vue';
 import LocalVariableWindow from '@app/components/tools/LocalVariable.vue';
-const composableEls = createElementRegistry();
+const composableEls = createTestElementRegistry();
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn(), components: {} }),

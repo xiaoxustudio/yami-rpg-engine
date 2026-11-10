@@ -1,8 +1,8 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { registerElement } from '@app/utils/element-registry';
-const inspectorEls = createElementRegistry();
+import { testRegisterElement } from '@app/__tests__/test-registry';
+const inspectorEls = createTestElementRegistry();
 import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';
 import UIButtonPage from '@app/components/inspector/UIButtonPage.vue';
@@ -86,7 +86,7 @@ describe('UIButtonPage（uiButton inspector 响应式双向绑定桥接）', () 
 		const host = document.createElement('div');
 		host.id = 'uiButton-vue-mount';
 		document.body.appendChild(host);
-		registerElement(inspectorEls, host.id, host);
+		testRegisterElement(inspectorEls, host.id, host);
 		const wrapper = mount(UIButtonPage, {
 			attachTo: document.body,
 			global: { plugins: [initYamiI18n()] }

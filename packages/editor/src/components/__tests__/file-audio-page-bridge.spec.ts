@@ -1,9 +1,9 @@
 import { inspectorPageSync } from '@app/composables/inspector-page-sync';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 const getFileAudioPage = () => inspectorPageSync.fileAudio.get();
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { registerElement } from '@app/utils/element-registry';
-const inspectorEls = createElementRegistry();
+import { testRegisterElement } from '@app/__tests__/test-registry';
+const inspectorEls = createTestElementRegistry();
 import { mount } from '@vue/test-utils';
 import FileAudioPage from '@app/components/inspector/FileAudioPage.vue';
 
@@ -55,7 +55,7 @@ describe('FileAudioPage（文件音频信息响应式渲染桥接）', () => {
 		const host = document.createElement('div');
 		host.id = 'fileAudio';
 		document.body.appendChild(host);
-		registerElement(inspectorEls, host.id, host);
+		testRegisterElement(inspectorEls, host.id, host);
 		const wrapper = mount(FileAudioPage, {
 			attachTo: document.body
 		});

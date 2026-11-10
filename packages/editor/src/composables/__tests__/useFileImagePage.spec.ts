@@ -1,10 +1,10 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { defineComponent } from 'vue';
 import { mount } from '@vue/test-utils';
 import { useFileImagePage } from '@app/composables/useFileImagePage';
-const inspectorEls = createElementRegistry();
-import { registerElement } from '@app/utils/element-registry';
+const inspectorEls = createTestElementRegistry();
+import { testRegisterElement } from '@app/__tests__/test-registry';
 
 const fileImage = vi.hoisted(() => ({
 	target: null as unknown,
@@ -59,7 +59,7 @@ describe('useFileImagePage（fileImage inspector 页面 composable）', () => {
 		Object.defineProperty(image, 'naturalHeight', { value: height });
 		frame.appendChild(image);
 		document.body.appendChild(frame);
-		registerElement(inspectorEls, 'fileImage-image', image);
+		testRegisterElement(inspectorEls, 'fileImage-image', image);
 		return { frame, image };
 	};
 

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createElementRegistry } from '@app/utils/element-registry';
+import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { getNumberOperand } from '@app/composables/number-operand-bridge';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
@@ -7,7 +7,7 @@ import IfBranch from '@app/components/tools/IfBranch.vue';
 import SwitchBranch from '@app/components/tools/SwitchBranch.vue';
 import IfCondition from '@app/components/tools/IfCondition.vue';
 import SetNumberOperand from '@app/components/tools/SetNumberOperand.vue';
-const composableEls = createElementRegistry();
+const composableEls = createTestElementRegistry();
 import { getIfBranch } from '@app/composables/tool-window-bridges';
 import { getSwitchBranch } from '@app/composables/tool-window-bridges';
 import { getIfConditionBridge } from '@app/composables/if-condition-bridge';
