@@ -14,7 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { composableEls } from '@app/composables/element-registry';
 import { inspectorEls } from '@app/inspector/element-registry';
 import { registryRef } from '@app/utils/element-registry';
 import { inspectorPanelNodes } from '@app/composables/page-shell-nodes';
@@ -28,7 +27,6 @@ import PageManager from '@app/components/common/PageManager.vue';
 const { bind } = inspectorPanelNodes.scoped();
 
 const frameRef = (frame: InspectorMountFrame): ((el: unknown) => void) | undefined => {
-	if (frame.registry === 'composable') return registryRef(composableEls, frame.id);
 	if (frame.registry === 'inspector') return registryRef(inspectorEls, frame.id);
 	return undefined;
 };

@@ -23,8 +23,6 @@ export const inspectorSpecialTargets = new Set([
 
 export const inspectorImperativeOnly = ['uiContainer'] as const;
 
-const inspectorComposableFrames = new Set(['animSoundLayer', 'animSoundFrame']);
-
 const inspectorUnregisteredFrames = new Set(['fileAnimation', 'uiContainer']);
 
 const inspectorModules = import.meta.glob('./*.vue');
@@ -54,11 +52,8 @@ export const inspectorMountFrames: InspectorMountFrame[] = [
 	...inspectorPages.map(({ value, target }) => ({
 		value,
 		id: target.replace(/^#/, ''),
-		registry: inspectorUnregisteredFrames.has(value)
-			? null
-			: inspectorComposableFrames.has(value)
-				? ('composable' as const)
-				: ('inspector' as const)
+		// 只有 inspector 页的挂载帧还需要进 inspectorEls（页管理器/页面模块按 id 取）
+		registry: inspectorUnregisteredFrames.has(value) ? null : ('inspector' as const)
 	})),
 	...inspectorImperativeOnly.map((value) => ({
 		value,
