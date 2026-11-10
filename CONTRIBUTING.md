@@ -52,10 +52,11 @@ pnpm start:prod   # 先构建再以生产模式启动
 
 **元素契约迁移：控件从「元素 API」到组件 `defineExpose`**
 
-现状（2026-11-08 实测；**数字真源是脚本，不是本文**）：
+现状（2026-11-10 实测；**数字真源是脚本，不是本文**）：
 
 ```shell
 node scripts/contract-inventory.mjs                                  # 还挂着 registryRef 的窗口 / 控件 id / 谁在读它们
+node scripts/migration-ledger.mjs --axis element-registry-lookups    # 还按 id 摸注册表的消费方（按文件计数）
 node scripts/oneoff/report-blocked-by-consumer.mjs                   # 按「卡住多少窗口」给消费方文件排序（决定先动谁）
 node scripts/oneoff/triage-registry-windows.mjs <窗口…>               # 这些窗口挂的注册表，别处有没有**动态**读
 node scripts/oneoff/audit-migrated-controls.mjs <迁过的 .vue…>        # 迁后回查：还有别的文件按 id 读它吗
@@ -63,10 +64,14 @@ node scripts/oneoff/audit-expose-vs-attach.mjs                       # 包装组
 node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --apply   # 生成桥模块并给窗口接线
 ```
 
-- 53 个 `.vue` 仍用 `registryRef(...)`（278 个控件 id），其中 **44 个**「有全局消费方或 schema 按 id 动态读」；
-- 台账三轴：`element-registry-lookups` 274 / 94 文件、`yami-element-refs` 488 / 93、`element-api-attach` 73；
-- ⚠️ **`element-api-attach` 的 73 处里绝大多数在 `packages/ui-kit`**（42 个文件，`createXxxApi(el, …)` 这类元素 API 的**实现**），editor 侧只剩 3 处（`TreeList` 的 `getMenuState` 工厂入参、`KeyboardBox`、`PageManager`）。把这条轴清零等于重写 ui-kit 的 API 形态，属于**独立工程**，不要混在窗口迁移里做；
-- 32 个 `attachElementApi` 组件里还剩 5 个的 `defineExpose` **不全**（`TreeList.getMenuState`、`AnimationPanel.setDirDirection`、`ExportApk`/`QrCode` 的 `update`、`VariableGetter2.getForm`）：迁到实例之前必须补齐，否则调用点在运行期静默变 `undefined`。
+- **业务窗口已全部迁到控件表**：`registryRef` 只剩 `utils/__tests__/element-registry.spec.ts`（对 `registryRef` 自身的测试，P4 删它时一并删）；
+- 台账三轴：`element-registry-lookups` **3 / 3 文件**、`yami-element-refs` 488 / 92、`element-api-attach` 72；
+- 剩下 3 处寻址**都不是控件 id**，是三类「兜底 / 窗口管理器」：
+  1. `composables/useCommandSchema.ts`：**默认写路径**的兜底（`controls` 没传时按 `${name}-${field}` 查注册表）。命令表单里还有大量窗口没接 `controls`，这条兜底要等它们接完才能删；取不到控件时会打一条 dev 警告（每 id 一次）——用它来点名还没接表的窗口；
+  2. `tools/window-object.ts`：按窗口 id 找 `WindowFrame` 根（`windowShellEls`，本身就是窗口注册表，不是控件表）；
+  3. `utils/timer.ts`：按窗口 id 批量取窗口根。
+- ⚠️ **`element-api-attach` 的 72 处里绝大多数在 `packages/ui-kit`**（42 个文件，`createXxxApi(el, …)` 这类元素 API 的**实现**），editor 侧只剩 3 处（`TreeList` 的 `getMenuState` 工厂入参、`KeyboardBox`、`PageManager`）。把这条轴清零等于重写 ui-kit 的 API 形态，属于**独立工程**，不要混在窗口迁移里做；
+- 仍往 `composableEls` 里登记的窗口只剩 4 个（`IfCondition`、`LightGetter`、`ObjectGetter`、`SetNumberOperand` 的根/字段循环），对应的 spec 还断言它们「已登记」——这四处是 P4 前的最后一批登记侧清理。
 
 **存量是碎片化的，不存在「再迁一批就清零」**：119 个消费方文件里最重的那个也只卡 5 个窗口（`report-blocked-by-consumer.mjs` 的输出）。所以一批的粒度应该是**一个消费方 + 它卡住的 1–5 个窗口**，而不是一个目录。
 
