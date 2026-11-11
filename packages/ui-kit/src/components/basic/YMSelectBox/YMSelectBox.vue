@@ -91,9 +91,10 @@ const clear = (): HTMLElement => {
 	return root.value as HTMLElement;
 };
 
-const enableHiddenMode = (): HTMLElement => {
+/** 返回隐藏模式句柄（可继续 `.relate(entries)`）：返回元素会逼调用方依赖元素 API。 */
+const enableHiddenMode = (): { relate: (entries: unknown) => void } => {
 	core.enableHiddenMode();
-	return root.value as HTMLElement;
+	return { relate };
 };
 
 const relate = (entries: unknown): void => {

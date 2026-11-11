@@ -41,7 +41,7 @@ interface SelectBoxElement extends HTMLElement {
 	setTooltip(tip: string | (() => string)): void;
 	createTooltip(): void;
 	clear(): HTMLElement;
-	enableHiddenMode(): HTMLElement;
+	enableHiddenMode(): { relate(entries: unknown): void };
 	relate(entries: unknown): void;
 	toggleRelatedElements(): void;
 	enableElement(element: unknown): void;
@@ -93,7 +93,7 @@ const ym = ref<{
 	loadItems(items: unknown[]): HTMLElement;
 	setItemNames(options: Record<string, string | { name?: string; tip?: string }>): void;
 	clear(): HTMLElement;
-	enableHiddenMode(): HTMLElement;
+	enableHiddenMode(): { relate(entries: unknown): void };
 	relate(entries: unknown): void;
 	toggleRelatedElements(): void;
 	enableElement(element: unknown): void;
@@ -162,7 +162,8 @@ const setItemNames = (options: Record<string, string | { name?: string; tip?: st
 	createTooltip();
 };
 const clear = (): HTMLElement => ym.value?.clear() as HTMLElement;
-const enableHiddenMode = (): HTMLElement => ym.value?.enableHiddenMode() as HTMLElement;
+const enableHiddenMode = (): { relate(entries: unknown): void } =>
+	ym.value?.enableHiddenMode() as { relate(entries: unknown): void };
 const relate = (entries: unknown): void => ym.value?.relate(entries);
 const toggleRelatedElements = (): void => ym.value?.toggleRelatedElements();
 const enableElement = (element: unknown): void => ym.value?.enableElement(element);

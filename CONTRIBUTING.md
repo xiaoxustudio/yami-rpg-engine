@@ -109,8 +109,12 @@ const page = sceneNodes.pick('page');
 | `enable` / `disable` | `relate()` 的 targets 是行 / 控件根，`select-box-core` 还要读写 `style.display` 与兄弟标签 | 同上登记；`enableElement` / `disableElement` 先查表，再回退 `classList` |
 
 - 能力表在 `packages/ui-kit/src/utils/element-capabilities.ts`（WeakMap，按元素查）。**只放 DOM 型能力**；`read` / `write` / `loadItems` / `relate` 这些控件能力**不许进表** —— 它们只能从组件实例上拿；
-- editor 侧 `components/common/*.vue` 都是单子节点透传，根元素就是 ui-kit 组件的根：能力登记在 ui-kit 组件里就覆盖了包装层，包装层的 `attachElementApi` 可以直接删；
-- 每个组件按「先登记能力 → 删 `attachElementApi` → 删 api 模块里的 `attachApi`」三步走，台账轴按文件下降；api 模块里 `box.write(...)` 这类**经元素回读自己**的写法要改成闭包直调（`write(...)`），否则删 attach 后就是运行期 undefined。
+- `enableHiddenMode()` 返回的是**隐藏模式句柄** `{ relate }`，不是根元素：返回元素会逼调用方继续依赖元素 API；
+- ⚠️ **包装层不能整批删**（2026-11-11 实测：一次删 27 个 `attachElementApi` 直接红 41 个测试）。仍按元素用的消费方有三类，必须和组件一起迁：
+  1. `SliderBox.synchronize(target)`：既读 `slider.input`（元素上的 `input`），又**改写** `number.write`（把同步逻辑挂到元素方法上）——这是真正的方法替换，不是读值；
+  2. 旧式 window 模块的 `el(prefix, id)` 助手（`useVariableGetterWindow` 的 `loadPresetKeys`、`useProjectSettingsWindow` 的 `config-*`）：它们从控件表 `controlRoot()` 取根元素，再调 `.loadItems()` / 写 `.filter`；
+  3. spec 自己 `document.getElementById(id)` 取元素再调 `.read()` / `.write()`（`set-list-bridge`、`input-bridge`、inspector 页族桥接 spec）——测试也在按元素契约断言；
+- 所以 P3 的批次单位是「**一个组件 + 它的元素消费方 + 对应 spec**」：先把消费方改成实例/句柄，再删 `attachElementApi`，最后删 api 模块里的 `attachApi`；api 模块里 `box.write(...)` 这类**经元素回读自己**的写法要改成闭包直调（`write(...)`），否则删 attach 后就是运行期 undefined。
 
 
 
