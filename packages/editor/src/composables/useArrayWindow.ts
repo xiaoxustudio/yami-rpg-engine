@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 import { getWindowFormsStore } from '@app/stores/window-forms';
 import { arrayListNodes } from '@app/composables/window-nodes';
+import { getWindowHandle } from '@app/composables/window-handles';
 import { h } from 'vue';
 import { getWindowStore } from '@app/stores/window';
 import { read } from '@app/utils/element-utils';
@@ -251,11 +252,8 @@ const open = (target: ArrayListTarget): void => {
 	targetState = target;
 	const label = target.previousSibling;
 	const alias = label.textContent;
-	// 窗口标题写在帧元素上（`WindowFrame` 把 `setTitle` 挂到根元素）
-	const frame = arrayListNodes.pick('frame') as
-		| (HTMLElement & { setTitle?: (title: string) => void })
-		| null;
-	frame?.setTitle?.(alias ?? '');
+	// 窗口标题走帧句柄（`WindowFrame` 挂载时登记，元素上不再挂方法）
+	getWindowHandle('arrayList')?.setTitle?.(alias ?? '');
 	openForm(read(target).slice(), (value) => {
 		targetState?.input?.(value);
 	});

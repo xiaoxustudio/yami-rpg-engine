@@ -1,4 +1,5 @@
 import { useImageClipWindow } from '@app/composables/useImageClipWindow';
+import { getWindowHandle } from '@app/composables/window-handles';
 import { getImageCropHandles } from '@app/composables/image-crop-handles';
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { $ } from '@app/utils/dom';
@@ -101,7 +102,7 @@ ImageClip.open = async function (this: typeof ImageClip, ...args: unknown[]) {
 };
 
 ImageClip.loadImage = function (this: typeof ImageClip) {
-	this.window.setTitle('');
+	getWindowHandle('imageClip')?.setTitle?.('');
 
 	const id = this.target?.getAttribute?.('image');
 	const guid = read($('#' + id));
@@ -174,7 +175,7 @@ ImageClip.updateTitle = function (this: typeof ImageClip, ...args: unknown[]) {
 	} else {
 		info = t('common.none');
 	}
-	this.window.setTitle(info);
+	getWindowHandle('imageClip')?.setTitle?.(info);
 };
 
 ImageClip.updateMarquee = function (this: typeof ImageClip) {

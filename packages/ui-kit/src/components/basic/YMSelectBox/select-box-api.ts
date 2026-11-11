@@ -1,5 +1,6 @@
 import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { attachApi } from '../../../utils/attach-api';
+import { onLocalize } from '../../../utils/localize-event';
 import {
 	createSelectBoxCore,
 	type RelationEntry,
@@ -217,6 +218,15 @@ export function attachSelectBoxApi(
 	box.writeEventEnabled = state.writeEventEnabled;
 	box.inputEventEnabled = state.inputEventEnabled;
 	markApiAttached(box);
+
+	// 本地化：选项名由控件自己应用，元素上不再需要 setItemNames 方法
+	onLocalize(box, (detail) => {
+		if (detail.kind === 'options' && detail.options) {
+			setItemNames(
+				detail.options as Record<string, string | { name?: string; tip?: string }>
+			);
+		}
+	});
 
 	attachApi<SelectBoxApi>(box, {
 		read,

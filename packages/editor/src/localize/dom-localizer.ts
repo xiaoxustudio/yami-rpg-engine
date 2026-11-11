@@ -1,6 +1,5 @@
 import { setTooltip } from '@app/utils/element-utils';
 import { requestLocalize } from './localize-event';
-import type { YamiElement } from '@app/types/element-api';
 import { templateLocalizedKeys } from './template-localized.ts';
 
 export interface LocalComponentItem {
@@ -19,7 +18,6 @@ const titleTagExp = /\$([\S ]+)(?=\n|$)/g;
 let saveItems: Record<string, LocalComponentItem> = {};
 
 export function setLocalElement(element: HTMLElement, item: LocalComponentItem): void {
-	const target = element as YamiElement;
 	if (item.save !== undefined) {
 		saveItems[item.save] = item;
 	}
@@ -29,10 +27,6 @@ export function setLocalElement(element: HTMLElement, item: LocalComponentItem):
 	if (item.title !== undefined) {
 		if (element.classList.contains('window-frame')) {
 			requestLocalize(element, { kind: 'title', text: item.title });
-			// 过渡：还没迁到事件契约的旧式元素仍靠元素方法
-			if (typeof target.setTitle === 'function') {
-				target.setTitle(item.title);
-			}
 		}
 	}
 	if (item.label !== undefined) {
@@ -47,17 +41,11 @@ export function setLocalElement(element: HTMLElement, item: LocalComponentItem):
 	if (item.placeholder !== undefined) {
 		if (element.classList.contains('text-box')) {
 			requestLocalize(element, { kind: 'placeholder', text: item.placeholder });
-			if (typeof target.setPlaceholder === 'function') {
-				target.setPlaceholder(item.placeholder);
-			}
 		}
 	}
 	if (item.options !== undefined) {
 		if (element.classList.contains('select-box')) {
 			requestLocalize(element, { kind: 'options', options: item.options });
-			if (typeof target.setItemNames === 'function') {
-				target.setItemNames(item.options);
-			}
 		}
 	}
 }

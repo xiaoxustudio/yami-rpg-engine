@@ -1,6 +1,7 @@
 import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { createTextBoxCore } from './text-box-core';
+import { onLocalize } from '../../../utils/localize-event';
 
 export interface TextBoxApiOptions {
 	id?: string;
@@ -122,6 +123,11 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 	});
 
 	markApiAttached(box);
+
+	// 本地化：占位符由控件自己应用，元素上不再需要 setPlaceholder 方法
+	onLocalize(box, (detail) => {
+		if (detail.kind === 'placeholder' && detail.text !== undefined) setPlaceholder(detail.text);
+	});
 
 	attachApi<TextBoxApi>(box, {
 		read,

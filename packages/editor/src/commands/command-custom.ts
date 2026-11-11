@@ -1,4 +1,5 @@
 import { scriptCommandNodes } from '@app/composables/command-nodes';
+import { getWindowHandle } from '@app/composables/window-handles';
 import { Window } from '@app/tools/window-object.ts';
 import { onToolWindowMounted } from '@app/tools/tool-window-host';
 import { clear, getFocus } from '@app/utils/element-utils';
@@ -93,11 +94,7 @@ Command.custom = {
 			window.addEventListener('localize', this.windowLocalize);
 		}
 
-		this.windowFrame = scriptCommandNodes.pick('frame') as HTMLElement & {
-			style: CSSStyleDeclaration;
-			absolute(x: number | null, y: number | null): void;
-			setTitle(title: string): void;
-		};
+		this.windowFrame = getWindowHandle('scriptCommand') ?? undefined;
 		this.parameterPane = scriptCommandNodes.pick(
 			'parameterPane'
 		) as unknown as typeof Command.custom.parameterPane;
@@ -114,8 +111,8 @@ Command.custom = {
 		const grid = this.parameterGrid;
 		this.parameterPane.onResize = () => {
 			const height = grid.clientHeight;
-			this.windowFrame!.style.height = `${height + 78}px`;
-			this.windowFrame!.absolute(this.windowX, this.windowY);
+			if (this.windowFrame!.root) this.windowFrame!.root.style.height = `${height + 78}px`;
+			this.windowFrame!.absolute?.(this.windowX ?? 0, this.windowY ?? 0);
 		};
 
 		const box = scriptCommandNodes.pick('parameterDetail') as unknown as ParameterWrapBox;
@@ -143,7 +140,7 @@ Command.custom = {
 			window.removeEventListener('script-change', this.scriptChange);
 		};
 
-		this.windowFrame.addEventListener('closed', (_event: Event) => {
+		this.windowFrame?.root?.addEventListener('closed', (_event: Event) => {
 			this.loadedScript.parameters = null;
 			clear(this.parameterPane);
 		});
@@ -303,7 +300,7 @@ Command.custom = {
 		const selector = Layout.focusableSelector;
 		const focusable = this.parameterPane!.querySelector(selector);
 		if (focusable) getFocus(focusable);
-		this.windowFrame!.setTitle(this.commandNameMap?.[id] ?? id);
+		this.windowFrame?.setTitle?.(this.commandNameMap?.[id] ?? id);
 	},
 
 	save: function (): void {

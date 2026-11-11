@@ -23,14 +23,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { YMWindowFrame } from '@ui-kit';
 import { Layout } from '@app/engine/layout/layout';
 import { getLocalStore } from '@app/stores/local';
 import { setLocalElement, type LocalComponentItem } from '@app/localize/dom-localizer';
 import { onLocalize as onLocalizeRequest } from '@app/localize/localize-event';
+import {
+	clearWindowHandle,
+	setWindowHandle,
+	type WindowHandle
+} from '@app/composables/window-handles';
 import { Window } from '@app/tools/window-object.ts';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import { useEventListener } from '@app/composables/useEventListener';
 
 interface Props {
@@ -146,34 +150,24 @@ const onLocalize = (): void => {
 
 useEventListener(window, 'localize', onLocalize);
 
+/** 窗口能力句柄：方法不再挂到元素上，窗口管理器按 id 从这里取。 */
+const windowHandle: WindowHandle = {
+	root: root.value,
+	open,
+	close,
+	maximize,
+	unmaximize,
+	focus,
+	blur,
+	setTitle,
+	absolute,
+	setPosition,
+	on
+};
+
 onMounted(() => {
-	const el = root.value as HTMLElement &
-		Record<
-			| 'open'
-			| 'close'
-			| 'maximize'
-			| 'unmaximize'
-			| 'focus'
-			| 'blur'
-			| 'setTitle'
-			| 'absolute'
-			| 'setPosition'
-			| 'on',
-			unknown
-		>;
+	const el = root.value;
 	if (!el) return;
-	attachElementApi(el, {
-		open,
-		close,
-		maximize,
-		unmaximize,
-		focus,
-		blur,
-		setTitle,
-		absolute,
-		setPosition,
-		on
-	});
 	// 本地化事件契约：标题由控件自己应用（元素只负责 textContent / tip / label）
 	onLocalizeRequest(el, (detail) => {
 		if (detail.kind === 'title' && detail.text !== undefined) setTitle(detail.text);
@@ -184,5 +178,11 @@ onMounted(() => {
 		});
 	}
 	onLocalize();
+	windowHandle.root = el;
+	setWindowHandle(props.id ?? '', windowHandle);
+});
+
+onUnmounted(() => {
+	clearWindowHandle(props.id ?? '', windowHandle);
 });
 </script>

@@ -106,11 +106,7 @@ interface CommandCustomShape {
 	windowY: number | null;
 	parsingScript: { id: string; parameters: Record<string, unknown> | null };
 	loadedScript: { id: string; parameters: Record<string, unknown> | null };
-	windowFrame?: HTMLElement & {
-		style: CSSStyleDeclaration;
-		absolute(x: number | null, y: number | null): void;
-		setTitle(title: string): void;
-	};
+	windowFrame?: import('@app/composables/window-handles').WindowHandle;
 	parameterPane?: YamiElement & {
 		getData?: () => Array<{ id: string; parameters: Record<string, unknown> | null }>;
 		onResize?: () => void;

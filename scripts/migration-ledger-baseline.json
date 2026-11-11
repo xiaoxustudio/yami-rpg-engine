@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-11T14:09:23.811Z",
+	"generatedAt": "2026-11-11T16:07:54.671Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -115,8 +115,8 @@
 			"label": "元素 API 装配（attachApi / attachElementApi）",
 			"target": "zero",
 			"value": {
-				"total": 42,
-				"files": 42
+				"total": 41,
+				"files": 41
 			}
 		},
 		"element-custom-events": {
@@ -263,8 +263,8 @@
 			"label": "YamiElement 类型引用（元素契约存量）",
 			"target": "zero",
 			"value": {
-				"total": 480,
-				"files": 91
+				"total": 478,
+				"files": 90
 			}
 		}
 	}

@@ -222,6 +222,12 @@ export {
 export { createScrollListener, type ScrollListenerApi } from './utils/scroll-listener';
 export { attachApi } from './utils/attach-api';
 export {
+	LOCALIZE_EVENT,
+	onLocalize,
+	requestLocalize,
+	type LocalizeDetail
+} from './utils/localize-event';
+export {
 	clearElementCapabilities,
 	disableElement,
 	enableElement,
