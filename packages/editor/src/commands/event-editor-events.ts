@@ -34,9 +34,9 @@ EventEditor.windowLocalize = function (this: EventEditorShape, _event: YamiMouse
 		}
 	}
 	for (const selectBox of types.relatedElements) {
-		selectBox.createTooltip();
-		if (read(selectBox)) {
-			selectBox.update();
+		selectBox?.createTooltip?.();
+		if (selectBox?.read?.()) {
+			selectBox.update?.();
 		}
 	}
 };

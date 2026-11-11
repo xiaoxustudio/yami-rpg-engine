@@ -169,7 +169,7 @@ onMounted(() => {
 
 	if (EventEditor.types) {
 		elType.value?.loadItems(EventEditor.types.global);
-		EventEditor.types.relatedElements.push(elType.value?.root ?? null);
+		EventEditor.types.relatedElements.push(elType.value ?? null);
 	}
 
 	elReturnType.value?.loadItems([

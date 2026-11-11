@@ -17,12 +17,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { YMSelectBox } from '@ui-kit';
+import { YMSelectBox, setElementCapabilities } from '@ui-kit';
 import { setTooltip as setTooltipElement, dispatchChangeEvent } from '@app/utils/element-utils';
 import { Select } from '@app/components/select-list.ts';
 import { parseLocalTip } from '@app/localize/dom-localizer';
 import { getLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface SelectBoxElement extends HTMLElement {
 	read(): unknown;
@@ -260,30 +259,7 @@ watchEffect(() => {
 onMounted(() => {
 	const el = root.value as SelectBoxElement | null;
 	if (!el) return;
-	attachElementApi(el, {
-		read,
-		write,
-		write2,
-		writeDefault,
-		input,
-		update,
-		reselect,
-		save,
-		restore,
-		enable,
-		disable,
-		loadItems,
-		setItemNames,
-		setTooltip,
-		createTooltip,
-		clear,
-		enableHiddenMode,
-		relate,
-		toggleRelatedElements,
-		enableElement,
-		disableElement,
-		on
-	});
+	setElementCapabilities(el, { enable, disable });
 	dispatchChangeEvent(el);
 	if (props.disabled) disable();
 });
