@@ -14,9 +14,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { YMTextBox } from '@ui-kit';
+import { YMTextBox, setElementCapabilities } from '@ui-kit';
 import { TextHistory, type HistoryInputElement } from '@ui-kit';
-import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface TextBoxElement extends HTMLElement {
 	input: HTMLInputElement;
@@ -152,22 +151,10 @@ onMounted(() => {
 	const input = ym.value?.input ?? null;
 	if (!el || !input) return;
 	(input as HistoryInputElement).history = new TextHistory(input);
-	attachElementApi(el, {
-		input,
-		read,
-		write,
-		insert,
+	setElementCapabilities(el, {
 		enable,
 		disable,
-		focus,
-		getFocus,
-		setPlaceholder,
-		setMaxLength,
-		fitContent,
-		deleteInputContent,
-		addCloseButton,
-		addKeydownFilter,
-		on
+		getFocus: (mode?: string) => getFocus(mode ?? null)
 	});
 });
 </script>

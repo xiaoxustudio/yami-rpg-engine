@@ -29,10 +29,9 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { elementDataOf, YMFileVar } from '@ui-kit';
+import { elementDataOf, YMFileVar, setElementCapabilities } from '@ui-kit';
 import { defVar } from '@app/components/file-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
-import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -161,7 +160,7 @@ onMounted(() => {
 	api.mode = el.classList.contains('variable') ? 'variable' : 'constant';
 	api.fileBox = getChildRoot(fileBoxRef.value);
 	elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(varBoxRef.value);
-	attachElementApi(el, api);
+	setElementCapabilities(el, { enable, disable, getFocus });
 	watch(
 		() => root.value?.className,
 		() => {

@@ -14,9 +14,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import type { YamiEvent } from '@app/types/editor-event';
-import { YMColorBox } from '@ui-kit';
+import { YMColorBox, setElementCapabilities } from '@ui-kit';
 import { Color } from '@app/tools/color-picker-window';
-import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface ColorBoxElement extends HTMLElement {
 	dataValue: string;
@@ -126,7 +125,7 @@ onMounted(() => {
 	});
 	el.foreground = el.querySelector('.color-box-foreground') as HTMLElement;
 	el.inputEventEnabled = false;
-	attachElementApi(el, { read, write, input, enable, disable, on });
+	setElementCapabilities(el, { enable, disable });
 	on('input', (e: YamiEvent) => {
 		emit('input', e.value);
 		emit('update:modelValue', e.value);

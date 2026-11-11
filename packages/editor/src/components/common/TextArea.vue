@@ -13,10 +13,9 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { YMTextArea } from '@ui-kit';
+import { YMTextArea, setElementCapabilities } from '@ui-kit';
 import { TextHistory, type HistoryTextAreaElement } from '@ui-kit';
 import { listenDraggingScrollbarEvent } from '@app/utils/element-utils';
-import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface TextAreaElement extends HTMLElement {
 	input: HTMLTextAreaElement;
@@ -102,6 +101,6 @@ onMounted(() => {
 	if (!el || !input) return;
 	(input as HistoryTextAreaElement).history = new TextHistory(input);
 	listenDraggingScrollbarEvent(input);
-	attachElementApi(el, { input, read, write, insert, enable, disable, getFocus, on });
+	setElementCapabilities(el, { enable, disable, getFocus });
 });
 </script>

@@ -24,10 +24,9 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { elementDataOf, YMNumberVar } from '@ui-kit';
+import { elementDataOf, YMNumberVar, setElementCapabilities } from '@ui-kit';
 import { defVar } from '@app/components/number-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
-import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -148,7 +147,7 @@ onMounted(() => {
 	};
 	if (!el) return;
 	api.mode = el.classList.contains('variable') ? 'variable' : 'constant';
-	attachElementApi(el, api);
+	setElementCapabilities(el, { enable, disable, getFocus });
 	watch(
 		() => root.value?.className,
 		() => {

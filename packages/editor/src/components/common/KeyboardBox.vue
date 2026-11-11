@@ -5,8 +5,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import type { YamiEvent } from '@app/types/editor-event';
-import { YMKeyboardBox } from '@ui-kit';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { YMKeyboardBox, setElementCapabilities } from '@ui-kit';
 
 interface KeyboardBoxElement extends HTMLElement {
 	input: HTMLInputElement;
@@ -70,15 +69,10 @@ defineExpose({ read, write, inputCode, enable, disable, getFocus, on, root });
 onMounted(() => {
 	const el = root.value as KeyboardBoxElement | null;
 	if (!el) return;
-	attachElementApi(el, {
-		input: ym.value?.input as HTMLInputElement,
-		read,
-		write,
-		inputCode,
+	setElementCapabilities(el, {
 		enable,
 		disable,
-		getFocus,
-		on
+		getFocus: (mode?: string) => getFocus(mode ?? '')
 	});
 	on('input', (event: YamiEvent) => emit('input', event.value));
 	on('focus', () => emit('focus'));
