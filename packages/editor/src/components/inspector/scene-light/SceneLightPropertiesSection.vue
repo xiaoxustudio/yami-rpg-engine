@@ -387,11 +387,6 @@ const { bind, dispose } = sceneLightNodes.scoped();
 onUnmounted(dispose);
 const { form, onParamInput } = inject(sceneLightContextKey)!;
 
-type SyncTarget = HTMLElement & {
-	write(value: number | string): void;
-	input: HTMLInputElement;
-};
-
 const elType = ref<InstanceType<typeof SelectBox> | null>(null);
 const elBlend = ref<InstanceType<typeof SelectBox> | null>(null);
 const elMask = ref<InstanceType<typeof CustomBox> | null>(null);
@@ -508,17 +503,17 @@ onMounted(() => {
 				}
 			]);
 		}
-		elRangeSlider.value?.synchronize(elRange.value?.root as SyncTarget);
-		elIntensitySlider.value?.synchronize(elIntensity.value?.root as SyncTarget);
-		elAnchorXSlider.value?.synchronize(elAnchorX.value?.root as SyncTarget);
-		elAnchorYSlider.value?.synchronize(elAnchorY.value?.root as SyncTarget);
-		elWidthSlider.value?.synchronize(elWidth.value?.root as SyncTarget);
-		elHeightSlider.value?.synchronize(elHeight.value?.root as SyncTarget);
-		elAngleSlider.value?.synchronize(elAngle.value?.root as SyncTarget);
-		elRedSlider.value?.synchronize(elRed.value?.root as SyncTarget);
-		elGreenSlider.value?.synchronize(elGreen.value?.root as SyncTarget);
-		elBlueSlider.value?.synchronize(elBlue.value?.root as SyncTarget);
-		elDirectSlider.value?.synchronize(elDirect.value?.root as SyncTarget);
+		elRangeSlider.value?.synchronize(elRange.value);
+		elIntensitySlider.value?.synchronize(elIntensity.value);
+		elAnchorXSlider.value?.synchronize(elAnchorX.value);
+		elAnchorYSlider.value?.synchronize(elAnchorY.value);
+		elWidthSlider.value?.synchronize(elWidth.value);
+		elHeightSlider.value?.synchronize(elHeight.value);
+		elAngleSlider.value?.synchronize(elAngle.value);
+		elRedSlider.value?.synchronize(elRed.value);
+		elGreenSlider.value?.synchronize(elGreen.value);
+		elBlueSlider.value?.synchronize(elBlue.value);
+		elDirectSlider.value?.synchronize(elDirect.value);
 	} catch (e) {
 		console.warn('[SceneLightPage] properties init skipped:', (e as Error)?.message);
 	}

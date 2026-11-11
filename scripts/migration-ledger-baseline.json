@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-11T12:43:22.836Z",
+	"generatedAt": "2026-11-11T13:31:51.133Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -115,15 +115,15 @@
 			"label": "元素 API 装配（attachApi / attachElementApi）",
 			"target": "zero",
 			"value": {
-				"total": 45,
-				"files": 45
+				"total": 43,
+				"files": 43
 			}
 		},
 		"element-custom-events": {
 			"label": "元素级自定义事件构造（new XxxEvent）",
 			"target": "zero",
 			"value": {
-				"total": 108,
+				"total": 110,
 				"files": 56
 			}
 		},

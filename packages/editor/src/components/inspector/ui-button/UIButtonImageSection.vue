@@ -321,11 +321,6 @@ const { bind, dispose } = uiButtonNodes.scoped();
 onUnmounted(dispose);
 const { form, onParamInput } = inject(uiButtonContextKey)!;
 
-type SyncTarget = HTMLElement & {
-	write(value: number | string): void;
-	input: HTMLInputElement;
-};
-
 const loadItems = (el: InstanceType<typeof SelectBox> | null, items: unknown[]) => {
 	el?.loadItems(items);
 };
@@ -344,7 +339,7 @@ const synchronize = (
 	slider: InstanceType<typeof SliderBox> | null,
 	input: InstanceType<typeof NumberBox> | null
 ) => {
-	slider?.synchronize(input?.root as SyncTarget);
+	slider?.synchronize(input);
 };
 
 const elDisplay = ref<InstanceType<typeof SelectBox> | null>(null);

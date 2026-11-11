@@ -294,11 +294,6 @@ const { form, onParamInput } = inject(sceneParallaxContextKey)!;
 
 const tint = computed(() => form.tint as number[]);
 
-type SyncTarget = HTMLElement & {
-	write(value: number | string): void;
-	input: HTMLInputElement;
-};
-
 const elTint0Slider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elTint0 = ref<InstanceType<typeof NumberBox> | null>(null);
 const elTint1Slider = ref<InstanceType<typeof SliderBox> | null>(null);
@@ -317,9 +312,9 @@ onMounted(() => {
 	sceneParallaxPageNodes.set('tint1Slider', elTint1Slider.value?.root ?? null);
 	sceneParallaxPageNodes.set('tint2Slider', elTint2Slider.value?.root ?? null);
 	sceneParallaxPageNodes.set('tint3Slider', elTint3Slider.value?.root ?? null);
-	elTint0Slider.value?.synchronize(elTint0.value?.root as SyncTarget);
-	elTint1Slider.value?.synchronize(elTint1.value?.root as SyncTarget);
-	elTint2Slider.value?.synchronize(elTint2.value?.root as SyncTarget);
-	elTint3Slider.value?.synchronize(elTint3.value?.root as SyncTarget);
+	elTint0Slider.value?.synchronize(elTint0.value);
+	elTint1Slider.value?.synchronize(elTint1.value);
+	elTint2Slider.value?.synchronize(elTint2.value);
+	elTint3Slider.value?.synchronize(elTint3.value);
 });
 </script>

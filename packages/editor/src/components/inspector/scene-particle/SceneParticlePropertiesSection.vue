@@ -206,11 +206,6 @@ const { bind, dispose } = sceneParticlePageNodes.scoped();
 onUnmounted(dispose);
 const { form, onParamInput } = inject(sceneParticleContextKey)!;
 
-type SyncTarget = HTMLElement & {
-	write(value: number | string): void;
-	input: HTMLInputElement;
-};
-
 const elAngleSlider = ref<InstanceType<typeof SliderBox> | null>(null);
 const elAngle = ref<InstanceType<typeof NumberBox> | null>(null);
 const elScaleSlider = ref<InstanceType<typeof SliderBox> | null>(null);
@@ -234,11 +229,11 @@ onMounted(() => {
 	sceneParticlePageNodes.set('opacitySlider', elOpacitySlider.value?.root ?? null);
 	sceneParticlePageNodes.set('prioritySlider', elPrioritySlider.value?.root ?? null);
 	try {
-		elAngleSlider.value?.synchronize(elAngle.value?.root as SyncTarget);
-		elScaleSlider.value?.synchronize(elScale.value?.root as SyncTarget);
-		elSpeedSlider.value?.synchronize(elSpeed.value?.root as SyncTarget);
-		elOpacitySlider.value?.synchronize(elOpacity.value?.root as SyncTarget);
-		elPrioritySlider.value?.synchronize(elPriority.value?.root as SyncTarget);
+		elAngleSlider.value?.synchronize(elAngle.value);
+		elScaleSlider.value?.synchronize(elScale.value);
+		elSpeedSlider.value?.synchronize(elSpeed.value);
+		elOpacitySlider.value?.synchronize(elOpacity.value);
+		elPrioritySlider.value?.synchronize(elPriority.value);
 	} catch (e) {
 		console.warn('[SceneParticlePage] properties init skipped:', (e as Error)?.message);
 	}

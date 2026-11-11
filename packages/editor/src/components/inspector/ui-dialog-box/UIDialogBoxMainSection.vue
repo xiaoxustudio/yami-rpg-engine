@@ -147,14 +147,7 @@ const synchronize = (
 	slider: InstanceType<typeof SliderBox> | null,
 	input: InstanceType<typeof NumberBox> | null
 ) => {
-	const el = input?.root ?? null;
-	if (!el) return;
-	slider?.synchronize(
-		el as HTMLElement & {
-			write(value: number | string): void;
-			input: HTMLInputElement;
-		}
-	);
+	slider?.synchronize(input);
 };
 
 const elTypeface = ref<InstanceType<typeof SelectBox> | null>(null);

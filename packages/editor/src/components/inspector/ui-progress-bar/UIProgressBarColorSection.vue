@@ -127,11 +127,6 @@ import { uiProgressBarContextKey } from './context.ts';
 const { t } = useI18n();
 const { form, onParamInput } = inject(uiProgressBarContextKey)!;
 
-type SyncTarget = HTMLElement & {
-	write(value: number | string): void;
-	input: HTMLInputElement;
-};
-
 const elColorMode = ref<InstanceType<typeof SelectBox> | null>(null);
 const elColor0Box = ref<HTMLElement | null>(null);
 const elColor0Slider = ref<InstanceType<typeof SliderBox> | null>(null);
@@ -164,7 +159,7 @@ const synchronize = (
 	slider: InstanceType<typeof SliderBox> | null,
 	input: InstanceType<typeof NumberBox> | null
 ) => {
-	slider?.synchronize(input?.root as SyncTarget);
+	slider?.synchronize(input);
 };
 
 onMounted(() => {

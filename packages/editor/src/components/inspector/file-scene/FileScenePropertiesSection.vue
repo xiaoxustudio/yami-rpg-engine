@@ -187,11 +187,6 @@ const { form, onParamInput } = inject(fileSceneContextKey)!;
 /** 页面建的控件表：本 section 把自己那一半填进去。 */
 const controls = inject<FileSceneControls>(FILE_SCENE_CONTROLS_KEY, {});
 
-type SyncTarget = HTMLElement & {
-	write(value: number | string): void;
-	input: HTMLInputElement;
-};
-
 const elTileWidth = ref<InstanceType<typeof NumberBox> | null>(null);
 const elTileHeight = ref<InstanceType<typeof NumberBox> | null>(null);
 const elAmbientRedSlider = ref<InstanceType<typeof SliderBox> | null>(null);
@@ -215,9 +210,9 @@ onMounted(() => {
 	controls['fileScene-ambient-blue-slider'] = toControl(elAmbientBlueSlider.value);
 	controls['fileScene-ambient-direct-slider'] = toControl(elAmbientDirectSlider.value);
 	controls['fileScene-tileWidth'] = toControl(elTileWidth.value);
-	elAmbientRedSlider.value?.synchronize(elAmbientRed.value?.root as SyncTarget);
-	elAmbientGreenSlider.value?.synchronize(elAmbientGreen.value?.root as SyncTarget);
-	elAmbientBlueSlider.value?.synchronize(elAmbientBlue.value?.root as SyncTarget);
-	elAmbientDirectSlider.value?.synchronize(elAmbientDirect.value?.root as SyncTarget);
+	elAmbientRedSlider.value?.synchronize(elAmbientRed.value);
+	elAmbientGreenSlider.value?.synchronize(elAmbientGreen.value);
+	elAmbientBlueSlider.value?.synchronize(elAmbientBlue.value);
+	elAmbientDirectSlider.value?.synchronize(elAmbientDirect.value);
 });
 </script>

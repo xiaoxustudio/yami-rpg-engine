@@ -22,21 +22,6 @@
 import { computed, onMounted, ref } from 'vue';
 import { YMNumberBox } from '@ui-kit';
 import { NumberHistory, type HistoryInputElement } from '@ui-kit';
-import { attachElementApi } from '@app/utils/attach-element-api';
-
-interface NumberBoxElement extends HTMLElement {
-	input: HTMLInputElement;
-	read(): number;
-	write(value: unknown): void;
-	enable(): void;
-	disable(): void;
-	getFocus(mode?: string): void;
-	on(
-		type: string,
-		listener: (event: Event) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
-}
 
 interface Props {
 	id?: string;
@@ -83,6 +68,7 @@ const ym = ref<{
 	): void;
 } | null>(null);
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
+const input = computed<HTMLInputElement | null>(() => ym.value?.input ?? null);
 
 const read = (): number => ym.value?.read() ?? 0;
 const write = (value: unknown): void => {
@@ -107,13 +93,11 @@ const onFocus = (event: FocusEvent): void => emit('focus', event);
 
 const onBlur = (event: FocusEvent): void => emit('blur', event);
 
-defineExpose({ read, write, enable, disable, getFocus, on, root });
+defineExpose({ read, write, enable, disable, getFocus, on, inputEl: input, root });
 
 onMounted(() => {
-	const el = root.value as NumberBoxElement | null;
-	const input = ym.value?.input ?? null;
-	if (!el || !input) return;
-	(input as HistoryInputElement).history = new NumberHistory(input);
-	attachElementApi(el, { input, read, write, enable, disable, getFocus, on });
+	const inputEl = input.value;
+	if (!inputEl) return;
+	(inputEl as HistoryInputElement).history = new NumberHistory(inputEl);
 });
 </script>

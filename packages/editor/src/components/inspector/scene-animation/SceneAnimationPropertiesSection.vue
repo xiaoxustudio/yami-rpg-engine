@@ -235,11 +235,6 @@ const onAnimationIdWrite = (value: unknown) => {
 	Inspector?.sceneAnimation?.animationIdWrite?.({ value });
 };
 
-type SyncTarget = HTMLElement & {
-	write(value: number | string): void;
-	input: HTMLInputElement;
-};
-
 const elAnimationId = ref<InstanceType<typeof CustomBox> | null>(null);
 const elRotatable = ref<InstanceType<typeof SelectBox> | null>(null);
 const elAngleSlider = ref<InstanceType<typeof SliderBox> | null>(null);
@@ -278,10 +273,10 @@ onMounted(() => {
 			value: false
 		}
 	]);
-	elAngleSlider.value?.synchronize(elAngle.value?.root as SyncTarget);
-	elScaleSlider.value?.synchronize(elScale.value?.root as SyncTarget);
-	elSpeedSlider.value?.synchronize(elSpeed.value?.root as SyncTarget);
-	elOpacitySlider.value?.synchronize(elOpacity.value?.root as SyncTarget);
-	elPrioritySlider.value?.synchronize(elPriority.value?.root as SyncTarget);
+	elAngleSlider.value?.synchronize(elAngle.value);
+	elScaleSlider.value?.synchronize(elScale.value);
+	elSpeedSlider.value?.synchronize(elSpeed.value);
+	elOpacitySlider.value?.synchronize(elOpacity.value);
+	elPrioritySlider.value?.synchronize(elPriority.value);
 });
 </script>

@@ -17,37 +17,15 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { YMSliderBox } from '@ui-kit';
-import {
-	addClass,
-	removeClass,
-	hideChildNodes,
-	showChildNodes,
-	read as readElement
-} from '@app/utils/element-utils';
-import { attachElementApi } from '@app/utils/attach-element-api';
+import { addClass, removeClass, hideChildNodes, showChildNodes } from '@app/utils/element-utils';
 import { elementDataOf } from '@ui-kit';
 
-interface SliderBoxElement extends HTMLElement {
-	filler: HTMLElement;
-	input: HTMLInputElement;
-	synchronizer: HTMLElement & { write(value: number | string): void; input: HTMLInputElement };
-	bar: HTMLElement;
-	activeWheel: boolean;
-	focusEventEnabled: boolean;
-	blurEventEnabled: boolean;
-	read(): number;
+/** 与滑块联动的数字框：只认组件实例的能力（`defineExpose`），不再读写元素上的方法。 */
+interface SyncTarget {
+	read?: () => number;
 	write(value: number | string): void;
-	enable(): void;
-	disable(): void;
-	updateFiller(): void;
-	synchronize(
-		target: HTMLElement & { write(value: number | string): void; input: HTMLInputElement }
-	): void;
-	on(
-		type: string,
-		listener: (event: Event) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	inputEl?: HTMLInputElement | null;
+	root?: HTMLElement | null;
 }
 
 interface Props {
@@ -98,12 +76,20 @@ const ym = ref<{
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 const input = computed<HTMLInputElement | null>(() => ym.value?.input ?? null);
 
-const read = (): number => ym.value?.read() ?? 0;
+/** 双向同步的写口：`write` 负责页面事件，`writeRaw` 只写控件，避免两边互相触发递归。 */
+let syncToNumber: (() => void) | null = null;
 
-const write = (value: number | string): void => {
+const writeRaw = (value: number | string): void => {
 	ym.value?.write(value);
 	emit('update:modelValue', ym.value?.read() ?? 0);
 };
+
+const write = (value: number | string): void => {
+	writeRaw(value);
+	syncToNumber?.();
+};
+
+const read = (): number => ym.value?.read() ?? 0;
 
 const updateFiller = (): void => ym.value?.updateFiller();
 
@@ -125,52 +111,42 @@ const disable = (): void => {
 	}
 };
 
-const synchronize = (
-	target: HTMLElement & { write(value: number | string): void; input: HTMLInputElement }
-): void => {
+/**
+ * 让滑块与数字框互相跟随。
+ *
+ * 旧实现在元素上互相改写 `write`；现在两侧都是组件实例：slider 侧用 `writeRaw` +
+ * `syncToNumber` 钩子，number 侧覆盖实例暴露的 `write`（暴露对象可写），避免递归。
+ */
+const synchronize = (target: SyncTarget | null): void => {
 	const el = root.value;
-	if (!el) return;
-	const slider = el as SliderBoxElement;
-	const number = target;
-	const sliderData = elementDataOf<SliderBoxElement>(slider);
-	if (sliderData.synchronizer) {
-		return;
-	}
+	const sliderInput = input.value;
+	const numberInput = target?.inputEl ?? null;
+	if (!el || !sliderInput || !target || !numberInput) return;
+	const sliderData = elementDataOf<{ synchronizer?: unknown }>(el);
+	if (sliderData.synchronizer) return;
 
-	if (number instanceof HTMLElement && number.classList.contains('number-box')) {
-		const writeSlider = slider.write;
-		const writeNumber = number.write;
+	const writeNumberRaw = target.write.bind(target);
+	sliderData.synchronizer = target;
 
-		const sliderPointerdown = () => {
-			slider.input.focus();
-		};
+	sliderInput.addEventListener('pointerdown', () => sliderInput.focus());
+	sliderInput.addEventListener('input', () => {
+		writeNumberRaw(read());
+		target.root?.dispatchEvent(new Event('input'));
+	});
+	numberInput.addEventListener('input', () => {
+		writeRaw(target.read?.() ?? 0);
+		el.dispatchEvent(new Event('input'));
+	});
 
-		const sliderInput = (event?: Event) => {
-			writeNumber.call(number, readElement(slider));
-			if (event) number.dispatchEvent(new Event('input'));
-		};
-
-		const numberInput = (event?: Event) => {
-			writeSlider.call(slider, readElement(number));
-			if (event) slider.dispatchEvent(new Event('input'));
-		};
-
-		sliderData.synchronizer = target;
-
-		slider.input.addEventListener('pointerdown', sliderPointerdown);
-		slider.input.addEventListener('input', sliderInput);
-		number.input.addEventListener('input', numberInput);
-
-		slider.write = (value) => {
-			writeSlider.call(slider, value);
-			sliderInput();
-		};
-
-		number.write = (value) => {
-			writeNumber.call(number, value);
-			numberInput();
-		};
-	}
+	target.write = (value: number | string) => {
+		writeNumberRaw(value);
+		writeRaw(target.read?.() ?? 0);
+		el.dispatchEvent(new Event('input'));
+	};
+	syncToNumber = () => {
+		writeNumberRaw(read());
+		target.root?.dispatchEvent(new Event('input'));
+	};
 };
 
 const on = (
@@ -206,48 +182,14 @@ const onInput = (value: number): void => {
 	emit('update:modelValue', value);
 };
 
-defineExpose({ read, write, enable, disable, synchronize, on, root });
-
-const api = {
-	bar: null as HTMLElement | null,
-	filler: null as HTMLElement | null,
-	input: null as HTMLInputElement | null,
-	focusEventEnabled: false,
-	blurEventEnabled: false,
-	activeWheel: props.activeWheel,
-	read,
-	write,
-	enable,
-	disable,
-	updateFiller,
-	synchronize,
-	on
-};
+defineExpose({ read, write, enable, disable, updateFiller, synchronize, on, root, input });
 
 watch(
 	() => props.disabled,
 	(val) => (val ? disable() : enable())
 );
-watch(
-	() => props.activeWheel,
-	(val) => {
-		api.activeWheel = val;
-	}
-);
 
 onMounted(() => {
-	const el = root.value as SliderBoxElement | null;
-	if (!el) return;
-	const inputEl = input.value;
-	const fillerEl = ym.value?.filler ?? null;
-	const barEl = ym.value?.bar ?? null;
-
-	api.bar = barEl as HTMLElement;
-	api.filler = fillerEl as HTMLElement;
-	api.input = inputEl as HTMLInputElement;
-	api.activeWheel = props.activeWheel;
-	attachElementApi(el, api);
-
 	if (props.disabled) disable();
 });
 </script>

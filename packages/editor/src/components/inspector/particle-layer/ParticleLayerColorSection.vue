@@ -500,11 +500,6 @@ const { bind, dispose } = particleLayerPageNodes.scoped();
 onUnmounted(dispose);
 const { form, onParamInput } = inject(particleLayerContextKey)!;
 
-type SyncTarget = HTMLElement & {
-	write(value: number | string): void;
-	input: HTMLInputElement;
-};
-
 const elColorMode = ref<InstanceType<typeof SelectBox> | null>(null);
 const elColorEasingId = ref<InstanceType<typeof SelectBox> | null>(null);
 const elColorRgbaBox = ref<HTMLElement | null>(null);
@@ -584,9 +579,9 @@ onMounted(() => {
 			}
 		]);
 	}
-	elTint0Slider.value?.synchronize(elTint0.value?.root as SyncTarget);
-	elTint1Slider.value?.synchronize(elTint1.value?.root as SyncTarget);
-	elTint2Slider.value?.synchronize(elTint2.value?.root as SyncTarget);
-	elTint3Slider.value?.synchronize(elTint3.value?.root as SyncTarget);
+	elTint0Slider.value?.synchronize(elTint0.value);
+	elTint1Slider.value?.synchronize(elTint1.value);
+	elTint2Slider.value?.synchronize(elTint2.value);
+	elTint3Slider.value?.synchronize(elTint3.value);
 });
 </script>
