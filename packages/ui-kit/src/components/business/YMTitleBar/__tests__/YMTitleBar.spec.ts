@@ -52,12 +52,15 @@ describe('YMTitleBar', () => {
 		expect(wrapper.element.classList.contains('title-bar')).toBe(true);
 		expect(wrapper.element.querySelector('.close')).toBeTruthy();
 		expect(wrapper.text()).toContain('Title');
+		const vm = wrapper.vm as unknown as TitleBarElement;
+		expect(typeof vm.pointerdown).toBe('function');
+		expect(typeof vm.mouseclick).toBe('function');
+		expect(typeof vm.doubleclick).toBe('function');
+		expect(typeof vm.on).toBe('function');
+		// 元素数据 `dragging` 仍在（不是方法），元素上不再挂方法
 		const el = wrapper.element as unknown as TitleBarElement;
-		expect(typeof el.pointerdown).toBe('function');
-		expect(typeof el.mouseclick).toBe('function');
-		expect(typeof el.doubleclick).toBe('function');
-		expect(typeof el.on).toBe('function');
 		expect('dragging' in el).toBe(true);
+		expect(typeof el.on).toBe('undefined');
 	});
 
 	it('pointerdown on empty area starts dragging and moves frame', async () => {

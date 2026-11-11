@@ -27,8 +27,7 @@ describe('YMNavBar', () => {
 	it('write selects matching nav-item and emits write', async () => {
 		const wrapper = mountNav();
 		const vm = wrapper.vm as unknown as NavBarApi;
-		const el = wrapper.element as unknown as NavBarApi;
-		el.on('write', () => {});
+		vm.on('write', () => {});
 		vm.write('b');
 		await wrapper.vm.$nextTick();
 		const items = wrapper.findAll('.nav-item');
@@ -46,8 +45,7 @@ describe('YMNavBar', () => {
 	it('selects nav-item on pointerdown and emits select', async () => {
 		const wrapper = mountNav();
 		const _vm = wrapper.vm as unknown as NavBarApi;
-		const el = wrapper.element as unknown as NavBarApi;
-		el.on('select', () => {});
+		_vm.on('select', () => {});
 		pointerdown(wrapper.findAll('.nav-item')[1].element);
 		await wrapper.vm.$nextTick();
 		expect(wrapper.findAll('.nav-item')[1].classes()).toContain('selected');

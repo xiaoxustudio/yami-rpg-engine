@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { clamp, hasClass, rect, rasterize, relate } from '../../../utils/dom';
-import { attachApi } from '../../../utils/attach-api';
 import { useEventListener } from '../../../composables/useEventListener';
 
 function getWindow(): { close(id?: string): void } | undefined {
@@ -168,12 +167,6 @@ onMounted(() => {
 			dragging = value;
 		},
 		configurable: true
-	});
-	attachApi(el, {
-		pointerdown,
-		mouseclick,
-		doubleclick,
-		on
 	});
 });
 </script>

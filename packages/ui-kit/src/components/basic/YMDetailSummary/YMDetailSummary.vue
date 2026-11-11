@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, ref } from 'vue';
+import { computed, inject, ref } from 'vue';
 import { DetailBoxKey, type DetailBoxContext } from '../YMDetailBox/context';
-import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -64,12 +63,6 @@ const on = (
 ): void => {
 	root.value?.addEventListener(type, listener as EventListener, options);
 };
-
-onMounted(() => {
-	const el = root.value;
-	if (!el) return;
-	attachApi(el, { toggle, on });
-});
 
 defineExpose({ toggle, on, root });
 </script>
