@@ -3,9 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { YMMarqueeArea } from '@ui-kit';
-import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -32,11 +31,4 @@ const select = (x?: number, y?: number, width?: number, height?: number): void =
 	ym.value?.select(x, y, width, height);
 
 defineExpose({ save, restore, resize, clear, select, root });
-
-onMounted(() => {
-	const el = root.value as HTMLElement &
-		Record<'save' | 'restore' | 'resize' | 'clear' | 'select', unknown>;
-	if (!el) return;
-	attachElementApi(el, { save, restore, resize, clear, select });
-});
 </script>

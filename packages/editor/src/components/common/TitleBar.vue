@@ -5,9 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { YMTitleBar } from '@ui-kit';
-import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -33,10 +32,4 @@ const on = (
 ): void => ym.value?.on(type, listener, options);
 
 defineExpose({ on, root });
-
-onMounted(() => {
-	const el = root.value as HTMLElement & Record<'on', typeof on>;
-	if (!el) return;
-	attachElementApi(el, { on });
-});
 </script>

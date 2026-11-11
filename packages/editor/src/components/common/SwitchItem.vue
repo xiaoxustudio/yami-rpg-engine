@@ -13,7 +13,6 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import type { YamiEvent } from '@app/types/editor-event';
 import { YMSwitchItem } from '@ui-kit';
-import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface SwitchItemElement extends HTMLDivElement {
 	read(): number;
@@ -94,7 +93,6 @@ watch(
 onMounted(() => {
 	const el = root.value as SwitchItemElement | null;
 	if (!el) return;
-	attachElementApi(el, { read, write, update, on });
 	Object.defineProperty(el, 'dataValue', {
 		get: () => dataValue.value,
 		set: (value: number) => {

@@ -3,6 +3,7 @@ vi.setConfig({ testTimeout: 30000 });
 import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';
 import AutoTileWindow from '@app/components/tools/AutoTile.vue';
+import SwitchItem from '@app/components/common/SwitchItem.vue';
 import { AutoTile } from '@app/palette/auto-tile.ts';
 import { getAutoTileStore } from '@app/stores/auto-tile';
 
@@ -42,14 +43,14 @@ describe('AutoTile 规则位 store 化（rule grid v-model 迁移回归保护）
 		const store = getAutoTileStore();
 		store.ruleBits = [1, 2, 0, 0, 0, 0, 0, 0];
 		await wrapper.vm.$nextTick();
-		const rule0 = document.getElementById('autoTile-rule-0') as HTMLElement & {
-			read?: () => unknown;
-		};
-		const rule1 = document.getElementById('autoTile-rule-1') as HTMLElement & {
-			read?: () => unknown;
-		};
-		expect(rule0?.read?.()).toBe(1);
-		expect(rule1?.read?.()).toBe(2);
+		const ruleItem = (id: string) =>
+			wrapper.findAllComponents(SwitchItem).find((item) => item.element.id === id) ?? null;
+		expect(ruleItem('autoTile-rule-0')?.vm.read()).toBe(1);
+		expect(ruleItem('autoTile-rule-1')?.vm.read()).toBe(2);
+		// 契约锁：能力只在组件实例上，元素上不再挂 read
+		expect(
+			(document.getElementById('autoTile-rule-0') as HTMLElement & { read?: unknown }).read
+		).toBeUndefined();
 		AutoTile.node = { rule: 0, frames: [0] };
 		document
 			.getElementById('autoTile-rule-2')

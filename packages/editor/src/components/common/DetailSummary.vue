@@ -5,18 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { YMDetailSummary } from '@ui-kit';
-import { attachElementApi } from '@app/utils/attach-element-api';
-
-interface DetailSummaryElement extends HTMLElement {
-	toggle(): void;
-	on(
-		type: string,
-		listener: (event: Event) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
-}
 
 interface Props {
 	id?: string;
@@ -43,10 +33,4 @@ const on = (
 ): void => ym.value?.on(type, listener, options);
 
 defineExpose({ toggle, on, root });
-
-onMounted(() => {
-	const el = root.value as DetailSummaryElement | null;
-	if (!el) return;
-	attachElementApi(el, { toggle, on });
-});
 </script>

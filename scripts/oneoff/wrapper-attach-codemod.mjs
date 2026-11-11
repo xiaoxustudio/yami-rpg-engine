@@ -25,6 +25,9 @@ const API_CAPS = {
 /** 固定跳过：另行处理。 */
 const SKIP = new Set(['GamepadBox.vue', 'TreeList.vue']);
 
+/** `ONLY=a.vue,b.vue` 只处理这几个文件（按批次跑时用）。 */
+const ONLY = process.env.ONLY ? new Set(process.env.ONLY.split(',').map((n) => n.trim())) : null;
+
 const DOM_CAPS = new Set(['enable', 'disable', 'getFocus']);
 
 function walk(dir, out = []) {
@@ -97,6 +100,7 @@ const report = [];
 for (const file of files) {
 	const name = file.slice(file.lastIndexOf('\\') + 1);
 	if (SKIP.has(name)) continue;
+	if (ONLY && !ONLY.has(name)) continue;
 	let text = readFileSync(file, 'utf8');
 	if (!text.includes('attachElementApi(')) continue;
 

@@ -3,16 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { YMFilterBox } from '@ui-kit';
-import { attachElementApi } from '@app/utils/attach-element-api';
-
-interface FilterBoxElement extends HTMLElement {
-	read(): [number, number, number, number] | null;
-	write(tint: [number, number, number, number]): void;
-	update(): void;
-	clear(): void;
-}
 
 interface Props {
 	id?: string;
@@ -37,10 +29,4 @@ const update = (): void => ym.value?.update();
 const clear = (): void => ym.value?.clear();
 
 defineExpose({ read, write, update, clear, root });
-
-onMounted(() => {
-	const el = root.value as FilterBoxElement | null;
-	if (!el) return;
-	attachElementApi(el, { read, write, update, clear });
-});
 </script>
