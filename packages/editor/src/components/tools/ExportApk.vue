@@ -88,7 +88,6 @@ import {
 	resetExportApk,
 	type ExportApkApi
 } from '@app/composables/title-window-bridges';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import { exportApkForm, Menubar } from '@app/title/menu-bar';
 
 const items = ref<{ done: boolean; msg: string }[]>([]);
@@ -111,9 +110,6 @@ const update = (): void => {
 
 onMounted(() => {
 	exportApkNodes.set('content', elContent.value);
-	const el = elContent.value;
-	if (!el) return;
-	attachElementApi(el, { update });
 	update();
 });
 

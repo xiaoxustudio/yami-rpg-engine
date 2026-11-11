@@ -1,4 +1,4 @@
-﻿<template>
+<template>
 	<YMTreeList
 		ref="ym"
 		:id="props.id"
@@ -12,8 +12,6 @@
 import { computed, onMounted, ref } from 'vue';
 import { Fragment, h, render, type VNode } from 'vue';
 import { YMTreeList } from '@ui-kit';
-import { useMenuService } from '@app/composables/useMenuService';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import { on } from '@app/utils/element-utils';
 
 interface Props {
@@ -34,8 +32,6 @@ const emit = defineEmits<{
 	open: [event: Event & { value?: unknown }];
 	change: [event: Event & { value?: unknown }];
 }>();
-
-const menuService = useMenuService();
 
 const renderNodeExtras = (item: unknown, container: HTMLElement): void => {
 	try {
@@ -63,7 +59,6 @@ defineExpose({ root });
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
-	attachElementApi(el, { getMenuState: () => menuService.getState() });
 	on(el, 'select', (event: Event & { value?: unknown }) => emit('select', event));
 	on(el, 'record', (event: Event & { value?: unknown }) => emit('record', event));
 	on(el, 'popup', (event: Event & { value?: unknown }) => emit('popup', event));
