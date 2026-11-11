@@ -9,6 +9,7 @@ import { File } from '@app/file/file-system-core.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Log } from '@app/log/log-window.ts';
 import { Title } from '@app/title/title-bar.ts';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -76,7 +77,7 @@ interface ControlEl extends HTMLElement {
 	read(): unknown;
 }
 
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 const makeConfig = () => ({
 	window: { title: 'YAMI', width: 960, height: 540, display: 'windowed' },

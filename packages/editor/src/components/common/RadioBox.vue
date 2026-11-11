@@ -15,14 +15,13 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useAttrs, watch } from 'vue';
-import { elementDataOf, YMRadioBox } from '@ui-kit';
+import { elementDataOf, YMRadioBox, setElementCapabilities } from '@ui-kit';
 import {
 	createRadioProxy,
 	radioProxyMap,
 	type RadioProxyElement,
 	type RadioRelationEntry
 } from '@ui-kit';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import { number as numberPattern } from '@app/utils/regexp';
 
 interface RadioBoxElement extends HTMLElement {
@@ -175,7 +174,7 @@ onMounted(() => {
 	});
 	if (props.disabled) disable();
 
-	attachElementApi(el, { read, write, input, enable, disable, relate, on });
+	setElementCapabilities(el, { enable, disable });
 
 	syncSelected();
 });

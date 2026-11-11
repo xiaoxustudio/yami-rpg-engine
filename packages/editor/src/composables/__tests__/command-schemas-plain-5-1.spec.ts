@@ -24,6 +24,7 @@ import { useSetTriggerMotionCommandSchema } from '@app/composables/commands/useS
 import { Enum } from '@app/enum/enum-window.ts';
 import SetTriggerSpeed from '@app/components/commands/SetTriggerSpeed.vue';
 import { useSetTriggerSpeedCommandSchema } from '@app/composables/commands/useSetTriggerSpeedCommandSchema';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -286,8 +287,7 @@ vi.mock('@app/stores/local', () => ({
 		write(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -368,8 +368,7 @@ vi.mock('@app/stores/local', () => ({
 		write(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),

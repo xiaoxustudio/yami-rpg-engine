@@ -8,6 +8,7 @@ import { useArrayWindow } from '@app/composables/useArrayWindow';
 import { Window } from '@app/tools/window-object.ts';
 import { ArrayList as ArrayListController } from '@app/composables/useArrayWindow';
 import '@app/utils/number';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -27,7 +28,7 @@ interface ControlEl extends HTMLElement {
 
 const getFrame = (id: string): FormFrame => document.getElementById(id) as unknown as FormFrame;
 
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 const bindList = (): void => {
 	getControl('arrayList-list').bind({

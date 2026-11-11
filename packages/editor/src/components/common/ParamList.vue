@@ -17,13 +17,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { YMParamList, type MenuItem, type MenuOptions } from '@ui-kit';
 import { ParamListHistory } from '@ui-kit';
 import { ctrl as ctrlText } from '@app/utils/event-accessors';
 import { Menu } from '@app/components/menu-list';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import { GlobalClipboard } from '@app/utils/clipboard';
 
 interface Props {
@@ -94,22 +93,4 @@ const on = (
 ): void => ym.value?.on(type, listener, options);
 
 defineExpose({ bind, read, write, update, select, clear, on, root });
-
-onMounted(() => {
-	const el = root.value as HTMLElement & {
-		bind(object: unknown): HTMLElement;
-		read(): unknown[] | null;
-		write(data: unknown[]): void;
-		update(): void;
-		select(start: number, end?: number): void;
-		clear(): HTMLElement;
-		on(
-			type: string,
-			listener: (event: Event) => void,
-			options?: boolean | AddEventListenerOptions
-		): void;
-	};
-	if (!el) return;
-	attachElementApi(el, { bind, read, write, update, select, clear, on });
-});
 </script>

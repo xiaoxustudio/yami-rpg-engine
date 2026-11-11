@@ -7,6 +7,7 @@ import { CommandSchema } from '@app/commands/schema.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Window } from '@app/tools/window-object.ts';
 import { dataItemsOf } from '@app/__tests__/element-data-read';
+import { controlApi } from '@app/__tests__/control-api';
 
 interface ControlEl extends HTMLElement {
 	read(): unknown;
@@ -14,7 +15,7 @@ interface ControlEl extends HTMLElement {
 	input(value: unknown): void;
 }
 
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 const target = {
 	scrollAndResize: vi.fn(),

@@ -14,6 +14,7 @@ import { VariableGetter } from '@app/commands/accessors/variable-accessor-window
 import { Enum } from '@app/enum/enum-window.ts';
 import { Data } from '@app/data/data-object.ts';
 import { Window } from '@app/tools/window-object.ts';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
 	setNumberColor: (value: unknown) => `[num:${String(value)}]`,
@@ -57,7 +58,7 @@ interface ControlEl extends HTMLElement {
 
 const getList = (id: string): ParamListElement =>
 	document.getElementById(id) as unknown as ParamListElement;
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 const words: string[] = [];
 

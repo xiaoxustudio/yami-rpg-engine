@@ -106,7 +106,11 @@ const setFilter = (value: string): void => {
 	if (el) el.filter = value;
 };
 
-defineExpose({ read, write, input, enable, disable, focus, on, setFilter, root });
+/** 读回根元素上的 `filter` 自有属性（与 `setFilter` 配对，供表单与测试读）。 */
+const getFilter = (): string =>
+	(root.value as (HTMLElement & { filter?: string }) | null)?.filter ?? '';
+
+defineExpose({ read, write, input, enable, disable, focus, on, setFilter, getFilter, root });
 
 /**
  * `localize` 全局事件。

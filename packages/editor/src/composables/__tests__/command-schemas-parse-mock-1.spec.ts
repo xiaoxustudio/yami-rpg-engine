@@ -33,6 +33,7 @@ import { useSaveAudioCommandSchema } from '@app/composables/commands/useSaveAudi
 import SetActive from '@app/components/commands/SetActive.vue';
 import { useSetActiveCommandSchema } from '@app/composables/commands/useSetActiveCommandSchema';
 import '@app/animation/register.ts';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/composables/useCommandParse.ts', () => ({
 	parseVariable: (value: unknown) => `[var:${(value as { key?: string })?.key ?? ''}]`,
@@ -373,8 +374,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -783,8 +783,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),

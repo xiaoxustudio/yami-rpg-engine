@@ -10,6 +10,7 @@ import { useShowChoicesCommandSchema } from '@app/composables/commands/useShowCh
 import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { Window } from '@app/tools/window-object.ts';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
 	setNumberColor: (value: unknown) => `[num:${String(value)}]`
@@ -53,7 +54,7 @@ interface ControlEl extends HTMLElement {
 
 const getList = (id: string): ParamListElement =>
 	document.getElementById(id) as unknown as ParamListElement;
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 const makeChoice = (content: string) => ({ content, commands: [] });
 

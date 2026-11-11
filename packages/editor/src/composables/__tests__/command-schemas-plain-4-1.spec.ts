@@ -21,6 +21,7 @@ import { useSetInventoryCommandSchema } from '@app/composables/commands/useSetIn
 import SetLanguage from '@app/components/commands/SetLanguage.vue';
 import { useSetLanguageCommandSchema } from '@app/composables/commands/useSetLanguageCommandSchema';
 import { dataItemsOf } from '@app/__tests__/element-data-read';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -32,11 +33,10 @@ vi.mock('@app/stores/local', () => ({
 		read(): unknown;
 		write(value: unknown): void;
 		input(value: unknown): void;
-		filter: string;
+		getFilter(): string;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	describe('useSetBooleanCommandSchema (setBoolean operand linkage + insert/edit/save paths)', () => {
 		beforeEach(() => {
@@ -72,11 +72,11 @@ vi.mock('@app/stores/local', () => ({
 		it('writeHandler switches common-variable filter by operand type', async () => {
 			const wrapper = await mountWindow();
 			Command.cases.setBoolean.writeHandler!({ value: 'variable' });
-			expect(getControl('setBoolean-common-variable').filter).toBe('boolean');
+			expect(getControl('setBoolean-common-variable').getFilter()).toBe('boolean');
 			Command.cases.setBoolean.writeHandler!({ value: 'list' });
-			expect(getControl('setBoolean-common-variable').filter).toBe('object');
+			expect(getControl('setBoolean-common-variable').getFilter()).toBe('object');
 			Command.cases.setBoolean.writeHandler!({ value: 'constant' });
-			expect(getControl('setBoolean-common-variable').filter).toBe('all');
+			expect(getControl('setBoolean-common-variable').getFilter()).toBe('all');
 			wrapper.unmount();
 		});
 
@@ -185,8 +185,7 @@ vi.mock('@app/stores/local', () => ({
 		write(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -354,8 +353,7 @@ vi.mock('@app/stores/local', () => ({
 		write(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -438,8 +436,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -514,8 +511,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -611,8 +607,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -717,8 +712,7 @@ vi.mock('@app/stores/local', () => ({
 		write(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),

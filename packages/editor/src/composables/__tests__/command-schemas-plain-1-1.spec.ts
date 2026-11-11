@@ -28,6 +28,7 @@ import { GameLocal } from '@app/local/local-object.ts';
 import ChangeActorPortrait from '@app/components/commands/ChangeActorPortrait.vue';
 import '@app/animation/register.ts';
 import { dataItemsOf } from '@app/__tests__/element-data-read';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -41,8 +42,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -99,8 +99,7 @@ vi.mock('@app/stores/local', () => ({
 		loadItems(items: unknown[]): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -307,8 +306,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -400,8 +398,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -905,8 +902,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),

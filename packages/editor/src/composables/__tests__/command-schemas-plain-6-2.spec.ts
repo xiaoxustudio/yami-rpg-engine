@@ -19,6 +19,7 @@ import WebSocketConnect from '@app/components/commands/WebSocketConnect.vue';
 import { useWebSocketConnectCommandSchema } from '@app/composables/commands/useWebSocketConnectCommandSchema';
 import WebSocketSend from '@app/components/commands/WebSocketSend.vue';
 import { dataItemsOf } from '@app/__tests__/element-data-read';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -32,8 +33,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -136,8 +136,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -587,8 +586,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),

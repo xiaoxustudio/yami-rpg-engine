@@ -3,6 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import IfConditionWindow from '@app/components/tools/IfCondition.vue';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
+import { controlApi } from '@app/__tests__/control-api';
 import type { IfConditionData } from '@app/composables/useIfConditionSchema';
 
 const IfCondition = useIfConditionSchema();
@@ -158,12 +159,10 @@ describe('useIfConditionSchema（if 条件窗口 composable：parse 树形渲染
 		const wrapper = mount(IfConditionWindow, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		IfCondition.writeHandler!({ value: 'number' });
-		const common = document.getElementById('if-condition-common-variable') as unknown as {
-			filter: string;
-		};
-		expect(common.filter).toBe('number');
+		const common = controlApi<{ getFilter(): string }>('if-condition-common-variable');
+		expect(common.getFilter()).toBe('number');
 		IfCondition.writeHandler!({ value: 'list' });
-		expect(common.filter).toBe('object');
+		expect(common.getFilter()).toBe('object');
 		wrapper.unmount();
 	});
 

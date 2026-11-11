@@ -27,6 +27,7 @@ import Loop from '@app/components/commands/Loop.vue';
 import { useLoopCommandSchema } from '@app/composables/commands/useLoopCommandSchema';
 import MoveActor from '@app/components/commands/MoveActor.vue';
 import { dataItemsOf } from '@app/__tests__/element-data-read';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -40,8 +41,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -519,8 +519,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	describe('useJumpToCommandSchema (jumpTo command insert/edit/save paths and label suggestions)', () => {
 		beforeEach(() => {
@@ -689,8 +688,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -800,8 +798,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),
@@ -972,8 +969,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),

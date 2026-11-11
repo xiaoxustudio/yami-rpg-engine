@@ -9,6 +9,7 @@ import {
 } from '@app/composables/usePresetGetterWindow';
 import { Window } from '@app/tools/window-object.ts';
 import { LightGetter, ObjectGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -33,7 +34,7 @@ interface ControlEl extends HTMLElement {
 	read(): unknown;
 }
 
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 const makeTarget = (read?: () => unknown) => ({
 	dataValue: undefined,

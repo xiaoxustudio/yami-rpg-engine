@@ -3,20 +3,7 @@ import { mount } from '@vue/test-utils';
 import TextBox from '@app/components/common/TextBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
-
-interface TextBoxBridgeEl extends HTMLElement {
-	input: HTMLInputElement;
-	write(value: string): void;
-}
-
-interface SliderBoxBridgeEl extends HTMLElement {
-	input: HTMLInputElement;
-	write(value: number): void;
-}
-
-interface RadioBoxBridgeEl extends HTMLElement {
-	input(value: string): void;
-}
+import { controlApi } from '@app/__tests__/control-api';
 
 describe('包装层输入事件转发（输入事件 Vue 化回归保护）', () => {
 	it('TextBox input 转发（input 元素事件 → emit input）', async () => {
@@ -25,10 +12,8 @@ describe('包装层输入事件转发（输入事件 Vue 化回归保护）', ()
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as unknown as TextBoxBridgeEl;
-		expect(typeof el.write).toBe('function');
-		el.write('Hello');
-		el.input!.dispatchEvent(new Event('input', { bubbles: true }));
+		controlApi<{ write(value: string): void }>('test-tb').write('Hello');
+		wrapper.find('input').element.dispatchEvent(new Event('input', { bubbles: true }));
 		await wrapper.vm.$nextTick();
 		const emitted = wrapper.emitted('input');
 		expect(emitted).toBeTruthy();
@@ -42,10 +27,8 @@ describe('包装层输入事件转发（输入事件 Vue 化回归保护）', ()
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as unknown as SliderBoxBridgeEl;
-		expect(typeof el.write).toBe('function');
-		el.write(3);
-		el.input!.dispatchEvent(new Event('input', { bubbles: true }));
+		controlApi<{ write(value: number): void }>('test-sl').write(3);
+		wrapper.find('input').element.dispatchEvent(new Event('input', { bubbles: true }));
 		await wrapper.vm.$nextTick();
 		const emitted = wrapper.emitted('input');
 		expect(emitted).toBeTruthy();
@@ -59,9 +42,7 @@ describe('包装层输入事件转发（输入事件 Vue 化回归保护）', ()
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as unknown as RadioBoxBridgeEl;
-		expect(typeof el.input).toBe('function');
-		el.input('a');
+		controlApi<{ input(value: string): void }>('test-radio').input('a');
 		await wrapper.vm.$nextTick();
 		expect(wrapper.emitted('input')).toBeTruthy();
 		wrapper.unmount();

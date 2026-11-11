@@ -32,6 +32,7 @@ import { useSetPlayerActorCommandSchema } from '@app/composables/commands/useSet
 import SetPointerEventRoot from '@app/components/commands/SetPointerEventRoot.vue';
 import { useSetPointerEventRootCommandSchema } from '@app/composables/commands/useSetPointerEventRootCommandSchema';
 import '@app/animation/register.ts';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/composables/useCommandParse.ts', () => ({
 	parseVariable: (value: unknown) => `[var:${(value as { key?: string })?.key ?? ''}]`,
@@ -947,8 +948,7 @@ vi.mock('@app/stores/local', () => ({
 		input(value: unknown): void;
 	}
 
-	const getControl = (id: string): ControlEl =>
-		document.getElementById(id) as unknown as ControlEl;
+	const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 	const target = {
 		scrollAndResize: vi.fn(),

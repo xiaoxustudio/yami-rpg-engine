@@ -15,14 +15,13 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, useAttrs, watch } from 'vue';
 import type { YamiEvent } from '@app/types/editor-event';
-import { YMCheckBox } from '@ui-kit';
+import { YMCheckBox, setElementCapabilities } from '@ui-kit';
 import {
 	on as onElement,
 	enable as enableElement,
 	disable as disableElement,
 	dispatchChangeEvent
 } from '@app/utils/element-utils';
-import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface CheckBoxElement extends HTMLElement {
 	read(): boolean;
@@ -190,7 +189,7 @@ watch(
 onMounted(() => {
 	const el = root.value as CheckBoxElement | null;
 	if (!el) return;
-	attachElementApi(el, { read, write, input, enable, disable, relate, on });
+	setElementCapabilities(el, { enable, disable });
 	Object.defineProperty(el, 'dataValue', {
 		configurable: true,
 		get: () => state.dataValue,

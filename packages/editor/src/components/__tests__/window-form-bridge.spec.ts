@@ -7,6 +7,7 @@ import ExportLanguage from '@app/components/tools/ExportLanguage.vue';
 import { useChoicesSchema } from '@app/composables/useChoicesSchema';
 import { useRegionGetterWindow } from '@app/composables/useRegionGetterWindow';
 import { getExportLanguageBridge } from '@app/composables/export-language-bridge';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -18,7 +19,7 @@ interface ControlEl extends HTMLElement {
 	write(value: unknown): void;
 }
 
-const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 describe('低频窗口表单桥接（choice/regionGetter/exportLanguage 回归保护）', () => {
 	beforeEach(() => {

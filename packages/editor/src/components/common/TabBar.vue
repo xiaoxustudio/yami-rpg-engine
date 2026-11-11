@@ -6,7 +6,6 @@
 import { computed, onMounted, ref } from 'vue';
 import { YMTabBar } from '@ui-kit';
 import { getLazyWindow } from '@app/tools/window-registry';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import { on as onElement } from '@app/utils/element-utils';
 
 const Title = getLazyWindow('title', () =>
@@ -105,38 +104,8 @@ defineExpose({
 });
 
 onMounted(() => {
-	const el = root.value as HTMLElement & {
-		read: () => TabItemData | undefined;
-		write: (value: TabItemData | undefined) => void;
-		update: () => void;
-		parseTabName: (item: TabItemData) => string;
-		select: (item: TabItemData) => void;
-		unselect: () => void;
-		insert: (item: TabItemData) => void;
-		close: (item: TabItemData) => void;
-		closeByProperty: (key: string, value: unknown) => void;
-		closeOtherTabs: (item: TabItemData) => void;
-		closeTabsToTheRight: (item: TabItemData) => void;
-		find: (meta: TabItemMeta) => TabItemData | undefined;
-		clear: () => void;
-	};
+	const el = root.value;
 	if (!el) return;
-	attachElementApi(el, {
-		read,
-		write,
-		update,
-		parseTabName,
-		select,
-		unselect,
-		insert,
-		close,
-		closeByProperty,
-		closeOtherTabs,
-		closeTabsToTheRight,
-		find,
-		clear,
-		on
-	});
 
 	onElement(el, 'select', (event: Event & { value?: TabItemData }) => emit('select', event));
 	onElement(el, 'closed', (event: Event & { value?: TabItemData }) => emit('closed', event));
