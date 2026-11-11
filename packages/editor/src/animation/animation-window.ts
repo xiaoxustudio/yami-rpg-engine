@@ -1,4 +1,8 @@
-import { animationNodes } from '@app/composables/animation-nodes';
+import {
+	animationNodes,
+	getAnimationDirList,
+	type AnimationDirListHandle
+} from '@app/composables/animation-nodes';
 import { elementDataOf } from '@ui-kit';
 import type { YamiElement } from '@app/types/element-api';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
@@ -238,7 +242,7 @@ export interface AnimationShape {
 	body: AnimationElement;
 	screen: AnimationElement;
 	marquee: AnimationElement & AnimationMarqueeExtensions & AnimationTimelineCursorExtensions;
-	dirList: AnimationElement & AnimationDirListExtensions;
+	dirList: AnimationDirListHandle & AnimationDirListExtensions;
 	searcher: AnimationElement & AnimationSearcherExtensions;
 	list: AnimationElement & AnimationListExtensions;
 	layerList: AnimationElement & AnimationListExtensions;
@@ -457,9 +461,7 @@ export const Animation = {
 	marquee:
 		(animationNodes.pick('marquee') as AnimationShape['marquee']) ??
 		({} as AnimationShape['marquee']),
-	dirList:
-		(animationNodes.pick('dirList') as AnimationShape['dirList']) ??
-		({} as AnimationShape['dirList']),
+	dirList: (getAnimationDirList() ?? {}) as AnimationShape['dirList'],
 	searcher:
 		(animationNodes.pick('searcher') as AnimationShape['searcher']) ??
 		({} as AnimationShape['searcher']),

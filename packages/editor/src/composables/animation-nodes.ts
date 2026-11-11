@@ -70,3 +70,23 @@ export const animationNodes = createSkeletonTable<AnimationNodeKey>({
 	easingCanvas: 'animation-easing-canvas',
 	switchSettings: 'animation-switch-settings'
 });
+
+/**
+ * 方向列表的**能力句柄**。
+ *
+ * 它和表里的元素是两份东西：元素用于读元素数据（`dirListData`），方法（`setDirItems` /
+ * `setDirDirection`）只有组件实例能提供。以前两者都挂在同一个元素上，现在分开交。
+ */
+export interface AnimationDirListHandle {
+	root: HTMLElement | null;
+	setDirItems?(items: string[], selected: number): void;
+	setDirDirection?(selected: number): void;
+}
+
+let dirListHandle: AnimationDirListHandle | null = null;
+
+export const setAnimationDirList = (handle: AnimationDirListHandle | null): void => {
+	dirListHandle = handle;
+};
+
+export const getAnimationDirList = (): AnimationDirListHandle | null => dirListHandle;

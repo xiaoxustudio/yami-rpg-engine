@@ -1,4 +1,4 @@
-import { animationNodes } from '@app/composables/animation-nodes';
+import { animationNodes, getAnimationDirList } from '@app/composables/animation-nodes';
 import { elementDataOf } from '@ui-kit';
 import type { AnimationElement } from '@app/animation/animation-window.ts';
 import { Animation } from './animation-window.ts';
@@ -41,7 +41,7 @@ Animation.initialize = function (this: typeof Animation) {
 		Object.assign(this.marquee, oldMarquee);
 	}
 	this.body = animationNodes.pick('body') as AnimationElement;
-	this.dirList = animationNodes.pick('dirList') as typeof this.dirList;
+	this.dirList = (getAnimationDirList() ?? {}) as typeof this.dirList;
 	this.searcher = animationNodes.pick('searcher') as typeof this.searcher;
 	const oldList = this.list;
 	this.list = animationNodes.pick('list') as typeof this.list;

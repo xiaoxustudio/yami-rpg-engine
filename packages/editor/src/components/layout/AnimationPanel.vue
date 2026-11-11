@@ -95,10 +95,9 @@
 </template>
 
 <script setup lang="ts">
-import { animationNodes } from '@app/composables/animation-nodes';
+import { animationNodes, setAnimationDirList } from '@app/composables/animation-nodes';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
@@ -148,10 +147,10 @@ const onDirPointerdown = (index: number): void => {
 
 onMounted(() => {
 	animationNodes.set('dirList', dirListEl.value);
-	const el = dirListEl.value;
-	if (!el) return;
-	attachElementApi(el, { setDirItems, setDirDirection });
+	setAnimationDirList({ root: dirListEl.value, setDirItems, setDirDirection });
 });
+
+onUnmounted(() => setAnimationDirList(null));
 
 const onAnimationHeadPointerdown = (event: PointerEvent) => {
 	Animation?.headPointerdown?.(event);

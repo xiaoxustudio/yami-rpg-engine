@@ -44,8 +44,18 @@ interface AnimationDirListElementData {
 	mode: string;
 }
 
-const dirListData = (el: unknown): AnimationDirListElementData =>
-	elementDataOf<AnimationDirListElementData>(el);
+/** 表里存的是控件实例，元素数据仍要按元素读 —— 先取 `root`。 */
+const controlRootOf = (control: unknown): HTMLElement | null => {
+	if (control instanceof HTMLElement) return control;
+	return (control as { root?: HTMLElement | null } | null)?.root ?? null;
+};
+
+const dirListData = (control: unknown): AnimationDirListElementData => {
+	const root = controlRootOf(control);
+	return root
+		? elementDataOf<AnimationDirListElementData>(root)
+		: ({} as AnimationDirListElementData);
+};
 
 interface AnimationRulerElementData {
 	start?: number;
