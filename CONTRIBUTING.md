@@ -120,6 +120,21 @@ const page = sceneNodes.pick('page');
 
 
 
+**P4：拆掉元素 API**（本阶段单独开工，不要混进 P3 批次里）
+
+P3 清零后剩下的元素 API 全部集中在四个**结构性**位置，逐个删 attach 会在别处报运行期错误；
+必须先换掉它们依赖的元素语义，再删 `attachApi` / `attachElementApi` / `YamiElement`：
+
+| 位置 | 现在怎么用元素 | 收尾方式 |
+| --- | --- | --- |
+| `localize/dom-localizer.ts` | `setLocalElement(el, item)` 直接调元素上的 `setTitle` / `setPlaceholder` / `setItemNames` | 改成组件监听 `yami-localize` DOM 事件（`detail` 就是 item）；元素只负责 textContent / tip / label |
+| 窗口管理器（`tools/window-object.ts`、`command-custom.ts`、`tile-frame-index.ts`） | 按窗口 id 取 `WindowFrame` 根元素，调 `open/close/absolute/setTitle`，再直接写 `style.height` | 加一张 `window-handles`（按窗口 id 存 `{ root, open, close, setTitle, absolute, setPosition, on }`），`WindowFrame` 挂载登记、卸载清空；DOM 查询只留给焦点落点 |
+| 旧式命令式构造（`components/ParameterPane.vue`、`components/var-factories.ts`、`local/local-window.ts`） | `createXxxElement()` 造裸元素、挂方法、再手动 append | 改成动态 Vue 组件（`<component :is>` + 控件表）；确实要保留命令式入口的，让工厂返回 `{ root, api }` 句柄而不是往元素上挂 |
+| ui-kit 的 `*-api.ts` 工厂与 17 个 `.vue` 的 `attachApi` | 元素与 API 是同一个对象（`CheckBoxApi extends HTMLElement`），模块内部还靠 `box.write(...)` 回读自己 | 每个工厂返回 `{ root, api }`；组件 `defineExpose(api)`；`markApiAttached` / 元素数据标记一起删 |
+
+判据：`element-api-attach` 0、`yami-element-refs` 0、`attachApi`/`attachElementApi` 两个导出删除、
+`ElementCapabilities` 只剩 `getFocus`（relate 的 enable/disable 也走能力表，不碰元素方法）。
+
 **目标契约**：控件 = 组件实例，能力来自 `defineExpose`；控件寻址不再经过 `ElementRegistry`。按消费方分三条路径，**不要混用**：
 
 1. **窗口内部**：`composables/control-refs.ts` 的 `useControlRefs<Id>()` —— `:ref="controlRef('x')"` 收实例，`controls['x']?.loadItems?.(…)` 调用。`Id` 是字面量联合，**拼错在 tsc / vue-tsc 就红**（注册表时代拼错只在运行期静默 no-op）。确实需要 DOM 的少数站点用 `controlRoot(controls['x'])` 取根元素；**不要**为了省事把表存成裸元素 —— 那样 `element-api-attach` 永远不会降。
