@@ -66,7 +66,7 @@ node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --appl
 
 - **元素注册表已整体拆除**：13 个按域拆分的 `element-registry.ts` 与 `utils/element-registry.ts` 已删除，业务代码里不再有 `registryRef` / `*Els` / 按 id 摸注册表的读法；spec 侧改用只在测试里可见的 `src/__tests__/test-registry.ts`（压测 imperative 组件用，不进生产构建）。
 - 台账三轴：`element-registry-lookups` **0 / 0 文件**（已清零）、`yami-element-refs` 481 / 91、`element-api-attach` 39；
-- editor 包装层已删 attach 的：CommonList / DetailSummary / FilterBox / MarqueeArea / NavBar / PageManager / SwitchItem / TitleBar / CheckBox / RadioBox / TabBar / ParamList / ColorBox / FileVar / KeyboardBox / NumberVar / StringVar / TextArea / TextAreaVar / TextBox / TreeList / ExportApk；剩下的都是**元素语义还有消费方**的：NumberBox + SliderBox（`synchronize` 会改写对方的 `write`）、SelectBox + SelectVar + CustomBox（`useVariableGetterWindow` 在元素上覆写 `setItemNames`、写 `filter`）、WindowFrame / ParameterPane（窗口管理器与 `command-custom` 当元素用）、AnimationPanel（`dirListData` 读元素数据 + 把方法挂在同一个元素上）。
+- editor 包装层只剩 **`ParameterPane`** 一处 attach（`WindowFrame` / `SliderBox` / `NumberBox` / `SelectBox` / `SelectVar` / `CustomBox` 等已清）；ui-kit 侧还有 15 个 `.vue` 的 `attachApi` 与 23 个 `*-api.ts` 命令式工厂。
 - 收尾只剩 P3 一条装配轴，做法见下一节「P3：元素 API → 能力缝」。
 
 **存量是碎片化的，不存在「再迁一批就清零」**：119 个消费方文件里最重的那个也只卡 5 个窗口（`report-blocked-by-consumer.mjs` 的输出）。所以一批的粒度应该是**一个消费方 + 它卡住的 1–5 个窗口**，而不是一个目录。
@@ -131,6 +131,8 @@ P3 清零后剩下的元素 API 全部集中在四个**结构性**位置，逐�
 | 窗口管理器（`tools/window-object.ts`、`command-custom.ts`、`tile-frame-index.ts`） | 按窗口 id 取 `WindowFrame` 根元素，调 `open/close/absolute/setTitle`，再直接写 `style.height` | 加一张 `window-handles`（按窗口 id 存 `{ root, open, close, setTitle, absolute, setPosition, on }`），`WindowFrame` 挂载登记、卸载清空；DOM 查询只留给焦点落点 |
 | 旧式命令式构造（`components/ParameterPane.vue`、`components/var-factories.ts`、`local/local-window.ts`） | `createXxxElement()` 造裸元素、挂方法、再手动 append | 改成动态 Vue 组件（`<component :is>` + 控件表）；确实要保留命令式入口的，让工厂返回 `{ root, api }` 句柄而不是往元素上挂 |
 | ui-kit 的 `*-api.ts` 工厂与 17 个 `.vue` 的 `attachApi` | 元素与 API 是同一个对象（`CheckBoxApi extends HTMLElement`），模块内部还靠 `box.write(...)` 回读自己 | 每个工厂返回 `{ root, api }`；组件 `defineExpose(api)`；`markApiAttached` / 元素数据标记一起删 |
+
+> ⚠️ **ParameterPane 是 editor 侧最后一条 attach，且它是被挡住的**：ui-kit 的 YMParameterPane.vue 里 self 就是根元素（ParameterPaneElement = HTMLElement & ParameterPaneApi），getData / onResize / createDetailBox / clear 都是宿主**往元素上赋值**的。要删这条 attach，得先把 self 拆成 { root, api }（与工厂改造同款），组件读 api 而不是读元素。
 
 判据：`element-api-attach` 0、`yami-element-refs` 0、`attachApi`/`attachElementApi` 两个导出删除、
 `ElementCapabilities` 只剩 `getFocus`（relate 的 enable/disable 也走能力表，不碰元素方法）。
