@@ -16,6 +16,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMTextBox, setElementCapabilities } from '@ui-kit';
 import { TextHistory, type HistoryInputElement } from '@ui-kit';
+import { onLocalize } from '@app/localize/localize-event';
 
 interface TextBoxElement extends HTMLElement {
 	input: HTMLInputElement;
@@ -151,6 +152,12 @@ onMounted(() => {
 	const input = ym.value?.input ?? null;
 	if (!el || !input) return;
 	(input as HistoryInputElement).history = new TextHistory(input);
+	// 本地化：占位符由控件自己应用（元素上不再挂 setPlaceholder）
+	onLocalize(el, (detail) => {
+		if (detail.kind === 'placeholder' && detail.text !== undefined) {
+			ym.value?.setPlaceholder?.(detail.text);
+		}
+	});
 	setElementCapabilities(el, {
 		enable,
 		disable,

@@ -21,6 +21,7 @@ import { YMSelectBox, setElementCapabilities } from '@ui-kit';
 import { setTooltip as setTooltipElement, dispatchChangeEvent } from '@app/utils/element-utils';
 import { Select } from '@app/components/select-list.ts';
 import { parseLocalTip } from '@app/localize/dom-localizer';
+import { onLocalize } from '@app/localize/localize-event';
 import { getLocalStore } from '@app/stores/local';
 
 interface SelectBoxElement extends HTMLElement {
@@ -260,6 +261,12 @@ onMounted(() => {
 	const el = root.value as SelectBoxElement | null;
 	if (!el) return;
 	setElementCapabilities(el, { enable, disable });
+	// 本地化：选项名由控件自己应用（元素方法只是过渡期的兜底）
+	onLocalize(el, (detail) => {
+		if (detail.kind === 'options' && detail.options) {
+			ym.value?.setItemNames(detail.options as Record<string, string>);
+		}
+	});
 	dispatchChangeEvent(el);
 	if (props.disabled) disable();
 });

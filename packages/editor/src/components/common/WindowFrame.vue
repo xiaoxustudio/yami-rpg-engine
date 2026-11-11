@@ -28,6 +28,7 @@ import { YMWindowFrame } from '@ui-kit';
 import { Layout } from '@app/engine/layout/layout';
 import { getLocalStore } from '@app/stores/local';
 import { setLocalElement, type LocalComponentItem } from '@app/localize/dom-localizer';
+import { onLocalize as onLocalizeRequest } from '@app/localize/localize-event';
 import { Window } from '@app/tools/window-object.ts';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import { useEventListener } from '@app/composables/useEventListener';
@@ -172,6 +173,10 @@ onMounted(() => {
 		absolute,
 		setPosition,
 		on
+	});
+	// 本地化事件契约：标题由控件自己应用（元素只负责 textContent / tip / label）
+	onLocalizeRequest(el, (detail) => {
+		if (detail.kind === 'title' && detail.text !== undefined) setTitle(detail.text);
 	});
 	for (const button of el.querySelectorAll<HTMLElement>('[name="cancel"]')) {
 		button.addEventListener('click', () => {
