@@ -1,5 +1,5 @@
 import { getGetterWindowsStore } from '@app/stores/getter-windows';
-import { elementDataOf, type CustomBoxApi } from '@ui-kit';
+import { elementDataOf } from '@ui-kit';
 import { controlRoot, type ControlApi } from '@app/composables/control-refs';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on } from '@app/utils/element-utils';
@@ -39,6 +39,10 @@ export const provideVariableGetterControls = (
  */
 const el = (prefix: string, id: string): YamiElement | null =>
 	controlRoot(controlTables[prefix]?.()[`${prefix}-${id}`] ?? null) as YamiElement | null;
+
+/** 控件级能力只从组件实例上拿（元素上只剩 `enableHiddenMode().relate` 的 targets 语义）。 */
+const ctrl = (prefix: string, id: string): ControlApi | null =>
+	controlTables[prefix]?.()[`${prefix}-${id}`] ?? null;
 
 type VarTypeSet = {
 	all: VarTypeItem[];
@@ -329,14 +333,13 @@ const syncControls = (prefix: string, filter: string): boolean => {
 	const typeEl = el(prefix, 'type');
 	if (!typeEl) return false;
 	initializeWindow(prefix);
-	typeEl.loadItems(getTypeItems(filter, prefix));
+	ctrl(prefix, 'type')?.loadItems?.(getTypeItems(filter, prefix));
 
-	const globalKeyEl = el(prefix, 'global-key') as CustomBoxApi | null;
-	if (globalKeyEl) {
-		globalKeyEl.filter = filter.startsWith('writable-') ? filter.slice(9) : filter;
-	}
+	ctrl(prefix, 'global-key')?.setFilter?.(
+		filter.startsWith('writable-') ? filter.slice(9) : filter
+	);
 	if (prefix === 'variableGetter2') {
-		el(prefix, 'preset-key')?.loadItems?.(Attribute.getAttributeItems('element', filter));
+		ctrl(prefix, 'preset-key')?.loadItems?.(Attribute.getAttributeItems('element', filter));
 	} else if (PRESET_TYPES.has(form.type)) {
 		loadPresetKeys(form.type);
 	}
@@ -447,7 +450,7 @@ const isNone = (variable: { key: string }): boolean => {
 };
 
 const loadPresetKeys = (group: string): void => {
-	const keyBox = el('variableGetter', 'preset-key');
+	const keyBox = ctrl('variableGetter', 'preset-key');
 	if (!keyBox) return;
 	let type: string | undefined = undefined;
 	switch (filterState.filter) {
@@ -464,7 +467,7 @@ const loadPresetKeys = (group: string): void => {
 			break;
 	}
 	const items = Attribute.getAttributeItems(group, type as string);
-	keyBox.loadItems(items);
+	keyBox.loadItems?.(items);
 };
 
 const checkDataForPlugin = (data: { getter?: string }): boolean => {
@@ -577,17 +580,15 @@ const typeInput = (event: Event & { value: string }): void => {
 		case 'item':
 		case 'equipment':
 		case 'element': {
-			const keyBox = el('variableGetter', 'preset-key') as
-				| (YamiElement & {
-						selectBox?: HTMLElement & {
-							textContent: string;
-							write(v: unknown): void;
-							read(): unknown;
-							dataItems: VarTypeItem[];
-						};
+			const keyBox = ctrl('variableGetter', 'preset-key');
+			const selectBox = (keyBox?.root?.querySelector('.select-box') ?? null) as
+				| (HTMLElement & {
+						textContent: string;
+						write(v: unknown): void;
+						read(): unknown;
+						dataItems: VarTypeItem[];
 				  })
 				| null;
-			const selectBox = keyBox?.selectBox ?? null;
 			if (!selectBox) break;
 			const attrName = selectBox.textContent;
 			selectBox.write(selectBox.read());

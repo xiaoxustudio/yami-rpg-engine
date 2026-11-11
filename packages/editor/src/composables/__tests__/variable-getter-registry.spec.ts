@@ -13,6 +13,7 @@ import { Window } from '@app/tools/window-object.ts';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { elementDataOf } from '@app/utils/element-data';
+import { controlApi } from '@app/__tests__/control-api';
 import type { YamiElement } from '@app/types/element-api';
 
 vi.mock('@app/stores/local', () => ({
@@ -41,16 +42,15 @@ const VARIABLE_GETTER2_IDS = [
 	'variableGetter2-global-key'
 ];
 
-type LoadableEl = HTMLElement & { loadItems?: (items: unknown[]) => void };
-
 /** 控件按 id 从 DOM 取：迁移后窗口交的是控件表，注册表里已经没有它们了。 */
 const byId = <T extends HTMLElement = HTMLElement>(id: string): T | null =>
 	document.getElementById(id) as T | null;
 
+/** `loadItems` 现在只从组件实例上拿，stub 也要装在实例的 defineExpose 上。 */
 const loadItemsOf = (id: string): ReturnType<typeof vi.fn> => {
-	const el = byId(id) as unknown as LoadableEl;
+	const control = controlApi<{ loadItems?: (items: unknown[]) => void }>(id);
 	const spy = vi.fn();
-	el.loadItems = spy;
+	control.loadItems = spy;
 	return spy;
 };
 

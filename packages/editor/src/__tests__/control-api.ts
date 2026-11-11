@@ -48,7 +48,8 @@ const readInstance = (proxy: unknown): Record<string, unknown> | null => {
 		const members = Object.keys(exposed).filter((key) => key !== 'root');
 		if (members.length > 0) {
 			const unpacked = unpack(exposed);
-			if (!isUiKitInstance(instance)) return unpacked;
+			// 返回真对象而不是拷贝：测试会用 spy 替换实例方法，拷贝上的替换不会生效
+			if (!isUiKitInstance(instance)) return exposed;
 			for (const [key, value] of Object.entries(unpacked)) {
 				if (!(key in fallback)) fallback[key] = value;
 			}

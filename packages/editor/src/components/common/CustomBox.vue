@@ -19,9 +19,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { YMCustomBox } from '@ui-kit';
+import { YMCustomBox, setElementCapabilities } from '@ui-kit';
 import { customBoxOptions } from '../custom-box-opts';
-import { attachElementApi } from '@app/utils/attach-element-api';
 import { useEventListener } from '@app/composables/useEventListener';
 
 interface Props {
@@ -135,7 +134,7 @@ onMounted(() => {
 		): void;
 	};
 	if (!el) return;
-	attachElementApi(el, { read, write, input, enable, disable, on });
+	setElementCapabilities(el, { enable, disable });
 	ym.value?.write(props.modelValue ?? '');
 });
 </script>

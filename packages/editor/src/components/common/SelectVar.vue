@@ -23,11 +23,10 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
-import { elementDataOf, YMSelectVar } from '@ui-kit';
+import { elementDataOf, YMSelectVar, setElementCapabilities } from '@ui-kit';
 import { defVar } from '@app/components/select-var';
 import { Select } from '@app/components/select-list.ts';
 import CustomBox from '@app/components/common/CustomBox.vue';
-import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -167,7 +166,7 @@ onMounted(() => {
 	api.selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
 	elementDataOf<{ varBox: HTMLElement | null }>(el).varBox = getChildRoot(varBoxRef.value);
 	api.mode = el.classList.contains('variable') ? 'variable' : 'constant';
-	attachElementApi(el, api);
+	setElementCapabilities(el, { enable, disable, getFocus });
 	watch(
 		() => root.value?.className,
 		() => {
