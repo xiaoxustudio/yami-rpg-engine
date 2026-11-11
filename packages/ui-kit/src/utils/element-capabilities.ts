@@ -25,3 +25,37 @@ export function getElementCapabilities(el: HTMLElement): ElementCapabilities | u
 export function clearElementCapabilities(el: HTMLElement): void {
 	capabilities.delete(el);
 }
+
+/**
+ * 启用/禁用 relate 目标。
+ *
+ * 目标按 DOM 语义传入（行 / 控件根），能力从能力表查；没有登记就退化成切 `disabled` 类，
+ * 保证「不是我们控件的纯 DOM 节点」也能按原来的显隐规则处理。
+ */
+export function enableElement(el: HTMLElement): void {
+	const caps = capabilities.get(el);
+	if (caps?.enable) {
+		caps.enable();
+		return;
+	}
+	const legacy = (el as HTMLElement & { enable?: () => void }).enable;
+	if (typeof legacy === 'function') {
+		legacy.call(el);
+		return;
+	}
+	el.classList.remove('disabled');
+}
+
+export function disableElement(el: HTMLElement): void {
+	const caps = capabilities.get(el);
+	if (caps?.disable) {
+		caps.disable();
+		return;
+	}
+	const legacy = (el as HTMLElement & { disable?: () => void }).disable;
+	if (typeof legacy === 'function') {
+		legacy.call(el);
+		return;
+	}
+	el.classList.add('disabled');
+}

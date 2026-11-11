@@ -1,4 +1,8 @@
 import { elementDataOf } from '../../../utils/element-data';
+import {
+	disableElement as disableElementCapability,
+	enableElement as enableElementCapability
+} from '../../../utils/element-capabilities';
 import { createPayloadEvent } from '../../../utils/payload-event';
 export interface SelectItem {
 	value: unknown;
@@ -125,21 +129,13 @@ export function createSelectBoxCore(
 
 	const enableElement = (element: ToggleableElement): void => {
 		if (!element) return;
-		if (typeof element.enable === 'function') {
-			element.enable();
-		} else {
-			element.classList.remove('disabled');
-		}
+		enableElementCapability(element);
 		setRelatedDisplay(element, '');
 	};
 
 	const disableElement = (element: ToggleableElement): void => {
 		if (!element) return;
-		if (typeof element.disable === 'function') {
-			element.disable();
-		} else {
-			element.classList.add('disabled');
-		}
+		disableElementCapability(element);
 		setRelatedDisplay(element, 'none');
 	};
 

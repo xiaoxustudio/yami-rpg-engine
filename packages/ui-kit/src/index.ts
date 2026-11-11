@@ -223,6 +223,8 @@ export { createScrollListener, type ScrollListenerApi } from './utils/scroll-lis
 export { attachApi } from './utils/attach-api';
 export {
 	clearElementCapabilities,
+	disableElement,
+	enableElement,
 	getElementCapabilities,
 	setElementCapabilities,
 	type ElementCapabilities

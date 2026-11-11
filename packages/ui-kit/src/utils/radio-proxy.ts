@@ -1,4 +1,8 @@
 import { addClass, removeClass, hasClass, dispatchChangeEvent } from './dom';
+import {
+	disableElement as disableElementCapability,
+	enableElement as enableElementCapability
+} from './element-capabilities';
 import { elementDataOf, elementDataValueOf } from './element-data';
 
 export type RadioRelationTarget = HTMLElement & {
@@ -32,13 +36,6 @@ export type RadioProxyElement = HTMLElement & {
 export const radioProxyMap: Record<string, RadioProxyElement> = {};
 
 export const RadioProxy = { map: radioProxyMap };
-
-const enable = (el: HTMLElement): void => {
-	removeClass(el, 'disabled');
-};
-const disable = (el: HTMLElement): void => {
-	addClass(el, 'disabled');
-};
 
 /** 读取组内成员的 `dataValue`：radio-box 元素走 own 属性，radio-proxy 走元素数据。 */
 const memberDataValue = (el: RadioProxyElement): unknown => elementDataValueOf(el);
@@ -157,21 +154,13 @@ export function attachRadioProxyApi(el: HTMLElement): void {
 				for (const entry of entries) {
 					if (entry.case === data.dataValue) {
 						for (const element of entry.targets) {
-							if (typeof element.enable === 'function') {
-								element.enable();
-							} else {
-								enable(element);
-							}
+							enableElementCapability(element);
 						}
 					} else {
 						for (const element of selection
 							? subtract(entry.targets, selection.targets)
 							: entry.targets) {
-							if (typeof element.disable === 'function') {
-								element.disable();
-							} else {
-								disable(element);
-							}
+							disableElementCapability(element);
 						}
 					}
 				}
@@ -179,11 +168,7 @@ export function attachRadioProxyApi(el: HTMLElement): void {
 				const entries = data.relations;
 				for (const entry of entries) {
 					for (const element of entry.targets) {
-						if (typeof element.disable === 'function') {
-							element.disable();
-						} else {
-							disable(element);
-						}
+						disableElementCapability(element);
 					}
 				}
 			}
