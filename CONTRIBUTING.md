@@ -65,7 +65,8 @@ node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --appl
 ```
 
 - **元素注册表已整体拆除**：13 个按域拆分的 `element-registry.ts` 与 `utils/element-registry.ts` 已删除，业务代码里不再有 `registryRef` / `*Els` / 按 id 摸注册表的读法；spec 侧改用只在测试里可见的 `src/__tests__/test-registry.ts`（压测 imperative 组件用，不进生产构建）。
-- 台账三轴：`element-registry-lookups` **0 / 0 文件**（已清零）、`yami-element-refs` 481 / 91、`element-api-attach` 70；
+- 台账三轴：`element-registry-lookups` **0 / 0 文件**（已清零）、`yami-element-refs` 481 / 91、`element-api-attach` 48；
+- editor 包装层已删 attach 的：CommonList / DetailSummary / FilterBox / MarqueeArea / NavBar / PageManager / SwitchItem / TitleBar / CheckBox / RadioBox / TabBar / ParamList / ColorBox / FileVar / KeyboardBox / NumberVar / StringVar / TextArea / TextAreaVar / TextBox / TreeList / ExportApk；剩下的都是**元素语义还有消费方**的：NumberBox + SliderBox（`synchronize` 会改写对方的 `write`）、SelectBox + SelectVar + CustomBox（`useVariableGetterWindow` 在元素上覆写 `setItemNames`、写 `filter`）、WindowFrame / ParameterPane（窗口管理器与 `command-custom` 当元素用）、AnimationPanel（`dirListData` 读元素数据 + 把方法挂在同一个元素上）。
 - 收尾只剩 P3 一条装配轴，做法见下一节「P3：元素 API → 能力缝」。
 
 **存量是碎片化的，不存在「再迁一批就清零」**：119 个消费方文件里最重的那个也只卡 5 个窗口（`report-blocked-by-consumer.mjs` 的输出）。所以一批的粒度应该是**一个消费方 + 它卡住的 1–5 个窗口**，而不是一个目录。
