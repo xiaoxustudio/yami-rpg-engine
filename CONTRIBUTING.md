@@ -115,6 +115,7 @@ const page = sceneNodes.pick('page');
   2. 旧式 window 模块的 `el(prefix, id)` 助手（`useVariableGetterWindow` 的 `loadPresetKeys`、`useProjectSettingsWindow` 的 `config-*`）：它们从控件表 `controlRoot()` 取根元素，再调 `.loadItems()` / 写 `.filter`；
   3. spec 自己 `document.getElementById(id)` 取元素再调 `.read()` / `.write()`（`set-list-bridge`、`input-bridge`、inspector 页族桥接 spec）——测试也在按元素契约断言；
 - 所以 P3 的批次单位是「**一个组件 + 它的元素消费方 + 对应 spec**」：先把消费方改成实例/句柄，再删 `attachElementApi`，最后删 api 模块里的 `attachApi`；api 模块里 `box.write(...)` 这类**经元素回读自己**的写法要改成闭包直调（`write(...)`），否则删 attach 后就是运行期 undefined。
+- spec 里读控件状态现在仍普遍是 `document.getElementById(id) as ... .read()`（约 150 处，`ControlEl` 一类字符串类型）。这是 P3 真正的尾巴：**每个控件族都要连 spec 一起迁**。可行方向是加一个测试助手（沿元素的 `__vueParentComponent` 找 editor 包装层的 `defineExpose`），但 2026-11-11 实测它在「元素不是 Vue 渲染的控件」上取不到实例（`switch-default` 直接抛错），要先弄清这类元素的所有者再铺开。
 
 
 
