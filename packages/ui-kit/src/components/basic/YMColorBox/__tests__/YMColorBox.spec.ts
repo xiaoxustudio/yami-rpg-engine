@@ -57,13 +57,15 @@ describe('YMColorBox', () => {
 		expect(wrapper.find('.color-popup').exists()).toBe(false);
 	});
 
-	it('exposes bridge functions on root element', () => {
+	it('exposes the API on the component instance, root keeps only element data', () => {
 		const wrapper = mount(YMColorBox, { props: { modelValue: 'ff0000' } });
+		const vm = wrapper.vm as unknown as ColorBoxApi;
+		expect(typeof vm.read).toBe('function');
+		expect(typeof vm.write).toBe('function');
+		expect(typeof vm.on).toBe('function');
 		const el = wrapper.element as unknown as ColorBoxApi;
-		expect(typeof el.read).toBe('function');
-		expect(typeof el.write).toBe('function');
-		expect(typeof el.on).toBe('function');
 		expect(el.foreground.tagName).toBe('DIV');
+		expect(typeof el.read).toBe('undefined');
 	});
 
 	it('disable adds disabled class', () => {

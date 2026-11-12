@@ -15,9 +15,8 @@ describe('YMKeyboardBox', () => {
 	it('inputCode dispatches input event with value', async () => {
 		const wrapper = mount(YMKeyboardBox);
 		const vm = wrapper.vm as unknown as KeyboardBoxApi;
-		const el = wrapper.element as unknown as KeyboardBoxApi;
 		const events: unknown[] = [];
-		el.on('input', (e: Event & { value: unknown }) => events.push(e.value));
+		vm.on('input', (e: Event & { value: unknown }) => events.push(e.value));
 		vm.inputCode(42);
 		await wrapper.vm.$nextTick();
 		expect(events).toEqual([42]);
@@ -60,20 +59,22 @@ describe('YMKeyboardBox', () => {
 		expect(wrapper.classes()).not.toContain('disabled');
 	});
 
-	it('exposes bridge functions on root element', () => {
+	it('exposes the API on the component instance, root keeps only element data', () => {
 		const wrapper = mount(YMKeyboardBox);
+		const vm = wrapper.vm as unknown as KeyboardBoxApi;
+		expect(typeof vm.read).toBe('function');
+		expect(typeof vm.write).toBe('function');
+		expect(typeof vm.getFocus).toBe('function');
 		const el = wrapper.element as unknown as KeyboardBoxApi;
-		expect(typeof el.read).toBe('function');
-		expect(typeof el.write).toBe('function');
-		expect(typeof el.getFocus).toBe('function');
 		expect(el.input!.tagName).toBe('INPUT');
+		expect(typeof el.read).toBe('undefined');
 	});
 
 	it('on(focus) enables focus event forwarding', async () => {
 		const wrapper = mount(YMKeyboardBox);
-		const el = wrapper.element as unknown as KeyboardBoxApi;
+		const vm = wrapper.vm as unknown as KeyboardBoxApi;
 		const events: unknown[] = [];
-		el.on('focus', () => events.push(1));
+		vm.on('focus', () => events.push(1));
 		const input = wrapper.find('input');
 		await input.trigger('focus');
 		await wrapper.vm.$nextTick();

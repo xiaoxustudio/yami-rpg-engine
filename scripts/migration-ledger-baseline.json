@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-11T16:48:43.834Z",
+	"generatedAt": "2026-11-12T05:33:15.415Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -115,8 +115,8 @@
 			"label": "元素 API 装配（attachApi / attachElementApi）",
 			"target": "zero",
 			"value": {
-				"total": 39,
-				"files": 39
+				"total": 37,
+				"files": 37
 			}
 		},
 		"element-custom-events": {

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -131,7 +130,6 @@ const inputKeydown = (event: KeyboardEvent): void => {
 onMounted(() => {
 	const el = root.value as HTMLElement & { [k: string]: unknown };
 	if (!el) return;
-	attachApi(el, { read, write, inputCode, enable, disable, getFocus, on });
 	el.input = input.value;
 });
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { attachApi } from '../../../utils/attach-api';
 import { createPayloadEvent } from '../../../utils/payload-event';
 import { useEventListener } from '../../../composables/useEventListener';
 
@@ -197,7 +196,6 @@ onMounted(() => {
 	});
 	(el as ColorBoxApi).foreground = foreground.value;
 	(el as ColorBoxApi).inputEventEnabled = false;
-	attachApi(el, { read, write, input, enable, disable, on, keydown, mouseclick });
 	write(props.modelValue);
 	if (props.disabled) disable();
 });
