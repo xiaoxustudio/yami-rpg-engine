@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMNumberVar from '../YMNumberVar.vue';
 import type { NumberVarApi } from '../number-var-api';
@@ -60,13 +60,14 @@ describe('YMNumberVar', () => {
 		expect(wrapper.classes()).toContain('variable');
 	});
 
-	it('exposes bridge functions on root element', () => {
+	it('exposes the API on the component instance, not on the root element', () => {
 		const wrapper = mount(YMNumberVar, { props: { modelValue: 3 } });
-		const el = wrapper.element as unknown as NumberVarApi;
-		expect(typeof el.read).toBe('function');
-		expect(typeof el.write).toBe('function');
-		expect(typeof el.switch).toBe('function');
-		expect(elementDataOf<NumberVarApi>(el).mode).toBe('constant');
+		const vm = wrapper.vm as unknown as NumberVarApi;
+		expect(typeof vm.read).toBe('function');
+		expect(typeof vm.write).toBe('function');
+		expect(typeof vm.switch).toBe('function');
+		expect(typeof (wrapper.element as unknown as NumberVarApi).read).toBe('undefined');
+		expect(elementDataOf<NumberVarApi>(wrapper.element).mode).toBe('constant');
 	});
 
 	it('disable adds disabled class', () => {

@@ -29,7 +29,8 @@ import {
 import { on } from '@app/utils/element-utils';
 
 const updateItems = (items: ReferenceItem[]): void => {
-	const list = (listRef.value?.root ?? null) as
+	// 控件能力只在实例上（元素上不再挂 reload/appendElement/update）
+	const list = listRef.value as
 		| (HTMLElement & {
 				reload(): void;
 				appendElement(element: HTMLElement): void;

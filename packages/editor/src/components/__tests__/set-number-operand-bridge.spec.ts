@@ -14,6 +14,7 @@ import { VariableGetter } from '@app/commands/accessors/variable-accessor-window
 import { Window } from '@app/tools/window-object.ts';
 import { Enum } from '@app/enum/enum-window.ts';
 import { Data } from '@app/data/data-object.ts';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -69,30 +70,13 @@ describe('setNumber-operand 窗口表单桥接（Vue 双向绑定迁移回归）
 		const wrapper = mount(SetNumberOperandWindow, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const frame = getFrame();
-		const typeBox = document.getElementById(
-			'setNumber-operand-type'
-		) as unknown as HTMLElement & {
-			input(value: unknown): void;
-		};
-		typeBox.input('variable');
-		const variableBox = document.getElementById(
-			'setNumber-operand-common-variable'
-		) as unknown as HTMLElement & {
-			input(value: unknown): void;
-		};
-		variableBox.input({ type: 'local', key: 'score' });
-		const indexBox = document.getElementById(
-			'setNumber-operand-list-index'
-		) as unknown as HTMLElement & {
-			write(value: number): void;
-		};
-		indexBox.write(4);
-		const scriptBox = document.getElementById(
-			'setNumber-operand-script'
-		) as unknown as HTMLElement & {
-			write(value: string): void;
-		};
-		scriptBox.write('run()');
+		controlApi<{ input(value: unknown): void }>('setNumber-operand-type').input('variable');
+		controlApi<{ input(value: unknown): void }>('setNumber-operand-common-variable').input({
+			type: 'local',
+			key: 'score'
+		});
+		controlApi<{ write(value: number): void }>('setNumber-operand-list-index').write(4);
+		controlApi<{ write(value: string): void }>('setNumber-operand-script').write('run()');
 		await wrapper.vm.$nextTick();
 		const form = frame.getForm();
 		expect(form.operandType).toBe('variable');

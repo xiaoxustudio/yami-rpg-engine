@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import YMNumberBox from '../YMNumberBox/YMNumberBox.vue';
-import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf } from '../../../utils/element-data';
 
 interface Props {
@@ -222,7 +221,6 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
-	attachApi(el, { read, write, switch: switchMode, enable, disable, getFocus, on });
 	elementDataOf<NumberVarApi>(el).mode = mode.value;
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);
