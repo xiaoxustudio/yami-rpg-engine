@@ -134,6 +134,13 @@ P3 清零后剩下的元素 API 全部集中在四个**结构性**位置，逐�
 
 > ⚠️ **ParameterPane 是 editor 侧最后一条 attach，且它是被挡住的**：ui-kit 的 YMParameterPane.vue 里 self 就是根元素（ParameterPaneElement = HTMLElement & ParameterPaneApi），getData / onResize / createDetailBox / clear 都是宿主**往元素上赋值**的。要删这条 attach，得先把 self 拆成 { root, api }（与工厂改造同款），组件读 api 而不是读元素。
 >
+> **WindowFrame 批的剩余疑点（2026-11-12 实测）**：`window-object` 的 4 处
+> `element.open/close/focus` 改成 `window-handles` 后，`window-object.spec`（23 条）与
+> `window-state.spec`（23 条）都能通过；卡住的是 `auto-tile-window-close.spec` 的
+> 「未保存确认」两条：给夹具补 `setWindowHandle` 后，`on(frame,'close')` 已确认走到
+> 实例的 `on`（元素上没有 `on`、`controlApiOfElement` 能命中），但 `Window.confirm`
+> 仍未被调用 —— 说明 YM 的 `closeEventEnabled` 置位与标题栏关闭按钮之间还有一处
+> 元素语义没接上，下一批先在这里下断点。
 > 2026-11-12 已落地前置：`element-utils` 的 `read` / `write` / `clear` 三个 shim 现在会经
 > `utils/control-instance.ts` 按元素反查控件实例（优先级：元素方法 → 实例 API → 元素数据）。
 > 但**直接写 `el.read()` / `el.write()` 的窗口模块与 spec 不走 shim**，那批仍要逐个改。
