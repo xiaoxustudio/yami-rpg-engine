@@ -7,6 +7,7 @@ import {
 	elementDataValueOf
 } from '@ui-kit';
 import { attachDoubleclick, detachDoubleclick } from '@app/utils/doubleclick';
+import { controlApiOfElement } from './control-instance';
 import { Fragment, h, render, type VNode } from 'vue';
 import type { EditorEvent, YamiMouseEvent, YamiEvent } from '@app/types/editor-event';
 
@@ -177,6 +178,12 @@ export function clear(el: Node | null | undefined): HTMLElement | null | undefin
 		element.clear();
 		return element;
 	}
+	// 元素 API 退场后，能力在组件实例上：按元素反查实例再调
+	const api = controlApiOfElement(el);
+	if (typeof api?.clear === 'function') {
+		api.clear();
+		return element;
+	}
 	el.textContent = '';
 	return element;
 }
@@ -189,6 +196,10 @@ export function read(el: unknown): any {
 	if (typeof (el as { read: () => unknown }).read === 'function') {
 		return (el as { read: () => unknown }).read();
 	}
+	const api = controlApiOfElement(el);
+	if (typeof api?.read === 'function') {
+		return api.read();
+	}
 	return elementDataValueOf(el);
 }
 
@@ -198,6 +209,8 @@ export function write(el: unknown, value: unknown): void {
 	}
 	if (typeof (el as { write: (value: unknown) => void }).write === 'function') {
 		(el as { write: (value: unknown) => void }).write(value);
+	} else if (typeof controlApiOfElement(el)?.write === 'function') {
+		controlApiOfElement(el)!.write!(value);
 	} else if (
 		el instanceof HTMLElement &&
 		!Object.prototype.hasOwnProperty.call(el, 'dataValue')
