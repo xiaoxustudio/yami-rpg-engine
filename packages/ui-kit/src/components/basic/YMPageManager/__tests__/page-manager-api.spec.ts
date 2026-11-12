@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { createPageManagerElement, attachPageManagerApi } from '../page-manager-api';
 import type { PageManagerApi } from '../page-manager-api';
 import { createToastManagerElement } from '../../YMToastManager/toast-api';
-import type { ToastManagerApi } from '../../YMToastManager/toast-api';
 
 describe('createPageManagerElement', () => {
 	it('switches visible page-frame', () => {
@@ -72,12 +71,12 @@ describe('createPageManagerElement', () => {
 describe('createToastManagerElement', () => {
 	it('shows and dismisses toast', () => {
 		vi.useFakeTimers();
-		const el = createToastManagerElement() as unknown as ToastManagerApi;
-		const toast = el.show('hello');
+		const { root, api } = createToastManagerElement();
+		const toast = api.show('hello');
 		expect(toast.classList.contains('toast-info')).toBe(true);
 		expect(toast.querySelector('.toast-text')!.textContent).toBe('hello');
-		el.dismiss(toast);
-		expect(toast.parentNode).toBe(el);
+		api.dismiss(toast);
+		expect(toast.parentNode).toBe(root);
 		vi.runAllTimers();
 		expect(toast.parentNode).toBeNull();
 		vi.useRealTimers();

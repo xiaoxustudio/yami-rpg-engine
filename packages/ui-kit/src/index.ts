@@ -125,7 +125,8 @@ export {
 } from './components/basic/YMPageManager/page-manager-api';
 export {
 	createToastManagerElement,
-	type ToastManagerApi
+	type ToastManagerApi,
+	type ToastManagerHandle
 } from './components/basic/YMToastManager/toast-api';
 export {
 	createNumberBoxElement,

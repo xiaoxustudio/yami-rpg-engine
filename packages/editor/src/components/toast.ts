@@ -1,21 +1,22 @@
 import { createToastManagerElement, type ToastManagerApi } from '@ui-kit';
 
-export function createToastManager(): ToastManagerApi {
-	return createToastManagerElement();
+interface ToastManagerHandle {
+	root: HTMLElement;
+	api: ToastManagerApi;
 }
 
-let manager: HTMLElement | null = null;
+let manager: ToastManagerHandle | null = null;
 
 export const Toast = {
-	_manager(): HTMLElement {
+	_manager(): ToastManagerHandle {
 		if (!manager) {
-			manager = createToastManager() as HTMLElement;
-			document.body.appendChild(manager);
+			manager = createToastManagerElement() as ToastManagerHandle;
+			document.body.appendChild(manager.root);
 		}
 		return manager;
 	},
 	show(message: string, type?: string, duration?: number): HTMLDivElement {
-		return (this._manager() as ToastManagerApi).show(message, type ?? 'info', duration ?? 4000);
+		return this._manager().api.show(message, type ?? 'info', duration ?? 4000);
 	},
 	error(message: string): HTMLDivElement {
 		return this.show(message, 'error');
