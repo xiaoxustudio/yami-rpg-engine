@@ -65,7 +65,7 @@ node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --appl
 ```
 
 - **元素注册表已整体拆除**：13 个按域拆分的 `element-registry.ts` 与 `utils/element-registry.ts` 已删除，业务代码里不再有 `registryRef` / `*Els` / 按 id 摸注册表的读法；spec 侧改用只在测试里可见的 `src/__tests__/test-registry.ts`（压测 imperative 组件用，不进生产构建）。
-- 台账三轴：`element-registry-lookups` **0 / 0 文件**（已清零）、`yami-element-refs` 481 / 91、`element-api-attach` 39；
+- 台账三轴：`element-registry-lookups` **0 / 0 文件**（已清零）、`yami-element-refs` 481 / 91、`element-api-attach` 37；
 - editor 包装层只剩 **`ParameterPane`** 一处 attach（`WindowFrame` / `SliderBox` / `NumberBox` / `SelectBox` / `SelectVar` / `CustomBox` 等已清）；ui-kit 侧还有 15 个 `.vue` 的 `attachApi` 与 23 个 `*-api.ts` 命令式工厂。
 - 收尾只剩 P3 一条装配轴，做法见下一节「P3：元素 API → 能力缝」。
 
