@@ -17,6 +17,7 @@ import {
 	setToolWindowHostContext
 } from '@app/tools/tool-window-host';
 import appShellRaw from '../../AppShell.vue?raw';
+import { controlApi } from '@app/__tests__/control-api';
 
 /**
  * 懒挂载窗口冒烟：54 个按需挂载的工具窗口逐个真实挂载，断言
@@ -107,18 +108,13 @@ describe('懒挂载工具窗口冒烟', () => {
 		await preloadToolWindows([id]);
 		expect(mountToolWindow(id)).toBe(true);
 
-		const type = document.getElementById('variableGetter-type') as unknown as Record<
-			string,
-			unknown
-		> | null;
-		const actor = document.getElementById('variableGetter-actor') as unknown as Record<
-			string,
-			unknown
-		> | null;
-		expect(typeof type?.loadItems, 'SelectBox.loadItems 应已可调用').toBe('function');
-		expect(typeof type?.write, 'SelectBox.write 应已可调用').toBe('function');
-		expect(typeof actor?.write, 'CustomBox.write 应已可调用').toBe('function');
-		expect(typeof actor?.input, 'CustomBox.input 应已可调用').toBe('function');
+		// 控件能力只在组件实例上（元素 API 已退场）
+		const type = controlApi<Record<string, unknown>>('variableGetter-type');
+		const actor = controlApi<Record<string, unknown>>('variableGetter-actor');
+		expect(typeof type.loadItems, 'SelectBox.loadItems 应已可调用').toBe('function');
+		expect(typeof type.write, 'SelectBox.write 应已可调用').toBe('function');
+		expect(typeof actor.write, 'CustomBox.write 应已可调用').toBe('function');
+		expect(typeof actor.input, 'CustomBox.input 应已可调用').toBe('function');
 	});
 
 	it('空闲预挂载：按批挂上窗口，首开前就已就绪', async () => {
