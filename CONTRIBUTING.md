@@ -132,6 +132,11 @@ P3 清零后剩下的元素 API 全部集中在四个**结构性**位置，逐�
 | 旧式命令式构造（`components/ParameterPane.vue`、`components/var-factories.ts`、`local/local-window.ts`） | `createXxxElement()` 造裸元素、挂方法、再手动 append | 改成动态 Vue 组件（`<component :is>` + 控件表）；确实要保留命令式入口的，让工厂返回 `{ root, api }` 句柄而不是往元素上挂 |
 | ui-kit 的 `*-api.ts` 工厂与 17 个 `.vue` 的 `attachApi` | 元素与 API 是同一个对象（`CheckBoxApi extends HTMLElement`），模块内部还靠 `box.write(...)` 回读自己 | 每个工厂返回 `{ root, api }`；组件 `defineExpose(api)`；`markApiAttached` / 元素数据标记一起删 |
 
+> **为什么 23 个 `*-api.ts` 工厂要等 ParameterPane**（2026-11-13 核查）：`text-box-api` /
+> `number-box-api` / `select-box-api` / `detail-box-api` / `var` 族等工厂的**唯一生产消费方**
+> 就是 `ParameterPane` 的 `controls` 表（`detailBox: () => createDetailBoxElement()` 这类），
+> 其余只在 spec 里出现。所以「工厂返回 `{ root, api }`」这批必须先做 `YMParameterPane` 的
+> `self → { root, api }` 拆分，否则改了也没有消费方承接。
 > ⚠️ **ParameterPane 是 editor 侧最后一条 attach，且它是被挡住的**：ui-kit 的 YMParameterPane.vue 里 self 就是根元素（ParameterPaneElement = HTMLElement & ParameterPaneApi），getData / onResize / createDetailBox / clear 都是宿主**往元素上赋值**的。要删这条 attach，得先把 self 拆成 { root, api }（与工厂改造同款），组件读 api 而不是读元素。
 >
 > **WindowFrame 批已落地（2026-11-12）**：`window-handles` 上移到 ui-kit，由 `YMWindowFrame` 自己登记；`window-object` 的 4 处
