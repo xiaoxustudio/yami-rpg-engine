@@ -62,7 +62,7 @@ describe('YMWindowFrame', () => {
 		});
 		expect(wrapper.element.classList.contains('window-frame')).toBe(true);
 		expect(wrapper.element.querySelector('.content')).toBeTruthy();
-		const el = wrapper.element as unknown as WindowFrameElement;
+		const vm = wrapper.vm as unknown as WindowFrameElement;
 		for (const name of [
 			'open',
 			'close',
@@ -73,9 +73,9 @@ describe('YMWindowFrame', () => {
 			'setTitle',
 			'on'
 		]) {
-			expect(typeof el[name], name).toBe('function');
+			expect(typeof vm[name], name).toBe('function');
 		}
-		expect(typeof el.setPosition).toBe('function');
+		expect(typeof vm.setPosition).toBe('function');
 	});
 
 	it('renders confirm/cancel buttons by default', () => {
@@ -145,24 +145,26 @@ describe('YMWindowFrame', () => {
 		const W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
 		const el = wrapper.element as unknown as WindowFrameElement;
+		const vm = wrapper.vm as unknown as WindowFrameElement;
 		let opened = false;
 		el.addEventListener('open', () => (opened = true));
-		el.open();
+		vm.open();
 		expect(el.classList.contains('open')).toBe(true);
 		expect(opened).toBe(true);
 		expect(W.frames.includes(el)).toBe(true);
 		expect(el.style.zIndex).toBe('1');
-		el.close();
+		vm.close();
 	});
 
 	it('close removes open class and dispatches closed when enabled', () => {
 		const _W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
 		const el = wrapper.element as unknown as WindowFrameElement;
-		el.open();
+		const vm = wrapper.vm as unknown as WindowFrameElement;
+		vm.open();
 		let closed = false;
-		el.on('closed', () => (closed = true));
-		const result = el.close();
+		vm.on('closed', () => (closed = true));
+		const result = vm.close();
 		expect(result).toBe(true);
 		expect(el.classList.contains('open')).toBe(false);
 		expect(closed).toBe(true);
@@ -182,9 +184,10 @@ describe('YMWindowFrame', () => {
 		const _W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
 		const el = wrapper.element as unknown as WindowFrameElement;
-		el.open();
+		const vm = wrapper.vm as unknown as WindowFrameElement;
+		vm.open();
 		el.addEventListener('close', (e: Event) => e.preventDefault());
-		const result = el.close();
+		const result = vm.close();
 		expect(result).toBe(false);
 		expect(el.classList.contains('open')).toBe(true);
 	});
@@ -193,15 +196,16 @@ describe('YMWindowFrame', () => {
 		const _W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
 		const el = wrapper.element as unknown as WindowFrameElement;
-		el.open();
+		const vm = wrapper.vm as unknown as WindowFrameElement;
+		vm.open();
 		let maximized = 0;
 		let unmaximized = 0;
-		el.on('maximize', () => maximized++);
-		el.on('unmaximize', () => unmaximized++);
-		el.maximize();
+		vm.on('maximize', () => maximized++);
+		vm.on('unmaximize', () => unmaximized++);
+		vm.maximize();
 		expect(el.classList.contains('maximized')).toBe(true);
 		expect(maximized).toBe(1);
-		el.unmaximize();
+		vm.unmaximize();
 		expect(el.classList.contains('maximized')).toBe(false);
 		expect(unmaximized).toBe(1);
 	});
@@ -209,18 +213,18 @@ describe('YMWindowFrame', () => {
 	it('resize 监听随最大化挂 / 摘（useEventListener 的 enabled 通道）', async () => {
 		const _W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
-		const el = wrapper.element as unknown as WindowFrameElement;
-		el.open();
+		const vm = wrapper.vm as unknown as WindowFrameElement;
+		vm.open();
 		let resized = 0;
-		el.on('resize', () => resized++);
+		vm.on('resize', () => resized++);
 
-		el.maximize();
+		vm.maximize();
 		await nextTick();
 		expect(resized).toBe(1);
 		window.dispatchEvent(new Event('resize'));
 		expect(resized).toBe(2);
 
-		el.unmaximize();
+		vm.unmaximize();
 		await nextTick();
 		const afterUnmaximize = resized;
 		window.dispatchEvent(new Event('resize'));
@@ -237,12 +241,13 @@ describe('YMWindowFrame', () => {
 			}
 		});
 		const el = wrapper.element as unknown as WindowFrameElement;
+		const vm = wrapper.vm as unknown as WindowFrameElement;
 		const input = el.querySelector('input') as HTMLInputElement;
 		const original = input.tabIndex;
-		el.blur();
+		vm.blur();
 		expect(el.classList.contains('blur')).toBe(true);
 		expect(input.tabIndex).toBe(original - 1);
-		el.focus();
+		vm.focus();
 		expect(el.classList.contains('blur')).toBe(false);
 		expect(input.tabIndex).toBe(original);
 	});
@@ -255,8 +260,8 @@ describe('YMWindowFrame', () => {
 				title: '<div class="title-bar">Original<div class="close" /></div>'
 			}
 		});
-		const el = wrapper.element as unknown as WindowFrameElement;
-		el.setTitle('New Title');
+		const vm = wrapper.vm as unknown as WindowFrameElement;
+		vm.setTitle('New Title');
 		expect(wrapper.element.querySelector('.title-bar').textContent).toContain('New Title');
 	});
 

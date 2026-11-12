@@ -10,6 +10,7 @@ import { Window } from '@app/tools/window-object';
 import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { testRegisterElement } from '@app/__tests__/test-registry';
 import { primeWindows } from '@app/tools/window-registry';
+import { setWindowHandle } from '@app/composables/window-handles';
 
 const { stackLayoutMock, stackTitleMock } = vi.hoisted(() => ({
 	stackLayoutMock: {
@@ -266,6 +267,7 @@ function makeStackFrame(id: string): StackTestFrame {
 	};
 	frame.closeEventEnabled = true;
 	frame.enableAmbient = false;
+	setWindowHandle(id, { root: el, open: frame.open, close: frame.close });
 	document.body.appendChild(el);
 	testRegisterElement(windowShellEls, id, frame);
 	stackFrames.push(frame);

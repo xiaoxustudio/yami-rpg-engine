@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import {
 	clamp,
 	addClass,
@@ -9,7 +9,11 @@ import {
 	rasterize,
 	focusWithOptions
 } from '../../../utils/dom';
-import { attachApi } from '../../../utils/attach-api';
+import {
+	clearWindowHandle,
+	setWindowHandle,
+	type WindowHandle
+} from '../../../utils/window-handles';
 import { useEventListener } from '../../../composables/useEventListener';
 import YMFormButtons from '../../basic/YMFormButtons/YMFormButtons.vue';
 
@@ -369,6 +373,24 @@ defineExpose({
 	root
 });
 
+const windowHandle = {
+	root: null as HTMLElement | null,
+	open,
+	close,
+	maximize,
+	unmaximize,
+	focus,
+	blur,
+	setTitle,
+	absolute,
+	setPosition,
+	on
+} as WindowHandle;
+
+onBeforeUnmount(() => {
+	clearWindowHandle(props.id ?? '', windowHandle);
+});
+
 const applyLocalization = (): void => {
 	const element = root.value;
 	if (!element) {
@@ -402,18 +424,8 @@ onMounted(() => {
 		return;
 	}
 	applyLocalization();
-	attachApi(element, {
-		open,
-		close,
-		maximize,
-		unmaximize,
-		focus,
-		blur,
-		setPosition,
-		setTitle,
-		absolute,
-		on
-	});
+	windowHandle.root = element;
+	setWindowHandle(props.id ?? '', windowHandle);
 	Object.defineProperty(element, 'closeEventEnabled', {
 		get: () => state.closeEventEnabled,
 		set: (value: boolean) => {

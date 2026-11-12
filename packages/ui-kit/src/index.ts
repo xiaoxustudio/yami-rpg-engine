@@ -222,6 +222,12 @@ export {
 export { createScrollListener, type ScrollListenerApi } from './utils/scroll-listener';
 export { attachApi } from './utils/attach-api';
 export {
+	setWindowHandle,
+	clearWindowHandle,
+	getWindowHandle,
+	type WindowHandle
+} from './utils/window-handles';
+export {
 	LOCALIZE_EVENT,
 	onLocalize,
 	requestLocalize,

@@ -206,7 +206,7 @@ Window.open = function (this: typeof Window, id: string) {
 
 	const { activeElement } = document;
 	if (!frames.includes(element)) {
-		(element as WindowFrame).open();
+		getWindowHandle(element.id)?.open?.();
 		if (!Title.target) {
 			Title.target = shellNodes.pick('title') as typeof Title.target;
 		}
@@ -234,7 +234,7 @@ Window.open = function (this: typeof Window, id: string) {
 		}
 		element.style.zIndex = String(frames.length);
 		Window.ambient.update();
-		(element as WindowFrame & { focus(): void }).focus?.();
+		getWindowHandle(element.id)?.focus?.();
 	}
 };
 
@@ -253,7 +253,7 @@ Window.close = function (this: typeof Window, id: string | null = null) {
 		return;
 	}
 
-	if ((element as WindowFrame).close()) {
+	if (getWindowHandle(element.id)?.close?.()) {
 		if (element.id === 'confirmation') {
 			getConfirmationStore().clear();
 		}
@@ -273,7 +273,7 @@ Window.closeById = function (this: typeof Window, id: string) {
 	purgeStaleFrames();
 	const element = frames.find((frame) => frame.id === id) as WindowFrame | undefined;
 	if (!element) return;
-	if (element.close()) {
+	if (getWindowHandle(element.id)?.close?.()) {
 		if (element.id === 'confirmation') {
 			getConfirmationStore().clear();
 		}
@@ -451,6 +451,7 @@ Window.ambient.update = function (this: typeof Window) {
 const windowBridgeKeys = ['positionMode', 'absolutePos', 'overlapRoot', 'activeElement'] as const;
 import { getWindowStore } from '@app/stores/window';
 import type { YamiElement } from '@app/types/element-api';
+import { getWindowHandle } from '@app/composables/window-handles';
 
 for (const key of windowBridgeKeys) {
 	Object.defineProperty(Window, key, {
@@ -540,7 +541,7 @@ const purgeStaleFrames = (allowHidden = false): void => {
 	if (frames.length === 0 && modalActive()) {
 		deactivateModalMode();
 	} else if (frames.length > 0) {
-		frames[frames.length - 1].focus();
+		getWindowHandle(frames[frames.length - 1].id)?.focus?.();
 	}
 };
 
@@ -556,7 +557,7 @@ Object.defineProperty(frames, 'append', {
 			if (frames.length === 0) {
 				activateModalMode();
 			} else {
-				frames[frames.length - 1].blur();
+				getWindowHandle(frames[frames.length - 1].id)?.blur?.();
 			}
 		} catch (error) {
 			console.error('[window] frames.append error:', error);
@@ -586,6 +587,8 @@ Object.defineProperty(frames, 'remove', {
 			if (frames.length === 0) {
 				deactivateModalMode();
 			} else {
+				// 恢复焦点是 DOM 语义：让浏览器把焦点还给下层窗口元素
+				getWindowHandle(frames[frames.length - 1].id)?.focus?.();
 				frames[frames.length - 1].focus();
 			}
 		} catch (error) {

@@ -6,6 +6,7 @@ import { Window } from '@app/tools/window-object';
 import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { testRegisterElement } from '@app/__tests__/test-registry';
 import { primeWindows } from '@app/tools/window-registry';
+import { setWindowHandle } from '@app/composables/window-handles';
 
 const { layoutMock, titleMock } = vi.hoisted(() => ({
 	layoutMock: {
@@ -56,6 +57,7 @@ function makeFrame(id: string, closeResult = true): TestFrame {
 	});
 	frame.closeEventEnabled = true;
 	frame.enableAmbient = false;
+	setWindowHandle(id, { root: el, open: frame.open, close: frame.close });
 	document.body.appendChild(el);
 	testRegisterElement(windowShellEls, id, frame);
 	createdFrames.push(frame);
@@ -115,6 +117,7 @@ describe('Window（window-object 模态/焦点/关闭链）', () => {
 		frame.close = vi.fn(() => true);
 		frame.closeEventEnabled = true;
 		frame.enableAmbient = false;
+		setWindowHandle('dom-only-window', { root: el, open: frame.open, close: frame.close });
 		document.body.appendChild(el);
 		createdFrames.push(frame);
 		// 窗口根只按 DOM id 找：注册表里不该有它
