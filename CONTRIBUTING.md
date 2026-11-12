@@ -147,6 +147,7 @@ P3 清零后剩下的元素 API 全部集中在四个**结构性**位置，逐�
 > `YMTextBox` / `YMTextArea` / `YMCustomBox` 同理被命令窗口的旧模块用着：`presetElement` / `presetObject` 窗口、
 > for-each / if-condition 表单桥、懒挂载冒烟测试都经 `read(el)` / `write(el)` 这类 shim 走元素 API；
 > 先按「窗口模块改实例」再删这三条 attach。
+> **FileNavPane 批的阻塞（2026-11-12）**：`YMFileBrowser.setupLinks()` 把 `links` 对象**挂在 nav 元素上**（`attachLinks(nav)`），head/body 两个 pane 再从自己的元素读 `links`；同时 `FileNav` 的 `selections` 也不是实例方法。要删 `YMFileNavPane` 的 attach，得先把 `links` / `selections` 换成显式句柄或 props，属于整组改造。
 > 其余 ui-kit 组件的元素消费方（2026-11-12 实测）：`YMCommonList` 被 `log/related-references.ts` 的 `list.reload()` 与 `palette/auto-tile.ts` 的 `nodeList.reload()` 用着（两个模块长期持有列表元素，要改成句柄）；`YMNumberVar` 只剩命令表单桥 spec 按元素读（`controlApi(id)` 可解）。
 
 判据：`element-api-attach` 0、`yami-element-refs` 0、`attachApi`/`attachElementApi` 两个导出删除、
