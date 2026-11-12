@@ -65,7 +65,7 @@ node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --appl
 ```
 
 - **元素注册表已整体拆除**：13 个按域拆分的 `element-registry.ts` 与 `utils/element-registry.ts` 已删除，业务代码里不再有 `registryRef` / `*Els` / 按 id 摸注册表的读法；spec 侧改用只在测试里可见的 `src/__tests__/test-registry.ts`（压测 imperative 组件用，不进生产构建）。
-- 台账三轴：`element-registry-lookups` **0 / 0 文件**（已清零）、`yami-element-refs` 481 / 91、`element-api-attach` 35；
+- 台账三轴：`element-registry-lookups` **0 / 0 文件**（已清零）、`yami-element-refs` 481 / 91、`element-api-attach` 34；
 - editor 包装层只剩 **`ParameterPane`** 一处 attach（`WindowFrame` / `SliderBox` / `NumberBox` / `SelectBox` / `SelectVar` / `CustomBox` 等已清）；ui-kit 侧还有 15 个 `.vue` 的 `attachApi` 与 23 个 `*-api.ts` 命令式工厂。
 - 收尾只剩 P3 一条装配轴，做法见下一节「P3：元素 API → 能力缝」。
 
@@ -134,7 +134,7 @@ P3 清零后剩下的元素 API 全部集中在四个**结构性**位置，逐�
 
 > ⚠️ **ParameterPane 是 editor 侧最后一条 attach，且它是被挡住的**：ui-kit 的 YMParameterPane.vue 里 self 就是根元素（ParameterPaneElement = HTMLElement & ParameterPaneApi），getData / onResize / createDetailBox / clear 都是宿主**往元素上赋值**的。要删这条 attach，得先把 self 拆成 { root, api }（与工厂改造同款），组件读 api 而不是读元素。
 >
-> **WindowFrame 批的剩余疑点（2026-11-12 实测）**：`window-object` 的 4 处
+> **WindowFrame 批已落地（2026-11-12）**：`window-handles` 上移到 ui-kit，由 `YMWindowFrame` 自己登记；`window-object` 的 4 处
 > `element.open/close/focus` 改成 `window-handles` 后，`window-object.spec`（23 条）与
 > `window-state.spec`（23 条）都能通过；卡住的是 `auto-tile-window-close.spec` 的
 > 「未保存确认」两条：给夹具补 `setWindowHandle` 后，`on(frame,'close')` 已确认走到
