@@ -134,6 +134,9 @@ P3 清零后剩下的元素 API 全部集中在四个**结构性**位置，逐�
 
 > ⚠️ **ParameterPane 是 editor 侧最后一条 attach，且它是被挡住的**：ui-kit 的 YMParameterPane.vue 里 self 就是根元素（ParameterPaneElement = HTMLElement & ParameterPaneApi），getData / onResize / createDetailBox / clear 都是宿主**往元素上赋值**的。要删这条 attach，得先把 self 拆成 { root, api }（与工厂改造同款），组件读 api 而不是读元素。
 >
+> `YMTextBox` / `YMTextArea` / `YMCustomBox` 同理被命令窗口的旧模块用着：`presetElement` / `presetObject` 窗口、
+> for-each / if-condition 表单桥、懒挂载冒烟测试都经 `read(el)` / `write(el)` 这类 shim 走元素 API；
+> 先按「窗口模块改实例」再删这三条 attach。
 > 其余 ui-kit 组件的元素消费方（2026-11-12 实测）：`YMCommonList` 被 `log/related-references.ts` 的 `list.reload()` 与 `palette/auto-tile.ts` 的 `nodeList.reload()` 用着（两个模块长期持有列表元素，要改成句柄）；`YMNumberVar` 只剩命令表单桥 spec 按元素读（`controlApi(id)` 可解）。
 
 判据：`element-api-attach` 0、`yami-element-refs` 0、`attachApi`/`attachElementApi` 两个导出删除、
