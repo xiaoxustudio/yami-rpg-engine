@@ -60,13 +60,15 @@ describe('YMFileVar', () => {
 		expect(wrapper.classes()).toContain('variable');
 	});
 
-	it('exposes bridge functions on root element', () => {
+	it('exposes bridge functions on the instance, mode stays on the root element', () => {
 		const wrapper = mount(YMFileVar, { props: { modelValue: 'test.png' } });
+		const vm = wrapper.vm as unknown as FileVarApi;
+		expect(typeof vm.read).toBe('function');
+		expect(typeof vm.write).toBe('function');
+		expect(typeof vm.switch).toBe('function');
 		const el = wrapper.element as unknown as FileVarApi;
-		expect(typeof el.read).toBe('function');
-		expect(typeof el.write).toBe('function');
-		expect(typeof el.switch).toBe('function');
 		expect(elementDataOf<FileVarApi>(el).mode).toBe('constant');
+		expect(typeof (el as unknown as { read?: unknown }).read).toBe('undefined');
 	});
 
 	it('disable adds disabled class', () => {

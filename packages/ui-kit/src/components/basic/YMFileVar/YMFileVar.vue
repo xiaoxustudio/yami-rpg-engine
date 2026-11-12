@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf } from '../../../utils/element-data';
 
 interface Props {
@@ -178,15 +177,6 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
-	attachApi(el as HTMLElement & Record<string, unknown>, {
-		read,
-		write,
-		switch: switchMode,
-		enable,
-		disable,
-		getFocus,
-		on
-	});
 	elementDataOf<{ mode?: 'constant' | 'variable' }>(el).mode = mode.value;
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);
