@@ -6,6 +6,7 @@ import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';
 import FileActorPage from '@app/components/inspector/FileActorPage.vue';
 import { getFileActorPage } from '@app/composables/file-actor-page-bridge';
+import { controlApi } from '@app/__tests__/control-api';
 
 interface ActorData {
 	portrait: string;
@@ -91,8 +92,7 @@ describe('FileActorPage（fileActor inspector 响应式双向绑定桥接）', (
 		...overrides
 	});
 
-	const read = (id: string) =>
-		(document.getElementById(id) as (HTMLElement & { read?: () => unknown }) | null)?.read?.();
+	const read = (id: string) => controlApi<{ read?(): unknown }>(id).read?.();
 
 	it('onMounted 交出 sync 页面桥（不再挂到 #fileActor-vue-mount 元素上）', async () => {
 		const wrapper = await mountPage();

@@ -6,6 +6,7 @@ const inspectorEls = createTestElementRegistry();
 import { mount } from '@vue/test-utils';
 import { initYamiI18n } from '@app/i18n';
 import UIImagePage from '@app/components/inspector/UIImagePage.vue';
+import { controlApi } from '@app/__tests__/control-api';
 
 interface ElementData {
 	name: string;
@@ -98,8 +99,7 @@ describe('UIImagePage（uiElement inspector 响应式双向绑定桥接）', () 
 		...overrides
 	});
 
-	const read = (id: string) =>
-		(document.getElementById(id) as (HTMLElement & { read?: () => unknown }) | null)?.read?.();
+	const read = (id: string) => controlApi<{ read?(): unknown }>(id).read?.();
 
 	it('onMounted 挂载 sync 桥接到 #uiImage-vue-mount 容器', async () => {
 		const wrapper = await mountPage();

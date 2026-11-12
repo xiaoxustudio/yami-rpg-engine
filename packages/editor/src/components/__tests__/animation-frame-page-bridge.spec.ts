@@ -7,6 +7,7 @@ import { mount } from '@vue/test-utils';
 import AnimJointFramePage from '@app/components/inspector/AnimJointFramePage.vue';
 import AnimParticleFramePage from '@app/components/inspector/AnimParticleFramePage.vue';
 import AnimSoundFramePage from '@app/components/inspector/AnimSoundFramePage.vue';
+import { controlApi } from '@app/__tests__/control-api';
 
 interface JointFrameData {
 	x: number;
@@ -85,8 +86,7 @@ describe('animation-frame 页（inspector sync 响应式桥接回归保护）', 
 		return wrapper;
 	};
 
-	const read = (id: string) =>
-		(document.getElementById(id) as (HTMLElement & { read?: () => unknown }) | null)?.read?.();
+	const read = (id: string) => controlApi<{ read?(): unknown }>(id).read?.();
 
 	describe('animJointFrame', () => {
 		const makeFrame = (overrides: Partial<JointFrameData> = {}): JointFrameData => ({
