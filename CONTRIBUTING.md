@@ -134,6 +134,9 @@ P3 清零后剩下的元素 API 全部集中在四个**结构性**位置，逐�
 
 > ⚠️ **ParameterPane 是 editor 侧最后一条 attach，且它是被挡住的**：ui-kit 的 YMParameterPane.vue 里 self 就是根元素（ParameterPaneElement = HTMLElement & ParameterPaneApi），getData / onResize / createDetailBox / clear 都是宿主**往元素上赋值**的。要删这条 attach，得先把 self 拆成 { root, api }（与工厂改造同款），组件读 api 而不是读元素。
 >
+> 2026-11-12 已落地前置：`element-utils` 的 `read` / `write` / `clear` 三个 shim 现在会经
+> `utils/control-instance.ts` 按元素反查控件实例（优先级：元素方法 → 实例 API → 元素数据）。
+> 但**直接写 `el.read()` / `el.write()` 的窗口模块与 spec 不走 shim**，那批仍要逐个改。
 > `YMTextBox` / `YMTextArea` / `YMCustomBox` 同理被命令窗口的旧模块用着：`presetElement` / `presetObject` 窗口、
 > for-each / if-condition 表单桥、懒挂载冒烟测试都经 `read(el)` / `write(el)` 这类 shim 走元素 API；
 > 先按「窗口模块改实例」再删这三条 attach。
