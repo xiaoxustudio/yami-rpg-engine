@@ -19,6 +19,8 @@ interface ComponentInstance {
 	type?: ComponentType;
 }
 
+import { isRef } from 'vue';
+
 export type ControlInstanceApi = Record<string, unknown> & {
 	read?: () => unknown;
 	write?: (value: unknown) => void;
@@ -35,7 +37,11 @@ export const controlApiOfElement = (target: unknown): ControlInstanceApi | null 
 		if (exposed) {
 			const name = instance.type?.__name ?? instance.type?.name ?? '';
 			const hasApi = Object.keys(exposed).some((key) => key !== 'root');
-			if (hasApi && !name.startsWith('YM')) return exposed as ControlInstanceApi;
+			// 只认「这个元素就是该控件的根」的实例：普通 DOM 子节点不能借祖先控件的 on/read
+			const rawRoot = (exposed as { root?: unknown }).root;
+			const root = isRef(rawRoot) ? rawRoot.value : rawRoot;
+			if (hasApi && root === target && !name.startsWith('YM'))
+				return exposed as ControlInstanceApi;
 		}
 		instance = instance.parent ?? null;
 		depth += 1;

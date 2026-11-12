@@ -57,6 +57,16 @@ export function on(
 		el.on(type, listener, options);
 		return;
 	}
+	// 元素 API 退场后能力在组件实例上：先按元素反查实例的 on
+	const api = controlApiOfElement(el);
+	if (typeof api?.on === 'function') {
+		(api.on as (t: string, l: (event: unknown) => void, o?: AddEventListenerOptions) => void)(
+			type,
+			listener,
+			options
+		);
+		return;
+	}
 	const target = elementOf(el);
 	if (!target) {
 		console.error('[on] el is not a DOM element or control, type:', type, 'el:', el);
