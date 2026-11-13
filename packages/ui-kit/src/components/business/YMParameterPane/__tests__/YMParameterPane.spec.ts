@@ -246,7 +246,10 @@ describe('YMParameterPane', () => {
 
 		const meta = (el.metas as unknown[])[0];
 		expect(meta).toBeTruthy();
-		const spy = vi.spyOn(el as unknown as { update: () => void }, 'update');
+		// 拆分后 `self` 是组件暴露的 api 对象，元素上的 update 只是过渡镜像；观察点要跟着落到 api 上。
+		const exposed = (wrapper.vm as unknown as { $: { exposed: { update: () => void } } }).$
+			.exposed;
+		const spy = vi.spyOn(exposed, 'update');
 		window.dispatchEvent(createPayloadEvent('script-change', { changedMeta: meta }));
 		expect(spy).toHaveBeenCalled();
 	});

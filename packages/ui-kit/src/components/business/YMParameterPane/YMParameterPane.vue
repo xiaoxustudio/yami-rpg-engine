@@ -230,6 +230,9 @@ type ParameterPaneElement = HTMLElement & PaneStateAccessors & ParameterPaneApi;
 
 let el: ParameterPaneElement | null = null;
 
+/** 控件能力对象：元素只做 DOM，方法/状态都挂在这里。 */
+const api = {} as ParameterPaneElement;
+
 const scriptChangeActive = ref(false);
 
 const attachStateAccessors = (self: ParameterPaneElement): void => {
@@ -299,7 +302,7 @@ interface ParamScriptListElement extends HTMLElement {
 }
 
 const bind = (scriptList: ParamScriptListElement): void => {
-	const self = el!;
+	const self = api;
 	self.scriptList = scriptList;
 	if (scriptList.classList.contains('param-list')) {
 		const object = scriptList.object!;
@@ -319,7 +322,7 @@ const bind = (scriptList: ParamScriptListElement): void => {
 };
 
 const rewrite = (parameters: Record<string, unknown>, key: string): void => {
-	const self = el!;
+	const self = api;
 	for (const wrap of self.wraps) {
 		const script = wrap.box.data!;
 		const map = script.parameters;
@@ -340,7 +343,7 @@ const rewrite = (parameters: Record<string, unknown>, key: string): void => {
 };
 
 const update = (): void => {
-	const self = el!;
+	const self = api;
 	self.clear();
 	self.appendHeadPad();
 	let changed = false;
@@ -362,7 +365,7 @@ const update = (): void => {
 			const banner = document.createElement('div');
 			addClass(banner, 'deprecated-banner');
 			banner.textContent = core.deprecatedBannerText(meta.overview.deprecated);
-			self.appendChild(banner);
+			el!.appendChild(banner);
 		}
 		const { groupOrder, groupMap } = core.groupParameters(paramList);
 		const createParamRow = (
@@ -427,14 +430,14 @@ const update = (): void => {
 				createParamRow(box, grid, children, parameter);
 			}
 			self.updateParamDisplay(box);
-			self.appendChild(box);
+			el!.appendChild(box);
 		}
 	}
 	if (changed) {
 		if (self.scriptList) dispatchChangeEvent(self.scriptList);
 	}
 	if (self.updateEventEnabled) {
-		dispatchUpdateEvent(self);
+		dispatchUpdateEvent(el!);
 	}
 	self.onResize?.();
 	scriptChangeActive.value = true;
@@ -457,18 +460,18 @@ const disableInput = (el: ParamInput): void => {
 };
 
 const appendHeadPad = (): void => {
-	const self = el!;
+	const self = api;
 	let { headPad } = self;
 	if (headPad === null || !headPad.parentNode) {
 		headPad = headPadRef.value ?? document.createElement('div');
 		headPad.style.display = 'none';
 		self.headPad = headPad;
 	}
-	self.appendChild(headPad);
+	el!.appendChild(headPad);
 };
 
 const createDetailBox = (): DetailWrap => {
-	const self = el!;
+	const self = api;
 	const { detailBoxes } = self;
 	let box: HTMLElement;
 	if (detailBoxes.length !== 0) {
@@ -579,7 +582,7 @@ const updateParamDisplay = (detailBox: DetailBoxElement): void => {
 };
 
 const createCheckBox = (): ParamWrap => {
-	const self = el!;
+	const self = api;
 	const { checkBoxes } = self;
 	if (checkBoxes.length !== 0) {
 		return checkBoxes.pop()!;
@@ -597,7 +600,7 @@ const createCheckBox = (): ParamWrap => {
 };
 
 const createNumberBox = (): ParamWrap => {
-	const self = el!;
+	const self = api;
 	const { numberBoxes } = self;
 	if (numberBoxes.length !== 0) {
 		return numberBoxes.pop()!;
@@ -610,7 +613,7 @@ const createNumberBox = (): ParamWrap => {
 };
 
 const createNumberVar = (): ParamWrap => {
-	const self = el!;
+	const self = api;
 	const { numberVars } = self;
 	if (numberVars.length !== 0) {
 		return numberVars.pop()!;
@@ -623,7 +626,7 @@ const createNumberVar = (): ParamWrap => {
 };
 
 const createTextBox = (): ParamWrap => {
-	const self = el!;
+	const self = api;
 	const { textBoxes } = self;
 	if (textBoxes.length !== 0) {
 		return textBoxes.pop()!;
@@ -651,7 +654,7 @@ const createTextBox = (): ParamWrap => {
 };
 
 const createSelectBox = (): ParamWrap => {
-	const self = el!;
+	const self = api;
 	const { selectBoxes } = self;
 	if (selectBoxes.length !== 0) {
 		return selectBoxes.pop()!;
@@ -664,7 +667,7 @@ const createSelectBox = (): ParamWrap => {
 };
 
 const createKeyboardBox = (): ParamWrap => {
-	const self = el!;
+	const self = api;
 	const { keyboardBoxes } = self;
 	if (keyboardBoxes.length !== 0) {
 		return keyboardBoxes.pop()!;
@@ -677,7 +680,7 @@ const createKeyboardBox = (): ParamWrap => {
 };
 
 const createColorBox = (): ParamWrap => {
-	const self = el!;
+	const self = api;
 	const { colorBoxes } = self;
 	if (colorBoxes.length !== 0) {
 		return colorBoxes.pop()!;
@@ -690,7 +693,7 @@ const createColorBox = (): ParamWrap => {
 };
 
 const createCustomBox = (): ParamWrap => {
-	const self = el!;
+	const self = api;
 	const { customBoxes } = self;
 	if (customBoxes.length !== 0) {
 		return customBoxes.pop()!;
@@ -791,7 +794,7 @@ const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
 };
 
 const recycle = (wrap: RecycleWrap): void => {
-	const self = el!;
+	const self = api;
 	switch (wrap.tag) {
 		case 'detail-box': {
 			const { children } = wrap;
@@ -851,7 +854,7 @@ const recycle = (wrap: RecycleWrap): void => {
 };
 
 const clear = (): void => {
-	const self = el!;
+	const self = api;
 	self.metas = [];
 	const { wraps } = self;
 	let i = wraps.length;
@@ -860,7 +863,7 @@ const clear = (): void => {
 			self.recycle(wraps[i]);
 		}
 		wraps.length = 0;
-		self.textContent = '';
+		el!.textContent = '';
 	}
 	if (!self.scriptList?.data) {
 		scriptChangeActive.value = false;
@@ -879,7 +882,7 @@ const on = (
 };
 
 const componentChange = (event: Event): void => {
-	const self = el!;
+	const self = api;
 	let element = event.target as HTMLElement;
 	if (element.tagName === 'INPUT') {
 		element = element.parentNode as HTMLElement;
@@ -952,7 +955,7 @@ const applyAffix = (input: HTMLElement, param: ParamDef): void => {
 };
 
 const windowLocalize = (_event: Event): void => {
-	const self = el!;
+	const self = api;
 	for (const { langMap } of self.metas) {
 		const oldMap = langMap.active;
 		const newMap = langMap.update().active;
@@ -964,11 +967,11 @@ const windowLocalize = (_event: Event): void => {
 };
 
 const scriptChange = (event: Event): void => {
-	const self = el!;
+	const self = api;
 	for (const meta of self.metas) {
 		if (meta === readPayload<{ changedMeta?: unknown }>(event).changedMeta) {
 			const selectList = props.selectList;
-			if (selectList && self.contains(selectList.target as HTMLElement)) {
+			if (selectList && el!.contains(selectList.target as HTMLElement)) {
 				selectList.close();
 			}
 			self.update();
@@ -976,32 +979,6 @@ const scriptChange = (event: Event): void => {
 		}
 	}
 };
-
-defineExpose({
-	bind,
-	rewrite,
-	update,
-	appendHeadPad,
-	createDetailBox,
-	createParamInput,
-	updateParamInput,
-	updateParamDisplay,
-	createCheckBox,
-	createNumberBox,
-	createNumberVar,
-	createTextBox,
-	createSelectBox,
-	createKeyboardBox,
-	createColorBox,
-	createCustomBox,
-	createRepeatableGroup,
-	recycle,
-	clear,
-	on,
-	componentChange,
-	applyAffix,
-	root
-});
 
 useEventListener(window, 'localize', windowLocalize);
 useEventListener(window, 'script-change', scriptChange, { enabled: scriptChangeActive });
@@ -1014,25 +991,30 @@ const onSelfUpdate = (event: Event): void => {
 };
 
 onMounted(() => {
-	const self = root.value as ParameterPaneElement;
-	if (!self) return;
-	el = self;
-	attachStateAccessors(self);
-	self.scriptList = null;
-	self.headPad = headPadRef.value;
-	self.metas = [];
-	self.wraps = [];
-	self.detailBoxes = [];
-	self.checkBoxes = [];
-	self.numberBoxes = [];
-	self.numberVars = [];
-	self.textBoxes = [];
-	self.selectBoxes = [];
-	self.keyboardBoxes = [];
-	self.colorBoxes = [];
-	self.customBoxes = [];
-	self.updateEventEnabled = false;
-	attachApi<ParameterPaneApi>(self, {
+	const host = root.value as ParameterPaneElement;
+	if (!host) return;
+	el = host;
+	// 暴露对象补上根元素：editor 包装层与窗口节点表都从这里取 host（defineExpose 捕获的是引用）
+	(api as ParameterPaneElement & { root: HTMLElement | null }).root = host;
+	// 过渡：editor 的 ParameterPane 包装层与既有 spec 仍按元素读状态，先给 host 也挂一份；
+	// 两边共用 paneState，读到的始终是同一份，外部宿主迁完就删掉这一行。
+	attachStateAccessors(host);
+	attachStateAccessors(api);
+	api.scriptList = null;
+	api.headPad = headPadRef.value;
+	api.metas = [];
+	api.wraps = [];
+	api.detailBoxes = [];
+	api.checkBoxes = [];
+	api.numberBoxes = [];
+	api.numberVars = [];
+	api.textBoxes = [];
+	api.selectBoxes = [];
+	api.keyboardBoxes = [];
+	api.colorBoxes = [];
+	api.customBoxes = [];
+	api.updateEventEnabled = false;
+	const paneApi: ParameterPaneApi = {
 		getData: (): ScriptDef[] => [],
 		windowLocalize,
 		scriptChange,
@@ -1058,8 +1040,12 @@ onMounted(() => {
 		on,
 		componentChange,
 		applyAffix
-	});
+	};
+	Object.assign(api, paneApi);
+	attachApi<ParameterPaneApi>(host, paneApi); // 过渡：外部宿主还在按元素读
 });
+
+defineExpose(api);
 </script>
 
 <template>
