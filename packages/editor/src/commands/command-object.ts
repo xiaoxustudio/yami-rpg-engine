@@ -107,12 +107,21 @@ interface CommandCustomShape {
 	parsingScript: { id: string; parameters: Record<string, unknown> | null };
 	loadedScript: { id: string; parameters: Record<string, unknown> | null };
 	windowFrame?: import('@app/composables/window-handles').WindowHandle;
-	parameterPane?: YamiElement & {
-		getData?: () => Array<{ id: string; parameters: Record<string, unknown> | null }>;
-		onResize?: () => void;
-		createDetailBox?: () => unknown;
-		clear?: () => void;
+	parameterPane?: {
+		configure(options: {
+			getData?: () => Array<{ id: string; parameters: Record<string, unknown> | null }>;
+			onResize?: () => void;
+			createDetailBox?: () => unknown;
+			clear?: () => void;
+		}): void;
+		metas: unknown[];
+		wraps: unknown[];
+		recycle(node: unknown): void;
+		update(): void;
+		clear(): void;
+		scriptChange?: (event: Event) => void;
 	};
+	parameterPaneEl?: YamiElement | null;
 	parameterGrid?: YamiElement;
 	[k: string]: unknown;
 }

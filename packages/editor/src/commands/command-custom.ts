@@ -1,8 +1,9 @@
 import { scriptCommandNodes } from '@app/composables/command-nodes';
 import { getWindowHandle } from '@app/composables/window-handles';
+import { controlApiOfElement } from '@app/utils/control-instance';
 import { Window } from '@app/tools/window-object.ts';
 import { onToolWindowMounted } from '@app/tools/tool-window-host';
-import { clear, getFocus } from '@app/utils/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/commands/command-object.ts';
 
 import { CommandSuggestion, CommandSuggestionItem } from './command-tip.ts';
@@ -67,17 +68,19 @@ interface ParameterWrap {
 	children: unknown[];
 }
 
-interface ParameterPane extends YamiElement {
-	getData: () => ScriptObject[];
-	onResize: () => void;
-	createDetailBox: () => ParameterWrap;
-	clear: () => void;
+interface ParameterPane {
+	configure(options: {
+		getData?: () => ScriptObject[];
+		onResize?: () => void;
+		createDetailBox?: () => ParameterWrap;
+		clear?: () => void;
+	}): void;
 	metas: unknown[];
 	wraps: ParameterWrap[];
 	recycle(node: unknown): void;
 	update(): void;
-	querySelector(selector: string): HTMLElement | null;
-	scriptChange: (event: Event) => void;
+	clear(): void;
+	scriptChange?: (event: Event) => void;
 }
 
 Command.custom = {
@@ -95,9 +98,11 @@ Command.custom = {
 		}
 
 		this.windowFrame = getWindowHandle('scriptCommand') ?? undefined;
-		this.parameterPane = scriptCommandNodes.pick(
-			'parameterPane'
-		) as unknown as typeof Command.custom.parameterPane;
+		const paneEl = scriptCommandNodes.pick('parameterPane') as YamiElement | null;
+		this.parameterPaneEl = paneEl;
+		this.parameterPane = (
+			paneEl ? (controlApiOfElement(paneEl) as unknown as ParameterPane | null) : null
+		) as typeof Command.custom.parameterPane;
 		this.parameterGrid = scriptCommandNodes.pick('parameterGrid') as YamiElement;
 
 		if (!this.parameterPane) {
@@ -106,43 +111,42 @@ Command.custom = {
 			return;
 		}
 		const scriptList: ScriptObject[] = [this.loadedScript];
-		this.parameterPane.getData = () => scriptList;
-
 		const grid = this.parameterGrid;
-		this.parameterPane.onResize = () => {
-			const height = grid.clientHeight;
-			if (this.windowFrame!.root) this.windowFrame!.root.style.height = `${height + 78}px`;
-			this.windowFrame!.absolute?.(this.windowX ?? 0, this.windowY ?? 0);
-		};
 
 		const box = scriptCommandNodes.pick('parameterDetail') as unknown as ParameterWrapBox;
 		if (!box) return;
 		const wrap: ParameterWrap = { box, grid, children: [] };
 		box.wrap = wrap;
-		this.parameterPane.createDetailBox = function (): ParameterWrap {
-			return wrap;
-		};
-
-		this.parameterPane.clear = function (this: ParameterPane): void {
-			this.metas = [];
-			const { wraps } = this;
-			if (wraps.length !== 0) {
-				const { children, box } = wraps[0];
-				let i = children.length;
-				while (--i >= 0) {
-					this.recycle(children[i]);
+		this.parameterPane!.configure({
+			getData: () => scriptList,
+			onResize: () => {
+				const height = grid.clientHeight;
+				if (this.windowFrame!.root)
+					this.windowFrame!.root.style.height = `${height + 78}px`;
+				this.windowFrame!.absolute?.(this.windowX ?? 0, this.windowY ?? 0);
+			},
+			createDetailBox: () => wrap,
+			clear: function (this: ParameterPane): void {
+				this.metas = [];
+				const { wraps } = this;
+				if (wraps.length !== 0) {
+					const { children, box: firstBox } = wraps[0];
+					let i = children.length;
+					while (--i >= 0) {
+						this.recycle(children[i]);
+					}
+					firstBox.meta = null;
+					firstBox.data = null;
+					children.length = 0;
+					wraps.length = 0;
 				}
-				box.meta = null;
-				box.data = null;
-				children.length = 0;
-				wraps.length = 0;
+				window.removeEventListener('script-change', this.scriptChange as never);
 			}
-			window.removeEventListener('script-change', this.scriptChange);
-		};
+		});
 
 		this.windowFrame?.root?.addEventListener('closed', (_event: Event) => {
 			this.loadedScript.parameters = null;
-			clear(this.parameterPane);
+			this.parameterPane?.clear?.();
 		});
 	},
 
@@ -298,7 +302,7 @@ Command.custom = {
 		this.windowY = Window.absolutePos.y;
 		this.parameterPane!.update();
 		const selector = Layout.focusableSelector;
-		const focusable = this.parameterPane!.querySelector(selector);
+		const focusable = this.parameterPaneEl?.querySelector(selector) ?? null;
 		if (focusable) getFocus(focusable);
 		this.windowFrame?.setTitle?.(this.commandNameMap?.[id] ?? id);
 	},

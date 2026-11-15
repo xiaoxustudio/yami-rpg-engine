@@ -164,7 +164,7 @@ describe('YMParameterPane', () => {
 	it('mounts and exposes api', () => {
 		const wrapper = mount(YMParameterPane, { props: makeProps() });
 		expect(wrapper.element.classList.contains('parameter-pane')).toBe(true);
-		const el = wrapper.element as unknown as ParameterPaneElement;
+		const vm = wrapper.vm as unknown as ParameterPaneElement;
 		for (const name of [
 			'bind',
 			'rewrite',
@@ -178,7 +178,7 @@ describe('YMParameterPane', () => {
 			'createCustomBox',
 			'applyAffix'
 		]) {
-			expect(typeof el[name], name).toBe('function');
+			expect(typeof vm[name], name).toBe('function');
 		}
 	});
 
@@ -200,14 +200,14 @@ describe('YMParameterPane', () => {
 				})
 			})
 		});
-		const el = wrapper.element as unknown as ParameterPaneElement;
+		const vm = wrapper.vm as unknown as ParameterPaneElement;
 		const scriptList: MockScriptList = document.createElement('div');
 		scriptList.classList.add('param-list');
 		scriptList.data = [{ id: 's1', parameters: { a: 'A1', b: 5 } }];
 		scriptList.object = { update: () => {} };
 		scriptList.history = { save: () => {} };
-		el.bind(scriptList);
-		el.update();
+		vm.bind(scriptList);
+		vm.update();
 		expect(wrapper.element.querySelectorAll('.detail-box').length).toBe(1);
 		expect(wrapper.element.querySelectorAll('.mock-input').length).toBe(2);
 		expect(wrapper.element.querySelector('.text').textContent).toBe('a');
@@ -234,17 +234,17 @@ describe('YMParameterPane', () => {
 			}),
 			attachTo: document.body
 		});
-		const el = wrapper.element as unknown as ParameterPaneElement;
+		const vm = wrapper.vm as unknown as ParameterPaneElement;
 		const scriptList: MockScriptList = document.createElement('div');
 		scriptList.classList.add('param-list');
 		scriptList.data = [{ id: 's1', parameters: { a: 'A1' } }];
 		scriptList.object = { update: () => {} };
 		scriptList.history = { save: () => {} };
-		el.bind(scriptList);
-		el.update();
+		vm.bind(scriptList);
+		vm.update();
 		await nextTick();
 
-		const meta = (el.metas as unknown[])[0];
+		const meta = (vm.metas as unknown[])[0];
 		expect(meta).toBeTruthy();
 		// 拆分后 `self` 是组件暴露的 api 对象，元素上的 update 只是过渡镜像；观察点要跟着落到 api 上。
 		const exposed = (wrapper.vm as unknown as { $: { exposed: { update: () => void } } }).$
@@ -256,7 +256,7 @@ describe('YMParameterPane', () => {
 
 	it('bind wraps param-list object.update', () => {
 		const wrapper = mount(YMParameterPane, { props: makeProps() });
-		const el = wrapper.element as unknown as ParameterPaneElement;
+		const vm = wrapper.vm as unknown as ParameterPaneElement;
 		let updates = 0;
 		const scriptList: MockScriptList = document.createElement('div');
 		scriptList.classList.add('param-list');
@@ -264,10 +264,10 @@ describe('YMParameterPane', () => {
 		scriptList.object = {
 			update: () => updates++
 		};
-		el.bind(scriptList);
+		vm.bind(scriptList);
 		scriptList.object.update();
 		expect(updates).toBe(1);
-		expect(el.getData).toBeTypeOf('function');
+		expect(vm.getData).toBeTypeOf('function');
 	});
 
 	it('componentChange updates parameters and dispatches change', () => {
@@ -285,14 +285,15 @@ describe('YMParameterPane', () => {
 			})
 		});
 		const el = wrapper.element as unknown as ParameterPaneElement;
+		const vm = wrapper.vm as unknown as ParameterPaneElement;
 		const scriptList: MockScriptList = document.createElement('div');
 		scriptList.classList.add('param-list');
 		const params = { a: 'A1' };
 		scriptList.data = [{ id: 's1', parameters: params }];
 		scriptList.object = { update: () => {} };
 		scriptList.history = { save: () => {} };
-		el.bind(scriptList);
-		el.update();
+		vm.bind(scriptList);
+		vm.update();
 		const input = wrapper.element.querySelector('.mock-input') as unknown as HTMLElement & {
 			[k: string]: unknown;
 		};
@@ -320,15 +321,15 @@ describe('YMParameterPane', () => {
 				})
 			})
 		});
-		const el = wrapper.element as unknown as ParameterPaneElement;
+		const vm = wrapper.vm as unknown as ParameterPaneElement;
 		const scriptList: MockScriptList = document.createElement('div');
 		scriptList.classList.add('param-list');
 		scriptList.data = [{ id: 's1', parameters: { a: 'A1' } }];
 		scriptList.object = { update: () => {} };
-		el.bind(scriptList);
-		el.update();
+		vm.bind(scriptList);
+		vm.update();
 		expect(wrapper.element.querySelectorAll('.mock-input').length).toBe(1);
-		el.clear();
+		vm.clear();
 		expect(wrapper.element.querySelectorAll('.mock-input').length).toBe(0);
 	});
 
@@ -338,11 +339,11 @@ describe('YMParameterPane', () => {
 				measureText: () => ({ width: 10 })
 			})
 		});
-		const el = wrapper.element as unknown as ParameterPaneElement;
+		const vm = wrapper.vm as unknown as ParameterPaneElement;
 		const input = makeInput();
 		const innerInput = document.createElement('input');
 		input.appendChild(innerInput);
-		el.applyAffix(input, { prefix: '$', suffix: 'px' });
+		vm.applyAffix(input, { prefix: '$', suffix: 'px' });
 		expect(input.querySelector('.param-affix.left')?.textContent).toBe('$');
 		expect(input.querySelector('.param-affix.right')?.textContent).toBe('px');
 	});

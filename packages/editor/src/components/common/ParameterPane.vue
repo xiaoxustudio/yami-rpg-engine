@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { YMParameterPane } from '@ui-kit';
 import type { ManifestEntry } from '@ui-kit';
@@ -40,7 +40,6 @@ import { PluginManager } from '@app/plugin/plugin';
 import { Selection } from '@app/tools/text-capture';
 import { measureText as measureTextUtil } from '@app/utils/dom';
 import { setTooltip as setTooltipUtil } from '@app/utils/element-utils';
-import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -88,6 +87,7 @@ const ym = ref<{
 		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
+	configure(options: Record<string, unknown>): void;
 } | null>(null);
 
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
@@ -103,12 +103,7 @@ const on = (
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
-defineExpose({ bind, rewrite, update, clear, on, root });
+const configure = (options: Record<string, unknown>): void => ym.value?.configure(options);
 
-onMounted(() => {
-	const el = root.value as HTMLElement &
-		Record<'bind' | 'rewrite' | 'update' | 'clear' | 'on', unknown>;
-	if (!el) return;
-	attachElementApi(el, { bind, rewrite, update, clear, on });
-});
+defineExpose({ bind, rewrite, update, clear, on, configure, root });
 </script>

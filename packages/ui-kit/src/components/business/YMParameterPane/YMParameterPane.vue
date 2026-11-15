@@ -10,7 +10,6 @@ import {
 	show,
 	write
 } from '../../../utils/dom';
-import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf } from '../../../utils/element-data';
 import { createParamPaneCore, type ParamDef } from './param-pane-core';
 import { useEventListener } from '../../../composables/useEventListener';
@@ -197,7 +196,15 @@ const paneStateFields = [
 
 type PaneStateAccessors = { [K in keyof typeof paneState]: (typeof paneState)[K] };
 
+export interface ParameterPaneConfigureOptions {
+	getData?: () => ScriptDef[];
+	onResize?: () => void;
+	createDetailBox?: () => unknown;
+	clear?: () => void;
+}
+
 interface ParameterPaneApi {
+	configure(options: ParameterPaneConfigureOptions): void;
 	getData: () => ScriptDef[];
 	windowLocalize: typeof windowLocalize;
 	scriptChange: typeof scriptChange;
@@ -996,9 +1003,7 @@ onMounted(() => {
 	el = host;
 	// 暴露对象补上根元素：editor 包装层与窗口节点表都从这里取 host（defineExpose 捕获的是引用）
 	(api as ParameterPaneElement & { root: HTMLElement | null }).root = host;
-	// 过渡：editor 的 ParameterPane 包装层与既有 spec 仍按元素读状态，先给 host 也挂一份；
-	// 两边共用 paneState，读到的始终是同一份，外部宿主迁完就删掉这一行。
-	attachStateAccessors(host);
+
 	attachStateAccessors(api);
 	api.scriptList = null;
 	api.headPad = headPadRef.value;
@@ -1014,7 +1019,17 @@ onMounted(() => {
 	api.colorBoxes = [];
 	api.customBoxes = [];
 	api.updateEventEnabled = false;
+	const configure = (options: ParameterPaneConfigureOptions): void => {
+		if (options.getData) api.getData = options.getData;
+		if (options.onResize) api.onResize = options.onResize;
+		if (options.createDetailBox) {
+			api.createDetailBox = options.createDetailBox as typeof api.createDetailBox;
+		}
+		if (options.clear) api.clear = options.clear as typeof api.clear;
+	};
+
 	const paneApi: ParameterPaneApi = {
+		configure,
 		getData: (): ScriptDef[] => [],
 		windowLocalize,
 		scriptChange,
@@ -1042,7 +1057,7 @@ onMounted(() => {
 		applyAffix
 	};
 	Object.assign(api, paneApi);
-	attachApi<ParameterPaneApi>(host, paneApi); // 过渡：外部宿主还在按元素读
+	// 元素上不再挂方法：外部宿主经 defineExpose(api) / configure 使用
 });
 
 defineExpose(api);
