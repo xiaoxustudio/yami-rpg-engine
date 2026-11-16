@@ -37,8 +37,8 @@ class FolderItem {
 }
 
 const makeLinks = () => ({
-	browser: { display: 'normal', filters: null, searchResults: null, backToParentFolder: vi.fn() },
-	nav: { selections: [], load: vi.fn(), scrollToSelection: vi.fn() },
+	browser: { display: 'normal', filters: null, searchResults: [], backToParentFolder: vi.fn() },
+	nav: { getSelections: () => [], load: vi.fn(), scrollToSelection: vi.fn() },
 	head: { view: { write: vi.fn() } },
 	body: null
 });

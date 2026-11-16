@@ -46,7 +46,6 @@ import {
 	attachDoubleclick,
 	focusWithOptions
 } from '../../../utils/dom';
-import { attachApi } from '../../../utils/attach-api';
 import { useEventListener } from '../../../composables/useEventListener';
 import { elementDataOf } from '../../../utils/element-data';
 import { renderDetached } from '../../../utils/detached';
@@ -126,21 +125,28 @@ interface FileBodyTextBox extends HTMLElement {
 	setMaxLength(length: number): void;
 }
 
+/**
+ * 外层 `YMFileBrowser` 交下来的显式句柄表（nav/head/body 都是组件实例）。
+ *
+ * nav 的选中项只能经 `getSelections()` 取；head 只借视图滑块写索引，DOM 需求走 `head.view`。
+ */
 interface FileBrowserLinks {
 	browser: {
-		filters?: string[];
+		// pane 只做透传：句柄表给的是「未知条目」列表，具体条目类型由 fileClasses 决定
+		filters?: unknown[] | null;
 		display?: string;
-		searchResults?: FileBodyFile[];
+		searchResults?: unknown[];
 		backToParentFolder?(): boolean;
 		getFilePaths?(files: FileBodyFile[]): { absolutePaths: string[] };
 	};
+	// `null` = 外层句柄表还没填（`onMounted` 的 `nextTick` 才拿到模板 ref），使用处一律 `?.`
 	nav: {
-		selections: FileBodyFile[];
-		load(folder: FileBodyFile): void;
-		scrollToSelection(mode: string): void;
-	};
-	body?: HTMLElement | null;
-	head?: { view: { write(index: number): void } } | null;
+		getSelections?(): unknown[];
+		load?(folder: FileBodyFile): void;
+		scrollToSelection?(mode: string): void;
+	} | null;
+	body?: unknown;
+	head?: { view?: { write?(index: number): void } } | null;
 }
 
 type FileBodyIconApi = HTMLElement & {
@@ -169,46 +175,11 @@ type FileBodyContentApi = HTMLElement & {
 	visibleLines?: number;
 };
 
-type FileBodyPaneApi = HTMLElement & {
-	textBox?: FileBodyTextBox;
-	content?: FileBodyContentApi;
-	elements?: (FileBodyItemApi | undefined)[];
-	links?: FileBrowserLinks;
-	setViewIndex?: (idx: number) => void;
-	updateViewMode?: () => void;
-	updateFiles?: () => void;
-	resize?: () => void;
-	computeGridProperties?: () => void;
-	updateContentSize?: () => void;
-	updateContentOffset?: () => void;
-	resetContentStyle?: () => void;
-	createFlatItems?: (dir: FileBodyFile[]) => void;
-	select?: (...files: FileBodyFile[]) => void;
-	selectAll?: () => void;
-	unselect?: () => void;
-	selectByPath?: (path: string) => void;
-	selectDefault?: () => void;
-	selectRelativeInGridMode?: (direction: 'prev' | 'next' | 'prev-line' | 'next-line') => void;
-	getDirName?: () => string;
-	createFolder?: () => void;
-	showInExplorer?: () => void;
-	openFileLocation?: (file: FileBodyFile) => void;
-	openFile?: (file: FileBodyFile) => void;
-	copyFiles?: (cut?: boolean) => void;
-	pasteFiles?: (targetPath?: string) => void;
-	deleteFiles?: () => void;
-	rename?: (file: FileBodyFile) => void;
-	cancelRenaming?: () => void;
-	importFiles?: () => void;
-	exportFile?: () => void;
-	clearElements?: (start: number) => void;
-	clear?: () => HTMLElement;
-	on?: (
-		type: string,
-		listener: (event: Event) => void,
-		options?: boolean | AddEventListenerOptions
-	) => void;
-};
+/**
+ * body 的根元素只需要 **DOM 语义**（滚动、测量、派发原生事件、`file.getContext(node)`）。
+ * 能力与状态一律走 `defineExpose`，元素上不再挂方法/`selections`/`links`。
+ */
+type FileBodyPaneApi = HTMLElement;
 
 /** 内容元素上的元素数据（`count` 仍在 DATA_FIELDS 内） */
 const contentData = (el: unknown): { count?: number } => elementDataOf<{ count?: number }>(el);
@@ -441,7 +412,7 @@ function setViewIndex(idx: number): void {
 	if (viewIndex !== idx) {
 		const { head } = props.links;
 		viewIndex = idx;
-		head!.view.write(idx);
+		head?.view?.write?.(idx);
 		updateViewMode();
 	}
 }
@@ -483,8 +454,8 @@ function updateViewMode(): void {
 function getFiles(): FileBodyFile[] {
 	const { browser, nav } = props.links;
 	return flattenFolderChildren(
-		nav.selections,
-		browser.filters,
+		(nav?.getSelections?.() ?? []) as FileBodyFile[],
+		(browser.filters ?? null) as string[] | null,
 		(item) => item instanceof FolderItem,
 		(item) => item.type
 	);
@@ -501,7 +472,7 @@ function updateFiles(): void {
 			createFlatItems(getFiles());
 			break;
 		case 'search':
-			createFlatItems(browser.searchResults!);
+			createFlatItems((browser.searchResults ?? []) as FileBodyFile[]);
 			break;
 	}
 
@@ -900,15 +871,20 @@ function updateIcon(file: FileBodyFile): void {
 }
 
 /**
- * 按下文件行时的「激活」入口：先看元素上的覆写，没有才走本实现。
+ * 按下文件行时的「激活」入口。
+ *
+ * 选择器窗口要的是「单击行 = 选中」而不是「按下待定」，以前靠往 body 元素上赋值
+ * `activateFile` 覆写；元素不再挂可写方法，改成显式句柄 `setActivateFile()`。
  */
-function activateFileViaElement(file: FileBodyFile): void {
-	const host = el.value as
-		| (FileBodyPaneApi & { activateFile?: (file: FileBodyFile) => void })
-		| undefined;
-	const override = host?.activateFile;
-	if (typeof override === 'function' && override !== activateFile) {
-		override.call(host, file);
+let activateOverride: ((file: FileBodyFile) => void) | null = null;
+
+function setActivateFile(fn: ((file: FileBodyFile) => void) | null): void {
+	activateOverride = fn;
+}
+
+function activateCurrentFile(file: FileBodyFile): void {
+	if (activateOverride) {
+		activateOverride(file);
 		return;
 	}
 	activateFile(file);
@@ -1105,7 +1081,7 @@ function getDirName(): string {
 	switch (files.length) {
 		case 0: {
 			const { nav } = props.links;
-			const folders = nav.selections;
+			const folders = (nav?.getSelections?.() ?? []) as FileBodyFile[];
 			if (folders.length === 1) {
 				dirname = folders[0].path;
 			}
@@ -1133,7 +1109,7 @@ function createFolder(): void {
 				if (changed) {
 					const folder = Directory?.getFolder(path);
 					if (folder?.path === path) {
-						props.links.nav.load(folder.parent!);
+						props.links.nav?.load?.(folder.parent!);
 						select(folder);
 						rename(folder);
 					}
@@ -1160,8 +1136,8 @@ function openFileLocation(file: FileBodyFile): void {
 		const folder = Directory?.getFolder(file.path);
 		if (folder instanceof FolderItem) {
 			const { nav } = props.links;
-			nav.load(folder!);
-			nav.scrollToSelection('middle');
+			nav?.load?.(folder!);
+			nav?.scrollToSelection?.('middle');
 		}
 	}
 }
@@ -1170,8 +1146,8 @@ function openFile(file: FileBodyFile): void {
 	const node = el.value as FileBodyPaneApi;
 	if (file instanceof FolderItem) {
 		const { nav } = props.links;
-		nav.load(file);
-		nav.scrollToSelection('middle');
+		nav?.load?.(file);
+		nav?.scrollToSelection?.('middle');
 	}
 	if ((file instanceof FileItem || file?.meta?.guid) && openEventEnabled) {
 		const open = new Event('open') as FileBodyEvent;
@@ -1195,8 +1171,9 @@ function copyFiles(cut: boolean = false): void {
 
 function pasteFiles(targetPath?: string): void {
 	const { browser, nav } = props.links;
-	if (!targetPath && nav.selections.length === 1) {
-		targetPath = nav.selections[0].path;
+	const folders = (nav?.getSelections?.() ?? []) as FileBodyFile[];
+	if (!targetPath && folders.length === 1) {
+		targetPath = folders[0].path;
 	}
 	if (!targetPath) return;
 	const copy = Clipboard?.read('yami.files');
@@ -1207,7 +1184,7 @@ function pasteFiles(targetPath?: string): void {
 			if (meta) files.push(meta.file!);
 		}
 		if (files.length !== 0) {
-			const { absolutePaths } = browser.getFilePaths!(files);
+			const { absolutePaths } = browser.getFilePaths?.(files) ?? { absolutePaths: [] };
 			Directory?.readdir(absolutePaths)
 				.then((dir: FileBodyFile[]) => {
 					const path = File?.path(targetPath) ?? targetPath;
@@ -1329,7 +1306,7 @@ function cancelRenaming(): void {
 
 function importFiles(): void {
 	const { nav } = props.links;
-	const folders = nav.selections;
+	const folders = (nav?.getSelections?.() ?? []) as FileBodyFile[];
 	if (folders.length !== 1) return;
 	const folder = folders[0];
 	const dialogs: { import?: string; export?: string } = Editor?.config.dialogs ?? {};
@@ -1411,6 +1388,36 @@ function exportFile(): void {
 				Directory?.update();
 			});
 	}
+}
+
+/**
+ * 当前选中项。以前是元素上的 `selections` 属性，现在只给方法
+ * ——「读状态」和「改状态」不再共用一条元素通道。
+ */
+function getSelections(): FileBodyFile[] {
+	return selections;
+}
+
+/**
+ * 当前可见行（按行槽位的顺序）。选择器窗口的「搜索框回车 = 只有一行时确认选中」
+ * 需要这条数据；直接暴露 `elements` 数组会把渲染簿记变成对外状态，所以给一份投影。
+ */
+function getRowFiles(): FileBodyFile[] {
+	const files: FileBodyFile[] = [];
+	const length = elements?.count ?? 0;
+	for (let i = 0; i < length; i++) {
+		const element = elements[i];
+		if (element !== undefined) files.push(element.file);
+	}
+	return files;
+}
+
+/**
+ * 可见行数（head 在搜索模式要显示「N 个文件」）。
+ * 不暴露 `elements` 数组本身：它是渲染簿记，外部只需要这个数。
+ */
+function getFileCount(): number {
+	return elements?.count ?? 0;
 }
 
 function clearElements(start: number): void {
@@ -1617,7 +1624,7 @@ function pointerdown(event: PointerEvent): void {
 					if (!hasClass(element, 'selected')) {
 						switch (event.button) {
 							case 0:
-								activateFileViaElement((element as FileBodyItemApi).file);
+								activateCurrentFile((element as FileBodyItemApi).file);
 								break;
 							case 2:
 								select((element as FileBodyItemApi).file);
@@ -1632,7 +1639,7 @@ function pointerdown(event: PointerEvent): void {
 							pressing = onPendingPointerup;
 							pressingActive.value = true;
 						} else {
-							activateFileViaElement((element as FileBodyItemApi).file);
+							activateCurrentFile((element as FileBodyItemApi).file);
 							if (
 								Menu?.() === 'closed' &&
 								document.activeElement === content &&
@@ -1912,7 +1919,6 @@ onMounted(() => {
 	});
 
 	textBox = createTextBox();
-	node.textBox = textBox;
 
 	attachDoubleclick(node, doubleclick);
 
@@ -1929,72 +1935,6 @@ onMounted(() => {
 		});
 		resizeObserver.observe(node);
 	}
-
-	attachApi(node, {
-		setViewIndex,
-		updateViewMode,
-		updateFiles,
-		resize,
-		getRowModel,
-		computeGridProperties,
-		updateContentSize,
-		updateContentOffset,
-		resetContentStyle,
-		createFlatItems,
-		select,
-		selectAll,
-		unselect,
-		selectByPath,
-		selectDefault,
-		selectRelativeInGridMode,
-		getDirName,
-		createFolder,
-		showInExplorer,
-		openFileLocation,
-		openFile,
-		copyFiles,
-		pasteFiles,
-		deleteFiles,
-		rename,
-		cancelRenaming,
-		importFiles,
-		exportFile,
-		clearElements,
-		clear,
-		selectActiveFile,
-		deactivateFile,
-		on
-	});
-	node.content = content;
-	Object.defineProperty(node, 'selections', {
-		get: () => selections,
-		configurable: true
-	});
-	Object.defineProperty(node, 'activeFile', {
-		get: () => activeFile,
-		configurable: true
-	});
-	Object.defineProperty(node, 'pressing', {
-		get: () => pressing,
-		set: (value: ((event: PointerEvent) => void) | null) => {
-			pressing = value;
-			pressingActive.value = value === onPendingPointerup;
-		},
-		configurable: true
-	});
-	Object.defineProperty(node, 'elements', {
-		get: () => elements,
-		configurable: true
-	});
-	Object.defineProperty(node, 'links', {
-		configurable: true,
-		get: () => props.links,
-		set: () => {}
-	});
-	Object.defineProperty(node, 'viewIndex', {
-		get: () => viewIndex,
-		configurable: true
-	});
 });
 
 onBeforeUnmount(() => {
@@ -2002,7 +1942,73 @@ onBeforeUnmount(() => {
 	resizeObserver?.disconnect?.();
 });
 
-defineExpose({ setViewIndex, updateFiles, select, unselect, clear, on, el });
+/**
+ * body 的对外契约：之前 `attachApi` 挂到根元素上的能力全部改成实例成员。
+ *
+ * `content` / `activeFile` / `pressing` / `viewIndex` / `textBox` 是
+ * **状态与 DOM 句柄**（不是控件方法）：head 要聚焦内容区、拖拽流程要判断是否正在改名、
+ * 选择器窗口要读「当前可见行」（`getRowFiles()`）和视图索引，所以按句柄暴露。
+ * 选中项只经 `getSelections()` 取，不再有 `selections` 属性。
+ */
+defineExpose({
+	setViewIndex,
+	updateViewMode,
+	updateFiles,
+	resize,
+	getRowModel,
+	computeGridProperties,
+	updateContentSize,
+	updateContentOffset,
+	resetContentStyle,
+	createFlatItems,
+	select,
+	selectAll,
+	unselect,
+	getSelections,
+	getFileCount,
+	getRowFiles,
+	selectByPath,
+	selectDefault,
+	selectRelativeInGridMode,
+	getDirName,
+	createFolder,
+	showInExplorer,
+	openFileLocation,
+	openFile,
+	copyFiles,
+	pasteFiles,
+	deleteFiles,
+	rename,
+	cancelRenaming,
+	importFiles,
+	exportFile,
+	clearElements,
+	clear,
+	selectActiveFile,
+	deactivateFile,
+	setActivateFile,
+	on,
+	el,
+	get content() {
+		return contentEl.value;
+	},
+	get activeFile() {
+		return activeFile;
+	},
+	get viewIndex() {
+		return viewIndex;
+	},
+	get textBox() {
+		return textBox;
+	},
+	get pressing() {
+		return pressing;
+	},
+	set pressing(value: ((event: PointerEvent) => void) | null) {
+		pressing = value;
+		pressingActive.value = value === onPendingPointerup;
+	}
+});
 </script>
 
 <style module>

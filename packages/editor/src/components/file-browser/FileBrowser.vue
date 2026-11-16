@@ -171,12 +171,10 @@ const setIconClipAdapter = (
 const onBrowserMount = (): void => getBrowserStore().initialize();
 const onSelectorMount = (): void => getSelectorStore().initialize();
 
-const ym = ref<{
-	el: HTMLElement | null;
-	update(): void;
-	searchFiles(kw: RegExp | string): void;
-	backToParentFolder(): boolean;
-} | null>(null);
+/** ui-kit `YMFileBrowser` 的实例类型（`defineExpose` 出来的那套成员） */
+type YmFileBrowserInstance = InstanceType<typeof YMFileBrowser>;
+
+const ym = ref<YmFileBrowserInstance | null>(null);
 
 const el = computed<HTMLElement | null>(() => ym.value?.el ?? null);
 const update = (): void => ym.value?.update();
@@ -185,16 +183,23 @@ const backToParentFolder = (): boolean => ym.value?.backToParentFolder() ?? fals
 
 defineExpose({ update, searchFiles, backToParentFolder, el });
 
-const registerNode = (node: HTMLElement | null): void => {
+/**
+ * 把 **组件实例**（而不是根元素）交给 store。
+ *
+ * 迁移前注册的是 `ym.value.el` 这个 `.file-browser` 元素，方法由 `attachApi` 挂在元素上；
+ * 现在 store 读的是实例的 `defineExpose`（`nav` / `body` / `links` / `close` …），
+ * 需要 DOM 时统一走 `instance.el`。
+ */
+const registerNode = (instance: YmFileBrowserInstance | null): void => {
 	const selector = getSelectorStore();
-	if (!node) {
+	if (!instance) {
 		if (props.bridge === 'selector') selector.setComponent(null);
 		else getBrowserStore().setComponent(null);
 		return;
 	}
 	if (props.bridge === 'selector') {
-		selector.setComponent(node as SelectorInstance);
-		const selectorNode = node as SelectorInstance;
+		const selectorNode = instance as SelectorInstance;
+		selector.setComponent(selectorNode);
 		selectorNode.open = (target: unknown, allowNone = true) =>
 			selector.open(
 				target as { read(): string; filter?: string; input?(value?: unknown): void },
@@ -202,7 +207,7 @@ const registerNode = (node: HTMLElement | null): void => {
 			);
 		return;
 	}
-	const browserNode = node as FileBrowserInstance;
+	const browserNode = instance as FileBrowserInstance;
 	getBrowserStore().setComponent(browserNode);
 	browserNode.open = (target: unknown, allowNone = true) =>
 		selector.open(
@@ -211,22 +216,15 @@ const registerNode = (node: HTMLElement | null): void => {
 		);
 };
 
-watch(
-	() => {
-		const exposed = ym.value?.el;
-		return exposed instanceof HTMLElement
-			? exposed
-			: ((exposed as { value?: HTMLElement } | null | undefined)?.value ?? null);
-	},
-	(node) => {
-		registerNode(node as HTMLElement | null);
-	}
-);
+// 实例在挂载后才出现（模板 ref），所以按实例本身 watch，而不是按它的 `el`
+watch(ym, (instance) => {
+	registerNode(instance);
+});
 
 onMounted(() => {
 	void nextTick(() => {
 		void nextTick(() => {
-			registerNode(ym.value?.el ?? null);
+			registerNode(ym.value);
 		});
 	});
 });

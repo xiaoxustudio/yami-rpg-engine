@@ -29,12 +29,16 @@ interface BodyApi extends HTMLElement {
 	computeGridProperties: () => void;
 	updateContentSize: () => void;
 	resize: () => void;
+	getFileCount: () => number;
 	select: (...files: unknown[]) => void;
 	unselect: () => void;
 	clear: () => unknown;
 	getRowModel: () => { keys: string[]; rows: { selected: boolean }[] };
 	elements: { count: number };
 }
+
+/** wrapper.vm 的公开类型不含 defineExpose 的成员：类型层收窄一次，运行期就是实例 */
+const bodyApiOf = (view: unknown): BodyApi => view as BodyApi;
 
 describe('YMFileBodyPane（模型 ↔ DOM ↔ 书 一致性）', () => {
 	it('一串操作之后三者一致；clear 之后都归零', async () => {
@@ -55,17 +59,18 @@ describe('YMFileBodyPane（模型 ↔ DOM ↔ 书 一致性）', () => {
 					browser: {
 						display: 'normal',
 						filters: null,
-						searchResults: null,
+						searchResults: [],
 						backToParentFolder: vi.fn()
 					},
-					nav: { selections: [], load: vi.fn(), scrollToSelection: vi.fn() },
+					nav: { getSelections: () => [], load: vi.fn(), scrollToSelection: vi.fn() },
 					head: { view: { write: vi.fn() } },
 					body: null
 				},
 				fileClasses: { FileItem, FolderItem: FileItem }
 			}
 		});
-		const el = wrapper.element as unknown as BodyApi;
+		const el = wrapper.element as HTMLElement;
+		const vm = bodyApiOf(wrapper.vm);
 		Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
 		Object.defineProperty(el, 'clientWidth', { value: 600, configurable: true });
 		Object.defineProperty(el, 'scrollLeft', { value: 0, configurable: true, writable: true });
@@ -75,10 +80,10 @@ describe('YMFileBodyPane（模型 ↔ DOM ↔ 书 一致性）', () => {
 			Array.from(el.querySelectorAll<HTMLElement>('.file-body-item'));
 		const nonEmpty = (keys: string[]): string[] => keys.filter((k) => k.length > 0);
 		const expectConsistent = (): void => {
-			const model = el.getRowModel();
+			const model = vm.getRowModel();
 			const dom = domRows();
-			expect(model.rows.length).toBe(el.elements.count);
-			expect(dom.length).toBe(el.elements.count);
+			expect(model.rows.length).toBe(vm.getFileCount());
+			expect(dom.length).toBe(vm.getFileCount());
 			expect(nonEmpty(model.keys)).toEqual(
 				nonEmpty(dom.map((r) => (r as unknown as { rowKey?: string }).rowKey ?? ''))
 			);
@@ -88,31 +93,31 @@ describe('YMFileBodyPane（模型 ↔ DOM ↔ 书 一致性）', () => {
 		};
 
 		const list = Array.from({ length: 5 }, (_, i) => new FileItem(`/a/f${i}`, `f${i}`));
-		el.setViewIndex(0);
-		el.updateViewMode();
-		el.createFlatItems(list);
-		el.computeGridProperties();
-		el.updateContentSize();
-		el.resize();
+		vm.setViewIndex(0);
+		vm.updateViewMode();
+		vm.createFlatItems(list);
+		vm.computeGridProperties();
+		vm.updateContentSize();
+		vm.resize();
 		await nextTick();
 		expectConsistent();
 
-		el.select(list[1]);
+		vm.select(list[1]);
 		await nextTick();
 		expectConsistent();
 
-		el.unselect();
+		vm.unselect();
 		await nextTick();
 		expectConsistent();
 
-		el.resize();
+		vm.resize();
 		await nextTick();
 		expectConsistent();
 
-		el.clear();
+		vm.clear();
 		await nextTick();
-		expect(el.elements.count).toBe(0);
-		expect(el.getRowModel().rows).toEqual([]);
+		expect(vm.getFileCount()).toBe(0);
+		expect(vm.getRowModel().rows).toEqual([]);
 		expect(domRows()).toEqual([]);
 	});
 
@@ -134,17 +139,18 @@ describe('YMFileBodyPane（模型 ↔ DOM ↔ 书 一致性）', () => {
 					browser: {
 						display: 'normal',
 						filters: null,
-						searchResults: null,
+						searchResults: [],
 						backToParentFolder: vi.fn()
 					},
-					nav: { selections: [], load: vi.fn(), scrollToSelection: vi.fn() },
+					nav: { getSelections: () => [], load: vi.fn(), scrollToSelection: vi.fn() },
 					head: { view: { write: vi.fn() } },
 					body: null
 				},
 				fileClasses: { FileItem, FolderItem: FileItem }
 			}
 		});
-		const el = wrapper.element as unknown as BodyApi;
+		const el = wrapper.element as HTMLElement;
+		const vm = bodyApiOf(wrapper.vm);
 		Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
 		Object.defineProperty(el, 'clientWidth', { value: 600, configurable: true });
 		Object.defineProperty(el, 'scrollLeft', { value: 0, configurable: true, writable: true });
@@ -154,7 +160,7 @@ describe('YMFileBodyPane（模型 ↔ DOM ↔ 书 一致性）', () => {
 			Array.from(el.querySelectorAll<HTMLElement>('.file-body-item'));
 		const nonEmpty = (keys: string[]): string[] => keys.filter((k) => k.length > 0);
 		const expectConsistent = (): void => {
-			const model = el.getRowModel();
+			const model = vm.getRowModel();
 			const dom = domRows();
 			expect(model.rows.length).toBe(dom.length);
 			expect(nonEmpty(model.keys)).toEqual(
@@ -167,20 +173,20 @@ describe('YMFileBodyPane（模型 ↔ DOM ↔ 书 一致性）', () => {
 
 		const list = Array.from({ length: 60 }, (_, i) => new FileItem(`/a/f${i}`, `f${i}`));
 		const render = (): void => {
-			el.createFlatItems(list);
-			el.computeGridProperties();
-			el.updateContentSize();
-			el.resize();
+			vm.createFlatItems(list);
+			vm.computeGridProperties();
+			vm.updateContentSize();
+			vm.resize();
 		};
-		el.setViewIndex(0);
-		el.updateViewMode();
+		vm.setViewIndex(0);
+		vm.updateViewMode();
 		render();
 		await nextTick();
 		expectConsistent();
 
 		for (const view of [1, 2, 3, 4, 0]) {
-			el.setViewIndex(view);
-			el.updateViewMode();
+			vm.setViewIndex(view);
+			vm.updateViewMode();
 			render();
 			// oxlint-disable-next-line no-await-in-loop
 			await nextTick();
@@ -188,21 +194,21 @@ describe('YMFileBodyPane（模型 ↔ DOM ↔ 书 一致性）', () => {
 		}
 
 		Object.defineProperty(el, 'scrollLeft', { value: 900, configurable: true, writable: true });
-		el.resize();
+		vm.resize();
 		await nextTick();
 		expectConsistent();
 
-		el.select(list[20], list[21], list[22]);
+		vm.select(list[20], list[21], list[22]);
 		await nextTick();
 		expectConsistent();
 
-		el.unselect();
+		vm.unselect();
 		await nextTick();
 		expectConsistent();
 
-		el.clear();
+		vm.clear();
 		await nextTick();
-		expect(el.getRowModel().rows).toEqual([]);
+		expect(vm.getRowModel().rows).toEqual([]);
 		expect(domRows()).toEqual([]);
 
 		render();

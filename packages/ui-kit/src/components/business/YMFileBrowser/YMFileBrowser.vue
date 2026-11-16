@@ -35,52 +35,13 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * 浏览器根元素上**只剩宿主写入的数据**：`directory`（`Browser.directory = [assets]`）。
+ * 方法、`display` / `searchResults` / `links` 都不再挂元素，改走实例与句柄表。
+ */
 type FileBrowserApi = HTMLElement & {
 	directory?: unknown;
-	load?(folders: unknown[]): void;
-	select?(item: unknown): void;
-	getSelections?(): unknown[];
-	unselect?(meta?: unknown): void;
-	update?(): void;
-	searchFiles?(kw: string | RegExp): void;
-	restoreDisplay?(): void;
-	backToParentFolder?(): void;
-	close?(): void;
-	getActivePage?(event: Event): unknown;
-	getFilePaths?(files: unknown[]): { relativePaths: string[]; absolutePaths: string[] };
-	display?: string;
-	searchResults?: unknown[];
-	[key: string]: unknown;
 };
-type FileNavApi = HTMLElement & {
-	load?(...folders: unknown[]): void;
-	select?(item: unknown): void;
-	getSelections?(): unknown[];
-	unselect?(): void;
-	clear?(): void;
-	selections?: unknown[];
-	[key: string]: unknown;
-};
-type FileBodyApi = HTMLElement & {
-	load?(folders: unknown[]): void;
-	select?(...files: unknown[]): void;
-	clear?(): void;
-	updateFiles?(): void;
-	selections?: unknown[];
-	[key: string]: unknown;
-};
-interface ActivePage extends HTMLElement {
-	pressing?: unknown;
-	activeFile?: unknown;
-	selections: unknown[];
-	textBox: { parentNode: Node | null };
-}
-interface FileHeadApi extends HTMLElement {
-	updateAddress?(): void;
-	searcher?: { write?(value: string): void; deleteInputContent?(): void };
-	el?: HTMLElement;
-	[key: string]: unknown;
-}
 interface DragState {
 	dropPath: string | null;
 	dropTarget: unknown;
@@ -126,7 +87,6 @@ interface OsDragEvent {
 }
 
 import { ref, onMounted, nextTick } from 'vue';
-import { attachApi } from '../../../utils/attach-api';
 import { useEventListener } from '../../../composables/useEventListener';
 import { hideDragImage, addClass, hasClass, removeClass } from '../../../utils/dom';
 import type { MenuItem, MenuOptions } from '../../basic/YMMenuList/menu-api';
@@ -226,8 +186,108 @@ let dragging: Dragging | null = null;
 let filters: unknown[] | null = null;
 let backupFolders: unknown[] = [];
 let searchResults: unknown[] = [];
-// oxlint-disable-next-line no-explicit-any
-let links: any = {};
+
+/**
+ * 交给三个 pane 的浏览器句柄。
+ *
+ * 以前 `links` 对象整体被 `defineProperty` 到 nav/head/body 元素上，pane 再从自己的元素
+ * 读 `el.links`；现在只有 props 一条通道。`browser` 的成员写成 getter 而不是快照：
+ * `display` / `searchResults` / `backupFolders` 是模块级状态，快照会让 pane 读到旧值。
+ */
+const browserHandle = {
+	get display(): 'normal' | 'search' {
+		return display;
+	},
+	get searchResults(): unknown[] {
+		return searchResults;
+	},
+	get backupFolders(): unknown[] {
+		return backupFolders;
+	},
+	get filters(): unknown[] | null {
+		return filters;
+	},
+	update,
+	searchFiles,
+	restoreDisplay,
+	backToParentFolder,
+	getFilePaths
+};
+
+/**
+ * 显式句柄表：`nav` / `head` / `body` 都是**组件实例**（各自的 `defineExpose`）。
+ * 在 `onMounted` 的 `nextTick` 里填（模板 ref 挂载后才可用）。
+ */
+const links = {
+	// 浏览器自己的句柄：pane 经它读 `display` / `searchResults` / `backupFolders` 并回调方法
+	browser: browserHandle,
+	// 三个 pane 只按**句柄**（组件实例的子集）参与协作：浏览器用不到它们的全部能力，
+	// 声明成最小集合能让「谁依赖谁」在类型上可见
+	nav: null as NavHandle | null,
+	head: null as HeadHandle | null,
+	body: null as BodyHandle | null
+};
+
+/** nav 侧句柄：选中项只经 `getSelections()`；`pressing` / `textBox` 供拖拽流程判定 */
+interface NavHandle {
+	el?: HTMLElement;
+	getSelections?(): unknown[];
+	load?(...folders: unknown[]): void;
+	unselect?(): void;
+	clear?(): void;
+	scrollToSelection?(mode?: string): void;
+	update?(): void;
+	resize?(): void;
+	activeFile?: unknown;
+	pressing?: ((event: PointerEvent) => void) | null;
+	textBox?: { parentNode: Node | null };
+	selectActiveFile?(): void;
+	deactivateFile?(): void;
+}
+
+/** head 侧句柄：地址栏刷新 + 搜索框（清关键字）+ 视图滑块 */
+interface HeadHandle {
+	el?: HTMLElement;
+	updateAddress?(): void;
+	searcher?: { write?(value: string): void; deleteInputContent?(): void };
+	view?: { write?(index: number): void };
+}
+
+/** body 侧句柄：行刷新 / 选中 / 视图与条数 */
+interface BodyHandle {
+	el?: HTMLElement;
+	updateFiles?(): void;
+	select?(...files: unknown[]): void;
+	clear?(): void;
+	getSelections?(): unknown[];
+	getFileCount?(): number;
+	getRowFiles?(): unknown[];
+	content?: HTMLElement;
+	activeFile?: unknown;
+	pressing?: ((event: PointerEvent) => void) | null;
+	textBox?: { parentNode: Node | null };
+	selectActiveFile?(): void;
+	deactivateFile?(): void;
+	setViewIndex?(index: number): void;
+}
+
+/** 拖拽流程里 nav 与 body 的公共面（页面元素反查句柄后统一用这份） */
+type PageHandle = NavHandle | BodyHandle;
+
+const navHandle = (): NavHandle | null => (navEl.value as NavHandle | undefined) ?? null;
+const headHandle = (): HeadHandle | null => (headEl.value as HeadHandle | undefined) ?? null;
+const bodyHandle = (): BodyHandle | null => (bodyEl.value as BodyHandle | undefined) ?? null;
+
+/**
+ * 由元素反查页面句柄。
+ *
+ * `getActivePage()` 仍然返回元素——`contains(event.target)` 是纯 DOM 判定；
+ * 但读选中项/激活文件/改名文本框改走组件实例，元素上不再有这些属性。
+ */
+const handleOfPage = (page: HTMLElement | null): PageHandle | null => {
+	if (page === null) return null;
+	return page === navEl.value?.el ? links.nav : links.body;
+};
 
 /**
  * 当前项目的目录根（宿主写在浏览器元素上：`Browser.directory = [Directory.assets]`）。
@@ -241,31 +301,18 @@ const directoryItems = (): unknown[] | null => {
 	return Array.isArray(value) ? value : null;
 };
 
-/**
- * 把模块内的 `display` / `searchResults` 镜像到浏览器元素上（nav 侧读 `browser.display`
- * 决定面包屑与"返回上一级"的行为）。
- */
-function syncDisplayState(): void {
-	const node = el.value as FileBrowserApi | undefined;
-	if (!node) return;
-	node.display = display;
-	node.searchResults = searchResults;
-}
-
 function update(): void {
-	syncDisplayState();
-	const body = bodyEl.value?.el as FileBodyApi;
-	body?.updateFiles?.();
-	(headEl.value as FileHeadApi | undefined)?.updateAddress?.();
+	bodyHandle()?.updateFiles?.();
+	headHandle()?.updateAddress?.();
 }
 
 function searchFiles(kw: RegExp | string): void {
-	const nav = navEl.value?.el as FileNavApi;
+	const nav = navHandle();
 	if (kw instanceof RegExp || kw.length !== 0) {
 		if (display === 'normal') {
 			display = 'search';
-			backupFolders = nav.selections ?? [];
-			nav.unselect?.();
+			backupFolders = nav?.getSelections?.() ?? [];
+			nav?.unselect?.();
 		}
 		if (typeof kw === 'string') {
 			kw = kw.replace(/[(){}\\^$*+?.|[\]]/g, '\\$&');
@@ -277,7 +324,7 @@ function searchFiles(kw: RegExp | string): void {
 	} else {
 		if (display === 'search') {
 			display = 'normal';
-			nav.load?.(...(backupFolders as unknown[]));
+			nav?.load?.(...(backupFolders as unknown[]));
 			keyword = null;
 			backupFolders = [];
 			searchResults = [];
@@ -293,26 +340,21 @@ function restoreDisplay(): void {
 			display = 'normal';
 			backupFolders = [];
 			searchResults = [];
-			syncDisplayState();
-			(
-				(headEl.value as { el?: FileHeadApi } | undefined)?.el?.searcher as
-					| { write?(value: string): void }
-					| undefined
-			)?.write?.('');
+			headHandle()?.searcher?.write?.('');
 			break;
 	}
 }
 
 function backToParentFolder(): boolean {
-	const nav = navEl.value?.el as FileNavApi;
+	const nav = navHandle();
 	switch (display) {
 		case 'normal': {
-			const folders = nav.selections ?? [];
+			const folders = nav?.getSelections?.() ?? [];
 			if (folders.length === 1) {
 				const path = (folders[0] as { path: string }).path;
 				const index = path.lastIndexOf('/');
 				if (index !== -1) {
-					nav.load?.(Directory?.getFolder?.(path.slice(0, index)));
+					nav?.load?.(Directory?.getFolder?.(path.slice(0, index)));
 					return true;
 				}
 			}
@@ -320,11 +362,7 @@ function backToParentFolder(): boolean {
 		}
 		case 'search': {
 			const active = document.activeElement as HTMLElement;
-			(
-				(headEl.value as { el?: FileHeadApi } | undefined)?.el?.searcher as
-					| { deleteInputContent?(): void }
-					| undefined
-			)?.deleteInputContent?.();
+			headHandle()?.searcher?.deleteInputContent?.();
 			active.focus();
 			return true;
 		}
@@ -333,7 +371,7 @@ function backToParentFolder(): boolean {
 }
 
 function dirchange(_event: Event): void {
-	const body = bodyEl.value?.el as FileBodyApi;
+	const body = bodyHandle();
 	switch (display) {
 		case 'normal':
 			break;
@@ -341,7 +379,7 @@ function dirchange(_event: Event): void {
 			searchFiles(keyword!);
 			break;
 	}
-	const files = Array.from((body as FileBodyApi).selections ?? []);
+	const files = Array.from(body?.getSelections?.() ?? []);
 	if (files.length !== 0) {
 		const { inoMap } = Directory as { inoMap: Record<string, unknown> };
 		let modified = false;
@@ -360,7 +398,7 @@ function dirchange(_event: Event): void {
 			}
 		}
 		if (modified) {
-			(body as FileBodyApi).select?.(...files);
+			body?.select?.(...files);
 		}
 	}
 }
@@ -370,17 +408,16 @@ function close(): void {
 	if (node?.directory) {
 		node.directory = null;
 		restoreDisplay();
-		const nav = navEl.value?.el as FileNavApi | undefined;
-		const body = bodyEl.value?.el as FileBodyApi | undefined;
-		nav?.clear?.();
-		body?.clear?.();
-		(headEl.value as FileHeadApi | undefined)?.updateAddress?.();
+		navHandle()?.clear?.();
+		bodyHandle()?.clear?.();
+		headHandle()?.updateAddress?.();
 	}
 }
 
 function getActivePage(event: Event): HTMLElement | null {
-	const nav = navEl.value?.el as FileNavApi;
-	const body = bodyEl.value?.el as FileBodyApi;
+	const nav = navEl.value?.el;
+	const body = bodyEl.value?.el;
+	if (nav === undefined || body === undefined) return null;
 	return nav.contains(event.target as Node)
 		? nav
 		: body.contains(event.target as Node)
@@ -415,13 +452,16 @@ function pointerdown(_event: PointerEvent): void {
 
 function dragstart(event: DragEvent): void {
 	const node = el.value as FileBrowserApi;
-	const page = getActivePage(event) as ActivePage | null;
-	if (page && !dragging) {
-		if (page.pressing) {
-			page.pressing = null;
+	const page = getActivePage(event);
+	const handle = handleOfPage(page);
+	if (page && handle && !dragging) {
+		if (handle.pressing) {
+			handle.pressing = null;
 		}
-		const files = page.activeFile ? [page.activeFile] : page.selections;
-		if (!files.includes(Directory?.assets) && !page.textBox.parentNode) {
+		const files: unknown[] = handle.activeFile
+			? [handle.activeFile]
+			: (handle.getSelections?.() ?? []);
+		if (!files.includes(Directory?.assets) && !handle.textBox?.parentNode) {
 			const { relativePaths, absolutePaths } = getFilePaths(files);
 			dragging = event as Dragging;
 			(event as OsDragEvent).mode = 'drag';
@@ -468,10 +508,11 @@ function dragend(_event?: DragEvent): void {
 		if (dropTarget instanceof HTMLElement) {
 			removeClass(dropTarget, 'drop-target');
 		}
+		const handle = handleOfPage(page as HTMLElement | null);
 		if (dragging.dragLeaved) {
-			(page as { deactivateFile?(): void }).deactivateFile?.();
+			handle?.deactivateFile?.();
 		} else {
-			(page as { selectActiveFile?(): void }).selectActiveFile?.();
+			handle?.selectActiveFile?.();
 		}
 		dragging = null;
 		node.removeEventListener('dragenter', dragover as EventListener);
@@ -539,8 +580,7 @@ function dragover(event: DragEvent): void {
 				});
 			} else {
 				if (hasClass(element, 'file-body-pane')) {
-					const nav = navEl.value?.el as FileNavApi;
-					const selections = nav.selections ?? [];
+					const selections = navEl.value?.getSelections?.() ?? [];
 					d.dropPath =
 						selections.length === 1 ? (selections[0] as { path: string }).path : null;
 				} else {
@@ -668,8 +708,7 @@ function osDragover(event: DragEvent): void {
 				d.dropPath = fileElementOf(element)!.path;
 			} else {
 				if (hasClass(element, 'file-body-pane')) {
-					const nav = navEl.value?.el as FileNavApi;
-					const selections = nav.selections ?? [];
+					const selections = navEl.value?.getSelections?.() ?? [];
 					d.dropPath =
 						selections.length === 1 ? (selections[0] as { path: string }).path : null;
 				} else {
@@ -706,45 +745,22 @@ function osDrop(event: DragEvent): void {
 	}
 }
 
-function setupLinks() {
-	const nav = navEl.value?.el as FileNavApi;
-	const head =
-		(headEl.value?.el as FileHeadApi) ||
-		(el.value?.querySelector('.file-head-pane') as FileHeadApi);
-	const body =
-		(bodyEl.value?.el as FileBodyApi) ||
-		(el.value?.querySelector('.file-body-pane') as FileBodyApi);
-	const node = (nav?.closest('.file-browser') || el.value) as FileBrowserApi;
-	el.value = node;
-	links.browser = node;
-	links.nav = nav;
-	links.head = head;
-	links.body = body;
-	const attachLinks = (target: HTMLElement | null): void => {
-		if (!target) return;
-		Object.defineProperty(target, 'links', {
-			configurable: true,
-			get: () => links
-		});
-	};
-	attachLinks(nav);
-	attachLinks(head);
-	attachLinks(body);
-	if (node) {
-		attachLinks(node);
-		Object.defineProperty(node, 'nav', {
-			get: () => node.querySelector('.file-nav-pane'),
-			configurable: true
-		});
-		Object.defineProperty(node, 'head', {
-			get: () => node.querySelector('.file-head-pane'),
-			configurable: true
-		});
-		Object.defineProperty(node, 'body', {
-			get: () => node.querySelector('.file-body-pane'),
-			configurable: true
-		});
-	}
+/**
+ * 挂载后把三个 pane 的**组件实例**装进句柄表。
+ *
+ * 只做这件事：以前这里会把 `links` 对象 `defineProperty` 到 nav/head/body 元素上，
+ * 再在浏览器元素上挂 `nav` / `head` / `body` / `links` 四个元素属性，pane 与宿主都从元素读，
+ * 「元素 = 句柄」一旦拆开就两边都不知道对方改了。现在只有 props/handle 一条通道。
+ *
+ * 时机仍必须 `nextTick`：模板 ref 在挂载后才填。
+ */
+function setupLinks(): void {
+	const nav = navEl.value?.el;
+	const node = (nav?.closest('.file-browser') || el.value) as FileBrowserApi | undefined;
+	if (node) el.value = node;
+	links.nav = navHandle();
+	links.head = headHandle();
+	links.body = bodyHandle();
 }
 
 const windowHooksReady = ref(false);
@@ -772,37 +788,46 @@ onMounted(() => {
 		} else if (node.id === 'selector-browser') {
 			props.onSelectorMount?.();
 		}
-
-		(node as FileBrowserApi).display = 'normal';
-		(node as FileBrowserApi).searchResults = [];
-		attachApi(node, {
-			update,
-			searchFiles,
-			restoreDisplay,
-			backToParentFolder,
-			close,
-			getActivePage,
-			getFilePaths,
-			dragstart,
-			dragend,
-			dragleave,
-			dragover,
-			drop,
-			osDragstart,
-			osDragend,
-			osDragleave,
-			osDragover,
-			osDrop
-		});
-		Object.defineProperty(node, 'links', {
-			configurable: true,
-			get: () => links,
-			set: () => {}
-		});
 	});
 });
 
-defineExpose({ update, searchFiles, backToParentFolder, el });
+/**
+ * 浏览器组的对外契约：实例（而不是元素）携带方法，三个 pane 实例与 `links` 句柄表也在这里。
+ *
+ * `display` / `searchResults` 以前镜像到元素上供 pane/测试读，现在由 handle 的 getter 与
+ * 这里的 getter 提供——元素只保留宿主写入的**目录数据** `directory`（editor 的
+ * `Browser.directory = [assets]` 契约不变）。
+ */
+defineExpose({
+	update,
+	searchFiles,
+	restoreDisplay,
+	backToParentFolder,
+	close,
+	getActivePage,
+	getFilePaths,
+	dragstart,
+	dragend,
+	dragleave,
+	dragover,
+	drop,
+	osDragstart,
+	osDragend,
+	osDragleave,
+	osDragover,
+	osDrop,
+	links,
+	nav: navEl,
+	head: headEl,
+	body: bodyEl,
+	el,
+	get display() {
+		return display;
+	},
+	get searchResults() {
+		return searchResults;
+	}
+});
 </script>
 
 <style module>

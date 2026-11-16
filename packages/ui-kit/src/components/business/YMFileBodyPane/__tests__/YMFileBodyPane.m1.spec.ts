@@ -3,6 +3,8 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane.vue';
 
+type BodyApi = InstanceType<typeof YMFileBodyPane>;
+
 class FileItem {
 	path: string;
 	name: string;
@@ -47,25 +49,9 @@ interface BodyContent extends HTMLElement {
 	range?: Uint32Array;
 }
 
-interface BodyElement extends HTMLElement {
-	[k: string]: unknown;
-	createFlatItems: (dir: unknown[]) => void;
-	selectAll: () => void;
-	selectByPath: (path: string) => void;
-	unselect: () => void;
-	updateFiles: () => void;
-	setViewIndex: (idx: number) => void;
-	updateViewMode: () => void;
-	computeGridProperties: () => void;
-	updateContentSize: () => void;
-	updateContentOffset: () => void;
-	resize: () => void;
-	selections?: unknown[];
-}
-
 const makeLinks = (display = 'normal') => ({
-	browser: { display, filters: null, searchResults: null, backToParentFolder: vi.fn() },
-	nav: { selections: [], load: vi.fn(), scrollToSelection: vi.fn() },
+	browser: { display, filters: null, searchResults: [], backToParentFolder: vi.fn() },
+	nav: { getSelections: () => [], load: vi.fn(), scrollToSelection: vi.fn() },
 	head: { view: { write: vi.fn() } },
 	body: null
 });
@@ -85,108 +71,110 @@ const mountBody = () => {
 	const wrapper = mount(YMFileBodyPane, {
 		props: { links: makeLinks('normal'), fileClasses: { FileItem, FolderItem } }
 	});
-	const el = wrapper.element as BodyElement;
+	const el = wrapper.element as HTMLElement;
+	const vm = wrapper.vm as BodyApi;
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
 	Object.defineProperty(el, 'clientWidth', { value: 600, configurable: true });
 	return {
 		wrapper,
 		el,
+		vm,
 		content: el.querySelector<BodyContent>('.file-body-content') as BodyContent
 	};
 };
 
 /** 编辑器形态渲染链（`viewIndex`：0=列表、2=网格） */
-const renderItems = async (el: BodyElement, list: unknown[], viewIndex = 0): Promise<void> => {
-	el.setViewIndex(viewIndex);
-	el.updateViewMode();
-	el.createFlatItems(list);
-	el.computeGridProperties();
-	el.updateContentSize();
-	el.resize();
+const renderItems = async (vm: BodyApi, list: unknown[], viewIndex = 0): Promise<void> => {
+	vm.setViewIndex(viewIndex);
+	vm.updateViewMode();
+	vm.createFlatItems(list);
+	vm.computeGridProperties();
+	vm.updateContentSize();
+	vm.resize();
 	await nextTick();
 	await nextTick();
 };
 
 const items = (n = 6) => Array.from({ length: n }, (_, i) => new FileItem(`/a/ev${i}`, `ev${i}`));
 
-const rows = (el: BodyElement): HTMLElement[] =>
+const rows = (el: HTMLElement): HTMLElement[] =>
 	Array.from(el.querySelectorAll<HTMLElement>('.file-body-item'));
 
 describe('YMFileBodyPane（行为金标准：行渲染/选区/度量/尺寸）', () => {
 	it('列表视图：按文件建立可见行，文本含文件名', async () => {
-		const { el } = mountBody();
-		await renderItems(el, items(3), 0);
+		const { el, vm } = mountBody();
+		await renderItems(vm, items(3), 0);
 		expect(rows(el).length).toBeGreaterThanOrEqual(3);
 		expect(el.textContent).toContain('ev0');
 	});
 
 	it('文件夹与文件都能成行', async () => {
-		const { el } = mountBody();
-		await renderItems(el, [new FileItem('/a/ev', 'ev'), new FolderItem('/a/sub', 'sub')], 0);
+		const { el, vm } = mountBody();
+		await renderItems(vm, [new FileItem('/a/ev', 'ev'), new FolderItem('/a/sub', 'sub')], 0);
 		expect(rows(el).length).toBeGreaterThanOrEqual(2);
 		expect(el.textContent).toContain('sub');
 	});
 
 	it('selectAll：行上出现 selected 类、selections 非空', async () => {
-		const { el } = mountBody();
-		await renderItems(el, items(4), 0);
-		el.selectAll();
+		const { el, vm } = mountBody();
+		await renderItems(vm, items(4), 0);
+		vm.selectAll();
 		await nextTick();
 		expect(rows(el).some((row) => row.classList.contains('selected'))).toBe(true);
-		expect((el.selections ?? []).length).toBeGreaterThan(0);
+		expect((vm.getSelections() ?? []).length).toBeGreaterThan(0);
 	});
 
 	it('selectByPath：只选中路径匹配的那一行', async () => {
-		const { el } = mountBody();
-		await renderItems(el, items(3), 0);
-		el.selectByPath('/a/ev1');
+		const { el, vm } = mountBody();
+		await renderItems(vm, items(3), 0);
+		vm.selectByPath('/a/ev1');
 		await nextTick();
 		expect(rows(el).filter((row) => row.classList.contains('selected')).length).toBe(1);
 	});
 
 	it('unselect：清空选区并移除 selected 类', async () => {
-		const { el } = mountBody();
-		await renderItems(el, items(3), 0);
-		el.selectAll();
+		const { el, vm } = mountBody();
+		await renderItems(vm, items(3), 0);
+		vm.selectAll();
 		await nextTick();
-		el.unselect();
+		vm.unselect();
 		await nextTick();
-		expect(el.selections ?? []).toEqual([]);
+		expect(vm.getSelections() ?? []).toEqual([]);
 		expect(rows(el).filter((row) => row.classList.contains('selected')).length).toBe(0);
 	});
 
 	it('网格度量：列表视图（viewIndex=0）算出每行数量/可见行数/行高', async () => {
-		const { el, content } = mountBody();
-		await renderItems(el, items(3), 0);
+		const { vm, content } = mountBody();
+		await renderItems(vm, items(3), 0);
 		expect(content.countPerLine).toBeGreaterThan(0);
 		expect(content.visibleLines).toBeGreaterThan(0);
 		expect(content.itemSize).toBeGreaterThan(0);
 	});
 
 	it('网格度量：网格视图（viewIndex=2）与列表视图的每行数量不同', async () => {
-		const { el: listEl, content: listContent } = mountBody();
-		await renderItems(listEl, items(3), 0);
-		const { el: gridEl, content: gridContent } = mountBody();
-		await renderItems(gridEl, items(3), 2);
+		const { vm: listVm, content: listContent } = mountBody();
+		await renderItems(listVm, items(3), 0);
+		const { vm: gridVm, content: gridContent } = mountBody();
+		await renderItems(gridVm, items(3), 2);
 		expect(listContent.countPerLine).toBeGreaterThan(0);
 		expect(gridContent.countPerLine).not.toBe(listContent.countPerLine);
 	});
 
 	it('updateContentSize：内容元素拿到滚动区尺寸（宽或高被写上）', async () => {
-		const { el, content } = mountBody();
-		await renderItems(el, items(30), 0);
+		const { vm, content } = mountBody();
+		await renderItems(vm, items(30), 0);
 		expect(content.style.width !== '' || content.style.height !== '').toBe(true);
 	});
 
 	it('空目录不产生行', async () => {
-		const { el } = mountBody();
-		await renderItems(el, [], 0);
+		const { el, vm } = mountBody();
+		await renderItems(vm, [], 0);
 		expect(rows(el).length).toBe(0);
 	});
 
 	it('行元素契约：行是 file-body-item + file-item，内含 .file-body-name 且文本为 basename', async () => {
-		const { el } = mountBody();
-		await renderItems(el, [new FileItem('/a/really-long-name', 'really-long-name')], 0);
+		const { el, vm } = mountBody();
+		await renderItems(vm, [new FileItem('/a/really-long-name', 'really-long-name')], 0);
 		const row = rows(el)[0];
 		expect(row.classList.contains('file-body-item')).toBe(true);
 		expect(row.classList.contains('file-item')).toBe(true);
@@ -196,85 +184,85 @@ describe('YMFileBodyPane（行为金标准：行渲染/选区/度量/尺寸）',
 	});
 
 	it('updateFiles：display=normal 且无目录文件时不建行', async () => {
-		const { el } = mountBody();
-		el.updateFiles();
+		const { el, vm } = mountBody();
+		vm.updateFiles();
 		expect(rows(el).length).toBe(0);
 	});
 
 	it('selectAll 覆盖**全部**行（含窗口外未渲染的那些）——数据化的直接收益', async () => {
-		const { el } = mountBody();
+		const { el, vm } = mountBody();
 		const list = items(400);
-		await renderItems(el, list, 0);
+		await renderItems(vm, list, 0);
 		expect(rows(el).length).toBeLessThan(list.length);
-		el.selectAll();
+		vm.selectAll();
 		await nextTick();
-		expect((el.selections ?? []).length).toBe(list.length);
+		expect((vm.getSelections() ?? []).length).toBe(list.length);
 	});
 
 	it('窗口迁移：列表视图滚动后可见区（content.range）随之右移', async () => {
-		const { el, content } = mountBody();
-		await renderItems(el, items(80), 0);
+		const { el, vm, content } = mountBody();
+		await renderItems(vm, items(80), 0);
 		const before = Array.from(content.range ?? []);
 		Object.defineProperty(el, 'scrollLeft', { value: 600, configurable: true, writable: true });
 		el.scrollTop = 0;
-		el.resize();
+		vm.resize();
 		await nextTick();
 		const after = Array.from(content.range ?? []);
 		expect(after[0]).toBeGreaterThan(before[0]);
 	});
 
 	it('窗口迁移：滚动后渲染的行切到后面的文件（首行不再是 ev0）', async () => {
-		const { el } = mountBody();
-		await renderItems(el, items(80), 0);
+		const { el, vm } = mountBody();
+		await renderItems(vm, items(80), 0);
 		expect(el.textContent).toContain('ev0');
 		Object.defineProperty(el, 'scrollLeft', { value: 600, configurable: true, writable: true });
-		el.resize();
+		vm.resize();
 		await nextTick();
 		expect(el.textContent).not.toContain('ev0 ');
 		expect(rows(el).length).toBeGreaterThan(0);
 	});
 
 	it('updateContentOffset：内容偏移被写到内容元素样式上', async () => {
-		const { el, content } = mountBody();
-		await renderItems(el, items(40), 0);
+		const { el, vm, content } = mountBody();
+		await renderItems(vm, items(40), 0);
 		Object.defineProperty(el, 'scrollLeft', { value: 600, configurable: true, writable: true });
-		el.updateContentOffset();
+		vm.updateContentOffset();
 		expect(typeof content.style.transform === 'string').toBe(true);
 	});
 
 	it('网格视图：窗口迁移按 scrollTop 计算（与列表视图的轴不同）', async () => {
-		const { el, content } = mountBody();
-		await renderItems(el, items(80), 2);
+		const { el, vm, content } = mountBody();
+		await renderItems(vm, items(80), 2);
 		const before = Array.from(content.range ?? []);
 		Object.defineProperty(el, 'scrollTop', { value: 400, configurable: true, writable: true });
 		Object.defineProperty(el, 'scrollLeft', { value: 0, configurable: true, writable: true });
-		el.resize();
+		vm.resize();
 		await nextTick();
 		const after = Array.from(content.range ?? []);
 		expect(after[0]).toBeGreaterThanOrEqual(before[0]);
 	});
 
 	it('改名：改 basename 后 resize 会让模板显示新名字', async () => {
-		const { el } = mountBody();
+		const { el, vm } = mountBody();
 		const list = items(3);
-		await renderItems(el, list);
+		await renderItems(vm, list);
 		const names = (): (string | null)[] =>
 			Array.from(el.querySelectorAll('.file-body-name')).map((n) => n.textContent);
 		expect(names()[0]).toBe('ev0');
 
 		(list[0] as unknown as { basename: string }).basename = 'renamed';
-		el.resize();
+		vm.resize();
 		await nextTick();
 
 		expect(names()[0]).toBe('renamed');
 	});
 
 	it('行内不重复：反复 resize 后每行仍只有 1 个图标 + 1 个名字（含文件夹行）', async () => {
-		const { el } = mountBody();
-		await renderItems(el, [...items(3), new FolderItem('/a/sub', 'sub')]);
-		el.resize();
+		const { el, vm } = mountBody();
+		await renderItems(vm, [...items(3), new FolderItem('/a/sub', 'sub')]);
+		vm.resize();
 		await nextTick();
-		el.resize();
+		vm.resize();
 		await nextTick();
 
 		const rows = Array.from(el.querySelectorAll('.file-body-item'));
@@ -286,9 +274,9 @@ describe('YMFileBodyPane（行为金标准：行渲染/选区/度量/尺寸）',
 	});
 
 	it('文件夹行：复用模板渲染的名字（不追加第二个），且图标在名字之前', async () => {
-		const { el } = mountBody();
-		await renderItems(el, [new FolderItem('/a/sub', 'sub')]);
-		el.resize();
+		const { el, vm } = mountBody();
+		await renderItems(vm, [new FolderItem('/a/sub', 'sub')]);
+		vm.resize();
 		await nextTick();
 
 		const row = rows(el)[0];

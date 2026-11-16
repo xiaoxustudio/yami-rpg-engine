@@ -23,58 +23,41 @@ import { fileItemElementOf } from '@app/utils/dom';
 import { applyLocalizedTip } from '@app/utils/localized-items';
 import type { YamiElement } from '@app/types/element-api';
 
+import type {
+	FileBrowserBodyHandle,
+	FileBrowserHeadHandle,
+	FileBrowserLinks,
+	FileBrowserNavHandle
+} from '@app/types/file-browser-links.ts';
+
+/**
+ * 选择器窗口的文件浏览器句柄（ui-kit `YMFileBrowser` 的 `defineExpose`）。
+ *
+ * 迁移前注册的是 `.file-browser` 元素、方法挂在元素上（`nav.selections` / `body.selections`）；
+ * 现在注册的是**组件实例**：选中项走 `getSelections()`，「单击行 = 选中」的覆写走
+ * `setActivateFile()`，需要 DOM 时用 `el`。
+ */
 export interface SelectorInstance {
 	state?: string;
 	target?: { input?(value?: unknown): void } | null;
 	dragging?: unknown;
-	directory?: unknown;
-	backupFolders?: unknown[];
-	selections?: unknown[];
-	links?: {
-		nav?: { lastChild?: Node; selections?: unknown[] };
-		body?: { selections?: unknown[] };
-		browser?: { display?: string };
-	};
+	el?: (HTMLElement & { directory?: unknown[] | null }) | null;
+	links?: FileBrowserLinks;
 	audioPlayed?: boolean;
-	deleteFiles?(...args: unknown[]): void;
-	exportFile?(...args: unknown[]): void;
-	openFile?(...args: unknown[]): void;
-	rename?(...args: unknown[]): void;
 	restoreDisplay?(): void;
 	open?(target: unknown, allowNone?: boolean): void;
 	close?(): void;
 	allowNone?: boolean;
 	lastDir?: string;
 	filters?: unknown[] | null;
-	nav?: YamiElement & {
-		load?(...folders: unknown[]): void;
-		selections?: unknown[];
-		clear?(): void;
-		resize?(): void;
-	};
-	body?: YamiElement & {
-		computeGridProperties?(): void;
-		selectByPath?(path?: string): void;
-		selections?: unknown[];
-		viewIndex?: number;
-		setViewIndex?(index: number): void;
-		clear?(): void;
-		resize?(): void;
-		updateContentSize?(): void;
-		selectDefault?(): void;
-		select?(file?: unknown): void;
-		elements?: unknown[] & { count?: number };
-		activateFile?: unknown;
-		on?(type: string, listener: (event: never) => void): void;
-	};
-	head?: YamiElement & {
-		searcher?: YamiElement & {
-			on?(type: string, listener: (event: never) => void): void;
-			getFocus?(): void;
-			read?(): unknown;
-		};
-		address?: YamiElement;
-	};
+	// 这四项在 `YMFileBrowser` 上从未提供（历史菜单项一直走 `?.` 空转），保留可选形态不改语义
+	deleteFiles?(...args: unknown[]): void;
+	exportFile?(...args: unknown[]): void;
+	openFile?(...args: unknown[]): void;
+	rename?(...args: unknown[]): void;
+	nav?: FileBrowserNavHandle | null;
+	body?: FileBrowserBodyHandle | null;
+	head?: FileBrowserHeadHandle | null;
 }
 
 export const useSelectorStore = defineStore('selector', () => {
@@ -111,9 +94,10 @@ export const useSelectorStore = defineStore('selector', () => {
 			return;
 		}
 		initRetryCount = 0;
-		if (Selector.body) {
-			Selector.body.activateFile = Selector.body.select;
-		}
+		// 「单击行 = 选中」的覆写：原来是往 body 元素赋值 activateFile，现在是显式 setter
+		// oxlint-disable-next-line unbound-method
+		const bodySelect = Selector.body?.select;
+		Selector.body?.setActivateFile?.(bodySelect ?? null);
 		Selector.body?.on?.('keydown', bodyKeydown);
 		Selector.body?.on?.('open', bodyOpen);
 		Selector.body?.on?.('popup', bodyPopup);
@@ -161,7 +145,7 @@ export const useSelectorStore = defineStore('selector', () => {
 	function playAudio() {
 		const Selector = getSelector();
 		if (!Selector) return;
-		const files = (Selector.links?.body?.selections ?? []) as {
+		const files = (Selector.body?.getSelections?.() ?? []) as {
 			type?: string;
 			path?: string;
 			meta?: { guid?: string };
@@ -179,7 +163,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		const Selector = getSelector();
 		if (!Selector) return;
 		if (Selector.dragging) return;
-		const files = Selector.body?.selections ?? [];
+		const files = Selector.body?.getSelections?.() ?? [];
 		switch (files.length) {
 			case 1: {
 				const meta = (files[0] as { meta?: { guid?: string } })?.meta;
@@ -211,7 +195,8 @@ export const useSelectorStore = defineStore('selector', () => {
 		if (!Selector) return;
 		const Directory = getDirectoryTree();
 		const { view } = project.selector!;
-		Selector.directory = [Directory?.assets];
+		// 目录根是元素数据（nav 从 parentNode.directory 读）
+		if (Selector.el) Selector.el.directory = [Directory?.assets];
 		Selector.body?.setViewIndex?.(view as number);
 	}
 
@@ -219,9 +204,8 @@ export const useSelectorStore = defineStore('selector', () => {
 		const Selector = getSelector();
 		if (!Selector) return;
 		state.value = 'closed';
-		const folder = (Selector.nav?.selections?.[0] ?? Selector.backupFolders?.[0]) as
-			| { path?: string }
-			| undefined;
+		const folder = (Selector.nav?.getSelections?.()[0] ??
+			Selector.links?.browser?.backupFolders?.[0]) as { path?: string } | undefined;
 		Selector.lastDir = folder?.path ?? 'Assets';
 		lastDir.value = Selector.lastDir;
 		Selector.target = null;
@@ -261,9 +245,9 @@ export const useSelectorStore = defineStore('selector', () => {
 				if (Selector.head?.searcher?.read?.()) {
 					event.stopImmediatePropagation();
 					const { body } = Selector;
-					const { elements } = body ?? { elements: [] as unknown[] & { count?: number } };
-					if (elements.count === 1) {
-						const { file } = elements[0];
+					const rows = body?.getRowFiles?.() ?? [];
+					if (rows.length === 1) {
+						const file = rows[0];
 						if (file instanceof FileItem) {
 							body?.select?.(file);
 							confirm(event);
@@ -305,7 +289,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		const { browser, nav } = Selector.links ?? {};
 		const get = (key: string) => t('menuFileBrowser.' + key);
 		if (itemElement === null && targetElement?.closest('.file-body-pane') != null) {
-			const folders = nav?.selections ?? [];
+			const folders = nav?.getSelections?.() ?? [];
 			if (!(browser?.display === 'normal' && (folders ?? []).length === 1)) {
 				return;
 			}
@@ -318,7 +302,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		} else {
 			const element = itemElement as (YamiElement & { file: { type?: string } }) | null;
 			if (element !== null && hasClass(element, 'selected')) {
-				const { selections } = Selector ?? {};
+				const selections = Selector.body?.getSelections?.() ?? [];
 				const { file } = element;
 				const single = (selections ?? []).length === 1;
 				if (single && file.type === 'audio') {

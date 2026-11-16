@@ -1,6 +1,8 @@
-﻿import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMFileHeadPane from '../YMFileHeadPane/YMFileHeadPane.vue';
+
+type HeadApi = InstanceType<typeof YMFileHeadPane>;
 
 interface TestFileItem {
 	name: string;
@@ -8,13 +10,21 @@ interface TestFileItem {
 	subfolders: TestFileItem[];
 }
 
-function makeLinks() {
-	const browser = { display: 'normal', searchFiles: vi.fn(), backToParentFolder: vi.fn() };
-	const nav = { selections: [] as TestFileItem[], load: vi.fn(), scrollToSelection: vi.fn() };
+/**
+ * 句柄表桩：nav 只有 `getSelections()`（选中项不再是 `nav.selections` 属性），
+ * body 只给 `content` / `getFileCount()` / `setViewIndex()`。
+ */
+function makeLinks(selections: TestFileItem[] = [], display = 'normal', count = 3) {
+	const browser = { display, searchFiles: vi.fn(), backToParentFolder: vi.fn() };
+	const nav = {
+		getSelections: () => selections,
+		load: vi.fn(),
+		scrollToSelection: vi.fn()
+	};
 	const body = {
 		content: document.createElement('div'),
 		setViewIndex: vi.fn(),
-		elements: { count: 3 }
+		getFileCount: () => count
 	};
 	return { browser, nav, body };
 }
@@ -23,35 +33,28 @@ function mountPane(props: InstanceType<typeof YMFileHeadPane>['$props']) {
 	return mount(YMFileHeadPane, { props, attachTo: document.body });
 }
 
-interface FileHeadPaneElement extends HTMLElement {
-	[k: string]: unknown;
-	links?: { browser?: unknown; nav?: unknown; body?: unknown };
-	updateAddress: () => void;
-}
-
 describe('YMFileHeadPane', () => {
-	it('mounts with links and exposes updateAddress', () => {
+	it('mounts and exposes updateAddress through the component instance', () => {
 		const links = makeLinks();
 		const wrapper = mountPane({ links });
 		expect(wrapper.classes()).toContain('file-head-pane');
-		expect(typeof wrapper.vm.updateAddress).toBe('function');
-		expect((wrapper.element as unknown as FileHeadPaneElement).links?.browser).toBeTruthy();
-		expect((wrapper.element as unknown as FileHeadPaneElement).updateAddress).toBeTypeOf(
-			'function'
-		);
+		expect(typeof (wrapper.vm as HeadApi).updateAddress).toBe('function');
+		// 元素上不再有 `updateAddress` / `links`：这条断言防止「又挂回元素」
+		const el = wrapper.element as { updateAddress?: unknown; links?: unknown };
+		expect(el.updateAddress).toBeUndefined();
+		expect(el.links).toBeUndefined();
 		wrapper.unmount();
 	});
 
 	it('updateAddress renders folder breadcrumb', async () => {
-		const links = makeLinks();
 		const folder: TestFileItem = { name: 'Root', subfolders: [] };
 		const sub: TestFileItem = { name: 'Sub', parent: folder, subfolders: [] };
-		links.nav.selections = [sub];
+		const links = makeLinks([sub]);
 		const wrapper = mountPane({
 			links,
 			isFolderItem: (obj: unknown) => !!obj && typeof obj === 'object' && 'name' in obj
 		});
-		wrapper.vm.updateAddress();
+		(wrapper.vm as HeadApi).updateAddress();
 		await wrapper.vm.$nextTick();
 		const folders = wrapper.element.querySelectorAll('file-head-address-folder');
 		expect(folders.length).toBe(2);
@@ -62,10 +65,9 @@ describe('YMFileHeadPane', () => {
 	});
 
 	it('updateAddress search mode shows file count', async () => {
-		const links = makeLinks();
-		links.browser.display = 'search';
+		const links = makeLinks([], 'search', 3);
 		const wrapper = mountPane({ links });
-		wrapper.vm.updateAddress();
+		(wrapper.vm as HeadApi).updateAddress();
 		await wrapper.vm.$nextTick();
 		const text = wrapper.element.querySelector('file-head-address-text');
 		expect(text?.textContent).toBe('3 个文件');
@@ -95,15 +97,14 @@ describe('YMFileHeadPane', () => {
 	});
 
 	it('clicking address folder navigates', async () => {
-		const links = makeLinks();
 		const parent: TestFileItem = { name: 'Parent', subfolders: [] };
 		const sub: TestFileItem = { name: 'Sub', parent, subfolders: [] };
-		links.nav.selections = [sub];
+		const links = makeLinks([sub]);
 		const wrapper = mountPane({
 			links,
 			isFolderItem: (obj: unknown) => !!obj && typeof obj === 'object' && 'name' in obj
 		});
-		wrapper.vm.updateAddress();
+		(wrapper.vm as HeadApi).updateAddress();
 		await wrapper.vm.$nextTick();
 		const nodes = wrapper.element.querySelectorAll('file-head-address-folder');
 		expect(nodes.length).toBe(2);
@@ -117,20 +118,19 @@ describe('YMFileHeadPane', () => {
 	});
 
 	it('clicking address arrow opens menu popup', async () => {
-		const links = makeLinks();
 		const menuPopup = vi.fn();
 		const folder: TestFileItem = {
 			name: 'Parent',
 			subfolders: [{ name: 'Child', subfolders: [] }]
 		};
 		const sub: TestFileItem = { name: 'Sub', parent: folder, subfolders: [] };
-		links.nav.selections = [sub];
+		const links = makeLinks([sub]);
 		const wrapper = mountPane({
 			links,
 			menuPopup,
 			isFolderItem: (obj: unknown) => !!obj && typeof obj === 'object' && 'name' in obj
 		});
-		wrapper.vm.updateAddress();
+		(wrapper.vm as HeadApi).updateAddress();
 		await wrapper.vm.$nextTick();
 		const arrow = wrapper.element.querySelector('file-head-address-arrow') as HTMLElement;
 		arrow.dispatchEvent(new MouseEvent('pointerdown', { button: 0, bubbles: true }));

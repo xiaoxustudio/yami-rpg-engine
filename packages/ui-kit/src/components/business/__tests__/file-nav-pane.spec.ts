@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMFileNavPane from '../YMFileNavPane/YMFileNavPane.vue';
 
+type NavApi = InstanceType<typeof YMFileNavPane>;
+
 interface FileItem {
 	name: string;
 	path: string;
@@ -24,7 +26,12 @@ function makeFile(name: string, subfolders: FileItem[] = []) {
 }
 
 function makeProps(extra: Record<string, unknown> = {}) {
-	const browser = { display: 'normal', update: vi.fn(), restoreDisplay: vi.fn() };
+	const browser = {
+		display: 'normal',
+		update: vi.fn(),
+		restoreDisplay: vi.fn(),
+		backupFolders: []
+	};
 	const links = { browser, nav: null, body: null };
 	return {
 		links,
@@ -47,15 +54,6 @@ function makeProps(extra: Record<string, unknown> = {}) {
 	};
 }
 
-interface FileNavPaneElement extends HTMLElement {
-	[k: string]: unknown;
-	load: () => void;
-	update: () => void;
-	select: (...files: unknown[]) => void;
-	clear: () => void;
-	links: unknown;
-}
-
 describe('YMFileNavPane', () => {
 	let host: HTMLElement;
 
@@ -69,63 +67,64 @@ describe('YMFileNavPane', () => {
 		host.remove();
 	});
 
-	it('mounts and exposes core api', () => {
+	it('mounts and exposes core api through the component instance', () => {
 		const props = makeProps();
 		const wrapper = mount(YMFileNavPane, { props, attachTo: host });
-		const el = wrapper.element as unknown as FileNavPaneElement;
-		expect(el.className).toContain('file-nav-pane');
-		expect(typeof el.load).toBe('function');
-		expect(typeof el.update).toBe('function');
-		expect(typeof el.select).toBe('function');
-		expect(typeof el.clear).toBe('function');
-		expect(typeof wrapper.vm.update).toBe('function');
+		const vm = wrapper.vm as NavApi;
+		expect(wrapper.element.className).toContain('file-nav-pane');
+		expect(typeof vm.load).toBe('function');
+		expect(typeof vm.update).toBe('function');
+		expect(typeof vm.select).toBe('function');
+		expect(typeof vm.clear).toBe('function');
+		// 元素上不再有方法：这条断言防止「又挂回元素」
+		expect((wrapper.element as { load?: unknown }).load).toBeUndefined();
 		wrapper.unmount();
 	});
 
-	it('暴露拖拽流程写入的 pressing（legacy 元素属性）', () => {
+	it('暴露拖拽流程写入的 pressing（实例访问器）', () => {
 		const props = makeProps();
 		const wrapper = mount(YMFileNavPane, { props, attachTo: host });
-		const el = wrapper.element as unknown as FileNavPaneElement & {
-			pressing?: ((event: PointerEvent) => void) | null;
-		};
-		expect(el.pressing).toBe(null);
+		const vm = wrapper.vm as NavApi;
+		expect(vm.pressing).toBe(null);
 		const sentinel = (): void => {};
-		el.pressing = sentinel;
-		expect(el.pressing).toBe(sentinel);
-		el.pressing = null;
-		expect(el.pressing).toBe(null);
+		vm.pressing = sentinel;
+		expect(vm.pressing).toBe(sentinel);
+		vm.pressing = null;
+		expect(vm.pressing).toBe(null);
 		wrapper.unmount();
 	});
 
-	it('load selects folders and calls browser update', async () => {
+	it('select stores selections (load selects folders and calls browser update)', () => {
 		const props = makeProps();
 		const wrapper = mount(YMFileNavPane, { props, attachTo: host });
-		(wrapper.element as unknown as FileNavPaneElement).links = props.links;
+		const vm = wrapper.vm as NavApi;
 		const file = makeFile('Assets');
-		wrapper.vm.select(file);
-		expect(wrapper.vm.getSelections()).toContain(file);
+		vm.select(file as never);
+		expect(vm.getSelections()).toContain(file);
 		wrapper.unmount();
 	});
 
 	it('select/unselect toggles selection state', async () => {
 		const props = makeProps();
 		const wrapper = mount(YMFileNavPane, { props, attachTo: host });
+		const vm = wrapper.vm as NavApi;
 		const a = makeFile('A');
 		const b = makeFile('B');
-		(wrapper.vm as unknown as FileNavPaneElement).select(a);
-		(wrapper.vm as unknown as FileNavPaneElement).select(a, b);
-		expect(wrapper.vm.getSelections()).toEqual([a, b]);
-		wrapper.vm.unselect();
-		expect(wrapper.vm.getSelections()).toEqual([]);
+		vm.select(a as never);
+		vm.select(a as never, b as never);
+		expect(vm.getSelections()).toEqual([a, b]);
+		vm.unselect();
+		expect(vm.getSelections()).toEqual([]);
 		wrapper.unmount();
 	});
 
 	it('keydown ArrowRight expands single selection', async () => {
 		const props = makeProps();
 		const wrapper = mount(YMFileNavPane, { props, attachTo: host });
+		const vm = wrapper.vm as NavApi;
 		const sub = makeFile('Sub');
 		const file = makeFile('Folder', [sub]);
-		(wrapper.vm as unknown as FileNavPaneElement).select(file);
+		vm.select(file as never);
 		const el = wrapper.element;
 		el.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowRight', bubbles: true }));
 		expect(file.getContext(el).expanded).toBe(true);
@@ -139,7 +138,7 @@ describe('YMFileNavPane', () => {
 		const wrapper = mount(YMFileNavPane, { props, attachTo: host });
 		const sub = makeFile('Sub');
 		const file = makeFile('Folder', [sub]);
-		const el = wrapper.element as unknown as FileNavPaneElement;
+		const el = wrapper.element;
 		const element = document.createElement('div') as unknown as HTMLElement & {
 			[k: string]: unknown;
 		};

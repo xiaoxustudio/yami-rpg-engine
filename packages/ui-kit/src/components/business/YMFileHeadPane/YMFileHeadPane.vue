@@ -51,31 +51,39 @@ interface MenuItem {
 	enabled?: boolean;
 }
 
+/**
+ * 外层 `YMFileBrowser` 交下来的显式句柄表（nav/head/body 都是组件实例）。
+ *
+ * 注意 `nav` 现在只承诺方法：选中项走 `getSelections()`，
+ * 不再有 `nav.selections` 这种「从元素/内部变量读状态」的通道。
+ */
 interface FileBrowserLinks {
+	// `null` = 外层句柄表还没填（`onMounted` 的 `nextTick` 才拿到模板 ref），
+	// 所以这里允许空并在使用处一律 `?.`。
 	browser: {
 		display?: string;
 		backToParentFolder(): void;
 		searchFiles(kw: string): void;
 	};
 	nav: {
-		selections: FileItem[];
-		load(...files: unknown[]): void;
-		scrollToSelection(mode: string): void;
-	};
+		getSelections?(): unknown[];
+		load?(...files: unknown[]): void;
+		scrollToSelection?(mode: string): void;
+	} | null;
 	body: {
-		content: HTMLElement;
-		elements: { count: number };
-		setViewIndex(index: number): void;
-	};
+		content?: HTMLElement;
+		getFileCount?(): number;
+		setViewIndex?(index: number): void;
+	} | null;
 	[key: string]: unknown;
 }
 
-type FileHeadElement = HTMLElement & {
-	links?: FileBrowserLinks;
-	updateAddress?: () => void;
-	view?: HTMLElement & { input: HTMLInputElement; activeWheel: boolean; read(): number };
-	searcher?: HTMLElement & { input: HTMLInputElement; addCloseButton(): void };
-	address?: HTMLElement;
+/** 视图滑块根元素被接管的能力（`onMounted` 里从 YMSliderBox 实例复制过去） */
+type SliderRoot = HTMLElement & {
+	input?: HTMLInputElement;
+	activeWheel?: boolean;
+	read?(): number;
+	write?(index: number): void;
 };
 
 interface Props {
@@ -89,10 +97,18 @@ const props = withDefaults(defineProps<Props>(), {
 	isFolderItem: () => false
 });
 
+/** 搜索框根元素：YMTextBox 的能力是挂到它根元素上的（`write` / 关闭按钮 / 原生 input） */
+type SearcherRoot = HTMLElement & {
+	input: HTMLInputElement;
+	addCloseButton(): void;
+	write?(value: string): void;
+	deleteInputContent?(): void;
+};
+
 const el = ref<HTMLElement>();
 const addressEl = ref<HTMLElement>();
 const searcherEl = ref<{
-	root: HTMLElement & { input: HTMLInputElement; addCloseButton(): void };
+	root: SearcherRoot;
 	input: HTMLInputElement;
 } | null>(null);
 const viewEl = ref<{
@@ -132,13 +148,12 @@ const onAddressPointerup = (event: Event): void => {
 	if (!element) return;
 	const pointer = event as PointerEvent;
 	if (pointer.button !== 0 || element !== pointer.target) return;
-	const head = el.value as FileHeadElement;
-	const nav = head.links!.nav;
+	const { nav } = props.links;
 	switch (element.tagName) {
 		case 'FILE-HEAD-ADDRESS-FOLDER':
 			if (!element.disabled) {
-				nav.load(element.file);
-				nav.scrollToSelection('middle');
+				nav?.load?.(element.file);
+				nav?.scrollToSelection?.('middle');
 			}
 			break;
 		case 'FILE-HEAD-ADDRESS-ARROW': {
@@ -153,8 +168,8 @@ const onAddressPointerup = (event: Event): void => {
 			const length = Math.min(folders.length, MAX_MENU_ITEMS);
 			const menuItems = Array.from<MenuItem>({ length });
 			const click = function (this: MenuItem) {
-				nav.load(this.folder);
-				nav.scrollToSelection('middle');
+				nav?.load?.(this.folder);
+				nav?.scrollToSelection?.('middle');
 			};
 			for (let i = 0; i < length; i++) {
 				const folder = folders[i];
@@ -218,19 +233,19 @@ const AddressPart = defineComponent({
 function updateAddress() {
 	const { browser, nav, body } = props.links;
 	addressNodes.value = core.buildAddressNodes({
-		display: browser.display,
-		selections: nav.selections,
+		display: browser?.display,
+		selections: (nav?.getSelections?.() ?? []) as FileItem[],
 		isFolderItem: props.isFolderItem,
 		nextId: () => ++addressSeq,
-		searchCount: body.elements.count
+		searchCount: body?.getFileCount?.() ?? 0
 	});
 }
 
 function pointerdown(event: PointerEvent) {
 	if (!(event.target instanceof HTMLInputElement)) {
 		event.preventDefault();
-		const { content } = props.links.body;
-		if (document.activeElement !== content) {
+		const content = props.links.body?.content;
+		if (content && document.activeElement !== content) {
 			focusWithOptions(content, { preventScroll: true });
 		}
 	}
@@ -253,13 +268,13 @@ function addressPointerdown(event: PointerEvent) {
 
 function backButtonClick(_event: Event) {
 	const { browser } = props.links;
-	browser.backToParentFolder();
+	browser?.backToParentFolder();
 }
 
 function searcherInput(event: Event) {
 	if ((event as InputEvent).inputType !== 'insertCompositionText') {
 		const text = searcherEl.value?.input?.value ?? '';
-		props.links.browser.searchFiles(text);
+		props.links.browser?.searchFiles(text);
 	}
 }
 
@@ -267,21 +282,11 @@ function searcherInput(event: Event) {
 function viewInput(_value?: unknown) {
 	const value = viewEl.value?.read?.();
 	if (value !== undefined) {
-		props.links.body.setViewIndex(value);
+		props.links.body?.setViewIndex?.(value);
 	}
 }
 
 onMounted(() => {
-	const root = el.value as FileHeadElement;
-	Object.defineProperty(root, 'links', {
-		configurable: true,
-		get: () => props.links,
-		set: () => {}
-	});
-	root.updateAddress = updateAddress;
-	root.view = viewEl.value!.root;
-	root.searcher = searcherEl.value!.root;
-	root.address = addressEl.value;
 	searcherEl.value?.root?.addCloseButton?.();
 	searcherEl.value?.root?.addEventListener?.('input', searcherInput);
 	searcherEl.value?.root?.addEventListener?.('compositionend', searcherInput);
@@ -306,7 +311,27 @@ onMounted(() => {
 	}
 });
 
-defineExpose({ updateAddress, el });
+/**
+ * head 的对外契约。
+ *
+ * `view` / `searcher` / `address` 是**DOM 句柄**（视图滑块、搜索框、地址栏容器），
+ * 没有别处可复用的控件实例语义：滑块的能力是 `onMounted` 从 YMSliderBox 复制到根元素上的，
+ * 搜索框要挂原生 `input` / `compositionend` 监听。所以按元素暴露，但只经组件实例取，
+ * 元素上不再挂 `updateAddress` / `links`。
+ */
+defineExpose({
+	updateAddress,
+	el,
+	get view() {
+		return viewEl.value?.root as SliderRoot | undefined;
+	},
+	get searcher() {
+		return searcherEl.value?.root;
+	},
+	get address() {
+		return addressEl.value;
+	}
+});
 </script>
 
 <style module>

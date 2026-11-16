@@ -55,14 +55,6 @@ const makeProps = () => ({
 	pathUtil: { dirname: (p: string) => p }
 });
 
-interface BrowserElement extends HTMLElement {
-	update?: () => void;
-	searchFiles?: (kw: string | RegExp) => void;
-	backToParentFolder?: () => boolean;
-	getFilePaths?: (files: unknown[]) => { relativePaths: string[]; absolutePaths: string[] };
-	display?: string;
-}
-
 const makeContainer = (): HTMLElement => {
 	const container = document.createElement('div');
 	container.classList.add('file-browser');
@@ -81,15 +73,17 @@ describe('YMFileBrowser', () => {
 		container.remove();
 	});
 
-	it('exposes api on root element', async () => {
+	// 方法挂在**组件实例**上（`defineExpose`），元素只留 `directory` 这类宿主写入的数据
+	it('exposes api through the component instance', async () => {
 		const container = makeContainer();
-		const _wrapper = mount(YMFileBrowser, { props: makeProps(), attachTo: container });
+		const wrapper = mount(YMFileBrowser, { props: makeProps(), attachTo: container });
 		await nextTick();
-		const el = container as BrowserElement;
-		expect(typeof el.update).toBe('function');
-		expect(typeof el.searchFiles).toBe('function');
-		expect(typeof el.backToParentFolder).toBe('function');
-		expect(typeof el.getFilePaths).toBe('function');
+		expect(typeof wrapper.vm.update).toBe('function');
+		expect(typeof wrapper.vm.searchFiles).toBe('function');
+		expect(typeof wrapper.vm.backToParentFolder).toBe('function');
+		expect(typeof wrapper.vm.getFilePaths).toBe('function');
+		// 元素上不再有方法：这条断言防止「又挂回元素」
+		expect((container as unknown as { update?: unknown }).update).toBeUndefined();
 		container.remove();
 	});
 
@@ -124,11 +118,10 @@ describe('YMFileBrowser', () => {
 
 	it('getFilePaths maps relative and absolute paths', async () => {
 		const container = makeContainer();
-		const _wrapper = mount(YMFileBrowser, { props: makeProps(), attachTo: container });
+		const wrapper = mount(YMFileBrowser, { props: makeProps(), attachTo: container });
 		await nextTick();
-		const el = container as BrowserElement;
 		const files = [new FileItem('/a/ev', 'ev')];
-		const result = el.getFilePaths!(files);
+		const result = wrapper.vm.getFilePaths(files);
 		expect(result.relativePaths).toEqual(['/a/ev']);
 		expect(result.absolutePaths).toEqual(['/a/ev']);
 		container.remove();

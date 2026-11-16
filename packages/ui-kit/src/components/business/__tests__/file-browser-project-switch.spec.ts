@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMFileBrowser from '../YMFileBrowser/YMFileBrowser.vue';
+import YMFileNavPane from '../YMFileNavPane/YMFileNavPane.vue';
+import YMFileBodyPane from '../YMFileBodyPane/YMFileBodyPane.vue';
 
 let inoSeq = 0;
 
@@ -136,14 +138,6 @@ const makeProps = (getAssets: () => FakeFolder) => ({
 	onSelectorMount: vi.fn()
 });
 
-interface PaneEl extends HTMLElement {
-	load?: (...folders: unknown[]) => void;
-	updateFiles?: () => void;
-	computeGridProperties?: () => void;
-	resize?: () => void;
-	setViewIndex?: (index: number) => void;
-}
-
 const mockBox = (el: HTMLElement, width = 400, height = 300): void => {
 	Object.defineProperty(el, 'clientWidth', { value: width, configurable: true });
 	Object.defineProperty(el, 'clientHeight', { value: height, configurable: true });
@@ -153,12 +147,17 @@ const mockBox = (el: HTMLElement, width = 400, height = 300): void => {
 	});
 };
 
+type BrowserVm = InstanceType<typeof YMFileBrowser>;
+type NavVm = InstanceType<typeof YMFileNavPane>;
+type BodyVm = InstanceType<typeof YMFileBodyPane>;
+
 describe('YMFileBrowser 项目切换', () => {
 	let host: HTMLElement;
 	let assets: FakeFolder;
 	let wrapper: ReturnType<typeof mount> | null = null;
-	let nav: PaneEl;
-	let body: PaneEl;
+	let browser: BrowserVm;
+	let nav: NavVm;
+	let body: BodyVm;
 
 	/**
 	 * 真实结构里三个 pane 是 `#project-browser` 的直接子元素，store 也把 `Browser.directory`
@@ -167,18 +166,20 @@ describe('YMFileBrowser 项目切换', () => {
 	 */
 	const setDirectory = (value: unknown): void => {
 		(host as HTMLElement & { directory?: unknown }).directory = value;
-		(nav.parentNode as HTMLElement & { directory?: unknown }).directory = value;
+		(nav.el!.parentNode as HTMLElement & { directory?: unknown }).directory = value;
 	};
 
 	const boot = async (): Promise<void> => {
 		wrapper = mount(YMFileBrowser, { props: makeProps(() => assets), attachTo: host });
 		await nextTick();
 		await nextTick();
-		nav = host.querySelector('.file-nav-pane') as PaneEl;
-		body = host.querySelector('.file-body-pane') as PaneEl;
-		mockBox(nav, 160, 300);
-		mockBox(body, 400, 300);
-		body.setViewIndex?.(0);
+		await nextTick();
+		browser = wrapper.vm as BrowserVm;
+		nav = browser.nav!;
+		body = browser.body!;
+		mockBox(nav.el!, 160, 300);
+		mockBox(body.el!, 400, 300);
+		body.setViewIndex(0);
 	};
 
 	const bodyNames = (): string[] =>
@@ -211,14 +212,14 @@ describe('YMFileBrowser 项目切换', () => {
 		await boot();
 
 		setDirectory(assets);
-		nav.load?.(projectA.folder);
+		nav.load(projectA.folder as never);
 		await nextTick();
 
 		expect(bodyNames()).toEqual(['A1', 'A2']);
 		expect(navNames()).toEqual(['FolderA']);
 		expect(addressNames()).toEqual(['Assets', 'FolderA']);
 
-		(host as HTMLElement & { close?: () => void }).close?.();
+		browser.close();
 		await nextTick();
 
 		expect(bodyNames()).toEqual([]);
@@ -233,20 +234,20 @@ describe('YMFileBrowser 项目切换', () => {
 		await boot();
 
 		setDirectory(assets);
-		nav.load?.(projectA.folder);
+		nav.load(projectA.folder as never);
 		await nextTick();
 
 		const searcher = host.querySelector('.file-head-searcher input') as HTMLInputElement;
 		searcher.value = 'A1';
-		(host as HTMLElement & { searchFiles?: (kw: string) => void }).searchFiles?.('A1');
+		browser.searchFiles('A1');
 		await nextTick();
-		expect((host as HTMLElement & { display?: string }).display).toBe('search');
+		expect(browser.display).toBe('search');
 
-		(host as HTMLElement & { close?: () => void }).close?.();
+		browser.close();
 		await nextTick();
 
 		expect(searcher.value).toBe('');
-		expect((host as HTMLElement & { display?: string }).display).toBe('normal');
+		expect(browser.display).toBe('normal');
 	});
 
 	it('切到另一个项目后只剩新项目的行', async () => {
@@ -255,17 +256,17 @@ describe('YMFileBrowser 项目切换', () => {
 		await boot();
 
 		setDirectory(assets);
-		nav.load?.(projectA.folder);
+		nav.load(projectA.folder as never);
 		await nextTick();
 		expect(bodyNames()).toEqual(['A1', 'A2']);
 
-		(host as HTMLElement & { close?: () => void }).close?.();
+		browser.close();
 		await nextTick();
 
 		const projectB = makeProject('FolderB', ['B1']);
 		assets = projectB.assets;
 		setDirectory(assets);
-		nav.load?.(projectB.folder);
+		nav.load(projectB.folder as never);
 		await nextTick();
 
 		expect(bodyNames()).toEqual(['B1']);
@@ -278,26 +279,26 @@ describe('YMFileBrowser 项目切换', () => {
 		await boot();
 
 		setDirectory(assets);
-		nav.load?.(projectA.folder);
+		nav.load(projectA.folder as never);
 		await nextTick();
 		expect(bodyNames()).toEqual(['A1', 'A2']);
 
-		mockBox(nav, 160, 0);
-		mockBox(body, 400, 0);
-		(host as HTMLElement & { close?: () => void }).close?.();
+		mockBox(nav.el!, 160, 0);
+		mockBox(body.el!, 400, 0);
+		browser.close();
 		await nextTick();
 
 		const projectB = makeProject('FolderB', ['B1']);
 		assets = projectB.assets;
 		setDirectory(assets);
-		nav.load?.(projectB.folder);
+		nav.load(projectB.folder as never);
 		await nextTick();
 
-		mockBox(nav, 160, 300);
-		mockBox(body, 400, 300);
-		body.computeGridProperties?.();
-		body.resize?.();
-		nav.resize?.();
+		mockBox(nav.el!, 160, 300);
+		mockBox(body.el!, 400, 300);
+		body.computeGridProperties();
+		body.resize();
+		nav.resize();
 		await nextTick();
 
 		expect(navNames()).toEqual(['FolderB']);

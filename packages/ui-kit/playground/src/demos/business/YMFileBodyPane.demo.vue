@@ -119,7 +119,8 @@ const links = {
 		getFilePaths: () => ({ absolutePaths: [] })
 	},
 	nav: {
-		selections: [assets] as FolderItem[]
+		// 选中项只走方法：pane 不再读元素/内部变量上的 selections 属性
+		getSelections: () => [current.value]
 	},
 	head: {
 		view: {
@@ -130,7 +131,6 @@ const links = {
 };
 
 const refresh = () => {
-	links.nav.selections = [current.value];
 	bodyRef.value?.updateFiles();
 	info.value = `folder: ${current.value.path}`;
 };

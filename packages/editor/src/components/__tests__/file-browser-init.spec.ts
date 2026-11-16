@@ -10,10 +10,6 @@ vi.mock('electron', () => ({
 	}
 }));
 
-interface FileBrowserNode extends HTMLElement {
-	body?: HTMLElement & { on?: (...a: unknown[]) => void; selections?: unknown[] };
-}
-
 function appendItem(content: HTMLElement): HTMLElement & { file: { name: string; path: string } } {
 	const item = document.createElement('div') as unknown as HTMLElement & {
 		file: { name: string; path: string };
@@ -39,13 +35,16 @@ describe('FileBrowser 初始化事件注册（时序回归保护）', () => {
 			attachTo: container
 		});
 		await new Promise((resolve) => setTimeout(resolve, 600));
-		const Browser = getBrowserStore().getBrowser() as unknown as FileBrowserNode | null;
+		// store 现在持有的是 **YMFileBrowser 实例**：pane 句柄是组件实例，DOM 走 `body.el`
+		const Browser = getBrowserStore().getBrowser();
 		const body = Browser?.body;
 		expect(body).toBeTruthy();
-		const content = body!.querySelector('.file-body-content') as HTMLElement;
+		expect(body!.el).toBeTruthy();
+		const content = body!.el!.querySelector('.file-body-content') as HTMLElement;
 		const item = appendItem(content);
 		const listener = vi.fn();
-		body!.addEventListener('popup', listener);
+		// 事件注册走实例的 `on()`；元素只用来派发原生指针事件
+		body!.on!('popup', listener);
 		item.dispatchEvent(new PointerEvent('pointerdown', { button: 2, bubbles: true }));
 		item.dispatchEvent(new PointerEvent('pointerup', { button: 2, bubbles: true }));
 		await new Promise((resolve) => setTimeout(resolve, 20));

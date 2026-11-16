@@ -3,6 +3,8 @@ import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import YMFileHeadPane from '../YMFileHeadPane.vue';
 
+type HeadApi = InstanceType<typeof YMFileHeadPane>;
+
 interface FileItem {
 	name: string;
 	parent?: FileItem;
@@ -15,23 +17,28 @@ const makeFolder = (name: string, parent?: FileItem): FileItem => ({
 	subfolders: []
 });
 
-const makeLinks = (overrides: Record<string, unknown> = {}) => ({
+/**
+ * 句柄表桩：nav 只承诺 `getSelections()`（选中项不再是元素/内部变量属性），
+ * body 提供 `content`（DOM 焦点落点）与 `getFileCount()`（搜索模式的条数）。
+ */
+const makeLinks = (
+	options: { selections?: FileItem[]; display?: string; count?: number } = {}
+) => ({
 	browser: {
-		display: 'normal',
+		display: options.display ?? 'normal',
 		backToParentFolder: vi.fn(),
 		searchFiles: vi.fn()
 	},
 	nav: {
-		selections: [] as FileItem[],
+		getSelections: () => options.selections ?? [],
 		load: vi.fn(),
 		scrollToSelection: vi.fn()
 	},
 	body: {
 		content: document.createElement('div'),
-		elements: { count: 0 },
+		getFileCount: () => options.count ?? 0,
 		setViewIndex: vi.fn()
-	},
-	...overrides
+	}
 });
 
 describe('YMFileHeadPane', () => {
@@ -46,11 +53,9 @@ describe('YMFileHeadPane', () => {
 
 	it('updateAddress renders single folder breadcrumb', async () => {
 		const folder = makeFolder('Root');
-		const links = makeLinks({
-			nav: { selections: [folder], load: vi.fn(), scrollToSelection: vi.fn() }
-		});
+		const links = makeLinks({ selections: [folder] });
 		const wrapper = mount(YMFileHeadPane, { props: { links } });
-		(wrapper.vm as unknown as { updateAddress: () => void }).updateAddress();
+		(wrapper.vm as HeadApi).updateAddress();
 		await wrapper.vm.$nextTick();
 		const address = wrapper.element.querySelector('.file-head-address') as HTMLElement;
 		const folderEl = address.querySelector('file-head-address-folder');
@@ -59,16 +64,9 @@ describe('YMFileHeadPane', () => {
 	});
 
 	it('updateAddress renders search count', async () => {
-		const links = makeLinks({
-			browser: { display: 'search', backToParentFolder: vi.fn(), searchFiles: vi.fn() },
-			body: {
-				content: document.createElement('div'),
-				elements: { count: 5 },
-				setViewIndex: vi.fn()
-			}
-		});
+		const links = makeLinks({ display: 'search', count: 5 });
 		const wrapper = mount(YMFileHeadPane, { props: { links } });
-		(wrapper.vm as unknown as { updateAddress: () => void }).updateAddress();
+		(wrapper.vm as HeadApi).updateAddress();
 		await wrapper.vm.$nextTick();
 		const address = wrapper.element.querySelector('.file-head-address') as HTMLElement;
 		expect(address.textContent).toContain('5 个文件');
@@ -85,7 +83,7 @@ describe('YMFileHeadPane', () => {
 describe('YMFileHeadPane 的卸载清理', () => {
 	/** 渲染出一个地址栏文件夹节点，并在它上面按下（这会登记 window 上的 pointerup） */
 	const pressAddressFolder = async (wrapper: ReturnType<typeof mount>) => {
-		(wrapper.vm as unknown as { updateAddress: () => void }).updateAddress();
+		(wrapper.vm as HeadApi).updateAddress();
 		await wrapper.vm.$nextTick();
 		const address = wrapper.element.querySelector('.file-head-address') as HTMLElement;
 		const folderEl = address.querySelector('file-head-address-folder') as HTMLElement;
@@ -94,9 +92,7 @@ describe('YMFileHeadPane 的卸载清理', () => {
 	};
 
 	it('按下后卸载：登记在 window 上的 pointerup 被摘掉', async () => {
-		const links = makeLinks({
-			nav: { selections: [makeFolder('Root')], load: vi.fn(), scrollToSelection: vi.fn() }
-		});
+		const links = makeLinks({ selections: [makeFolder('Root')] });
 		const wrapper = mount(YMFileHeadPane, { props: { links } });
 		await pressAddressFolder(wrapper);
 
@@ -127,12 +123,9 @@ describe('YMFileHeadPane 的卸载清理', () => {
 		const root = makeFolder('Root');
 		const sub = makeFolder('Sub', root);
 		root.subfolders = [sub];
-		const load = vi.fn();
-		const links = makeLinks({
-			nav: { selections: [root, sub], load, scrollToSelection: vi.fn() }
-		});
+		const links = makeLinks({ selections: [root, sub] });
 		const wrapper = mount(YMFileHeadPane, { props: { links }, attachTo: document.body });
-		(wrapper.vm as unknown as { updateAddress: () => void }).updateAddress();
+		(wrapper.vm as HeadApi).updateAddress();
 		await nextTick();
 
 		const address = wrapper.element.querySelector('.file-head-address') as HTMLElement;
@@ -142,7 +135,7 @@ describe('YMFileHeadPane 的卸载清理', () => {
 		first.dispatchEvent(new PointerEvent('pointerdown', { button: 0, bubbles: true }));
 		await nextTick();
 		first.dispatchEvent(new PointerEvent('pointerup', { button: 0, bubbles: true }));
-		expect(load).toHaveBeenCalledWith(root);
+		expect(links.nav.load).toHaveBeenCalledWith(root);
 		wrapper.unmount();
 	});
 });

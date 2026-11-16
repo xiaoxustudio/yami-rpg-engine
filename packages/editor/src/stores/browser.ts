@@ -24,52 +24,36 @@ const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
 import { addClass, hasClass, removeClass } from '@app/utils/element-utils';
 import { pinia } from './pinia';
-import type { FileBrowserLinks } from '@app/types/file-browser-links.ts';
+import type {
+	FileBrowserBodyHandle,
+	FileBrowserHeadHandle,
+	FileBrowserLinks,
+	FileBrowserNavHandle
+} from '@app/types/file-browser-links.ts';
 import { GlobalClipboard } from '@app/utils/clipboard';
 import child_process from 'node:child_process';
 import { fileItemElementOf } from '@app/utils/dom';
 import type { YamiElement } from '@app/types/element-api';
 
-export interface FileBrowserBody {
-	activeFile?: unknown;
-	selections?: unknown[];
-	copyFiles?(cut?: boolean): void;
-	pasteFiles?(path?: string): void;
-	deleteFiles?(): void;
-	rename?(file?: unknown): void;
-	importFiles?(): void;
-	showInExplorer?(): void;
-	openFileLocation?(file?: unknown): void;
-	openFile?(file?: unknown): void;
-	updateIcon?(meta?: unknown): void;
-	computeGridProperties?(): void;
-	resize?(): void;
-	updateContentSize?(): void;
-	on?(type: string, listener: (event: unknown) => void): void;
-	content?: { getFocus?(): void };
-}
+/** 宿主写在根元素上的目录数据（`Browser.el.directory = [Directory.assets]`，nav 从 `parentNode.directory` 读） */
+export type FileBrowserHostElement = HTMLElement & { directory?: unknown[] | null };
 
+/**
+ * 文件浏览器的宿主句柄（ui-kit `YMFileBrowser` 的 `defineExpose`）。
+ *
+ * 迁移前这里是「元素 + 方法」：`FileBrowser.vue` 注册的是 `.file-browser` 元素，方法由
+ * `attachApi` 挂在元素上。现在注册的是**组件实例**，元素只作 DOM 宿主（`el`）与目录数据
+ * 的落点；`nav` / `head` / `body` 是三个 pane 的实例，选中项走 `getSelections()`。
+ */
 export interface FileBrowserInstance {
 	state?: string;
-	directory?: unknown[] | null;
-	page?: HTMLElement;
-	searcher?: HTMLElement & { addKeydownFilter?(): void };
-	head?: HTMLElement & { searcher?: HTMLElement };
-	nav?: {
-		resize?(): void;
-		load?(...folders: unknown[]): void;
-		setViewIndex?(index: number): void;
-		update?(): void;
-		getSelections?(): unknown[];
-	};
-	body?: FileBrowserBody & {
-		setViewIndex?(index: number): void;
-		unselect?(meta?: unknown): void;
-		getDirName?(): string;
-		select?(file?: unknown): void;
-		viewIndex?: number;
-	};
+	el?: FileBrowserHostElement | null;
 	links?: FileBrowserLinks;
+	page?: HTMLElement;
+	searcher?: (HTMLElement & { addKeydownFilter?(): void }) | null;
+	head?: FileBrowserHeadHandle | null;
+	nav?: FileBrowserNavHandle | null;
+	body?: FileBrowserBodyHandle | null;
 	dragging?: unknown;
 	initialize?(): void;
 	close?(): void;
@@ -94,7 +78,7 @@ export const useBrowserStore = defineStore('browser', () => {
 	function syncState() {
 		const Browser = getBrowser();
 		state.value = Browser?.state ?? 'closed';
-		directory.value = Browser?.directory ?? null;
+		directory.value = Browser?.el?.directory ?? null;
 	}
 
 	function pageResize(_event: Event) {
@@ -242,7 +226,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		const pastable = Clipboard?.has?.('yami.files');
 		let creatable = false;
 		if (itemElement === null && targetElement?.closest('.file-body-pane') != null) {
-			const folders = nav?.selections ?? [];
+			const folders = (nav?.getSelections?.() ?? []) as FolderItem[];
 			if (browser?.display === 'normal' && folders.length === 1) {
 				creatable = true;
 				items.push(
@@ -283,7 +267,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		} else {
 			const element = itemElement as (HTMLElement & { file?: unknown }) | null;
 			if (element !== null && hasClass(element, 'selected')) {
-				const { selections } = Browser.body ?? { selections: [] as unknown[] };
+				const selections = Browser.body?.getSelections?.() ?? [];
 				const { file } = element;
 				const single = (selections ?? []).length === 1;
 				if (single && selections?.[0] instanceof FolderItem) {
@@ -383,9 +367,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		}
 		initRetryCount = 0;
 		Browser.page = projectNodes.pick('page') as YamiElement;
-		Browser.searcher = (
-			Browser.links?.head as (HTMLElement & { searcher?: HTMLElement }) | undefined
-		)?.searcher;
+		Browser.searcher = Browser.links?.head?.searcher ?? null;
 		Browser.searcher?.addKeydownFilter?.();
 		Browser.page?.addEventListener('resize', pageResize);
 		Browser.body?.on?.('keydown', bodyKeydown as (event: unknown) => void);
@@ -409,7 +391,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		const body = Browser.body;
-		const files = body?.selections ?? [];
+		const files = body?.getSelections?.() ?? [];
 		if (files.length === 1 && (files as { meta?: unknown }[])[0].meta === meta) {
 			body?.unselect?.();
 		}
@@ -505,14 +487,15 @@ export const useBrowserStore = defineStore('browser', () => {
 
 	function updateNavVisibility() {
 		const Browser = getBrowser();
-		if (!Browser) return;
+		const el = Browser?.el;
+		if (!Browser || !el) return;
 		if (hasClass(Browser.page, 'visible')) {
-			if ((Browser as HTMLElement & FileBrowserInstance).clientWidth >= 500) {
-				if (removeClass(Browser, 'hide-nav-pane')) {
+			if (el.clientWidth >= 500) {
+				if (removeClass(el, 'hide-nav-pane')) {
 					Browser.nav?.update?.();
 				}
 			} else {
-				addClass(Browser, 'hide-nav-pane');
+				addClass(el, 'hide-nav-pane');
 			}
 		}
 	}
@@ -542,7 +525,8 @@ export const useBrowserStore = defineStore('browser', () => {
 		if (selections.length === 0) {
 			selections.push(Directory?.assets ?? null);
 		}
-		Browser.directory = [Directory?.assets];
+		// 目录根是**元素数据**（nav 从 `parentNode.directory` 读）：句柄只用来取根元素
+		if (Browser.el) Browser.el.directory = [Directory?.assets];
 		Browser.body?.setViewIndex?.(view);
 		Browser.nav?.load?.(...selections);
 	}

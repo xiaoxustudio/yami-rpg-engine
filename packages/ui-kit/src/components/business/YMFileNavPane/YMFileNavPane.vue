@@ -25,10 +25,8 @@ import {
 import {
 	commonListResize,
 	commonListUpdateHeadAndFoot,
-	type CommonListLike,
-	type HeadAndFootListLike
+	type CommonListLike
 } from '../../../utils/common-list';
-import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf } from '../../../utils/element-data';
 import { createFileNavCore } from './file-nav-pane-core';
 import { createPayloadEvent } from '../../../utils/payload-event';
@@ -101,6 +99,12 @@ interface RenameTimer {
 	remove(): void;
 }
 
+/**
+ * 外层 `YMFileBrowser` 交下来的显式句柄表。
+ *
+ * 这里只放**数据/方法句柄**，不再由外层把同一个对象挂到元素上：
+ * nav 自己也是这张表里的 `nav`（组件实例），任何需要 DOM 的地方走 `links.nav.el`。
+ */
 interface FileBrowserLinks {
 	browser?: {
 		display?: string;
@@ -113,7 +117,7 @@ interface FileBrowserLinks {
 	[key: string]: unknown;
 }
 
-interface FolderElements extends Array<FolderElement | undefined> {
+interface FolderElements extends Array<FolderElement> {
 	versionId: number;
 	count: number;
 	start: number;
@@ -122,25 +126,10 @@ interface FolderElements extends Array<FolderElement | undefined> {
 	foot: HTMLElement | null;
 }
 
-type FileNavPaneElement = HTMLElement & {
-	textBox?: TextBoxElement;
-	load?: (...folders: FileItem[]) => void;
-	update?: () => void;
-	resize?: () => void;
-	updateHeadAndFoot?: () => void;
-	updateOnResize?: (element: FolderElement) => void;
-	select?: (...files: FileItem[]) => void;
-	unselect?: () => void;
-	selectRelative?: (direction: 'up' | 'down') => void;
-	scrollToSelection?: (mode?: string) => void;
-	getSelections?: () => unknown[];
-	rename?: (file: FileItem) => void;
-	cancelRenaming?: () => void;
-	clearElements?: (start: number) => void;
-	clear?: () => HTMLElement;
-	elements?: FolderElements;
-	links?: FileBrowserLinks;
-};
+/**
+ * nav 的根元素本身**不挂任何东西**：`elements` 这类簿记只活在模块作用域里，
+ * 共享的 `common-list` 若需要它，由 `listView()` 适配视图补上。
+ */
 
 interface Props {
 	links: FileBrowserLinks;
@@ -274,12 +263,44 @@ function update(): void {
 	resize();
 }
 
+/**
+ * `common-list` 的共享实现（`YMCommonList` 也在用）按「元素上带 `updateOnResize`」的契约读。
+ *
+ * nav 不再往自己的元素挂方法，所以给它一层**适配视图**：DOM 成员照旧读根元素
+ * （`Reflect.get` 的接收者必须是真实元素，DOM 访问器有品牌校验），`updateOnResize`
+ * 用闭包函数。共享实现因此保持唯一一份，元素保持干净。
+ */
+const listView = (node: HTMLElement): CommonListLike => ({
+	get scrollTop() {
+		return node.scrollTop;
+	},
+	set scrollTop(value: number) {
+		node.scrollTop = value;
+	},
+	get clientHeight() {
+		return node.clientHeight;
+	},
+	get textContent() {
+		return node.textContent;
+	},
+	set textContent(value: string | null) {
+		node.textContent = value;
+	},
+	get childNodes() {
+		return node.childNodes;
+	},
+	appendChild: (child: Node) => node.appendChild(child),
+	insertBefore: (child: Node, reference: Node | null) => node.insertBefore(child, reference),
+	elements,
+	updateOnResize
+});
+
 function resize(): void {
-	commonListResize(el.value! as FileNavPaneElement & CommonListLike);
+	commonListResize(listView(el.value!));
 }
 
 function updateHeadAndFoot(): void {
-	commonListUpdateHeadAndFoot(el.value! as FileNavPaneElement & HeadAndFootListLike);
+	commonListUpdateHeadAndFoot(listView(el.value!));
 }
 
 function updateOnResize(element: FolderElement): void {
@@ -414,7 +435,7 @@ function selectRelative(direction: 'up' | 'down'): void {
 		const { selections: sels } = { selections };
 		const indices: number[] = [];
 		for (const file of sels) {
-			indices.push(els.indexOf(file.getContext(el.value!).element));
+			indices.push(els.indexOf(file.getContext(el.value!).element as FolderElement));
 		}
 		const index = core.computeRelativeSelectionIndex(direction, count, indices);
 		const file = els[index]?.file;
@@ -449,7 +470,7 @@ function scrollToSelection(mode: string = 'active'): void {
 
 function getSelections(): unknown[] {
 	const { browser } = props.links;
-	return core.resolveSelections(browser!.display, selections, browser!.backupFolders!);
+	return core.resolveSelections(browser?.display, selections, browser?.backupFolders ?? []);
 }
 
 function rename(file: FileItem): void {
@@ -598,7 +619,9 @@ function pointerdown(event: PointerEvent): void {
 						const els = elements;
 						const indices: number[] = [];
 						for (const file of sels) {
-							indices.push(els.indexOf(file.getContext(node).element));
+							indices.push(
+								els.indexOf(file.getContext(node).element as FolderElement)
+							);
 						}
 						const { start, end } = core.computeShiftSelectionRange(
 							els.indexOf(element as FolderElement),
@@ -674,7 +697,7 @@ function dirchange(_event: Event): void {
 	const paths = core.resolveFolderPaths(getSelections(), props.directoryApi!.inoMap);
 	const folders: unknown[] = paths.map((path) => props.directoryApi?.getFolder(path));
 	const { browser } = props.links;
-	switch (browser!.display) {
+	switch (browser?.display) {
 		case 'normal':
 			unselect();
 			load(...(folders as FileItem[]));
@@ -753,7 +776,7 @@ function createTextBox(): TextBoxElement {
 }
 
 onMounted(() => {
-	const node = el.value as FileNavPaneElement;
+	const node = el.value!;
 	timerCallback = () => {
 		const files = selections;
 		if (files.length === 1) {
@@ -779,7 +802,6 @@ onMounted(() => {
 	});
 
 	textBox = createTextBox();
-	node.textBox = textBox;
 
 	attachDoubleclick(node, doubleclick);
 	selectEventEnabled = true;
@@ -792,51 +814,44 @@ onMounted(() => {
 		});
 		resizeObserver.observe(node);
 	}
-
-	attachApi(node, {
-		load,
-		update,
-		resize,
-		updateHeadAndFoot,
-		updateOnResize,
-		select,
-		unselect,
-		selectRelative,
-		scrollToSelection,
-		getSelections,
-		rename,
-		cancelRenaming,
-		clearElements,
-		clear
-	});
-	Object.defineProperty(node, 'selections', {
-		get: () => selections,
-		configurable: true
-	});
-	Object.defineProperty(node, 'pressing', {
-		get: () => pressing,
-		set: (value: ((event: PointerEvent) => void) | null) => {
-			pressing = value;
-			pressingActive.value = value === onPendingPointerup;
-		},
-		configurable: true
-	});
-	Object.defineProperty(node, 'elements', {
-		get: () => elements,
-		configurable: true
-	});
-	Object.defineProperty(node, 'links', {
-		configurable: true,
-		get: () => props.links,
-		set: () => {}
-	});
 });
 
 onBeforeUnmount(() => {
 	resizeObserver?.disconnect?.();
 });
 
-defineExpose({ load, update, select, unselect, clear, getSelections, el });
+/**
+ * 组件实例就是 nav 的对外契约（外层 `links.nav` 存的就是它）。
+ *
+ * `textBox` / `pressing` 不是控件能力而是**DOM/拖拽簿记**：外层 `YMFileBrowser`
+ * 的拖拽流程要判断「是否正在改名（文本框挂在行上）」并清掉待定的按下令牌，
+ * 所以按句柄暴露出去，元素上不再挂。
+ */
+defineExpose({
+	load,
+	update,
+	resize,
+	updateHeadAndFoot,
+	select,
+	unselect,
+	selectRelative,
+	scrollToSelection,
+	getSelections,
+	rename,
+	cancelRenaming,
+	clear,
+	el,
+	get textBox() {
+		return textBox;
+	},
+	get pressing() {
+		return pressing;
+	},
+	set pressing(value: ((event: PointerEvent) => void) | null) {
+		pressing = value;
+		pressingActive.value = value === onPendingPointerup;
+	}
+});
 </script>
 
 <style module>

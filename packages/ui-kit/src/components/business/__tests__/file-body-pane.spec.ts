@@ -3,6 +3,8 @@ import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane/YMFileBodyPane.vue';
 
+type BodyApi = InstanceType<typeof YMFileBodyPane>;
+
 function makeFile(name: string, type = 'image') {
 	const file: {
 		name: string;
@@ -33,11 +35,13 @@ function makeFile(name: string, type = 'image') {
 function makeProps(extra: Record<string, unknown> = {}) {
 	const browser = {
 		display: 'normal',
+		filters: null as string[] | null,
+		searchResults: [],
 		update: vi.fn(),
 		restoreDisplay: vi.fn(),
 		getFilePaths: vi.fn(() => ({ relativePaths: [], absolutePaths: [] }))
 	};
-	const nav = { selections: [], load: vi.fn(), scrollToSelection: vi.fn() };
+	const nav = { getSelections: () => [] as unknown[], load: vi.fn(), scrollToSelection: vi.fn() };
 	const links = { browser, nav, body: null, head: { view: { write: vi.fn() } } };
 	return {
 		links,
@@ -99,18 +103,15 @@ function makeProps(extra: Record<string, unknown> = {}) {
 	};
 }
 
-interface FileBodyPaneElement extends HTMLElement {
-	[k: string]: unknown;
-	updateFiles: () => void;
-	select: (a: unknown, b?: unknown) => void;
-	unselect: () => void;
-	setViewIndex: (index: number) => void;
-	clear: () => void;
-	on: (type: string, listener: (event: Event) => void) => void;
-	content: unknown;
-	selections: unknown[];
-	elements: { count: number } & { [i: number]: HTMLElement | undefined };
-}
+/** 夹具把尺寸钉死：body 的行窗口按 `clientWidth/Height` 与 `getBoundingClientRect` 计算 */
+const mockBox = (el: HTMLElement): void => {
+	Object.defineProperty(el, 'clientHeight', { value: 300, configurable: true });
+	Object.defineProperty(el, 'clientWidth', { value: 400, configurable: true });
+	Object.defineProperty(el, 'getBoundingClientRect', {
+		value: () => ({ width: 400, height: 300, top: 0, left: 0, right: 400, bottom: 300 }),
+		configurable: true
+	});
+};
 
 describe('YMFileBodyPane', () => {
 	let host: HTMLElement;
@@ -125,28 +126,32 @@ describe('YMFileBodyPane', () => {
 		host.remove();
 	});
 
-	it('mounts and exposes core api', () => {
-		const props = makeProps();
-		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
-		const el = wrapper.element as unknown as FileBodyPaneElement;
+	it('mounts and exposes core api through the component instance', () => {
+		const wrapper = mount(YMFileBodyPane, { props: makeProps(), attachTo: host });
+		const vm = wrapper.vm as BodyApi;
+		const el = wrapper.element;
 		expect(el.className).toContain('file-body-pane');
-		expect(typeof el.updateFiles).toBe('function');
-		expect(typeof el.select).toBe('function');
-		expect(typeof el.setViewIndex).toBe('function');
-		expect(typeof el.clear).toBe('function');
-		expect(el.content).toBeTruthy();
+		expect(typeof vm.updateFiles).toBe('function');
+		expect(typeof vm.select).toBe('function');
+		expect(typeof vm.setViewIndex).toBe('function');
+		expect(typeof vm.clear).toBe('function');
+		expect(vm.content).toBeTruthy();
+		// 元素上不再有方法/`selections`：这条断言防止「又挂回元素」
+		const raw = el as { select?: unknown; selections?: unknown };
+		expect(raw.select).toBeUndefined();
+		expect(raw.selections).toBeUndefined();
 		wrapper.unmount();
 	});
 
 	it('select/unselect toggles selection', () => {
-		const props = makeProps();
-		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
+		const wrapper = mount(YMFileBodyPane, { props: makeProps(), attachTo: host });
+		const vm = wrapper.vm as BodyApi;
 		const a = makeFile('A');
 		const b = makeFile('B');
-		(wrapper.vm as unknown as FileBodyPaneElement).select(a, b);
-		expect((wrapper.element as unknown as FileBodyPaneElement).selections).toEqual([a, b]);
-		wrapper.vm.unselect();
-		expect((wrapper.element as unknown as FileBodyPaneElement).selections).toEqual([]);
+		vm.select(a as never, b as never);
+		expect(vm.getSelections()).toEqual([a, b]);
+		vm.unselect();
+		expect(vm.getSelections()).toEqual([]);
 		wrapper.unmount();
 	});
 
@@ -155,12 +160,12 @@ describe('YMFileBodyPane', () => {
 		const props = makeProps({
 			links: {
 				browser: { display: 'normal' },
-				nav: { selections: [] },
+				nav: { getSelections: () => [] },
 				head: { view: { write: viewWrite } }
 			}
 		});
 		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
-		(wrapper.vm as unknown as FileBodyPaneElement).setViewIndex(2);
+		(wrapper.vm as BodyApi).setViewIndex(2);
 		expect(viewWrite).toHaveBeenCalledWith(2);
 		expect(wrapper.element.querySelector('.file-body-content')?.className).toContain('medium');
 		wrapper.unmount();
@@ -175,22 +180,23 @@ describe('YMFileBodyPane', () => {
 			fileClasses: { FileItem: FileItemClass, FolderItem: FolderItemClass },
 			links: {
 				browser: { display: 'normal', filters: null },
-				nav: { selections: [folder] }
+				nav: { getSelections: () => [folder] },
+				head: { view: { write: vi.fn() } }
 			}
 		});
 		Object.setPrototypeOf(a, FileItemClass.prototype);
 		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
-		Object.defineProperty(wrapper.element, 'clientHeight', { value: 300, configurable: true });
-		Object.defineProperty(wrapper.element, 'clientWidth', { value: 400, configurable: true });
-		(wrapper.element as unknown as FileBodyPaneElement).updateFiles();
+		mockBox(wrapper.element);
+		const vm = wrapper.vm as BodyApi;
+		vm.setViewIndex(0);
+		vm.updateFiles();
 		await new Promise((r) => setTimeout(r, 30));
-		expect((wrapper.element as unknown as FileBodyPaneElement).elements.count).toBeGreaterThan(
-			0
-		);
+		expect(vm.getFileCount()).toBeGreaterThan(0);
+		expect(wrapper.element.querySelectorAll('.file-body-item').length).toBeGreaterThan(0);
 		wrapper.unmount();
 	});
 
-	it('暴露拖拽流程依赖的 activeFile / pressing / deactivateFile（legacy 元素成员）', async () => {
+	it('暴露拖拽流程依赖的 activeFile / pressing / deactivateFile（实例句柄）', async () => {
 		const FileItemClass = class FileItem {};
 		const FolderItemClass = class FolderItem {};
 		const a = makeFile('A');
@@ -199,49 +205,39 @@ describe('YMFileBodyPane', () => {
 			fileClasses: { FileItem: FileItemClass, FolderItem: FolderItemClass },
 			links: {
 				browser: { display: 'normal', filters: null },
-				nav: { selections: [folder] },
+				nav: { getSelections: () => [folder] },
 				head: { view: { write: vi.fn() } }
 			}
 		});
 		Object.setPrototypeOf(a, FileItemClass.prototype);
 		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
-		const node = wrapper.element as unknown as FileBodyPaneElement & {
-			activeFile?: unknown;
-			pressing?: unknown;
-			deactivateFile?: () => void;
-			selectActiveFile?: () => void;
-		};
-		Object.defineProperty(node, 'clientHeight', { value: 300, configurable: true });
-		Object.defineProperty(node, 'clientWidth', { value: 400, configurable: true });
-		Object.defineProperty(node, 'getBoundingClientRect', {
-			value: () => ({ width: 400, height: 300, top: 0, left: 0, right: 400, bottom: 300 }),
-			configurable: true
-		});
-		node.setViewIndex(0);
-		node.updateFiles();
+		const node = wrapper.element;
+		mockBox(node);
+		const vm = wrapper.vm as BodyApi;
+		vm.setViewIndex(0);
+		vm.updateFiles();
 		await nextTick();
 
 		const row = node.querySelector('.file-body-item') as HTMLElement & { file?: unknown };
 		expect(row).not.toBe(null);
 
 		row.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
-		expect(node.activeFile).toBe(row.file);
-		expect(typeof node.pressing).toBe('function');
+		expect(vm.activeFile).toBe(row.file);
+		expect(typeof vm.pressing).toBe('function');
 
-		node.pressing = null;
+		vm.pressing = null;
 		window.dispatchEvent(new PointerEvent('pointerup'));
-		expect(node.selections).toEqual([]);
+		expect(vm.getSelections()).toEqual([]);
 
 		expect(row.classList.contains('selected')).toBe(true);
-		expect(typeof node.deactivateFile).toBe('function');
-		node.deactivateFile?.();
-		expect(node.activeFile).toBe(null);
+		vm.deactivateFile();
+		expect(vm.activeFile).toBe(null);
 		expect(row.classList.contains('selected')).toBe(false);
 
 		wrapper.unmount();
 	});
 
-	it('按下行的激活走元素覆写（选择器窗口 activateFile = select）', async () => {
+	it('按下行的激活走实例覆写（选择器窗口 setActivateFile = select）', async () => {
 		const FileItemClass = class FileItem {};
 		const FolderItemClass = class FolderItem {};
 		const a = makeFile('A');
@@ -249,52 +245,58 @@ describe('YMFileBodyPane', () => {
 			fileClasses: { FileItem: FileItemClass, FolderItem: FolderItemClass },
 			links: {
 				browser: { display: 'normal', filters: null },
-				nav: { selections: [{ children: [a] }] },
+				nav: { getSelections: () => [{ children: [a] }] },
 				head: { view: { write: vi.fn() } }
 			}
 		});
 		Object.setPrototypeOf(a, FileItemClass.prototype);
 		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
-		const node = wrapper.element as unknown as FileBodyPaneElement & {
-			activateFile?: (file: unknown) => void;
-			activeFile?: unknown;
-		};
-		Object.defineProperty(node, 'clientHeight', { value: 300, configurable: true });
-		Object.defineProperty(node, 'clientWidth', { value: 400, configurable: true });
-		Object.defineProperty(node, 'getBoundingClientRect', {
-			value: () => ({ width: 400, height: 300, top: 0, left: 0, right: 400, bottom: 300 }),
-			configurable: true
-		});
-		node.setViewIndex(0);
-		node.updateFiles();
+		const node = wrapper.element;
+		mockBox(node);
+		const vm = wrapper.vm as BodyApi;
+		vm.setViewIndex(0);
+		vm.updateFiles();
 		await nextTick();
 
 		const override = vi.fn();
-		node.activateFile = override;
+		vm.setActivateFile(override);
 		const row = node.querySelector('.file-body-item') as HTMLElement;
 		row.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
 
 		expect(override).toHaveBeenCalledTimes(1);
-		expect(node.activeFile).toBe(null);
+		expect(vm.activeFile).toBe(null);
 
 		wrapper.unmount();
 	});
 
 	it('keydown Delete triggers deleteFiles flow', async () => {
-		const props = makeProps();
-		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
+		const FileItemClass = class FileItem {};
+		const FolderItemClass = class FolderItem {};
 		const a = makeFile('A');
-		(wrapper.vm as unknown as FileBodyPaneElement).select(a);
-		const node = wrapper.element as unknown as FileBodyPaneElement;
-		const ctx = a.getContext(node);
-		ctx.element = document.createElement('div');
-		node.elements[0] = ctx.element;
-		node.elements.count = 1;
-		wrapper.element.dispatchEvent(
-			new KeyboardEvent('keydown', { code: 'Delete', bubbles: true })
-		);
+		const props = makeProps({
+			fileClasses: { FileItem: FileItemClass, FolderItem: FolderItemClass },
+			links: {
+				browser: { display: 'normal', filters: null },
+				nav: { getSelections: () => [{ children: [a] }] },
+				head: { view: { write: vi.fn() } }
+			}
+		});
+		Object.setPrototypeOf(a, FileItemClass.prototype);
+		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
+		const node = wrapper.element;
+		mockBox(node);
+		const vm = wrapper.vm as BodyApi;
+		vm.setViewIndex(0);
+		vm.updateFiles();
+		await nextTick();
+		// 先让行渲染出来（`deleteFiles` 只删可见行里的选中项）
+		vm.select(a as never);
+		await nextTick();
+		node.dispatchEvent(new KeyboardEvent('keydown', { code: 'Delete', bubbles: true }));
 		await new Promise((r) => setTimeout(r, 30));
-		expect(props.windowApi.confirm).toHaveBeenCalled();
+		expect(
+			(props.windowApi as { confirm: ReturnType<typeof vi.fn> }).confirm
+		).toHaveBeenCalled();
 		wrapper.unmount();
 	});
 
@@ -308,25 +310,19 @@ describe('YMFileBodyPane', () => {
 			fileClasses: { FileItem: FileItemClass, FolderItem: FolderItemClass },
 			links: {
 				browser: { display: 'normal', filters: null },
-				nav: { selections: [{ children: [a] }] },
+				nav: { getSelections: () => [{ children: [a] }] },
 				head: { view: { write: vi.fn() } }
 			}
 		});
 		Object.setPrototypeOf(a, FileItemClass.prototype);
 		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
-		const node = wrapper.element as unknown as FileBodyPaneElement;
-		Object.defineProperty(node, 'clientHeight', { value: 300, configurable: true });
-		Object.defineProperty(node, 'clientWidth', { value: 400, configurable: true });
-		Object.defineProperty(node, 'getBoundingClientRect', {
-			value: () => ({ width: 400, height: 300, top: 0, left: 0, right: 400, bottom: 300 }),
-			configurable: true
-		});
-		node.setViewIndex(0);
-		node.updateFiles();
+		const node = wrapper.element;
+		mockBox(node);
+		const vm = wrapper.vm as BodyApi;
+		vm.setViewIndex(0);
+		vm.updateFiles();
 		const opened: unknown[] = [];
-		node.on('open', (event: Event) =>
-			opened.push((event as Event & { value?: unknown }).value)
-		);
+		vm.on('open', (event: Event) => opened.push((event as Event & { value?: unknown }).value));
 		await nextTick();
 
 		const row = node.querySelector('.file-body-item') as HTMLElement;
