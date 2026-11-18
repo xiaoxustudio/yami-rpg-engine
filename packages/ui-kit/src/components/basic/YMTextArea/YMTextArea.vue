@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -178,7 +177,6 @@ onMounted(() => {
 	const input = inputEl.value;
 	if (!el || !input) return;
 	(el as TextAreaHost).input = input;
-	attachApi(el, { read, write, insert, enable, disable, getFocus, on });
 	write(props.modelValue);
 	if (props.disabled) disable();
 });

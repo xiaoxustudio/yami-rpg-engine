@@ -35,12 +35,14 @@ describe('YMTextArea', () => {
 		expect(wrapper.classes()).not.toContain('disabled');
 	});
 
-	it('exposes bridge functions on root element', () => {
+	it('exposes bridge functions on the instance', () => {
 		const wrapper = mount(YMTextArea);
-		const el = wrapper.element as unknown as TextAreaApi;
-		expect(typeof el.read).toBe('function');
-		expect(typeof el.write).toBe('function');
-		expect(el.input!.tagName).toBe('TEXTAREA');
+		const vm = wrapper.vm as unknown as TextAreaApi;
+		// 方法只在实例上：元素是纯 DOM
+		expect(typeof (wrapper.element as unknown as { read?: unknown }).read).toBe('undefined');
+		expect(typeof vm.read).toBe('function');
+		expect(typeof vm.write).toBe('function');
+		expect(vm.input!.tagName).toBe('TEXTAREA');
 	});
 
 	it('syncs with external modelValue', async () => {
