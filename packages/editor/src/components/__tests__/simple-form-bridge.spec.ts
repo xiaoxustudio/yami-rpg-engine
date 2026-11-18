@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
+import { controlApi } from '@app/__tests__/control-api';
 import SetQuantity from '@app/components/tools/SetQuantity.vue';
 import Rename from '@app/components/tools/Rename.vue';
 import SetKey from '@app/components/tools/SetKey.vue';
@@ -108,9 +109,8 @@ describe('低频工具窗口表单桥接（表单读写型回归保护）', () =
 		expect(frame.getForm().x).toBe(10);
 		expect(frame.getForm().y).toBe(20);
 		const setControl = (id: string, value: number): void => {
-			const control = document.getElementById(id) as HTMLElement & {
-				write(v: unknown): void;
-			};
+			// 方法只在实例上：按 id 取控件能力对象写值
+			const control = controlApi(id) as unknown as { write(v: unknown): void };
 			control.write(value);
 		};
 		setControl('scene-shift-x', -30);

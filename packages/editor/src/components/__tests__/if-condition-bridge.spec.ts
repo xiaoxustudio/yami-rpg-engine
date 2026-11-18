@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
+import { controlApi } from '@app/__tests__/control-api';
 import IfConditionWindow from '@app/components/tools/IfCondition.vue';
 import { useIfConditionSchema } from '@app/composables/useIfConditionSchema';
 import { getIfConditionBridge, type IfConditionBridge } from '@app/composables/if-condition-bridge';
@@ -55,9 +56,10 @@ describe('if-condition 窗口表单桥接（Vue 双向绑定迁移回归）', ()
 		expect(form.actorQuantity).toBe(5);
 		expect(form.booleanConstantValue).toBe(true);
 		expect(form.actorShortcutKey).toBe('id0');
-		const numberBox = document.getElementById(
-			'if-condition-number-constant-value'
-		) as unknown as HTMLElement & { read(): number };
+		// 方法只在实例上：按 id 取控件能力对象读值
+		const numberBox = controlApi('if-condition-number-constant-value') as unknown as {
+			read(): number;
+		};
 		expect(numberBox.read()).toBe(42);
 		wrapper.unmount();
 	});
@@ -66,19 +68,15 @@ describe('if-condition 窗口表单桥接（Vue 双向绑定迁移回归）', ()
 		const wrapper = mount(IfConditionWindow, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const frame = getFrame();
-		const typeBox = document.getElementById('if-condition-type') as unknown as HTMLElement & {
+		const typeBox = controlApi('if-condition-type') as unknown as {
 			input(value: unknown): void;
 		};
 		typeBox.input('boolean');
-		const variableBox = document.getElementById(
-			'if-condition-operand-variable'
-		) as unknown as HTMLElement & {
+		const variableBox = controlApi('if-condition-operand-variable') as unknown as {
 			input(value: unknown): void;
 		};
 		variableBox.input({ type: 'local', key: 'flag' });
-		const quantityBox = document.getElementById(
-			'if-condition-actor-quantity'
-		) as unknown as HTMLElement & {
+		const quantityBox = controlApi('if-condition-actor-quantity') as unknown as {
 			write(value: number): void;
 		};
 		quantityBox.write(7);

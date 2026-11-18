@@ -41,10 +41,13 @@ describe('YMNumberBox', () => {
 
 	it('exposes bridge functions and decimals property', () => {
 		const wrapper = mount(YMNumberBox);
+		const vm = wrapper.vm as unknown as NumberBoxApi & { decimals: number };
 		const el = wrapper.element as unknown as NumberBoxApi & { decimals: number };
-		expect(typeof el.read).toBe('function');
-		expect(typeof el.write).toBe('function');
-		expect(el.input!.tagName).toBe('INPUT');
+		expect(typeof vm.read).toBe('function');
+		expect(typeof vm.write).toBe('function');
+		expect(vm.input!.tagName).toBe('INPUT');
+		// 方法只在实例上：元素是纯 DOM（decimals 仍是元素数据）
+		expect(typeof el.read).toBe('undefined');
 		el.decimals = 3;
 		expect(el.decimals).toBe(3);
 	});
