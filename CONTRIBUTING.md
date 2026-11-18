@@ -65,10 +65,10 @@ node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --appl
 ```
 
 - **元素注册表已整体拆除**：13 个按域拆分的 `element-registry.ts` 与 `utils/element-registry.ts` 已删除，业务代码里不再有 `registryRef` / `*Els` / 按 id 摸注册表的读法；spec 侧改用只在测试里可见的 `src/__tests__/test-registry.ts`（压测 imperative 组件用，不进生产构建）。
-- 台账三轴：`element-registry-lookups` **0 / 0 文件**（已清零）、`yami-element-refs` 481 / 91、`element-api-attach` 27；
+- 台账三轴：`element-registry-lookups` **0 / 0 文件**（已清零）、`yami-element-refs` 481 / 91、`element-api-attach` 26；
 - editor 包装层只剩 **`ParameterPane`** 一处 attach（`WindowFrame` / `SliderBox` / `NumberBox` / `SelectBox` / `SelectVar` / `CustomBox` 等已清）；ui-kit 侧还有 15 个 `.vue` 的 `attachApi` 与 23 个 `*-api.ts` 命令式工厂。
 - 收尾只剩 P3 一条装配轴，做法见下一节「P3：元素 API → 能力缝」。
-- **状态（2026-11-13）**：P3 已完成——editor 侧控件寻址全部走组件实例/句柄，只剩 `ParameterPane` 一条 attach（被 `YMParameterPane.self = 根元素` 挡住）；`element-api-attach` **33**（editor 0、ui-kit 27）。
+- **状态（2026-11-13）**：P3 已完成——editor 侧控件寻址全部走组件实例/句柄，只剩 `ParameterPane` 一条 attach（被 `YMParameterPane.self = 根元素` 挡住）；`element-api-attach` **33**（editor 0、ui-kit 26）。
 - **P4（拆元素 API 本身）尚未开工**：它是独立工程，前置、批次与判据见本文件「P4：拆掉元素 API」一节。
 
 **存量是碎片化的，不存在「再迁一批就清零」**：119 个消费方文件里最重的那个也只卡 5 个窗口（`report-blocked-by-consumer.mjs` 的输出）。所以一批的粒度应该是**一个消费方 + 它卡住的 1–5 个窗口**，而不是一个目录。
@@ -155,7 +155,7 @@ P3 清零后剩下的元素 API 全部集中在四个**结构性**位置，逐�
 > for-each / if-condition 表单桥、懒挂载冒烟测试都经 `read(el)` / `write(el)` 这类 shim 走元素 API；
 > 先按「窗口模块改实例」再删这三条 attach。
 > **FileNavPane 批的阻塞（2026-11-12）**：`YMFileBrowser.setupLinks()` 把 `links` 对象**挂在 nav 元素上**（`attachLinks(nav)`），head/body 两个 pane 再从自己的元素读 `links`；同时 `FileNav` 的 `selections` 也不是实例方法。要删 `YMFileNavPane` 的 attach，得先把 `links` / `selections` 换成显式句柄或 props，属于整组改造。
-> 其余 ui-kit 组件的元素消费方（2026-11-12 实测）：`YMCommonList` 被 `log/related-references.ts` 的 `list.reload()` 与 `palette/auto-tile.ts` 的 `nodeList.reload()` 用着（两个模块长期持有列表元素，要改成句柄）；`YMNumberVar` 只剩命令表单桥 spec 按元素读（`controlApi(id)` 可解）。
+> 其余 ui-kit 组件的元素消费方（2026-11-18 更新）：`YMCommonList` 已完成（AutoTile / Reference 改持实例；`templates` 仍是 `TreeList` 元素，等 `YMTreeList` 迁移）；剩余输入框族与 `*-api.ts` 工厂。
 
 判据：`element-api-attach` 0、`yami-element-refs` 0、`attachApi`/`attachElementApi` 两个导出删除、
 `ElementCapabilities` 只剩 `getFocus`（relate 的 enable/disable 也走能力表，不碰元素方法）。
