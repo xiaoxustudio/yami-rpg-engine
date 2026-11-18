@@ -8,7 +8,6 @@ import { ParamListHistory } from '../param-history';
 const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientHeight', { value: 400, configurable: true });
 	Object.defineProperty(el, 'clientWidth', { value: 300, configurable: true });
-	Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
 };
 
 // 早先的替身漏了它 —— 只在 `edit()` 真走到"占位行 → 新增"那条分支时才会暴露。
@@ -28,8 +27,10 @@ const makeObject = (): {
 	open: () => {}
 });
 
-interface ParamListElement extends HTMLElement {
+/** 组件暴露的能力对象（`defineExpose(api)`）：方法/状态从这里读，元素只做 DOM 断言。 */
+interface ParamListApi {
 	[k: string]: unknown;
+	root: HTMLElement | null;
 	bind: (object: unknown) => void;
 	read: () => unknown;
 	write: (data: unknown) => void;
@@ -48,9 +49,12 @@ interface ParamListElement extends HTMLElement {
 	on: (name: string, cb: (e: Event) => void) => void;
 	toggle: () => void;
 	data: unknown;
-	start: number;
+	elements: { count: number };
+	start: number | null;
+	end: number | null;
 	togglable: boolean;
 	inserting: boolean;
+	dragging: unknown;
 	history: { canUndo: () => boolean };
 }
 
@@ -60,7 +64,8 @@ describe('YMParamList', () => {
 	it('mounts and exposes api', () => {
 		const wrapper = mount(YMParamList);
 		expect(wrapper.element.classList.contains('param-list')).toBe(true);
-		const el = wrapper.element as unknown as ParamListElement;
+		const vm = wrapper.vm as unknown as ParamListApi;
+		expect(vm.root).toBe(wrapper.element);
 		for (const name of [
 			'bind',
 			'read',
@@ -79,36 +84,37 @@ describe('YMParamList', () => {
 			'clear',
 			'on'
 		]) {
-			expect(typeof el[name], name).toBe('function');
+			expect(typeof vm[name], name).toBe('function');
 		}
 	});
 
 	it('拖拽选择：window 上的 pointerup 能收尾（useEventListener 的 enabled 通道）', async () => {
 		const wrapper = mount(YMParamList, { attachTo: document.body });
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element as HTMLElement;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
-		el.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }]);
+		vm.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }]);
 		await nextTick();
 
 		const item = el.querySelector('.param-item') as HTMLElement;
 		item.dispatchEvent(
 			new PointerEvent('pointerdown', { button: 0, bubbles: true, pointerId: 5 })
 		);
-		expect(el.dragging).toBeTruthy();
+		expect(vm.dragging).toBeTruthy();
 		await nextTick();
 		window.dispatchEvent(
 			new PointerEvent('pointerup', { button: 0, bubbles: true, pointerId: 5 })
 		);
-		expect(el.dragging).toBe(null);
+		expect(vm.dragging).toBe(null);
 	});
 
 	/**
 	 * 回归（2026-10-22 实报）：**列表变短后双击会崩**，以及对应的行为约定
 	 * 「列表变短时选中自动收敛到最后一行」。
 	 *
-	 * `update()` 会重建全部行并重置 `elements.count`，而 `self.start` / `self.end` 存的是
+	 * `update()` 会重建全部行并重置 `elements.count`，而 `start` / `end` 存的是
 	 * 上一批行的索引。列表变短后它们越界 ⇒ `elements[i]` 为 `undefined`，
 	 * `edit()` 读 `.dataItem` 就抛 `Cannot read properties of undefined (reading 'dataItem')`。
 	 * 现在 `update()` 末尾的 `reconcileSelection()` 会把范围夹回有效区间。
@@ -116,67 +122,70 @@ describe('YMParamList', () => {
 	 * 注意 `elements.count` **含末尾占位行**（N 项数据 → count = N + 1），
 	 * 所以"最后一行"通常就是那个占位行 —— 选中落在那儿意味着下一次 `edit()` 是"新增"。
 	 */
-	const rowCount = (el: ParamListElement): number => (el.elements as { count: number }).count;
+	const rowCount = (vm: ParamListApi): number => vm.elements.count;
 
 	it('列表变短时选中收敛到最后一行，且 edit 不崩', async () => {
 		const wrapper = mount(YMParamList, { attachTo: document.body });
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element as HTMLElement;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
-		el.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }, { name: 'Four' }]);
+		vm.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }, { name: 'Four' }]);
 		await nextTick();
 
-		el.select(3);
+		vm.select(3);
 		await nextTick();
-		expect(el.start).toBe(3);
+		expect(vm.start).toBe(3);
 
-		el.write([{ name: 'Only' }, { name: 'Second' }]);
+		vm.write([{ name: 'Only' }, { name: 'Second' }]);
 		await nextTick();
-		expect(el.start).toBe(rowCount(el) - 1);
-		expect(el.end).toBe(rowCount(el) - 1);
-		expect(el.start).toBeLessThan(3);
+		expect(vm.start).toBe(rowCount(vm) - 1);
+		expect(vm.end).toBe(rowCount(vm) - 1);
+		expect(vm.start).toBeLessThan(3);
 
-		expect(() => el.edit()).not.toThrow();
+		expect(() => vm.edit()).not.toThrow();
 	});
 
 	it('列表被清空时选中收敛到占位行（不会停在越界索引）', async () => {
 		const wrapper = mount(YMParamList, { attachTo: document.body });
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element as HTMLElement;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
-		el.write([{ name: 'One' }, { name: 'Two' }]);
+		vm.write([{ name: 'One' }, { name: 'Two' }]);
 		await nextTick();
 
-		el.select(1);
+		vm.select(1);
 		await nextTick();
-		expect(el.start).toBe(1);
+		expect(vm.start).toBe(1);
 
-		el.write([]);
+		vm.write([]);
 		await nextTick();
-		expect(el.start).toBe(rowCount(el) - 1);
-		expect(el.end).toBe(rowCount(el) - 1);
-		expect(() => el.edit()).not.toThrow();
+		expect(vm.start).toBe(rowCount(vm) - 1);
+		expect(vm.end).toBe(rowCount(vm) - 1);
+		expect(() => vm.edit()).not.toThrow();
 	});
 
 	it('列表变长时不动选中', async () => {
 		const wrapper = mount(YMParamList, { attachTo: document.body });
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element as HTMLElement;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
-		el.write([{ name: 'One' }, { name: 'Two' }]);
+		vm.write([{ name: 'One' }, { name: 'Two' }]);
 		await nextTick();
 
-		el.select(1);
+		vm.select(1);
 		await nextTick();
-		expect(el.start).toBe(1);
+		expect(vm.start).toBe(1);
 
-		el.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }, { name: 'Four' }]);
+		vm.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }, { name: 'Four' }]);
 		await nextTick();
-		expect(el.start).toBe(1);
-		expect(el.end).toBe(1);
+		expect(vm.start).toBe(1);
+		expect(vm.end).toBe(1);
 	});
 
 	it('空列表被聚焦后不产生 -1 的选中，右键不崩', async () => {
@@ -187,14 +196,15 @@ describe('YMParamList', () => {
 				menuPopup: () => {}
 			}
 		});
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element as HTMLElement;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
 		await nextTick();
 
-		expect(el.start).toBe(null);
-		expect(el.end).toBe(null);
+		expect(vm.start).toBe(null);
+		expect(vm.end).toBe(null);
 
 		expect(() =>
 			el.dispatchEvent(
@@ -218,15 +228,16 @@ describe('YMParamList', () => {
 				}
 			}
 		});
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element as HTMLElement;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
-		el.write([{ name: 'One' }, { name: 'Two' }]);
+		vm.write([{ name: 'One' }, { name: 'Two' }]);
 		await nextTick();
 
-		el.start = 9;
-		el.end = 9;
+		vm.start = 9;
+		vm.end = 9;
 		expect(() =>
 			el.dispatchEvent(
 				new PointerEvent('pointerup', {
@@ -251,16 +262,17 @@ describe('YMParamList', () => {
 		const opened: unknown[] = [];
 		const mergeObject = makeObject();
 		const wrapper = mount(YMParamList, { attachTo: document.body });
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element as HTMLElement;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
 		mergeObject.open = (data?: unknown) => opened.push(data);
-		el.bind(mergeObject);
+		vm.bind(mergeObject);
 		el.focus();
-		el.write([{ name: 'One' }, { name: 'Two' }]);
+		vm.write([{ name: 'One' }, { name: 'Two' }]);
 		await nextTick();
 
-		el.start = 9;
-		el.end = 9;
+		vm.start = 9;
+		vm.end = 9;
 
 		const row = el.querySelectorAll('.param-item')[1] as HTMLElement;
 		row.dispatchEvent(
@@ -268,25 +280,26 @@ describe('YMParamList', () => {
 		);
 		await nextTick();
 
-		expect(el.start).toBe(1);
-		expect(el.end).toBe(1);
-		expect(opened).toEqual([(el.data as { name: string }[])[1]]);
+		expect(vm.start).toBe(1);
+		expect(vm.end).toBe(1);
+		expect(opened).toEqual([(vm.data as { name: string }[])[1]]);
 	});
 
 	it('列表重建后选中高亮仍在（范围没变也要重画）', async () => {
 		const wrapper = mount(YMParamList, { attachTo: document.body });
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element as HTMLElement;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
-		el.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }]);
+		vm.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }]);
 		await nextTick();
 
-		el.select(1);
+		vm.select(1);
 		await nextTick();
-		expect(el.start).toBe(1);
+		expect(vm.start).toBe(1);
 
-		el.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }]);
+		vm.write([{ name: 'One' }, { name: 'Two' }, { name: 'Three' }]);
 		await nextTick();
 
 		const rows = el.querySelectorAll('.param-item');
@@ -296,14 +309,15 @@ describe('YMParamList', () => {
 
 	it('bind and write render items', () => {
 		const wrapper = mount(YMParamList);
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element as HTMLElement;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
 		const object = makeObject();
-		el.bind(object);
+		vm.bind(object);
 		el.focus();
 		const data = [{ name: 'One' }, { name: 'Two' }, { name: 'Three' }];
-		el.write(data);
-		expect(el.data).toBe(data);
+		vm.write(data);
+		expect(vm.data).toBe(data);
 		const texts = Array.from(el.querySelectorAll('.param-item') as NodeListOf<Element>).map(
 			(n: Element) => n.textContent
 		);
@@ -312,98 +326,107 @@ describe('YMParamList', () => {
 
 	it('select highlights and read returns data', () => {
 		const wrapper = mount(YMParamList, { attachTo: document.body });
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element as HTMLElement;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
-		el.write([{ name: 'One' }, { name: 'Two' }]);
-		el.select(1);
+		vm.write([{ name: 'One' }, { name: 'Two' }]);
+		vm.select(1);
 		expect(el.querySelectorAll('.param-item')[1].classList.contains('selected')).toBe(true);
-		expect(el.start).toBe(1);
+		expect(vm.start).toBe(1);
 	});
 
 	it('delete removes items and saves history', () => {
 		const wrapper = mount(YMParamList);
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
 		const data = [{ name: 'One' }, { name: 'Two' }, { name: 'Three' }];
-		el.write(data);
-		el.select(1);
-		el.delete();
+		vm.write(data);
+		vm.select(1);
+		vm.delete();
 		expect(data.map((d) => d.name)).toEqual(['One', 'Three']);
-		expect(el.history.canUndo()).toBe(true);
+		expect(vm.history.canUndo()).toBe(true);
 	});
 
 	it('undo restores deleted items', () => {
 		const wrapper = mount(YMParamList);
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
 		const data = [{ name: 'One' }, { name: 'Two' }];
-		el.write(data);
-		el.select(1);
-		el.delete();
-		el.undo();
+		vm.write(data);
+		vm.select(1);
+		vm.delete();
+		vm.undo();
 		expect(data.map((d) => d.name)).toEqual(['One', 'Two']);
 	});
 
 	it('toggle disables items', () => {
 		const wrapper = mount(YMParamList);
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element;
+		const vm = wrapper.vm as unknown as ParamListApi;
+		// 列表配置按能力对象寻址（宿主元素只做 DOM），所以 config 要拿 api 本身。
+		const api = (wrapper.vm as unknown as { $: { exposed: ParamListApi } }).$.exposed;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
-		getListConfig(el).togglable = true;
+		getListConfig(api).togglable = true;
 		const data = [
 			{ name: 'One', enabled: true },
 			{ name: 'Two', enabled: true }
 		];
-		el.write(data);
-		el.select(0, 1);
-		el.toggle();
+		vm.write(data);
+		vm.select(0, 1);
+		vm.toggle();
 		expect(data[0].enabled).toBe(false);
 		expect(data[1].enabled).toBe(false);
 	});
 
-	it('元素访问器 togglable 与 getListConfig 是同一份真源', () => {
+	it('api 访问器 togglable 与 getListConfig 是同一份真源', () => {
 		const wrapper = mount(YMParamList);
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element;
+		const vm = wrapper.vm as unknown as ParamListApi;
+		const api = (wrapper.vm as unknown as { $: { exposed: ParamListApi } }).$.exposed;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
-		el.togglable = true;
-		expect(getListConfig(el).togglable).toBe(true);
-		expect(el.togglable).toBe(true);
+		vm.togglable = true;
+		expect(getListConfig(api).togglable).toBe(true);
+		expect(vm.togglable).toBe(true);
 		const data = [
 			{ name: 'One', enabled: true },
 			{ name: 'Two', enabled: true }
 		];
-		el.write(data);
-		el.select(0, 1);
-		el.toggle();
+		vm.write(data);
+		vm.select(0, 1);
+		vm.toggle();
 		expect(data[0].enabled).toBe(false);
 		expect(data[1].enabled).toBe(false);
 	});
 
 	it('save dispatches change and replaces item', () => {
 		const wrapper = mount(YMParamList);
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
 		let changed: EventTarget | null = null;
-		el.on('change', (e: Event) => (changed = e.target));
+		vm.on('change', (e: Event) => (changed = e.target));
 		const object = makeObject();
 		object.save = () => ({ name: 'Replaced' });
-		el.bind(object);
+		vm.bind(object);
 		el.focus();
 		const data = [{ name: 'One' }, { name: 'Two' }];
-		el.write(data);
-		el.select(1);
-		el.edit = () => {};
-		el.inserting = false;
-		el.save();
+		vm.write(data);
+		vm.select(1);
+		vm.edit = () => {};
+		vm.inserting = false;
+		vm.save();
 		expect(data[1].name).toBe('Replaced');
 		expect(changed).toBe(el);
 	});
@@ -418,14 +441,15 @@ describe('YMParamList', () => {
 				}
 			}
 		});
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
 		const data = [{ name: 'One' }];
-		el.write(data);
-		el.select(0);
-		el.paste();
+		vm.write(data);
+		vm.select(0);
+		vm.paste();
 		expect(data.map((d) => d.name)).toEqual(['Pasted', 'One']);
 	});
 
@@ -435,12 +459,13 @@ describe('YMParamList', () => {
 				historyFactory: (list: unknown) => new ParamListHistory(list as never)
 			}
 		});
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
-		el.write([{ name: 'A' }]);
-		expect(el.history).toBeInstanceOf(ParamListHistory);
+		vm.write([{ name: 'A' }]);
+		expect(vm.history).toBeInstanceOf(ParamListHistory);
 	});
 
 	it('right-click popup uses injected menuPopup', () => {
@@ -448,17 +473,18 @@ describe('YMParamList', () => {
 			attachTo: document.body,
 			props: {
 				localize: (key: string) => key,
-				menuPopup: (options: unknown, items: unknown[]) => {
+				menuPopup: (_options: unknown, items: unknown[]) => {
 					testWindow.__menuItems = items;
 				}
 			}
 		});
-		const el = wrapper.element as unknown as ParamListElement;
+		const el = wrapper.element as HTMLElement;
+		const vm = wrapper.vm as unknown as ParamListApi;
 		mockHeight(el);
-		el.bind(makeObject());
+		vm.bind(makeObject());
 		el.focus();
-		el.write([{ name: 'One' }]);
-		el.select(0);
+		vm.write([{ name: 'One' }]);
+		vm.select(0);
 		el.dispatchEvent(
 			new PointerEvent('pointerup', { bubbles: true, button: 2, clientX: 10, clientY: 10 })
 		);

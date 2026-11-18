@@ -8,6 +8,7 @@ import { read } from '@app/utils/element-utils';
 import { renderDetached } from '@app/utils/dom';
 import { requestFocus } from '@app/directives/focus';
 import { getYamiI18n } from '@app/i18n';
+import { controlApiOfElement } from '@app/utils/control-instance';
 
 const t = (key: string, named?: Record<string, unknown>) =>
 	getYamiI18n().global.t(key, named ?? {});
@@ -239,10 +240,19 @@ const listInterface: ArrayListInterface = {
 
 const getList = (): YamiElement => arrayListNodes.pick('list') as YamiElement;
 
+/** 列表方法在组件实例上（节点表存的是宿主元素）：按元素反查能力对象。 */
+interface ArrayListListApi {
+	bind?: (object: unknown) => void;
+	clear?: () => unknown;
+}
+
+const getListApi = (): ArrayListListApi | null =>
+	controlApiOfElement(getList()) as ArrayListListApi | null;
+
 const initialize = (): void => {
-	const list = getList();
+	const list = getListApi();
 	if (!list) return;
-	list.bind(listInterface);
+	list.bind?.(listInterface);
 
 	arrayListNodes.pick('frame')?.addEventListener?.('close', windowClose);
 	arrayListNodes.pick('frame')?.addEventListener?.('closed', windowClosed);
@@ -265,7 +275,7 @@ const windowClose = (event: Event): void => {
 
 const windowClosed = (_event: Event): void => {
 	targetState = null;
-	getList().clear();
+	getListApi()?.clear?.();
 	onWindowClosed();
 };
 

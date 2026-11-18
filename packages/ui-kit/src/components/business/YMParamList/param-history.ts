@@ -2,6 +2,8 @@ import { dispatchChangeEvent } from '../../../utils/dom';
 
 interface ParamListLike {
 	data: unknown;
+	/** 宿主元素：`list` 现在是能力对象，事件只能在根元素上派发。 */
+	root?: HTMLElement | null;
 	update(): void;
 	select(start: number, end?: number): void;
 	enableItems(items: unknown[]): void;
@@ -166,7 +168,8 @@ export class ParamListHistory {
 		}
 		if (loaded) {
 			list.scrollToSelection();
-			dispatchChangeEvent(list);
+			// 能力对象自己没有事件通道：优先在宿主元素上派发（老调用方直接传元素时仍走原路径）
+			dispatchChangeEvent(list.root ?? list);
 		}
 	}
 }

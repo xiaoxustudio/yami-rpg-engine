@@ -65,11 +65,16 @@ const ctrl = (keyName: string): string => ctrlText(keyName);
 
 const ym = ref<{
 	root: HTMLElement | null;
+	object?: unknown;
+	start?: number | null;
 	bind(object: unknown): HTMLElement;
 	read(): unknown[] | null;
 	write(data: unknown[]): void;
 	update(): void;
 	select(start: number, end?: number): void;
+	insert(): void;
+	edit(): void;
+	delete(): void;
 	clear(): HTMLElement;
 	on(
 		type: string,
@@ -85,6 +90,9 @@ const read = (): unknown[] | null => ym.value?.read() ?? null;
 const write = (data: unknown[]): void => ym.value?.write(data);
 const update = (): void => ym.value?.update();
 const select = (start: number, end?: number): void => ym.value?.select(start, end);
+const insert = (): void => ym.value?.insert();
+const edit = (): void => ym.value?.edit();
+const remove = (): void => ym.value?.delete();
 const clear = (): HTMLElement => ym.value!.clear();
 const on = (
 	type: string,
@@ -92,5 +100,31 @@ const on = (
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
-defineExpose({ bind, read, write, update, select, clear, on, root });
+/**
+ * 列表当前绑定的参数对象（`bind` 的入参）。
+ *
+ * 能力对象在 YMParamList 内部，包装层只转出编辑器/窗口真正要用的那一份：
+ * 选中后菜单、双击编辑、undo/redo 都从 api 走，不再经元素。
+ */
+defineExpose({
+	bind,
+	read,
+	write,
+	update,
+	select,
+	insert,
+	edit,
+	delete: remove,
+	clear,
+	on,
+	root,
+	/** YMParamList 实例：bind 需要它的 object/data，包装层本身没有 */
+	self: computed(() => ym.value),
+	get object(): unknown {
+		return ym.value?.object ?? null;
+	},
+	get start(): number | null {
+		return ym.value?.start ?? null;
+	}
+});
 </script>

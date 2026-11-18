@@ -144,7 +144,7 @@ describe('useArrayWindow（数组窗口 composable：form 状态 + open/confirm/
 			mount(ArrayListString, { attachTo: document.body })
 		];
 		await Promise.all(wrappers.map((w) => w.vm.$nextTick()));
-		ArrayListController.initialize!(document.getElementById('arrayList-list') as HTMLElement);
+		ArrayListController.initialize!();
 		const container = document.createElement('div');
 		const label = document.createElement('div');
 		label.textContent = 'Items';

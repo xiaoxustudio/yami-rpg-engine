@@ -15,6 +15,7 @@ const SwitchCondition = useSwitchConditionSchema();
 import { Command } from '@app/commands/command-object.ts';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Window } from '@app/tools/window-object.ts';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({
 	setNumberColor: (value: unknown) => `[num:${String(value)}]`,
@@ -38,7 +39,8 @@ vi.mock('@app/i18n', () => ({
 	getYamiI18n: () => ({ global: { t: () => '' } })
 }));
 
-interface ParamListElement extends HTMLElement {
+/** 列表能力对象（组件实例 `defineExpose`）：方法与状态从这里读，元素只做 DOM。 */
+interface ParamListApi {
 	bind(object: unknown): HTMLElement;
 	read(): unknown[] | null;
 	write(data: unknown[]): void;
@@ -51,8 +53,7 @@ interface ParamListElement extends HTMLElement {
 	clear(): HTMLElement;
 }
 
-const getList = (id: string): ParamListElement =>
-	document.getElementById(id) as unknown as ParamListElement;
+const getList = (id: string): ParamListApi => controlApi(id) as unknown as ParamListApi;
 
 const words: string[] = [];
 

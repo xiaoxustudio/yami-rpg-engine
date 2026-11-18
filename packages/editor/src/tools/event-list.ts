@@ -68,8 +68,10 @@ export class EventListInterface implements IListInterface {
 	}
 
 	initialize(list: EventListDom): void {
+		// 列表能力对象（api）上不再有 DOM 成员：filter / id 从它带的宿主元素读。
+		const host = (list as EventListDom & { root?: HTMLElement }).root ?? list;
 		getListConfig(list).togglable = true;
-		this.filter = list.getAttribute('filter') ?? FILTER_BY_LIST_ID[list.id] ?? 'global';
+		this.filter = host.getAttribute('filter') ?? FILTER_BY_LIST_ID[host.id] ?? 'global';
 		this.type = `${this.filter}.event`;
 		this.editCallback = () => list.save();
 		this.insertCallback = () => {

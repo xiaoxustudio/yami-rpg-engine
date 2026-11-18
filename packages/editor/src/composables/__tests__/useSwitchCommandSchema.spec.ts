@@ -41,7 +41,8 @@ vi.mock('@app/i18n', () => ({
 	getYamiI18n: () => ({ global: { t: () => '' } })
 }));
 
-interface ParamListElement extends HTMLElement {
+/** 列表能力对象（组件实例 `defineExpose`）：方法与状态从这里读，元素只做 DOM。 */
+interface ParamListApi {
 	bind(object: unknown): HTMLElement;
 	read(): unknown[] | null;
 	write(data: unknown[]): void;
@@ -60,8 +61,8 @@ interface ControlEl extends HTMLElement {
 	input(value: unknown): void;
 }
 
-const getList = (id: string): ParamListElement =>
-	document.getElementById(id) as unknown as ParamListElement;
+const getList = (id: string): ParamListApi => controlApi(id) as unknown as ParamListApi;
+const getListBox = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 /** 有高度才走 `resize()` 把行真正挂进 DOM（同真实窗口）。 */
@@ -138,7 +139,7 @@ describe('useSwitchCommandSchema (switch command window dynamic rows + insert/ed
 	it('第二次 customLoad 只有 branches 变化（variable/default 不变）时列表也立刻刷新', async () => {
 		const { commandWrapper } = await mountAll();
 		const list = getList('switch-branches');
-		mockListBox(list);
+		mockListBox(getListBox('switch-branches'));
 
 		const variable = { type: 'local', key: 'mode' };
 		const defaultCommands = [{ id: 'comment' }];
@@ -157,7 +158,7 @@ describe('useSwitchCommandSchema (switch command window dynamic rows + insert/ed
 		});
 		await commandWrapper.vm.$nextTick();
 		expect(list.read()).toHaveLength(2);
-		expect(list.querySelectorAll('.param-item')).toHaveLength(3);
+		expect(getListBox('switch-branches').querySelectorAll('.param-item')).toHaveLength(3);
 	});
 
 	it('insert path: CommandSchema.insert opens switch window, new branch saved via switch-condition', async () => {

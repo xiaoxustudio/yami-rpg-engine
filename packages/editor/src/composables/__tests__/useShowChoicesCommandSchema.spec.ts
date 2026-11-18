@@ -30,7 +30,8 @@ vi.mock('@app/i18n', () => ({
 	getYamiI18n: () => ({ global: { t: (key: string) => key } })
 }));
 
-interface ParamListElement extends HTMLElement {
+/** 列表能力对象（组件实例 `defineExpose`）：方法与状态从这里读，元素只做 DOM。 */
+interface ParamListApi {
 	bind(object: unknown): HTMLElement;
 	read(): unknown[] | null;
 	write(data: unknown[]): void;
@@ -42,8 +43,6 @@ interface ParamListElement extends HTMLElement {
 	save(): void;
 	clear(): HTMLElement;
 	start: number | null;
-	end: number | null;
-	elements: { count: number };
 }
 
 interface ControlEl extends HTMLElement {
@@ -52,8 +51,8 @@ interface ControlEl extends HTMLElement {
 	input(value: unknown): void;
 }
 
-const getList = (id: string): ParamListElement =>
-	document.getElementById(id) as unknown as ParamListElement;
+const getList = (id: string): ParamListApi => controlApi(id) as unknown as ParamListApi;
+const getListBox = (id: string): HTMLElement => document.getElementById(id) as HTMLElement;
 const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 const makeChoice = (content: string) => ({ content, commands: [] });
@@ -131,7 +130,7 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 	it('customLoad 后选项列表立刻有行（v-model 必须真的到达 ParamList）', async () => {
 		const { commandWrapper } = await mountAll();
 		const list = getList('showChoices-choices');
-		mockListBox(list);
+		mockListBox(getListBox('showChoices-choices'));
 
 		Command.cases.showChoices.customLoad!({
 			choices: [makeChoice('Yes'), makeChoice('No')],
@@ -140,19 +139,19 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		await commandWrapper.vm.$nextTick();
 
 		expect(list.read()).toEqual([makeChoice('Yes'), makeChoice('No')]);
-		expect(list.querySelectorAll('.param-item')).toHaveLength(3);
+		expect(getListBox('showChoices-choices').querySelectorAll('.param-item')).toHaveLength(3);
 	});
 
 	it('空选项列表被聚焦后右键不崩（不留下 -1 的选中）', async () => {
 		const { commandWrapper } = await mountAll();
 		const list = getList('showChoices-choices');
-		mockListBox(list);
-		list.focus();
+		mockListBox(getListBox('showChoices-choices'));
+		getListBox('showChoices-choices').focus();
 		await commandWrapper.vm.$nextTick();
 
 		expect(list.start).toBe(null);
 		expect(() =>
-			list.dispatchEvent(
+			getListBox('showChoices-choices').dispatchEvent(
 				pointer('pointerup', { button: 2, clientX: 10, clientY: 10, bubbles: true })
 			)
 		).not.toThrow();
@@ -160,8 +159,7 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 
 	it('双击选项行打开选项编辑窗口（2026-10-22 实报：双击没反应）', async () => {
 		const { commandWrapper } = await mountAll();
-		const list = getList('showChoices-choices');
-		mockListBox(list);
+		mockListBox(getListBox('showChoices-choices'));
 
 		Command.cases.showChoices.customLoad!({
 			choices: [makeChoice('Yes'), makeChoice('No')],
@@ -169,7 +167,9 @@ describe('useShowChoicesCommandSchema (showChoices choice rows + insert/edit/sav
 		});
 		await commandWrapper.vm.$nextTick();
 
-		const row = list.querySelectorAll('.param-item')[0] as HTMLElement;
+		const row = getListBox('showChoices-choices').querySelectorAll(
+			'.param-item'
+		)[0] as HTMLElement;
 		const coords = { clientX: 20, clientY: 10 };
 		row.dispatchEvent(pointer('pointerdown', { button: 0, ...coords }));
 		await commandWrapper.vm.$nextTick();

@@ -50,6 +50,10 @@ interface ScriptListElement extends HTMLElement {
 
 const listScopes = new WeakMap<ScriptListElement, { off(): void }>();
 
+/** 能力对象带宿主元素；老调用方（树列表）直接传元素。DOM 语义（focus/contains）走宿主。 */
+const hostOf = (target: unknown): HTMLElement =>
+	(target as { root?: HTMLElement }).root ?? (target as HTMLElement);
+
 export class ScriptListInterface implements IScriptListInterface {
 	target!: (HTMLElement & { [k: string]: unknown }) | null;
 	type!: string;
@@ -77,16 +81,13 @@ export class ScriptListInterface implements IScriptListInterface {
 		}
 
 		listScopes.get(list)?.off();
-		const scope = collect(list);
+		const scope = collect(hostOf(list));
 		scope.on('pointerdown', ScriptListInterface.listPointerdown as EventListener);
-		// oxlint-disable-next-line unbound-method
-		scope.on('dragenter', ScriptListInterface.listDragenter as EventListener);
-		// oxlint-disable-next-line unbound-method
-		scope.on('dragleave', ScriptListInterface.listDragleave as EventListener);
-		// oxlint-disable-next-line unbound-method
-		scope.on('dragover', ScriptListInterface.listDragover as EventListener);
-		// oxlint-disable-next-line unbound-method
-		scope.on('drop', ScriptListInterface.listDrop as EventListener);
+		// 事件里 `this` 是列表能力对象（api）：object/inserting/select/save 都在它上面。
+		scope.on('dragenter', (event) => ScriptListInterface.listDragenter.call(list, event));
+		scope.on('dragleave', (event) => ScriptListInterface.listDragleave.call(list, event));
+		scope.on('dragover', (event) => ScriptListInterface.listDragover.call(list, event));
+		scope.on('drop', (event) => ScriptListInterface.listDrop.call(list, event));
 		listScopes.set(list, scope);
 	}
 
@@ -167,7 +168,7 @@ export class ScriptListInterface implements IScriptListInterface {
 	}
 
 	static listDragleave(this: ScriptListElement, event: Event) {
-		if (!this.contains((event as DragEvent).relatedTarget as Node)) {
+		if (!hostOf(this).contains((event as DragEvent).relatedTarget as Node)) {
 			removeClass(this, 'dragover');
 		}
 	}
@@ -190,7 +191,7 @@ export class ScriptListInterface implements IScriptListInterface {
 			script.id = file.meta!.guid;
 			this.object.script = script;
 			this.inserting = true;
-			this.focus();
+			hostOf(this).focus();
 			this.select(Infinity);
 			this.save();
 			removeClass(this, 'dragover');

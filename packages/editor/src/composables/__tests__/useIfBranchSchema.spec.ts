@@ -37,7 +37,8 @@ vi.mock('@app/i18n', () => ({
 	getYamiI18n: () => ({ global: { t: () => '' } })
 }));
 
-interface ParamListElement extends HTMLElement {
+/** 列表能力对象（组件实例 `defineExpose`）：方法与状态从这里读，元素只做 DOM。 */
+interface ParamListApi {
 	bind(object: unknown): HTMLElement;
 	read(): unknown[] | null;
 	write(data: unknown[]): void;
@@ -56,8 +57,7 @@ interface ControlEl extends HTMLElement {
 	input(value: unknown): void;
 }
 
-const getList = (id: string): ParamListElement =>
-	document.getElementById(id) as unknown as ParamListElement;
+const getList = (id: string): ParamListApi => controlApi(id) as unknown as ParamListApi;
 const getControl = (id: string): ControlEl => controlApi(id) as unknown as ControlEl;
 
 const words: string[] = [];

@@ -300,6 +300,8 @@ const getMeasureText = (text: string, font: string): { width: number } =>
 const getSetTooltip = (): ((el: HTMLElement, tip: string) => void) | null => props.setTooltip;
 
 interface ParamScriptListElement extends HTMLElement {
+	/** 能力对象带宿主元素（`YMParamList` 拆分后宿主与状态不再同一个对象）。 */
+	root?: HTMLElement | null;
 	object?: { update: (...args: unknown[]) => unknown };
 	data?: ScriptDef[];
 	history: {
@@ -308,10 +310,19 @@ interface ParamScriptListElement extends HTMLElement {
 	};
 }
 
-const bind = (scriptList: ParamScriptListElement): void => {
+interface ParamScriptListHandle {
+	root?: HTMLElement | null;
+	object?: { update: (...args: unknown[]) => unknown };
+	data?: ScriptDef[];
+}
+
+const bind = (scriptList: ParamScriptListHandle): void => {
 	const self = api;
-	self.scriptList = scriptList;
-	if (scriptList.classList.contains('param-list')) {
+	self.scriptList = scriptList as unknown as ParamScriptListElement;
+	// 宿主元素与能力对象（句柄）都收：DOM 判定在宿主上做，状态从能力对象读。
+	const host = scriptList.root ?? (scriptList as unknown as HTMLElement);
+	if (!(host instanceof Element)) return;
+	if (host.classList.contains('param-list')) {
 		const object = scriptList.object!;
 		const { update } = object;
 		self.getData = () => scriptList.data!;
@@ -320,9 +331,9 @@ const bind = (scriptList: ParamScriptListElement): void => {
 			self.update();
 		};
 	}
-	if (scriptList.classList.contains('tree-list')) {
+	if (host.classList.contains('tree-list')) {
 		self.getData = () => {
-			const item = read(scriptList as HTMLElement) as ScriptDef | null;
+			const item = read(host) as ScriptDef | null;
 			return item ? [item] : [];
 		};
 	}

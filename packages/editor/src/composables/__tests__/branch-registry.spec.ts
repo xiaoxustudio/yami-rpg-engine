@@ -12,6 +12,7 @@ import { getIfBranch } from '@app/composables/tool-window-bridges';
 import { getSwitchBranch } from '@app/composables/tool-window-bridges';
 import { getIfConditionBridge } from '@app/composables/if-condition-bridge';
 import { getSetNumberOperandBridge } from '@app/composables/set-number-operand-bridge';
+import { controlApi } from '@app/__tests__/control-api';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -29,7 +30,12 @@ const mountSettle = async (component: Parameters<typeof mount>[0]) => {
 	return wrapper;
 };
 
-type BoundList = HTMLElement & { object?: { parse?: unknown }; bind?: unknown };
+/** 列表实例（包装层 exposed）：`object` 是 bind 进来的参数对象，元素上已经没有它。 */
+interface BoundListApi {
+	object?: { parse?: unknown };
+}
+
+const listOf = (id: string): BoundListApi => controlApi(id) as unknown as BoundListApi;
 
 describe('分支/条件表单注册表', () => {
 	beforeEach(() => {
@@ -43,7 +49,7 @@ describe('分支/条件表单注册表', () => {
 		const api = getIfBranch();
 		expect(api, '窗口应交出 IfBranch 桥').toBeTruthy();
 		expect(composableEls.get('if-branch-conditions')).toBeFalsy();
-		const conditions = document.getElementById('if-branch-conditions') as BoundList | null;
+		const conditions = listOf('if-branch-conditions');
 		expect(conditions?.object, 'if-branch-conditions 未被 bind').toBeTruthy();
 		expect(typeof conditions?.object?.parse).toBe('function');
 
@@ -57,7 +63,7 @@ describe('分支/条件表单注册表', () => {
 		const api = getSwitchBranch();
 		expect(api, '窗口应交出 SwitchBranch 桥').toBeTruthy();
 		expect(composableEls.get('switch-branch-conditions')).toBeFalsy();
-		const conditions = document.getElementById('switch-branch-conditions') as BoundList | null;
+		const conditions = listOf('switch-branch-conditions');
 		expect(conditions?.object, 'switch-branch-conditions 未被 bind').toBeTruthy();
 
 		wrapper.unmount();

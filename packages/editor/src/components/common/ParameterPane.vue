@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, toValue } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { YMParameterPane } from '@ui-kit';
 import type { ManifestEntry } from '@ui-kit';
@@ -40,6 +40,7 @@ import { PluginManager } from '@app/plugin/plugin';
 import { Selection } from '@app/tools/text-capture';
 import { measureText as measureTextUtil } from '@app/utils/dom';
 import { setTooltip as setTooltipUtil } from '@app/utils/element-utils';
+import { controlApiOfElement } from '@app/utils/control-instance';
 
 interface Props {
 	id?: string;
@@ -92,7 +93,13 @@ const ym = ref<{
 
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const bind = (scriptList: HTMLElement): void => ym.value?.bind(scriptList);
+const bind = (scriptList: unknown): void => {
+	// 页面交出的是列表根元素：先换成包装层，再取它暴露的 YMParamList 实例；
+	// 拆分后 object/data 只在实例上，元素只剩 DOM。
+	const wrapper = controlApiOfElement(scriptList) as { self?: unknown } | null;
+	const handle = toValue(wrapper?.self) ?? wrapper ?? scriptList;
+	ym.value?.bind(handle as never);
+};
 const rewrite = (parameters: Record<string, unknown>, key: string): void =>
 	ym.value?.rewrite(parameters, key);
 const update = (): void => ym.value?.update();

@@ -49,14 +49,17 @@ export class AttributeListInterface implements IListInterface {
 	initialize(list: HTMLElement): void {
 		this.target = null;
 		this.type = 'object-attribute';
-		let match = list.id.match(/^config-(.+)-tempAttributes$/);
+		// 列表能力对象（api）上不再有 DOM 成员：id / group 从它带的宿主元素读。
+		const host = (list as { root?: HTMLElement }).root ?? list;
+		let match = host.id.match(/^config-(.+)-tempAttributes$/);
 		if (!match) {
-			match = list.id.match(/^file([A-Z][a-zA-Z]*)/);
+			match = host.id.match(/^file([A-Z][a-zA-Z]*)/);
 		}
-		this.group = list.getAttribute('group') ?? (match ? match[1].toLowerCase() : '');
+		this.group = host.getAttribute('group') ?? (match ? match[1].toLowerCase() : '');
 
 		const { editor, owner } = this;
 		if (editor && owner) {
+			// history 存 api：undo/redo 时 update/select 与事件派发都由 param-history 按 root 处理。
 			this.history = new ParamHistory(editor, owner, list);
 		}
 	}

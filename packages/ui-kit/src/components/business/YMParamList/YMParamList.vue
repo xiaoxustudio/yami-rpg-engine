@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf } from '../../../utils/element-data';
 import { getListConfig } from '../../../utils/list-config';
 import {
@@ -196,6 +195,9 @@ const root = ref<HTMLElement | null>(null);
 
 let el: ParamListElement | null = null;
 
+/** 列表能力对象：宿主元素只做 DOM，方法与状态都挂在这里。 */
+const api = {} as ParamListElement;
+
 const dragActive = ref(false);
 
 const state = {
@@ -264,45 +266,45 @@ const getClipboard = (): ClipboardAdapter | null => props.clipboard;
 const getCtrl = (keyName: string): string => (props.ctrl ? props.ctrl(keyName) : 'Ctrl+' + keyName);
 
 const getInnerHeight = (): number => {
-	const self = el!;
+	const self = api;
 	if (self.flexible) {
 		return self.height!;
 	}
 	let padding = self._paddingTop;
 	if (padding === undefined) {
-		const style = css(self);
+		const style = css(el!);
 		const pt = parseInt(style.paddingTop);
 		const pb = parseInt(style.paddingBottom);
 		padding = self._paddingTop = pt + pb;
 	}
-	const outerHeight = self.clientHeight;
+	const outerHeight = el!.clientHeight;
 	const innerHeight = outerHeight - padding;
 	return Math.max(innerHeight, 0);
 };
 
 const getPaddingTop = (): number => {
-	const self = el!;
+	const self = api;
 	let pt = self._paddingTop;
 	if (pt === undefined) {
-		pt = self._paddingTop = parseInt(css(self).paddingTop);
+		pt = self._paddingTop = parseInt(css(el!).paddingTop);
 	}
 	return pt;
 };
 
 const bind = (object: ParamObject): HTMLElement => {
-	const self = el!;
+	const self = api;
 	object.initialize(self);
 	object.initialize = () => {};
 	self.object = object;
-	self.type = `yami.${object.type ?? self.id}`;
+	self.type = `yami.${object.type ?? el!.id}`;
 	self.history = object.history ?? createHistory(self);
 	return self;
 };
 
-const read = (): (ParamDataItem | null)[] | null => el!.data;
+const read = (): (ParamDataItem | null)[] | null => api.data;
 
 const write = (data: (ParamDataItem | null)[]): void => {
-	const self = el!;
+	const self = api;
 	if (self.flexible) {
 		self.autoSwitch = true;
 	}
@@ -312,7 +314,7 @@ const write = (data: (ParamDataItem | null)[]): void => {
 };
 
 const update = (): void => {
-	const self = el!;
+	const self = api;
 	const { data } = self;
 	if (!data) return;
 	const { elements } = self;
@@ -428,14 +430,14 @@ const update = (): void => {
 };
 
 const resize = (): void => {
-	const self = el!;
-	const st = self.scrollTop;
-	const ch = self.clientHeight;
+	const self = api;
+	const st = el!.scrollTop;
+	const ch = el!.clientHeight;
 	const elements = self.elements;
 	const count = elements.count;
 	if (ch === 0) return;
 	if (count === 0) {
-		self.textContent = '';
+		el!.textContent = '';
 		return;
 	}
 	const range = core.computeVisibleRange(st, ch, count);
@@ -449,7 +451,7 @@ const resize = (): void => {
 			elementDataOf<{ versionId?: number }>(element).versionId = versionId;
 			updateOnResize(element);
 		}
-		const nodes = self.childNodes;
+		const nodes = el!.childNodes;
 		const last = nodes.length - 1;
 		for (let i = last; i >= 0; i--) {
 			const element = nodes[i];
@@ -458,30 +460,30 @@ const resize = (): void => {
 			}
 		}
 		if (elements.foot && !elements.foot.parentNode) {
-			self.appendChild(elements.foot);
+			el!.appendChild(elements.foot);
 		}
 		for (let i = range.end - 2; i >= range.start; i--) {
 			const element = elements[i];
 			if (element.parentNode === null) {
 				const next = elements[i + 1];
-				self.insertBefore(element, next);
+				el!.insertBefore(element, next);
 			}
 		}
 	}
 };
 
 const updateFlexibleHeight = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.flexible) {
 		const count = self.elements.count;
 		const height = core.computeFlexibleHeight(count);
 		if (self.height !== height) {
 			self.height = height;
-			self.style.height = `${height}px`;
+			el!.style.height = `${height}px`;
 		}
 		if (self.autoSwitch) {
 			self.autoSwitch = false;
-			const detailBox = self.parentNode as
+			const detailBox = el!.parentNode as
 				| (HTMLElement & {
 						open?: () => void;
 						close?: () => void;
@@ -499,7 +501,7 @@ const updateFlexibleHeight = (): void => {
 };
 
 const updateHeadAndFoot = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.elements.head) {
 		self.elements.head.style.marginTop = '';
 		self.elements.head = null;
@@ -526,7 +528,7 @@ const updateHeadAndFoot = (): void => {
 const updateOnResize = (_element?: ParamItemElement): void => {};
 
 const select = (start: number, end: number = start): void => {
-	const self = el!;
+	const self = api;
 	const elements = self.elements;
 	const range = core.resolveSelectionRange(start, end, elements.count, (index) => {
 		return !!elements[index]?.dataItem;
@@ -551,7 +553,7 @@ const select = (start: number, end: number = start): void => {
 };
 
 const selectMultiple = (active: number): void => {
-	const self = el!;
+	const self = api;
 	const origin = self.origin!;
 	select(origin, active);
 	self.origin = origin;
@@ -559,13 +561,13 @@ const selectMultiple = (active: number): void => {
 };
 
 const selectAll = (): void => {
-	const self = el!;
+	const self = api;
 	select(0, Infinity);
 	self.active = self.end;
 };
 
 const unselect = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.start !== null) {
 		const { selections } = self;
 		const { count } = selections;
@@ -581,7 +583,7 @@ const unselect = (): void => {
 };
 
 const reselect = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.focusing && self.start !== null) {
 		const { selections } = self;
 		const elements = self.elements;
@@ -611,7 +613,7 @@ const reselect = (): void => {
  * 本来会保留的仍然保留，只是不再越界。
  */
 const reconcileSelection = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.start === null) return;
 	const { count } = self.elements;
 	if (count === 0) {
@@ -635,7 +637,7 @@ const reconcileSelection = (): void => {
 };
 
 const selectUp = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.start !== null) {
 		let index = self.start;
 		if (index === self.end) {
@@ -647,7 +649,7 @@ const selectUp = (): void => {
 };
 
 const selectDown = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.start !== null) {
 		let index = self.end!;
 		if (index === self.start) {
@@ -659,7 +661,7 @@ const selectDown = (): void => {
 };
 
 const selectMultipleUp = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.start !== null) {
 		const i = self.active! - 1;
 		if (i >= 0) {
@@ -670,7 +672,7 @@ const selectMultipleUp = (): void => {
 };
 
 const selectMultipleDown = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.start !== null) {
 		const elements = self.elements;
 		const count = elements.count;
@@ -684,21 +686,21 @@ const selectMultipleDown = (): void => {
 };
 
 const scrollToSelection = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.start !== null) {
 		const scrollTop = core.computeSelectionScrollTop(
-			self.scrollTop,
+			el!.scrollTop,
 			self.active!,
 			self.innerHeight
 		);
-		if (self.scrollTop !== scrollTop) {
-			self.scrollTop = scrollTop;
+		if (el!.scrollTop !== scrollTop) {
+			el!.scrollTop = scrollTop;
 		}
 	}
 };
 
 const insert = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.start !== null) {
 		self.inserting = true;
 		self.object!.target = self;
@@ -707,7 +709,7 @@ const insert = (): void => {
 };
 
 const edit = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.start !== null) {
 		const elements = self.elements;
 		const element = elements[self.start];
@@ -727,7 +729,7 @@ const edit = (): void => {
 };
 
 const toggle = (): void => {
-	const self = el!;
+	const self = api;
 	if (getListConfig(self).togglable && self.start !== null) {
 		const { data, start, end } = self;
 		const { method, items } = core.collectToggleItems(data!, start, end!);
@@ -748,7 +750,7 @@ const toggle = (): void => {
 			}
 			update();
 			reselect();
-			dispatchChangeEvent(self);
+			dispatchChangeEvent(el!);
 		}
 	}
 };
@@ -762,7 +764,7 @@ const disableItems = (items: ParamDataItem[]): void => {
 };
 
 const copy = (): void => {
-	const self = el!;
+	const self = api;
 	const clipboard = getClipboard();
 	if (!clipboard) return;
 	if (self.start !== null) {
@@ -777,7 +779,7 @@ const copy = (): void => {
 };
 
 const paste = (): void => {
-	const self = el!;
+	const self = api;
 	const clipboard = getClipboard();
 	if (!clipboard) return;
 	if (self.start !== null) {
@@ -796,13 +798,13 @@ const paste = (): void => {
 			update();
 			select(start + copies.length);
 			scrollToSelection();
-			dispatchChangeEvent(self);
+			dispatchChangeEvent(el!);
 		}
 	}
 };
 
 const delete_ = (): void => {
-	const self = el!;
+	const self = api;
 	if (self.start !== null) {
 		const data = self.data!;
 		const start = self.start;
@@ -819,27 +821,27 @@ const delete_ = (): void => {
 			update();
 			select(start);
 			scrollToSelection();
-			dispatchChangeEvent(self);
+			dispatchChangeEvent(el!);
 		}
 	}
 };
 
 const undo = (): void => {
-	const self = el!;
+	const self = api;
 	if (!self.dragging && self.history!.canUndo()) {
 		self.history!.restore('undo');
 	}
 };
 
 const redo = (): void => {
-	const self = el!;
+	const self = api;
 	if (!self.dragging && self.history!.canRedo()) {
 		self.history!.restore('redo');
 	}
 };
 
 const save = (): void => {
-	const self = el!;
+	const self = api;
 	const item = self.object!.save();
 	if (item === undefined) {
 		return;
@@ -873,18 +875,18 @@ const save = (): void => {
 				break;
 		}
 		scrollToSelection();
-		dispatchChangeEvent(self);
+		dispatchChangeEvent(el!);
 	}
 };
 
 const clearElements = (start: number): void => {
-	core.clearElements(el!.elements, start);
+	core.clearElements(api.elements, start);
 };
 
 const clear = (): HTMLElement => {
-	const self = el!;
+	const self = api;
 	unselect();
-	self.textContent = '';
+	el!.textContent = '';
 	self.start = null;
 	self.data = null;
 	self.end = null;
@@ -894,11 +896,11 @@ const clear = (): HTMLElement => {
 	self.elements.start = -1;
 	self.elements.end = -1;
 	updateHeadAndFoot();
-	return self;
+	return el!;
 };
 
 const listFocus = (_event: Event): void => {
-	const self = el!;
+	const self = api;
 	if (!self.focusing) {
 		self.focusing = true;
 		if (self.start !== null) reselect();
@@ -907,12 +909,12 @@ const listFocus = (_event: Event): void => {
 };
 
 const listBlur = (_event: Event): void => {
-	const self = el!;
+	const self = api;
 	if (self.dragging) {
 		windowPointerup(self.dragging);
 	}
 	if (self.focusing) {
-		let element: Node | null = self;
+		let element: Node | null = el!;
 		while ((element = element.parentNode)) {
 			if (element.nodeType !== Node.ELEMENT_NODE) {
 				continue;
@@ -931,7 +933,7 @@ const listBlur = (_event: Event): void => {
 };
 
 const keydown = (event: KeyboardEvent): void => {
-	const self = el!;
+	const self = api;
 	if (cmdOrCtrlKey(event)) {
 		switch (event.code) {
 			case 'KeyX':
@@ -956,10 +958,10 @@ const keydown = (event: KeyboardEvent): void => {
 				redo();
 				break;
 			case 'ArrowUp':
-				self.scrollTop -= 20;
+				el!.scrollTop -= 20;
 				break;
 			case 'ArrowDown':
-				self.scrollTop += 20;
+				el!.scrollTop += 20;
 				break;
 			default:
 				return;
@@ -1006,7 +1008,7 @@ const keydown = (event: KeyboardEvent): void => {
 };
 
 const pointerdown = (event: PointerEvent): void => {
-	const self = el!;
+	const self = api;
 	if (self.dragging) {
 		return;
 	}
@@ -1014,8 +1016,8 @@ const pointerdown = (event: PointerEvent): void => {
 		case 0: {
 			let index: number | undefined;
 			let element = event.target as HTMLElement;
-			if (element === self) {
-				if (isInContent(self, event)) {
+			if (element === el) {
+				if (isInContent(el!, event)) {
 					index = self.elements.count - 1;
 				}
 			} else {
@@ -1046,8 +1048,8 @@ const pointerdown = (event: PointerEvent): void => {
 		case 2: {
 			let index: number | undefined;
 			let element = event.target as HTMLElement;
-			if (element === self) {
-				if (isInContent(self, event)) {
+			if (element === el) {
+				if (isInContent(el!, event)) {
 					index = self.elements.count - 1;
 				}
 			} else {
@@ -1068,13 +1070,13 @@ const pointerdown = (event: PointerEvent): void => {
 };
 
 const pointerup = (event: PointerEvent): void => {
-	const self = el!;
+	const self = api;
 	if (self.dragging) {
 		return;
 	}
 	switch (event.button) {
 		case 2:
-			if (self.start !== null && document.activeElement === self) {
+			if (self.start !== null && document.activeElement === el) {
 				const elements = self.elements;
 				const element = elements[self.start];
 				const valid = !!element?.dataItem;
@@ -1191,10 +1193,10 @@ const pointerup = (event: PointerEvent): void => {
  * `doubleclick` 事件由 `attachDoubleclick` 从第二次 `pointerdown` 合成，`target` 就是被点的行。
  */
 const doubleclick = (event: Event): void => {
-	const self = el!;
+	const self = api;
 	const target = event.target as HTMLElement | null;
 	const row = target?.closest?.('.param-item') as ParamItemElement | null;
-	if (row && self.contains(row)) {
+	if (row && el!.contains(row)) {
 		const index = readElement(row);
 		if (typeof index === 'number' && index >= 0 && index < self.elements.count) {
 			if (self.start !== index || self.end !== index) select(index);
@@ -1208,7 +1210,7 @@ const doubleclick = (event: Event): void => {
 };
 
 const windowPointerup = (event: PointerEvent): void => {
-	const self = el!;
+	const self = api;
 	const { dragging } = self;
 	if (dragging && relate(dragging, event)) {
 		if (dragging.mode === 'select') {
@@ -1220,7 +1222,7 @@ const windowPointerup = (event: PointerEvent): void => {
 };
 
 const windowPointermove = (event: PointerEvent): void => {
-	const self = el!;
+	const self = api;
 	const { dragging } = self;
 	if (dragging && relate(dragging, event)) {
 		if (dragging.mode === 'select') {
@@ -1230,7 +1232,7 @@ const windowPointermove = (event: PointerEvent): void => {
 			if (count > 0) {
 				const pt = self.paddingTop;
 				const { itemHeight } = dragging;
-				const { y } = getRelativeCoords(event, self);
+				const { y } = getRelativeCoords(event, el!);
 				const index = core.computeDragSelectIndex(y, pt, itemHeight!, count);
 				if (dragging.itemIndex !== index) {
 					dragging.itemIndex = index;
@@ -1256,61 +1258,29 @@ const on = (
 	el!.addEventListener(type, listener as EventListener, options);
 };
 
-defineExpose({
-	bind,
-	read,
-	write,
-	update,
-	resize,
-	updateFlexibleHeight,
-	updateHeadAndFoot,
-	updateOnResize,
-	select,
-	selectMultiple,
-	selectAll,
-	unselect,
-	reselect,
-	selectUp,
-	selectDown,
-	selectMultipleUp,
-	selectMultipleDown,
-	scrollToSelection,
-	insert,
-	edit,
-	toggle,
-	enableItems,
-	disableItems,
-	copy,
-	paste,
-	delete: delete_,
-	undo,
-	redo,
-	save,
-	clearElements,
-	clear,
-	on,
-	root
-});
+defineExpose(api);
 
 /**
  * 根元素上的 `change`（内层控件冒泡上来的原生 change）：读当前值并转发为组件事件。
  */
 const onSelfChange = (): void => {
-	const self = el!;
-	const value = readElement(self);
+	const value = readElement(el!);
 	emit('change', value);
 	emit('update:modelValue', value);
 };
 
 onMounted(() => {
-	el = root.value as ParamListElement | null;
-	if (!el) return;
-	const self = el;
-	self.object = null;
-	attachStateAccessors(self);
-	self.type = null;
-	self.data = null;
-	self.elements = Object.assign([], {
+	const host = root.value as ParamListElement | null;
+	if (!host) return;
+	el = host;
+	// 暴露对象补上根元素：editor 包装层与窗口节点表都从这里取 host（defineExpose 捕获的是引用）
+	(api as ParamListElement & { root: HTMLElement | null }).root = host;
+
+	attachStateAccessors(api);
+	api.object = null;
+	api.type = null;
+	api.data = null;
+	api.elements = Object.assign([], {
 		versionId: 0,
 		count: 0,
 		start: -1,
@@ -1318,37 +1288,38 @@ onMounted(() => {
 		head: null,
 		foot: null
 	});
-	self.selections = Object.assign([], { count: 0 });
-	self.start = null;
-	self.end = null;
-	self.origin = null;
-	self.active = null;
-	self.flexible = props.flexible || self.hasAttribute('flexible');
-	self.inserting = false;
-	self.focusing = false;
-	self.dragging = null;
-	self.history = null;
-	getListConfig(self).togglable = false;
-	Object.defineProperty(self, 'togglable', {
+	api.selections = Object.assign([], { count: 0 });
+	api.start = null;
+	api.end = null;
+	api.origin = null;
+	api.active = null;
+	api.flexible = props.flexible || host.hasAttribute('flexible');
+	api.inserting = false;
+	api.focusing = false;
+	api.dragging = null;
+	api.history = null;
+	getListConfig(api).togglable = false;
+	Object.defineProperty(api, 'togglable', {
 		configurable: true,
-		get: () => getListConfig(self).togglable,
+		get: () => getListConfig(api).togglable,
 		set: (value: boolean | undefined) => {
-			getListConfig(self).togglable = value;
+			getListConfig(api).togglable = value;
 		}
 	});
-	self.height = undefined;
-	self._paddingTop = undefined;
-	Object.defineProperty(self, 'innerHeight', {
+	api.height = undefined;
+	api._paddingTop = undefined;
+	Object.defineProperty(api, 'innerHeight', {
 		configurable: true,
 		get: getInnerHeight
 	});
-	Object.defineProperty(self, 'paddingTop', {
+	Object.defineProperty(api, 'paddingTop', {
 		configurable: true,
 		get: getPaddingTop
 	});
-	self.scrollListener = attachScrollListener(self);
-	attachDoubleclick(self, doubleclick);
-	attachApi(self, {
+	api.scrollListener = attachScrollListener(host);
+	attachDoubleclick(host, doubleclick);
+	// 元素上不再挂方法：外部宿主经 defineExpose(api) 使用，host 只做 DOM。
+	Object.assign(api, {
 		bind,
 		read,
 		write,
@@ -1393,7 +1364,7 @@ onMounted(() => {
 	watch(
 		() => props.modelValue,
 		(value) => {
-			if (value !== undefined && self.object) {
+			if (value !== undefined && api.object) {
 				write(value as (ParamDataItem | null)[]);
 			}
 		},
