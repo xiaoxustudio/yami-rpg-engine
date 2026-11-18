@@ -1,8 +1,8 @@
 import { elementDataOf, getListConfig } from '@ui-kit';
 import { renderDetached } from '@app/utils/dom';
-import { getAutoTileHandles } from '@app/composables/auto-tile-handles';
+import { getAutoTileHandles, type AutoTileListHandle } from '@app/composables/auto-tile-handles';
 import { Window } from '@app/tools/window-object.ts';
-import { on, hasClass, write, read, clear } from '@app/utils/element-utils.ts';
+import { on, hasClass, read, clear } from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/utils/event-accessors';
 import { requestFocus } from '@app/directives/focus';
 import { File } from '@app/file/file-system-core.ts';
@@ -52,8 +52,9 @@ type AutoTileListElement = YamiElement & {
 interface AutoTileShape {
 	canvas: HTMLCanvasElement | null;
 	templateList: AutoTileListElement | null;
-	nodeList: YamiElement | null;
-	frameList: YamiElement | null;
+	/** 节点 / 帧两张普通列表：句柄是**组件实例**（方法只在实例上，DOM 走 `root`） */
+	nodeList: AutoTileListHandle | null;
+	frameList: AutoTileListHandle | null;
 	nodes: AutoTileNodeData[] | null;
 	node: AutoTileNodeData | null;
 	nodeMaximum: number | null;
@@ -155,6 +156,7 @@ function ensureDomBound(): boolean {
 	const handles = getAutoTileHandles();
 	if (!handles) return false;
 	const canvas = handles.canvas;
+	// 模板树仍是元素 API（`YMTreeList` 未迁移）：句柄给的就是它的根元素
 	const templateList = handles.templates as unknown as AutoTileListElement;
 	if (!templateList || !canvas) return false;
 	if (AutoTile.templateList === templateList && AutoTile.canvas === canvas) return false;
@@ -186,10 +188,13 @@ function registerWindowEvents() {
 	window.addEventListener('dprchange', AutoTile.dprchange);
 	on(frame, 'close', AutoTile.windowClose);
 	on(frame, 'closed', AutoTile.windowClosed);
+	// 列表的 `on` 在句柄上：模板树是元素（自身 `on` 会顺带开启 record/open 等事件位），
+	// 节点 / 帧是组件实例的 `on`（转发给 YMCommonList）。两者都不再按元素反查。
 	on(AutoTile.templateList, 'keydown', AutoTile.templatesKeydown);
-	on(AutoTile.nodeList, 'keydown', AutoTile.nodesKeydown);
-	on(AutoTile.frameList, 'keydown', AutoTile.framesKeydown);
-	on(AutoTile.frameList, 'doubleclick', AutoTile.framesDoubleclick);
+	// 实例 `on` 按 DOM 语义只声明 `Event`；键鼠字段由处理器自己收窄（与 addEventListener 一致）
+	AutoTile.nodeList.on('keydown', AutoTile.nodesKeydown as (event: Event) => void);
+	AutoTile.frameList.on('keydown', AutoTile.framesKeydown as (event: Event) => void);
+	AutoTile.frameList.on('doubleclick', AutoTile.framesDoubleclick as (event: Event) => void);
 }
 
 AutoTile.initialize = function (this: typeof AutoTile) {
@@ -381,7 +386,10 @@ AutoTile.createNodeData = function (this: typeof AutoTile) {
 };
 
 AutoTile.createNodeItems = function (this: typeof AutoTile, id = getAutoTileStore().nodeIndex) {
-	const list = this.nodeList!.reload();
+	// `reload()` 只负责清空槽位并返回宿主元素；`appendElement` / `update` / `write` 是**实例**方法，
+	// 不能拿 `reload()` 的返回值当列表句柄用（元素上已经没有这些方法了）。
+	const list = this.nodeList!;
+	list.reload();
 	const cover = getAutoTileStore().template.cover;
 	const nodes = this.nodes!;
 	const length = nodes.length;
@@ -398,7 +406,7 @@ AutoTile.createNodeItems = function (this: typeof AutoTile, id = getAutoTileStor
 		list.appendElement(element);
 	}
 	list.update();
-	write(list, Math.min(id, length - 1));
+	list.write(Math.min(id, length - 1));
 };
 
 AutoTile.editFrame = function (this: typeof AutoTile) {
@@ -467,7 +475,9 @@ AutoTile.setFrameQuantity = function (this: typeof AutoTile, count: number) {
 };
 
 AutoTile.createFrameItems = function (this: typeof AutoTile, id = getAutoTileStore().frameIndex) {
-	const list = this.frameList!.reload();
+	// 同上：句柄是实例，`reload()` 的返回值只是宿主元素
+	const list = this.frameList!;
+	list.reload();
 	const frames = this.frames!;
 	const length = frames.length;
 	const digits = computeIndexDigits(length);
@@ -482,7 +492,7 @@ AutoTile.createFrameItems = function (this: typeof AutoTile, id = getAutoTileSto
 		list.appendElement(element);
 	}
 	list.update();
-	write(list, Math.min(id, frames.length - 1));
+	list.write(Math.min(id, frames.length - 1));
 };
 
 AutoTile.updateFrameItem = function (this: typeof AutoTile) {
@@ -493,8 +503,12 @@ AutoTile.updateFrameItem = function (this: typeof AutoTile) {
 	const prefix = padZero(index, length);
 	const x = frame & 0xff;
 	const y = frame >> 8;
-	elementDataOf<{ selection: HTMLElement }>(this.frameList!).selection.textContent =
-		`#${prefix}: ${x},${y}`;
+	// 行元素数据只能从**宿主元素**读：句柄是组件实例，元素在 `root` 上。
+	// `selection` 由外部写进元素数据（ui-kit 自身不维护），取不到就不写，避免把
+	// 「列表刚重建 / 尚未写入」升级成 `reading 'textContent' of undefined`。
+	const root = this.frameList!.root;
+	const selection = root ? elementDataOf<{ selection?: HTMLElement }>(root).selection : undefined;
+	if (selection) selection.textContent = `#${prefix}: ${x},${y}`;
 	this.drawFrame();
 };
 
@@ -531,8 +545,9 @@ AutoTile.windowClosed = function (this: typeof AutoTile, _event: Event) {
 	this.image = null;
 	this.updateCanvas();
 	clear(this.templateList);
-	clear(this.nodeList);
-	clear(this.frameList);
+	// 节点 / 帧的清空走实例（元素上已无 `clear`）
+	this.nodeList?.clear();
+	this.frameList?.clear();
 }.bind(AutoTile);
 
 AutoTile.dprchange = function (this: typeof AutoTile, _event: Event) {

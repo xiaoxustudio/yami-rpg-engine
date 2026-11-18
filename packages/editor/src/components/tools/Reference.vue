@@ -29,14 +29,9 @@ import {
 import { on } from '@app/utils/element-utils';
 
 const updateItems = (items: ReferenceItem[]): void => {
-	// 控件能力只在实例上（元素上不再挂 reload/appendElement/update）
-	const list = listRef.value as
-		| (HTMLElement & {
-				reload(): void;
-				appendElement(element: HTMLElement): void;
-				update(): void;
-		  })
-		| null;
+	// 控件能力只在**组件实例**上（元素上不再挂 reload/appendElement/update）：
+	// `listRef` 就是 editor `CommonList` 包装层实例，方法直接调，不再按元素反查。
+	const list = listRef.value;
 	if (!list) return;
 	list.reload();
 	for (const item of items) {

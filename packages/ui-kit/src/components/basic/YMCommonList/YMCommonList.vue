@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { hasClass, seek } from '../../../utils/dom';
-import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf } from '../../../utils/element-data';
 import { createCommonListCore, type RelativeDirection } from './common-list-core';
 import { createPayloadEvent } from '../../../utils/payload-event';
@@ -319,6 +318,13 @@ const pointerup = (event: PointerEvent): void => {
 	}
 };
 
+/**
+ * 能力只在**组件实例**上（`defineExpose`），元素只做 DOM。
+ *
+ * 与 `YMParamList` / `YMParameterPane` 同一契约：消费方持有实例，`root` 一并交出
+ * （确实需要 DOM 的站点用它取宿主元素）。`reload()` / `clear()` 仍**返回宿主元素**，
+ * 但方法本身只能经实例调用 —— 元素上不再挂方法，否则 `element-api-attach` 台账回升。
+ */
 defineExpose({
 	read,
 	write,
@@ -341,24 +347,8 @@ defineExpose({
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
+	// 只做 DOM 层面的装配（键盘可达性）；方法与状态一律留在 `defineExpose` 的实例上。
 	el.tabIndex = 0;
-	attachApi(el, {
-		read,
-		write,
-		reload,
-		appendElement,
-		update,
-		resize,
-		updateHeadAndFoot,
-		updateOnResize,
-		select,
-		unselect,
-		scrollToItem,
-		selectRelative,
-		clearElements,
-		clear,
-		on
-	});
 });
 </script>
 

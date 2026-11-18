@@ -7,6 +7,7 @@ interface CommonListElement extends HTMLElement {
 	[k: string]: unknown;
 	read: () => unknown;
 	write: (v: unknown) => void;
+	reload: () => HTMLElement;
 	unselect: () => void;
 	selectRelative: (dir: string) => void;
 	clear: () => void;
@@ -43,9 +44,8 @@ describe('YMCommonList', () => {
 
 	it('write emits write event with value', () => {
 		const vm = wrapper.vm as unknown as CommonListElement;
-		const el = wrapper.element as unknown as CommonListElement;
 		const events: unknown[] = [];
-		el.on('write', (e: Event & { value: unknown }) => events.push(e.value));
+		vm.on('write', (e: Event & { value: unknown }) => events.push(e.value));
 		vm.appendElement(createItem('x'));
 		vm.resize();
 		vm.write('x');
@@ -85,13 +85,25 @@ describe('YMCommonList', () => {
 		expect(wrapper.element.children.length).toBe(0);
 	});
 
-	it('exposes bridge functions on root element', () => {
-		const el = wrapper.element as unknown as CommonListElement;
-		expect(typeof el.read).toBe('function');
-		expect(typeof el.write).toBe('function');
-		expect(typeof el.appendElement).toBe('function');
-		expect(typeof el.clear).toBe('function');
-		expect(typeof el.on).toBe('function');
+	// 契约锁：能力只在实例上，元素上不再挂方法（`attachApi` 已从组件里删除）
+	it('能力只在组件实例上，元素上不再挂方法', () => {
+		const el = wrapper.element as unknown as Record<string, unknown>;
+		expect(el.read).toBeUndefined();
+		expect(el.write).toBeUndefined();
+		expect(el.reload).toBeUndefined();
+		expect(el.appendElement).toBeUndefined();
+		expect(el.clear).toBeUndefined();
+		expect(el.on).toBeUndefined();
+
+		const vm = wrapper.vm as unknown as CommonListElement;
+		expect(typeof vm.read).toBe('function');
+		expect(typeof vm.write).toBe('function');
+		expect(typeof vm.reload).toBe('function');
+		expect(typeof vm.appendElement).toBe('function');
+		expect(typeof vm.clear).toBe('function');
+		expect(typeof vm.on).toBe('function');
+		// `reload()` 保持「返回宿主元素」的语义：DOM 站点仍能拿到根元素
+		expect(vm.reload()).toBe(wrapper.element);
 	});
 
 	it('keyboard selectRelative via ArrowDown', async () => {

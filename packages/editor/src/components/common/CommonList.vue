@@ -8,28 +8,6 @@ import type { YamiMouseEvent } from '@app/types/editor-event';
 import { YMCommonList } from '@ui-kit';
 import { listenDraggingScrollbarEvent } from '@app/utils/element-utils';
 
-interface CommonListElement extends HTMLElement {
-	read(): unknown;
-	write(value: unknown): void;
-	reload(): HTMLElement;
-	appendElement(element: HTMLElement): void;
-	update(): void;
-	resize(): void;
-	updateHeadAndFoot(): void;
-	updateOnResize(element?: HTMLElement): void;
-	select(element: HTMLElement): void;
-	unselect(): void;
-	scrollToItem(index: number): void;
-	selectRelative(direction: 'up' | 'down'): void;
-	clearElements(start: number): void;
-	clear(): HTMLElement;
-	on(
-		type: string,
-		listener: (event: Event) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
-}
-
 interface Props {
 	id?: string;
 }
@@ -106,7 +84,8 @@ defineExpose({
 });
 
 onMounted(() => {
-	const el = root.value as CommonListElement | null;
+	// 包装层只托管 DOM（tabindex / 拖动滚动条）；方法一律转给 YMCommonList 实例
+	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
 	listenDraggingScrollbarEvent(el);

@@ -168,7 +168,8 @@ import { useI18n } from 'vue-i18n';
 import {
 	provideAutoTileHandles,
 	resetAutoTileHandles,
-	type AutoTileHandles
+	type AutoTileHandles,
+	type AutoTileListHandle
 } from '@app/composables/auto-tile-handles';
 import type { YamiElement } from '@app/types/element-api';
 import { AutoTile } from '@app/palette/auto-tile.ts';
@@ -247,12 +248,17 @@ const onConfirm = () => {
 	AutoTile?.confirm?.();
 };
 
-/** 长期持有的 5 个节点一次交给单例（模板 / 节点 / 帧三张列表 + 画布 + 根元素）。 */
+/**
+ * 长期持有的 5 个句柄一次交给单例（模板树 / 节点列表 / 帧列表 + 画布 + 根元素）。
+ *
+ * 句柄种类按控件契约分配：节点 / 帧是 `YMCommonList`，交出**组件实例**（方法只在实例上）；
+ * 根元素与模板树确实要 DOM（窗口事件、树的元素 API），经 `rootOf` 取根元素。
+ */
 const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
-const templatesRef = ref<unknown>(null);
-const nodesRef = ref<unknown>(null);
-const canvasRef = ref<unknown>(null);
-const framesRef = ref<unknown>(null);
+const templatesRef = ref<InstanceType<typeof TreeList> | null>(null);
+const nodesRef = ref<InstanceType<typeof CommonList> | null>(null);
+const framesRef = ref<InstanceType<typeof CommonList> | null>(null);
+const canvasRef = ref<HTMLCanvasElement | null>(null);
 
 const rootOf = (target: unknown): YamiElement | null => {
 	const instance = target as { root?: unknown; $el?: unknown } | null;
@@ -265,10 +271,10 @@ let handles: AutoTileHandles | null = null;
 onMounted(() => {
 	const root = rootOf(frame.value);
 	const templates = rootOf(templatesRef.value);
-	const nodes = rootOf(nodesRef.value);
-	const canvas = canvasRef.value as HTMLCanvasElement | null;
-	const frames = rootOf(framesRef.value);
-	if (!root || !templates || !nodes || !canvas || !frames) return;
+	const canvas = canvasRef.value;
+	const nodes = nodesRef.value as AutoTileListHandle | null;
+	const frames = framesRef.value as AutoTileListHandle | null;
+	if (!root || !templates || !canvas || !nodes || !frames) return;
 	handles = { root, canvas, templates, nodes, frames };
 	provideAutoTileHandles(handles);
 	onUnmounted(() => {
