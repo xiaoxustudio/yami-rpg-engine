@@ -169,7 +169,8 @@ function searcherInput(event: { value?: string }): void {
 }
 
 function confirm(_event?: Event): void {
-	const uiId = ui.read();
+	// 控件方法只在实例上：read 负责从元素反查实例（元素只剩 DOM）
+	const uiId = read(ui);
 	if (!uiId) {
 		return getFocus(ui);
 	}

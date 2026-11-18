@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
-import { attachApi } from '../../../utils/attach-api';
 import { isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { addClass, dispatchChangeEvent, removeClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
@@ -260,21 +259,6 @@ function initializeApi(): void {
 	el.writeEventEnabled = false;
 	el.inputEventEnabled = false;
 	markApiAttached(el);
-	attachApi(el, {
-		read,
-		write,
-		input,
-		update,
-		enable,
-		disable,
-		on,
-		keydown,
-		click,
-		dragenter,
-		dragleave,
-		dragover,
-		drop
-	});
 
 	write(props.modelValue);
 	if (props.disabled) disable();

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { controlApi } from '@app/__tests__/control-api';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import PresetObject from '@app/components/tools/PresetObject.vue';
@@ -56,9 +57,6 @@ const getList = (): PresetObjectListEl =>
 
 const getSearcher = (): SearcherEl =>
 	document.getElementById('presetObject-searcher') as unknown as SearcherEl;
-
-const getSceneControl = (): HTMLElement & { read(): string } =>
-	document.getElementById('presetObject-sceneId') as unknown as HTMLElement & { read(): string };
 
 const makeNodes = (): PresetObjectNode[] => [
 	{
@@ -121,7 +119,7 @@ describe('usePresetObjectWindow（场景对象预设窗口 composable：列表�
 		} as unknown as Parameters<typeof presetObject.open>[0];
 		presetObject.open(target);
 		expect(Window.open).toHaveBeenCalledWith('presetObject');
-		expect(getSceneControl().read()).toBe('scene-1');
+		expect((controlApi('presetObject-sceneId') as { read(): string }).read()).toBe('scene-1');
 		expect(presetObject.target).toBe(target);
 		wrapper.unmount();
 	});
@@ -297,7 +295,7 @@ describe('usePresetObjectWindow（场景对象预设窗口 composable：列表�
 			read: () => 'preset-1'
 		} as unknown as Parameters<NonNullable<typeof PresetObjectController.open>>[0]);
 		expect(Window.open).toHaveBeenCalledWith('presetObject');
-		expect(getSceneControl().read()).toBe('scene-1');
+		expect((controlApi('presetObject-sceneId') as { read(): string }).read()).toBe('scene-1');
 		vi.spyOn(getList(), 'read').mockReturnValue({
 			class: 'actor',
 			name: 'Hero',

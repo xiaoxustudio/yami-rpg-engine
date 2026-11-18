@@ -2,6 +2,7 @@ import { treeRowCount, treeRowItemAt, type TreeListRowApi } from '@ui-kit';
 import { presetObjectNodes } from '@app/composables/window-nodes';
 import { getWindowStore } from '@app/stores/window';
 import { getFocus, on, read, write } from '@app/utils/element-utils';
+import { controlApiOfElement } from '@app/utils/control-instance';
 import { Data } from '@app/data/data-object.ts';
 import { Scene } from '@app/scene/scene-window.ts';
 import type { YamiElement, YamiElementApi } from '@app/types/element-api';
@@ -83,7 +84,8 @@ function initialize(): void {
 	list = current;
 	searcher = presetObjectNodes.pick('searcher') as YamiElement;
 	list.bind(() => nodes);
-	searcher.addCloseButton();
+	// 按钮能力在实例上（元素只剩 DOM）
+	(controlApiOfElement(searcher) as { addCloseButton?(): void } | null)?.addCloseButton?.();
 	on(searcher, 'keydown', searcherKeydown);
 	presetObjectNodes.pick('frame')?.addEventListener('closed', windowClosed);
 }

@@ -28,33 +28,42 @@ const makeProps = (overrides: Record<string, unknown> = {}) => ({
 describe('YMCustomBox', () => {
 	it('mounts and exposes api', () => {
 		const wrapper = mount(YMCustomBox, { props: makeProps() });
-		expect(wrapper.element.classList.contains('custom-box')).toBe(true);
-		const el = wrapper.element as unknown as CustomBoxApi;
+		const vm = wrapper.vm as unknown as CustomBoxApi;
+		// 方法只在实例上（元素只剩 DOM）
+		expect(typeof (wrapper.element as unknown as { write?: unknown }).write).toBe('undefined');
 		for (const name of ['read', 'write', 'input', 'enable', 'disable', 'focus', 'on']) {
-			expect(typeof el[name as keyof CustomBoxApi], name).toBe('function');
+			expect(typeof vm[name as keyof CustomBoxApi], name).toBe('function');
 		}
 	});
 
 	it('write displays parsed text', () => {
 		const wrapper = mount(YMCustomBox, { props: makeProps({ type: 'actor' }) });
 		const el = wrapper.element as unknown as CustomBoxApi;
-		el.write({ name: 'Hero' });
+		const vm = wrapper.vm as unknown as CustomBoxApi;
+		// 方法只在实例上（元素只剩 DOM）
+		expect(typeof (wrapper.element as unknown as { write?: unknown }).write).toBe('undefined');
+		vm.write({ name: 'Hero' });
 		expect(el.querySelector('.custom-box-text')!.textContent).toBe('Hero');
-		expect(el.read()).toEqual({ name: 'Hero' });
+		expect(vm.read()).toEqual({ name: 'Hero' });
 	});
 
 	it('write with invalid marks error class', () => {
 		const wrapper = mount(YMCustomBox, { props: makeProps({ type: 'file' }) });
 		const el = wrapper.element as unknown as CustomBoxApi;
-		el.write('bad');
+		const vm = wrapper.vm as unknown as CustomBoxApi;
+		// 方法只在实例上（元素只剩 DOM）
+		expect(typeof (wrapper.element as unknown as { write?: unknown }).write).toBe('undefined');
+		vm.write('bad');
 		expect(el.querySelector('.custom-box-text')!.classList.contains('invalid')).toBe(true);
-		el.write('good.png');
+		vm.write('good.png');
 		expect(el.querySelector('.custom-box-text')!.classList.contains('invalid')).toBe(false);
 	});
 
 	it('click opens getter for type', () => {
 		const wrapper = mount(YMCustomBox, { props: makeProps({ type: 'actor' }) });
 		const el = wrapper.element as unknown as CustomBoxApi;
+		// 方法只在实例上（元素只剩 DOM）
+		expect(typeof (wrapper.element as unknown as { write?: unknown }).write).toBe('undefined');
 		el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 		expect(testWindow.__opened).toBe('actor');
 		delete testWindow.__opened;
@@ -63,26 +72,35 @@ describe('YMCustomBox', () => {
 	it('unknown type renders raw value', () => {
 		const wrapper = mount(YMCustomBox, { props: makeProps({ type: 'unknown-type' }) });
 		const el = wrapper.element as unknown as CustomBoxApi;
-		el.write('raw-value');
+		const vm = wrapper.vm as unknown as CustomBoxApi;
+		// 方法只在实例上（元素只剩 DOM）
+		expect(typeof (wrapper.element as unknown as { write?: unknown }).write).toBe('undefined');
+		vm.write('raw-value');
 		expect(el.querySelector('.custom-box-text')!.textContent).toBe('raw-value');
 	});
 
 	it('input dispatches change and events', () => {
 		const wrapper = mount(YMCustomBox, { props: makeProps({ type: 'actor' }) });
 		const el = wrapper.element as unknown as CustomBoxApi;
+		const vm = wrapper.vm as unknown as CustomBoxApi;
+		// 方法只在实例上（元素只剩 DOM）
+		expect(typeof (wrapper.element as unknown as { write?: unknown }).write).toBe('undefined');
 		let changed = 0;
 		el.addEventListener('change', () => changed++);
-		el.input({ name: 'New' });
-		expect(el.read()).toEqual({ name: 'New' });
+		vm.input({ name: 'New' });
+		expect(vm.read()).toEqual({ name: 'New' });
 		expect(changed).toBe(1);
 	});
 
 	it('enable and disable toggle class', () => {
 		const wrapper = mount(YMCustomBox, { props: makeProps() });
 		const el = wrapper.element as unknown as CustomBoxApi;
-		el.disable();
+		const vm = wrapper.vm as unknown as CustomBoxApi;
+		// 方法只在实例上（元素只剩 DOM）
+		expect(typeof (wrapper.element as unknown as { write?: unknown }).write).toBe('undefined');
+		vm.disable();
 		expect(el.classList.contains('disabled')).toBe(true);
-		el.enable();
+		vm.enable();
 		expect(el.classList.contains('disabled')).toBe(false);
 	});
 
@@ -97,6 +115,9 @@ describe('YMCustomBox', () => {
 			})
 		});
 		const el = wrapper.element as unknown as CustomBoxApi;
+		const vm = wrapper.vm as unknown as CustomBoxApi;
+		// 方法只在实例上（元素只剩 DOM）
+		expect(typeof (wrapper.element as unknown as { write?: unknown }).write).toBe('undefined');
 		const makeDrag = (type: string): Event => {
 			const e = new Event(type, { bubbles: true });
 			(e as unknown as Event & { dataTransfer?: { dropEffect: string } }).dataTransfer = {
@@ -107,7 +128,7 @@ describe('YMCustomBox', () => {
 		el.dispatchEvent(makeDrag('dragover'));
 		expect(el.classList.contains('dragover')).toBe(true);
 		el.dispatchEvent(makeDrag('drop'));
-		expect(el.read()).toBe('g1');
+		expect(vm.read()).toBe('g1');
 		expect(el.querySelector('.custom-box-text')!.textContent).toBe('g1');
 	});
 });
@@ -143,12 +164,12 @@ describe('无数据时显示 None（null/undefined/空串）', () => {
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as unknown as { write(v: unknown): void };
-		el.write(null);
+		const vm = wrapper.vm as unknown as { write(v: unknown): void };
+		vm.write(null);
 		await wrapper.vm.$nextTick();
 		const info = wrapper.element.querySelector('.custom-box-text') as HTMLElement;
 		expect(info.textContent).toBe('None');
-		el.write(undefined);
+		vm.write(undefined);
 		await wrapper.vm.$nextTick();
 		expect(info.textContent).toBe('None');
 		wrapper.unmount();

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { controlApi } from '@app/__tests__/control-api';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import PresetElement from '@app/components/tools/PresetElement.vue';
@@ -41,9 +42,6 @@ type PresetElementListEl = HTMLElement & {
 
 const getList = (): PresetElementListEl =>
 	document.getElementById('presetElement-list') as unknown as PresetElementListEl;
-
-const getUiControl = (): HTMLElement & { read(): string } =>
-	document.getElementById('presetElement-uiId') as unknown as HTMLElement & { read(): string };
 
 const makeNodes = (): PresetElementNode[] => [
 	{
@@ -107,7 +105,7 @@ describe('usePresetElementWindow（UI 元素预设窗口 composable：列表构�
 		>[0];
 		presetElement.open(target);
 		expect(Window.open).toHaveBeenCalledWith('presetElement');
-		expect(getUiControl().read()).toBe('ui-1');
+		expect((controlApi('presetElement-uiId') as { read(): string }).read()).toBe('ui-1');
 		expect(presetElement.target).toBe(target);
 		wrapper.unmount();
 	});
@@ -131,7 +129,9 @@ describe('usePresetElementWindow（UI 元素预设窗口 composable：列表构�
 		const { wrapper, presetElement } = await mountAndInit();
 		const input = vi.fn();
 		presetElement.open({ input });
-		vi.spyOn(getUiControl(), 'read').mockReturnValue('');
+		vi.spyOn(controlApi('presetElement-uiId') as { read(): string }, 'read').mockReturnValue(
+			''
+		);
 		presetElement.confirm();
 		expect(input).not.toHaveBeenCalled();
 		expect(Window.close).not.toHaveBeenCalled();
@@ -284,7 +284,7 @@ describe('usePresetElementWindow（UI 元素预设窗口 composable：列表构�
 			read: () => 'preset-1'
 		} as unknown as Parameters<NonNullable<typeof PresetElementController.open>>[0]);
 		expect(Window.open).toHaveBeenCalledWith('presetElement');
-		expect(getUiControl().read()).toBe('ui-1');
+		expect((controlApi('presetElement-uiId') as { read(): string }).read()).toBe('ui-1');
 		vi.spyOn(getList(), 'read').mockReturnValue({
 			class: 'text',
 			name: 'Label',

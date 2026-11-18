@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ForEach from '@app/components/commands/ForEach.vue';
+import { controlApi } from '@app/__tests__/control-api';
 import { Command } from '@app/commands/command-object.ts';
 import { useForEachCommandSchema } from '@app/composables/commands/useForEachCommandSchema';
 import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
@@ -80,11 +81,10 @@ describe('forEach 窗口表单桥接（Vue 双向绑定迁移回归）', () => {
 		const wrapper = mount(ForEach, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		const { form } = useForEachCommandSchema();
-		const data = document.getElementById('forEach-data') as unknown as HTMLElement & {
-			input(value: unknown): void;
-		};
+		// 方法只在实例上：按 id 取控件能力对象
+		const data = controlApi('forEach-data') as unknown as { input(value: unknown): void };
 		data.input('member');
-		const variable = document.getElementById('forEach-variable') as unknown as HTMLElement & {
+		const variable = controlApi('forEach-variable') as unknown as {
 			input(value: unknown): void;
 		};
 		variable.input({ type: 'local', key: 'm' });
