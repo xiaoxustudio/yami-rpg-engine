@@ -1,3 +1,4 @@
+import { controlApi } from '@app/__tests__/control-api';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createTestElementRegistry } from '@app/__tests__/test-registry';
 import { createPinia, setActivePinia } from 'pinia';
@@ -177,11 +178,14 @@ describe('项目设置窗口注册表', () => {
 		settings.initialize();
 		settings.open();
 
-		const control = document.getElementById('config-window-title') as unknown as HTMLElement & {
+		// 方法只在实例上；元素只用于派发输入事件
+		const control = controlApi('config-window-title') as unknown as {
 			write(value: unknown): void;
 		};
 		control.write('From registry');
-		control.dispatchEvent(new Event('input', { bubbles: true }));
+		// 只用于派发输入事件：按 id 取宿主元素（不读方法）
+		const host = document.querySelector('#config-window-title') as HTMLElement | null;
+		host?.dispatchEvent(new Event('input', { bubbles: true }));
 
 		expect(getProjectStore().data?.window.title).toBe('From registry');
 		expect(settings.form.window.title).toBe('From registry');

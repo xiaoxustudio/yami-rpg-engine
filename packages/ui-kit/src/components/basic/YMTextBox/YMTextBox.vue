@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import { createTextBoxCore } from './text-box-core';
 
@@ -253,22 +252,6 @@ function initializeApi(): void {
 	elementDataOf<TextBoxApi>(el).lastText = '';
 	elementDataOf<TextBoxApi>(el).hiddenNodes = [];
 	(el as TextBoxApi).input = input;
-	attachApi(el, {
-		read,
-		write,
-		insert,
-		enable,
-		disable,
-		focus,
-		getFocus,
-		setPlaceholder,
-		setMaxLength,
-		fitContent,
-		deleteInputContent,
-		addCloseButton,
-		addKeydownFilter,
-		on
-	});
 	write(props.modelValue);
 	if (props.disabled) disable();
 	markApiAttached(el);

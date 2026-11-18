@@ -97,20 +97,18 @@ const props = withDefaults(defineProps<Props>(), {
 	isFolderItem: () => false
 });
 
-/** 搜索框根元素：YMTextBox 的能力是挂到它根元素上的（`write` / 关闭按钮 / 原生 input） */
-type SearcherRoot = HTMLElement & {
+/** 搜索框：能力在 YMTextBox 实例上，根元素只留给原生 input 事件 */
+interface SearcherApi {
+	root: HTMLElement;
 	input: HTMLInputElement;
-	addCloseButton(): void;
+	addCloseButton?(): void;
 	write?(value: string): void;
 	deleteInputContent?(): void;
-};
+}
 
 const el = ref<HTMLElement>();
 const addressEl = ref<HTMLElement>();
-const searcherEl = ref<{
-	root: SearcherRoot;
-	input: HTMLInputElement;
-} | null>(null);
+const searcherEl = ref<SearcherApi | null>(null);
 const viewEl = ref<{
 	root: HTMLElement & { input: HTMLInputElement; activeWheel: boolean; read(): number };
 	input: HTMLInputElement;
@@ -287,7 +285,8 @@ function viewInput(_value?: unknown) {
 }
 
 onMounted(() => {
-	searcherEl.value?.root?.addCloseButton?.();
+	// 方法只经实例调用：元素上不再挂 addCloseButton
+	searcherEl.value?.addCloseButton?.();
 	searcherEl.value?.root?.addEventListener?.('input', searcherInput);
 	searcherEl.value?.root?.addEventListener?.('compositionend', searcherInput);
 	const viewRoot = viewEl.value?.root;
@@ -326,7 +325,7 @@ defineExpose({
 		return viewEl.value?.root as SliderRoot | undefined;
 	},
 	get searcher() {
-		return searcherEl.value?.root;
+		return searcherEl.value ?? undefined;
 	},
 	get address() {
 		return addressEl.value;

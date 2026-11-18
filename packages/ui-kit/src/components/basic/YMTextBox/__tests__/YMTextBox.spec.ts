@@ -48,13 +48,15 @@ describe('YMTextBox', () => {
 		expect(input.maxLength).toBe(10);
 	});
 
-	it('exposes bridge functions on root element', () => {
+	it('exposes bridge functions on the instance', () => {
 		const wrapper = mount(YMTextBox);
-		const el = wrapper.element as unknown as TextBoxApi;
-		expect(typeof el.read).toBe('function');
-		expect(typeof el.write).toBe('function');
-		expect(typeof el.getFocus).toBe('function');
-		expect(el.input!.tagName).toBe('INPUT');
+		const vm = wrapper.vm as unknown as TextBoxApi;
+		// 方法只在实例上：元素是纯 DOM
+		expect(typeof (wrapper.element as unknown as { read?: unknown }).read).toBe('undefined');
+		expect(typeof vm.read).toBe('function');
+		expect(typeof vm.write).toBe('function');
+		expect(typeof vm.getFocus).toBe('function');
+		expect(vm.input!.tagName).toBe('INPUT');
 	});
 
 	it('deleteInputContent invokes execCommand delete', async () => {
