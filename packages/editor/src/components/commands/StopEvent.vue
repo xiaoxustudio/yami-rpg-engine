@@ -139,7 +139,7 @@ const onTypeWrite = (value: unknown) => {
 		return;
 	}
 	// 选择框能力在实例/旁表上（元素只作 DOM）
-	const elEventType = controls['stopEvent-eventType'] as unknown as {
+	const elEventType = controls['stopEvent-eventType'] as HTMLElement & {
 		loadItems(items: unknown[]): void;
 		createTooltip?(): void;
 	};

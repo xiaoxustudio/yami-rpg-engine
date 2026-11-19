@@ -145,7 +145,7 @@ onMounted(() => {
 	provideSwitchCondition(bridgeApi);
 	onUnmounted(() => resetSwitchCondition(bridgeApi));
 	// 选择框能力在实例/旁表上：类型只声明这里用到的两个方法
-	const typeEl = of('type') as unknown as {
+	const typeEl = of('type') as HTMLElement & {
 		loadItems(items: unknown[]): void;
 		enableHiddenMode?(): { relate?(entries: unknown): void };
 	};
