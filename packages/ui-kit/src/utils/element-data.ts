@@ -44,17 +44,3 @@ export function elementDataValueOf(el: unknown): unknown {
 		? elementDataOf<{ dataValue?: unknown }>(el).dataValue
 		: undefined;
 }
-
-/**
- * 元素 API 工厂的"只装配一次"守卫。
- *
- * `*-api.ts` 里写成 `if (isApiAttached(box)) return box;` … `markApiAttached(box);`——
- * `_initialized` 存在元素数据里，不占用元素自身的属性。
- */
-export function isApiAttached(el: unknown): boolean {
-	return elementDataOf<{ _initialized?: boolean }>(el)._initialized === true;
-}
-
-export function markApiAttached(el: unknown): void {
-	elementDataOf<{ _initialized?: boolean }>(el)._initialized = true;
-}

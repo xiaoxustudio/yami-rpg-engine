@@ -1,1 +1,1 @@
-export { getElementData, elementDataOf, isApiAttached, markApiAttached } from '@ui-kit';
+export { getElementData, elementDataOf } from '@ui-kit';

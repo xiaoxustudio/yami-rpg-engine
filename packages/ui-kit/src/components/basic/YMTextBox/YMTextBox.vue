@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { elementDataOf } from '../../../utils/element-data';
+import { isInitialized, markInitialized } from '../../../utils/init-flag';
 import { createTextBoxCore } from './text-box-core';
 
 interface Props {
@@ -248,13 +249,13 @@ watch(
 function initializeApi(): void {
 	const el = root.value;
 	const input = inputEl.value;
-	if (!el || !input || isApiAttached(el)) return;
+	if (!el || !input || isInitialized(el)) return;
 	elementDataOf<TextBoxApi>(el).lastText = '';
 	elementDataOf<TextBoxApi>(el).hiddenNodes = [];
 	(el as TextBoxApi).input = input;
 	write(props.modelValue);
 	if (props.disabled) disable();
-	markApiAttached(el);
+	markInitialized(el);
 }
 
 onMounted(initializeApi);

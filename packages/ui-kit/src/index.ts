@@ -201,13 +201,7 @@ export {
 export { WordList, type WordListShape } from './composables/useWordList';
 
 export { HistoryTimer, NumberHistory, TextHistory, CommandHistory } from './utils/history';
-export {
-	elementDataOf,
-	elementDataValueOf,
-	getElementData,
-	isApiAttached,
-	markApiAttached
-} from './utils/element-data';
+export { elementDataOf, elementDataValueOf, getElementData } from './utils/element-data';
 export * from './utils/payload-event';
 export type { HistoryOperation, IEditableHistory, ICapacityHistory } from './utils/history';
 export { EventBus } from './utils/event-bus';
@@ -242,6 +236,7 @@ export {
 	type ElementCapabilities
 } from './utils/element-capabilities';
 export { getElementApi, setElementApi, type ElementApi } from './utils/element-apis';
+export { isInitialized, markInitialized } from './utils/init-flag';
 export type { YamiElement, YamiElementApi, YamiListElement } from './utils/element-contract';
 export { getListConfig, type ListConfig } from './utils/list-config';
 export {

@@ -1,4 +1,5 @@
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { elementDataOf } from '../../../utils/element-data';
+import { isInitialized, markInitialized } from '../../../utils/init-flag';
 import { addClass, dispatchResizeEvent, hasClass, removeClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
@@ -18,7 +19,7 @@ const frameData = (el: unknown): PageFrameElement => elementDataOf<PageFrameElem
 
 export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 	const manager = el as PageManagerApi;
-	if (isApiAttached(manager)) return manager;
+	if (isInitialized(manager)) return manager;
 
 	manager.index = null;
 	manager.active = null;
@@ -106,7 +107,7 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 		if (manager.index !== null) manager.switch(manager.index);
 	}).observe(el, { childList: true });
 
-	markApiAttached(manager);
+	markInitialized(manager);
 	return manager;
 }
 

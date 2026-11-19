@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
-import { isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { isInitialized, markInitialized } from '../../../utils/init-flag';
 import { addClass, dispatchChangeEvent, removeClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
@@ -244,7 +244,7 @@ watch(
 function initializeApi(): void {
 	const el = root.value as (HTMLElement & { [k: string]: unknown }) | null;
 	const text = infoEl.value;
-	if (!el || !text || isApiAttached(el)) return;
+	if (!el || !text || isInitialized(el)) return;
 
 	info = text;
 
@@ -258,7 +258,7 @@ function initializeApi(): void {
 
 	el.writeEventEnabled = false;
 	el.inputEventEnabled = false;
-	markApiAttached(el);
+	markInitialized(el);
 
 	write(props.modelValue);
 	if (props.disabled) disable();

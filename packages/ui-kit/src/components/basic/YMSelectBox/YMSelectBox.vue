@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useEventListener } from '../../../composables/useEventListener';
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { elementDataOf } from '../../../utils/element-data';
+import { isInitialized, markInitialized } from '../../../utils/init-flag';
 import {
 	createSelectBoxCore,
 	type RelationEntry,
@@ -210,7 +211,7 @@ watch(
 function initializeApi(): void {
 	const el = root.value;
 	const infoEl = info.value;
-	if (!el || !infoEl || isApiAttached(el)) return;
+	if (!el || !infoEl || isInitialized(el)) return;
 	el.tabIndex = 0;
 	elementDataOf<SelectBoxHost>(el).dataItems = state.dataItems;
 	Object.defineProperty(el, 'dataValue', {
@@ -230,7 +231,7 @@ function initializeApi(): void {
 	on('write', (e: Event & { value?: unknown }) => emit('write', e.value));
 	if (props.modelValue !== null) write(props.modelValue);
 	if (props.disabled) disable();
-	markApiAttached(el);
+	markInitialized(el);
 }
 
 onMounted(initializeApi);
