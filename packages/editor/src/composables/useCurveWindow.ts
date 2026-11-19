@@ -1,5 +1,6 @@
 import { animationNodes } from '@app/composables/animation-nodes';
 import { addClass, hide, on, rect, removeClass, show, write } from '@app/utils/element-utils.ts';
+import { controlApiOfElement } from '@app/utils/control-instance';
 import { elementDataValueOf } from '@ui-kit';
 import { Timer } from '@app/utils/timer';
 import { Animation } from '@app/animation/animation-window.ts';
@@ -209,7 +210,11 @@ const updateEasingOptions = (): void => {
 		currentList.data = easings;
 		const headItem = currentList.defaultItem;
 		const items = Data.createEasingItems!();
-		currentList.loadItems([headItem, ...items]);
+		// 缓动下拉是组件节点（元素上不再挂 loadItems）：按根元素反查组件实例
+		const api = controlApiOfElement(currentList) as {
+			loadItems?(items: unknown[]): void;
+		} | null;
+		api?.loadItems?.([headItem, ...items]);
 	}
 };
 

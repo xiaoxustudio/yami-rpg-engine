@@ -1,5 +1,5 @@
-import { attachApi } from '../../../utils/attach-api';
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
+import { elementDataOf } from '../../../utils/element-data';
 import { addClass, hasClass, numberPattern } from '../../../utils/dom';
 import {
 	radioProxyMap,
@@ -31,7 +31,7 @@ export type RadioBoxApi = HTMLElement & {
 
 export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions = {}): RadioBoxApi {
 	const box = el as RadioBoxApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 	const data = elementDataOf<RadioBoxApi>(box);
 
 	if (options.name) box.setAttribute('name', options.name);
@@ -151,8 +151,6 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 		box.insertBefore(mark, box.childNodes[0]);
 	}
 
-	markApiAttached(box);
-
 	const read = (): number | string | boolean => box.dataValue;
 	const write = (v: number | string | boolean): void => {
 		box.dataValue = v;
@@ -177,10 +175,10 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
 
-	attachApi<RadioBoxApi>(box, { read, write, input, enable, disable, relate, on });
+	setElementApi(box, { read, write, input, enable, disable, relate, on });
 
 	if (options.disabled) {
-		box.disable();
+		disable();
 	}
 
 	return box;

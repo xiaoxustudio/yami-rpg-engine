@@ -1,6 +1,6 @@
-import { attachApi } from '../../../utils/attach-api';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 import { addClass, relate, removeClass, rect, roundTo } from '../../../utils/dom';
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { elementDataOf } from '../../../utils/element-data';
 
 export interface ScrollBarApiOptions {
 	target?: HTMLElement | null;
@@ -61,7 +61,7 @@ export function attachScrollBarApi(
 	options: ScrollBarApiOptions = {}
 ): ScrollBarApi {
 	const bar = el as ScrollBarApi;
-	if (isApiAttached(bar)) return bar;
+	if (getElementApi(bar)) return bar;
 	const data = elementDataOf<ScrollBarData>(bar);
 
 	data.target = options.target ?? null;
@@ -118,9 +118,9 @@ export function attachScrollBarApi(
 			const p1 = roundTo((sl / sw) * 100, 6);
 			const p2 = roundTo((cw / sw) * 100, 6);
 			updateHorizontalThumb(p1, p2);
-			bar.updateDisplay(true);
+			updateDisplay(true);
 		} else {
-			bar.updateDisplay(false);
+			updateDisplay(false);
 		}
 	};
 
@@ -133,9 +133,9 @@ export function attachScrollBarApi(
 			const p1 = roundTo((st / sh) * 100, 6);
 			const p2 = roundTo((ch / sh) * 100, 6);
 			updateVerticalThumb(p1, p2);
-			bar.updateDisplay(true);
+			updateDisplay(true);
 		} else {
-			bar.updateDisplay(false);
+			updateDisplay(false);
 		}
 	};
 
@@ -159,7 +159,7 @@ export function attachScrollBarApi(
 		}
 	};
 
-	attachApi<ScrollBarApi>(bar, { updateDisplay, updateHorizontalBar, updateVerticalBar, bind });
+	setElementApi(bar, { updateDisplay, updateHorizontalBar, updateVerticalBar, bind });
 
 	const scrollRelative = (sign: number): void => {
 		const { target } = data;
@@ -300,7 +300,7 @@ export function attachScrollBarApi(
 									dragging!.scrollLeft +
 									((event.clientX - dragging!.clientX) * target.scrollWidth) /
 										denom;
-								bar.updateHorizontalBar();
+								updateHorizontalBar();
 								target.dispatchEvent(new Event('userscroll'));
 							}
 							break;
@@ -313,7 +313,7 @@ export function attachScrollBarApi(
 									dragging!.scrollTop +
 									((event.clientY - dragging!.clientY) * target.scrollHeight) /
 										denom;
-								bar.updateVerticalBar();
+								updateVerticalBar();
 								target.dispatchEvent(new Event('userscroll'));
 							}
 							break;
@@ -365,8 +365,6 @@ export function attachScrollBarApi(
 				break;
 		}
 	};
-
-	markApiAttached(bar);
 	el.addEventListener('pointerdown', pointerdown);
 
 	return bar;

@@ -1,6 +1,6 @@
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { elementDataOf } from '../../../utils/element-data';
 import { createPayloadEvent } from '../../../utils/payload-event';
-import { attachApi } from '../../../utils/attach-api';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 
 export interface CustomBoxParseResult {
 	text: string;
@@ -80,7 +80,7 @@ export function attachCustomBoxApi(
 	options: CustomBoxApiOptions = {}
 ): CustomBoxApi {
 	const box = el as CustomBoxApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 
 	const props = {
 		getters: options.getters ?? null,
@@ -275,11 +275,10 @@ export function attachCustomBoxApi(
 	});
 	box.writeEventEnabled = false;
 	box.inputEventEnabled = false;
-	markApiAttached(box);
 
 	const read = (): unknown => state.dataValue;
 
-	attachApi<CustomBoxApi>(box, {
+	setElementApi(box, {
 		read,
 		write,
 		input,

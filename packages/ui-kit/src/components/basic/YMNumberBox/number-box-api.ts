@@ -1,5 +1,5 @@
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 import { addClass } from '../../../utils/dom';
 import { NumberHistory } from '../../../utils/history';
 import { createNumberBoxCore } from './number-box-core';
@@ -41,7 +41,7 @@ export function attachNumberBoxApi(
 	options: NumberBoxApiOptions = {}
 ): NumberBoxApi {
 	const box = el as NumberBoxApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 	const data = elementDataOf<NumberBoxData>(box);
 
 	const input = document.createElement('input');
@@ -111,15 +111,13 @@ export function attachNumberBoxApi(
 		core.write(value, data.decimals);
 	};
 
-	attachApi<NumberBoxApi>(box, { read, write, enable, disable, getFocus, on });
-
-	markApiAttached(box);
+	setElementApi(box, { read, write, enable, disable, getFocus, on });
 
 	if (options.modelValue !== undefined && options.modelValue !== null) {
-		box.write(options.modelValue);
+		write(options.modelValue);
 	}
 	if (options.disabled) {
-		box.disable();
+		disable();
 	}
 
 	return box;

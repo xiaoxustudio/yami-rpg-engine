@@ -1,5 +1,5 @@
 import { h, render } from 'vue';
-import { attachApi } from '../../../utils/attach-api';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 import { type YamiElementApi } from '../../../utils/element-contract';
 import { elementDataOf } from '../../../utils/element-data';
 import { getListConfig } from '../../../utils/list-config';
@@ -1318,7 +1318,10 @@ export const treeListPrototype: Record<string, (this: TreeListHost, ...args: nev
 								this.select(item);
 							} else if (
 								getListConfig(this).renamable &&
-								this.getMenuState() === 'closed' &&
+								// 注入项在旁表里（元素只作 key）
+								getElementApi<{ getMenuState?: () => string }>(
+									this
+								)?.getMenuState?.() === 'closed' &&
 								document.activeElement === this &&
 								event.clientX > (rect(rowData(element).nodeIcon)?.right ?? 0)
 							) {
@@ -1585,7 +1588,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.renderNodeExtras = options?.renderNodeExtras;
 	list.renderNodeIcon = options?.renderNodeIcon;
 	list.renderState = createTreeRenderState(list);
-	attachApi<TreeListElementApi>(list, { getMenuState });
+	setElementApi(list, { getMenuState });
 
 	for (const name of Object.keys(treeListPrototype)) {
 		Reflect.set(list, name, Reflect.get(treeListPrototype, name));

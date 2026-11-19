@@ -11,6 +11,7 @@ import {
 	write
 } from '../../../utils/dom';
 import { elementDataOf } from '../../../utils/element-data';
+import { getElementApi } from '../../../utils/element-apis';
 import { createParamPaneCore, type ParamDef } from './param-pane-core';
 import { useEventListener } from '../../../composables/useEventListener';
 import type { ManifestEntry } from './manifest-entry';
@@ -464,6 +465,12 @@ const update = (): void => {
 const enableInput = (el: ParamInput): void => {
 	if (el && typeof el.enable === 'function') {
 		el.enable();
+		return;
+	}
+	// 工厂件的 enable 在旁表里
+	const api = getElementApi<{ enable?(): void }>(el);
+	if (typeof api?.enable === 'function') {
+		api.enable();
 	} else {
 		el?.classList?.remove('disabled');
 	}
@@ -472,6 +479,11 @@ const enableInput = (el: ParamInput): void => {
 const disableInput = (el: ParamInput): void => {
 	if (el && typeof el.disable === 'function') {
 		el.disable();
+		return;
+	}
+	const api = getElementApi<{ disable?(): void }>(el);
+	if (typeof api?.disable === 'function') {
+		api.disable();
 	} else {
 		el?.classList?.add('disabled');
 	}

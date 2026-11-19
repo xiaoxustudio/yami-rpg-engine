@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { getElementApi } from '../../../utils/element-apis';
 import { createSelectListApi, type SelectItem, type SelectListApi } from './select-list-api';
 
 interface Props {
@@ -53,7 +54,9 @@ defineExpose({
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
-	api = createSelectListApi(el);
+	createSelectListApi(el);
+	// 能力在旁表里（元素只作 key），组件内的转发必须拿表对象
+	api = getElementApi<SelectListApi>(el);
 });
 </script>
 

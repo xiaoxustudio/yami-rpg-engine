@@ -9,12 +9,16 @@ export type ElementApi = Record<string, unknown>;
 
 const apis = new WeakMap<Element, ElementApi>();
 
-export const setElementApi = <T extends ElementApi>(el: Element, api: T): T => {
-	apis.set(el, api);
+export const setElementApi = <T extends object>(el: Element, api: T): T => {
+	apis.set(el, api as ElementApi);
 	return api;
 };
 
-export const getElementApi = <T extends ElementApi = ElementApi>(el: unknown): T | null => {
+/**
+ * 泛型不约束到 `ElementApi`：`*Api` 契约多是 `interface`/交叉类型，而 interface 没有隐式索引签名，
+ * 无法赋给 `Record<string, unknown>`；传 type literal 与 interface 都应该能取。
+ */
+export const getElementApi = <T = ElementApi>(el: unknown): T | null => {
 	if (!(el instanceof Element)) return null;
-	return (apis.get(el) as T | undefined) ?? null;
+	return (apis.get(el) as unknown as T | undefined) ?? null;
 };

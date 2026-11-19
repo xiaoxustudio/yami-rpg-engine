@@ -1,4 +1,4 @@
-import { attachApi } from '../../../utils/attach-api';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 import { elementDataOf, elementDataValueOf } from '../../../utils/element-data';
 import {
 	clamp,
@@ -55,6 +55,22 @@ const itemData = (el: unknown): SelectItemElement => elementDataOf<SelectItemEle
  */
 const itemDataOrUndefined = (el: unknown): SelectItemElement | undefined =>
 	el == null ? undefined : itemData(el);
+
+/**
+ * 把选中值提交回宿主（select-box）。
+ *
+ * 工厂件的 `input` 在旁表里；组件实例/测试夹具仍可能把方法直挂在元素上，两处都认。
+ */
+const commitTargetInput = (target: SelectTarget | null, value: unknown): void => {
+	if (target === null || target === undefined) return;
+	const mapped = getElementApi<{ input?: (value: unknown) => void }>(target);
+	// 以方法形式调用，避免「解绑 this」的告警与真实语义偏差
+	if (typeof mapped?.input === 'function') {
+		mapped.input(value);
+		return;
+	}
+	if (typeof target.input === 'function') target.input(value);
+};
 
 export type SelectListApi = HTMLElement & {
 	state: 'open' | 'closed';
@@ -238,7 +254,7 @@ export function createSelectListApi(
 			let index = getElementIndexOfSelection(Infinity);
 			index = Math.min(index, bottomIndex) - scrollLines;
 			index = Math.max(index, 0);
-			box.select(box.elements[index]);
+			select(box.elements[index]);
 		}
 		box.scrollBy(0, -scrollLines * ROW_HEIGHT);
 	};
@@ -251,7 +267,7 @@ export function createSelectListApi(
 			let index = getElementIndexOfSelection(0);
 			index = Math.max(index, topIndex) + scrollLines;
 			index = Math.min(index, count - 1);
-			box.select(box.elements[index]);
+			select(box.elements[index]);
 		}
 		box.scrollBy(0, +scrollLines * ROW_HEIGHT);
 	};
@@ -315,7 +331,7 @@ export function createSelectListApi(
 			case 'NumpadEnter': {
 				const value = read();
 				if (value !== undefined) {
-					data.target!.input(value);
+					commitTargetInput(data.target, value);
 				}
 				close();
 				break;
@@ -370,7 +386,7 @@ export function createSelectListApi(
 					if (event.altKey) {
 						return;
 					}
-					target.input(itemData(item).dataValue);
+					commitTargetInput(target, itemData(item).dataValue);
 				}
 				close();
 				return;
@@ -405,7 +421,7 @@ export function createSelectListApi(
 		close();
 	};
 
-	attachApi<SelectListApi>(box, {
+	setElementApi(box, {
 		read,
 		write,
 		select,

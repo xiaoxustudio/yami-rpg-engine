@@ -11,6 +11,14 @@ import { GameLocal } from '@app/local/local-object.ts';
 
 import { IListInterface } from '@app/types/list-interface.ts';
 import { IUndoRedoHistory } from '@app/types/history.ts';
+import { getElementApi, type SelectBoxApi } from '@ui-kit';
+
+/**
+ * 类型选择框是命令式工厂件：能力在 ui-kit 旁表里（元素只作 key），
+ * 不能直接 `typeBox.write()`。取用即触发 getter 的懒创建。
+ */
+const typeBoxApi = (): SelectBoxApi | null =>
+	getElementApi<SelectBoxApi>(AttributeListInterface.typeBox);
 
 interface AttributeItemShape {
 	key: string;
@@ -143,7 +151,7 @@ export class AttributeListInterface implements IListInterface {
 		const keyBox = getObjectAttribute()?.control('key');
 		keyBox?.loadItems?.(Attribute.getAttributeItems(this.group, 'boolean number string'));
 		const invalid = !Attribute.getGroupAttribute(this.group, key);
-		if (invalid) AttributeListInterface.typeBox.write(type);
+		if (invalid) typeBoxApi()?.write(type);
 		Object.assign(form, { key, booleanValue, numberValue, stringValue, enumValue });
 		if (isNew || invalid) {
 			return requestFocus('object-attribute-key');
@@ -167,7 +175,7 @@ export class AttributeListInterface implements IListInterface {
 	}
 
 	save() {
-		const type = AttributeListInterface.typeBox.read();
+		const type = typeBoxApi()?.read();
 		const key = form.key;
 		if (key === '') {
 			return requestFocus('object-attribute-key');
@@ -197,14 +205,16 @@ export class AttributeListInterface implements IListInterface {
 	static target: HTMLElement | null = null;
 
 	static initialize() {
-		this.typeBox.loadItems([
+		typeBoxApi()?.loadItems([
 			{ name: 'Boolean', value: 'boolean' },
 			{ name: 'Number', value: 'number' },
 			{ name: 'String', value: 'string' },
 			{ name: 'Enum', value: 'enum' }
 		]);
 
-		this.typeBox.enableHiddenMode().relate([
+		const api = typeBoxApi();
+		api?.enableHiddenMode();
+		api?.relate([
 			{ case: 'boolean', targets: getObjectAttribute()?.elementsOf(['boolean']) ?? [] },
 			{ case: 'number', targets: getObjectAttribute()?.elementsOf(['number']) ?? [] },
 			{ case: 'string', targets: getObjectAttribute()?.elementsOf(['string']) ?? [] },
@@ -236,7 +246,7 @@ export class AttributeListInterface implements IListInterface {
 			return;
 		}
 		if (attr) {
-			AttributeListInterface.typeBox.write(attr.type);
+			typeBoxApi()?.write(attr.type);
 			if (attr.type === 'enum') {
 				const enumBox = getObjectAttribute()?.control('enum');
 				enumBox?.loadItems?.(Enum.getStringItems(attr.enum));

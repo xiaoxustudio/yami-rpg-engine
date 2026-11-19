@@ -1,5 +1,5 @@
-import { attachApi } from '../../../utils/attach-api';
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
+import { elementDataOf } from '../../../utils/element-data';
 import { createTextBoxCore } from './text-box-core';
 import { onLocalize } from '../../../utils/localize-event';
 
@@ -31,7 +31,7 @@ export interface TextBoxApi extends HTMLElement {
 
 export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {}): TextBoxApi {
 	const box = el as TextBoxApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 
 	const input = document.createElement('input');
 	input.className = 'text-box-input';
@@ -122,14 +122,12 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 		box.dispatchEvent(new Event('change', { bubbles: true }));
 	});
 
-	markApiAttached(box);
-
 	// 本地化：占位符由控件自己应用，元素上不再需要 setPlaceholder 方法
 	onLocalize(box, (detail) => {
 		if (detail.kind === 'placeholder' && detail.text !== undefined) setPlaceholder(detail.text);
 	});
 
-	attachApi<TextBoxApi>(box, {
+	setElementApi(box, {
 		read,
 		write,
 		insert,

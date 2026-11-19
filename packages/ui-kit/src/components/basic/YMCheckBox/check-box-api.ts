@@ -1,5 +1,4 @@
-import { isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { attachApi } from '../../../utils/attach-api';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 import { addClass, removeClass, hasClass, dispatchChangeEvent } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
@@ -42,7 +41,7 @@ const disableElement = (element: HTMLElement & { disable?: () => void }): void =
 
 export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions = {}): CheckBoxApi {
 	const box = el as CheckBoxApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 
 	const standard = options.standard ?? hasClass(box, 'standard');
 	let dataValue = false;
@@ -87,7 +86,7 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 
 	const input = function (value: boolean): void {
 		if (dataValue !== value) {
-			box.write(value);
+			write(value);
 			if (inputEventEnabled) {
 				const inputEvent = createPayloadEvent('input', {} as { value: boolean }, {
 					bubbles: true
@@ -137,7 +136,7 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 			case 'NumpadEnter':
 				if (!event.cmdOrCtrlKey && !hasClass(box, 'disabled')) {
 					event.stopPropagation();
-					box.mouseclick(event);
+					mouseclick(event);
 				}
 				break;
 		}
@@ -149,16 +148,16 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 				if (document.activeElement !== document.body) {
 					(document.activeElement as HTMLElement).blur();
 				}
-				box.input(!box.read());
+				input(!read());
 				break;
 		}
 	};
 
 	const mouseclick = function (_event: Event): void {
-		box.input(!box.read());
+		input(!read());
 	};
 
-	attachApi<CheckBoxApi>(box, {
+	setElementApi(box, {
 		write,
 		read,
 		input,
@@ -171,24 +170,22 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 		mouseclick
 	});
 
-	box.addEventListener('keydown', box.keydown as EventListener);
+	box.addEventListener('keydown', keydown as EventListener);
 	if (standard) {
 		const standardMark = document.createElement('span');
 		addClass(standardMark, 'check-mark');
 		box.tabIndex = 0;
 		box.insertBefore(standardMark, box.childNodes[0] || null);
-		box.addEventListener('click', box.mouseclick);
+		box.addEventListener('click', mouseclick);
 	} else {
-		box.addEventListener('pointerdown', box.pointerdown as EventListener);
+		box.addEventListener('pointerdown', pointerdown as EventListener);
 	}
-
-	markApiAttached(box);
 
 	if (options.modelValue) {
-		box.write(options.modelValue);
+		write(options.modelValue);
 	}
 	if (options.disabled) {
-		box.disable();
+		disable();
 	}
 
 	return box;

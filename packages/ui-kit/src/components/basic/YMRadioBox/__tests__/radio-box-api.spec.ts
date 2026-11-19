@@ -2,16 +2,20 @@ import { describe, expect, it } from 'vitest';
 import { createRadioBoxElement } from '../radio-box-api';
 import type { RadioBoxApi } from '../radio-box-api';
 import { elementDataOf } from '../../../../utils/element-data';
+import { getElementApi } from '../../../../utils/element-apis';
 
 describe('createRadioBoxElement', () => {
 	it('creates radio-box with proxy', () => {
 		const el = createRadioBoxElement({ name: 'grp', value: 'a' }) as unknown as RadioBoxApi;
+		const api = getElementApi<RadioBoxApi>(el)!;
 		document.body.appendChild(el);
 		expect(el.classList.contains('radio-box')).toBe(true);
 		expect(el.getAttribute('name')).toBe('grp');
 		expect(el.dataValue).toBe('a');
 		expect(elementDataOf<{ proxy?: { read(): unknown } }>(el).proxy).toBeTruthy();
-		expect(typeof el.read).toBe('function');
+		// 契约锁：能力在旁表里，元素上不再挂方法
+		expect(typeof (el as unknown as Record<string, unknown>).read).toBe('undefined');
+		expect(typeof api.read).toBe('function');
 		el.remove();
 	});
 
@@ -32,7 +36,7 @@ describe('createRadioBoxElement', () => {
 		const b = createRadioBoxElement({ name: 'g3', value: 'b' }) as unknown as RadioBoxApi;
 		document.body.appendChild(a);
 		document.body.appendChild(b);
-		b.input('b');
+		getElementApi<RadioBoxApi>(b)!.input('b');
 		expect(elementDataOf<{ proxy: { read(): unknown } }>(b).proxy.read()).toBe('b');
 		expect(a.classList.contains('selected')).toBe(false);
 		expect(b.classList.contains('selected')).toBe(true);

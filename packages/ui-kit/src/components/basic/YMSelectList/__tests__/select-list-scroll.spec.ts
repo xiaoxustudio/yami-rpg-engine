@@ -2,6 +2,7 @@ import { describe, expect, it, vi, afterEach } from 'vitest';
 import { createSelectListElement } from '../select-list-api';
 import type { SelectListApi } from '../select-list-api';
 import { elementDataOf } from '../../../../utils/element-data';
+import { getElementApi } from '../../../../utils/element-apis';
 
 function makeBox(): SelectListApi {
 	return createSelectListElement() as unknown as SelectListApi;
@@ -30,11 +31,12 @@ describe('YMSelectList scroll 监听（回归保护）', () => {
 
 	it('open 后绑定 scroll 事件监听', () => {
 		const box = makeBox();
+		const api = getElementApi<SelectListApi>(box)!;
 		const addSpy = vi.spyOn(box, 'addEventListener');
-		box.open(makeTarget() as any);
+		api.open(makeTarget() as any);
 		expect(addSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
 		expect(addSpy).toHaveBeenCalledWith('pointermove', expect.any(Function));
-		box.close();
+		api.close();
 		if (box.isConnected) {
 			box.remove();
 		}
@@ -42,9 +44,10 @@ describe('YMSelectList scroll 监听（回归保护）', () => {
 
 	it('close 后移除 scroll 事件监听', () => {
 		const box = makeBox();
+		const api = getElementApi<SelectListApi>(box)!;
 		const removeSpy = vi.spyOn(box, 'removeEventListener');
-		box.open(makeTarget() as any);
-		box.close();
+		api.open(makeTarget() as any);
+		api.close();
 		expect(removeSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
 		expect(removeSpy).toHaveBeenCalledWith('pointermove', expect.any(Function));
 		if (box.isConnected) {

@@ -1,5 +1,5 @@
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { attachApi } from '../../../utils/attach-api';
+import { elementDataOf } from '../../../utils/element-data';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 import { onLocalize } from '../../../utils/localize-event';
 import {
 	createSelectBoxCore,
@@ -57,7 +57,7 @@ export function attachSelectBoxApi(
 	options: SelectBoxApiOptions = {}
 ): SelectBoxApi {
 	const box = el as SelectBoxApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 
 	const popupEnabled = options.popup ?? true;
 	const popupHandler = typeof options.popup === 'function' ? options.popup : null;
@@ -217,7 +217,6 @@ export function attachSelectBoxApi(
 	box.hideUnrelated = state.hideUnrelated;
 	box.writeEventEnabled = state.writeEventEnabled;
 	box.inputEventEnabled = state.inputEventEnabled;
-	markApiAttached(box);
 
 	// 本地化：选项名由控件自己应用，元素上不再需要 setItemNames 方法
 	onLocalize(box, (detail) => {
@@ -228,7 +227,7 @@ export function attachSelectBoxApi(
 		}
 	});
 
-	attachApi<SelectBoxApi>(box, {
+	setElementApi(box, {
 		read,
 		write,
 		write2,

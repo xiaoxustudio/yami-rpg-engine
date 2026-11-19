@@ -2,18 +2,22 @@ import { elementDataOf } from '../../../../utils/element-data';
 import { describe, expect, it } from 'vitest';
 import { createCustomBoxElement } from '../custom-box-api';
 import type { CustomBoxApi } from '../custom-box-api';
+import { getElementApi } from '../../../../utils/element-apis';
 
 describe('createCustomBoxElement', () => {
 	it('creates a custom-box element with api attached', () => {
 		const el = createCustomBoxElement();
+		const api = getElementApi<CustomBoxApi>(el)!;
 		expect(el.classList.contains('custom-box')).toBe(true);
-		expect(typeof el.read).toBe('function');
-		expect(typeof el.write).toBe('function');
-		expect(typeof el.input).toBe('function');
-		expect(typeof el.update).toBe('function');
-		expect(typeof el.enable).toBe('function');
-		expect(typeof el.disable).toBe('function');
-		expect(typeof el.on).toBe('function');
+		// 契约锁：能力在旁表里，元素上不再挂方法
+		expect(typeof (el as unknown as Record<string, unknown>).read).toBe('undefined');
+		expect(typeof api.read).toBe('function');
+		expect(typeof api.write).toBe('function');
+		expect(typeof api.input).toBe('function');
+		expect(typeof api.update).toBe('function');
+		expect(typeof api.enable).toBe('function');
+		expect(typeof api.disable).toBe('function');
+		expect(typeof api.on).toBe('function');
 	});
 
 	it('supports type/filter property proxy', () => {
@@ -28,8 +32,9 @@ describe('createCustomBoxElement', () => {
 
 	it('write/read roundtrip', () => {
 		const el = createCustomBoxElement() as unknown as CustomBoxApi;
-		el.write({ id: 1, name: 'Hero' });
-		expect(el.read()).toEqual({ id: 1, name: 'Hero' });
+		const api = getElementApi<CustomBoxApi>(el)!;
+		api.write({ id: 1, name: 'Hero' });
+		expect(api.read()).toEqual({ id: 1, name: 'Hero' });
 		expect(elementDataOf<{ info: HTMLElement }>(el).info).toBeTruthy();
 	});
 
@@ -40,7 +45,8 @@ describe('createCustomBoxElement', () => {
 				actor: (actor: unknown) => ({ text: 'Actor:' + (actor as { name: string }).name })
 			}
 		}) as unknown as CustomBoxApi;
-		el.write({ id: 1, name: 'Hero' });
+		const api = getElementApi<CustomBoxApi>(el)!;
+		api.write({ id: 1, name: 'Hero' });
 		expect(elementDataOf<{ info: HTMLElement }>(el).info.textContent).toBe('Actor:Hero');
 	});
 });

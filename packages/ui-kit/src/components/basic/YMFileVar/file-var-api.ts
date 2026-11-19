@@ -1,6 +1,6 @@
-import { attachApi } from '../../../utils/attach-api';
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { addClass, removeClass, hasClass, read, write } from '../../../utils/dom';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
+import { elementDataOf } from '../../../utils/element-data';
+import { addClass, removeClass, hasClass } from '../../../utils/dom';
 import type { CustomBoxApi } from '../../business/YMCustomBox/custom-box-api';
 import { defVar } from '../YMNumberVar/number-var-api';
 
@@ -28,7 +28,7 @@ export interface FileVarApi extends HTMLElement {
 
 export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {}): FileVarApi {
 	const box = el as FileVarApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 
 	const factory = options.customBoxFactory ?? (() => null);
 	const data = elementDataOf<FileVarApi>(box);
@@ -43,23 +43,23 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 	const readValue = function (): unknown {
 		switch (data.mode) {
 			case 'constant':
-				return read(data.fileBox);
+				return getElementApi<CustomBoxApi>(data.fileBox)?.read();
 			case 'variable':
-				return data.varBox?.read();
+				return getElementApi<CustomBoxApi>(data.varBox)?.read();
 		}
 	};
 
 	const writeValue = function (value: unknown): void {
 		switch (typeof value) {
 			case 'string':
-				box.switch('constant');
-				write(data.fileBox, value);
-				data.varBox?.write(defVar);
+				switchMode('constant');
+				getElementApi<CustomBoxApi>(data.fileBox)?.write(value);
+				getElementApi<CustomBoxApi>(data.varBox)?.write(defVar);
 				break;
 			case 'object':
-				box.switch('variable');
-				write(data.fileBox, '');
-				data.varBox?.write(value);
+				switchMode('variable');
+				getElementApi<CustomBoxApi>(data.fileBox)?.write('');
+				getElementApi<CustomBoxApi>(data.varBox)?.write(value);
 				break;
 		}
 	};
@@ -101,15 +101,15 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 
 	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
-			data.fileBox.enable();
-			data.varBox?.enable();
+			getElementApi<CustomBoxApi>(data.fileBox)?.enable();
+			getElementApi<CustomBoxApi>(data.varBox)?.enable();
 		}
 	};
 
 	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
-			data.fileBox.disable();
-			data.varBox?.disable();
+			getElementApi<CustomBoxApi>(data.fileBox)?.disable();
+			getElementApi<CustomBoxApi>(data.varBox)?.disable();
 		}
 	};
 
@@ -126,7 +126,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 		switch (event.code) {
 			case 'Slash':
 				event.preventDefault();
-				box.switch();
+				switchMode();
 				break;
 		}
 	};
@@ -136,13 +136,13 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 			case 0:
 				if (!hasClass(box, 'disabled') && event.target === box) {
 					event.preventDefault();
-					box.switch();
+					switchMode();
 				}
 				break;
 			case 2:
 				if (!hasClass(box, 'disabled')) {
 					event.preventDefault();
-					box.switch();
+					switchMode();
 				}
 				break;
 		}
@@ -156,7 +156,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
 
-	attachApi<FileVarApi>(box, {
+	setElementApi(box, {
 		read: readValue,
 		write: writeValue,
 		switch: switchMode,
@@ -167,16 +167,14 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 		pointerdown,
 		on
 	});
-
-	markApiAttached(box);
 	box.addEventListener('keydown', keydown as EventListener);
 	box.addEventListener('pointerdown', pointerdown as EventListener);
 
 	if (options.modelValue !== undefined && options.modelValue !== null) {
-		box.write(options.modelValue);
+		writeValue(options.modelValue);
 	}
 	if (options.disabled) {
-		box.disable();
+		disable();
 	}
 
 	return box;

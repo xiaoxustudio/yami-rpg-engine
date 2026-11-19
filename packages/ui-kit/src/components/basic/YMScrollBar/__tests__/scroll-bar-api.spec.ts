@@ -2,22 +2,29 @@ import { describe, expect, it } from 'vitest';
 import { createScrollBarElement } from '../scroll-bar-api';
 import type { ScrollBarApi } from '../scroll-bar-api';
 import { elementDataOf } from '../../../../utils/element-data';
+import { getElementApi } from '../../../../utils/element-apis';
 
 describe('createScrollBarElement', () => {
 	it('creates scroll-bar and binds', () => {
 		const el = createScrollBarElement() as unknown as ScrollBarApi;
+		const api = getElementApi<ScrollBarApi>(el)!;
 		expect(el.classList.contains('scroll-bar')).toBe(true);
 		const target = document.createElement('div');
-		el.bind(target, 'vertical');
+		api.bind(target, 'vertical');
 		expect(elementDataOf<{ target: HTMLElement | null }>(el).target).toBe(target);
 		expect(el.type).toBe('vertical');
 		expect(elementDataOf<{ thumb: HTMLElement | null }>(el).thumb).toBeTruthy();
-		expect(typeof el.updateVerticalBar).toBe('function');
-		expect(typeof el.updateHorizontalBar).toBe('function');
+		// 契约锁：能力在旁表里，元素上不再挂方法
+		expect(typeof (el as unknown as Record<string, unknown>).updateVerticalBar).toBe(
+			'undefined'
+		);
+		expect(typeof api.updateVerticalBar).toBe('function');
+		expect(typeof api.updateHorizontalBar).toBe('function');
 	});
 
 	it('drag dispatches userscroll on target（9.48 回归——marquee 同步链）', () => {
 		const el = createScrollBarElement() as unknown as ScrollBarApi;
+		const api = getElementApi<ScrollBarApi>(el)!;
 		const target = document.createElement('div');
 		target.style.cssText = 'width:100px;height:100px;overflow-y:auto;';
 		const content = document.createElement('div');
@@ -26,8 +33,8 @@ describe('createScrollBarElement', () => {
 		document.body.appendChild(target);
 		Object.defineProperty(target, 'clientHeight', { value: 100, configurable: true });
 		Object.defineProperty(target, 'scrollHeight', { value: 300, configurable: true });
-		el.bind(target, 'vertical');
-		el.updateVerticalBar();
+		api.bind(target, 'vertical');
+		api.updateVerticalBar();
 
 		let userscrollCount = 0;
 		target.addEventListener('userscroll', () => userscrollCount++);
@@ -58,6 +65,7 @@ describe('createScrollBarElement', () => {
 
 	it('drag works when bar size is 0 (denom fallback——9.46 回归)', () => {
 		const el = createScrollBarElement() as unknown as ScrollBarApi;
+		const api = getElementApi<ScrollBarApi>(el)!;
 		const target = document.createElement('div');
 		target.style.cssText = 'width:100px;height:100px;overflow-y:auto;';
 		const content = document.createElement('div');
@@ -67,8 +75,8 @@ describe('createScrollBarElement', () => {
 		Object.defineProperty(target, 'clientHeight', { value: 100, configurable: true });
 		Object.defineProperty(target, 'scrollHeight', { value: 300, configurable: true });
 		el.style.cssText = 'width:0;height:0;';
-		el.bind(target, 'vertical');
-		el.updateVerticalBar();
+		api.bind(target, 'vertical');
+		api.updateVerticalBar();
 
 		const fire = (el2: EventTarget, type: string, props: object) => {
 			const ev = new PointerEvent(type, {
@@ -95,14 +103,16 @@ describe('createScrollBarElement', () => {
 
 	it('updateDisplay toggles visible class', () => {
 		const el = createScrollBarElement() as unknown as ScrollBarApi;
-		el.updateDisplay(true);
+		const api = getElementApi<ScrollBarApi>(el)!;
+		api.updateDisplay(true);
 		expect(el.classList.contains('visible')).toBe(true);
-		el.updateDisplay(false);
+		api.updateDisplay(false);
 		expect(el.classList.contains('visible')).toBe(false);
 	});
 
 	it('updateVerticalBar shows/hides based on scroll', () => {
 		const el = createScrollBarElement() as unknown as ScrollBarApi;
+		const api = getElementApi<ScrollBarApi>(el)!;
 		const target = document.createElement('div');
 		target.style.cssText = 'width:100px;height:100px;overflow-y:auto;';
 		const content = document.createElement('div');
@@ -111,8 +121,8 @@ describe('createScrollBarElement', () => {
 		document.body.appendChild(target);
 		Object.defineProperty(target, 'clientHeight', { value: 100, configurable: true });
 		Object.defineProperty(target, 'scrollHeight', { value: 300, configurable: true });
-		el.bind(target, 'vertical');
-		el.updateVerticalBar();
+		api.bind(target, 'vertical');
+		api.updateVerticalBar();
 		expect(el.classList.contains('visible')).toBe(true);
 		expect(
 			parseFloat(elementDataOf<{ thumb: HTMLElement }>(el).thumb.style.height)

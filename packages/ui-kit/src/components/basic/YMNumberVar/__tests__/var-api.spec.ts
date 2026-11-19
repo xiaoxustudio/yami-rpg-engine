@@ -1,6 +1,7 @@
-﻿import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createNumberVarElement } from '../number-var-api';
 import { elementDataOf } from '../../../../utils/element-data';
+import { getElementApi, setElementApi } from '../../../../utils/element-apis';
 import { createCustomBoxElement } from '../../../business/YMCustomBox/custom-box-api';
 import { createNumberBoxElement } from '../../YMNumberBox/number-box-api';
 import { createSelectVarElement } from '../../YMSelectVar/select-var-api';
@@ -23,9 +24,10 @@ describe('createNumberVarElement', () => {
 			customBoxFactory,
 			numberBoxFactory
 		}) as unknown as NumberVarApi;
-		el.write(42);
+		const api = getElementApi<NumberVarApi>(el)!;
+		api.write(42);
 		expect(elementDataOf<NumberVarApi>(el).mode).toBe('constant');
-		expect(el.read()).toBe(42);
+		expect(api.read()).toBe(42);
 	});
 
 	it('writes variable object and switches mode', () => {
@@ -33,10 +35,11 @@ describe('createNumberVarElement', () => {
 			customBoxFactory,
 			numberBoxFactory
 		}) as unknown as NumberVarApi;
+		const api = getElementApi<NumberVarApi>(el)!;
 		const v = { type: 'local', key: 'x' };
-		el.write(v);
+		api.write(v);
 		expect(elementDataOf<NumberVarApi>(el).mode).toBe('variable');
-		expect(el.read()).toEqual(v);
+		expect(api.read()).toEqual(v);
 	});
 
 	it('Slash keydown switches mode', () => {
@@ -44,7 +47,8 @@ describe('createNumberVarElement', () => {
 			customBoxFactory,
 			numberBoxFactory
 		}) as unknown as NumberVarApi;
-		el.write(1);
+		const api = getElementApi<NumberVarApi>(el)!;
+		api.write(1);
 		el.dispatchEvent(
 			new KeyboardEvent('keydown', { code: 'Slash', bubbles: true, cancelable: true })
 		);
@@ -62,23 +66,27 @@ describe('createSelectVarElement', () => {
 				el.classList.add('select-box');
 				data.dataValue = null;
 				data.dataItems = [];
-				el.read = () => data.dataValue;
-				el.write = (v: unknown) => {
-					data.dataValue = v;
-				};
-				el.writeDefault = () => {};
-				el.enable = () => {};
-				el.disable = () => {};
-				el.loadItems = (items: unknown) => {
-					data.dataItems = items as SelectItem[];
-				};
-				el.clear = () => {};
+				// 夹具也按新契约把能力放进旁表（元素上不挂方法）
+				setElementApi(el, {
+					read: () => data.dataValue,
+					write: (v: unknown) => {
+						data.dataValue = v;
+					},
+					writeDefault: () => {},
+					enable: () => {},
+					disable: () => {},
+					loadItems: (items: unknown) => {
+						data.dataItems = items as SelectItem[];
+					},
+					clear: () => {}
+				});
 				(el as unknown as { focus: () => void }).focus = () => {};
 				return el;
 			}
 		}) as unknown as SelectVarApi;
-		sb.write('a');
-		expect(sb.read()).toBe('a');
+		const api = getElementApi<SelectVarApi>(sb)!;
+		api.write('a');
+		expect(api.read()).toBe('a');
 	});
 });
 
@@ -92,18 +100,21 @@ describe('createStringVarElement', () => {
 				const input = document.createElement('input');
 				el.appendChild(input);
 				el.input = input;
-				el.read = () => input.value;
-				el.write = (v: string) => {
-					input.value = v;
-				};
-				el.enable = () => {};
-				el.disable = () => {};
-				el.getFocus = () => {};
+				setElementApi(el, {
+					read: () => input.value,
+					write: (v: string) => {
+						input.value = v;
+					},
+					enable: () => {},
+					disable: () => {},
+					getFocus: () => {}
+				});
 				return el;
 			}
 		}) as unknown as StringVarApi;
-		el.write('hello');
-		expect(el.read()).toBe('hello');
+		const api = getElementApi<StringVarApi>(el)!;
+		api.write('hello');
+		expect(api.read()).toBe('hello');
 		expect(elementDataOf<StringVarApi>(el).mode).toBe('constant');
 	});
 });
@@ -111,10 +122,11 @@ describe('createStringVarElement', () => {
 describe('createKeyboardBoxElement', () => {
 	it('write/read/inputCode', () => {
 		const el = createKeyboardBoxElement() as unknown as KeyboardBoxApi;
-		el.write(65);
-		expect(el.read()).toBe(65);
+		const api = getElementApi<KeyboardBoxApi>(el)!;
+		api.write(65);
+		expect(api.read()).toBe(65);
 		expect(el.input!.value).toBe('65');
-		el.inputCode(75);
-		expect(el.read()).toBe(75);
+		api.inputCode(75);
+		expect(api.read()).toBe(75);
 	});
 });

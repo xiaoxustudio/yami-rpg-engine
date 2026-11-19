@@ -1,4 +1,3 @@
-import { attachApi } from '../../../utils/attach-api';
 import { elementDataOf } from '../../../utils/element-data';
 import { getWindowFramesLength } from '../../../utils/dom';
 import { Timer as MenuTimer } from '../../../utils/timer';
@@ -488,7 +487,8 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		}
 	}
 
-	attachApi<MenuApi>(menu, {
+	// 菜单是普通对象（不是元素）：能力直接挂在它自己身上
+	Object.assign(menu, {
 		windowBlur,
 		windowKeydown,
 		windowPointerdown,

@@ -1,5 +1,4 @@
-import { isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { attachApi } from '../../../utils/attach-api';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 import { addClass, removeClass } from '../../../utils/dom';
 import { readClipboardText } from '../../../utils/clipboard';
 import { TextHistory } from '../../../utils/history';
@@ -90,7 +89,7 @@ const getFocus = (input: HTMLTextAreaElement, mode?: string): void => {
 
 export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions = {}): TextAreaApi {
 	const box = el as TextAreaApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 
 	const input = document.createElement('textarea');
 	(input as HistoryTextAreaElement).history = new TextHistory(input);
@@ -170,7 +169,7 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 		}
 	};
 
-	attachApi<TextAreaApi>(box, { read, write, insert, enable, disable, getFocus: focusBox, on });
+	setElementApi(box, { read, write, insert, enable, disable, getFocus: focusBox, on });
 
 	function inputKeydown(event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void {
 		switch (event.code) {
@@ -196,13 +195,11 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 		}
 	}
 
-	markApiAttached(box);
-
 	if (options.modelValue !== undefined) {
-		box.write(options.modelValue);
+		write(options.modelValue);
 	}
 	if (options.disabled) {
-		box.disable();
+		disable();
 	}
 
 	return box;

@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMSelectList from '../YMSelectList.vue';
 import { createSelectListApi } from '../select-list-api';
+import type { SelectListApi } from '../select-list-api';
 import { elementDataOf } from '../../../../utils/element-data';
+import { getElementApi } from '../../../../utils/element-apis';
 
 const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientHeight', { value: 200, configurable: true });
@@ -152,9 +154,10 @@ describe('YMSelectList', () => {
 		const host = document.createElement('div');
 		document.body.appendChild(host);
 		mockHeight(host);
-		const api = createSelectListApi(host, {
+		createSelectListApi(host, {
 			setTooltip: (el: HTMLElement, tip: string) => (tipReceived = tip)
 		});
+		const api = getElementApi<SelectListApi>(host)!;
 		api.createItems([{ value: 'x', name: 'X', tip: 'x tip' }]);
 		api.resize();
 		expect(host.querySelector('.select-item')?.textContent).toBe('X');

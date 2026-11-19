@@ -1,5 +1,6 @@
 import { getListConfig } from './list-config';
 import { elementDataOf } from './element-data';
+import { getElementApi } from './element-apis';
 
 export interface CommonListLike {
 	scrollTop: number;
@@ -115,10 +116,15 @@ export const commonListResize = (list: CommonListLike): void => {
 		list.elements.end = end;
 		commonListUpdateHeadAndFoot(list);
 		const versionId = list.elements.versionId++;
+		// 列表件分两代：原型法（tree/command，方法在元素上）与工厂件（能力在旁表）
+		const updateOnResize =
+			(list as { updateOnResize?: (element: HTMLElement) => void }).updateOnResize ??
+			getElementApi<{ updateOnResize?: (element: HTMLElement) => void }>(list)
+				?.updateOnResize;
 		for (let i = start; i < end; i++) {
 			const element = list.elements[i];
 			versionOf(element).versionId = versionId;
-			list.updateOnResize(element);
+			updateOnResize?.(element);
 		}
 		const nodes = el.childNodes;
 		const last = nodes.length - 1;

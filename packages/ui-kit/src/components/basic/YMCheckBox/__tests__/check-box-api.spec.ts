@@ -1,36 +1,43 @@
 import { describe, expect, it } from 'vitest';
 import { createCheckBoxElement } from '../check-box-api';
 import type { CheckBoxApi } from '../check-box-api';
+import { getElementApi } from '../../../../utils/element-apis';
 
 describe('createCheckBoxElement', () => {
-	it('creates check-box with api', () => {
+	it('creates check-box with api in side table', () => {
 		const el = createCheckBoxElement() as unknown as CheckBoxApi;
+		const api = getElementApi<CheckBoxApi>(el)!;
 		expect(el.classList.contains('check-box')).toBe(true);
-		expect(typeof el.read).toBe('function');
-		expect(typeof el.write).toBe('function');
-		expect(typeof el.input).toBe('function');
-		expect(typeof el.enable).toBe('function');
-		expect(typeof el.disable).toBe('function');
-		expect(typeof el.relate).toBe('function');
-		expect(typeof el.on).toBe('function');
+		// 契约锁：能力从元素移到旁表后，元素上不应再有这些方法
+		expect(typeof (el as unknown as Record<string, unknown>).read).toBe('undefined');
+		expect(typeof (el as unknown as Record<string, unknown>).write).toBe('undefined');
+		expect(typeof api.read).toBe('function');
+		expect(typeof api.write).toBe('function');
+		expect(typeof api.input).toBe('function');
+		expect(typeof api.enable).toBe('function');
+		expect(typeof api.disable).toBe('function');
+		expect(typeof api.relate).toBe('function');
+		expect(typeof api.on).toBe('function');
 	});
 
 	it('write/read roundtrip with selected class', () => {
 		const el = createCheckBoxElement() as unknown as CheckBoxApi;
-		el.write(true);
-		expect(el.read()).toBe(true);
+		const api = getElementApi<CheckBoxApi>(el)!;
+		api.write(true);
+		expect(api.read()).toBe(true);
 		expect(el.classList.contains('selected')).toBe(true);
-		el.write(false);
-		expect(el.read()).toBe(false);
+		api.write(false);
+		expect(api.read()).toBe(false);
 		expect(el.classList.contains('selected')).toBe(false);
 	});
 
 	it('pointerdown toggles value', () => {
 		const el = createCheckBoxElement() as unknown as CheckBoxApi;
+		const api = getElementApi<CheckBoxApi>(el)!;
 		el.dispatchEvent(new PointerEvent('pointerdown', { button: 0, bubbles: true }));
-		expect(el.read()).toBe(true);
+		expect(api.read()).toBe(true);
 		el.dispatchEvent(new PointerEvent('pointerdown', { button: 0, bubbles: true }));
-		expect(el.read()).toBe(false);
+		expect(api.read()).toBe(false);
 	});
 
 	it('standard mode adds check-mark span', () => {
@@ -41,11 +48,12 @@ describe('createCheckBoxElement', () => {
 
 	it('relate toggles related elements', () => {
 		const el = createCheckBoxElement() as unknown as CheckBoxApi;
+		const api = getElementApi<CheckBoxApi>(el)!;
 		const target = document.createElement('div');
-		el.relate([target]);
-		el.write(true);
+		api.relate([target]);
+		api.write(true);
 		expect(target.classList.contains('disabled')).toBe(false);
-		el.write(false);
+		api.write(false);
 		expect(target.classList.contains('disabled')).toBe(true);
 	});
 });

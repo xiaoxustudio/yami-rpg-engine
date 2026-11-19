@@ -48,6 +48,8 @@ import {
 } from '../../../utils/dom';
 import { useEventListener } from '../../../composables/useEventListener';
 import { elementDataOf } from '../../../utils/element-data';
+import { getElementApi } from '../../../utils/element-apis';
+import type { TextBoxApi } from '../../basic/YMTextBox/text-box-api';
 import { renderDetached } from '../../../utils/detached';
 import { createFileBodyCore, type GridMetrics } from './file-body-core';
 import {
@@ -1280,11 +1282,12 @@ function rename(file: FileBodyFile): void {
 		if (element && element.parentNode) {
 			hide(element.nameBox);
 			element.appendChild(textBox);
-			textBox.write(file.basename ?? file.name);
-			textBox.getFocus('all');
+			const api = getElementApi<TextBoxApi>(textBox);
+			api?.write(file.basename ?? file.name);
+			api?.getFocus('all');
 			switch (viewMode) {
 				case 'list':
-					textBox.fitContent();
+					api?.fitContent();
 					break;
 				default:
 					textBox.style.width = '';
@@ -1750,7 +1753,7 @@ function windowPointermove(event: PointerEvent): void {
 function createTextBox(): FileBodyTextBox {
 	const tb = props.createTextBox?.();
 	if (!tb) return tb;
-	tb.setMaxLength(64);
+	getElementApi<TextBoxApi>(tb)?.setMaxLength(64);
 	addClass(tb, 'file-body-text-box');
 	addClass(tb.input, 'file-body-text-box-input');
 
@@ -1783,7 +1786,7 @@ function createTextBox(): FileBodyTextBox {
 	// oxlint-disable-next-line no-explicit-any
 	tb.addEventListener('input', function (this: any, _event: Event) {
 		if (this.style.width !== '') {
-			this.fitContent();
+			getElementApi<TextBoxApi>(this)?.fitContent();
 		}
 	});
 
@@ -1794,7 +1797,7 @@ function createTextBox(): FileBodyTextBox {
 	tb.input.addEventListener('blur', function () {
 		const item = tb.parentNode;
 		const file = item.file;
-		const name = tb.read().trim();
+		const name = (getElementApi<TextBoxApi>(tb)?.read() ?? '').trim();
 		let filename = name;
 		tb.remove();
 		show(item.nameBox);

@@ -1,5 +1,5 @@
-import { elementDataOf } from '@ui-kit';
-import { getFocus, read, write } from '@app/utils/element-utils';
+import { elementDataOf, getElementApi } from '@ui-kit';
+import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { controlRoot, type ControlApi } from '@app/composables/control-refs';
 import { addClass, hide, setTooltip, show } from '@app/utils/element-utils';
 import { createTextAreaVar } from '@app/components/textarea-var.ts';
@@ -268,9 +268,9 @@ export interface CallEventSchemaOptions {
 	/**
 	 * 窗口的控件表 getter（`useControlRefs` 建的那张）。
 	 *
-	 * 这扇窗口里只有**模板里那几个**控件走表；参数行 / 返回值行是运行时用 `createXxxBox()`
-	 * 建出来的元素 API（那是 ui-kit 的那条轴，不在这次迁移范围内），它们只在本模块内被持有，
-	 * 不经过注册表。
+	 * 这扇窗口里只有**模板里那几个**控件走控件表；参数行 / 返回值行是运行时用 `createXxxBox()`
+	 * 建出来的工厂件，能力在 ui-kit 的旁表里（`getElementApi`），它们只在本模块内被持有，
+	 * 不经过控件表。
 	 */
 	controls?: () => Partial<Record<string, ControlApi | null>>;
 }
@@ -344,7 +344,7 @@ export function useCallEventCommandSchema(options: CallEventSchemaOptions = {}) 
 		switch (type) {
 			case 'boolean':
 				input = createSelectBox();
-				input.loadItems?.([
+				getElementApi<CallEventInputApi>(input)?.loadItems?.([
 					{ name: 'False', value: false },
 					{ name: 'True', value: true }
 				]);
@@ -362,7 +362,7 @@ export function useCallEventCommandSchema(options: CallEventSchemaOptions = {}) 
 					'tag-local-var tag-global-var tag-dynamic-global-var tag-localization'
 				);
 				addClass(input, 'callEvent-argument-string');
-				input.on!('change', () => resizeWindow());
+				on(input, 'change', () => resizeWindow());
 				Selection.addEventListeners!(strBoxOf(input)!);
 				break;
 			case 'object':

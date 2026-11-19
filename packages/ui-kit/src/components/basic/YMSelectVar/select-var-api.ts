@@ -1,6 +1,6 @@
-import { attachApi } from '../../../utils/attach-api';
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { addClass, removeClass, hasClass, read, write } from '../../../utils/dom';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
+import { elementDataOf } from '../../../utils/element-data';
+import { addClass, removeClass, hasClass } from '../../../utils/dom';
 import type { CustomBoxApi } from '../../business/YMCustomBox/custom-box-api';
 import type { SelectBoxApi } from '../YMSelectBox/select-box-api';
 import { defVar } from '../YMNumberVar/number-var-api';
@@ -34,7 +34,7 @@ export function attachSelectVarApi(
 	options: SelectVarApiOptions = {}
 ): SelectVarApi {
 	const box = el as SelectVarApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 
 	elementDataOf<SelectVarApi>(box).mode = null;
 	box.selectBox = (options.selectBoxFactory ?? (() => null))() as SelectBoxApi;
@@ -46,23 +46,23 @@ export function attachSelectVarApi(
 	const readValue = function (): unknown {
 		switch (data.mode) {
 			case 'constant':
-				return read(box.selectBox);
+				return getElementApi<SelectBoxApi>(box.selectBox)?.read();
 			case 'variable':
-				return data.varBox?.read();
+				return getElementApi<CustomBoxApi>(data.varBox)?.read();
 		}
 	};
 
 	const writeValue = function (value: unknown): void {
 		switch (typeof value) {
 			case 'string':
-				box.switch('constant');
-				write(box.selectBox, value);
-				data.varBox?.write(defVar);
+				switchMode('constant');
+				getElementApi<SelectBoxApi>(box.selectBox)?.write(value);
+				getElementApi<CustomBoxApi>(data.varBox)?.write(defVar);
 				break;
 			case 'object':
-				box.switch('variable');
-				box.selectBox.writeDefault();
-				data.varBox?.write(value);
+				switchMode('variable');
+				getElementApi<SelectBoxApi>(box.selectBox)?.writeDefault();
+				getElementApi<CustomBoxApi>(data.varBox)?.write(value);
 				break;
 		}
 	};
@@ -104,20 +104,20 @@ export function attachSelectVarApi(
 
 	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
-			box.selectBox.enable();
-			data.varBox?.enable();
+			getElementApi<SelectBoxApi>(box.selectBox)?.enable();
+			getElementApi<CustomBoxApi>(data.varBox)?.enable();
 		}
 	};
 
 	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
-			box.selectBox.disable();
-			data.varBox?.disable();
+			getElementApi<SelectBoxApi>(box.selectBox)?.disable();
+			getElementApi<CustomBoxApi>(data.varBox)?.disable();
 		}
 	};
 
 	const loadItems = function (items: unknown): void {
-		box.selectBox.loadItems(items);
+		getElementApi<SelectBoxApi>(box.selectBox)?.loadItems(items);
 	};
 
 	const getFocus = function (_mode: unknown): void {
@@ -130,14 +130,14 @@ export function attachSelectVarApi(
 	};
 
 	const clear = function (): void {
-		box.selectBox.clear();
+		getElementApi<SelectBoxApi>(box.selectBox)?.clear();
 	};
 
 	const keydown = function (event: KeyboardEvent): void {
 		switch (event.code) {
 			case 'Slash':
 				event.preventDefault();
-				box.switch();
+				switchMode();
 				break;
 		}
 	};
@@ -147,13 +147,13 @@ export function attachSelectVarApi(
 			case 0:
 				if (!hasClass(box, 'disabled') && event.target === box) {
 					event.preventDefault();
-					box.switch();
+					switchMode();
 				}
 				break;
 			case 2:
 				if (!hasClass(box, 'disabled')) {
 					event.preventDefault();
-					box.switch();
+					switchMode();
 				}
 				break;
 		}
@@ -167,7 +167,7 @@ export function attachSelectVarApi(
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
 
-	attachApi<SelectVarApi>(box, {
+	setElementApi(box, {
 		read: readValue,
 		write: writeValue,
 		switch: switchMode,
@@ -180,16 +180,14 @@ export function attachSelectVarApi(
 		pointerdown,
 		on
 	});
-
-	markApiAttached(box);
 	box.addEventListener('keydown', keydown as EventListener);
 	box.addEventListener('pointerdown', pointerdown as EventListener);
 
 	if (options.modelValue !== undefined && options.modelValue !== null) {
-		box.write(options.modelValue);
+		writeValue(options.modelValue);
 	}
 	if (options.disabled) {
-		box.disable();
+		disable();
 	}
 
 	return box;

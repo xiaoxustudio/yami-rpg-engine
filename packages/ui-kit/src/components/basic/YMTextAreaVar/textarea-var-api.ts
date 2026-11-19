@@ -1,6 +1,6 @@
-import { attachApi } from '../../../utils/attach-api';
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { addClass, removeClass, hasClass, read, write } from '../../../utils/dom';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
+import { elementDataOf } from '../../../utils/element-data';
+import { addClass, removeClass, hasClass } from '../../../utils/dom';
 import type { CustomBoxApi } from '../../business/YMCustomBox/custom-box-api';
 import type { TextAreaApi } from '../YMTextArea/text-area-api';
 import { defVar } from '../YMNumberVar/number-var-api';
@@ -32,7 +32,7 @@ export function attachTextAreaVarApi(
 	options: TextAreaVarApiOptions = {}
 ): TextAreaVarApi {
 	const box = el as TextAreaVarApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 
 	let currentMode: string | null = null;
 
@@ -48,23 +48,23 @@ export function attachTextAreaVarApi(
 	const readValue = function (): unknown {
 		switch (currentMode) {
 			case 'constant':
-				return read(strBox);
+				return getElementApi<TextAreaApi>(strBox)?.read();
 			case 'variable':
-				return varBox.read();
+				return getElementApi<CustomBoxApi>(varBox)?.read();
 		}
 	};
 
 	const writeValue = function (value: unknown): void {
 		switch (typeof value) {
 			case 'string':
-				box.switch('constant');
-				write(strBox, value);
-				varBox.write(defVar);
+				switchMode('constant');
+				getElementApi<TextAreaApi>(strBox)?.write(value);
+				getElementApi<CustomBoxApi>(varBox)?.write(defVar);
 				break;
 			case 'object':
-				box.switch('variable');
-				write(strBox, '');
-				varBox.write(value);
+				switchMode('variable');
+				getElementApi<TextAreaApi>(strBox)?.write('');
+				getElementApi<CustomBoxApi>(varBox)?.write(value);
 				break;
 		}
 	};
@@ -108,22 +108,22 @@ export function attachTextAreaVarApi(
 
 	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
-			strBox.enable();
-			varBox.enable();
+			getElementApi<TextAreaApi>(strBox)?.enable();
+			getElementApi<CustomBoxApi>(varBox)?.enable();
 		}
 	};
 
 	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
-			strBox.disable();
-			varBox.disable();
+			getElementApi<TextAreaApi>(strBox)?.disable();
+			getElementApi<CustomBoxApi>(varBox)?.disable();
 		}
 	};
 
 	const getFocus = function (mode?: string): unknown {
 		switch (currentMode) {
 			case 'constant':
-				return strBox.getFocus(mode);
+				return getElementApi<TextAreaApi>(strBox)?.getFocus(mode);
 			case 'variable':
 				return varBox.focus();
 		}
@@ -133,7 +133,7 @@ export function attachTextAreaVarApi(
 		switch (event.code) {
 			case 'Slash':
 				event.preventDefault();
-				box.switch();
+				switchMode();
 				break;
 		}
 	};
@@ -143,13 +143,13 @@ export function attachTextAreaVarApi(
 			case 0:
 				if (!hasClass(box, 'disabled') && event.target === box) {
 					event.preventDefault();
-					box.switch();
+					switchMode();
 				}
 				break;
 			case 2:
 				if (!hasClass(box, 'disabled')) {
 					event.preventDefault();
-					box.switch();
+					switchMode();
 				}
 				break;
 		}
@@ -163,7 +163,7 @@ export function attachTextAreaVarApi(
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
 
-	attachApi<TextAreaVarApi>(box, {
+	setElementApi(box, {
 		read: readValue,
 		write: writeValue,
 		switch: switchMode,
@@ -174,16 +174,14 @@ export function attachTextAreaVarApi(
 		pointerdown,
 		on
 	});
-
-	markApiAttached(box);
 	box.addEventListener('keydown', keydown as EventListener);
 	box.addEventListener('pointerdown', pointerdown as EventListener);
 
 	if (options.modelValue !== undefined && options.modelValue !== null) {
-		box.write(options.modelValue);
+		writeValue(options.modelValue);
 	}
 	if (options.disabled) {
-		box.disable();
+		disable();
 	}
 
 	return box;

@@ -4,7 +4,9 @@ import { Cursor } from '../composables/usePointerObjectWindow';
 import {
 	createScrollBarElement as createScrollBar,
 	elementDataOf,
-	elementDataValueOf
+	elementDataValueOf,
+	getElementApi,
+	type ScrollBarApi
 } from '@ui-kit';
 import { attachDoubleclick, detachDoubleclick } from '@app/utils/doubleclick';
 import { controlApiOfElement } from './control-instance';
@@ -493,8 +495,11 @@ export function addScrollbars(el: HTMLElement): void {
 		parent.appendChild(vBar);
 		parent.appendChild(corner);
 	}
-	hBar.bind(el, 'horizontal');
-	vBar.bind(el, 'vertical');
+	// 滚动条是工厂件：能力在旁表里，元素只作 key
+	const hBarApi = getElementApi<ScrollBarApi>(hBar);
+	const vBarApi = getElementApi<ScrollBarApi>(vBar);
+	hBarApi?.bind(el, 'horizontal');
+	vBarApi?.bind(el, 'vertical');
 
 	const wheel = (event: WheelEvent) => {
 		el.dispatchEvent(new WheelEvent('wheel', event));
@@ -557,8 +562,8 @@ export function addScrollbars(el: HTMLElement): void {
 				removeClass(corner, 'visible');
 			}
 		}
-		hBar.updateHorizontalBar();
-		vBar.updateVerticalBar();
+		hBarApi?.updateHorizontalBar();
+		vBarApi?.updateVerticalBar();
 	};
 }
 

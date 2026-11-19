@@ -28,6 +28,8 @@ import {
 	type CommonListLike
 } from '../../../utils/common-list';
 import { elementDataOf } from '../../../utils/element-data';
+import { getElementApi } from '../../../utils/element-apis';
+import type { TextBoxApi } from '../../basic/YMTextBox/text-box-api';
 import { createFileNavCore } from './file-nav-pane-core';
 import { createPayloadEvent } from '../../../utils/payload-event';
 import { useEventListener } from '../../../composables/useEventListener';
@@ -485,9 +487,10 @@ function rename(file: FileItem): void {
 		if (element && element.parentNode) {
 			elementDataOf<FolderElementData>(element).textNode!.nodeValue = '';
 			element.appendChild(textBox!);
-			textBox!.write(file.name);
-			textBox!.getFocus('all');
-			textBox!.fitContent();
+			const api = getElementApi<TextBoxApi>(textBox);
+			api?.write(file.name);
+			api?.getFocus('all');
+			api?.fitContent();
 		}
 	}
 }
@@ -711,7 +714,7 @@ function dirchange(_event: Event): void {
 function createTextBox(): TextBoxElement {
 	const tb = props.createTextBox?.();
 	if (!tb) return tb!;
-	tb.setMaxLength(64);
+	getElementApi<TextBoxApi>(tb)?.setMaxLength(64);
 	addClass(tb, 'file-nav-text-box');
 	addClass(tb.input, 'file-nav-text-box-input');
 
@@ -740,7 +743,7 @@ function createTextBox(): TextBoxElement {
 	});
 
 	tb.addEventListener('input', function (this: TextBoxElement) {
-		this.fitContent();
+		getElementApi<TextBoxApi>(this)?.fitContent();
 	});
 
 	tb.addEventListener('select', function (event: Event) {
@@ -750,7 +753,7 @@ function createTextBox(): TextBoxElement {
 	tb.input.addEventListener('blur', function () {
 		const item = tb.parentNode as HTMLElement & { file: FileItem; textNode: Text };
 		const file = item.file;
-		const name = tb.read().trim();
+		const name = (getElementApi<TextBoxApi>(tb)?.read() ?? '').trim();
 		tb.remove();
 		if (name && name !== file.name) {
 			const dir = props.pathUtil?.dirname(file.path) ?? '';

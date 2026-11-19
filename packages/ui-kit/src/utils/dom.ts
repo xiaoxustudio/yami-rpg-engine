@@ -1,4 +1,5 @@
 import { elementDataOf, elementDataValueOf } from './element-data';
+import { getElementApi } from './element-apis';
 
 export const clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max);
@@ -78,14 +79,18 @@ export const css = (el: Element): CSSStyleDeclaration => getComputedStyle(el);
 export const rect = (el: Node | null): DOMRect => (el as Element).getBoundingClientRect();
 
 /**
- * 读写元素值：自带 `read` / `write` 或 own `dataValue` 的宿主走自身，
- * 元素走元素数据，其余读写都不发生。
+ * 读写元素值：自带 `read` / `write` 的宿主走自身；工厂件的元素 API 在旁表里，按元素查表；
+ * 都没有才走元素数据。
  */
 export const read = (
 	el: HTMLElement | { read?: () => unknown; dataValue?: unknown } | null | undefined
 ): unknown => {
 	if (el && 'read' in el && typeof el.read === 'function') {
 		return el.read();
+	}
+	const api = getElementApi<{ read?: () => unknown }>(el);
+	if (typeof api?.read === 'function') {
+		return api.read();
 	}
 	return elementDataValueOf(el);
 };
@@ -96,6 +101,11 @@ export const write = (
 ): void => {
 	if (el && 'write' in el && typeof el.write === 'function') {
 		el.write(value);
+		return;
+	}
+	const api = getElementApi<{ write?: (value: unknown) => void }>(el);
+	if (typeof api?.write === 'function') {
+		api.write(value);
 		return;
 	}
 	if (el === null || el === undefined || typeof el !== 'object') return;

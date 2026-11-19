@@ -1,5 +1,4 @@
-import { isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { attachApi } from '../../../utils/attach-api';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 import { addClass, removeClass, dispatchChangeEvent } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
@@ -37,7 +36,7 @@ const hideChildNodes = (el: HTMLElement): void => {
 
 export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions = {}): ColorBoxApi {
 	const box = el as ColorBoxApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 
 	const background = document.createElement('div');
 	addClass(background, 'box');
@@ -56,7 +55,6 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 		}
 	});
 	box.inputEventEnabled = false;
-	markApiAttached(box);
 
 	box.appendChild(background);
 	box.appendChild(foreground);
@@ -77,7 +75,7 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 
 	const input = function (color: string): void {
 		if (box.dataValue !== color) {
-			box.write(color);
+			write(color);
 			if (box.inputEventEnabled) {
 				const input = createPayloadEvent(
 					'input',
@@ -123,7 +121,7 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 			case 'NumpadEnter':
 				if (!(event as KeyboardEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey) {
 					event.stopPropagation();
-					box.mouseclick(event);
+					mouseclick(event);
 				}
 				break;
 		}
@@ -133,16 +131,16 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 		options.colorPicker?.(box);
 	};
 
-	attachApi<ColorBoxApi>(box, { read, write, input, enable, disable, on, keydown, mouseclick });
+	setElementApi(box, { read, write, input, enable, disable, on, keydown, mouseclick });
 
 	box.addEventListener('keydown', keydown as EventListener);
 	box.addEventListener('click', mouseclick);
 
 	if (options.modelValue) {
-		box.write(options.modelValue);
+		write(options.modelValue);
 	}
 	if (options.disabled) {
-		box.disable();
+		disable();
 	}
 
 	return box;

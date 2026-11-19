@@ -1,13 +1,6 @@
-import { attachApi } from '../../../utils/attach-api';
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
-import {
-	addClass,
-	removeClass,
-	hasClass,
-	read,
-	write,
-	dispatchChangeEvent
-} from '../../../utils/dom';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
+import { elementDataOf } from '../../../utils/element-data';
+import { addClass, removeClass, hasClass, dispatchChangeEvent } from '../../../utils/dom';
 import type { CustomBoxApi } from '../../business/YMCustomBox/custom-box-api';
 import type { NumberBoxApi } from '../YMNumberBox/number-box-api';
 
@@ -41,7 +34,7 @@ export function attachNumberVarApi(
 	options: NumberVarApiOptions = {}
 ): NumberVarApi {
 	const box = el as NumberVarApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 
 	let currentMode: string | null = null;
 
@@ -57,32 +50,36 @@ export function attachNumberVarApi(
 	const readValue = function (): unknown {
 		switch (currentMode) {
 			case 'constant':
-				return read(numBox);
+				return getElementApi<NumberBoxApi>(numBox)?.read();
 			case 'variable':
-				return varBox.read();
+				return getElementApi<CustomBoxApi>(varBox)?.read();
 		}
 	};
 
 	const writeValue = function (value: unknown): void {
 		switch (typeof value) {
 			case 'number':
-				box.switch('constant');
-				write(numBox, value);
-				varBox.write(varBox.isPluginInput ? defVarForPlugin : defVar);
+				switchMode('constant');
+				getElementApi<NumberBoxApi>(numBox)?.write(value);
+				getElementApi<CustomBoxApi>(varBox)?.write(
+					varBox.isPluginInput ? defVarForPlugin : defVar
+				);
 				break;
 			case 'string': {
 				const n = Number(value);
 				if (!isNaN(n)) {
-					box.switch('constant');
-					write(numBox, n);
-					varBox.write(varBox.isPluginInput ? defVarForPlugin : defVar);
+					switchMode('constant');
+					getElementApi<NumberBoxApi>(numBox)?.write(n);
+					getElementApi<CustomBoxApi>(varBox)?.write(
+						varBox.isPluginInput ? defVarForPlugin : defVar
+					);
 				}
 				break;
 			}
 			case 'object':
-				box.switch('variable');
-				write(numBox, 0);
-				varBox.write(value);
+				switchMode('variable');
+				getElementApi<NumberBoxApi>(numBox)?.write(0);
+				getElementApi<CustomBoxApi>(varBox)?.write(value);
 				break;
 		}
 	};
@@ -127,22 +124,22 @@ export function attachNumberVarApi(
 
 	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
-			numBox.enable();
-			varBox.enable();
+			getElementApi<NumberBoxApi>(numBox)?.enable();
+			getElementApi<CustomBoxApi>(varBox)?.enable();
 		}
 	};
 
 	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
-			numBox.disable();
-			varBox.disable();
+			getElementApi<NumberBoxApi>(numBox)?.disable();
+			getElementApi<CustomBoxApi>(varBox)?.disable();
 		}
 	};
 
 	const getFocus = function (mode?: string): unknown {
 		switch (currentMode) {
 			case 'constant':
-				return numBox.getFocus(mode);
+				return getElementApi<NumberBoxApi>(numBox)?.getFocus(mode);
 			case 'variable':
 				return varBox.focus();
 		}
@@ -152,7 +149,7 @@ export function attachNumberVarApi(
 		switch (event.code) {
 			case 'Slash':
 				event.preventDefault();
-				box.switch();
+				switchMode();
 				break;
 		}
 	};
@@ -162,13 +159,13 @@ export function attachNumberVarApi(
 			case 0:
 				if (!hasClass(box, 'disabled') && event.target === box) {
 					event.preventDefault();
-					box.switch();
+					switchMode();
 				}
 				break;
 			case 2:
 				if (!hasClass(box, 'disabled')) {
 					event.preventDefault();
-					box.switch();
+					switchMode();
 				}
 				break;
 		}
@@ -182,7 +179,7 @@ export function attachNumberVarApi(
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
 
-	attachApi<NumberVarApi>(box, {
+	setElementApi(box, {
 		read: readValue,
 		write: writeValue,
 		switch: switchMode,
@@ -193,16 +190,14 @@ export function attachNumberVarApi(
 		pointerdown,
 		on
 	});
-
-	markApiAttached(box);
 	box.addEventListener('keydown', keydown as EventListener);
 	box.addEventListener('pointerdown', pointerdown as EventListener);
 
 	if (options.modelValue !== undefined && options.modelValue !== null) {
-		box.write(options.modelValue);
+		writeValue(options.modelValue);
 	}
 	if (options.disabled) {
-		box.disable();
+		disable();
 	}
 
 	return box;

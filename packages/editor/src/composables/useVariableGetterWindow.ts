@@ -2,7 +2,7 @@ import { getGetterWindowsStore } from '@app/stores/getter-windows';
 import { elementDataOf } from '@ui-kit';
 import { controlRoot, type ControlApi } from '@app/composables/control-refs';
 import { getWindowStore } from '@app/stores/window';
-import { getFocus, on } from '@app/utils/element-utils';
+import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { getVariable } from '@app/utils/safe';
 import { Attribute } from '@app/attribute/attribute-window.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
@@ -597,14 +597,12 @@ const typeInput = (event: Event & { value: string }): void => {
 			const selectBox = (keyBox?.root?.querySelector('.select-box') ?? null) as
 				| (HTMLElement & {
 						textContent: string;
-						write(v: unknown): void;
-						read(): unknown;
 						dataItems: VarTypeItem[];
 				  })
 				| null;
 			if (!selectBox) break;
 			const attrName = selectBox.textContent;
-			selectBox.write(selectBox.read());
+			write(selectBox, read(selectBox));
 			if (elementDataOf<{ invalid?: boolean }>(selectBox).invalid) {
 				const items = selectBox.dataItems;
 				let defValue = items[0]?.value;
@@ -615,7 +613,7 @@ const typeInput = (event: Event & { value: string }): void => {
 					}
 				}
 				if (defValue !== undefined) {
-					selectBox.write(defValue);
+					write(selectBox, defValue);
 				}
 			}
 			break;

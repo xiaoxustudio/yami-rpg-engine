@@ -1,5 +1,4 @@
-import { isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { attachApi } from '../../../utils/attach-api';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 import { addClass, removeClass, dispatchChangeEvent } from '../../../utils/dom';
 
 export interface KeyboardBoxApiOptions {
@@ -47,7 +46,7 @@ export function attachKeyboardBoxApi(
 	options: KeyboardBoxApiOptions = {}
 ): KeyboardBoxApi {
 	const box = el as KeyboardBoxApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 
 	const input = document.createElement('input');
 	addClass(input, 'keyboard-box-input');
@@ -57,14 +56,14 @@ export function attachKeyboardBoxApi(
 		event.preventDefault();
 		switch (event.code) {
 			case 'Backspace':
-				box.inputCode(0);
+				inputCode(0);
 				break;
 			case 'Enter':
 			case 'NumpadEnter':
 				event.stopImmediatePropagation();
 				break;
 			default:
-				box.inputCode((event as KeyboardEvent & { keyCode?: number }).keyCode || 0);
+				inputCode((event as KeyboardEvent & { keyCode?: number }).keyCode || 0);
 				input.value = codeToKey(event.code);
 				break;
 		}
@@ -95,7 +94,7 @@ export function attachKeyboardBoxApi(
 
 	const inputCode = function (code: number): void {
 		if (box.dataValue !== code) {
-			box.write(code);
+			write(code);
 			if (box.inputEventEnabled) {
 				const inputEvent = new InputEvent('input') as InputEvent & {
 					value: number;
@@ -165,15 +164,13 @@ export function attachKeyboardBoxApi(
 		}
 	};
 
-	attachApi<KeyboardBoxApi>(box, { read, write, inputCode, enable, disable, getFocus, on });
-
-	markApiAttached(box);
+	setElementApi(box, { read, write, inputCode, enable, disable, getFocus, on });
 
 	if (options.modelValue) {
-		box.write(options.modelValue);
+		write(options.modelValue);
 	}
 	if (options.disabled) {
-		box.disable();
+		disable();
 	}
 
 	return box;
