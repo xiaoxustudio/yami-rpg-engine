@@ -1,15 +1,26 @@
-import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
+import { elementDataOf } from '../../../utils/element-data';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 import { addClass, parseNumberOrString, removeClass, hasClass } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
-export interface NavBarApi extends HTMLElement {
+/**
+ * 导航条能力对象（命令式工厂件：方法不挂元素，元素只作 key）。
+ *
+ * 状态字段（`writeEventEnabled` / `selectEventEnabled`）也在这里，读方一律走
+ * `getElementApi(el)`；元素上不再有同名属性。
+ */
+export interface NavBarApi {
 	writeEventEnabled: boolean;
 	selectEventEnabled: boolean;
-	read(...args: unknown[]): unknown;
-	write(...args: unknown[]): void;
-	unselect(...args: unknown[]): void;
+	read(): unknown;
+	write(value: unknown): void;
+	unselect(): void;
 	pointerdown(event: PointerEvent): void;
-	on(...args: unknown[]): void;
+	on(
+		type: string,
+		listener: (event: Event) => void,
+		listenerOptions?: boolean | AddEventListenerOptions
+	): void;
 }
 
 interface NavItemData {
@@ -28,11 +39,85 @@ const parseValue = (element: HTMLElement & { dataValue?: unknown }): unknown => 
 };
 
 export function attachNavBarApi(el: HTMLElement): NavBarApi {
-	const nav = el as NavBarApi;
-	if (isApiAttached(nav)) return nav;
+	const existing = getElementApi<NavBarApi>(el);
+	if (existing) return existing;
 
-	nav.writeEventEnabled = false;
-	nav.selectEventEnabled = false;
+	const api: NavBarApi = {
+		writeEventEnabled: false,
+		selectEventEnabled: false,
+		on(type, listener, listenerOptions): void {
+			el.addEventListener(type, listener, listenerOptions);
+			switch (type) {
+				case 'write':
+					api.writeEventEnabled = true;
+					break;
+				case 'select':
+					api.selectEventEnabled = true;
+					break;
+			}
+		},
+		read(): unknown {
+			const item = el.querySelector('.selected') as
+				| (HTMLElement & {
+						dataValue: unknown;
+				  })
+				| null;
+			if (item) {
+				const data = navItemData(item);
+				if (data.dataValue === undefined && hasClass(item, 'nav-item')) {
+					parseValue(item);
+				}
+				return data.dataValue;
+			}
+			return undefined;
+		},
+		write(value: unknown): void {
+			current = value;
+			const items = el.childNodes;
+			const length = items.length;
+			if (length !== 0) {
+				api.unselect();
+				let target: HTMLElement | undefined;
+				for (let i = 0; i < length; i++) {
+					const item = items[i] as HTMLElement & { dataValue: unknown };
+					const data = navItemData(item);
+					if (hasClass(item, 'nav-item') && data.dataValue === undefined) {
+						parseValue(item);
+					}
+					if (data.dataValue === value) {
+						target = item;
+						break;
+					}
+				}
+				if (target !== undefined) {
+					addClass(target, 'selected');
+				}
+				if (api.writeEventEnabled) {
+					emitValueEvent('write', target ? value : undefined);
+				}
+			}
+		},
+		unselect(): void {
+			for (const item of Array.from(el.querySelectorAll('.selected'))) {
+				removeClass(item, 'selected');
+			}
+		},
+		pointerdown(event: PointerEvent): void {
+			switch (event.button) {
+				case 0: {
+					const element = event.target as HTMLElement & { dataValue: unknown };
+					if (hasClass(element, 'nav-item') && !hasClass(element, 'selected')) {
+						const data = navItemData(element);
+						api.write(parseValue(element));
+						if (api.selectEventEnabled) {
+							emitValueEvent('select', data.dataValue);
+						}
+					}
+					break;
+				}
+			}
+		}
+	};
 
 	let current: unknown;
 
@@ -42,84 +127,7 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 		el.dispatchEvent(event);
 	};
 
-	nav.on = function (
-		type: string,
-		listener: (event: Event) => void,
-		listenerOptions?: boolean | AddEventListenerOptions
-	): void {
-		el.addEventListener(type, listener, listenerOptions);
-		switch (type) {
-			case 'write':
-				nav.writeEventEnabled = true;
-				break;
-			case 'select':
-				nav.selectEventEnabled = true;
-				break;
-		}
-	};
-
-	nav.read = function (): unknown {
-		const item = el.querySelector('.selected') as (HTMLElement & { dataValue: unknown }) | null;
-		if (item) {
-			const data = navItemData(item);
-			if (data.dataValue === undefined && hasClass(item, 'nav-item')) {
-				parseValue(item);
-			}
-			return data.dataValue;
-		}
-		return undefined;
-	};
-
-	nav.write = function (value: unknown): void {
-		current = value;
-		const items = el.childNodes;
-		const length = items.length;
-		if (length !== 0) {
-			nav.unselect();
-			let target: HTMLElement | undefined;
-			for (let i = 0; i < length; i++) {
-				const item = items[i] as HTMLElement & { dataValue: unknown };
-				const data = navItemData(item);
-				if (hasClass(item, 'nav-item') && data.dataValue === undefined) {
-					parseValue(item);
-				}
-				if (data.dataValue === value) {
-					target = item;
-					break;
-				}
-			}
-			if (target !== undefined) {
-				addClass(target, 'selected');
-			}
-			if (nav.writeEventEnabled) {
-				emitValueEvent('write', target ? value : undefined);
-			}
-		}
-	};
-
-	nav.unselect = function (): void {
-		for (const item of Array.from(el.querySelectorAll('.selected'))) {
-			removeClass(item, 'selected');
-		}
-	};
-
-	nav.pointerdown = function (event: PointerEvent): void {
-		switch (event.button) {
-			case 0: {
-				const element = event.target as HTMLElement & { dataValue: unknown };
-				if (hasClass(element, 'nav-item') && !hasClass(element, 'selected')) {
-					const data = navItemData(element);
-					nav.write(parseValue(element));
-					if (nav.selectEventEnabled) {
-						emitValueEvent('select', data.dataValue);
-					}
-				}
-				break;
-			}
-		}
-	};
-
-	el.addEventListener('pointerdown', (event) => nav.pointerdown(event as PointerEvent));
+	el.addEventListener('pointerdown', (event) => api.pointerdown(event as PointerEvent));
 
 	const elements = el.childNodes;
 	if (elements.length > 0) {
@@ -135,15 +143,16 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 	}
 
 	new MutationObserver(() => {
-		if (current !== undefined) nav.write(current);
+		if (current !== undefined) api.write(current);
 	}).observe(el, { childList: true });
 
-	markApiAttached(nav);
-	return nav;
+	setElementApi(el, api);
+	return api;
 }
 
-export function createNavBarElement(): NavBarApi {
+export function createNavBarElement(): HTMLElement {
 	const el = document.createElement('div');
 	el.className = 'nav-bar';
-	return attachNavBarApi(el);
+	attachNavBarApi(el);
+	return el;
 }
