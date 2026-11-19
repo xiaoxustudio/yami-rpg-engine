@@ -68,7 +68,8 @@ node scripts/oneoff/wire-command-bridges.mjs <窗口> <bridgeId> "<spec>" --appl
 - 台账三轴：`element-registry-lookups` **0 / 0 文件**（已清零）、`yami-element-refs` 481 / 91、`element-api-attach` 0；
 - editor 包装层只剩 **`ParameterPane`** 一处 attach（`WindowFrame` / `SliderBox` / `NumberBox` / `SelectBox` / `SelectVar` / `CustomBox` 等已清）；ui-kit 侧还有 15 个 `.vue` 的 `attachApi` 与 23 个 `*-api.ts` 命令式工厂。
 - 收尾只剩 P3 一条装配轴，做法见下一节「P3：元素 API → 能力缝」。
-- **状态（2026-11-13）**：P3 已完成——editor 侧控件寻址全部走组件实例/句柄，只剩 `ParameterPane` 一条 attach（被 `YMParameterPane.self = 根元素` 挡住）；`element-api-attach` **33**（editor 0、ui-kit 0）。
+- **状态（2026-11-19）**：P3 / P4 的装配轴已归零 —— editor 侧控件寻址全部走组件实例/句柄，`attachApi` 装配点与 `attachElementApi` 别名已删除；`element-registry-lookups` 0、`element-api-attach` 0。
+- **收尾剩余**：`yami-element-refs` 仍 469 / 90 文件（`YamiElement` 类型与 `isApiAttached`/`markApiAttached` 仍在使用），那是「删类型契约」的独立批；判据见 P4 一节。
 - **P4（拆元素 API 本身）已收尾：`attachApi` 装配点与 `attachElementApi` 别名已删除**：它是独立工程，前置、批次与判据见本文件「P4：拆掉元素 API」一节。
 
 **存量是碎片化的，不存在「再迁一批就清零」**：119 个消费方文件里最重的那个也只卡 5 个窗口（`report-blocked-by-consumer.mjs` 的输出）。所以一批的粒度应该是**一个消费方 + 它卡住的 1–5 个窗口**，而不是一个目录。
