@@ -242,6 +242,7 @@ export {
 	setElementCapabilities,
 	type ElementCapabilities
 } from './utils/element-capabilities';
+export { getElementApi, setElementApi, type ElementApi } from './utils/element-apis';
 export type { YamiElement, YamiElementApi, YamiListElement } from './utils/element-contract';
 export { getListConfig, type ListConfig } from './utils/list-config';
 export {

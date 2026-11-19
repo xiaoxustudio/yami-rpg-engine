@@ -1,5 +1,4 @@
-import { isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { attachApi } from '../../../utils/attach-api';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 import { show, hide } from '../../../utils/dom';
 import { createPayloadEvent } from '../../../utils/payload-event';
 
@@ -12,7 +11,7 @@ export interface DetailBoxApi extends HTMLElement {
 
 export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 	const box = el as DetailBoxApi;
-	if (isApiAttached(box)) return box;
+	if (getElementApi(box)) return box;
 	let toggleEventEnabled = false;
 
 	const isSummary = (node: Element): boolean =>
@@ -56,9 +55,9 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 
 	const toggle = function (): void {
 		if (box.hasAttribute('open')) {
-			box.close();
+			close();
 		} else {
-			box.open();
+			open();
 		}
 	};
 
@@ -73,9 +72,8 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 		}
 	};
 
-	attachApi<DetailBoxApi>(box, { open, close, toggle, on });
-
-	markApiAttached(box);
+	// 能力对象放旁表（元素只作 key）：元素上不再挂方法
+	setElementApi(box, { open, close, toggle, on });
 
 	if (box.hasAttribute('open')) {
 		apply(true);

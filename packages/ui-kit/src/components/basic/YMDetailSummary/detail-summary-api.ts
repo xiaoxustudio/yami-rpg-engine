@@ -1,5 +1,4 @@
-import { isApiAttached, markApiAttached } from '../../../utils/element-data';
-import { attachApi } from '../../../utils/attach-api';
+import { getElementApi, setElementApi } from '../../../utils/element-apis';
 
 export interface DetailSummaryApi extends HTMLElement {
 	toggle(): void;
@@ -8,7 +7,7 @@ export interface DetailSummaryApi extends HTMLElement {
 
 export function attachDetailSummaryApi(el: HTMLElement): DetailSummaryApi {
 	const summary = el as DetailSummaryApi;
-	if (isApiAttached(summary)) return summary;
+	if (getElementApi(summary)) return summary;
 
 	const findBox = (node: Element): (HTMLElement & { toggle?: () => void }) | null => {
 		let parent = node.parentElement;
@@ -28,7 +27,8 @@ export function attachDetailSummaryApi(el: HTMLElement): DetailSummaryApi {
 		const parent =
 			(summary.closest('.detail-box') as (HTMLElement & { toggle?: () => void }) | null) ??
 			findBox(summary);
-		parent?.toggle?.();
+		// 详情框的能力也在旁表里（元素只作 key）
+		getElementApi<{ toggle?(): void }>(parent)?.toggle?.();
 	};
 
 	const keydown = (event: KeyboardEvent): void => {
@@ -51,7 +51,8 @@ export function attachDetailSummaryApi(el: HTMLElement): DetailSummaryApi {
 		}
 	};
 
-	attachApi<DetailSummaryApi>(summary, {
+	// 能力对象放旁表（元素只作 key）：元素上不再挂方法
+	setElementApi(summary, {
 		toggle,
 		on: (
 			type: string,
@@ -62,7 +63,6 @@ export function attachDetailSummaryApi(el: HTMLElement): DetailSummaryApi {
 		}
 	});
 
-	markApiAttached(summary);
 	summary.addEventListener('keydown', keydown);
 	summary.addEventListener('pointerdown', pointerdown);
 

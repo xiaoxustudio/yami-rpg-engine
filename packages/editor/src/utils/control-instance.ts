@@ -19,6 +19,7 @@ interface ComponentInstance {
 	type?: ComponentType;
 }
 
+import { getElementApi } from '@ui-kit';
 import { isRef } from 'vue';
 
 export type ControlInstanceApi = Record<string, unknown> & {
@@ -29,6 +30,9 @@ export type ControlInstanceApi = Record<string, unknown> & {
 
 export const controlApiOfElement = (target: unknown): ControlInstanceApi | null => {
 	if (!(target instanceof Element)) return null;
+	// 命令式工厂件把能力放在旁表里（元素只作 key）
+	const mapped = getElementApi(target);
+	if (mapped) return mapped as ControlInstanceApi;
 	let instance = (target as Element & { __vueParentComponent?: ComponentInstance | null })
 		.__vueParentComponent;
 	let depth = 0;
