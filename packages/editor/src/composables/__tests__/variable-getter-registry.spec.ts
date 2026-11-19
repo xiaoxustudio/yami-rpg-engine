@@ -14,7 +14,6 @@ import { Attribute } from '@app/attribute/attribute-window.ts';
 import { EventEditor } from '@app/commands/event-editor.ts';
 import { elementDataOf } from '@app/utils/element-data';
 import { controlApi } from '@app/__tests__/control-api';
-import type { YamiElement } from '@app/types/element-api';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ syncState: vi.fn() }),
@@ -147,7 +146,7 @@ describe('变量访问器窗口的控件交接', () => {
 		const namespaceEntry = { name: 'n1', type: 'number', command: namespaceCommand };
 		const otherEntry = { name: 'o1', type: 'number', command: otherCommand };
 
-		const rows = [] as unknown as YamiElement[] & { count?: number };
+		const rows = [] as unknown as HTMLElement[] & { count?: number };
 		rows.count = 2;
 		rows[0] = { dataKey: true, dataIndent: 0, dataItem: otherCommand } as never;
 		rows[1] = { dataKey: true, dataIndent: 0, dataItem: namespaceCommand } as never;

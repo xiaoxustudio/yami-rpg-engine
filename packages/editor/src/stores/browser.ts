@@ -33,7 +33,6 @@ import type {
 import { GlobalClipboard } from '@app/utils/clipboard';
 import child_process from 'node:child_process';
 import { fileItemElementOf } from '@app/utils/dom';
-import type { YamiElement } from '@app/types/element-api';
 
 /** 宿主写在根元素上的目录数据（`Browser.el.directory = [Directory.assets]`，nav 从 `parentNode.directory` 读） */
 export type FileBrowserHostElement = HTMLElement & { directory?: unknown[] | null };
@@ -366,7 +365,7 @@ export const useBrowserStore = defineStore('browser', () => {
 			return;
 		}
 		initRetryCount = 0;
-		Browser.page = projectNodes.pick('page') as YamiElement;
+		Browser.page = projectNodes.pick('page') as HTMLElement;
 		Browser.searcher = Browser.links?.head?.searcher ?? null;
 		Browser.searcher?.addKeydownFilter?.();
 		Browser.page?.addEventListener('resize', pageResize);

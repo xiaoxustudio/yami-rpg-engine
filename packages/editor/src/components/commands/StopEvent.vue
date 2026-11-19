@@ -107,7 +107,6 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
-import type { YamiElement } from '@app/types/element-api';
 import { controlRoot, useControlRefs } from '@app/composables/control-refs';
 
 /** 控件 id 联合：模板与脚本共用，拼错在 tsc / vue-tsc 就红。 */
@@ -139,7 +138,11 @@ const onTypeWrite = (value: unknown) => {
 	if (!source) {
 		return;
 	}
-	const elEventType = controls['stopEvent-eventType'] as YamiElement;
+	// 选择框能力在实例/旁表上（元素只作 DOM）
+	const elEventType = controls['stopEvent-eventType'] as unknown as {
+		loadItems(items: unknown[]): void;
+		createTooltip?(): void;
+	};
 	const eventTypes = Enum.getMergedItems!(source, type + '-event');
 	elEventType?.loadItems?.(eventTypes);
 	elEventType?.createTooltip?.();

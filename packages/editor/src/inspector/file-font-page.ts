@@ -3,7 +3,6 @@ import { getBrowserInstance } from '@app/stores/browser.ts';
 import { hide, show } from '@app/utils/element-utils';
 import { File } from '@app/file/file-system-core.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
-import type { YamiElement } from '@app/types/element-api';
 import { encodeURL } from '@app/utils/css';
 
 {
@@ -13,7 +12,7 @@ import { encodeURL } from '@app/utils/css';
 		extname: string;
 		path: string;
 	}
-	type FileFontPreviews = YamiElement[] & { dpr?: number };
+	type FileFontPreviews = HTMLElement[] & { dpr?: number };
 	interface FileFontShape {
 		target: FileFontFileShape | null;
 		meta: unknown;

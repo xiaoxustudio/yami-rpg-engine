@@ -5,7 +5,6 @@ import { addClass, read, removeClass } from '@app/utils/element-utils';
 import { Data } from '@app/data/data-object.ts';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { getUIStore } from '@app/stores/ui';
-import type { YamiElement } from '@app/types/element-api';
 
 {
 	interface FileUIShape {
@@ -36,7 +35,7 @@ import type { YamiElement } from '@app/types/element-api';
 
 	FileUI.initialize = function (this: typeof FileUI) {
 		if (!uiNodes.pick('switchSettings')) return;
-		this.button = uiNodes.pick('switchSettings') as YamiElement;
+		this.button = uiNodes.pick('switchSettings') as HTMLElement;
 		this.owner = {
 			setTarget: (target: Record<string, unknown>) => {
 				if (this.target !== target) {

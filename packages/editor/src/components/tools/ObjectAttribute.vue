@@ -63,7 +63,6 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import type { YamiElement } from '@app/types/element-api';
 import { useI18n } from 'vue-i18n';
 import {
 	provideObjectAttribute,
@@ -84,7 +83,7 @@ const onKeyWrite = (value: unknown) => {
 	AttributeListInterface?.keyWrite?.({ value } as { value: string });
 };
 const onConfirm = () => {
-	(AttributeListInterface?.target as YamiElement | undefined)?.save?.();
+	(AttributeListInterface?.target as { save?(): void } | undefined)?.save?.();
 };
 
 onMounted(() => {});

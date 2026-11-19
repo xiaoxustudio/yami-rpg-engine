@@ -1,4 +1,3 @@
-import type { YamiElement } from '@app/types/element-api';
 export type { SceneItem } from './scene-list.ts';
 
 export type DragEventItem = PointerEvent & {
@@ -14,4 +13,4 @@ export type DragEventItem = PointerEvent & {
 	startY?: number;
 };
 
-export type ScrollableScreen = YamiElement;
+export type ScrollableScreen = HTMLElement & { updateScrollbars(): void };

@@ -7,7 +7,6 @@ import { write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { Inspector } from '@app/inspector/inspector.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import type { YamiElement } from '@app/types/element-api';
 import type { ControlPoint, UIFacadeShape } from './ui-facade.ts';
 import type { UIPointerEvent } from './ui-singleton.ts';
 import { clamp, roundTo, dist, modDegrees } from '@app/utils/math';
@@ -56,7 +55,7 @@ export const UIEngine = {} as UIEngineShape;
 
 UIEngine.setZoom = (function IIFE() {
 	return function (this: UIShape, zoom: number) {
-		const slider = uiNodes.pick('zoom') as YamiElement;
+		const slider = uiNodes.pick('zoom') as HTMLElement;
 		if (getUIStore().zoom !== zoom) {
 			let scale;
 			switch (zoom) {

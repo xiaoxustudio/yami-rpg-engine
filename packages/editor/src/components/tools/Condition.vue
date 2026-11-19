@@ -84,7 +84,6 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import type { YamiElement } from '@app/types/element-api';
 import { useI18n } from 'vue-i18n';
 import {
 	provideCondition,
@@ -106,7 +105,7 @@ const onTypeWrite = (value: unknown) => {
 	ConditionListInterface?.typeWrite?.({ value } as Event & { value: string });
 };
 const onConfirm = () => {
-	(ConditionListInterface?.target as YamiElement | undefined)?.save?.();
+	(ConditionListInterface?.target as { save?(): void } | undefined)?.save?.();
 };
 
 /** 8 个条件控件：模板 ref 就位后经桥交出（逻辑名 → 控件）。 */

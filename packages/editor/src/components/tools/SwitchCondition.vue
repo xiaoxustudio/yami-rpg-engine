@@ -123,7 +123,6 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { form } from '@app/composables/useSwitchConditionSchema';
-import type { YamiElement } from '@app/types/element-api';
 
 const { t } = useI18n();
 
@@ -145,7 +144,11 @@ const bridgeApi: SwitchConditionApi = {
 onMounted(() => {
 	provideSwitchCondition(bridgeApi);
 	onUnmounted(() => resetSwitchCondition(bridgeApi));
-	const typeEl = of('type') as unknown as YamiElement;
+	// 选择框能力在实例/旁表上：类型只声明这里用到的两个方法
+	const typeEl = of('type') as unknown as {
+		loadItems(items: unknown[]): void;
+		enableHiddenMode?(): { relate?(entries: unknown): void };
+	};
 	if (!typeEl) return;
 	typeEl.loadItems([
 		{ name: 'None', value: 'none' },
