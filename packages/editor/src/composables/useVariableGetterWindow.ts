@@ -243,6 +243,11 @@ const PRESET_TYPES = new Set(['actor', 'skill', 'state', 'equipment', 'item', 'e
  * 装配一个变量窗口：隐藏行关系、类型项本地化、输入联动。
  * 窗口是懒挂载的，控件不在注册表时静默返回；挂载完成后由 initialize / open 再跑一次。
  */
+const getTypeApi = (
+	prefix: string
+): { enableHiddenMode?: () => unknown; setItemNames?: unknown } | null =>
+	ctrl(prefix, 'type') as { enableHiddenMode?: () => unknown; setItemNames?: unknown } | null;
+
 const initializeWindow = (prefix: string): void => {
 	const typeEl = el(prefix, 'type');
 	if (!typeEl || initializedTypeEls.has(typeEl)) return;
@@ -253,7 +258,12 @@ const initializeWindow = (prefix: string): void => {
 		const globalKeyEl = el(prefix, 'global-key');
 		const elementEl = el(prefix, 'element');
 		const presetKeyEl = el(prefix, 'preset-key');
-		typeEl.enableHiddenMode().relate([
+		// enableHiddenMode 只在实例上：元素不再挂方法
+		(
+			getTypeApi(prefix)?.enableHiddenMode?.() as
+				| { relate(entries: unknown): void }
+				| undefined
+		)?.relate([
 			{ case: 'local', targets: [commonKeyEl] },
 			{ case: 'global', targets: [globalKeyEl] },
 			{
@@ -274,7 +284,10 @@ const initializeWindow = (prefix: string): void => {
 	const itemEl = el(prefix, 'item');
 	const elementEl = el(prefix, 'element');
 
-	typeEl.enableHiddenMode().relate([
+	// enableHiddenMode 只在实例上：元素不再挂方法
+	(
+		getTypeApi(prefix)?.enableHiddenMode?.() as { relate(entries: unknown): void } | undefined
+	)?.relate([
 		{ case: 'local', targets: [commonKeyEl] },
 		{ case: 'global', targets: [globalKeyEl] },
 		{

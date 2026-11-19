@@ -557,7 +557,9 @@ vi.mock('@app/stores/local', () => ({
 					'keydown',
 					'keyup'
 				]);
-				expect(type.read()).toBe('autorun');
+				expect((controlApi('registerEvent-type') as { read(): unknown }).read()).toBe(
+					'autorun'
+				);
 				expect(typeInvalid()).toBe(false);
 				expect(form.type).toBe('autorun');
 				Command.cases.registerEvent.customLoad!({
@@ -574,7 +576,9 @@ vi.mock('@app/stores/local', () => ({
 					'keydown',
 					'keyup'
 				]);
-				expect(type.read()).toBe('keydown');
+				expect((controlApi('registerEvent-type') as { read(): unknown }).read()).toBe(
+					'keydown'
+				);
 				expect(typeInvalid()).toBe(false);
 				expect(form.type).toBe('keydown');
 				Command.cases.registerEvent.targetWrite!({ value: 'actor' });

@@ -94,11 +94,12 @@ describe('变量访问器窗口的控件交接', () => {
 		const wrapper = mount(VariableGetter, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 
-		const typeEl = byId('variableGetter-type') as unknown as HTMLElement & {
+		// 方法只在实例上：桩要打在能力对象上
+		const typeApi = controlApi('variableGetter-type') as unknown as {
 			enableHiddenMode(): { relate(cases: unknown[]): void };
 		};
 		const relate = vi.fn();
-		typeEl.enableHiddenMode = () => ({ relate });
+		typeApi.enableHiddenMode = () => ({ relate });
 
 		useVariableGetterWindow().initialize();
 

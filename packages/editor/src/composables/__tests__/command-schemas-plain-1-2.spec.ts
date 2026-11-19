@@ -408,11 +408,12 @@ vi.mock('@app/stores/local', () => ({
 			await wrapper.vm.$nextTick();
 			const team = document.getElementById('changeActorTeam-teamId') as unknown as {
 				dataItems?: Array<{ value: string }>;
-				read(): unknown;
 			};
 			const text = document.querySelector('#changeActorTeam-teamId .select-box-text');
 			expect(dataItemsOf(team)?.map((item) => item.value)).toEqual(['team0']);
-			expect(team.read()).toBe('team0');
+			expect((controlApi('changeActorTeam-teamId') as { read(): unknown }).read()).toBe(
+				'team0'
+			);
 			expect(text?.classList.contains('invalid')).toBe(false);
 			expect(text?.textContent).toBe('Team 0');
 			wrapper.unmount();

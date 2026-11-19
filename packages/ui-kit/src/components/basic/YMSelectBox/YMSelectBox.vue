@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { attachApi } from '../../../utils/attach-api';
 import { useEventListener } from '../../../composables/useEventListener';
 import { elementDataOf, isApiAttached, markApiAttached } from '../../../utils/element-data';
 import {
@@ -223,28 +222,6 @@ function initializeApi(): void {
 	});
 	elementDataOf<{ invalid?: boolean }>(el).invalid = state.invalid;
 	(el as SelectBoxHost).hideUnrelated = state.hideUnrelated;
-	attachApi(el, {
-		read,
-		write,
-		write2,
-		writeDefault,
-		input,
-		update,
-		reselect,
-		save,
-		restore,
-		enable,
-		disable,
-		loadItems,
-		setItemNames,
-		clear,
-		enableHiddenMode,
-		relate,
-		toggleRelatedElements,
-		enableElement,
-		disableElement,
-		on
-	});
 	loadItems(props.items);
 	on('input', (e: Event & { value?: unknown }) => {
 		emit('update:modelValue', e.value);

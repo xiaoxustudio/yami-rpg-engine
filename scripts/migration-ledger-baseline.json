@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"generatedAt": "2026-11-18T16:15:36.313Z",
+	"generatedAt": "2026-11-19T05:47:36.980Z",
 	"scan": {
 		"dirs": [
 			"packages/editor/src",
@@ -115,8 +115,8 @@
 			"label": "元素 API 装配（attachApi / attachElementApi）",
 			"target": "zero",
 			"value": {
-				"total": 22,
-				"files": 22
+				"total": 21,
+				"files": 21
 			}
 		},
 		"element-custom-events": {
@@ -214,8 +214,8 @@
 			"label": "元素优先 on() API（消费站点已达下界，仅需不增）",
 			"target": "stable",
 			"value": {
-				"total": 36,
-				"exposed": 20,
+				"total": 35,
+				"exposed": 19,
 				"consumed": 16
 			}
 		},

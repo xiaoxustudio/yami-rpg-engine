@@ -18,6 +18,7 @@ import {
 } from '@app/tools/tool-window-host';
 import appShellRaw from '../../AppShell.vue?raw';
 import { controlApi } from '@app/__tests__/control-api';
+import { controlApiOfElement } from '@app/utils/control-instance';
 
 /**
  * 懒挂载窗口冒烟：54 个按需挂载的工具窗口逐个真实挂载，断言
@@ -189,17 +190,15 @@ describe('懒挂载工具窗口冒烟', () => {
 				failures.push(`${id}: 重复 id ${[...new Set(duplicated)].join(', ')}`);
 			}
 
-			// 控件按类名识别（不再依赖注册表）：至少有一个元素级 API 才算「接线成功」。
-			// P3 之后包装组件不再往元素上挂 API，这里会自然归零 —— 那时这条断言该删，
-			// 换成对控件实例表的断言。
+			// 控件按类名识别：方法只在**组件实例**上（元素 API 已退场），
+			// 所以按元素反查能力对象，再看它有没有任一约定成员。
 			for (const element of [frame, ...frame.querySelectorAll<HTMLElement>('[id]')]) {
 				const idOfElement = element.id;
 				if (idOfElement === id) continue;
 				if (!isControl(element)) continue;
-				const wired = CONTROL_API.some(
-					(name) =>
-						typeof (element as unknown as Record<string, unknown>)[name] === 'function'
-				);
+				const api = controlApiOfElement(element) as Record<string, unknown> | null;
+				if (!api) continue;
+				const wired = CONTROL_API.some((name) => typeof api[name] === 'function');
 				if (!wired) continue;
 				checkedControls++;
 			}

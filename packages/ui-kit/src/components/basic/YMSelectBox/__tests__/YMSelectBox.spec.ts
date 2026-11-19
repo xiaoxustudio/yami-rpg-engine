@@ -71,13 +71,15 @@ describe('YMSelectBox', () => {
 		expect(wrapper.find('.select-popup').exists()).toBe(false);
 	});
 
-	it('exposes bridge functions on root element', () => {
+	it('exposes bridge functions on the instance', () => {
 		const wrapper = mount(YMSelectBox, { props: { items } });
-		const el = wrapper.element as unknown as SelectBoxApi;
-		expect(typeof el.read).toBe('function');
-		expect(typeof el.write).toBe('function');
-		expect(typeof el.loadItems).toBe('function');
-		expect(typeof el.on).toBe('function');
+		const vm = wrapper.vm as unknown as SelectBoxApi;
+		// 方法只在实例上：元素是纯 DOM
+		expect(typeof (wrapper.element as unknown as { read?: unknown }).read).toBe('undefined');
+		expect(typeof vm.read).toBe('function');
+		expect(typeof vm.write).toBe('function');
+		expect(typeof vm.loadItems).toBe('function');
+		expect(typeof vm.on).toBe('function');
 	});
 
 	it('save/restore roundtrip', () => {
@@ -96,7 +98,7 @@ describe('YMSelectBox', () => {
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as unknown as SelectBoxApi;
+		const vm = wrapper.vm as unknown as SelectBoxApi;
 		const la = document.createElement('div');
 		la.className = 'text';
 		la.textContent = 'A';
@@ -109,8 +111,8 @@ describe('YMSelectBox', () => {
 		document.body.appendChild(lb);
 		const tb = document.createElement('div');
 		document.body.appendChild(tb);
-		el.enableHiddenMode();
-		el.relate([
+		vm.enableHiddenMode();
+		vm.relate([
 			{ case: 'a', targets: [ta] },
 			{ case: 'b', targets: [tb] }
 		]);
@@ -119,7 +121,7 @@ describe('YMSelectBox', () => {
 		expect(lb.style.display).not.toBe('none');
 		expect(ta.style.display).toBe('none');
 		expect(la.style.display).toBe('none');
-		el.input('a');
+		vm.input('a');
 		await wrapper.vm.$nextTick();
 		expect(ta.style.display).not.toBe('none');
 		expect(la.style.display).not.toBe('none');
@@ -134,7 +136,7 @@ describe('YMSelectBox', () => {
 
 	it('relate hides/shows targets by current value after setup', () => {
 		const wrapper = mount(YMSelectBox, { props: { items } });
-		const el = wrapper.element as unknown as SelectBoxApi;
+		const vm = wrapper.vm as unknown as SelectBoxApi;
 		const makeLabel = (text: string) => {
 			const label = document.createElement('div');
 			label.className = 'text';
@@ -148,9 +150,9 @@ describe('YMSelectBox', () => {
 		const lb = makeLabel('B');
 		const tb = document.createElement('div');
 		document.body.appendChild(tb);
-		el.enableHiddenMode();
-		el.write('b');
-		el.relate([
+		vm.enableHiddenMode();
+		vm.write('b');
+		vm.relate([
 			{ case: 'a', targets: [ta] },
 			{ case: 'b', targets: [tb] }
 		]);
@@ -158,7 +160,7 @@ describe('YMSelectBox', () => {
 		expect(ta.style.display).toBe('none');
 		expect(la.style.display).toBe('none');
 		expect(lb.style.display).not.toBe('none');
-		el.write('a');
+		vm.write('a');
 		expect(ta.style.display).not.toBe('none');
 		expect(tb.style.display).toBe('none');
 		expect(la.style.display).not.toBe('none');
