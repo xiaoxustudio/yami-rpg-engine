@@ -156,9 +156,14 @@ const Path = props.pathUtil;
 const Local = props.localize;
 
 const el = ref<HTMLElement>();
-const navEl = ref<InstanceType<typeof YMFileNavPane>>();
-const headEl = ref<InstanceType<typeof YMFileHeadPane>>();
-const bodyEl = ref<InstanceType<typeof YMFileBodyPane>>();
+// 三个 pane 的 ref 一律按**句柄**声明（`NavHandle` / `HeadHandle` / `BodyHandle`），不用
+// `InstanceType<typeof X>`：实例类型里带着各自 SFC 内部未导出的 `Props` / `FileItem` /
+// `TextBoxElement` 等名字，一旦从这里进 `defineExpose`，`vue-tsc --emitDeclarationOnly`
+// 就会报 `TS4023 … cannot be named`（8 条，2026-11-20 CI 首次跑到本步时暴露）。
+// 句柄本来就是这个组件对三个 pane 的最小依赖面，ref 直接用它，下面的 `as` 转换也就不需要了。
+const navEl = ref<NavHandle>();
+const headEl = ref<HeadHandle>();
+const bodyEl = ref<BodyHandle>();
 
 const isFolderItem = (obj: unknown): boolean => obj instanceof FolderItem;
 
@@ -274,9 +279,9 @@ interface BodyHandle {
 /** 拖拽流程里 nav 与 body 的公共面（页面元素反查句柄后统一用这份） */
 type PageHandle = NavHandle | BodyHandle;
 
-const navHandle = (): NavHandle | null => (navEl.value as NavHandle | undefined) ?? null;
-const headHandle = (): HeadHandle | null => (headEl.value as HeadHandle | undefined) ?? null;
-const bodyHandle = (): BodyHandle | null => (bodyEl.value as BodyHandle | undefined) ?? null;
+const navHandle = (): NavHandle | null => navEl.value ?? null;
+const headHandle = (): HeadHandle | null => headEl.value ?? null;
+const bodyHandle = (): BodyHandle | null => bodyEl.value ?? null;
 
 /**
  * 由元素反查页面句柄。
