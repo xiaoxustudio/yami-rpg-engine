@@ -1463,20 +1463,48 @@ test('render-callback-props：容器回调要认，普通回调不认', () => {
 test('真实仓库的读数与台账一致（防「仪器只对手写样本有效」）', () => {
 	// 只锚「非零 + 量级」：具体数字由台账 baseline 守护，这里防止口径被整体改坏成恒 0。
 	//
-	// 下限**不能写死成当前排队量**：`element-registry-lookups` 的终态是归零，迁移每推一批
-	// 真实读数就往下走（本轮 1232 → 972），写死 `> 1000` 会让门禁在**迁移成功时**变红。
-	// 这两条只是烟雾检查，量级下界取「几十处」，真正的棘轮在 migration-ledger-baseline.json。
+	// ⚠️ **换锚记录（2026-11-20）**：本条此前还断言 `registry > 50`（「元素注册表寻址应仍有
+	// 数十处以上」）。`element-registry-lookups` 的终态是 0，而它 2026-11-09 就跨过了 50
+	// （54 → 48 → … → 0，逐提交读数见台账 baseline）⇒ 那条下限此后**恒假**，2026-11-20 的 CI
+	// `gates` 第 6 步 `migration:selftest` 正是这么红的。轴到终态后「0」才是正确读数，
+	// 所以这里换的是判据、不是删判据：0 的合法性必须能被**独立重算**证明（①②③），
+	// 否则「收口」与「仪器瞎了」两种状态读出来一模一样 —— 本仓 2026-09-21 的假绿三连就是这么来的。
 	const files = collectFiles({ dirs: SCAN_DIRS });
 	const style = files.reduce(
 		(sum, f) => sum + countCodeMatches(readSource(f.full), auxRe('styleWrite')),
 		0
 	);
+	ok(style > 100, `真实仓库的 style 直写应在百处量级，实际 ${style}`);
+
+	// ① 窄口径（轴本身）必须读到 0；真正的棘轮在 migration-ledger-baseline.json。
 	const registry = files.reduce(
 		(sum, f) => sum + countCodeMatches(readSource(f.full), apiRe('registryLookup')),
 		0
 	);
-	ok(style > 100, `真实仓库的 style 直写应在百处量级，实际 ${style}`);
-	ok(registry > 50, `元素注册表寻址应仍有数十处以上（终态归零），实际 ${registry}`);
+	// ② 宽探针**不能按名字数**：收口后的替代写法恰好就叫 `fieldEls[id]` / `pointEls[id]`
+	//    （普通对象/Record 当节点表，`EasingPointsSection.vue`、`IfCondition.vue` 等 19 处仍在）
+	//    ⇒「任何 `*Els` 标识符都算」会把**迁移成果**读成迁移债。盲区只能按**构造入口**查：
+	//    没有注册表就没有寻址，于是独立数一遍 `createElementRegistry` /
+	//    `getRegistryElement(s)` 这一族（与轴的正则不是同一套写法，不看可选链/泛型形态）。
+	const registryFactory = files.reduce(
+		(sum, f) =>
+			sum +
+			countCodeMatches(
+				readSource(f.full),
+				/\b(?:createElementRegistry|getRegistryElements?|testRegistryElements)\b/g
+			),
+		0
+	);
+	// ③ 承载注册表的 util 真的不在了：2026-11-11 `854941d1` 删掉 13 个按域 element-registry.ts
+	//    与 `utils/element-registry.ts`。文件复活即「寻址又有家可回」，读数 0 便不可信。
+	const registryUtils = files.filter((f) => /(^|\/)element-registry\.ts$/.test(f.rel));
+	// ④ 扫描面本身没瞎：上面 `style > 100` 就是这条的正向对照（同一批文件、同一套
+	//    readSource/codeOnly）。它若也塌成个位数，先修仪器，别信本轴的 0。
+	ok(
+		registry === 0 && registryFactory === 0 && registryUtils.length === 0,
+		`元素注册表寻址应已收到终态 0：窄口径 ${registry} / 构造入口 ${registryFactory} / 残留 util ${registryUtils.length}。` +
+			'（轴读 0 但构造入口还在 ⇒ 先怀疑窄口径漏了写法；确有新注册表 ⇒ 换锚并重设 baseline，别删这条）'
+	);
 });
 
 // ---------------------------------------------------------------------------
